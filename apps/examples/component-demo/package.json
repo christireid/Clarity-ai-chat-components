@@ -15,8 +15,18 @@
     "@clarity-chat/react": "workspace:*",
     "@clarity-chat/token-optimization": "workspace:*",
     "@clarity-chat/utils": "workspace:*",
+    "flowtoken": "^1.0.0",
+    "framer-motion": "^12.23.25",
+    "jszip": "^3.10.0",
+    "lucide-react": "^0.500.0",
+    "prismjs": "^1.29.0",
     "react": "^19.2.0",
-    "react-dom": "^19.2.0"
+    "react-dom": "^19.2.0",
+    "react-markdown": "^10.0.0",
+    "rehype-highlight": "^7.0.0",
+    "remark-gfm": "^4.0.0",
+    "shiki": "^3.0.0",
+    "zod": "^3.24.0"
   },
   "devDependencies": {
     "@types/react": "^19.0.0",

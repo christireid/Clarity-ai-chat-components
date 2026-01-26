@@ -10,13 +10,18 @@
     "lint": "eslint ."
   },
   "dependencies": {
-    "@clarity-chat/react": "workspace:*",
     "@clarity-chat/primitives": "workspace:*",
+    "@clarity-chat/react": "workspace:*",
     "@clarity-chat/types": "workspace:*",
     "@tanstack/react-query": "^5.62.14",
     "@tanstack/react-query-devtools": "^5.62.14",
+    "flowtoken": "^1.0.0",
+    "framer-motion": "^12.23.25",
+    "jszip": "^3.10.0",
+    "lucide-react": "^0.500.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
+    "zod": "^3.24.0",
     "zustand": "^4.4.7"
   },
   "devDependencies": {

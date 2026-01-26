@@ -12,9 +12,13 @@
     "@clarity-chat/primitives": "workspace:*",
     "@clarity-chat/react": "workspace:*",
     "@clarity-chat/testing-utils": "workspace:*",
+    "framer-motion": "^12.23.25",
+    "jszip": "^3.10.0",
+    "lucide-react": "^0.500.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
-    "recharts": "^2.10.3"
+    "recharts": "^2.10.3",
+    "zod": "^3.24.0"
   },
   "devDependencies": {
     "@types/react": "^19.0.0",
