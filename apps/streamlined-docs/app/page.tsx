@@ -14,6 +14,9 @@ import {
   Shield,
 } from 'lucide-react'
 
+// ISR Configuration: Home page has high traffic, revalidate every 30 minutes
+export const revalidate = 1800
+
 export default function Page() {
   return (
     <div className="relative">
@@ -49,13 +52,14 @@ export default function Page() {
               Everything you need
             </KineticText>
             <p className="text-base sm:text-lg text-neutral-600 dark:text-neutral-400">
-              Built with modern best practices, accessibility standards, and performance optimization.
+              Built with modern best practices, accessibility standards, and
+              performance optimization.
             </p>
           </div>
         </ScrollReveal>
 
         <ScrollReveal direction="up" delay={0.4}>
-            <FeaturesGrid
+          <FeaturesGrid
             features={[
               {
                 icon: <Package className="w-5 h-5" />,
@@ -138,7 +142,8 @@ export default function Page() {
               Ready to build something amazing?
             </KineticText>
             <p className="text-base sm:text-lg text-neutral-600 dark:text-neutral-400 mb-8 max-w-2xl mx-auto">
-              Join thousands of developers building beautiful chat interfaces with Clarity Chat UI.
+              Join thousands of developers building beautiful chat interfaces
+              with Clarity Chat UI.
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <a
