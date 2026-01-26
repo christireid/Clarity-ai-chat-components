@@ -15,10 +15,12 @@ import {
 import { LIBRARY_STATS } from '@/lib/library-stats'
 
 // Lazy load the AI assistant to reduce initial bundle size
+// Using optimized dynamic component with loading skeleton
 const DocsAssistant = dynamic(() =>
-  import('@/components/AI/DocsAssistant').then((mod) => ({
-    default: mod.DocsAssistant,
-  }))
+  import('@/components/Dynamic/DynamicDocsAssistant').then((mod) => ({
+    default: mod.DynamicDocsAssistant,
+  })),
+  { ssr: false }
 )
 
 // Lazy load scroll progress for better initial bundle
@@ -46,6 +48,13 @@ const MobileBottomNav = dynamic(() =>
 const FloatingActionButton = dynamic(() =>
   import('@/components/Enhanced/FloatingActionButton').then((mod) => ({
     default: mod.FloatingActionButton,
+  }))
+)
+
+// Lazy load accessibility audit (dev only)
+const AccessibilityAudit = dynamic(() =>
+  import('@/components/Accessibility/AccessibilityAudit').then((mod) => ({
+    default: mod.AccessibilityAudit,
   }))
 )
 
@@ -160,6 +169,7 @@ export default function RootLayout({
             />
           </div>
           <ToastManager />
+          <AccessibilityAudit />
         </Providers>
       </body>
     </html>

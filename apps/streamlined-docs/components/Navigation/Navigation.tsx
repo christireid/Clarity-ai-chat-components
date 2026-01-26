@@ -141,8 +141,8 @@ export function Navigation() {
 
   return (
     <>
-      <header className="sticky top-0 z-50 w-full border-b border-neutral-200/60 dark:border-neutral-800/60 bg-white/80 dark:bg-neutral-950/80 backdrop-blur-xl">
-        <nav className="container-docs" aria-label="Main navigation">
+      <header role="banner" className="sticky top-0 z-50 w-full border-b border-neutral-200/60 dark:border-neutral-800/60 bg-white/80 dark:bg-neutral-950/80 backdrop-blur-xl">
+        <nav className="container-docs" role="navigation" aria-label="Main navigation">
           <div className="flex h-14 items-center gap-6">
             {/* Logo - compact with hover glow */}
             <Link
