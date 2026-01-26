@@ -12,7 +12,7 @@ import { ProfilerPanel } from './profiler-panel'
 import { ValidationForm } from './validation-form'
 import { TimeTravelPanel } from './time-travel-panel'
 import { ModelComparisonPanel } from './model-comparison-panel'
-import { PanelErrorBoundary } from './ErrorBoundary'
+import { PanelErrorBoundary } from './error-boundary'
 import {
   InspectorIcon,
   ProfilerIcon,
