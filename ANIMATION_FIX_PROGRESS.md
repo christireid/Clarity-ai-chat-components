@@ -4,9 +4,9 @@
 Fix all 341 animation accessibility errors by adding `viewport={{ once: true }}` to motion components for WCAG 2.1 AA compliance.
 
 ## Current Status
-- **Fixed**: 70/341 errors (21% complete)
-- **Remaining**: 271 errors (79%)
-- **Files Fixed**: 20 files
+- **Fixed**: 77/341 errors (23% complete)
+- **Remaining**: 264 errors (77%)
+- **Files Fixed**: 21 files
 
 ## Files Completed (14 total)
 
@@ -19,7 +19,7 @@ Fix all 341 animation accessibility errors by adding `viewport={{ once: true }}`
 6. KeyboardShortcutsHelp.tsx - 1 motion component
 7. ComponentPreview.tsx - 1 motion component
 
-### Current Session (13 files, 36 errors)
+### Current Session (14 files, 43 errors)
 8. HeroSection.tsx - 13 motion components (commit: 000706801)
 9. not-found.tsx - 2 motion components (commit: 6c5dee82d)
 10. FeedbackButtons.tsx - 2 motion components (commit: 37283d6fa)
@@ -33,9 +33,10 @@ Fix all 341 animation accessibility errors by adding `viewport={{ once: true }}`
 18. ShareButton.tsx - 3 motion components (commit: 5b0e1d33e)
 19. SearchPalette.tsx - 2 motion components (commit: 766ba5424)
 20. AnalyticsDashboard.tsx - 1 motion component (commit: c04cb6d03)
+21. PropsTable.tsx - 7 motion components (commit: aa6562654)
 
 ## Remaining Work
-Estimated 100+ files remaining with 271 errors total.
+Estimated 100+ files remaining with 264 errors total.
 
 ## Next Batch to Fix
 - SuggestionsPanel.tsx
@@ -73,7 +74,7 @@ Estimated 100+ files remaining with 271 errors total.
 
 ## Estimated Time Remaining
 At current pace (~30 errors per hour):
-- 271 errors remaining ÷ 30 errors/hour = **~9 hours remaining**
+- 264 errors remaining ÷ 30 errors/hour = **~9 hours remaining**
 
 ## Last Updated
-2026-01-26 - 21% complete (70/341 fixed)
+2026-01-26 - 23% complete (77/341 fixed)
