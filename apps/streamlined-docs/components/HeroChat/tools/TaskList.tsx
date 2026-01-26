@@ -65,6 +65,7 @@ export function TaskList({
     <motion.div
       initial={{ opacity: 0, y: 20, scale: 0.95 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
+      viewport={{ once: true }}
       transition={{ type: 'spring', stiffness: 300, damping: 25 }}
       className="w-full max-w-sm overflow-hidden rounded-2xl bg-white dark:bg-slate-900 shadow-2xl border border-slate-200 dark:border-slate-700"
     >
@@ -97,6 +98,7 @@ export function TaskList({
                 className="h-full bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full"
                 initial={{ width: 0 }}
                 animate={{ width: `${progress}%` }}
+                viewport={{ once: true }}
                 transition={{ type: 'spring', stiffness: 100, damping: 20 }}
               />
             </div>
@@ -113,6 +115,7 @@ export function TaskList({
               layout
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
               exit={{ opacity: 0, x: 20 }}
               transition={{ delay: index * 0.05 }}
               className="relative"
@@ -140,6 +143,7 @@ export function TaskList({
                       <motion.div
                         initial={{ scale: 0 }}
                         animate={{ scale: 1 }}
+                        viewport={{ once: true }}
                         exit={{ scale: 0 }}
                         transition={{
                           type: 'spring',
@@ -179,6 +183,7 @@ export function TaskList({
                     className="absolute inset-0 pointer-events-none"
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
+                    viewport={{ once: true }}
                     exit={{ opacity: 0 }}
                   >
                     {[...Array(8)].map((_, i) => (
@@ -196,6 +201,7 @@ export function TaskList({
                           y: Math.sin((i / 8) * Math.PI * 2) * 30,
                           opacity: [1, 1, 0],
                         }}
+                        viewport={{ once: true }}
                         transition={{
                           duration: durations.slower,
                           ease: 'easeOut',
@@ -216,6 +222,7 @@ export function TaskList({
           <motion.div
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
+            viewport={{ once: true }}
             exit={{ opacity: 0, height: 0 }}
             className="border-t border-slate-100 dark:border-slate-800"
           >
@@ -223,6 +230,7 @@ export function TaskList({
               <div className="flex items-center justify-center gap-2 text-indigo-600 dark:text-indigo-400">
                 <motion.div
                   animate={{ rotate: 360 }}
+                  viewport={{ once: true }}
                   transition={{ duration: durations.slower, ease: 'easeOut' }}
                 >
                   <Sparkles className="w-5 h-5" />
@@ -230,6 +238,7 @@ export function TaskList({
                 <span className="font-medium">All tasks complete!</span>
                 <motion.div
                   animate={{ rotate: 360 }}
+                  viewport={{ once: true }}
                   transition={{ duration: durations.slower, ease: 'easeOut' }}
                 >
                   <Sparkles className="w-5 h-5" />
