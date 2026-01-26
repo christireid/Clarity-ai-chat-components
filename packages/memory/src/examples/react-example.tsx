@@ -7,7 +7,7 @@
  * For more comprehensive examples, see /docs/examples/
  */
 
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import { useMemoryService } from '../react' // Use updated hooks
 import type { MemoryItem } from '../types'
 
@@ -25,11 +25,7 @@ export function ChatApp({
   const [error, setError] = useState<string | null>(null)
 
   // Load thread messages on mount
-  useEffect(() => {
-    loadMessages()
-  }, [threadId])
-
-  async function loadMessages() {
+  const loadMessages = useCallback(async () => {
     try {
       setLoading(true)
       setError(null)
@@ -53,7 +49,11 @@ export function ChatApp({
     } finally {
       setLoading(false)
     }
-  }
+  }, [memory, threadId])
+
+  useEffect(() => {
+    loadMessages()
+  }, [loadMessages])
 
   async function handleSend() {
     if (!message.trim()) return
