@@ -1,0 +1,87 @@
+{
+  "name": "@clarity-chat/react - Peer Dependencies API",
+  "entryPoints": ["./src/index.ts"],
+  "out": "./docs/api/generated",
+  "plugin": ["typedoc-plugin-markdown"],
+  "readme": "./docs/api/peer-dependencies.md",
+  "exclude": [
+    "**/node_modules/**",
+    "**/*.test.ts",
+    "**/*.test.tsx",
+    "**/*.spec.ts",
+    "**/*.spec.tsx",
+    "**/dist/**",
+    "**/tests/**"
+  ],
+  "excludePrivate": true,
+  "excludeProtected": false,
+  "excludeInternal": true,
+  "includeVersion": true,
+  "categorizeByGroup": true,
+  "categoryOrder": [
+    "Components",
+    "Hooks",
+    "Document Loaders",
+    "Utilities",
+    "Types",
+    "*"
+  ],
+  "defaultCategory": "Other",
+  "groupOrder": [
+    "Required Peer Dependencies",
+    "Optional Peer Dependencies",
+    "Core Components",
+    "Advanced Components",
+    "Hooks",
+    "*"
+  ],
+  "sort": ["source-order", "required-first", "alphabetical"],
+  "kindSortOrder": [
+    "Module",
+    "Class",
+    "Interface",
+    "TypeAlias",
+    "Function",
+    "Variable"
+  ],
+  "validation": {
+    "notExported": true,
+    "invalidLink": true,
+    "notDocumented": false
+  },
+  "treatWarningsAsErrors": false,
+  "treatValidationWarningsAsErrors": false,
+  "cleanOutputDir": true,
+  "githubPages": false,
+  "hideBreadcrumbs": false,
+  "hideInPageTOC": false,
+  "navigation": {
+    "includeCategories": true,
+    "includeGroups": true,
+    "includeFolders": true
+  },
+  "searchInComments": true,
+  "skipErrorChecking": true,
+  "tsconfig": "./tsconfig.json",
+  "commentStyle": "jsdoc",
+  "blockTags": [
+    "@peerDependency",
+    "@requiredPeer",
+    "@optionalPeer",
+    "@fallback",
+    "@example",
+    "@param",
+    "@returns",
+    "@deprecated",
+    "@since"
+  ],
+  "modifierTags": [
+    "@internal",
+    "@private",
+    "@protected",
+    "@public",
+    "@readonly",
+    "@experimental",
+    "@beta"
+  ]
+}
