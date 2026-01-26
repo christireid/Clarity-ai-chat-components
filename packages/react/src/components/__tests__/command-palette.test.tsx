@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import * as React from 'react'
 import { render, screen } from '@testing-library/react'
-import { CommandPalette, CommandItem } from '../command-palette'
+import { CommandPalette, CommandItem } from '../CommandPalette'
 
 describe('CommandPalette Component', () => {
   const mockItems: CommandItem[] = [

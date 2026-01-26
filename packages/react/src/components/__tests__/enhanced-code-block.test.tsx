@@ -1,7 +1,7 @@
 import React from 'react'
 import { render, screen, fireEvent } from '@testing-library/react'
 import { describe, it, expect, vi } from 'vitest'
-import { EnhancedCodeBlock } from '../enhanced-code-block'
+import { EnhancedCodeBlock } from '../EnhancedCodeBlock'
 
 // Mock icons to avoid rendering issues
 vi.mock('../icons', () => ({

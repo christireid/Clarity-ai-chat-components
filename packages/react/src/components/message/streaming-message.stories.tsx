@@ -3,7 +3,7 @@
  */
 
 import type { Meta, StoryObj } from '@storybook/react'
-import { StreamingMessage } from './streaming-message'
+import { StreamingMessage } from './StreamingMessage'
 import { useState } from 'react'
 
 const meta: Meta<typeof StreamingMessage> = {

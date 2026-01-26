@@ -29,18 +29,18 @@
 import {
   ClarityChat,
   type ClarityChatProps,
-} from './components/chat/clarity-chat'
-import { ChatWindow, type ChatWindowProps } from './components/chat/chat-window'
-import { ChatInput, type ChatInputProps } from './components/chat/chat-input'
+} from './components/chat/ClarityChat'
+import { ChatWindow, type ChatWindowProps } from './components/chat/ChatWindow'
+import { ChatInput, type ChatInputProps } from './components/chat/ChatInput'
 import MessageList, {
   type MessageListProps,
-} from './components/chat/virtualized-message-list'
+} from './components/chat/VirtualizedMessageList'
 import { Message, type MessageProps } from './components/message/message'
-import { ThinkingIndicator } from './components/message/thinking-indicator'
+import { ThinkingIndicator } from './components/message/ThinkingIndicator'
 import {
   PromptSuggestions,
   type PromptSuggestion,
-} from './components/prompt/prompt-suggestions'
+} from './components/prompt/PromptSuggestions'
 
 // Import hooks
 import {

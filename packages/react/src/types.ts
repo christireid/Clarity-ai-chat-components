@@ -196,17 +196,17 @@ export type {
 // COMPONENT PROPS TYPES
 // =============================================================================
 
-export type { ClarityChatProps } from './components/chat/clarity-chat'
-export type { ClarityChatSimpleProps } from './components/chat/clarity-chat-simple'
-export type { ChatWindowProps } from './components/chat/chat-window'
-export type { TypingIndicatorVariant } from './components/message/typing-indicator'
+export type { ClarityChatProps } from './components/chat/ClarityChat'
+export type { ClarityChatSimpleProps } from './components/chat/ClarityChatSimple'
+export type { ChatWindowProps } from './components/chat/ChatWindow'
+export type { TypingIndicatorVariant } from './components/message/TypingIndicator'
 
 export type {
   ChatCompleteProps,
   ChatWithMemoryProps,
   ChatWithAnalyticsProps,
   ChatWithPresetProps,
-} from './components/chat/chat-recipes'
+} from './components/chat/ChatRecipes'
 
 // =============================================================================
 // LICENSE TYPES

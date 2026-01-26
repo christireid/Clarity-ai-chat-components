@@ -1,7 +1,7 @@
 import { render, screen, waitFor } from '@testing-library/react'
 import { describe, it, expect, vi } from 'vitest'
 import type { StreamableValueLike } from '../../hooks/streaming/use-streamable-ui'
-import { StreamBlock } from '../stream-block'
+import { StreamBlock } from '../StreamBlock'
 
 vi.mock('@clarity-chat/primitives', () => ({
   cn: (...classes: Array<string | undefined>) =>

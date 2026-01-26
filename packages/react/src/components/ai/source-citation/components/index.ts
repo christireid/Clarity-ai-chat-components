@@ -5,17 +5,17 @@
 export { Favicon } from './favicon'
 export type { FaviconProps } from './favicon'
 
-export { ConfidenceBadge } from './confidence-badge'
-export type { ConfidenceBadgeProps } from './confidence-badge'
+export { ConfidenceBadge } from './ConfidenceBadge'
+export type { ConfidenceBadgeProps } from './ConfidenceBadge'
 
 export { SourceCitationSkeleton } from './skeleton'
 export type { SourceCitationSkeletonProps } from './skeleton'
 
-export { InlineSourceItem } from './inline-source-item'
-export type { InlineSourceItemProps } from './inline-source-item'
+export { InlineSourceItem } from './InlineSourceItem'
+export type { InlineSourceItemProps } from './InlineSourceItem'
 
-export { CardSourceItem } from './card-source-item'
-export type { CardSourceItemProps } from './card-source-item'
+export { CardSourceItem } from './CardSourceItem'
+export type { CardSourceItemProps } from './CardSourceItem'
 
-export { ListSourceItem } from './list-source-item'
-export type { ListSourceItemProps } from './list-source-item'
+export { ListSourceItem } from './ListSourceItem'
+export type { ListSourceItemProps } from './ListSourceItem'

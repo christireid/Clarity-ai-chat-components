@@ -6,7 +6,7 @@
  */
 
 import type { UseClarityChatOptions } from '../hooks/chat/use-clarity-chat'
-import type { ClarityChatProps } from '../components/chat/clarity-chat'
+import type { ClarityChatProps } from '../components/chat/ClarityChat'
 
 /**
  * Preset configurations for common chat scenarios

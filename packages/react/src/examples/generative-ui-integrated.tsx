@@ -11,7 +11,7 @@ import {
   convertCoreMessagesToMessages,
 } from '../hooks/use-clarity-chat'
 import { useAssistant, type ToolInvocation } from '../hooks/use-assistant'
-import { ChatWindow } from '../components/chat/chat-window'
+import { ChatWindow } from '../components/chat/ChatWindow'
 import {
   ClarityToolResult,
   type ToolCall,

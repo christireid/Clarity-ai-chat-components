@@ -1,6 +1,6 @@
 /**
  * Recipe Component Examples
- * 
+ *
  * Demonstrates the pre-built recipe components for common patterns
  */
 
@@ -11,7 +11,7 @@ import {
   ChatWithPersistence,
   ChatWithErrorHandling,
   ChatComplete,
-} from '../components/chat-recipes'
+} from '../components/ChatRecipes'
 import '@clarity-chat/react/styles.css'
 
 /**
@@ -134,7 +134,7 @@ export function CompleteChatExample() {
  */
 export function PresetUsageExample() {
   const { applyChatPreset } = require('../presets/chat-presets')
-  
+
   // Apply preset to custom options
   const options = applyChatPreset('enterprise', {
     api: '/api/chat',

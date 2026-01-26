@@ -22,7 +22,7 @@ import {
   AdvancedSkeleton,
 } from '../skeleton-enhanced'
 
-import { useOptimalAnimation, useResponsiveSize } from '../skeleton-advanced'
+import { useOptimalAnimation, useResponsiveSize } from '../SkeletonAdvanced'
 
 import { useReducedMotion } from '@clarity-chat/primitives'
 import {

@@ -6,7 +6,7 @@
  */
 
 import React from 'react'
-import { errorReporter } from '../components/ui/error-boundary'
+import { errorReporter } from '../components/ui/ErrorBoundary'
 
 // ============================================================================
 // TYPES

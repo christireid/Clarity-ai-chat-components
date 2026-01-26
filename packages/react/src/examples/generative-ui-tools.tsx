@@ -13,7 +13,7 @@ import {
   useClarityChat,
   convertCoreMessagesToMessages,
 } from '../hooks/use-clarity-chat'
-import { ChatWindow } from '../components/chat/chat-window'
+import { ChatWindow } from '../components/chat/ChatWindow'
 import {
   ClarityToolResult,
   type ToolCall,

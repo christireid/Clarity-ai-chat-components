@@ -51,7 +51,10 @@ function tokenizeMath(expr: string): string[] {
     }
 
     // Number (including decimals)
-    if (/\d/.test(char) || (char === '.' && i + 1 < expr.length && /\d/.test(expr.charAt(i + 1)))) {
+    if (
+      /\d/.test(char) ||
+      (char === '.' && i + 1 < expr.length && /\d/.test(expr.charAt(i + 1)))
+    ) {
       let num = ''
       let hasDecimal = false
       while (i < expr.length) {
@@ -108,7 +111,8 @@ function parseAddSubtract(state: ParseState): ParseState {
     state.pos++
     const right = parseMultiplyDivide(state)
     state.pos = right.pos
-    state.value = op === '+' ? state.value + right.value : state.value - right.value
+    state.value =
+      op === '+' ? state.value + right.value : state.value - right.value
   }
 
   return state
@@ -220,7 +224,7 @@ export function SimpleChatWorkflow() {
  */
 export function ChatWithMemoryWorkflow() {
   return (
-    <ClarityChatPresets.WithMemory 
+    <ClarityChatPresets.WithMemory
       api="/api/chat"
       memoryStrategy="vector-store"
     />
@@ -231,10 +235,10 @@ export function ChatWithMemoryWorkflow() {
 export function ChatWithMemoryWorkflowAdvanced() {
   const { MemoryProvider } = require('@clarity-chat/react')
   const { ClarityChat } = require('@clarity-chat/react')
-  
+
   return (
     <MemoryProvider config={{ maxTokens: 10000 }}>
-      <ClarityChat 
+      <ClarityChat
         api="/api/chat"
         memory={{
           enabled: true,
@@ -259,8 +263,13 @@ export function ChatWithMemoryWorkflowAdvanced() {
  * and extensibility while maintaining type safety.
  */
 export function CustomChatWithToolsWorkflow() {
-  const { useClarityChat, useChatHandlers, ChatWindow, useClarityChatWithTools } = require('@clarity-chat/react')
-  
+  const {
+    useClarityChat,
+    useChatHandlers,
+    ChatWindow,
+    useClarityChatWithTools,
+  } = require('@clarity-chat/react')
+
   // Define tools
   const searchTool = {
     name: 'web_search',
@@ -273,18 +282,24 @@ export function CustomChatWithToolsWorkflow() {
       required: ['query'],
     },
     execute: async (args: { query: string }) => {
-      const response = await fetch(`/api/search?q=${encodeURIComponent(args.query)}`)
+      const response = await fetch(
+        `/api/search?q=${encodeURIComponent(args.query)}`
+      )
       return await response.json()
     },
   }
 
   const calculatorTool = {
     name: 'calculator',
-    description: 'Perform mathematical calculations (supports +, -, *, /, parentheses)',
+    description:
+      'Perform mathematical calculations (supports +, -, *, /, parentheses)',
     parameters: {
       type: 'object',
       properties: {
-        expression: { type: 'string', description: 'Mathematical expression (e.g., "2 + 3 * 4")' },
+        expression: {
+          type: 'string',
+          description: 'Mathematical expression (e.g., "2 + 3 * 4")',
+        },
       },
       required: ['expression'],
     },
@@ -294,7 +309,9 @@ export function CustomChatWithToolsWorkflow() {
         const result = safeEvaluateMath(args.expression)
         return { result }
       } catch (error) {
-        return { error: error instanceof Error ? error.message : 'Invalid expression' }
+        return {
+          error: error instanceof Error ? error.message : 'Invalid expression',
+        }
       }
     },
   }
@@ -376,7 +393,7 @@ export function EnterpriseApplicationWorkflow() {
     <AnalyticsProvider config={analyticsConfig}>
       <QuotaProvider config={quotaConfig}>
         <RBACProvider config={rbacConfig}>
-          <ClarityChatPresets.Enterprise 
+          <ClarityChatPresets.Enterprise
             api="/api/chat"
             sessionTitle="Enterprise Assistant"
             showHeader
@@ -407,7 +424,7 @@ interface UserProfile {
 
 export function StructuredOutputWorkflow() {
   const { useClarityObject } = require('@clarity-chat/react')
-  
+
   const { data, isLoading, error, generate } = useClarityObject<UserProfile>({
     api: '/api/chat',
     schema: {
@@ -474,9 +491,7 @@ export function CustomCompositionWorkflow() {
   // Mid-level hook for chat state (Vercel-compatible)
   const chat = useChatEnhanced({
     api: '/api/chat',
-    initialMessages: [
-      createUserMessage('Hello!'),
-    ],
+    initialMessages: [createUserMessage('Hello!')],
   })
 
   // Mid-level hook for memory
@@ -491,12 +506,9 @@ export function CustomCompositionWorkflow() {
   const handleSend = async (content: string) => {
     // Add to memory before sending
     if (memory?.addMemory) {
-      await memory.addMemory(
-        content,
-        'conversation',
-        'session',
-        { timestamp: Date.now() }
-      )
+      await memory.addMemory(content, 'conversation', 'session', {
+        timestamp: Date.now(),
+      })
     }
 
     // Send message
@@ -522,5 +534,5 @@ export function CustomCompositionWorkflow() {
 }
 
 // Component imports (used as values)
-import { ClarityChat } from '../components/clarity-chat'
-import { ClarityChatPresets } from '../components/clarity-chat-presets'
+import { ClarityChat } from '../components/ClarityChat'
+import { ClarityChatPresets } from '../components/ClarityChatPresets'

@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import { screen } from '@testing-library/react'
-import { MessageList } from '../message/message-list'
+import { MessageList } from '../message/MessageList'
 import type { Message } from '@clarity-chat/types'
 import { renderWithProviders } from '../../test-utils'
 

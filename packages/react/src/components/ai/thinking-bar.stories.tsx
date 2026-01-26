@@ -6,7 +6,11 @@
 
 import * as React from 'react'
 import type { Meta, StoryObj } from '@storybook/react'
-import { ThinkingBar, useThinkingBar, type ThinkingBarStatus } from './thinking-bar'
+import {
+  ThinkingBar,
+  useThinkingBar,
+  type ThinkingBarStatus,
+} from './ThinkingBar'
 
 const meta: Meta<typeof ThinkingBar> = {
   title: 'Components/AI/ThinkingBar',
@@ -72,7 +76,14 @@ function MyComponent() {
   argTypes: {
     status: {
       control: 'select',
-      options: ['idle', 'thinking', 'searching', 'generating', 'complete', 'error'],
+      options: [
+        'idle',
+        'thinking',
+        'searching',
+        'generating',
+        'complete',
+        'error',
+      ],
       description: 'Current processing status',
     },
     variant: {
@@ -167,7 +178,8 @@ export const Generating: Story = {
   parameters: {
     docs: {
       description: {
-        story: 'Generating state, typically used when composing the final response',
+        story:
+          'Generating state, typically used when composing the final response',
       },
     },
   },
@@ -433,7 +445,11 @@ export const AllVariants: Story = {
       <div className="space-y-6 w-[400px]">
         <div>
           <p className="text-sm text-muted-foreground mb-2">Minimal</p>
-          <ThinkingBar status="thinking" variant="minimal" message="Processing..." />
+          <ThinkingBar
+            status="thinking"
+            variant="minimal"
+            message="Processing..."
+          />
         </div>
         <div>
           <p className="text-sm text-muted-foreground mb-2">Default</p>

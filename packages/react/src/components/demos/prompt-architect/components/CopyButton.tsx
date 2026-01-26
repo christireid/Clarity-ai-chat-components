@@ -13,7 +13,7 @@ import { logger } from '@clarity-chat/utils/logger'
 
 import * as React from 'react'
 import { cn } from '@clarity-chat/primitives'
-import { CopyButton as BaseCopyButton } from '../../../message/copy-button'
+import { CopyButton as BaseCopyButton } from '../../../message/CopyButton'
 
 export interface CopyButtonProps {
   /** Text to copy to clipboard */

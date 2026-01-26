@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { render, screen } from '@testing-library/react'
-import { ThemeContrastChecker } from '../theme-contrast-checker'
+import { ThemeContrastChecker } from '../ThemeContrastChecker'
 import { ThemeProvider } from '../../theme/ThemeProvider'
 import { modernThemes } from '../../theme/modern-presets'
 import type { CompleteThemeConfig } from '../../theme/theme-config'

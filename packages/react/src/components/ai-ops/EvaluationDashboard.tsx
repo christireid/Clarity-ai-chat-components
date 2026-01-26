@@ -12,7 +12,7 @@ import {
 import {
   ResponseQualityMeter,
   type ResponseQualityMeterProps,
-} from '../dashboards/response-quality-meter'
+} from '../dashboards/ResponseQualityMeter'
 import { Skeleton } from '../ui/skeleton'
 
 export interface EvaluationMetricItem {

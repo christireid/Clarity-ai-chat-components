@@ -31,7 +31,7 @@ vi.mock('sonner', () => ({
   toast: mockToast,
 }))
 
-import { ClarityToaster, toast } from '../sonner-toast'
+import { ClarityToaster, toast } from '../SonnerToast'
 
 describe('ClarityToaster', () => {
   describe('Rendering', () => {

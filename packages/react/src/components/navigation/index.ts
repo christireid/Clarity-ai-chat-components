@@ -4,13 +4,13 @@
  * Keyboard navigation, command palette, and focus management components.
  */
 
-export { CommandPalette, type CommandItem } from './command-palette'
+export { CommandPalette, type CommandItem } from './CommandPalette'
 export {
   CommandPaletteEnhanced,
   type CommandAction,
   type CommandPaletteEnhancedProps,
-} from './command-palette-enhanced'
-export { ContextMenu } from './context-menu'
+} from './CommandPaletteEnhanced'
+export { ContextMenu } from './ContextMenu'
 export {
   FocusIndicator,
   FocusRing,
@@ -19,11 +19,8 @@ export {
   type FocusIndicatorProps,
   type FocusRingProps,
   type FocusVisibleProps,
-} from './focus-indicator'
-export {
-  KeyboardHint,
-  type KeyboardHintShortcut,
-} from './keyboard-hint'
+} from './FocusIndicator'
+export { KeyboardHint, type KeyboardHintShortcut } from './KeyboardHint'
 export {
   KeyboardHintsOverlay,
   ContextualKeyboardHints,
@@ -33,20 +30,20 @@ export {
   type KeyboardHintsOverlayProps,
   type ContextualKeyboardHintsProps,
   type WithShortcutProps,
-} from './keyboard-hints-overlay'
+} from './KeyboardHintsOverlay'
 export {
   KeyboardShortcutHint,
   useKeyboardShortcutHint,
   InlineShortcutHint,
   type KeyboardShortcutHintProps,
   type InlineShortcutHintProps,
-} from './keyboard-shortcut-hint'
+} from './KeyboardShortcutHint'
 export {
   KeyboardShortcutsModal,
   type ShortcutItem,
   type KeyboardShortcutsModalProps,
-} from './keyboard-shortcuts-modal'
-export { KeyboardNavigationDemo } from './keyboard-navigation-demo'
+} from './KeyboardShortcutsModal'
+export { KeyboardNavigationDemo } from './KeyboardNavigationDemo'
 export {
   SkipLinks,
   Landmark,
@@ -54,4 +51,4 @@ export {
   type SkipLink,
   type SkipLinksProps,
   type LandmarkProps,
-} from './skip-links'
+} from './SkipLinks'

@@ -8,8 +8,8 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { render, screen, fireEvent, waitFor, act } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { CommandPalette } from '../command-palette'
-import type { CommandItem } from '../command-palette'
+import { CommandPalette } from '../CommandPalette'
+import type { CommandItem } from '../CommandPalette'
 
 // Mock useDebounce to control timing
 vi.mock('../../../hooks/ui/use-debounce', () => ({
@@ -41,11 +41,7 @@ describe('CommandPalette Performance Regression', () => {
       const largeItemSet = createMockItems(1000)
 
       const { rerender } = render(
-        <CommandPalette
-          items={largeItemSet}
-          open={true}
-          onClose={() => {}}
-        />
+        <CommandPalette items={largeItemSet} open={true} onClose={() => {}} />
       )
 
       const input = screen.getByPlaceholderText('Type a command...')
@@ -87,11 +83,7 @@ describe('CommandPalette Performance Regression', () => {
       })
 
       const { rerender } = render(
-        <CommandPalette
-          items={items}
-          open={true}
-          onClose={() => {}}
-        />
+        <CommandPalette items={items} open={true} onClose={() => {}} />
       )
 
       const input = screen.getByPlaceholderText('Type a command...')
@@ -110,11 +102,7 @@ describe('CommandPalette Performance Regression', () => {
       const items = createMockItems(500)
 
       const { rerender } = render(
-        <CommandPalette
-          items={items}
-          open={true}
-          onClose={() => {}}
-        />
+        <CommandPalette items={items} open={true} onClose={() => {}} />
       )
 
       const input = screen.getByPlaceholderText('Type a command...')
@@ -140,13 +128,7 @@ describe('CommandPalette Performance Regression', () => {
     it('shows results after debounce delay', async () => {
       const items = createMockItems(100)
 
-      render(
-        <CommandPalette
-          items={items}
-          open={true}
-          onClose={() => {}}
-        />
-      )
+      render(<CommandPalette items={items} open={true} onClose={() => {}} />)
 
       const input = screen.getByPlaceholderText('Type a command...')
 
@@ -157,26 +139,47 @@ describe('CommandPalette Performance Regression', () => {
       expect(screen.getAllByRole('button')).toHaveLength(6) // 5 items + close button
 
       // After debounce, should show filtered results
-      await waitFor(() => {
-        expect(screen.getByText('Command 50')).toBeInTheDocument()
-      }, { timeout: 200 })
+      await waitFor(
+        () => {
+          expect(screen.getByText('Command 50')).toBeInTheDocument()
+        },
+        { timeout: 200 }
+      )
     })
 
     it('filters by multiple criteria', async () => {
       const items: CommandItem[] = [
-        { id: '1', label: 'Open File', description: 'Opens a file', category: 'File', onSelect: vi.fn() },
-        { id: '2', label: 'Save File', description: 'Saves current file', category: 'File', onSelect: vi.fn() },
-        { id: '3', label: 'Edit Text', description: 'Edit selected text', category: 'Edit', onSelect: vi.fn() },
-        { id: '4', label: 'View Stats', description: 'Show statistics', category: 'View', onSelect: vi.fn() },
+        {
+          id: '1',
+          label: 'Open File',
+          description: 'Opens a file',
+          category: 'File',
+          onSelect: vi.fn(),
+        },
+        {
+          id: '2',
+          label: 'Save File',
+          description: 'Saves current file',
+          category: 'File',
+          onSelect: vi.fn(),
+        },
+        {
+          id: '3',
+          label: 'Edit Text',
+          description: 'Edit selected text',
+          category: 'Edit',
+          onSelect: vi.fn(),
+        },
+        {
+          id: '4',
+          label: 'View Stats',
+          description: 'Show statistics',
+          category: 'View',
+          onSelect: vi.fn(),
+        },
       ]
 
-      render(
-        <CommandPalette
-          items={items}
-          open={true}
-          onClose={() => {}}
-        />
-      )
+      render(<CommandPalette items={items} open={true} onClose={() => {}} />)
 
       const input = screen.getByPlaceholderText('Type a command...')
 
@@ -213,11 +216,7 @@ describe('CommandPalette Performance Regression', () => {
       const startTime = performance.now()
 
       const { rerender } = render(
-        <CommandPalette
-          items={largeItemSet}
-          open={true}
-          onClose={() => {}}
-        />
+        <CommandPalette items={largeItemSet} open={true} onClose={() => {}} />
       )
 
       const renderTime = performance.now() - startTime
@@ -241,13 +240,7 @@ describe('CommandPalette Performance Regression', () => {
     it('maintains selection during search', async () => {
       const items = createMockItems(50)
 
-      render(
-        <CommandPalette
-          items={items}
-          open={true}
-          onClose={() => {}}
-        />
-      )
+      render(<CommandPalette items={items} open={true} onClose={() => {}} />)
 
       const input = screen.getByPlaceholderText('Type a command...')
 
@@ -271,13 +264,7 @@ describe('CommandPalette Performance Regression', () => {
     it('handles empty search results gracefully', async () => {
       const items = createMockItems(50)
 
-      render(
-        <CommandPalette
-          items={items}
-          open={true}
-          onClose={() => {}}
-        />
-      )
+      render(<CommandPalette items={items} open={true} onClose={() => {}} />)
 
       const input = screen.getByPlaceholderText('Type a command...')
 
@@ -296,11 +283,7 @@ describe('CommandPalette Performance Regression', () => {
       const items = createMockItems(100)
 
       const { rerender } = render(
-        <CommandPalette
-          items={items}
-          open={true}
-          onClose={() => {}}
-        />
+        <CommandPalette items={items} open={true} onClose={() => {}} />
       )
 
       const input = screen.getByPlaceholderText('Type a command...')
@@ -313,7 +296,9 @@ describe('CommandPalette Performance Regression', () => {
       }
 
       // Should handle without memory issues
-      expect(screen.getByPlaceholderText('Type a command...')).toBeInTheDocument()
+      expect(
+        screen.getByPlaceholderText('Type a command...')
+      ).toBeInTheDocument()
     })
 
     it('cleans up on close', () => {

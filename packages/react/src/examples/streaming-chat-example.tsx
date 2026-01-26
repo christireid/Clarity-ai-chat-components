@@ -1,7 +1,7 @@
 import * as React from 'react'
 import { useStreamingSSE } from '../hooks/streaming/use-streaming-sse'
 import { useStreamingWebSocket } from '../hooks/streaming/use-streaming-websocket'
-import { StreamCancellation } from '../components/message/stream-cancellation'
+import { StreamCancellation } from '../components/message/StreamCancellation'
 import { Button } from '@clarity-chat/primitives'
 import { cn } from '@clarity-chat/primitives'
 

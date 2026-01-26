@@ -9,7 +9,7 @@ import {
   useChatWithFeatures,
   createChatHook,
 } from '../hooks/use-chat-composable'
-import { ChatWindow } from '../components/chat/chat-window'
+import { ChatWindow } from '../components/chat/ChatWindow'
 import '@clarity-chat/react/styles.css'
 
 /**

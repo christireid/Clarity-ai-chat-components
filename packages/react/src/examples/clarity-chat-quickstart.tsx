@@ -4,7 +4,7 @@
  * This demonstrates the simplest way to use Clarity Chat - just one component!
  */
 
-import { ClarityChat } from '../components/chat/clarity-chat'
+import { ClarityChat } from '../components/chat/ClarityChat'
 import '@clarity-chat/react/dist/styles/index.css'
 
 /**

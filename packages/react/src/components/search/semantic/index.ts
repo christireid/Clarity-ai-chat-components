@@ -4,7 +4,7 @@
  * AI-powered semantic search with vector embeddings and hybrid search capabilities.
  */
 
-export { SemanticMessageSearch } from './semantic-message-search'
+export { SemanticMessageSearch } from './SemanticMessageSearch'
 
 export type {
   EmbeddingProvider,

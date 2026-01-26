@@ -552,16 +552,18 @@ export function consoleLogger(options?: {
   verbose?: boolean
 }): TelemetryHandler {
   return (event: TelemetryEvent) => {
-    const { type, timestamp, requestId, data } = event
-    const prefix = `[ClarityTokens] ${timestamp.toISOString()}`
+    if (process.env['NODE_ENV'] === 'development') {
+      const { type, timestamp, requestId, data } = event
+      const prefix = `[ClarityTokens] ${timestamp.toISOString()}`
 
-    if (options?.verbose) {
-      console.log(`${prefix} [${type}] ${requestId ?? 'N/A'}`, data)
-    } else {
-      console.log(
-        `${prefix} [${type}]`,
-        requestId ? `req=${requestId.slice(0, 8)}` : ''
-      )
+      if (options?.verbose) {
+        console.log(`${prefix} [${type}] ${requestId ?? 'N/A'}`, data)
+      } else {
+        console.log(
+          `${prefix} [${type}]`,
+          requestId ? `req=${requestId.slice(0, 8)}` : ''
+        )
+      }
     }
   }
 }

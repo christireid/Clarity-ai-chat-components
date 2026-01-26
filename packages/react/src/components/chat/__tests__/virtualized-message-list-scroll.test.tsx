@@ -8,34 +8,36 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { VirtualizedMessageList } from '../virtualized-message-list'
+import { VirtualizedMessageList } from '../VirtualizedMessageList'
 import type { Message } from '@clarity-chat/types'
 
 // Mock react-window to avoid complex virtualization setup
 vi.mock('react-window', () => ({
-  VariableSizeList: vi.fn(({ children, itemCount, itemSize, height, onScroll }) => {
-    const items = []
-    for (let i = 0; i < itemCount; i++) {
-      items.push(children({ index: i, style: { height: itemSize(i) } }))
-    }
+  VariableSizeList: vi.fn(
+    ({ children, itemCount, itemSize, height, onScroll }) => {
+      const items = []
+      for (let i = 0; i < itemCount; i++) {
+        items.push(children({ index: i, style: { height: itemSize(i) } }))
+      }
 
-    return (
-      <div
-        data-testid="virtualized-list"
-        style={{ height, overflow: 'auto' }}
-        onScroll={(e) => {
-          if (onScroll) {
-            onScroll({
-              scrollOffset: e.currentTarget.scrollTop,
-              scrollUpdateWasRequested: false,
-            })
-          }
-        }}
-      >
-        {items}
-      </div>
-    )
-  }),
+      return (
+        <div
+          data-testid="virtualized-list"
+          style={{ height, overflow: 'auto' }}
+          onScroll={(e) => {
+            if (onScroll) {
+              onScroll({
+                scrollOffset: e.currentTarget.scrollTop,
+                scrollUpdateWasRequested: false,
+              })
+            }
+          }}
+        >
+          {items}
+        </div>
+      )
+    }
+  ),
 }))
 
 vi.mock('react-virtualized-auto-sizer', () => ({
@@ -130,7 +132,9 @@ describe('VirtualizedMessageList Scroll Regression', () => {
       const containerHeight = 400
       const nearBottomPosition = scrollHeight - containerHeight - 50 // Within 50px of bottom
 
-      fireEvent.scroll(listElement, { target: { scrollTop: nearBottomPosition } })
+      fireEvent.scroll(listElement, {
+        target: { scrollTop: nearBottomPosition },
+      })
 
       // Add new messages
       const newMessages = [
@@ -298,7 +302,10 @@ describe('VirtualizedMessageList Scroll Regression', () => {
     it('handles messages with varying heights', () => {
       const variedMessages = [
         createMockMessage('short', 'Hi'),
-        createMockMessage('long', 'This is a very long message that should take up more space and potentially wrap to multiple lines depending on the container width and styling applied to the message component.'),
+        createMockMessage(
+          'long',
+          'This is a very long message that should take up more space and potentially wrap to multiple lines depending on the container width and styling applied to the message component.'
+        ),
         createMockMessage('medium', 'Medium length message'),
       ]
 

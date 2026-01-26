@@ -25,7 +25,7 @@ import * as React from 'react'
 import {
   ClarityChat,
   type ClarityChatProps,
-} from '../components/chat/clarity-chat'
+} from '../components/chat/ClarityChat'
 import { MultiTenancyProvider } from '../multi-tenancy/react'
 import { RBACProvider } from '../rbac/react'
 import { AnalyticsProvider } from '../analytics/AnalyticsProvider'

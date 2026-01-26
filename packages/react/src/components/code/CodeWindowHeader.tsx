@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { Button, cn } from '@clarity-chat/primitives'
-import { CopyButton } from '../message/copy-button'
+import { CopyButton } from '../message/CopyButton'
 import {
   ChevronDownIcon,
   ChevronUpIcon,

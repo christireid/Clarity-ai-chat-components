@@ -11,7 +11,7 @@
 // ============================================================================
 
 // Main drop-in component
-export { ClarityChat, type ClarityChatProps } from '../components/clarity-chat'
+export { ClarityChat, type ClarityChatProps } from '../components/ClarityChat'
 
 // Recipe components (pre-built combinations)
 export {
@@ -27,13 +27,13 @@ export {
   type ChatWithPersistenceProps,
   type ChatWithErrorHandlingProps,
   type ChatCompleteProps,
-} from '../components/chat-recipes'
+} from '../components/ChatRecipes'
 
 // Error boundary wrapper
 export {
   ChatWithErrorBoundary,
   type ChatWithErrorBoundaryProps,
-} from '../components/chat-with-error-boundary'
+} from '../components/ChatWithErrorBoundary'
 
 // ============================================================================
 // MID-LEVEL: Composable Building Blocks
@@ -60,11 +60,11 @@ export {
 
 // Message components
 export { Message, type MessageProps } from '../components/message'
-export { MessageList, type MessageListProps } from '../components/message-list'
-export { VirtualizedMessageList } from '../components/virtualized-message-list'
+export { MessageList, type MessageListProps } from '../components/MessageList'
+export { VirtualizedMessageList } from '../components/VirtualizedMessageList'
 
 // Input components
-export { ChatInput, type ChatInputProps } from '../components/chat-input'
+export { ChatInput, type ChatInputProps } from '../components/ChatInput'
 export {
   AdvancedChatInput,
   type AdvancedChatInputProps,

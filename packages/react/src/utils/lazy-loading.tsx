@@ -63,7 +63,9 @@ export function createLazyComponent<T extends React.ComponentType<any>>(
  * @param options - Configuration options
  * @returns Lazy-loaded component with error handling
  */
-export function createLazyComponentWithBoundary<T extends React.ComponentType<any>>(
+export function createLazyComponentWithBoundary<
+  T extends React.ComponentType<any>,
+>(
   importFn: () => Promise<{ default: T }>,
   options: {
     fallback?: React.ReactNode
@@ -74,7 +76,7 @@ export function createLazyComponentWithBoundary<T extends React.ComponentType<an
   const {
     fallback = <div>Loading...</div>,
     errorFallback = <div>Failed to load component</div>,
-    onError
+    onError,
   } = options
 
   const LazyComponent = React.lazy(importFn)
@@ -91,7 +93,6 @@ export function createLazyComponentWithBoundary<T extends React.ComponentType<an
 
       window.addEventListener('error', handleError)
       return () => window.removeEventListener('error', handleError)
-       
     }, [])
 
     if (hasError) {
@@ -129,9 +130,7 @@ export function createLazyComponentWithBoundary<T extends React.ComponentType<an
  * </button>
  * ```
  */
-export function preloadComponent<T>(
-  importFn: () => Promise<T>
-): Promise<T> {
+export function preloadComponent<T>(importFn: () => Promise<T>): Promise<T> {
   return importFn()
 }
 
@@ -153,11 +152,12 @@ export function loadWhen<T extends React.ComponentType<any>>(
 ): React.ComponentType<React.ComponentProps<T>> {
   return (props: React.ComponentProps<T>) => {
     const [shouldLoad, setShouldLoad] = React.useState(condition())
-    const [Component, setComponent] = React.useState<React.ComponentType<any> | null>(null)
+    const [Component, setComponent] =
+      React.useState<React.ComponentType<any> | null>(null)
 
     React.useEffect(() => {
       if (shouldLoad && !Component) {
-        importFn().then(module => {
+        importFn().then((module) => {
           setComponent(() => module.default)
           options.onLoad?.()
         })
@@ -256,7 +256,7 @@ export const LazyComponents: Record<string, React.ComponentType<any>> = {
   /** Lazy-loaded enhanced markdown renderer */
   MarkdownRenderer: createLazyComponent(
     () =>
-      import('../components/ai/enhanced-markdown-renderer').then((m) => ({
+      import('../components/ai/EnhancedMarkdownRenderer').then((m) => ({
         default: m.EnhancedMarkdownRenderer,
       })),
     <div>Loading markdown...</div>
@@ -271,7 +271,7 @@ export const LazyComponents: Record<string, React.ComponentType<any>> = {
   /** Lazy-loaded template marketplace */
   TemplateMarketplace: createLazyComponent(
     () =>
-      import('../components/prompt/template-marketplace').then((m) => ({
+      import('../components/prompt/TemplateMarketplace').then((m) => ({
         default: m.TemplateMarketplace,
       })),
     <div>Loading marketplace...</div>
@@ -280,16 +280,18 @@ export const LazyComponents: Record<string, React.ComponentType<any>> = {
   /** Lazy-loaded analytics dashboard */
   AnalyticsDashboard: createLazyComponent(
     () =>
-      import('../components/dashboards/conversation-analytics-dashboard').then((m) => ({
-        default: m.ConversationAnalyticsDashboard,
-      })),
+      import('../components/dashboards/ConversationAnalyticsDashboard').then(
+        (m) => ({
+          default: m.ConversationAnalyticsDashboard,
+        })
+      ),
     <div>Loading analytics...</div>
   ),
 
   /** Lazy-loaded performance monitor */
   PerformanceMonitor: createLazyComponent(
     () =>
-      import('../components/dashboards/performance-dashboard').then((m) => ({
+      import('../components/dashboards/PerformanceDashboard').then((m) => ({
         default: m.PerformanceDashboard,
       })),
     <div>Loading performance...</div>
@@ -304,7 +306,8 @@ export const LazyComponents: Record<string, React.ComponentType<any>> = {
  * Performance monitor for lazy loading operations
  */
 export class LazyLoadPerformanceMonitor {
-  private loads: Map<string, { start: number; end?: number; size?: number }> = new Map()
+  private loads: Map<string, { start: number; end?: number; size?: number }> =
+    new Map()
 
   startLoad(id: string): void {
     this.loads.set(id, { start: performance.now() })
@@ -346,7 +349,9 @@ export class LazyLoadPerformanceMonitor {
   logSlowLoads(thresholdMs: number = 1000): void {
     for (const [id, metrics] of Object.entries(this.getAllMetrics())) {
       if (metrics.duration && metrics.duration > thresholdMs) {
-        devLog.warn(`Slow lazy load: ${id} took ${metrics.duration.toFixed(2)}ms`)
+        devLog.warn(
+          `Slow lazy load: ${id} took ${metrics.duration.toFixed(2)}ms`
+        )
       }
     }
   }
@@ -411,11 +416,12 @@ export function useConditionalLoad<T extends React.ComponentType<any>>(
   condition: boolean,
   importFn: () => Promise<{ default: T }>
 ): React.ComponentType<React.ComponentProps<T>> | null {
-  const [Component, setComponent] = React.useState<React.ComponentType<any> | null>(null)
+  const [Component, setComponent] =
+    React.useState<React.ComponentType<any> | null>(null)
 
   React.useEffect(() => {
     if (condition && !Component) {
-      importFn().then(module => setComponent(() => module.default))
+      importFn().then((module) => setComponent(() => module.default))
     }
   }, [condition, Component, importFn])
 

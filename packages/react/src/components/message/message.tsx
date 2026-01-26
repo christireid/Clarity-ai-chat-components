@@ -10,12 +10,12 @@ import {
   duration,
   ANIMATION_PRESETS,
 } from '../../animations/constants'
-import { EnhancedMarkdownRenderer } from '../ai/enhanced-markdown-renderer'
-import { MessageActions } from './message-actions'
-import { MessageMetadata } from './message-metadata'
-import { EditableMessageContent } from './editable-message-content'
-import { ErrorMessage, type ErrorDetails } from '../feedback/error-message'
-import { MessageHeader } from './message-header'
+import { EnhancedMarkdownRenderer } from '../ai/EnhancedMarkdownRenderer'
+import { MessageActions } from './MessageActions'
+import { MessageMetadata } from './MessageMetadata'
+import { EditableMessageContent } from './EditableMessageContent'
+import { ErrorMessage, type ErrorDetails } from '../feedback/ErrorMessage'
+import { MessageHeader } from './MessageHeader'
 import { formatRelativeTime } from '../../internal/helpers'
 
 export interface MessageProps {

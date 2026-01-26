@@ -1,6 +1,6 @@
 import { render, screen, waitFor } from '@testing-library/react'
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { VoiceInput, InlineVoiceInput } from '../voice-input'
+import { VoiceInput, InlineVoiceInput } from '../VoiceInput'
 import * as useVoiceInputModule from '../../hooks/input/use-voice-input'
 
 // Mock the useVoiceInput hook

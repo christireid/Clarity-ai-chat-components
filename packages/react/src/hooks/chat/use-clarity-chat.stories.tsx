@@ -7,7 +7,7 @@
 import type { Meta, StoryObj } from '@storybook/react'
 import React, { useMemo } from 'react'
 import { useClarityChat, coreMessagesToMessages } from './use-clarity-chat'
-import { ChatWindow } from '../../components/chat/chat-window'
+import { ChatWindow } from '../../components/chat/ChatWindow'
 import {
   Card,
   CardContent,

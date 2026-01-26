@@ -39,16 +39,19 @@ export {
 } from './cache'
 
 // Metadata Fetching
-export { createMetadataFetcher, createFallbackMetadata } from './metadata-fetcher'
+export {
+  createMetadataFetcher,
+  createFallbackMetadata,
+} from './metadata-fetcher'
 
 // Components
 export { LinkPreviewSkeleton } from './skeleton'
 export { LinkPreviewError } from './error'
-export { LinkPreviewCompact } from './link-preview-compact'
-export { RichEmbed } from './rich-embed'
-export { LinkPreview } from './link-preview'
-export { InlineLink } from './inline-link'
-export { SmartLinkPreview } from './smart-link-preview'
+export { LinkPreviewCompact } from './LinkPreviewCompact'
+export { RichEmbed } from './RichEmbed'
+export { LinkPreview } from './LinkPreview'
+export { InlineLink } from './InlineLink'
+export { SmartLinkPreview } from './SmartLinkPreview'
 
 // Hooks
 export { useLinkPreview } from './use-link-preview'

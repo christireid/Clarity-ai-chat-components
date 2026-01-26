@@ -2,16 +2,16 @@
  * Semantic search UI components
  */
 
-export { SemanticSearchHeader } from './semantic-search-header'
-export { SemanticSearchInput } from './semantic-search-input'
-export { SemanticSearchResultCard } from './semantic-search-result'
-export { SemanticConfigPanel } from './semantic-config-panel'
-export { QueryExpansionPreview } from './query-expansion-preview'
-export { SemanticSearchHistory } from './semantic-search-history'
+export { SemanticSearchHeader } from './SemanticSearchHeader'
+export { SemanticSearchInput } from './SemanticSearchInput'
+export { SemanticSearchResultCard } from './SemanticSearchResult'
+export { SemanticConfigPanel } from './SemanticConfigPanel'
+export { QueryExpansionPreview } from './QueryExpansionPreview'
+export { SemanticSearchHistory } from './SemanticSearchHistory'
 
-export type { SemanticSearchHeaderProps } from './semantic-search-header'
-export type { SemanticSearchInputProps } from './semantic-search-input'
-export type { SemanticSearchResultProps } from './semantic-search-result'
-export type { SemanticConfigPanelProps } from './semantic-config-panel'
-export type { QueryExpansionPreviewProps } from './query-expansion-preview'
-export type { SemanticSearchHistoryProps } from './semantic-search-history'
+export type { SemanticSearchHeaderProps } from './SemanticSearchHeader'
+export type { SemanticSearchInputProps } from './SemanticSearchInput'
+export type { SemanticSearchResultProps } from './SemanticSearchResult'
+export type { SemanticConfigPanelProps } from './SemanticConfigPanel'
+export type { QueryExpansionPreviewProps } from './QueryExpansionPreview'
+export type { SemanticSearchHistoryProps } from './SemanticSearchHistory'

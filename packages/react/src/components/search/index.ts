@@ -5,8 +5,8 @@
  * basic search, advanced search, and semantic search.
  */
 
-export { MessageSearch, MessageSearchWithSuspense } from './message-search'
-export { AdvancedMessageSearch } from './advanced-message-search'
+export { MessageSearch, MessageSearchWithSuspense } from './MessageSearch'
+export { AdvancedMessageSearch } from './AdvancedMessageSearch'
 
 // Semantic search (modular)
 export { SemanticMessageSearch } from './semantic'
@@ -18,7 +18,7 @@ export type {
 } from './semantic'
 
 // Types
-export type { AdvancedMessageSearchProps } from './advanced-message-search'
+export type { AdvancedMessageSearchProps } from './AdvancedMessageSearch'
 export type {
   SearchFilters,
   SavedSearch,
@@ -73,4 +73,8 @@ export {
 export { useEmbeddings, useSemanticSearch } from './semantic'
 
 // Constants
-export { defaultPresets, STORAGE_KEY_SAVED, STORAGE_KEY_RECENT } from './constants'
+export {
+  defaultPresets,
+  STORAGE_KEY_SAVED,
+  STORAGE_KEY_RECENT,
+} from './constants'

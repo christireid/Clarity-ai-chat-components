@@ -347,7 +347,9 @@ export function useStreamingSSE(
       if (pendingEventsRef.current.length < maxEventBufferSize) {
         pendingEventsRef.current.push(event)
       } else {
-        console.warn('[useStreamingSSE] Event buffer full, dropping event')
+        if (process.env['NODE_ENV'] === 'development') {
+          console.warn('[useStreamingSSE] Event buffer full, dropping event')
+        }
         onEventBufferOverflow?.(1, maxEventBufferSize)
       }
 
@@ -356,9 +358,11 @@ export function useStreamingSSE(
       if (newData.length <= MAX_DATA_SIZE) {
         pendingDataRef.current = newData
       } else {
-        console.warn(
-          `[useStreamingSSE] Data buffer limit (${MAX_DATA_SIZE} bytes) reached. Truncating.`
-        )
+        if (process.env['NODE_ENV'] === 'development') {
+          console.warn(
+            `[useStreamingSSE] Data buffer limit (${MAX_DATA_SIZE} bytes) reached. Truncating.`
+          )
+        }
         onEventBufferOverflow?.(newData.length, MAX_DATA_SIZE)
         pendingDataRef.current = newData.slice(-MAX_DATA_SIZE) // Keep last 10MB
       }

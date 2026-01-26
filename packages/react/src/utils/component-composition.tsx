@@ -8,10 +8,10 @@
  */
 
 import * as React from 'react'
-import { ClarityChat } from '../components/chat/clarity-chat'
-import { ChatWindow } from '../components/chat/chat-window'
-import { MessageList } from '../components/message/message-list'
-import { ChatInput } from '../components/chat/chat-input'
+import { ClarityChat } from '../components/chat/ClarityChat'
+import { ChatWindow } from '../components/chat/ChatWindow'
+import { MessageList } from '../components/message/MessageList'
+import { ChatInput } from '../components/chat/ChatInput'
 import { useClarityChat } from '../hooks/use-clarity-chat'
 
 // =============================================================================
@@ -34,7 +34,9 @@ import { useClarityChat } from '../hooks/use-clarity-chat'
  * })
  * ```
  */
-export function composeComponents<T extends Record<string, React.ComponentType<any>>>(
+export function composeComponents<
+  T extends Record<string, React.ComponentType<any>>,
+>(
   components: T,
   layout?: React.ComponentType<{ children: React.ReactNode }>
 ): React.ComponentType<React.ComponentProps<T[keyof T]>> {
@@ -64,13 +66,19 @@ export function composeComponents<T extends Record<string, React.ComponentType<a
  * }))
  * ```
  */
-export function withProps<T extends React.ComponentType<any>, P extends Partial<React.ComponentProps<T>>>(
+export function withProps<
+  T extends React.ComponentType<any>,
+  P extends Partial<React.ComponentProps<T>>,
+>(
   BaseComponent: T,
   enhancer: (props: React.ComponentProps<T>) => P
 ): React.ComponentType<Omit<React.ComponentProps<T>, keyof P>> {
   return (props: Omit<React.ComponentProps<T>, keyof P>) => {
     const enhancedProps = enhancer(props as React.ComponentProps<T>)
-    const mergedProps = { ...props, ...enhancedProps } as React.ComponentProps<T>
+    const mergedProps = {
+      ...props,
+      ...enhancedProps,
+    } as React.ComponentProps<T>
     return <BaseComponent {...mergedProps} />
   }
 }
@@ -98,9 +106,7 @@ export function conditional<T extends React.ComponentType<any>>(
   Fallback: React.ComponentType<React.ComponentProps<T>> = () => null
 ): React.ComponentType<React.ComponentProps<T>> {
   return (props: React.ComponentProps<T>) => {
-    return condition(props)
-      ? <Component {...props} />
-      : <Fallback {...props} />
+    return condition(props) ? <Component {...props} /> : <Fallback {...props} />
   }
 }
 
@@ -124,24 +130,23 @@ export const Compositions = {
   }),
 
   /** Chat with sidebar */
-  SidebarChat: composeComponents({
-    Sidebar: ({ children }: { children?: React.ReactNode }) => (
-      <div className="sidebar">{children}</div>
-    ),
-    Main: composeComponents({
-      Header: ({ title }: { title?: string }) => (
-        <div className="chat-header">
-          <h2>{title || 'AI Assistant'}</h2>
-        </div>
+  SidebarChat: composeComponents(
+    {
+      Sidebar: ({ children }: { children?: React.ReactNode }) => (
+        <div className="sidebar">{children}</div>
       ),
-      Messages: MessageList,
-      Input: ChatInput,
-    }),
-  }, ({ children }) => (
-    <div className="sidebar-layout">
-      {children}
-    </div>
-  )),
+      Main: composeComponents({
+        Header: ({ title }: { title?: string }) => (
+          <div className="chat-header">
+            <h2>{title || 'AI Assistant'}</h2>
+          </div>
+        ),
+        Messages: MessageList,
+        Input: ChatInput,
+      }),
+    },
+    ({ children }) => <div className="sidebar-layout">{children}</div>
+  ),
 
   /** Chat with toolbar */
   ToolbarChat: composeComponents({
@@ -156,15 +161,14 @@ export const Compositions = {
 
   /** Modal chat */
   ModalChat: composeComponents({
-    Modal: ({ isOpen, onClose, children }: any) => (
+    Modal: ({ isOpen, onClose, children }: any) =>
       isOpen ? (
         <div className="modal-overlay" onClick={onClose}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
             {children}
           </div>
         </div>
-      ) : null
-    ),
+      ) : null,
     Chat: ClarityChat,
   }),
 }
@@ -176,7 +180,9 @@ export const Compositions = {
 /**
  * Create a responsive grid layout
  */
-export function createGridLayout(columns: number | { sm: number, md: number, lg: number }) {
+export function createGridLayout(
+  columns: number | { sm: number; md: number; lg: number }
+) {
   const getColumns = (breakpoint?: string) => {
     if (typeof columns === 'number') return columns
     return columns[breakpoint as keyof typeof columns] || columns.sm
@@ -185,15 +191,17 @@ export function createGridLayout(columns: number | { sm: number, md: number, lg:
   return ({ children }: { children: React.ReactNode }) => (
     <div
       className="grid gap-4"
-      style={{
-        gridTemplateColumns: `repeat(${getColumns()}, 1fr)`,
-        '@media (min-width: 768px)': {
-          gridTemplateColumns: `repeat(${getColumns('md')}, 1fr)`,
-        },
-        '@media (min-width: 1024px)': {
-          gridTemplateColumns: `repeat(${getColumns('lg')}, 1fr)`,
-        },
-      } as any}
+      style={
+        {
+          gridTemplateColumns: `repeat(${getColumns()}, 1fr)`,
+          '@media (min-width: 768px)': {
+            gridTemplateColumns: `repeat(${getColumns('md')}, 1fr)`,
+          },
+          '@media (min-width: 1024px)': {
+            gridTemplateColumns: `repeat(${getColumns('lg')}, 1fr)`,
+          },
+        } as any
+      }
     >
       {children}
     </div>
@@ -205,14 +213,26 @@ export function createGridLayout(columns: number | { sm: number, md: number, lg:
  */
 export const FlexLayouts = {
   /** Vertical stack */
-  VStack: ({ children, gap = 4 }: { children: React.ReactNode, gap?: number }) => (
+  VStack: ({
+    children,
+    gap = 4,
+  }: {
+    children: React.ReactNode
+    gap?: number
+  }) => (
     <div className="flex flex-col" style={{ gap: `${gap * 0.25}rem` }}>
       {children}
     </div>
   ),
 
   /** Horizontal stack */
-  HStack: ({ children, gap = 4 }: { children: React.ReactNode, gap?: number }) => (
+  HStack: ({
+    children,
+    gap = 4,
+  }: {
+    children: React.ReactNode
+    gap?: number
+  }) => (
     <div className="flex flex-row" style={{ gap: `${gap * 0.25}rem` }}>
       {children}
     </div>
@@ -227,9 +247,7 @@ export const FlexLayouts = {
 
   /** Space between items */
   SpaceBetween: ({ children }: { children: React.ReactNode }) => (
-    <div className="flex items-center justify-between">
-      {children}
-    </div>
+    <div className="flex items-center justify-between">{children}</div>
   ),
 }
 
@@ -253,10 +271,8 @@ export const FlexLayouts = {
  * ```
  */
 export function composeHooks<
-  T extends Array<[hook: (...args: any[]) => any, args: any[]]>
->(
-  hooks: T
-): () => UnionToIntersection<ReturnType<T[number][0]>> {
+  T extends Array<[hook: (...args: any[]) => any, args: any[]]>,
+>(hooks: T): () => UnionToIntersection<ReturnType<T[number][0]>> {
   return () => {
     const results = hooks.map(([hook, args]) => hook(...args))
     return Object.assign({}, ...results) as any
@@ -339,12 +355,15 @@ export function withDefaults<T extends React.ComponentType<any>>(
  */
 export function withVariants<
   T extends React.ComponentType<any>,
-  V extends Record<string, Partial<React.ComponentProps<T>>>
+  V extends Record<string, Partial<React.ComponentProps<T>>>,
 >(
   BaseComponent: T,
   variants: V
 ): React.ComponentType<React.ComponentProps<T> & { variant?: keyof V }> {
-  return ({ variant, ...props }: React.ComponentProps<T> & { variant?: keyof V }) => {
+  return ({
+    variant,
+    ...props
+  }: React.ComponentProps<T> & { variant?: keyof V }) => {
     const variantProps = variant ? variants[variant] : {}
     return <BaseComponent {...variantProps} {...(props as any)} />
   }
@@ -370,16 +389,14 @@ export function withVariants<
  */
 export function createContextProvider<T>(
   initialValue: T
-): [React.ComponentType<{ children: React.ReactNode, value?: T }>, () => T] {
+): [React.ComponentType<{ children: React.ReactNode; value?: T }>, () => T] {
   const Context = React.createContext<T>(initialValue)
 
-  const Provider: React.ComponentType<{ children: React.ReactNode, value?: T }> = ({
-    children,
-    value = initialValue
-  }) => (
-    <Context.Provider value={value}>
-      {children}
-    </Context.Provider>
+  const Provider: React.ComponentType<{
+    children: React.ReactNode
+    value?: T
+  }> = ({ children, value = initialValue }) => (
+    <Context.Provider value={value}>{children}</Context.Provider>
   )
 
   const useContext = () => {
@@ -397,8 +414,8 @@ export function createContextProvider<T>(
 // UTILITY TYPES
 // =============================================================================
 
-type UnionToIntersection<U> = (
-  U extends any ? (k: U) => void : never
-) extends (k: infer I) => void
+type UnionToIntersection<U> = (U extends any ? (k: U) => void : never) extends (
+  k: infer I
+) => void
   ? I
   : never

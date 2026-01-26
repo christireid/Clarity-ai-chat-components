@@ -20,7 +20,7 @@ import { LineNumbers } from './LineNumbers'
 import { CodeBlockHeader } from './CodeBlockHeader'
 import { CodeBlockCopyButton } from './CodeBlockCopyButton'
 import { ChevronDownIcon, ChevronUpIcon, DownloadIcon } from '../ui/icons'
-import { ContentErrorBoundary } from '../ui/error-boundary'
+import { ContentErrorBoundary } from '../ui/ErrorBoundary'
 import { useAnalytics, useInteractionTracking } from '../../utils/analytics'
 
 /**

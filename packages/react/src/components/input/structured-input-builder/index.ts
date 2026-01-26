@@ -4,8 +4,8 @@
  * A form-based component for building structured prompts with token optimization.
  */
 
-export { StructuredInputBuilder as default } from './structured-input-builder'
-export { StructuredInputBuilder } from './structured-input-builder'
+export { StructuredInputBuilder as default } from './StructuredInputBuilder'
+export { StructuredInputBuilder } from './StructuredInputBuilder'
 export { useStructuredInput } from './use-structured-input'
 export { PRESET_FIELDS } from './presets'
 
@@ -25,4 +25,4 @@ export type {
 export { defaultFormatPrompt, validateFields, sanitizeHtmlId } from './utils'
 
 // Re-export components (useful for custom layouts)
-export { FieldInput, PriorityBadge, TokenUsageBar } from './field-components'
+export { FieldInput, PriorityBadge, TokenUsageBar } from './FieldComponents'

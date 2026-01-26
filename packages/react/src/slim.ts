@@ -39,13 +39,13 @@
 export {
   ClarityChat,
   type ClarityChatProps,
-} from './components/chat/clarity-chat'
-export { ChatWindow, type ChatWindowProps } from './components/chat/chat-window'
-export { ChatInput, type ChatInputProps } from './components/chat/chat-input'
+} from './components/chat/ClarityChat'
+export { ChatWindow, type ChatWindowProps } from './components/chat/ChatWindow'
+export { ChatInput, type ChatInputProps } from './components/chat/ChatInput'
 export {
   default as MessageList,
   type MessageListProps,
-} from './components/chat/virtualized-message-list'
+} from './components/chat/VirtualizedMessageList'
 export { Message, type MessageProps } from './components/message/message'
 
 // ============================================================================

@@ -256,10 +256,12 @@ export function useAdaptiveModel(
             timestamp: new Date(),
           }
 
-          if (enableLogging) {
-            console.log(
-              `[AdaptiveModel] Routed: ${originalProvider}/${originalModel} -> ${routedRequest.provider}/${routedRequest.model} (Rule ${i})`
-            )
+          if (process.env['NODE_ENV'] === 'development') {
+            if (enableLogging) {
+              console.log(
+                `[AdaptiveModel] Routed: ${originalProvider}/${originalModel} -> ${routedRequest.provider}/${routedRequest.model} (Rule ${i})`
+              )
+            }
           }
 
           setHistory((prev) => [...prev.slice(-99), decision])
@@ -285,10 +287,12 @@ export function useAdaptiveModel(
         timestamp: new Date(),
       }
 
-      if (enableLogging) {
-        console.log(
-          `[AdaptiveModel] Routed: ${originalProvider}/${originalModel} -> ${routedRequest.provider}/${routedRequest.model} (Default)`
-        )
+      if (process.env['NODE_ENV'] === 'development') {
+        if (enableLogging) {
+          console.log(
+            `[AdaptiveModel] Routed: ${originalProvider}/${originalModel} -> ${routedRequest.provider}/${routedRequest.model} (Default)`
+          )
+        }
       }
 
       setHistory((prev) => [...prev.slice(-99), decision])

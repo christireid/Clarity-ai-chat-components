@@ -103,7 +103,7 @@ export { Tabs, TabsList, TabsTrigger, TabsContent } from './components/ui/tabs'
 export { VirtualizedMessageList } from './components/chat/VirtualizedMessageList'
 export { MessageList } from './components/message/MessageList'
 export { VoiceInput } from './components/input/VoiceInput'
-export * from './components/ui/LinkPreview'
+export * from './components/ui/link-preview'
 
 // Re-export hooks from internal domains
 export { useChatHandlers } from './hooks/chat/use-chat-handlers'

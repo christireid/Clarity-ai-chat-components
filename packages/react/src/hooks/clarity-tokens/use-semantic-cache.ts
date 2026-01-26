@@ -8,7 +8,11 @@ import {
   type CacheStats as TokenOptCacheStats,
   type CacheContext,
 } from '@clarity-chat/token-optimization'
-import type { UseSemanticCacheConfig, UseSemanticCacheReturn, CacheStats } from './types'
+import type {
+  UseSemanticCacheConfig,
+  UseSemanticCacheReturn,
+  CacheStats,
+} from './types'
 
 /**
  * useSemanticCache - Semantic similarity-based response caching
@@ -176,7 +180,10 @@ export function useSemanticCache<T = string>(
           timestamp: new Date(),
         }
 
-        const result: SemanticCacheResult = await cacheRef.current.get(prompt, context)
+        const result: SemanticCacheResult = await cacheRef.current.get(
+          prompt,
+          context
+        )
 
         updateStatsFromCache()
 
@@ -220,7 +227,8 @@ export function useSemanticCache<T = string>(
         return ''
       }
 
-      const content = typeof response === 'string' ? response : JSON.stringify(response)
+      const content =
+        typeof response === 'string' ? response : JSON.stringify(response)
       const id = `cache_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
 
       await cacheRef.current.set(prompt, content, {
@@ -240,10 +248,13 @@ export function useSemanticCache<T = string>(
   /**
    * Invalidate by ID
    */
-  const invalidate = React.useCallback(async (id: string): Promise<void> => {
-    responseMapRef.current.delete(id)
-    updateStatsFromCache()
-  }, [updateStatsFromCache])
+  const invalidate = React.useCallback(
+    async (id: string): Promise<void> => {
+      responseMapRef.current.delete(id)
+      updateStatsFromCache()
+    },
+    [updateStatsFromCache]
+  )
 
   /**
    * Invalidate similar prompts
@@ -252,7 +263,9 @@ export function useSemanticCache<T = string>(
     async (prompt: string, threshold?: number): Promise<number> => {
       // Note: AdvancedSemanticCache doesn't support selective invalidation
       // Would need to extend the base class for this functionality
-      console.warn('Prompt-based invalidation requires cache extension')
+      if (process.env['NODE_ENV'] === 'development') {
+        console.warn('Prompt-based invalidation requires cache extension')
+      }
       return 0
     },
     []
@@ -266,12 +279,15 @@ export function useSemanticCache<T = string>(
       if (!cacheRef.current) return
 
       for (const entry of entries) {
-        const content = typeof entry.response === 'string'
-          ? entry.response
-          : JSON.stringify(entry.response)
+        const content =
+          typeof entry.response === 'string'
+            ? entry.response
+            : JSON.stringify(entry.response)
         const id = `cache_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
 
-        await cacheRef.current.set(entry.prompt, content, { qualityScore: 0.95 })
+        await cacheRef.current.set(entry.prompt, content, {
+          qualityScore: 0.95,
+        })
         responseMapRef.current.set(id, entry.response)
       }
 
@@ -308,12 +324,15 @@ export function useSemanticCache<T = string>(
       if (!cacheRef.current) return
 
       for (const entry of entries) {
-        const content = typeof entry.response === 'string'
-          ? entry.response
-          : JSON.stringify(entry.response)
+        const content =
+          typeof entry.response === 'string'
+            ? entry.response
+            : JSON.stringify(entry.response)
         const id = `cache_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
 
-        await cacheRef.current.set(entry.prompt, content, { qualityScore: 0.95 })
+        await cacheRef.current.set(entry.prompt, content, {
+          qualityScore: 0.95,
+        })
         responseMapRef.current.set(id, entry.response)
       }
 

@@ -225,7 +225,11 @@ export function useEmbeddingCache(
         setIsModelLoaded(true)
       } catch {
         // Transformers.js not available - use fallback
-        console.warn('Transformers.js not available, using fallback embedding')
+        if (process.env['NODE_ENV'] === 'development') {
+          console.warn(
+            'Transformers.js not available, using fallback embedding'
+          )
+        }
 
         // Simple hash-based pseudo-embedding (for demo/testing purposes only)
         pipelineRef.current = async (text: string): Promise<Float32Array> => {
@@ -254,7 +258,9 @@ export function useEmbeddingCache(
         setIsModelLoaded(true)
       }
     } catch (error) {
-      console.error('Failed to load embedding model:', error)
+      if (process.env['NODE_ENV'] === 'development') {
+        console.error('Failed to load embedding model:', error)
+      }
       throw error
     }
   }, [config.model, config.normalize])

@@ -5,7 +5,7 @@
  */
 
 // Main component
-export { SourceCitation } from './source-citation'
+export { SourceCitation } from './SourceCitation'
 
 // Types
 export type {

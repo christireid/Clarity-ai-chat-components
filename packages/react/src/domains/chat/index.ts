@@ -23,17 +23,17 @@ export {
 // MID-LEVEL: Composable building blocks
 // =============================================================================
 
-export { ChatWindow, type ChatWindowProps } from '../../components/chat-window'
-export { ChatLayout, type ChatLayoutProps } from '../../components/chat-layout'
-export { ChatInput } from '../../components/chat-input'
-export { MessageList } from '../../components/message-list'
+export { ChatWindow, type ChatWindowProps } from '../../components/ChatWindow'
+export { ChatLayout, type ChatLayoutProps } from '../../components/ChatLayout'
+export { ChatInput } from '../../components/ChatInput'
+export { MessageList } from '../../components/MessageList'
 
 // =============================================================================
 // LOW-LEVEL: Primitives for custom UIs
 // =============================================================================
 
 export { Message } from '../../components/message'
-export { StreamingMessage } from '../../components/streaming-message'
+export { StreamingMessage } from '../../components/StreamingMessage'
 
 // Composable primitives (Radix-style)
 export {

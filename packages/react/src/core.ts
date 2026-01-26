@@ -46,11 +46,11 @@
 export {
   ClarityChat,
   type ClarityChatProps,
-} from './components/chat/clarity-chat'
+} from './components/chat/ClarityChat'
 export {
   ClarityChatSimple,
   type ClarityChatSimpleProps,
-} from './components/chat/clarity-chat-simple'
+} from './components/chat/ClarityChatSimple'
 
 // Types are exported above with their components
 
@@ -68,9 +68,9 @@ export {
 } from './hooks/chat/use-clarity-chat'
 
 // Core components
-export { ChatWindow, type ChatWindowProps } from './components/chat/chat-window'
-export { ChatInput } from './components/chat/chat-input'
-export { MessageList } from './components/message/message-list'
+export { ChatWindow, type ChatWindowProps } from './components/chat/ChatWindow'
+export { ChatInput } from './components/chat/ChatInput'
+export { MessageList } from './components/message/MessageList'
 
 // =============================================================================
 // CORE TYPES
@@ -97,7 +97,7 @@ export {
 export {
   ChatWithErrorBoundary,
   type ChatWithErrorBoundaryProps,
-} from './components/chat/chat-with-error-boundary'
+} from './components/chat/ChatWithErrorBoundary'
 
 // =============================================================================
 // MEMORY

@@ -10,7 +10,7 @@ import {
   ChainOfThought,
   useChainOfThought,
   type ChainOfThoughtStep,
-} from './chain-of-thought'
+} from './ChainOfThought'
 
 const meta: Meta<typeof ChainOfThought> = {
   title: 'AI/ChainOfThought',
@@ -158,9 +158,9 @@ const detailedSteps: ChainOfThoughtStep[] = [
     duration: durations.slower,
     timestamp: new Date(Date.now() - 30000),
     metadata: {
-      'Confidence': '0.95',
+      Confidence: '0.95',
       'Tokens processed': 48,
-      'Model': 'claude-3-opus',
+      Model: 'claude-3-opus',
     },
   },
   {
@@ -224,7 +224,7 @@ const detailedSteps: ChainOfThoughtStep[] = [
     status: 'pending',
     metadata: {
       'Target length': '500-800 words',
-      'Format': 'Markdown',
+      Format: 'Markdown',
     },
   },
   {
@@ -233,7 +233,7 @@ const detailedSteps: ChainOfThoughtStep[] = [
     content: '',
     status: 'pending',
     metadata: {
-      'Checks': 'Accuracy, completeness, tone',
+      Checks: 'Accuracy, completeness, tone',
     },
   },
 ]
@@ -242,7 +242,8 @@ const errorSteps: ChainOfThoughtStep[] = [
   {
     id: '1',
     title: 'Parsing request',
-    content: 'Successfully parsed the incoming request and validated parameters.',
+    content:
+      'Successfully parsed the incoming request and validated parameters.',
     status: 'complete',
     duration: durations.slower,
   },
@@ -450,7 +451,8 @@ export const StreamingSimulation: Story = {
 
       updateStep('1', {
         status: 'complete',
-        content: 'Identified key entities and user intent. Query type: factual question.',
+        content:
+          'Identified key entities and user intent. Query type: factual question.',
         duration: durations.slower,
       })
 
@@ -472,7 +474,8 @@ export const StreamingSimulation: Story = {
 
       updateStep('2', {
         status: 'complete',
-        content: 'Retrieved 8 relevant documents with average relevance score of 0.91.',
+        content:
+          'Retrieved 8 relevant documents with average relevance score of 0.91.',
         duration: durations.slower,
       })
 
@@ -494,7 +497,8 @@ export const StreamingSimulation: Story = {
 
       updateStep('3', {
         status: 'complete',
-        content: 'Combined information from multiple sources. Verified factual accuracy.',
+        content:
+          'Combined information from multiple sources. Verified factual accuracy.',
         duration: durations.slower,
       })
 
@@ -549,7 +553,8 @@ export const StreamingSimulation: Story = {
   parameters: {
     docs: {
       description: {
-        story: 'Interactive demo showing how to use the useChainOfThought hook for streaming updates.',
+        story:
+          'Interactive demo showing how to use the useChainOfThought hook for streaming updates.',
       },
     },
   },
@@ -634,7 +639,8 @@ export const CustomStyling: Story = {
     steps: basicSteps,
     title: 'Custom Styled',
     className: 'gap-4',
-    containerClassName: 'p-4 bg-gradient-to-br from-primary/5 to-transparent rounded-xl',
+    containerClassName:
+      'p-4 bg-gradient-to-br from-primary/5 to-transparent rounded-xl',
     stepClassName: 'shadow-md',
   },
 }
@@ -728,9 +734,24 @@ export const ResearchAssistantExample: Story = {
         status: 'complete',
         duration: durations.slower,
         subSteps: [
-          { id: '2a', title: 'Google Scholar', content: '89 results', status: 'complete' },
-          { id: '2b', title: 'PubMed', content: '34 results', status: 'complete' },
-          { id: '2c', title: 'IEEE Xplore', content: '33 results', status: 'complete' },
+          {
+            id: '2a',
+            title: 'Google Scholar',
+            content: '89 results',
+            status: 'complete',
+          },
+          {
+            id: '2b',
+            title: 'PubMed',
+            content: '34 results',
+            status: 'complete',
+          },
+          {
+            id: '2c',
+            title: 'IEEE Xplore',
+            content: '33 results',
+            status: 'complete',
+          },
         ],
       },
       {

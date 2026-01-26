@@ -138,7 +138,9 @@ export function useRAGPipeline(
       } catch (err) {
         const error =
           err instanceof Error ? err : new Error('RAG retrieval failed')
-        console.error('[useRAGPipeline] Retrieval failed:', error)
+        if (process.env['NODE_ENV'] === 'development') {
+          console.error('[useRAGPipeline] Retrieval failed:', error)
+        }
         // Return empty array on error (fail gracefully)
         return []
       }

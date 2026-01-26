@@ -4,10 +4,10 @@
  * Generic UI primitives and utilities used across the library.
  */
 
-export * from './animated-dots'
-export * from './animated-list'
-export { BatteryIndicator } from './battery-indicator'
-export * from './collapsible-section'
+export * from './AnimatedDots'
+export * from './AnimatedList'
+export { BatteryIndicator } from './BatteryIndicator'
+export * from './CollapsibleSection'
 // Re-export DashboardErrorBoundary from canonical location
 export {
   DashboardErrorBoundary,
@@ -19,7 +19,7 @@ export {
   CircularProgress,
   type DashboardProgressProps,
   type CircularProgressProps,
-} from './dashboard-progress'
+} from './DashboardProgress'
 // Dashboard skeleton components
 export {
   AnalyticsDashboardSkeleton,
@@ -38,7 +38,7 @@ export {
   type DashboardEmptyStateProps,
   type DashboardStateTransitionProps,
   type LoadingAnnouncerProps,
-} from './dashboard-skeleton'
+} from './DashboardSkeleton'
 export { Draggable, DropZone } from './draggable'
 export {
   EmptyState,
@@ -47,10 +47,10 @@ export {
   NoConversationsState,
   ErrorState,
   SuccessState,
-} from './empty-state'
-export * from './feedback-animation'
+} from './EmptyState'
+export * from './FeedbackAnimation'
 export * from './icons'
-export * from './interactive-card'
+export * from './InteractiveCard'
 export {
   LinkPreview,
   LinkPreviewSkeleton,

@@ -36,7 +36,13 @@ export interface FieldStatus {
 /**
  * Overall streaming status
  */
-export type StreamingState = 'idle' | 'connecting' | 'streaming' | 'paused' | 'complete' | 'error'
+export type StreamingState =
+  | 'idle'
+  | 'connecting'
+  | 'streaming'
+  | 'paused'
+  | 'complete'
+  | 'error'
 
 /**
  * Token statistics
@@ -121,7 +127,10 @@ export interface UseStreamStatusReturn {
   /** Update estimated total */
   updateEstimate: (estimatedTotal: number) => void
   /** Update field status (for structured outputs) */
-  updateFieldStatus: (fieldName: string, updates: Partial<Omit<FieldStatus, 'name'>>) => void
+  updateFieldStatus: (
+    fieldName: string,
+    updates: Partial<Omit<FieldStatus, 'name'>>
+  ) => void
   /** Mark stream as complete */
   complete: () => void
   /** Mark stream as errored */
@@ -137,9 +146,17 @@ export interface UseStreamStatusReturn {
 /**
  * Simplified return type for external use
  */
-export type StreamStatusReturn = Omit<UseStreamStatusReturn,
-  'startStream' | 'recordTokens' | 'updateEstimate' | 'updateFieldStatus' |
-  'complete' | 'setError' | 'pause' | 'resume' | 'reset'
+export type StreamStatusReturn = Omit<
+  UseStreamStatusReturn,
+  | 'startStream'
+  | 'recordTokens'
+  | 'updateEstimate'
+  | 'updateFieldStatus'
+  | 'complete'
+  | 'setError'
+  | 'pause'
+  | 'resume'
+  | 'reset'
 >
 
 // =============================================================================
@@ -272,25 +289,30 @@ export function useStreamStatus(
 
   const [state, setState] = React.useState<StreamingState>('idle')
   const [tokensReceived, setTokensReceived] = React.useState(0)
-  const [estimatedTotal, setEstimatedTotal] = React.useState<number | undefined>(
-    initialEstimate
-  )
-  const [fieldStatus, setFieldStatus] = React.useState<Map<string, FieldStatus>>(
-    () => new Map(
-      trackedFields.map((name) => [
-        name,
-        {
+  const [estimatedTotal, setEstimatedTotal] = React.useState<
+    number | undefined
+  >(initialEstimate)
+  const [fieldStatus, setFieldStatus] = React.useState<
+    Map<string, FieldStatus>
+  >(
+    () =>
+      new Map(
+        trackedFields.map((name) => [
           name,
-          status: 'pending' as FieldStreamStatus,
-          tokensReceived: 0,
-          progress: 0,
-        },
-      ])
-    )
+          {
+            name,
+            status: 'pending' as FieldStreamStatus,
+            tokensReceived: 0,
+            progress: 0,
+          },
+        ])
+      )
   )
   const [error, setErrorState] = React.useState<string | undefined>()
   const [startTime, setStartTime] = React.useState<Date | undefined>()
-  const [firstTokenTime, setFirstTokenTime] = React.useState<number | undefined>()
+  const [firstTokenTime, setFirstTokenTime] = React.useState<
+    number | undefined
+  >()
   const [elapsed, setElapsed] = React.useState(0)
 
   // Refs for tracking
@@ -334,11 +356,22 @@ export function useStreamStatus(
   const time: TimeStats = React.useMemo(
     () => ({
       elapsed,
-      remaining: calculateRemainingTime(tokensReceived, estimatedTotal, tokensPerSecond),
+      remaining: calculateRemainingTime(
+        tokensReceived,
+        estimatedTotal,
+        tokensPerSecond
+      ),
       timeToFirstToken: firstTokenTime,
       startedAt: startTime,
     }),
-    [elapsed, tokensReceived, estimatedTotal, tokensPerSecond, firstTokenTime, startTime]
+    [
+      elapsed,
+      tokensReceived,
+      estimatedTotal,
+      tokensPerSecond,
+      firstTokenTime,
+      startTime,
+    ]
   )
 
   const isStreaming = state === 'streaming' || state === 'connecting'
@@ -388,8 +421,12 @@ export function useStreamStatus(
 
   const startStream = React.useCallback(
     (newEstimatedTotal?: number) => {
-      if (debug) {
-        console.log('[useStreamStatus] Starting stream', { newEstimatedTotal })
+      if (process.env['NODE_ENV'] === 'development') {
+        if (debug) {
+          console.log('[useStreamStatus] Starting stream', {
+            newEstimatedTotal,
+          })
+        }
       }
 
       setState('connecting')
@@ -436,8 +473,10 @@ export function useStreamStatus(
           setFirstTokenTime(ttft)
           setState('streaming')
 
-          if (debug) {
-            console.log('[useStreamStatus] First token received', { ttft })
+          if (process.env['NODE_ENV'] === 'development') {
+            if (debug) {
+              console.log('[useStreamStatus] First token received', { ttft })
+            }
           }
         }
 
@@ -476,10 +515,22 @@ export function useStreamStatus(
         }
 
         // Auto-calculate progress if tokens are provided
-        if (updates.tokensReceived !== undefined && updates.estimatedTokens !== undefined) {
-          updated.progress = calculateProgress(updates.tokensReceived, updates.estimatedTokens)
-        } else if (updates.tokensReceived !== undefined && existing.estimatedTokens) {
-          updated.progress = calculateProgress(updates.tokensReceived, existing.estimatedTokens)
+        if (
+          updates.tokensReceived !== undefined &&
+          updates.estimatedTokens !== undefined
+        ) {
+          updated.progress = calculateProgress(
+            updates.tokensReceived,
+            updates.estimatedTokens
+          )
+        } else if (
+          updates.tokensReceived !== undefined &&
+          existing.estimatedTokens
+        ) {
+          updated.progress = calculateProgress(
+            updates.tokensReceived,
+            existing.estimatedTokens
+          )
         }
 
         // Auto-set timestamps
@@ -492,8 +543,13 @@ export function useStreamStatus(
 
         newMap.set(fieldName, updated)
 
-        if (debug) {
-          console.log('[useStreamStatus] Field status updated', { fieldName, updated })
+        if (process.env['NODE_ENV'] === 'development') {
+          if (debug) {
+            console.log('[useStreamStatus] Field status updated', {
+              fieldName,
+              updated,
+            })
+          }
         }
 
         return newMap
@@ -535,14 +591,24 @@ export function useStreamStatus(
     }
 
     onCompleteRef.current?.(finalStats)
-  }, [elapsed, estimatedTotal, firstTokenTime, startTime, fieldStatus, stopTimer, debug])
+  }, [
+    elapsed,
+    estimatedTotal,
+    firstTokenTime,
+    startTime,
+    fieldStatus,
+    stopTimer,
+    debug,
+  ])
 
   const setError = React.useCallback(
     (err: string | Error) => {
       const errorMessage = err instanceof Error ? err.message : err
 
-      if (debug) {
-        console.error('[useStreamStatus] Stream error', errorMessage)
+      if (process.env['NODE_ENV'] === 'development') {
+        if (debug) {
+          console.error('[useStreamStatus] Stream error', errorMessage)
+        }
       }
 
       setState('error')
@@ -559,8 +625,10 @@ export function useStreamStatus(
       setState('paused')
       stopTimer()
 
-      if (debug) {
-        console.log('[useStreamStatus] Stream paused')
+      if (process.env['NODE_ENV'] === 'development') {
+        if (debug) {
+          console.log('[useStreamStatus] Stream paused')
+        }
       }
     }
   }, [state, stopTimer, debug])
@@ -575,18 +643,25 @@ export function useStreamStatus(
         const now = Date.now()
         const newElapsed = now - resumeStart
         setElapsed(newElapsed)
-        throughputRef.current = calculateThroughput(lastTokensRef.current, newElapsed)
+        throughputRef.current = calculateThroughput(
+          lastTokensRef.current,
+          newElapsed
+        )
       }, updateInterval)
 
-      if (debug) {
-        console.log('[useStreamStatus] Stream resumed')
+      if (process.env['NODE_ENV'] === 'development') {
+        if (debug) {
+          console.log('[useStreamStatus] Stream resumed')
+        }
       }
     }
   }, [state, elapsed, updateInterval, debug])
 
   const reset = React.useCallback(() => {
-    if (debug) {
-      console.log('[useStreamStatus] Reset')
+    if (process.env['NODE_ENV'] === 'development') {
+      if (debug) {
+        console.log('[useStreamStatus] Reset')
+      }
     }
 
     setState('idle')
