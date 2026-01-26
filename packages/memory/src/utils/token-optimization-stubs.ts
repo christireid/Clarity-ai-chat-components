@@ -5,7 +5,7 @@
  * that were previously imported from @clarity-chat/token-optimization
  */
 
-import { TokenCounter, countTokens } from './TokenCounter'
+import { TokenCounter, countTokens } from './token-counter'
 import type { TokenBreakdown, MemoryItem } from '../types'
 
 /**

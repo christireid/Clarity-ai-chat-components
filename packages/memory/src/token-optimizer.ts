@@ -5,7 +5,7 @@
  * This file provides backward compatibility for imports using './token-optimizer'.
  */
 
-export { TokenCounter } from './utils/TokenCounter'
+export { TokenCounter } from './utils/token-counter'
 export type {
   ModelFamily,
   ContentType,

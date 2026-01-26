@@ -7,7 +7,7 @@
  */
 
 import type { MemoryItem } from '../types'
-import { TokenCounter } from './TokenCounter'
+import { TokenCounter } from './token-counter'
 
 export interface TokenBudgetAllocation {
   systemPrompt: number

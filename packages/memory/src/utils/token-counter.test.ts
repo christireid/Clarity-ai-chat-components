@@ -6,7 +6,7 @@ import {
   TokenCounter,
   countTokens,
   countTokensWithConfidence,
-} from './TokenCounter'
+} from './token-counter'
 
 describe('TokenCounter', () => {
   describe('count', () => {

@@ -10,7 +10,7 @@ export * from './health-check'
 export * from './rate-limiter'
 export * from './batch'
 // Performance utilities moved to @clarity-chat/utils/performance-unified
-export * from './TokenCounter'
+export * from './token-counter'
 // Note: validation-helpers not exported to avoid conflicts with validation.ts
 // Logger removed - use @clarity-chat/utils/logger instead
 export * from './decay-manager'
