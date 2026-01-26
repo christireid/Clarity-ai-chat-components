@@ -5,17 +5,13 @@
  * performance, and conversation metrics.
  */
 
-export { AnalyticsDashboard } from './analytics-dashboard'
-export { PerformanceDashboard } from './performance-dashboard'
-export { PerformanceAnalyticsDashboard } from './performance-analytics-dashboard'
-export { ConversationAnalyticsDashboard } from './conversation-analytics-dashboard'
-export { UsageDashboard } from './usage-dashboard'
-export {
-  ABTestingDashboard,
-  useABTesting,
-} from './ab-testing-dashboard'
+export { AnalyticsDashboard } from './AnalyticsDashboard'
+export { PerformanceDashboard } from './PerformanceDashboard'
+export { PerformanceAnalyticsDashboard } from './PerformanceAnalyticsDashboard'
+export { ConversationAnalyticsDashboard } from './ConversationAnalyticsDashboard'
+export { UsageDashboard } from './UsageDashboard'
 export {
   UserInteractionAnalytics,
   useInteractionTracking,
-} from './user-interaction-analytics'
-export { ResponseQualityMeter } from './response-quality-meter'
+} from './UserInteractionAnalytics'
+export { ResponseQualityMeter } from './ResponseQualityMeter'

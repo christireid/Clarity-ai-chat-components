@@ -30,11 +30,11 @@
 // ============================================================================
 
 // Primary drop-in component (Legacy - consider using ClarityChatApp from app-api instead)
-export { ClarityChat } from './components/chat/clarity-chat'
-export type { ClarityChatProps } from './components/chat/clarity-chat'
+export { ClarityChat } from './components/chat/ClarityChat'
+export type { ClarityChatProps } from './components/chat/ClarityChat'
 
 // Preset configurations
-export { ClarityChatPresets } from './components/chat/clarity-chat-presets'
+export { ClarityChatPresets } from './components/chat/ClarityChatPresets'
 
 // Recipe components for common patterns
 export {
@@ -46,7 +46,7 @@ export {
   type ChatWithMemoryProps,
   type ChatWithAnalyticsProps,
   type ChatWithPresetProps,
-} from './components/chat/chat-recipes'
+} from './components/chat/ChatRecipes'
 
 // ============================================================================
 // CORE HOOKS (Primary state management)
@@ -110,7 +110,7 @@ export {
 } from './components/ai/source-citation'
 
 // Primary markdown renderer (unified API with LaTeX, Mermaid, syntax highlighting)
-export { EnhancedMarkdownRenderer } from './components/ai/enhanced-markdown-renderer'
+export { EnhancedMarkdownRenderer } from './components/ai/EnhancedMarkdownRenderer'
 
 // Chain of Thought - AI reasoning visualization
 export {
@@ -122,7 +122,7 @@ export {
   type ChainOfThoughtVariant,
   type UseChainOfThoughtOptions,
   type UseChainOfThoughtReturn,
-} from './components/ai/chain-of-thought'
+} from './components/ai/ChainOfThought'
 
 // ThinkingBar - AI processing status indicator
 export {
@@ -133,7 +133,7 @@ export {
   type ThinkingBarVariant,
   type UseThinkingBarOptions,
   type UseThinkingBarReturn,
-} from './components/ai/thinking-bar'
+} from './components/ai/ThinkingBar'
 
 // StreamStatusProgress - Comprehensive streaming progress visualization
 // Note: Different from ui/progress.tsx's simple StreamingProgress (animated dots)
@@ -146,7 +146,7 @@ export {
   type StreamStatusProgressSize,
   type StreamStatusProgressColor,
   type StreamStatusTokens,
-} from './components/ai/streaming-progress'
+} from './components/ai/StreamingProgress'
 
 // TextShimmer - Animated text placeholder loading indicator
 export {
@@ -164,7 +164,7 @@ export {
   type TextShimmerGroupProps,
   type UseTextShimmerOptions,
   type UseTextShimmerReturn,
-} from './components/ai/text-shimmer'
+} from './components/ai/TextShimmer'
 
 // ToolExecutionCard - Tool call execution status display
 export {
@@ -175,7 +175,7 @@ export {
   type ToolExecutionStatus,
   type UseToolExecutionOptions,
   type UseToolExecutionReturn,
-} from './components/ai/tool-execution-card'
+} from './components/ai/ToolExecutionCard'
 
 // Tool UI Registry
 export { createToolUIRegistry } from './agents/tool-ui-registry'
@@ -190,7 +190,7 @@ export {
 export { InlineCode, type InlineCodeProps } from './components/code/InlineCode'
 
 export { StreamingCodeBlock } from './components/code/StreamingCodeBlock'
-export { EnhancedCodeBlock } from './components/ai/enhanced-code-block'
+export { EnhancedCodeBlock } from './components/ai/EnhancedCodeBlock'
 
 // Code block utilities
 export {
@@ -224,21 +224,21 @@ export {
 // COMPOSABLE UI COMPONENTS (For custom layouts)
 // ============================================================================
 
-export { ChatWindow } from './components/chat/chat-window'
+export { ChatWindow } from './components/chat/ChatWindow'
 export {
   FloatingChatWidget,
   type FloatingChatWidgetProps,
-} from './components/chat/floating-chat-widget'
-export { ChatInput } from './components/chat/chat-input'
+} from './components/chat/FloatingChatWidget'
+export { ChatInput } from './components/chat/ChatInput'
 export {
   OfflineChatSync,
   useOfflineChat,
-} from './components/chat/offline-chat-sync'
+} from './components/chat/OfflineChatSync'
 export {
   ChatSyncStatus,
   type ChatSyncStatusProps,
-} from './components/chat/chat-sync-status'
-export { VirtualizedMessageList as MessageList } from './components/chat/virtualized-message-list'
+} from './components/chat/ChatSyncStatus'
+export { VirtualizedMessageList as MessageList } from './components/chat/VirtualizedMessageList'
 export {
   TanStackMessageList,
   AutoTanStackMessageList,
@@ -249,11 +249,11 @@ export {
   type UseMessageListScrollOptions,
   type UseMessageListScrollReturn,
   type UseJumpToBottomReturn,
-} from './components/chat/tanstack-message-list'
-export { StreamingMessage } from './components/message/streaming-message'
-export { ThinkingIndicator } from './components/message/thinking-indicator'
-export { TypingIndicator } from './components/message/typing-indicator'
-export { ClarityToolResult } from './components/message/clarity-tool-result'
+} from './components/chat/TanstackMessageList'
+export { StreamingMessage } from './components/message/StreamingMessage'
+export { ThinkingIndicator } from './components/message/ThinkingIndicator'
+export { TypingIndicator } from './components/message/TypingIndicator'
+export { ClarityToolResult } from './components/message/ClarityToolResult'
 
 // FlowToken Integration (optional - requires 'flowtoken' peer dependency)
 export {
@@ -264,10 +264,10 @@ export {
   type FlowTokenStreamingTextProps,
   type FlowTokenMarkdownProps,
   type UseFlowTokenReturn,
-} from './components/message/flowtoken-adapter'
+} from './components/message/FlowtokenAdapter'
 
 // Layouts
-export { ChatLayout, type ChatLayoutProps } from './components/chat/chat-layout'
+export { ChatLayout, type ChatLayoutProps } from './components/chat/ChatLayout'
 export {
   ResizableChatLayout,
   useResizableLayout,
@@ -278,7 +278,7 @@ export {
   type ResizableChatLayoutProps,
   type ResizeHandleProps,
   type ImperativePanelHandle,
-} from './components/chat/resizable-chat-layout'
+} from './components/chat/ResizableChatLayout'
 
 // ============================================================================
 // MEMORY SYSTEM
@@ -410,56 +410,56 @@ export type { InitializeClarityOptions } from './initialization'
 // ============================================================================
 
 // Error and Feedback
-export { NetworkStatus } from './components/feedback/network-status'
+export { NetworkStatus } from './components/feedback/NetworkStatus'
 
 // Token Management
-export { TokenCounter } from './components/token/token-counter'
+export { TokenCounter } from './components/token/TokenCounter'
 
 // Media and Export
-export { ExportDialog } from './components/media/export-dialog'
+export { ExportDialog } from './components/media/ExportDialog'
 
 // Search
 export {
   MessageSearch,
   MessageSearchWithSuspense,
-} from './components/search/message-search'
+} from './components/search/MessageSearch'
 // SemanticMessageSearch is already exported via 'export * from ./components/search' in internal.ts
-export { AdvancedMessageSearch } from './components/search/advanced-message-search'
+export { AdvancedMessageSearch } from './components/search/AdvancedMessageSearch'
 
 // Prompts and Suggestions
-export { FollowUpSuggestions } from './components/prompt/follow-up-suggestions'
-export { PromptSuggestions } from './components/prompt/prompt-suggestions'
-export type { PromptSuggestion } from './components/prompt/prompt-suggestions'
+export { FollowUpSuggestions } from './components/prompt/FollowUpSuggestions'
+export { PromptSuggestions } from './components/prompt/PromptSuggestions'
+export type { PromptSuggestion } from './components/prompt/PromptSuggestions'
 
 // Prompt Container and Suggestion Cards
 export {
   PromptContainer,
   useFileAttachments,
-} from './components/prompt/prompt-container'
+} from './components/prompt/PromptContainer'
 export type {
   PromptContainerProps,
   SuggestionCategory,
   FileAttachment,
-} from './components/prompt/prompt-container'
+} from './components/prompt/PromptContainer'
 
 export {
   SuggestionCards,
   useSuggestionCards,
-} from './components/prompt/suggestion-cards'
+} from './components/prompt/SuggestionCards'
 export type {
   SuggestionCardsProps,
   SuggestionCard,
   CategoryFilter,
-} from './components/prompt/suggestion-cards'
+} from './components/prompt/SuggestionCards'
 
 // Message Components
-export { CitationCard } from './components/message/citation-card'
+export { CitationCard } from './components/message/CitationCard'
 
 // Input Components
-export { VoiceInput } from './components/input/voice-input'
+export { VoiceInput } from './components/input/VoiceInput'
 
 // Empty States
-export { EmptyChatState } from './components/ui/empty-state'
+export { EmptyChatState } from './components/ui/EmptyState'
 
 // ============================================================================
 // ADDITIONAL HOOKS (For DocsAssistant and similar use cases)
@@ -472,7 +472,7 @@ export {
   type ClarityToasterProps,
   type ToastOptions,
   type PromiseToastOptions,
-} from './components/ui/sonner-toast'
+} from './components/ui/SonnerToast'
 
 // Keyboard shortcuts
 export { useKeyboardShortcuts } from './hooks/keyboard/use-keyboard-shortcuts'
@@ -750,108 +750,104 @@ export {
   MODEL_PRICING_PRESETS,
   // TokenUsage and ModelPricing types are exported above from @clarity-chat/token-optimization
   type TokenUsageMeterProps,
-} from './components/token/token-usage-meter'
+} from './components/token/TokenUsageMeter'
 export {
   TokenBudgetBar,
   TokenBudgetIndicator,
-} from './components/token/token-budget-bar'
+} from './components/token/TokenBudgetBar'
 
 // ============================================================================
 // DASHBOARD & ANALYTICS COMPONENTS
 // ============================================================================
 
-export { AnalyticsDashboard } from './components/dashboards/analytics-dashboard'
-export { PerformanceDashboard } from './components/dashboards/performance-dashboard'
-export { ResponseQualityMeter } from './components/dashboards/response-quality-meter'
-export { UsageDashboard } from './components/dashboards/usage-dashboard'
-export { ABTestingDashboard } from './components/dashboards/ab-testing-dashboard'
-export { ConversationAnalyticsDashboard } from './components/dashboards/conversation-analytics-dashboard'
+export { AnalyticsDashboard } from './components/dashboards/AnalyticsDashboard'
+export { PerformanceDashboard } from './components/dashboards/PerformanceDashboard'
+export { ResponseQualityMeter } from './components/dashboards/ResponseQualityMeter'
+export { UsageDashboard } from './components/dashboards/UsageDashboard'
+export { ConversationAnalyticsDashboard } from './components/dashboards/ConversationAnalyticsDashboard'
 
 // ============================================================================
 // MESSAGE COMPONENTS (Advanced Features)
 // ============================================================================
 
 export { Message } from './components/message/message'
-export { MessageMetadata } from './components/message/message-metadata'
-export { StreamBlock } from './components/message/stream-block'
-export { StreamCancellation } from './components/message/stream-cancellation'
-export { StreamingTextRenderer } from './components/message/streaming-text-renderer'
-export { MessageList as MessageListComponent } from './components/message/message-list'
-export { ToolInvocationCard } from './components/message/tool-invocation-card'
-export { MessageOptimized } from './components/message/message-optimized'
+export { MessageMetadata } from './components/message/MessageMetadata'
+export { StreamBlock } from './components/message/StreamBlock'
+export { StreamCancellation } from './components/message/StreamCancellation'
+export { StreamingTextRenderer } from './components/message/StreamingTextRenderer'
+export { MessageList as MessageListComponent } from './components/message/MessageList'
+export { ToolInvocationCard } from './components/message/ToolInvocationCard'
+export { MessageOptimized } from './components/message/MessageOptimized'
 
 // ============================================================================
 // CONTEXT & MEMORY COMPONENTS
 // ============================================================================
 
-export { ContextManager } from './components/context/context-manager'
-export { ContextCard } from './components/context/context-card'
-export { ContextVisualizer } from './components/context/context-visualizer'
-export { MemoryInspector } from './components/context/memory-inspector'
-export { ProjectSidebar } from './components/context/project-sidebar'
-export { SettingsPanel } from './components/context/settings-panel'
+export { ContextManager } from './components/context/ContextManager'
+export { ContextCard } from './components/context/ContextCard'
+export { ContextVisualizer } from './components/context/ContextVisualizer'
+export { MemoryInspector } from './components/context/MemoryInspector'
+export { ProjectSidebar } from './components/context/ProjectSidebar'
+export { SettingsPanel } from './components/context/SettingsPanel'
 
 // ============================================================================
 // ADVANCED AI COMPONENTS
 // ============================================================================
 
-export { PersonaPanel } from './components/ai/persona-panel'
-export { AgentRunFeed } from './components/ai/agent-run-feed'
-export { SessionSummaryCard } from './components/ai/session-summary-card'
-export { WorkflowSuggestionList } from './components/ai/workflow-suggestion-list'
-export { SafetyStatusCard } from './components/ai/safety-status-card'
-export { KnowledgeBaseViewer } from './components/ai/knowledge-base-viewer'
-export { AuditLogViewer } from './components/ai/audit-log-viewer'
-export { PromptLibrary } from './components/prompt/prompt-library'
-export { ModelSelector } from './components/ai/model-selector'
+export { AgentRunFeed } from './components/ai/AgentRunFeed'
+export { SessionSummaryCard } from './components/ai/SessionSummaryCard'
+export { WorkflowSuggestionList } from './components/ai/WorkflowSuggestionList'
+export { SafetyStatusCard } from './components/ai/SafetyStatusCard'
+export { AuditLogViewer } from './components/ai/AuditLogViewer'
+export { PromptLibrary } from './components/prompt/PromptLibrary'
+export { ModelSelector } from './components/ai/ModelSelector'
 export { createAgent } from './agents'
 
 // ============================================================================
 // ADVANCED INPUT COMPONENTS
 // ============================================================================
 
-export { AdvancedChatInput } from './components/input/advanced-chat-input'
-export { FileUpload } from './components/input/file-upload'
-export { InlineVoiceInput } from './components/input/voice-input'
-export { StructuredInputBuilder } from './components/input/structured-input-builder'
+export { AdvancedChatInput } from './components/input/AdvancedChatInput'
+export { FileUpload } from './components/input/FileUpload'
+export { InlineVoiceInput } from './components/input/VoiceInput'
+export { StructuredInputBuilder } from './components/input/StructuredInputBuilder'
 export {
   DocumentIntegration,
   useDocumentIntegration,
-} from './components/media/document-integration'
+} from './components/media/DocumentIntegration'
 
 // ============================================================================
 // CONVERSATION & NAVIGATION
 // ============================================================================
 
-export { ConversationList } from './components/conversation/conversation-list'
-export { ConversationTimeline } from './components/conversation/conversation-timeline'
-export { ConversationBranchVisualizer } from './components/conversation/conversation-branch-visualizer'
+export { ConversationList } from './components/conversation/ConversationList'
+export { ConversationTimeline } from './components/conversation/ConversationTimeline'
+export { ConversationBranchVisualizer } from './components/conversation/ConversationBranchVisualizer'
 export { ContextMenu } from './components/navigation'
-export { CommandPalette } from './components/navigation/command-palette'
+export { CommandPalette } from './components/navigation/CommandPalette'
 export {
   CollaborativeEditor,
   useCollaborativeSession,
-} from './components/ai/collaborative-editing'
+} from './components/ai/CollaborativeEditing'
 
 // ============================================================================
 // MEDIA & DOCUMENTS
 // ============================================================================
 
-export { DocumentViewer } from './components/media/document-viewer'
-export { MultiModalPreview } from './components/media/multi-modal-preview'
-export { BatchExportDialog } from './components/media/batch-export-dialog'
+export { DocumentViewer } from './components/media/DocumentViewer'
+export { MultiModalPreview } from './components/media/MultiModalPreview'
 
 // ============================================================================
 // FEEDBACK & RETRY COMPONENTS
 // ============================================================================
 
-export { RetryButton } from './components/feedback/retry-button'
+export { RetryButton } from './components/feedback/RetryButton'
 export {
   ConsoleAlertHandler,
   useConsoleAlerts,
   type ConsoleAlert,
   type ConsoleAlertHandlerProps,
-} from './components/feedback/console-alert-handler'
+} from './components/feedback/ConsoleAlertHandler'
 
 // ============================================================================
 // UI PRIMITIVES (Tabs and Layout)
@@ -1030,7 +1026,7 @@ export {
   type ErrorBoundaryProps,
   type ErrorFallbackProps,
   type ErrorReport,
-} from './components/ui/error-boundary'
+} from './components/ui/ErrorBoundary'
 
 // Analytics and usage tracking
 export {

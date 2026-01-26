@@ -22,7 +22,6 @@
  * - code/         Code display components
  * - enterprise/   Enterprise features
  * - ai-ops/       AI operations components
- * - ab-testing/   A/B testing components
  */
 
 // Message Components
@@ -69,9 +68,6 @@ export * from './code'
 
 // AI-Ops Components
 export * from './ai-ops'
-
-// A/B Testing Sub-components
-export * from './ab-testing'
 
 // Pro Components
 export * from './pro'

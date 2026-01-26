@@ -3,7 +3,6 @@ import { render, screen, fireEvent } from '@testing-library/react'
 import { vi } from 'vitest'
 import {
   FollowUpSuggestions,
-  PersonaPanel,
   ConversationTimeline,
   MemoryInspector,
   SafetyStatusCard,
@@ -35,33 +34,6 @@ describe('AI experience components', () => {
       screen.getByRole('button', { name: /summarise conversation/i })
     )
     expect(handleSelect).toHaveBeenCalled()
-  })
-
-  it('highlights active persona', () => {
-    render(
-      <PersonaPanel
-        personas={[
-          {
-            id: '1',
-            name: 'Researcher',
-            role: 'researcher',
-            summary: 'Finds docs',
-            expertise: [],
-          },
-          {
-            id: '2',
-            name: 'Mentor',
-            role: 'coach',
-            summary: 'Coaches writing',
-            expertise: [],
-          },
-        ]}
-        activePersonaId="2"
-      />
-    )
-
-    expect(screen.getByText(/mentor/i)).toBeInTheDocument()
-    expect(screen.getByText(/active/i)).toBeInTheDocument()
   })
 
   it('renders conversation timeline events in order', () => {

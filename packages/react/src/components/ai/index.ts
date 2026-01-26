@@ -5,22 +5,20 @@
  * personas, and AI-powered features.
  */
 
-export { AgentRunFeed } from './agent-run-feed'
-export { AuditLogViewer } from './audit-log-viewer'
+export { AgentRunFeed } from './AgentRunFeed'
+export { AuditLogViewer } from './AuditLogViewer'
 export {
   CollaborativeEditor,
   CollaborativeMessageList,
   PresenceIndicator,
   useCollaborativeSession,
-} from './collaborative-editing'
-export { EnhancedCodeBlock } from './enhanced-code-block'
-export { EnhancedMarkdownRenderer } from './enhanced-markdown-renderer'
-export { KnowledgeBaseViewer } from './knowledge-base-viewer'
-export { ModelSelector } from './model-selector'
-export { PersonaPanel } from './persona-panel'
-export { SafetyStatusCard } from './safety-status-card'
-export { SessionSummaryCard } from './session-summary-card'
-export { WorkflowSuggestionList } from './workflow-suggestion-list'
+} from './CollaborativeEditing'
+export { EnhancedCodeBlock } from './EnhancedCodeBlock'
+export { EnhancedMarkdownRenderer } from './EnhancedMarkdownRenderer'
+export { ModelSelector } from './ModelSelector'
+export { SafetyStatusCard } from './SafetyStatusCard'
+export { SessionSummaryCard } from './SessionSummaryCard'
+export { WorkflowSuggestionList } from './WorkflowSuggestionList'
 export { Citation, type CitationProps, type CitationSource } from './citation'
 
 // ThinkingBar - AI processing status indicator
@@ -32,7 +30,7 @@ export {
   type ThinkingBarVariant,
   type UseThinkingBarOptions,
   type UseThinkingBarReturn,
-} from './thinking-bar'
+} from './ThinkingBar'
 
 // ToolExecutionCard - Tool call execution status display
 export {
@@ -43,7 +41,7 @@ export {
   type ToolExecutionStatus,
   type UseToolExecutionOptions,
   type UseToolExecutionReturn,
-} from './tool-execution-card'
+} from './ToolExecutionCard'
 
 // StreamStatusProgress - Comprehensive streaming progress visualization
 // Note: Different from ui/progress.tsx's simple StreamingProgress (animated dots)
@@ -56,4 +54,4 @@ export {
   type StreamStatusProgressSize,
   type StreamStatusProgressColor,
   type StreamStatusTokens,
-} from './streaming-progress'
+} from './StreamingProgress'
