@@ -36,6 +36,8 @@ import {
   getClientIdentifier,
   createRateLimitHeaders,
 } from '@/lib/security/rate-limit'
+import { validateRequestBody, validationErrorResponse } from '@/lib/validation'
+import { liveDemoChatRequestSchema } from './schema'
 
 const logger = getLogger('live-demo-chat')
 
@@ -72,12 +74,7 @@ Clarity Chat is a comprehensive React component library with:
 
 Remember: You're the friendly face of Clarity Chat, helping developers build production-ready chat UIs!`
 
-interface RequestBody {
-  message: string
-}
-
-// Maximum message length (4KB is reasonable for chat)
-const MAX_MESSAGE_LENGTH = 4096
+// Interfaces moved to schema.ts for validation
 
 /**
  * Create a plain text streaming response from StreamChunk generator
@@ -111,32 +108,20 @@ function createPlainTextStream(
  * POST /api/live-demo-chat
  */
 export async function POST(request: NextRequest) {
-  let body: RequestBody
-
   try {
-    body = (await request.json()) as RequestBody
-  } catch {
-    return Response.json(
-      { error: 'Invalid JSON in request body' },
-      { status: 400 }
+    // VALIDATION: Validate request body with Zod schema
+    const validation = await validateRequestBody(
+      request,
+      liveDemoChatRequestSchema
     )
-  }
 
-  try {
-    // SECURITY: Validate message exists and has content
-    const message = typeof body.message === 'string' ? body.message.trim() : ''
-
-    if (!message) {
-      return Response.json({ error: 'Message is required' }, { status: 400 })
+    if (!validation.success) {
+      return validationErrorResponse(validation.error)
     }
 
-    // SECURITY: Validate input length
-    const lengthValidation = validateInputLength(message, MAX_MESSAGE_LENGTH)
-    if (!lengthValidation.valid) {
-      return Response.json({ error: lengthValidation.error }, { status: 400 })
-    }
+    const { message } = validation.data
 
-    // SECURITY: Detect injection patterns
+    // SECURITY: Detect injection patterns (additional layer after validation)
     const injectionCheck = detectInjectionPatterns(message)
     if (injectionCheck.detected) {
       logger.warn('Malicious input detected', {
@@ -152,7 +137,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // SECURITY: Sanitize message
+    // SECURITY: Sanitize message (additional layer after validation)
     const sanitizedMessage = sanitizeChatMessage(message)
 
     // SECURITY: Check rate limit

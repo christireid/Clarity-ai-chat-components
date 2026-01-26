@@ -55,6 +55,8 @@ import {
   getClientIdentifier,
   createRateLimitHeaders,
 } from '@/lib/security/rate-limit'
+import { validateRequestBody, validationErrorResponse } from '@/lib/validation'
+import { docsAssistantRequestSchema } from './schema'
 
 const logger = getLogger('docs-assistant-api')
 
@@ -91,33 +93,19 @@ interface RequestBody {
  */
 export async function POST(request: NextRequest) {
   try {
-    // Parse request body
-    const body = (await request.json()) as RequestBody
-
-    // SECURITY: Input validation
-    const MAX_MESSAGE_LENGTH = 10000 // 10KB max message length
-    const MAX_MESSAGES_COUNT = 50 // Max conversation history
-
-    if (!body.message) {
-      return NextResponse.json(
-        { error: 'Message is required' },
-        { status: 400 }
-      )
-    }
-
-    // SECURITY: Validate input length
-    const lengthValidation = validateInputLength(
-      body.message,
-      MAX_MESSAGE_LENGTH
+    // VALIDATION: Validate request body with Zod schema
+    const validation = await validateRequestBody(
+      request,
+      docsAssistantRequestSchema
     )
-    if (!lengthValidation.valid) {
-      return NextResponse.json(
-        { error: lengthValidation.error },
-        { status: 400 }
-      )
+
+    if (!validation.success) {
+      return validationErrorResponse(validation.error)
     }
 
-    // SECURITY: Detect injection patterns
+    const body = validation.data
+
+    // SECURITY: Detect injection patterns (additional layer after validation)
     const injectionCheck = detectInjectionPatterns(body.message)
     if (injectionCheck.detected) {
       logger.warn('Malicious input detected', {
@@ -133,17 +121,8 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // SECURITY: Sanitize message
+    // SECURITY: Sanitize message (additional layer after validation)
     const sanitizedMessage = sanitizeChatMessage(body.message)
-
-    if (body.messages && body.messages.length > MAX_MESSAGES_COUNT) {
-      return NextResponse.json(
-        {
-          error: `Conversation history limited to ${MAX_MESSAGES_COUNT} messages`,
-        },
-        { status: 400 }
-      )
-    }
 
     // SECURITY: Get client identifier for rate limiting
     const identifier = getClientIdentifier(
