@@ -101,6 +101,7 @@ export function ScrollProgress({
             scale: showButton ? 1 : 0.8,
             y: showButton ? 0 : 20,
           }}
+          viewport={{ once: true }}
           transition={springs.smooth}
           onClick={scrollToTop}
           {...(buttonAnimation as any)}
@@ -169,6 +170,7 @@ export function CircularScrollProgress({
         opacity: showButton ? 1 : 0,
         scale: showButton ? 1 : 0.8,
       }}
+      viewport={{ once: true }}
       transition={springs.smooth}
       onClick={scrollToTop}
       {...(buttonAnimation as any)}
@@ -295,6 +297,7 @@ export function ReadingProgress({
           className="text-sm font-medium text-brand-500"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
+          viewport={{ once: true }}
         >
           <motion.span>{Math.round(progress.get())}%</motion.span>
         </motion.div>

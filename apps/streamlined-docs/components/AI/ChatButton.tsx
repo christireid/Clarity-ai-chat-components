@@ -24,9 +24,13 @@ export function ChatButton({ onClick, isOpen }: ChatButtonProps) {
     <motion.div
       initial={{ opacity: 0, scale: 0.8, y: 20 }}
       animate={{ opacity: 1, scale: 1, y: 0 }}
+      viewport={{ once: true }}
       transition={{ duration: durations.moderate, ease: [0.25, 0.1, 0.25, 1] }}
       className="fixed bottom-6 right-6 z-[55] group/container"
-      style={{ paddingBottom: 'env(safe-area-inset-bottom)', paddingRight: 'env(safe-area-inset-right)' }}
+      style={{
+        paddingBottom: 'env(safe-area-inset-bottom)',
+        paddingRight: 'env(safe-area-inset-right)',
+      }}
     >
       {/* Keyboard Shortcut Tooltip - Desktop only */}
       <AnimatePresence>
@@ -35,6 +39,7 @@ export function ChatButton({ onClick, isOpen }: ChatButtonProps) {
             initial={{ opacity: 0, y: 10, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 10, scale: 0.95 }}
+            viewport={{ once: true }}
             transition={{ duration: durations.normal }}
             className={cn(
               'hidden lg:block',
@@ -51,6 +56,7 @@ export function ChatButton({ onClick, isOpen }: ChatButtonProps) {
             <motion.div
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
+              viewport={{ once: true }}
               transition={{ delay: 0.1 }}
               className="absolute bottom-0 right-4 translate-y-1/2 rotate-45 w-2 h-2 bg-gray-900 dark:bg-gray-800 border-r border-b border-gray-700"
             />
@@ -91,6 +97,7 @@ export function ChatButton({ onClick, isOpen }: ChatButtonProps) {
                 initial={{ rotate: -90, scale: 0 }}
                 animate={{ rotate: 0, scale: 1 }}
                 exit={{ rotate: 90, scale: 0 }}
+                viewport={{ once: true }}
                 transition={{ duration: durations.normal }}
               >
                 <X className="w-5 h-5" />
@@ -101,6 +108,7 @@ export function ChatButton({ onClick, isOpen }: ChatButtonProps) {
                 initial={{ rotate: 90, scale: 0 }}
                 animate={{ rotate: 0, scale: 1 }}
                 exit={{ rotate: -90, scale: 0 }}
+                viewport={{ once: true }}
                 transition={{ duration: durations.normal }}
                 className="relative"
               >
@@ -112,6 +120,7 @@ export function ChatButton({ onClick, isOpen }: ChatButtonProps) {
                       initial={{ scale: 0, rotate: -180 }}
                       animate={{ scale: 1, rotate: 0 }}
                       exit={{ scale: 0, rotate: 180 }}
+                      viewport={{ once: true }}
                       transition={{
                         type: 'spring',
                         stiffness: 200,
@@ -134,6 +143,7 @@ export function ChatButton({ onClick, isOpen }: ChatButtonProps) {
             width: isOpen ? 0 : 'auto',
             opacity: isOpen ? 0 : 1,
           }}
+          viewport={{ once: true }}
           transition={{ duration: durations.moderate }}
           className="overflow-hidden whitespace-nowrap"
         >
@@ -147,6 +157,7 @@ export function ChatButton({ onClick, isOpen }: ChatButtonProps) {
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
               exit={{ scale: 0 }}
+              viewport={{ once: true }}
               className="absolute top-2 right-2 flex h-2 w-2"
             >
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75" />

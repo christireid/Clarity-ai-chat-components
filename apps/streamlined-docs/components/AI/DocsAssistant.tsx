@@ -391,6 +391,7 @@ function DocsAssistantInner({ className }: DocsAssistantProps) {
             initial="initial"
             animate="animate"
             exit="exit"
+            viewport={{ once: true }}
             transition={{
               duration: prefersReducedMotion ? 0.1 : 0.25,
               ease: [0.25, 0.1, 0.25, 1],
@@ -517,6 +518,7 @@ function DocsAssistantInner({ className }: DocsAssistantProps) {
                   initial={{ height: 0, opacity: 0 }}
                   animate={{ height: 'auto', opacity: 1 }}
                   exit={{ height: 0, opacity: 0 }}
+                  viewport={{ once: true }}
                   transition={{ duration: durations.normal, ease: 'easeOut' }}
                   className="absolute top-14 left-4 right-4 z-10 bg-background/95 backdrop-blur-sm rounded-lg border border-border/40 shadow-lg overflow-hidden"
                 >
@@ -681,6 +683,7 @@ function DocsAssistantInner({ className }: DocsAssistantProps) {
                   initial={{ height: 0, opacity: 0 }}
                   animate={{ height: 'auto', opacity: 1 }}
                   exit={{ height: 0, opacity: 0 }}
+                  viewport={{ once: true }}
                   transition={{ duration: durations.normal, ease: 'easeOut' }}
                   className="border-t border-border/40 bg-muted/30 overflow-hidden"
                 >
