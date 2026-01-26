@@ -4,5 +4,5 @@
  * Pre-built chat UI components
  */
 
-export { chatWindow } from './ChatWindow'
+export { chatWindow } from './chat-window'
 export { messageBubble } from './message-bubble'
