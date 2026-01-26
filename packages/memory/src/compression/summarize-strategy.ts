@@ -6,7 +6,7 @@
 
 import type { Memory } from '../types'
 import type { Summarizer } from '../summarization/summarizer'
-import { countTokens } from '../utils/TokenCounter'
+import { countTokens } from '../utils/token-counter'
 
 /**
  * Compression strategy interface

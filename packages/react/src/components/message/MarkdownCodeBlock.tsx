@@ -33,26 +33,17 @@ async function loadPrism(): Promise<typeof import('prismjs') | null> {
 
       // Load language support sequentially to ensure dependencies are met
       // typescript and javascript must load before jsx/tsx
-      // @ts-expect-error - prismjs components are side-effect only imports
       await import('prismjs/components/prism-javascript')
-      // @ts-expect-error - prismjs components are side-effect only imports
       await import('prismjs/components/prism-typescript')
-      // @ts-expect-error - prismjs components are side-effect only imports
       await import('prismjs/components/prism-jsx')
-      // @ts-expect-error - prismjs components are side-effect only imports
       await import('prismjs/components/prism-tsx')
 
       // Load other languages in parallel
       await Promise.all([
-        // @ts-expect-error - prismjs components are side-effect only imports
         import('prismjs/components/prism-json'),
-        // @ts-expect-error - prismjs components are side-effect only imports
         import('prismjs/components/prism-bash'),
-        // @ts-expect-error - prismjs components are side-effect only imports
         import('prismjs/components/prism-css'),
-        // @ts-expect-error - prismjs components are side-effect only imports
         import('prismjs/components/prism-markdown'),
-        // @ts-expect-error - prismjs components are side-effect only imports
         import('prismjs/components/prism-python'),
       ])
 

@@ -149,6 +149,88 @@ export function useTokenThrottle(
     }
   }, [persistUsage])
 
+  /**
+   * Process queued requests
+   */
+  const processQueue = React.useCallback(() => {
+    // Use setState callback to access latest state
+    setState((prev) => {
+      const queue = queueRef.current
+
+      while (queue.length > 0) {
+        const request = queue[0]
+
+        // Check if we can fulfill
+        const remaining = Math.min(
+          prev.tokensRemaining.minute,
+          prev.tokensRemaining.hour,
+          prev.tokensRemaining.day
+        )
+
+        if (remaining >= request.count) {
+          queue.shift()
+          request.resolve({
+            granted: true,
+            grantedCount: request.count,
+            waitTimeMs: 0,
+          })
+
+          // Update usage inline
+          const newState = {
+            ...prev,
+            tokensUsedThisMinute: prev.tokensUsedThisMinute + request.count,
+            tokensUsedThisHour: prev.tokensUsedThisHour + request.count,
+            tokensUsedThisDay: prev.tokensUsedThisDay + request.count,
+            tokensRemaining: {
+              minute:
+                (limits.perMinute ?? Infinity) -
+                prev.tokensUsedThisMinute -
+                request.count,
+              hour:
+                (limits.perHour ?? Infinity) -
+                prev.tokensUsedThisHour -
+                request.count,
+              day:
+                (limits.perDay ?? Infinity) -
+                prev.tokensUsedThisDay -
+                request.count,
+            },
+            queuedRequests: queue.length,
+          }
+
+          // Update category usage
+          if (request.category) {
+            setCategoryUsage((prevCat) => ({
+              ...prevCat,
+              [request.category!]:
+                (prevCat[request.category!] ?? 0) + request.count,
+            }))
+          }
+
+          // Persist if enabled
+          if (persistUsage && typeof localStorage !== 'undefined') {
+            localStorage.setItem(
+              'clarity-tokens-throttle',
+              JSON.stringify({
+                date: new Date().toISOString(),
+                tokensUsedThisDay: newState.tokensUsedThisDay,
+              })
+            )
+          }
+
+          prev = newState
+        } else {
+          break
+        }
+      }
+
+      return {
+        ...prev,
+        queuedRequests: queue.length,
+      }
+    })
+  }, [limits, persistUsage])
+
   // Set up reset timers
   React.useEffect(() => {
     // Reset minute usage every minute
@@ -210,87 +292,6 @@ export function useTokenThrottle(
       if (dayTimerRef.current) clearTimeout(dayTimerRef.current)
     }
   }, [limits.perMinute, limits.perHour, limits.perDay, processQueue])
-
-  /**
-   * Process queued requests
-   */
-  const processQueue = React.useCallback(() => {
-    // Use setState callback to access latest state
-    setState((prev) => {
-      const queue = queueRef.current
-
-      while (queue.length > 0) {
-        const request = queue[0]
-
-        // Check if we can fulfill
-        const remaining = Math.min(
-          prev.tokensRemaining.minute,
-          prev.tokensRemaining.hour,
-          prev.tokensRemaining.day
-        )
-
-        if (remaining >= request.count) {
-          queue.shift()
-          request.resolve({
-            granted: true,
-            grantedCount: request.count,
-            waitTimeMs: 0,
-          })
-
-          // Update usage inline
-          const newState = {
-            ...prev,
-            tokensUsedThisMinute: prev.tokensUsedThisMinute + request.count,
-            tokensUsedThisHour: prev.tokensUsedThisHour + request.count,
-            tokensUsedThisDay: prev.tokensUsedThisDay + request.count,
-            tokensRemaining: {
-              minute:
-                (limits.perMinute ?? Infinity) -
-                prev.tokensUsedThisMinute -
-                request.count,
-              hour:
-                (limits.perHour ?? Infinity) -
-                prev.tokensUsedThisHour -
-                request.count,
-              day:
-                (limits.perDay ?? Infinity) -
-                prev.tokensUsedThisDay -
-                request.count,
-            },
-            queuedRequests: queue.length,
-          }
-
-          // Update category usage
-          if (request.category) {
-            setCategoryUsage((prevCat) => ({
-              ...prevCat,
-              [request.category!]: (prevCat[request.category!] ?? 0) + request.count,
-            }))
-          }
-
-          // Persist if enabled
-          if (persistUsage && typeof localStorage !== 'undefined') {
-            localStorage.setItem(
-              'clarity-tokens-throttle',
-              JSON.stringify({
-                date: new Date().toISOString(),
-                tokensUsedThisDay: newState.tokensUsedThisDay,
-              })
-            )
-          }
-
-          prev = newState
-        } else {
-          break
-        }
-      }
-
-      return {
-        ...prev,
-        queuedRequests: queue.length,
-      }
-    })
-  }, [limits, persistUsage])
 
   /**
    * Internal usage recording

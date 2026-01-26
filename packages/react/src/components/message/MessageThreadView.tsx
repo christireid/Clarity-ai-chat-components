@@ -386,7 +386,7 @@ export function MessageThreadView({
               <motion.div
                 key={message.id}
                 {...ANIMATION_PRESETS.slideUp}
-                exit={prefersReducedMotion ? false : { opacity: 0, y: -10 }}
+                exit={prefersReducedMotion ? undefined : { opacity: 0, y: -10 }}
                 transition={
                   prefersReducedMotion
                     ? { duration: 0 }
@@ -618,7 +618,7 @@ export function ThreadList({
             <motion.div
               key={thread.id}
               {...ANIMATION_PRESETS.slideRight}
-              exit={prefersReducedMotion ? false : { opacity: 0, x: 20 }}
+              exit={prefersReducedMotion ? undefined : { opacity: 0, x: 20 }}
               transition={
                 prefersReducedMotion ? { duration: 0 } : { delay: index * 0.03 }
               }

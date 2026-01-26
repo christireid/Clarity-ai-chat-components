@@ -8,7 +8,7 @@ import type { Memory, SummarizationConfig } from '../types'
 import type { Summarizer } from './summarizer'
 import { OpenAISummarizer } from './openai-summarizer'
 import { AnthropicSummarizer } from './anthropic-summarizer'
-import { countTokens } from '../utils/TokenCounter'
+import { countTokens } from '../utils/token-counter'
 
 export class SummarizationPipeline {
   private config: SummarizationConfig

@@ -274,25 +274,45 @@ export class SecurityTestingPlayground {
   }
 
   async runAllTests(): Promise<SecurityTestResult[]> {
-    console.log('🧪 Starting Security Testing Playground...')
-    console.log(`Running ${this.testCases.length} security test cases...\n`)
+    if (process.env.NODE_ENV === 'development') {
+      if (process.env.NODE_ENV === 'development') {
+        console.log('🧪 Starting Security Testing Playground...')
+      }
+      if (process.env.NODE_ENV === 'development') {
+        console.log(`Running ${this.testCases.length} security test cases...\n`)
+      }
+    }
 
     this.testResults = []
 
     for (const testCase of this.testCases) {
-      console.log(`Testing: ${testCase.name}`)
-      console.log(`Description: ${testCase.description}`)
+      if (process.env.NODE_ENV === 'development') {
+        if (process.env.NODE_ENV === 'development') {
+          console.log(`Testing: ${testCase.name}`)
+        }
+        if (process.env.NODE_ENV === 'development') {
+          console.log(`Description: ${testCase.description}`)
+        }
+      }
 
       const result = await this.runTestCase(testCase)
       this.testResults.push(result)
 
-      console.log(
-        `✅ ${result.passed ? 'PASSED' : 'FAILED'} (${result.processingTime}ms)`
-      )
-      if (result.error) {
-        console.log(`   Error: ${result.error}`)
+      if (process.env.NODE_ENV === 'development') {
+        if (process.env.NODE_ENV === 'development') {
+          console.log(
+            `✅ ${result.passed ? 'PASSED' : 'FAILED'} (${result.processingTime}ms)`
+          )
+        }
+        if (result.error) {
+          if (process.env.NODE_ENV === 'development') {
+            console.log(`   Error: ${result.error}`)
+          }
+        }
+        if (process.env.NODE_ENV === 'development') {
+          console.log('')
+        }
       }
-      console.log('')
     }
 
     this.generateTestReport()
@@ -300,7 +320,11 @@ export class SecurityTestingPlayground {
   }
 
   async runRateLimitingTest(): Promise<void> {
-    console.log('🚀 Testing Rate Limiting...')
+    if (process.env.NODE_ENV === 'development') {
+      if (process.env.NODE_ENV === 'development') {
+        console.log('🚀 Testing Rate Limiting...')
+      }
+    }
 
     const testContext = {
       userId: 'rate-test-user',
@@ -323,19 +347,31 @@ export class SecurityTestingPlayground {
           result.riskLevel === 'high' &&
           result.reason?.includes('Rate limit exceeded')
         ) {
-          console.log(`✅ Rate limiting triggered at request ${i}`)
+          if (process.env.NODE_ENV === 'development') {
+            if (process.env.NODE_ENV === 'development') {
+              console.log(`✅ Rate limiting triggered at request ${i}`)
+            }
+          }
           break
         }
       } catch (error: unknown) {
-        console.log(
-          `Request ${i} failed: ${error instanceof Error ? error.message : String(error)}`
-        )
+        if (process.env.NODE_ENV === 'development') {
+          if (process.env.NODE_ENV === 'development') {
+            console.log(
+              `Request ${i} failed: ${error instanceof Error ? error.message : String(error)}`
+            )
+          }
+        }
       }
     }
   }
 
   async runQuarantineTest(): Promise<void> {
-    console.log('🔒 Testing Quarantine Logic...')
+    if (process.env.NODE_ENV === 'development') {
+      if (process.env.NODE_ENV === 'development') {
+        console.log('🔒 Testing Quarantine Logic...')
+      }
+    }
 
     const highRiskContext = {
       userId: 'quarantine-test-user',
@@ -351,12 +387,22 @@ export class SecurityTestingPlayground {
       highRiskContext
     )
 
-    if (result.quarantineInfo && result.riskLevel === 'high') {
-      console.log('✅ Content successfully quarantined')
-      console.log(`Quarantine ID: ${result.quarantineInfo.quarantineId}`)
-      console.log(`Reason: ${result.quarantineInfo.reason}`)
-    } else {
-      console.log('❌ Quarantine test failed')
+    if (process.env.NODE_ENV === 'development') {
+      if (result.quarantineInfo && result.riskLevel === 'high') {
+        if (process.env.NODE_ENV === 'development') {
+          console.log('✅ Content successfully quarantined')
+        }
+        if (process.env.NODE_ENV === 'development') {
+          console.log(`Quarantine ID: ${result.quarantineInfo.quarantineId}`)
+        }
+        if (process.env.NODE_ENV === 'development') {
+          console.log(`Reason: ${result.quarantineInfo.reason}`)
+        }
+      } else {
+        if (process.env.NODE_ENV === 'development') {
+          console.log('❌ Quarantine test failed')
+        }
+      }
     }
   }
 
@@ -368,48 +414,82 @@ export class SecurityTestingPlayground {
       this.testResults.reduce((sum, r) => sum + r.processingTime, 0) /
       totalTests
 
-    console.log('📊 Security Test Report')
-    console.log('========================')
-    console.log(`Total Tests: ${totalTests}`)
-    console.log(`Passed: ${passedTests}`)
-    console.log(`Failed: ${failedTests}`)
-    console.log(
-      `Success Rate: ${((passedTests / totalTests) * 100).toFixed(1)}%`
-    )
-    console.log(`Average Processing Time: ${avgProcessingTime.toFixed(1)}ms`)
+    if (process.env.NODE_ENV === 'development') {
+      if (process.env.NODE_ENV === 'development') {
+        console.log('📊 Security Test Report')
+      }
+      if (process.env.NODE_ENV === 'development') {
+        console.log('========================')
+      }
+      if (process.env.NODE_ENV === 'development') {
+        console.log(`Total Tests: ${totalTests}`)
+      }
+      if (process.env.NODE_ENV === 'development') {
+        console.log(`Passed: ${passedTests}`)
+      }
+      if (process.env.NODE_ENV === 'development') {
+        console.log(`Failed: ${failedTests}`)
+      }
+      if (process.env.NODE_ENV === 'development') {
+        console.log(
+          `Success Rate: ${((passedTests / totalTests) * 100).toFixed(1)}%`
+        )
+      }
+      console.log(`Average Processing Time: ${avgProcessingTime.toFixed(1)}ms`)
 
-    if (failedTests > 0) {
-      console.log('\n❌ Failed Tests:')
-      this.testResults
-        .filter((r) => !r.passed)
-        .forEach((r) => {
-          console.log(
-            `- ${r.testCase.name}: ${r.error || 'Check test expectations'}`
-          )
-        })
+      if (failedTests > 0) {
+        if (process.env.NODE_ENV === 'development') {
+          console.log('\n❌ Failed Tests:')
+        }
+        this.testResults
+          .filter((r) => !r.passed)
+          .forEach((r) => {
+            if (process.env.NODE_ENV === 'development') {
+              if (process.env.NODE_ENV === 'development') {
+                console.log(
+                  `- ${r.testCase.name}: ${r.error || 'Check test expectations'}`
+                )
+              }
+            }
+          })
+      }
+
+      if (process.env.NODE_ENV === 'development') {
+        console.log('\n✅ Security playground testing completed!')
+      }
     }
-
-    console.log('\n✅ Security playground testing completed!')
   }
 
   // Interactive testing methods
   async testCustomInput(input: string, context: SecurityContext): Promise<any> {
-    console.log('🧪 Testing custom input...')
-    console.log(`Input: ${input}`)
-    console.log(`Context: ${JSON.stringify(context, null, 2)}`)
+    if (process.env.NODE_ENV === 'development') {
+      if (process.env.NODE_ENV === 'development') {
+        console.log('🧪 Testing custom input...')
+      }
+      if (process.env.NODE_ENV === 'development') {
+        console.log(`Input: ${input}`)
+      }
+      console.log(`Context: ${JSON.stringify(context, null, 2)}`)
+    }
 
     try {
       const result = await this.securityManager.validateAndSecureInput(
         input,
         context
       )
-      console.log('Result:', JSON.stringify(result, null, 2))
+      if (process.env.NODE_ENV === 'development') {
+        console.log('Result:', JSON.stringify(result, null, 2))
+      }
       return result
     } catch (error: unknown) {
-      console.error(
-        'Test failed:',
-        error instanceof Error ? error.message : String(error)
-      )
+      if (process.env.NODE_ENV === 'development') {
+        if (process.env.NODE_ENV === 'development') {
+          console.error(
+            'Test failed:',
+            error instanceof Error ? error.message : String(error)
+          )
+        }
+      }
       throw error
     }
   }

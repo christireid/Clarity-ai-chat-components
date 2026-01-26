@@ -107,9 +107,9 @@ const ActionButton = React.forwardRef<HTMLButtonElement, ActionButtonProps>(
       <Tooltip content={tooltipContent} side="top" delay={300}>
         <motion.div
           variants={prefersReducedMotion ? {} : buttonVariants}
-          initial={prefersReducedMotion ? false : 'initial'}
-          animate={prefersReducedMotion ? false : 'animate'}
-          exit={prefersReducedMotion ? false : 'exit'}
+          initial={prefersReducedMotion ? undefined : 'initial'}
+          animate={prefersReducedMotion ? undefined : 'animate'}
+          exit={prefersReducedMotion ? undefined : 'exit'}
           whileHover={disabled || prefersReducedMotion ? undefined : 'hover'}
           whileTap={disabled || prefersReducedMotion ? undefined : 'tap'}
           transition={

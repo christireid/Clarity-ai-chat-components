@@ -106,6 +106,22 @@ export function useSemanticCache<T = string>(
     config.similarityThreshold ?? 0.85
   )
 
+  /**
+   * Update stats from cache
+   */
+  const updateStatsFromCache = React.useCallback(() => {
+    if (!cacheRef.current) return
+
+    const cacheStats = cacheRef.current.getStats()
+    setStats({
+      totalEntries: cacheStats.totalEntries,
+      hitRate: cacheStats.averageHitRate,
+      totalTokensSaved: 0, // Calculated per operation
+      totalCostSaved: 0, // Calculated per operation
+      avgSearchTimeMs: 0, // Calculated per operation
+    })
+  }, [])
+
   // Initialize cache using existing AdvancedSemanticCache from token-optimization
   React.useEffect(() => {
     const cacheConfig: SemanticCacheConfig = {
@@ -140,22 +156,6 @@ export function useSemanticCache<T = string>(
     config.ttlMs,
     updateStatsFromCache,
   ])
-
-  /**
-   * Update stats from cache
-   */
-  const updateStatsFromCache = React.useCallback(() => {
-    if (!cacheRef.current) return
-
-    const cacheStats = cacheRef.current.getStats()
-    setStats({
-      totalEntries: cacheStats.totalEntries,
-      hitRate: cacheStats.averageHitRate,
-      totalTokensSaved: 0, // Calculated per operation
-      totalCostSaved: 0, // Calculated per operation
-      avgSearchTimeMs: 0, // Calculated per operation
-    })
-  }, [])
 
   /**
    * Search cache for similar prompt

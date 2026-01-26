@@ -13,7 +13,7 @@ import type {
 import type { StorageAdapter } from '../stores/storage-adapter'
 import type { EmbeddingProvider } from '../embeddings/embedding-provider'
 import { TokenBudgetManager } from './token-budget'
-import { countTokens } from '../utils/TokenCounter'
+import { countTokens } from '../utils/token-counter'
 
 export class ContextBuilder {
   private budgetManager: TokenBudgetManager

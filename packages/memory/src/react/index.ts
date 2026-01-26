@@ -3,6 +3,6 @@
  */
 
 export { useMemory } from './use-memory'
-export { MemoryInspector } from './MemoryInspector'
+export { MemoryInspector } from './memory-inspector'
 export type { UseMemoryOptions, UseMemoryReturn } from './use-memory'
-export type { MemoryInspectorProps } from './MemoryInspector'
+export type { MemoryInspectorProps } from './memory-inspector'
