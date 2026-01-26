@@ -385,7 +385,7 @@ export function validateThemeWithWarnings(
 ): boolean {
   const result = validateThemeConfig(theme)
 
-  if (process.env['NODE_ENV'] !== 'production') {
+  if (process.env['NODE_ENV'] === 'development') {
     // Log warnings
     if (result.warnings.length > 0) {
       console.warn(

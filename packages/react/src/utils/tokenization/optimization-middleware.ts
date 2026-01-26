@@ -580,7 +580,9 @@ export class TokenOptimizationMiddleware {
     error: unknown,
     startTime: number
   ): MiddlewareResult {
-    console.warn('Token optimization failed:', error)
+    if (process.env.NODE_ENV === 'development') {
+      console.warn('Token optimization failed:', error)
+    }
 
     if (this.config.enableFallback) {
       return {

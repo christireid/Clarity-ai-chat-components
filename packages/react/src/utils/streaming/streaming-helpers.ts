@@ -378,10 +378,7 @@ export async function processStream(
 
       // Prevent buffer overflow
       if (buffer.length > maxChunkSize) {
-        if (
-          typeof process !== 'undefined' &&
-          process.env?.NODE_ENV !== 'production'
-        ) {
+        if (process.env.NODE_ENV === 'development') {
           console.warn('[processStream] Buffer size exceeded, flushing...')
         }
         handleLine(buffer)
@@ -433,10 +430,12 @@ function processChunkByFormat(chunk: string, format: StreamFormat): string {
           const jsonData = safeParseJSON(parsed.data)
           // FIX: Log when JSON parsing fails for debugging
           if (jsonData === null && parsed.data.trim().startsWith('{')) {
-            console.warn(
-              '[processChunkByFormat] Failed to parse SSE data as JSON:',
-              parsed.data.substring(0, 100)
-            )
+            if (process.env.NODE_ENV === 'development') {
+              console.warn(
+                '[processChunkByFormat] Failed to parse SSE data as JSON:',
+                parsed.data.substring(0, 100)
+              )
+            }
           }
           return jsonData ? extractStreamContent(jsonData) : parsed.data
         }
@@ -448,10 +447,12 @@ function processChunkByFormat(chunk: string, format: StreamFormat): string {
         const parsed = safeParseJSON(chunk)
         // FIX: Log when JSON parsing fails for debugging
         if (parsed === null && chunk.trim()) {
-          console.warn(
-            '[processChunkByFormat] Failed to parse chunk as JSON:',
-            chunk.substring(0, 100)
-          )
+          if (process.env.NODE_ENV === 'development') {
+            console.warn(
+              '[processChunkByFormat] Failed to parse chunk as JSON:',
+              chunk.substring(0, 100)
+            )
+          }
           // Return empty string instead of potentially malformed data
           return ''
         }
@@ -464,12 +465,14 @@ function processChunkByFormat(chunk: string, format: StreamFormat): string {
     }
   } catch (error) {
     // FIX: Catch any unexpected errors during chunk processing
-    console.error(
-      '[processChunkByFormat] Unexpected error processing chunk:',
-      error,
-      'Chunk:',
-      chunk.substring(0, 100)
-    )
+    if (process.env.NODE_ENV === 'development') {
+      console.error(
+        '[processChunkByFormat] Unexpected error processing chunk:',
+        error,
+        'Chunk:',
+        chunk.substring(0, 100)
+      )
+    }
     // Return empty string to prevent stream corruption
     return ''
   }

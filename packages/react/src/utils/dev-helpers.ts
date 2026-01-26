@@ -29,13 +29,18 @@ export function validateSetup(): { issues: string[]; suggestions: string[] } {
 
   // Check for common issues
   if (typeof window === 'undefined') {
-    issues.push('Server-side rendering detected - ensure proper client-side setup')
-    suggestions.push('Wrap ClarityChat components in a client component with "use client" directive')
+    issues.push(
+      'Server-side rendering detected - ensure proper client-side setup'
+    )
+    suggestions.push(
+      'Wrap ClarityChat components in a client component with "use client" directive'
+    )
   }
 
   // Check for CSS imports
-  const hasStyles = document.querySelector('link[href*="clarity-chat"]') ||
-                   document.querySelector('style[data-clarity-chat]')
+  const hasStyles =
+    document.querySelector('link[href*="clarity-chat"]') ||
+    document.querySelector('style[data-clarity-chat]')
   if (!hasStyles) {
     issues.push('Clarity Chat styles not found')
     suggestions.push('Import styles: import "@clarity-chat/react/styles.css"')
@@ -53,12 +58,14 @@ export function runDevSetupCheck(): void {
   const { issues, suggestions } = validateSetup()
 
   if (issues.length > 0) {
-    console.group('🚀 Clarity Chat Setup Check')
-    issues.forEach(issue => console.warn(`⚠️  ${issue}`))
-    console.log('')
-    console.log('💡 Suggestions:')
-    suggestions.forEach(suggestion => console.log(`   • ${suggestion}`))
-    console.groupEnd()
+    if (process.env.NODE_ENV === 'development') {
+      console.group('🚀 Clarity Chat Setup Check')
+      issues.forEach((issue) => console.warn(`⚠️  ${issue}`))
+      console.log('')
+      console.log('💡 Suggestions:')
+      suggestions.forEach((suggestion) => console.log(`   • ${suggestion}`))
+      console.groupEnd()
+    }
   }
 }
 
@@ -226,12 +233,16 @@ export function ChatApp() {
 /**
  * Print a quick start template to console
  */
-export function showQuickStart(template: keyof typeof QuickStartTemplates): void {
-  console.log(`🚀 Quick Start: ${template}`)
-  console.log('=' .repeat(50))
-  console.log(QuickStartTemplates[template])
-  console.log('')
-  console.log('💡 Copy this code to get started quickly!')
+export function showQuickStart(
+  template: keyof typeof QuickStartTemplates
+): void {
+  if (process.env.NODE_ENV === 'development') {
+    console.log(`🚀 Quick Start: ${template}`)
+    console.log('='.repeat(50))
+    console.log(QuickStartTemplates[template])
+    console.log('')
+    console.log('💡 Copy this code to get started quickly!')
+  }
 }
 
 // =============================================================================
@@ -254,7 +265,9 @@ export class DevPerformanceMonitor {
     this.lastRender = now
 
     if (this.renders % 10 === 0) {
-      devLog.info(`${component} render #${this.renders} (${timeSinceLast}ms since last)`)
+      devLog.info(
+        `${component} render #${this.renders} (${timeSinceLast}ms since last)`
+      )
     }
   }
 
@@ -271,7 +284,10 @@ export class DevPerformanceMonitor {
 // =============================================================================
 
 // Auto-run setup check in development
-if (typeof window !== 'undefined' && process.env['NODE_ENV'] === 'development') {
+if (
+  typeof window !== 'undefined' &&
+  process.env['NODE_ENV'] === 'development'
+) {
   // Run after DOM is ready
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', runDevSetupCheck)

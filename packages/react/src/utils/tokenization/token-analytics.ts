@@ -506,7 +506,9 @@ export class TokenAnalyticsMonitor {
       try {
         listener(event)
       } catch (error) {
-        console.warn('Error in token usage event listener:', error)
+        if (process.env.NODE_ENV === 'development') {
+          console.warn('Error in token usage event listener:', error)
+        }
       }
     })
   }
@@ -519,7 +521,9 @@ export class TokenAnalyticsMonitor {
       try {
         listener(alert)
       } catch (error) {
-        console.warn('Error in token alert listener:', error)
+        if (process.env.NODE_ENV === 'development') {
+          console.warn('Error in token alert listener:', error)
+        }
       }
     })
   }

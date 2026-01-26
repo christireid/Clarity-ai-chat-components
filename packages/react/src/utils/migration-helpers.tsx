@@ -46,7 +46,9 @@ export const VercelAdapter = {
     // Map Clarity Chat methods
     append: (message: any) => {
       // This would need to be adapted based on specific use case
-      console.warn('Migration: append method needs custom implementation')
+      if (process.env.NODE_ENV === 'development') {
+        console.warn('Migration: append method needs custom implementation')
+      }
     },
     reload: vercelChat.reload,
     stop: vercelChat.stop,
@@ -64,12 +66,16 @@ export const VercelAdapter = {
       input: '', // Would need state management
       handleInputChange: (e: any) => {
         // Would need to manage input state
-        console.warn('Migration: handleInputChange needs implementation')
+        if (process.env.NODE_ENV === 'development') {
+          console.warn('Migration: handleInputChange needs implementation')
+        }
       },
       handleSubmit: (e: any) => {
         e.preventDefault()
         // Would need to get input value and call append
-        console.warn('Migration: handleSubmit needs implementation')
+        if (process.env.NODE_ENV === 'development') {
+          console.warn('Migration: handleSubmit needs implementation')
+        }
       },
       isLoading: clarityChat.isLoading,
       error: clarityChat.error,

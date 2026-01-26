@@ -1,6 +1,6 @@
 /**
  * StreamableValue utilities - Vercel AI SDK compatible
- * 
+ *
  * Provides utilities for streaming complex data structures and UI components
  * that can be progressively rendered on the client.
  */
@@ -19,7 +19,9 @@ export interface StreamableValue<T = any> {
 /**
  * Create a streamable value that can be updated incrementally
  */
-export function createStreamableValue<T = any>(initialValue?: T): StreamableValue<T> {
+export function createStreamableValue<T = any>(
+  initialValue?: T
+): StreamableValue<T> {
   let currentValue = initialValue as T
   const listeners = new Set<(value: T) => void>()
   let isDone = false
@@ -30,7 +32,9 @@ export function createStreamableValue<T = any>(initialValue?: T): StreamableValu
     },
     update(newValue: T) {
       if (isDone) {
-        console.warn('StreamableValue: Cannot update after done() is called')
+        if (process.env.NODE_ENV === 'development') {
+          console.warn('StreamableValue: Cannot update after done() is called')
+        }
         return
       }
       currentValue = newValue
@@ -74,7 +78,7 @@ export async function readStreamableValue<T = any>(
 
           try {
             const parsed = JSON.parse(data)
-            
+
             // Handle streamable value format
             if (parsed.type === 'streamable-value') {
               finalValue = parsed.value
@@ -115,22 +119,25 @@ export function createStreamableValueTransformer<T = any>(
   onValue: (value: T) => void
 ): TransformStream<Uint8Array, Uint8Array> {
   const encoder = new TextEncoder()
-  
+
   return new TransformStream({
     transform(chunk, controller) {
       const decoder = new TextDecoder()
       const text = decoder.decode(chunk, { stream: true })
-      
+
       // Parse and emit streamable values
       const lines = text.split('\n')
       for (const line of lines) {
         if (line.startsWith('data: ')) {
           const data = line.slice(6)
           if (data === '[DONE]') continue
-          
+
           try {
             const parsed = JSON.parse(data)
-            if (parsed.type === 'streamable-value' || parsed.value !== undefined) {
+            if (
+              parsed.type === 'streamable-value' ||
+              parsed.value !== undefined
+            ) {
               onValue(parsed.value)
             }
           } catch {
@@ -138,7 +145,7 @@ export function createStreamableValueTransformer<T = any>(
           }
         }
       }
-      
+
       // Pass through the original chunk
       controller.enqueue(chunk)
     },

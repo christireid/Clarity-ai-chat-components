@@ -3,7 +3,21 @@ import { writeFileSync, readFileSync, existsSync } from 'fs'
 import { join } from 'path'
 
 export default defineConfig({
-  entry: ['src/index.ts'],
+  entry: {
+    index: 'src/index.ts',
+    // Granular utility entry points for optimal tree-shaking
+    'utils/number': 'src/lib/utils/number.ts',
+    'utils/string': 'src/lib/utils/string.ts',
+    'utils/array': 'src/lib/utils/array.ts',
+    'utils/object': 'src/lib/utils/object.ts',
+    'utils/type-guards': 'src/lib/utils/type-guards.ts',
+    'utils/async': 'src/lib/utils/async.ts',
+    'utils/file': 'src/lib/utils/file.ts',
+    'utils/format': 'src/lib/utils/format.ts',
+    'utils/classnames': 'src/lib/utils/classnames.ts',
+    'utils/dom': 'src/lib/utils/dom.ts',
+    'utils/style': 'src/lib/utils/style.ts',
+  },
   format: ['cjs', 'esm'],
   dts: true,
   external: ['react', 'react-dom', '@clarity-chat/utils', '@clarity-chat/utils/logger'],

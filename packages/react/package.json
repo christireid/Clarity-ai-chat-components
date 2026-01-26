@@ -168,15 +168,21 @@
     "framer-motion": "^12.23.25",
     "react": "^18.0.0 || ^19.0.0",
     "react-dom": "^18.0.0 || ^19.0.0",
+    "lucide-react": "^0.500.0",
     "flowtoken": "^1.0.0",
     "mermaid": "^11.0.0",
     "pdfjs-dist": "^3.0.0 || ^4.0.0",
     "mammoth": "^1.0.0",
-    "cohere-ai": "^7.0.0"
+    "cohere-ai": "^7.0.0",
+    "shiki": "^3.0.0",
+    "jszip": "^3.10.0"
   },
   "peerDependenciesMeta": {
     "react-dom": {
       "optional": true
+    },
+    "lucide-react": {
+      "optional": false
     },
     "flowtoken": {
       "optional": true
@@ -192,6 +198,12 @@
     },
     "cohere-ai": {
       "optional": true
+    },
+    "shiki": {
+      "optional": true
+    },
+    "jszip": {
+      "optional": true
     }
   },
   "dependencies": {
@@ -206,8 +218,6 @@
     "@tanstack/react-virtual": "^3.11.2",
     "@types/prismjs": "^1.26.5",
     "isomorphic-dompurify": "^2.21.0",
-    "jszip": "^3.10.1",
-    "lucide-react": "^0.556.0",
     "prismjs": "^1.30.0",
     "react-markdown": "^10.1.0",
     "react-resizable-panels": "^2.1.7",
@@ -216,7 +226,6 @@
     "sonner": "^1.7.1",
     "rehype-highlight": "^7.0.2",
     "remark-gfm": "^4.0.1",
-    "shiki": "^3.19.0",
     "zod": "^3.24.0"
   },
   "devDependencies": {

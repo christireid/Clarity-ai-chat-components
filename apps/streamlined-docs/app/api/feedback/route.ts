@@ -2,29 +2,19 @@
  * Feedback API Endpoint
  *
  * Handles user feedback on AI assistant responses.
+ * Uses Zod validation for type-safe input validation.
  */
 
 import { NextRequest, NextResponse } from 'next/server'
 import { getFeedbackStore } from '@/lib/ai/feedbackStore'
 import { getLogger } from '@/lib/logging'
+import { validateRequestBody, validationErrorResponse } from '@/lib/validation'
+import { feedbackRequestSchema } from './schema'
 
 const logger = getLogger('feedback')
 
 export const runtime = 'edge'
 export const dynamic = 'force-dynamic'
-
-interface FeedbackRequest {
-  messageId: string
-  type: 'positive' | 'negative'
-  comment?: string
-  sessionId?: string
-  userId?: string
-  metadata?: {
-    messageContent?: string
-    sources?: Array<{ url: string; title: string }>
-    model?: string
-  }
-}
 
 /**
  * POST /api/feedback
@@ -33,22 +23,14 @@ interface FeedbackRequest {
  */
 export async function POST(request: NextRequest) {
   try {
-    const body = (await request.json()) as FeedbackRequest
+    // Validate request body with Zod schema
+    const validation = await validateRequestBody(request, feedbackRequestSchema)
 
-    // Validate required fields
-    if (!body.messageId || !body.type) {
-      return NextResponse.json(
-        { error: 'messageId and type are required' },
-        { status: 400 }
-      )
+    if (!validation.success) {
+      return validationErrorResponse(validation.error)
     }
 
-    if (!['positive', 'negative'].includes(body.type)) {
-      return NextResponse.json(
-        { error: 'type must be "positive" or "negative"' },
-        { status: 400 }
-      )
-    }
+    const body = validation.data
 
     // Save feedback
     const feedbackStore = getFeedbackStore()

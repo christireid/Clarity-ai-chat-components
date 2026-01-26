@@ -42,6 +42,61 @@
       "types": "./dist/components/icons.d.ts",
       "import": "./dist/components/icons.js",
       "require": "./dist/components/icons.js"
+    },
+    "./utils/number": {
+      "types": "./dist/utils/number.d.ts",
+      "import": "./dist/utils/number.mjs",
+      "require": "./dist/utils/number.js"
+    },
+    "./utils/string": {
+      "types": "./dist/utils/string.d.ts",
+      "import": "./dist/utils/string.mjs",
+      "require": "./dist/utils/string.js"
+    },
+    "./utils/array": {
+      "types": "./dist/utils/array.d.ts",
+      "import": "./dist/utils/array.mjs",
+      "require": "./dist/utils/array.js"
+    },
+    "./utils/object": {
+      "types": "./dist/utils/object.d.ts",
+      "import": "./dist/utils/object.mjs",
+      "require": "./dist/utils/object.js"
+    },
+    "./utils/type-guards": {
+      "types": "./dist/utils/type-guards.d.ts",
+      "import": "./dist/utils/type-guards.mjs",
+      "require": "./dist/utils/type-guards.js"
+    },
+    "./utils/async": {
+      "types": "./dist/utils/async.d.ts",
+      "import": "./dist/utils/async.mjs",
+      "require": "./dist/utils/async.js"
+    },
+    "./utils/file": {
+      "types": "./dist/utils/file.d.ts",
+      "import": "./dist/utils/file.mjs",
+      "require": "./dist/utils/file.js"
+    },
+    "./utils/format": {
+      "types": "./dist/utils/format.d.ts",
+      "import": "./dist/utils/format.mjs",
+      "require": "./dist/utils/format.js"
+    },
+    "./utils/classnames": {
+      "types": "./dist/utils/classnames.d.ts",
+      "import": "./dist/utils/classnames.mjs",
+      "require": "./dist/utils/classnames.js"
+    },
+    "./utils/dom": {
+      "types": "./dist/utils/dom.d.ts",
+      "import": "./dist/utils/dom.mjs",
+      "require": "./dist/utils/dom.js"
+    },
+    "./utils/style": {
+      "types": "./dist/utils/style.d.ts",
+      "import": "./dist/utils/style.mjs",
+      "require": "./dist/utils/style.js"
     }
   },
   "files": [

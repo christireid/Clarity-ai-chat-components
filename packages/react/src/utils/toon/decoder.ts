@@ -8,7 +8,10 @@ export interface ToonDecodeOptions {
   /** Strict mode - throw on parse errors */
   strict?: boolean
   /** Type hints for parsing */
-  typeHints?: Record<string, 'string' | 'number' | 'boolean' | 'object' | 'array'>
+  typeHints?: Record<
+    string,
+    'string' | 'number' | 'boolean' | 'object' | 'array'
+  >
 }
 
 /**
@@ -29,11 +32,17 @@ export interface ToonDecodeOptions {
  * // ]
  * ```
  */
-export function toonToJson(toon: string, options: ToonDecodeOptions = {}): unknown {
+export function toonToJson(
+  toon: string,
+  options: ToonDecodeOptions = {}
+): unknown {
   const { strict = false } = options
 
   try {
-    const lines = toon.trim().split('\n').filter(line => line.trim().length > 0)
+    const lines = toon
+      .trim()
+      .split('\n')
+      .filter((line) => line.trim().length > 0)
 
     if (lines.length === 0) return null
 
@@ -62,7 +71,9 @@ export function toonToJson(toon: string, options: ToonDecodeOptions = {}): unkno
     if (strict) {
       throw error
     }
-    console.warn('TOON parse error:', error)
+    if (process.env.NODE_ENV === 'development') {
+      console.warn('TOON parse error:', error)
+    }
     return null
   }
 }
@@ -78,20 +89,25 @@ function isTableFormat(lines: string[]): boolean {
  * Check if TOON is in list format
  */
 function isListFormat(lines: string[]): boolean {
-  return lines.some(line => line.trim().startsWith('-'))
+  return lines.some((line) => line.trim().startsWith('-'))
 }
 
 /**
  * Check if TOON is in object format
  */
 function isObjectFormat(lines: string[]): boolean {
-  return lines.some(line => line.includes(':') && !line.trim().startsWith('-'))
+  return lines.some(
+    (line) => line.includes(':') && !line.trim().startsWith('-')
+  )
 }
 
 /**
  * Parse table format (CSV-style)
  */
-function parseTable(lines: string[], options: ToonDecodeOptions): Record<string, unknown>[] {
+function parseTable(
+  lines: string[],
+  options: ToonDecodeOptions
+): Record<string, unknown>[] {
   const [headerLine, ...dataLines] = lines
   if (!headerLine) return []
 
@@ -99,7 +115,7 @@ function parseTable(lines: string[], options: ToonDecodeOptions): Record<string,
   const headers = parseCsvLine(headerLine)
 
   // Parse data rows
-  return dataLines.map(line => {
+  return dataLines.map((line) => {
     const values = parseCsvLine(line)
     const obj: Record<string, unknown> = {}
 
@@ -145,7 +161,10 @@ function parseList(lines: string[], options: ToonDecodeOptions): unknown[] {
 /**
  * Parse object format (YAML-style)
  */
-function parseObject(lines: string[], options: ToonDecodeOptions): Record<string, unknown> {
+function parseObject(
+  lines: string[],
+  options: ToonDecodeOptions
+): Record<string, unknown> {
   const obj: Record<string, unknown> = {}
   let currentKey: string | null = null
   let currentValue = ''
@@ -246,7 +265,7 @@ function parseValue(value: string, options: ToonDecodeOptions): unknown {
   // Array (inline format)
   if (trimmed.startsWith('[') && trimmed.endsWith(']')) {
     const items = trimmed.substring(1, trimmed.length - 1).split(',')
-    return items.map(item => parseValue(item.trim(), options))
+    return items.map((item) => parseValue(item.trim(), options))
   }
 
   // Object (inline format)
@@ -267,7 +286,10 @@ function parseValue(value: string, options: ToonDecodeOptions): unknown {
 /**
  * Validate TOON format
  */
-export function validateToon(toon: string): { valid: boolean; errors: string[] } {
+export function validateToon(toon: string): {
+  valid: boolean
+  errors: string[]
+} {
   const errors: string[] = []
 
   try {

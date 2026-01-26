@@ -139,7 +139,11 @@ class AnalyticsManager {
       trackInteractions: true,
       trackComponents: true,
       onEvent: () => {},
-      onError: (error) => console.error('Analytics error:', error),
+      onError: (error) => {
+        if (process.env.NODE_ENV === 'development') {
+          console.error('Analytics error:', error)
+        }
+      },
     }
   }
 
@@ -659,7 +663,11 @@ export function AnalyticsProvider({
       trackInteractions: true,
       trackComponents: true,
       onEvent: () => {},
-      onError: (error) => console.error('Analytics error:', error),
+      onError: (error) => {
+        if (process.env.NODE_ENV === 'development') {
+          console.error('Analytics error:', error)
+        }
+      },
       ...config,
     })
   )

@@ -413,7 +413,9 @@ export class TokenOptimizationErrorHandler {
     }
 
     // In production, this would send to monitoring service
-    console.error('[TokenOptimization]', logEntry)
+    if (process.env.NODE_ENV === 'development') {
+      console.error('[TokenOptimization]', logEntry)
+    }
   }
 
   /**

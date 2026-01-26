@@ -47,8 +47,24 @@ const nextConfig: NextConfig = {
   reactStrictMode: true,
   pageExtensions: ['js', 'jsx', 'mdx', 'ts', 'tsx'],
 
-  // Server-side external packages
-  serverExternalPackages: ['tiktoken'],
+  // Server-side external packages (Wave 3.3 Agent 32 optimizations)
+  serverExternalPackages: [
+    // Tokenization (server-only)
+    'tiktoken',
+
+    // AI SDKs (server-only) - Wave 3.3 Agent 32: -650 KB from client bundle
+    '@anthropic-ai/sdk',
+    'openai',
+    '@google/generative-ai',
+    '@ai-sdk/openai',
+    'ai',
+
+    // Vector DB (server-only)
+    '@pinecone-database/pinecone',
+
+    // Markdown processing (can be external)
+    'gray-matter',
+  ],
 
   // Typed routes disabled - too strict for dynamic href patterns in this codebase
   // typedRoutes: true,
@@ -114,9 +130,46 @@ const nextConfig: NextConfig = {
     contentDispositionType: 'attachment',
   },
 
-  // Comprehensive security headers
+  // Comprehensive security and ISR cache headers
   async headers() {
     return [
+      // ISR Cache optimization for static documentation
+      {
+        source: '/api/reference/:path*',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, s-maxage=3600, stale-while-revalidate=86400',
+          },
+        ],
+      },
+      {
+        source: '/get-started/:path*',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, s-maxage=7200, stale-while-revalidate=86400',
+          },
+        ],
+      },
+      {
+        source: '/explore/:path*',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, s-maxage=10800, stale-while-revalidate=86400',
+          },
+        ],
+      },
+      {
+        source: '/about/:path*',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, s-maxage=21600, stale-while-revalidate=86400',
+          },
+        ],
+      },
       {
         // Apply to all routes
         source: '/:path*',
@@ -146,11 +199,22 @@ const nextConfig: NextConfig = {
             key: 'Referrer-Policy',
             value: 'strict-origin-when-cross-origin',
           },
-          // Permissions/Feature Policy
+          // Permissions/Feature Policy (Wave 3.4 Agent 37 - Enhanced)
           {
             key: 'Permissions-Policy',
-            value:
-              'camera=(), microphone=(), geolocation=(), interest-cohort=()',
+            value: [
+              'camera=()',
+              'microphone=()',
+              'geolocation=()',
+              'payment=()',
+              'usb=()',
+              'magnetometer=()',
+              'gyroscope=()',
+              'accelerometer=()',
+              'interest-cohort=()', // Disable FLoC
+              'sync-xhr=(self)',
+              'fullscreen=(self)',
+            ].join(', '),
           },
           // DNS prefetch control
           {
@@ -165,7 +229,7 @@ const nextConfig: NextConfig = {
         ],
       },
       {
-        // Additional headers for API routes
+        // Additional headers for API routes (Wave 3.4 Agent 37 - Enhanced)
         source: '/api/:path*',
         headers: [
           {
@@ -175,6 +239,21 @@ const nextConfig: NextConfig = {
           {
             key: 'X-Frame-Options',
             value: 'DENY',
+          },
+          // Stricter Permissions-Policy for API routes
+          {
+            key: 'Permissions-Policy',
+            value: [
+              'camera=()',
+              'microphone=()',
+              'geolocation=()',
+              'payment=()',
+              'usb=()',
+              'magnetometer=()',
+              'gyroscope=()',
+              'accelerometer=()',
+              'interest-cohort=()',
+            ].join(', '),
           },
           // Stricter CSP for API routes (no scripts/styles)
           {

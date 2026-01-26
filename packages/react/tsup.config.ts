@@ -21,6 +21,10 @@ const commonConfig = {
     'highlight.js/styles/github-dark.css',
     'katex/dist/katex.min.css',
     'dompurify',
+    // Phase 1 externalizations (optional features - ~410KB savings)
+    'shiki',
+    'lucide-react',
+    'jszip',
   ],
   sourcemap: false,
   minify: true,

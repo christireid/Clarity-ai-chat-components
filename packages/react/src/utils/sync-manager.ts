@@ -240,22 +240,30 @@ export class RealtimeSync {
           const data = JSON.parse(event.data)
           this.onMessage(data)
         } catch (error) {
-          console.warn('Failed to parse real-time sync message:', error)
+          if (process.env.NODE_ENV === 'development') {
+            console.warn('Failed to parse real-time sync message:', error)
+          }
         }
       }
 
       this.eventSource.onerror = (error) => {
-        console.error('Real-time sync connection error:', error)
+        if (process.env.NODE_ENV === 'development') {
+          console.error('Real-time sync connection error:', error)
+        }
         this.onError(error)
         this.scheduleReconnect()
       }
 
       this.eventSource.onopen = () => {
-        console.log('Real-time sync connected')
+        if (process.env.NODE_ENV === 'development') {
+          console.log('Real-time sync connected')
+        }
         this.reconnectAttempts = 0
       }
     } catch (error) {
-      console.error('Failed to create EventSource:', error)
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Failed to create EventSource:', error)
+      }
       this.scheduleReconnect()
     }
   }
@@ -274,16 +282,20 @@ export class RealtimeSync {
 
   private scheduleReconnect(): void {
     if (this.reconnectAttempts >= this.maxReconnectAttempts) {
-      console.error('Max real-time sync reconnection attempts reached')
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Max real-time sync reconnection attempts reached')
+      }
       return
     }
 
     this.reconnectAttempts++
     const delay = this.reconnectDelay * Math.pow(2, this.reconnectAttempts - 1)
 
-    console.log(
-      `Reconnecting real-time sync in ${delay}ms (attempt ${this.reconnectAttempts})`
-    )
+    if (process.env.NODE_ENV === 'development') {
+      console.log(
+        `Reconnecting real-time sync in ${delay}ms (attempt ${this.reconnectAttempts})`
+      )
+    }
 
     this.reconnectTimer = setTimeout(() => {
       this.connect()
@@ -488,11 +500,15 @@ export class SyncManager {
         endpoint,
         (data) => {
           // Handle real-time updates
-          console.log('Real-time sync update:', data)
+          if (process.env.NODE_ENV === 'development') {
+            console.log('Real-time sync update:', data)
+          }
           this.scheduleSync()
         },
         (error) => {
-          console.error('Real-time sync error:', error)
+          if (process.env.NODE_ENV === 'development') {
+            console.error('Real-time sync error:', error)
+          }
         }
       )
 

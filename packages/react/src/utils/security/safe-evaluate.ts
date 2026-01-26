@@ -168,10 +168,12 @@ export function safeEvaluate(
   }
 
   // Log warning when this dangerous function is used
-  console.warn(
-    '[SECURITY WARNING] safe-evaluate is being used despite known security risks. ' +
-      'This should only be used with fully trusted code. Issue: TOOL-021'
-  )
+  if (process.env.NODE_ENV === 'development') {
+    console.warn(
+      '[SECURITY WARNING] safe-evaluate is being used despite known security risks. ' +
+        'This should only be used with fully trusted code. Issue: TOOL-021'
+    )
+  }
   // Input validation
   if (typeof code !== 'string') {
     return { success: false, error: 'Code must be a string' }

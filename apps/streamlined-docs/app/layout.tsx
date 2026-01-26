@@ -13,6 +13,7 @@ import {
   DocumentationSiteStructuredData,
 } from '@/components/SEO/StructuredData'
 import { LIBRARY_STATS } from '@/lib/library-stats'
+import { TTFBMonitor } from '@/components/Monitoring/TTFBMonitor'
 
 // Lazy load the AI assistant to reduce initial bundle size
 // Using optimized dynamic component with loading skeleton
@@ -138,6 +139,7 @@ export default function RootLayout({
       </head>
       <body className="font-sans antialiased overflow-x-hidden" suppressHydrationWarning>
         <AnalyticsScript />
+        <TTFBMonitor />
         <Providers>
           <a href="#main-content" className="skip-to-content">
             Skip to content

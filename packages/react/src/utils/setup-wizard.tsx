@@ -132,7 +132,9 @@ export class QuickSetup {
  */
 export function interactiveSetup(): void {
   if (typeof window === 'undefined') {
-    console.log('Interactive setup is only available in browser environment')
+    if (process.env.NODE_ENV === 'development') {
+      console.log('Interactive setup is only available in browser environment')
+    }
     return
   }
 
@@ -154,9 +156,11 @@ export function interactiveSetup(): void {
     ui: { header: true, prompts: true, darkMode: false },
   }
 
-  console.log('Generated configuration:', config)
-  console.log('Copy this into your component:')
-  console.log(generateCodeSnippet(config))
+  if (process.env.NODE_ENV === 'development') {
+    console.log('Generated configuration:', config)
+    console.log('Copy this into your component:')
+    console.log(generateCodeSnippet(config))
+  }
 }
 
 /**

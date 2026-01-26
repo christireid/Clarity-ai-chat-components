@@ -75,7 +75,9 @@ export async function testAccessibility(
 ): Promise<AccessibilityReport> {
   // Check if axe is available
   if (typeof window === 'undefined' || !(window as any).axe) {
-    console.warn('axe-core not available. Install with: npm install axe-core')
+    if (process.env.NODE_ENV === 'development') {
+      console.warn('axe-core not available. Install with: npm install axe-core')
+    }
     return {
       violations: [],
       passes: [],
@@ -161,7 +163,9 @@ export async function testAccessibility(
       url: window.location.href,
     }
   } catch (error) {
-    console.error('Accessibility test failed:', error)
+    if (process.env.NODE_ENV === 'development') {
+      console.error('Accessibility test failed:', error)
+    }
     return {
       violations: [
         {
@@ -289,51 +293,53 @@ export function createAccessibilityMatcher() {
  * Log accessibility violations in a readable format
  */
 export function logAccessibilityViolations(report: AccessibilityReport): void {
-  if (report.violations.length === 0) {
-    console.log('✅ No accessibility violations found')
-    return
-  }
+  if (process.env.NODE_ENV === 'development') {
+    if (report.violations.length === 0) {
+      console.log('✅ No accessibility violations found')
+      return
+    }
 
-  console.group('🚨 Accessibility Violations Found')
+    console.group('🚨 Accessibility Violations Found')
 
-  const grouped = report.violations.reduce(
-    (acc, violation) => {
-      const key = violation.impact
-      if (!acc[key]) acc[key] = []
-      acc[key].push(violation)
-      return acc
-    },
-    {} as Record<string, AccessibilityViolation[]>
-  )
+    const grouped = report.violations.reduce(
+      (acc, violation) => {
+        const key = violation.impact
+        if (!acc[key]) acc[key] = []
+        acc[key].push(violation)
+        return acc
+      },
+      {} as Record<string, AccessibilityViolation[]>
+    )
 
-  Object.entries(grouped).forEach(([impact, violations]) => {
-    const emojiMap = {
-      minor: '⚠️',
-      moderate: '🟡',
-      serious: '🟠',
-      critical: '🔴',
-    } as const
-    const emoji = emojiMap[impact as keyof typeof emojiMap] || '❓'
+    Object.entries(grouped).forEach(([impact, violations]) => {
+      const emojiMap = {
+        minor: '⚠️',
+        moderate: '🟡',
+        serious: '🟠',
+        critical: '🔴',
+      } as const
+      const emoji = emojiMap[impact as keyof typeof emojiMap] || '❓'
 
-    console.group(`${emoji} ${impact.toUpperCase()} (${violations.length})`)
+      console.group(`${emoji} ${impact.toUpperCase()} (${violations.length})`)
 
-    violations.forEach((violation) => {
-      console.log(`• ${violation.description}`)
-      console.log(`  Help: ${violation.help}`)
-      console.log(`  URL: ${violation.helpUrl}`)
-      if (violation.nodes.length > 0) {
-        console.log(`  Affected: ${violation.nodes.length} element(s)`)
-      }
-      console.log('')
+      violations.forEach((violation) => {
+        console.log(`• ${violation.description}`)
+        console.log(`  Help: ${violation.help}`)
+        console.log(`  URL: ${violation.helpUrl}`)
+        if (violation.nodes.length > 0) {
+          console.log(`  Affected: ${violation.nodes.length} element(s)`)
+        }
+        console.log('')
+      })
+
+      console.groupEnd()
     })
 
+    console.log(
+      `📊 Summary: ${report.violations.length} violations, ${report.passes.length} passes`
+    )
     console.groupEnd()
-  })
-
-  console.log(
-    `📊 Summary: ${report.violations.length} violations, ${report.passes.length} passes`
-  )
-  console.groupEnd()
+  }
 }
 
 /**
