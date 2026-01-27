@@ -1,0 +1,227 @@
+╔═══════════════════════════════════════════════════════════════════════════════╗
+║                   API SURFACE COHESION AUDIT - SUMMARY                       ║
+║                           Date: 2026-01-27                                    ║
+╚═══════════════════════════════════════════════════════════════════════════════╝
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ OVERALL SCORE: 68/100                                                       │
+│ TARGET SCORE: 85/100                                                        │
+│ ESTIMATED EFFORT: 3-4 weeks                                                 │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ SCORE BREAKDOWN                                                             │
+├─────────────────────────────┬─────────┬────────┬───────────────────────────┤
+│ Category                    │ Score   │ Weight │ Issues                    │
+├─────────────────────────────┼─────────┼────────┼───────────────────────────┤
+│ Export Organization         │ 75/100  │  20%   │ Missing subpath exports   │
+│ Naming Consistency          │ 65/100  │  25%   │ Hook/component naming     │
+│ Type Coverage               │ 80/100  │  15%   │ Missing engine types      │
+│ JSDoc Coverage              │ 55/100  │  15%   │ Only 55% documented       │
+│ Duplication/Overlap         │ 60/100  │  15%   │ Multiple message lists    │
+│ Missing/Unexpected Exports  │ 70/100  │  10%   │ Internal types exposed    │
+└─────────────────────────────┴─────────┴────────┴───────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ KEY ISSUES IDENTIFIED                                                       │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│ 🔴 CRITICAL (12 issues)                                                     │
+│   • Duplicate ./memory export in @clarity-chat/types                       │
+│   • Missing JSDoc on top 20 exports                                        │
+│   • No bundle variant documentation                                        │
+│   • Confusing hook aliases (useHeadlessChat, etc.)                         │
+│                                                                             │
+│ 🟡 HIGH PRIORITY (24 issues)                                                │
+│   • Missing type exports (RAGEngineConfig, ToolsEngineConfig, etc.)        │
+│   • 4 overlapping MessageList components                                   │
+│   • 3 overlapping token budget hooks                                       │
+│   • No granular subpath exports                                            │
+│   • Implementation details in component names (TanStackMessageList)        │
+│                                                                             │
+│ 🟢 MEDIUM PRIORITY (18 issues)                                              │
+│   • Type suffix inconsistency (Settings vs Config vs Options)              │
+│   • Internal types exposed publicly                                        │
+│   • Missing type-only entry points                                         │
+│   • Poor type documentation (~30% coverage)                                │
+│                                                                             │
+│ 🔵 LOW PRIORITY (14 issues)                                                 │
+│   • Bundle size budgets needed                                             │
+│   • API usage analytics                                                    │
+│   • Interactive API explorer                                               │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ PACKAGES ANALYZED                                                           │
+├────────────────────────────────┬────────────┬────────┬──────────────────────┤
+│ Package                        │ Exports    │ Score  │ Main Issues          │
+├────────────────────────────────┼────────────┼────────┼──────────────────────┤
+│ @clarity-chat/react            │ 1078+      │ 70/100 │ Too many exports     │
+│ @clarity-chat/token-opt        │ 640        │ 85/100 │ Good organization    │
+│ @clarity-chat/types            │ ~50        │ 65/100 │ Duplicate export     │
+│ @clarity-chat/utils            │ 200+       │ 80/100 │ Excellent subpaths   │
+│ @clarity-chat/memory           │ 100+       │ 70/100 │ No subpath exports   │
+└────────────────────────────────┴────────────┴────────┴──────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ TOP DUPLICATE EXPORTS                                                       │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│ 1. MESSAGE LIST COMPONENTS (4 variants!)                                   │
+│    • MessageList (alias to VirtualizedMessageList)                         │
+│    • VirtualizedMessageList                                                │
+│    • TanStackMessageList                                                   │
+│    • MessageListComponent (different component!)                           │
+│                                                                             │
+│ 2. TOKEN BUDGET HOOKS (3 variants)                                         │
+│    • useTokenBudgetMonitor (deprecated)                                    │
+│    • useTokenBudgetTracking (new name)                                     │
+│    • TokenBudgetProvider + useTokenBudget (context pattern)                │
+│                                                                             │
+│ 3. CHAT HOOKS (6 variants)                                                 │
+│    • useClarityChat                                                        │
+│    • useChat (aliased as useHeadlessChat)                                  │
+│    • useClarityChatApp                                                     │
+│    • useClarityChatWithTools                                               │
+│    • useChatSync                                                           │
+│    • useClarityObject                                                      │
+│                                                                             │
+│ 4. ERROR HANDLING (4 overlapping functions)                                │
+│    • handleError (from utils/errors)                                       │
+│    • handleError (from utils/error-handler) - same name!                   │
+│    • useErrorHandler (React)                                               │
+│    • useAsyncErrorHandler (React)                                          │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ NAMING INCONSISTENCIES                                                      │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│ HOOK PREFIXES:                                                              │
+│   With "Clarity": useClarityChat, useClarityChatApp, useClarityObject      │
+│   Without: useChat, useTokenCount, useMemoryContext                        │
+│   → Recommendation: Remove "Clarity" prefix from all hooks                 │
+│                                                                             │
+│ TYPE SUFFIXES:                                                              │
+│   Config: ChatApiConfig, ModelRouterConfig                                 │
+│   Options: UseChatOptions, TokenizerOptions                                │
+│   Settings: TokenBudgetSettings                                            │
+│   → Recommendation: Standardize (Options for hooks, Config for objects)    │
+│                                                                             │
+│ RETURN TYPES:                                                               │
+│   Return: UseChatReturn                                                    │
+│   Result: UseTokenCountResult                                              │
+│   → Recommendation: Use "Return" for hooks, "Result" for functions         │
+│                                                                             │
+│ CONSTANTS:                                                                  │
+│   UPPER_CASE: DEFAULT_MODEL, MODEL_PRICING                                 │
+│   camelCase: smoothingPresets (should be SMOOTHING_PRESETS)                │
+│   → Recommendation: UPPER_CASE for all constants                           │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ MISSING TYPE EXPORTS                                                        │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│ createRAGEngine        → Missing: RAGEngineConfig, RAGEngine               │
+│ createToolsEngine      → Missing: ToolsEngineConfig, ToolsEngine           │
+│ createAgent            → Missing: AgentConfig, Agent                       │
+│ useAutoScroll          → Missing: UseAutoScrollOptions, UseAutoScrollReturn│
+│ useWindowSize          → Missing: UseWindowSizeReturn                      │
+│ useContextMonitor      → Missing: UseContextMonitorOptions/Return          │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ JSDOC COVERAGE BY PACKAGE                                                  │
+├────────────────────────────────┬──────────────────────────────────────────┤
+│ @clarity-chat/react            │ ████████░░░░░░░░░░░░ 40%                 │
+│ @clarity-chat/token-opt        │ █████████████░░░░░░░ 65%                 │
+│ @clarity-chat/types            │ ██████░░░░░░░░░░░░░░ 30%                 │
+│ @clarity-chat/utils            │ ██████████████░░░░░░ 70%                 │
+│ @clarity-chat/memory           │ ████████████░░░░░░░░ 60%                 │
+│                                │                                          │
+│ OVERALL                        │ ███████████░░░░░░░░░ 55%                 │
+│ TARGET                         │ ██████████████████░░ 90%                 │
+└────────────────────────────────┴──────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ 4-WEEK ACTION PLAN                                                          │
+├────────┬─────────────────────┬──────────────────────┬─────────────────────┤
+│ Week   │ Focus               │ Key Deliverables     │ Score Impact        │
+├────────┼─────────────────────┼──────────────────────┼─────────────────────┤
+│ Week 1 │ Critical Fixes      │ • Remove duplicate   │ 68 → 75 (+7)        │
+│        │                     │ • Add JSDoc top 20   │                     │
+│        │                     │ • Document bundles   │                     │
+│        │                     │ • Deprecate hooks    │                     │
+├────────┼─────────────────────┼──────────────────────┼─────────────────────┤
+│ Week 2 │ High Priority       │ • Export all types   │ 75 → 80 (+5)        │
+│        │                     │ • Fix MessageList    │                     │
+│        │                     │ • Add subpaths       │                     │
+│        │                     │ • Remove impl names  │                     │
+├────────┼─────────────────────┼──────────────────────┼─────────────────────┤
+│ Week 3 │ Medium Priority     │ • Type naming        │ 80 → 83 (+3)        │
+│        │                     │ • Full type docs     │                     │
+│        │                     │ • Migration guide    │                     │
+│        │                     │ • Internal cleanup   │                     │
+├────────┼─────────────────────┼──────────────────────┼─────────────────────┤
+│ Week 4 │ Polish              │ • Bundle budgets     │ 83 → 85+ (+2)       │
+│        │                     │ • Tests              │                     │
+│        │                     │ • Communication      │                     │
+│        │                     │ • Final verification │                     │
+└────────┴─────────────────────┴──────────────────────┴─────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ QUICK WINS (Day 1)                                                          │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│ 1. Remove duplicate ./memory export (5 minutes)                            │
+│    File: packages/types/package.json                                       │
+│                                                                             │
+│ 2. Add deprecation warnings to hooks (1 hour)                              │
+│    Files: packages/react/src/hooks/deprecated.ts                           │
+│                                                                             │
+│ 3. Document bundle variants (2 hours)                                      │
+│    File: packages/react/README.md                                          │
+│                                                                             │
+│ Impact: +3 points (68 → 71)                                                │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ DOCUMENTS GENERATED                                                         │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│ 1. API_COHESION_AUDIT.md                                                   │
+│    Main audit report with detailed scoring and analysis                    │
+│                                                                             │
+│ 2. API_COHESION_TECHNICAL_APPENDIX.md                                      │
+│    Technical details, code examples, file locations                        │
+│                                                                             │
+│ 3. API_COHESION_ACTION_PLAN.md                                             │
+│    Week-by-week action plan with specific tasks                            │
+│                                                                             │
+│ 4. API_AUDIT_SUMMARY.txt (this file)                                       │
+│    Quick reference summary                                                 │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ NEXT STEPS                                                                  │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│ 1. Review documents with team                                              │
+│ 2. Prioritize tasks based on business impact                               │
+│ 3. Create GitHub issues for tracking                                       │
+│ 4. Assign owners to each task                                              │
+│ 5. Begin Week 1 implementation                                             │
+│ 6. Schedule weekly sync meetings                                           │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+Generated: 2026-01-27
+Agent: Claude Sonnet 4.5
+Task: API Surface Cohesion Audit

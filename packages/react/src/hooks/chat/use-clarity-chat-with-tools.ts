@@ -47,7 +47,7 @@ import {
   useClarityChat,
   type UseClarityChatOptions,
   type UseClarityChatReturn,
-} from './use-clarity-chat'
+} from '../use-clarity-chat'
 import type { ToolComponentRegistry } from '../../agents/tool-ui-registry'
 import type { ToolCall } from '../../adapters/types'
 import type { CoreMessage } from './use-chat-enhanced'
