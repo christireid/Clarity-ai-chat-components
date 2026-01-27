@@ -367,7 +367,7 @@ export function MessageThreadView({
         {/* Thread messages */}
         <div
           className={cn(
-            'flex-1 overflow-y-auto p-4 space-y-3',
+            'flex-1 overflow-y-auto scrollbar-hide p-4 space-y-3',
             layout === 'inline' && 'max-h-96'
           )}
         >

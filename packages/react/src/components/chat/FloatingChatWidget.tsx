@@ -191,7 +191,7 @@ export function FloatingChatWidget({
             </AnimatePresence>
 
             {/* Messages */}
-            <div className="flex-1 overflow-y-auto p-4 space-y-4 scroll-smooth">
+            <div className="flex-1 overflow-y-auto scrollbar-hide p-4 space-y-4 scroll-smooth">
               {messages.map((msg) => (
                 <motion.div
                   {...ANIMATION_PRESETS.slideUp}

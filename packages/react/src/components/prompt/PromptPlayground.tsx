@@ -533,7 +533,7 @@ export function PromptPlayground({
                     className={cn(
                       'p-4 rounded-lg border bg-muted/30',
                       'font-mono text-sm whitespace-pre-wrap',
-                      'min-h-[200px] max-h-[400px] overflow-auto'
+                      'min-h-[200px] max-h-[400px] overflow-auto scrollbar-hide'
                     )}
                   >
                     {state.output || (

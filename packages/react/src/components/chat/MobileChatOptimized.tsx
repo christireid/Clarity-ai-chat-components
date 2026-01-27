@@ -456,7 +456,7 @@ export function MobileChatWindow({
       {/* Messages */}
       <div
         ref={scrollRef}
-        className="flex-1 overflow-y-auto overscroll-contain"
+        className="flex-1 overflow-y-auto scrollbar-hide overscroll-contain"
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}

@@ -362,7 +362,7 @@ const EnhancedMarkdownRendererComponent = React.memo(
             <div className="relative group/code my-4">
               <pre
                 className={cn(
-                  'relative overflow-x-auto p-4',
+                  'relative overflow-x-auto scrollbar-hide p-4',
                   'bg-gradient-to-br from-muted/60 to-muted/40',
                   'border border-border/50',
                   'rounded-xl',
@@ -403,7 +403,7 @@ const EnhancedMarkdownRendererComponent = React.memo(
         },
         // Table styling
         table: ({ children, ...props }: MarkdownTableProps) => (
-          <div className="overflow-x-auto my-4 w-full">
+          <div className="overflow-x-auto scrollbar-hide my-4 w-full">
             <table
               className="min-w-full table-auto border-collapse divide-y divide-border"
               {...props}

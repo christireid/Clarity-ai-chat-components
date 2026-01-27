@@ -390,7 +390,7 @@ export function ToolInvocationCard({
                     >
                       <pre
                         className={cn(
-                          'rounded-lg border p-3 text-sm overflow-x-auto',
+                          'rounded-lg border p-3 text-sm overflow-x-auto scrollbar-hide',
                           error
                             ? 'bg-destructive/10 border-destructive/30'
                             : 'bg-muted/50'
@@ -436,7 +436,7 @@ export function ToolInvocationCard({
                 <div className="space-y-3.5">
                   <pre
                     className={cn(
-                      'rounded-lg border p-3 text-sm overflow-x-auto',
+                      'rounded-lg border p-3 text-sm overflow-x-auto scrollbar-hide',
                       error
                         ? 'bg-destructive/10 border-destructive/30'
                         : 'bg-muted/50'

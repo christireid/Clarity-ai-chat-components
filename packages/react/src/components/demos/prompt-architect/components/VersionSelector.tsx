@@ -126,7 +126,7 @@ export function VersionSelector({
         <div
           className={cn(
             'absolute top-full left-0 mt-1 z-50',
-            'min-w-[250px] max-h-[350px] overflow-auto',
+            'min-w-[250px] max-h-[350px] overflow-auto scrollbar-hide',
             'rounded-lg border border-border bg-background shadow-lg',
             'py-1'
           )}

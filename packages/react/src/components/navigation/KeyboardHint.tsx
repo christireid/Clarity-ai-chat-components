@@ -135,7 +135,7 @@ export function KeyboardHint({
         </div>
 
         {/* Shortcuts List */}
-        <div className="overflow-y-auto flex-1 p-4">
+        <div className="overflow-y-auto scrollbar-hide flex-1 p-4">
           <div className="space-y-4">
             {Object.entries(groupedShortcuts).map(
               ([category, categoryShortcuts], groupIndex) => (

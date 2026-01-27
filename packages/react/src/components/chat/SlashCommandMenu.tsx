@@ -220,7 +220,7 @@ export function SlashCommandMenu({
           className={cn(
             'absolute left-0 right-0 z-50',
             'bg-background border border-border rounded-lg shadow-lg',
-            'max-h-[280px] overflow-y-auto',
+            'max-h-[280px] overflow-y-auto scrollbar-hide',
             'backdrop-blur-sm bg-opacity-95',
             position === 'above' ? 'bottom-full mb-2' : 'top-full mt-2',
             className

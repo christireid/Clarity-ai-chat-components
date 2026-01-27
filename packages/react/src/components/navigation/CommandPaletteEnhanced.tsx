@@ -18,7 +18,12 @@
 import * as React from 'react'
 import { createPortal } from 'react-dom'
 import { motion, AnimatePresence, MotionConfig } from 'framer-motion'
-import { Kbd, cn, useBodyScrollLock, useReducedMotion } from '@clarity-chat/primitives'
+import {
+  Kbd,
+  cn,
+  useBodyScrollLock,
+  useReducedMotion,
+} from '@clarity-chat/primitives'
 import {
   useFocusTrap,
   useFocusRestoration,
@@ -759,7 +764,7 @@ export function CommandPaletteEnhanced({
                 ref={listRef}
                 id="command-list"
                 role="listbox"
-                className="flex-1 overflow-y-auto p-2"
+                className="flex-1 overflow-y-auto scrollbar-hide p-2"
               >
                 {flatItems.length === 0 ? (
                   <motion.div

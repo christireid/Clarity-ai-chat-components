@@ -182,7 +182,7 @@ export function ModelSelector({
             }
             viewport={{ once: true }}
             role="listbox"
-            className="absolute z-20 mt-2 w-full overflow-auto rounded-2xl border border-border/40 bg-card/98 backdrop-blur-lg shadow-xl"
+            className="absolute z-20 mt-2 w-full overflow-auto scrollbar-hide rounded-2xl border border-border/40 bg-card/98 backdrop-blur-lg shadow-xl"
           >
             {models.map((model) => (
               <button

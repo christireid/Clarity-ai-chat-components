@@ -122,7 +122,7 @@ export function PresetSelector({
         <div
           className={cn(
             'absolute top-full left-0 mt-1 z-50',
-            'min-w-[280px] max-h-[400px] overflow-auto',
+            'min-w-[280px] max-h-[400px] overflow-auto scrollbar-hide',
             'rounded-lg border border-border bg-background shadow-lg',
             'py-1'
           )}

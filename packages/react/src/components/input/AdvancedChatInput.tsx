@@ -504,7 +504,7 @@ export function AdvancedChatInput({
         suggestions.length > 0 &&
         (prefersReducedMotion ? (
           <div
-            className="absolute bottom-full left-4 right-4 mb-2 bg-popover border border-border/60 rounded-lg shadow-2xl max-h-64 overflow-y-auto z-50 backdrop-blur-sm"
+            className="absolute bottom-full left-4 right-4 mb-2 bg-popover border border-border/60 rounded-lg shadow-2xl max-h-64 overflow-y-auto scrollbar-hide z-50 backdrop-blur-sm"
             role="listbox"
             aria-label="Suggestions"
           >
@@ -560,7 +560,7 @@ export function AdvancedChatInput({
             <motion.div
               {...ANIMATION_PRESETS.slideUp}
               viewport={{ once: true }}
-              className="absolute bottom-full left-4 right-4 mb-2 bg-popover border border-border/60 rounded-lg shadow-2xl max-h-64 overflow-y-auto z-50 backdrop-blur-sm"
+              className="absolute bottom-full left-4 right-4 mb-2 bg-popover border border-border/60 rounded-lg shadow-2xl max-h-64 overflow-y-auto scrollbar-hide z-50 backdrop-blur-sm"
               role="listbox"
               aria-label="Suggestions"
             >

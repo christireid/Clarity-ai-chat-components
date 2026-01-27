@@ -82,7 +82,7 @@ const markdownComponents: Components = {
   table(props: MarkdownElementProps) {
     const { node: _node, children, ...rest } = props
     return (
-      <div className="overflow-x-auto my-4 w-full">
+      <div className="overflow-x-auto scrollbar-hide my-4 w-full">
         <table
           className="min-w-full table-auto border-collapse divide-y divide-border"
           {...rest}

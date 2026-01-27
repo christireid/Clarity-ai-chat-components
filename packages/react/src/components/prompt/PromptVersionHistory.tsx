@@ -352,7 +352,7 @@ export function PromptVersionHistory({
                                 )}
                                 className="mt-3 pt-3 border-t"
                               >
-                                <pre className="text-xs bg-muted/50 p-3 rounded overflow-auto max-h-40">
+                                <pre className="text-xs bg-muted/50 p-3 rounded overflow-auto scrollbar-hide max-h-40">
                                   {version.template}
                                 </pre>
                               </motion.div>

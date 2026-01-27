@@ -538,7 +538,7 @@ To enable live AI responses, provide a Gemini API key.`
           </div>
 
           {/* Editors */}
-          <div className="flex-1 overflow-auto p-3 sm:p-4 space-y-4 sm:space-y-6">
+          <div className="flex-1 overflow-auto scrollbar-hide p-3 sm:p-4 space-y-4 sm:space-y-6">
             <PromptEditor
               label="System Prompt"
               value={state.systemPrompt}

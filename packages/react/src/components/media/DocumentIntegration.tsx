@@ -644,7 +644,7 @@ export function DocumentIntegration({
                 Close
               </Button>
             </div>
-            <div className="text-sm text-muted-foreground max-h-48 overflow-y-auto whitespace-pre-wrap">
+            <div className="text-sm text-muted-foreground max-h-48 overflow-y-auto scrollbar-hide whitespace-pre-wrap">
               {state.selectedDocument.text.slice(0, 500)}
               {state.selectedDocument.text.length > 500 && '...'}
             </div>

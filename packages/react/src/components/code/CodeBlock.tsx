@@ -21,7 +21,10 @@ import { CodeBlockCopyButton } from './CodeBlockCopyButton'
 import { ChevronDownIcon, ChevronUpIcon, DownloadIcon } from '../ui/icons'
 import { ContentErrorBoundary } from '../ui/ErrorBoundary'
 import { useAnalytics, useInteractionTracking } from '../../utils/analytics'
-import { isFeatureAvailable, isFeatureDisabled } from '../../utils/config/feature-flags'
+import {
+  isFeatureAvailable,
+  isFeatureDisabled,
+} from '../../utils/config/feature-flags'
 
 // Try to import shiki, but handle gracefully if not installed or disabled
 let shikiModule: {
@@ -443,16 +446,19 @@ const CodeBlockComponent = React.memo<CodeBlockProps>(function CodeBlock({
               {shikiExplicitlyDisabled ? (
                 <>
                   <p className="font-medium">
-                    Syntax highlighting is disabled via CLARITY_DISABLE_SYNTAX_HIGHLIGHTING.
+                    Syntax highlighting is disabled via
+                    CLARITY_DISABLE_SYNTAX_HIGHLIGHTING.
                   </p>
                   <p className="text-amber-300/90">
-                    To re-enable, unset the environment variable or set it to false.
+                    To re-enable, unset the environment variable or set it to
+                    false.
                   </p>
                 </>
               ) : (
                 <>
                   <p className="font-medium">
-                    CodeBlock requires &apos;shiki&apos; for syntax highlighting.
+                    CodeBlock requires &apos;shiki&apos; for syntax
+                    highlighting.
                   </p>
                   <p className="text-amber-300/90">
                     Install it with:{' '}
@@ -525,7 +531,7 @@ const CodeBlockComponent = React.memo<CodeBlockProps>(function CodeBlock({
       <div
         ref={codeRef}
         className={cn(
-          'relative overflow-auto',
+          'relative overflow-auto scrollbar-hide',
           maxHeight && !isExpanded && 'overflow-hidden'
         )}
         style={maxHeight && !isExpanded ? { maxHeight } : undefined}
@@ -545,7 +551,7 @@ const CodeBlockComponent = React.memo<CodeBlockProps>(function CodeBlock({
           {/* Code */}
           <div
             className={cn(
-              'flex-1 p-4 overflow-x-auto',
+              'flex-1 p-4 overflow-x-auto scrollbar-hide',
               'text-sm leading-relaxed',
               fontClass,
               enableLigatures && 'font-ligatures',

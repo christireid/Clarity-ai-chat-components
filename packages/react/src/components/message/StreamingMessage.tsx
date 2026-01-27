@@ -586,7 +586,7 @@ export function StreamingMessage({
       if (parsed) {
         return (
           <div className="space-y-2">
-            <pre className="bg-muted border rounded-lg p-3 overflow-x-auto text-sm">
+            <pre className="bg-muted border rounded-lg p-3 overflow-x-auto scrollbar-hide text-sm">
               <code className="text-foreground">
                 {JSON.stringify(parsed, null, 2)}
               </code>

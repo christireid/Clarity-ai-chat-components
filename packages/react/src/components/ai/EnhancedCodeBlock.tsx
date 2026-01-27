@@ -165,7 +165,7 @@ export function EnhancedCodeBlock({
             Prism default is usually relative. We force it here via code-metrics class.
         */}
         <div
-          className="flex-1 min-w-0 overflow-x-auto relative"
+          className="flex-1 min-w-0 overflow-x-auto scrollbar-hide relative"
           // If we had line highlighting overlays, they would go here absolute positioned
         >
           {highlightLines.length > 0 && (

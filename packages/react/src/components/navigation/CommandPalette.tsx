@@ -4,7 +4,12 @@ import { useState, useRef, useMemo, useEffect, useId } from 'react'
 import { useDebounce } from '../../hooks/ui/use-debounce'
 import { createPortal } from 'react-dom'
 import { motion, AnimatePresence, MotionConfig } from 'framer-motion'
-import { Kbd, cn, useBodyScrollLock, useReducedMotion } from '@clarity-chat/primitives'
+import {
+  Kbd,
+  cn,
+  useBodyScrollLock,
+  useReducedMotion,
+} from '@clarity-chat/primitives'
 import {
   ANIMATION_DURATION,
   EASING_FRAMER,
@@ -351,7 +356,7 @@ export function CommandPalette({
                 id={listboxId}
                 role="listbox"
                 aria-label="Commands"
-                className="overflow-y-auto flex-1 p-2"
+                className="overflow-y-auto scrollbar-hide flex-1 p-2"
               >
                 {filteredItems.length === 0 ? (
                   <motion.div

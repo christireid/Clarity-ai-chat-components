@@ -184,7 +184,7 @@ export function TanStackMessageList({
     return (
       <div
         ref={parentRef}
-        className={cn('overflow-auto', className)}
+        className={cn('overflow-auto scrollbar-hide', className)}
         style={{ height }}
         role="log"
         aria-label="Chat messages (screen reader mode)"
@@ -352,7 +352,7 @@ export function TanStackMessageList({
   return (
     <div
       ref={parentRef}
-      className={cn('overflow-auto', className)}
+      className={cn('overflow-auto scrollbar-hide', className)}
       style={{ height, contain: 'strict' }}
       onScroll={handleScroll}
       role="log"
@@ -458,7 +458,7 @@ export function AutoTanStackMessageList({
   // Standard rendering for small lists
   return (
     <div
-      className={cn('overflow-auto', className)}
+      className={cn('overflow-auto scrollbar-hide', className)}
       style={{ height: props.height || '100%' }}
       role="log"
       aria-label="Chat messages"

@@ -502,8 +502,8 @@ const CollapsibleDataSection: React.FC<CollapsibleDataSectionProps> = ({
           >
             <pre
               className={cn(
-                'rounded-lg border p-3 text-xs overflow-x-auto',
-                'max-h-64 overflow-y-auto',
+                'rounded-lg border p-3 text-xs overflow-x-auto scrollbar-hide',
+                'max-h-64 overflow-y-auto scrollbar-hide',
                 variantStyles[variant]
               )}
             >

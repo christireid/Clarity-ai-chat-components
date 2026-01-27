@@ -125,7 +125,7 @@ export function DocumentViewer({
         </section>
       ) : null}
 
-      <section className="flex-1 overflow-y-auto rounded-lg border border-border/50 bg-background/70 p-4 shadow-inner">
+      <section className="flex-1 overflow-y-auto scrollbar-hide rounded-lg border border-border/50 bg-background/70 p-4 shadow-inner">
         <h4 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
           Content
         </h4>

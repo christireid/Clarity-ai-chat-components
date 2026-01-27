@@ -71,7 +71,7 @@ export function ThemeSelector({
 
   return (
     <div
-      className={`theme-selector ${isHorizontal ? 'flex flex-row gap-2 overflow-x-auto' : 'flex flex-col gap-1'} ${className || ''}`}
+      className={`theme-selector ${isHorizontal ? 'flex flex-row gap-2 overflow-x-auto scrollbar-hide' : 'flex flex-col gap-1'} ${className || ''}`}
       role="radiogroup"
       aria-label="Theme selection"
     >

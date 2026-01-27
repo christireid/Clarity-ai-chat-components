@@ -230,7 +230,7 @@ export const StreamingCodeBlock = React.memo<StreamingCodeBlockProps>(
         <div
           ref={contentRef}
           className={cn(
-            'p-4 overflow-auto',
+            'p-4 overflow-auto scrollbar-hide',
             'text-sm leading-relaxed font-mono',
             'font-fira-code font-ligatures',
             isHighlighting && 'opacity-80'

@@ -4,9 +4,16 @@
 
 import * as React from 'react'
 import { cn } from '@clarity-chat/primitives'
-import { getContrastRatio, hslStringToHex, hexToHSLString } from '../../../theme/color-utils'
+import {
+  getContrastRatio,
+  hslStringToHex,
+  hexToHSLString,
+} from '../../../theme/color-utils'
 import { simulateColorBlindness } from '../../../theme/color-advanced'
-import type { ColorConfig, CompleteThemeConfig } from '../../../theme/theme-config'
+import type {
+  ColorConfig,
+  CompleteThemeConfig,
+} from '../../../theme/theme-config'
 import type {
   ContrastBadgeProps,
   ColorBlindnessPreviewProps,
@@ -25,7 +32,11 @@ import {
 /**
  * Contrast Checker Badge
  */
-export function ContrastBadge({ foreground, background, label }: ContrastBadgeProps) {
+export function ContrastBadge({
+  foreground,
+  background,
+  label,
+}: ContrastBadgeProps) {
   const ratio = getContrastRatio(foreground, background)
   const passesAA = ratio >= 4.5
   const passesAAA = ratio >= 7
@@ -79,12 +90,18 @@ export function ColorBlindnessPreview({
             style={{ backgroundColor: hex }}
             title="Original color"
           />
-          <span className="text-[10px] text-muted-foreground block mt-0.5">Original</span>
+          <span className="text-[10px] text-muted-foreground block mt-0.5">
+            Original
+          </span>
         </div>
         {displayTypes.map(({ type, label, description }) => {
           const simulated = simulateColorBlindness(hex, type)
           return (
-            <div key={type} className="text-center" title={`${label}: ${description}`}>
+            <div
+              key={type}
+              className="text-center"
+              title={`${label}: ${description}`}
+            >
               <div
                 className="w-8 h-8 rounded-lg border border-border"
                 style={{ backgroundColor: simulated }}
@@ -101,7 +118,9 @@ export function ColorBlindnessPreview({
           onClick={() => setExpanded(!expanded)}
           className="text-xs text-primary hover:underline focus:outline-none focus:ring-2 focus:ring-ring rounded"
         >
-          {expanded ? 'Show fewer' : `Show all ${ALL_COLOR_BLINDNESS_TYPES.length} types`}
+          {expanded
+            ? 'Show fewer'
+            : `Show all ${ALL_COLOR_BLINDNESS_TYPES.length} types`}
         </button>
       )}
     </div>
@@ -111,8 +130,11 @@ export function ColorBlindnessPreview({
 /**
  * Full Color Blindness Panel with all types and descriptions
  */
-export function ColorBlindnessPanelFull({ colors }: ColorBlindnessPanelFullProps) {
-  const [selectedColor, setSelectedColor] = React.useState<keyof ColorConfig>('primary')
+export function ColorBlindnessPanelFull({
+  colors,
+}: ColorBlindnessPanelFullProps) {
+  const [selectedColor, setSelectedColor] =
+    React.useState<keyof ColorConfig>('primary')
   const colorOptions: Array<{ key: keyof ColorConfig; label: string }> = [
     { key: 'primary', label: 'Primary' },
     { key: 'destructive', label: 'Destructive' },
@@ -151,28 +173,36 @@ export function ColorBlindnessPanelFull({ colors }: ColorBlindnessPanelFullProps
             className="w-full aspect-square rounded-lg border-2 border-border"
             style={{ backgroundColor: hex }}
           />
-          <span className="text-xs text-foreground font-medium block mt-1">Original</span>
+          <span className="text-xs text-foreground font-medium block mt-1">
+            Original
+          </span>
         </div>
-        {ALL_COLOR_BLINDNESS_TYPES.map(({ type, label, description, prevalence }) => {
-          const simulated = simulateColorBlindness(hex, type)
-          return (
-            <div key={type} className="text-center group relative">
-              <div
-                className="w-full aspect-square rounded-lg border border-border transition-all group-hover:border-primary"
-                style={{ backgroundColor: simulated }}
-              />
-              <span className="text-xs text-muted-foreground block mt-1">{label}</span>
-              {/* Tooltip */}
-              <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover:block z-10">
-                <div className="bg-popover text-popover-foreground text-xs p-2 rounded-lg shadow-lg border whitespace-nowrap">
-                  <p className="font-medium">{label}</p>
-                  <p className="text-muted-foreground">{description}</p>
-                  <p className="text-muted-foreground">Affects: {prevalence}</p>
+        {ALL_COLOR_BLINDNESS_TYPES.map(
+          ({ type, label, description, prevalence }) => {
+            const simulated = simulateColorBlindness(hex, type)
+            return (
+              <div key={type} className="text-center group relative">
+                <div
+                  className="w-full aspect-square rounded-lg border border-border transition-all group-hover:border-primary"
+                  style={{ backgroundColor: simulated }}
+                />
+                <span className="text-xs text-muted-foreground block mt-1">
+                  {label}
+                </span>
+                {/* Tooltip */}
+                <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover:block z-10">
+                  <div className="bg-popover text-popover-foreground text-xs p-2 rounded-lg shadow-lg border whitespace-nowrap">
+                    <p className="font-medium">{label}</p>
+                    <p className="text-muted-foreground">{description}</p>
+                    <p className="text-muted-foreground">
+                      Affects: {prevalence}
+                    </p>
+                  </div>
                 </div>
               </div>
-            </div>
-          )
-        })}
+            )
+          }
+        )}
       </div>
     </div>
   )
@@ -181,7 +211,10 @@ export function ColorBlindnessPanelFull({ colors }: ColorBlindnessPanelFullProps
 /**
  * Enhanced Export Panel with complete theme output
  */
-export function EnhancedExportPanel({ theme, typography }: EnhancedExportPanelProps) {
+export function EnhancedExportPanel({
+  theme,
+  typography,
+}: EnhancedExportPanelProps) {
   const [exportFormat, setExportFormat] = React.useState<
     'json' | 'css' | 'tailwind' | 'scss' | 'figma'
   >('css')
@@ -212,10 +245,16 @@ export function EnhancedExportPanel({ theme, typography }: EnhancedExportPanelPr
       lines.push('', '  /* Typography */')
       const fontConfig = FONTS.find((f) => f.id === typography.fontFamily)
       const sizeConfig = SCALES.find((s) => s.id === typography.sizeScale)
-      lines.push(`  --font-sans: ${fontConfig?.family || 'system-ui, sans-serif'};`)
+      lines.push(
+        `  --font-sans: ${fontConfig?.family || 'system-ui, sans-serif'};`
+      )
       lines.push(`  --font-size-base: ${sizeConfig?.multiplier || 1}rem;`)
-      lines.push(`  --font-size-sm: calc(0.875rem * ${sizeConfig?.multiplier || 1});`)
-      lines.push(`  --font-size-lg: calc(1.125rem * ${sizeConfig?.multiplier || 1});`)
+      lines.push(
+        `  --font-size-sm: calc(0.875rem * ${sizeConfig?.multiplier || 1});`
+      )
+      lines.push(
+        `  --font-size-lg: calc(1.125rem * ${sizeConfig?.multiplier || 1});`
+      )
     }
 
     if (includeShadows) {
@@ -248,7 +287,9 @@ export function EnhancedExportPanel({ theme, typography }: EnhancedExportPanelPr
     if (includeTypography) {
       lines.push('', '// Typography')
       const fontConfig = FONTS.find((f) => f.id === typography.fontFamily)
-      lines.push(`$font-sans: ${fontConfig?.family || 'system-ui, sans-serif'};`)
+      lines.push(
+        `$font-sans: ${fontConfig?.family || 'system-ui, sans-serif'};`
+      )
     }
 
     return lines.join('\n')
@@ -268,19 +309,20 @@ export function EnhancedExportPanel({ theme, typography }: EnhancedExportPanelPr
 
     Object.entries(theme.colors).forEach(([key, value]) => {
       const kebabKey = key.replace(/([A-Z])/g, '-$1').toLowerCase()
-      ;(config.theme as Record<string, Record<string, Record<string, string>>>).extend.colors[
-        kebabKey
-      ] = `hsl(${value})`
+      ;(
+        config.theme as Record<string, Record<string, Record<string, string>>>
+      ).extend.colors[kebabKey] = `hsl(${value})`
     })
 
     if (includeBorders) {
-      ;(config.theme as Record<string, Record<string, Record<string, string>>>).extend.borderRadius =
-        {
-          sm: theme.borders.radius.sm,
-          md: theme.borders.radius.md,
-          lg: theme.borders.radius.lg,
-          xl: theme.borders.radius.xl,
-        }
+      ;(
+        config.theme as Record<string, Record<string, Record<string, string>>>
+      ).extend.borderRadius = {
+        sm: theme.borders.radius.sm,
+        md: theme.borders.radius.md,
+        lg: theme.borders.radius.lg,
+        xl: theme.borders.radius.xl,
+      }
     }
 
     if (includeTypography) {
@@ -293,7 +335,9 @@ export function EnhancedExportPanel({ theme, typography }: EnhancedExportPanelPr
     }
 
     if (includeShadows) {
-      ;(config.theme as Record<string, Record<string, Record<string, string>>>).extend.boxShadow = {
+      ;(
+        config.theme as Record<string, Record<string, Record<string, string>>>
+      ).extend.boxShadow = {
         sm: theme.shadows.sm,
         md: theme.shadows.md,
         lg: theme.shadows.lg,
@@ -388,25 +432,33 @@ export function EnhancedExportPanel({ theme, typography }: EnhancedExportPanelPr
     <div className="space-y-4">
       {/* Format Selection */}
       <div className="space-y-2">
-        <label className="text-sm font-medium text-foreground">Export Format</label>
-        <div className="flex gap-2 flex-wrap" role="radiogroup" aria-label="Export format">
-          {(['css', 'scss', 'tailwind', 'json', 'figma'] as const).map((format) => (
-            <button
-              key={format}
-              onClick={() => setExportFormat(format)}
-              className={cn(
-                'px-3 py-1.5 text-sm rounded-md capitalize transition-colors',
-                'focus:outline-none focus:ring-2 focus:ring-ring',
-                exportFormat === format
-                  ? 'bg-primary text-primary-foreground'
-                  : 'bg-muted text-muted-foreground hover:bg-muted/80'
-              )}
-              role="radio"
-              aria-checked={exportFormat === format}
-            >
-              {format === 'figma' ? 'Figma Tokens' : format.toUpperCase()}
-            </button>
-          ))}
+        <label className="text-sm font-medium text-foreground">
+          Export Format
+        </label>
+        <div
+          className="flex gap-2 flex-wrap"
+          role="radiogroup"
+          aria-label="Export format"
+        >
+          {(['css', 'scss', 'tailwind', 'json', 'figma'] as const).map(
+            (format) => (
+              <button
+                key={format}
+                onClick={() => setExportFormat(format)}
+                className={cn(
+                  'px-3 py-1.5 text-sm rounded-md capitalize transition-colors',
+                  'focus:outline-none focus:ring-2 focus:ring-ring',
+                  exportFormat === format
+                    ? 'bg-primary text-primary-foreground'
+                    : 'bg-muted text-muted-foreground hover:bg-muted/80'
+                )}
+                role="radio"
+                aria-checked={exportFormat === format}
+              >
+                {format === 'figma' ? 'Figma Tokens' : format.toUpperCase()}
+              </button>
+            )
+          )}
         </div>
       </div>
 
@@ -447,7 +499,7 @@ export function EnhancedExportPanel({ theme, typography }: EnhancedExportPanelPr
       {/* Code Preview */}
       <div className="relative">
         <pre
-          className="p-4 rounded-lg bg-muted/50 border border-border overflow-x-auto text-xs font-mono text-foreground max-h-64"
+          className="p-4 rounded-lg bg-muted/50 border border-border overflow-x-auto scrollbar-hide text-xs font-mono text-foreground max-h-64"
           aria-label="Export preview"
         >
           {getExportContent()}

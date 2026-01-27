@@ -109,7 +109,7 @@ function DefaultToolResult({
         />
       </CardHeader>
       <CardContent className="">
-        <pre className="text-xs overflow-auto max-h-64 bg-muted p-2 rounded">
+        <pre className="text-xs overflow-auto scrollbar-hide max-h-64 bg-muted p-2 rounded">
           {sanitizedResult}
         </pre>
       </CardContent>
@@ -176,7 +176,7 @@ export function ClarityToolResult({
             <p className="text-xs text-muted-foreground">
               {escapeHtml(error.message)}
             </p>
-            <pre className="text-xs overflow-auto max-h-32 bg-muted p-2 rounded mt-2">
+            <pre className="text-xs overflow-auto scrollbar-hide max-h-32 bg-muted p-2 rounded mt-2">
               {JSON.stringify(result, null, 2)}
             </pre>
           </CardContent>

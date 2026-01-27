@@ -352,7 +352,7 @@ export function KeyboardShortcutsModal({
             </div>
 
             {/* Content */}
-            <div className="flex-1 overflow-y-auto p-5">
+            <div className="flex-1 overflow-y-auto scrollbar-hide p-5">
               {groupedShortcuts.length === 0 ? (
                 <motion.div
                   {...ANIMATION_PRESETS.slideUp}

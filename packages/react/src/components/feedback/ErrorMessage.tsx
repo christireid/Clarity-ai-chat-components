@@ -388,7 +388,7 @@ export function ErrorMessage({
             {showDetails && (
               <motion.pre
                 {...ANIMATION_PRESETS.collapse}
-                className="text-xs bg-muted/50 rounded p-3 overflow-x-auto font-mono"
+                className="text-xs bg-muted/50 rounded p-3 overflow-x-auto scrollbar-hide font-mono"
               >
                 {errorDetails.technicalDetails}
               </motion.pre>

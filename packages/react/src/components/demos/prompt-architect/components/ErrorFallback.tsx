@@ -58,7 +58,7 @@ export function ErrorFallback({
           <summary className="text-xs text-muted-foreground cursor-pointer hover:text-foreground">
             Show technical details
           </summary>
-          <pre className="mt-2 p-3 text-xs bg-muted rounded-lg overflow-auto max-h-32 text-foreground">
+          <pre className="mt-2 p-3 text-xs bg-muted rounded-lg overflow-auto scrollbar-hide max-h-32 text-foreground">
             {error.stack || error.toString()}
           </pre>
         </details>

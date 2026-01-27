@@ -123,7 +123,7 @@ export const EditableMessageContent = React.memo<EditableMessageContentProps>(
           onChange={(e) => setEditValue(e.target.value)}
           onKeyDown={handleKeyDown}
           className={cn(
-            'min-h-[100px] max-h-64 overflow-y-auto resize-none',
+            'min-h-[100px] max-h-64 overflow-y-auto scrollbar-hide resize-none',
             'bg-background border-2',
             isOverLimit
               ? 'border-amber-500/70 focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20'

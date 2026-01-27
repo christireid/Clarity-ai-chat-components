@@ -323,7 +323,7 @@ export function MentionInput({
         (prefersReducedMotion ? (
           <div
             ref={suggestionsRef}
-            className="absolute bottom-full mb-2 left-0 right-0 max-h-64 overflow-y-auto bg-background border rounded-lg shadow-lg z-50"
+            className="absolute bottom-full mb-2 left-0 right-0 max-h-64 overflow-y-auto scrollbar-hide bg-background border rounded-lg shadow-lg z-50"
           >
             {suggestions.map((user, index) => (
               <button
@@ -372,7 +372,7 @@ export function MentionInput({
             {...ANIMATION_PRESETS.slideDown}
             transition={{ duration: durations.fast }}
             viewport={{ once: true }}
-            className="absolute bottom-full mb-2 left-0 right-0 max-h-64 overflow-y-auto bg-background border rounded-lg shadow-lg z-50"
+            className="absolute bottom-full mb-2 left-0 right-0 max-h-64 overflow-y-auto scrollbar-hide bg-background border rounded-lg shadow-lg z-50"
           >
             {suggestions.map((user, index) => (
               <button
