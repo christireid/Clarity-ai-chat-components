@@ -68,7 +68,24 @@ export {
 // INPUT COMPONENTS
 // ============================================================================
 
+export {
+  AdvancedChatInput,
+  type AdvancedChatInputProps,
+} from './components/input/AdvancedChatInput'
 export { VoiceInput, type VoiceInputProps } from './components/input/VoiceInput'
+export { FileUpload, type FileUploadProps } from './components/input/FileUpload'
+export {
+  MentionSystem,
+  type MentionSystemProps,
+} from './components/input/MentionSystem'
+export {
+  StructuredInputBuilder,
+  type StructuredInputBuilderProps,
+} from './components/input/StructuredInputBuilder'
+export {
+  OutputPreferenceSelector,
+  type OutputPreferenceSelectorProps,
+} from './components/input/OutputPreferenceSelector'
 
 // ============================================================================
 // RENDERING COMPONENTS
@@ -160,6 +177,22 @@ export {
 // ============================================================================
 
 export {
+  MessageSearch,
+  type MessageSearchProps,
+} from './components/search/MessageSearch'
+export {
+  AdvancedMessageSearch,
+  type AdvancedMessageSearchProps,
+} from './components/search/AdvancedMessageSearch'
+export {
+  AdvancedMessageSearchSemantic,
+  type AdvancedMessageSearchSemanticProps,
+} from './components/search/AdvancedMessageSearchSemantic'
+export {
+  SemanticMessageSearch,
+  type SemanticMessageSearchProps,
+} from './components/search/semantic/SemanticMessageSearch'
+export {
   SearchFiltersPanel,
   type SearchFiltersPanelProps,
 } from './components/search/components/SearchFiltersPanel'
@@ -167,6 +200,10 @@ export {
   SearchResultsSummary,
   type SearchResultsSummaryProps,
 } from './components/search/components/SearchResultsSummary'
+export {
+  SavedSearchesPanel,
+  type SavedSearchesPanelProps,
+} from './components/search/components/SavedSearchesPanel'
 
 // ============================================================================
 // PROMPT COMPONENTS

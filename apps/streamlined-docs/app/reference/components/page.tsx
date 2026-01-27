@@ -19,6 +19,7 @@ import {
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Breadcrumbs } from '@/components/Navigation/Breadcrumbs'
+import { durations } from '@/lib/animations'
 
 interface ComponentInfo {
   name: string
@@ -30,13 +31,26 @@ interface ComponentInfo {
 }
 
 const components: ComponentInfo[] = [
+  // ====== CHAT COMPONENTS ======
+  {
+    name: 'ClarityChatApp',
+    slug: 'clarity-chat-app',
+    description:
+      'The main drop-in component for AI chat. Handles streaming, memory, rate limiting, and more.',
+    category: 'Chat',
+  },
   {
     name: 'ClarityChat',
     slug: 'clarity-chat',
     description:
-      'The main drop-in component for AI chat. Handles streaming, memory, rate limiting, and more.',
+      'Full-featured chat component with advanced customization options.',
     category: 'Chat',
-    isNew: false,
+  },
+  {
+    name: 'ClarityChatSimple',
+    slug: 'clarity-chat-simple',
+    description: 'Simplified chat component for basic use cases.',
+    category: 'Chat',
   },
   {
     name: 'ChatWindow',
@@ -52,35 +66,284 @@ const components: ComponentInfo[] = [
     category: 'Chat',
   },
   {
-    name: 'MessageBubble',
-    slug: 'message-bubble',
-    description: 'Individual message display component with actions.',
+    name: 'MobileChatWindow',
+    slug: 'mobile-chat-window',
+    description: 'Mobile-optimized chat interface with touch interactions.',
+    category: 'Chat',
+  },
+  {
+    name: 'ChatWithErrorBoundary',
+    slug: 'chat-with-error-boundary',
+    description: 'Chat component wrapped with error recovery.',
+    category: 'Chat',
+  },
+
+  // ====== MESSAGE COMPONENTS ======
+  {
+    name: 'MessageList',
+    slug: 'message-list',
+    description: 'Scrollable list of chat messages.',
     category: 'Messages',
   },
   {
-    name: 'StreamingText',
-    slug: 'streaming-text',
-    description: 'Component for displaying streaming text with typing effect.',
+    name: 'VirtualizedMessageList',
+    slug: 'virtualized-message-list',
+    description: 'Performant virtualized message list for large conversations.',
+    category: 'Messages',
+  },
+  {
+    name: 'StreamingMessage',
+    slug: 'streaming-message',
+    description: 'Real-time streaming message with typewriter effect.',
+    category: 'Messages',
+  },
+  {
+    name: 'MessageThreadView',
+    slug: 'message-thread-view',
+    description: 'Threaded conversation view with branching support.',
+    category: 'Messages',
+  },
+
+  // ====== INPUT COMPONENTS ======
+  {
+    name: 'AdvancedChatInput',
+    slug: 'advanced-chat-input',
+    description: 'Feature-rich input with mentions, file upload, and voice.',
+    category: 'Input',
+  },
+  {
+    name: 'VoiceInput',
+    slug: 'voice-input',
+    description: 'Voice-to-text input with audio recording.',
+    category: 'Input',
+  },
+  {
+    name: 'FileUpload',
+    slug: 'file-upload',
+    description: 'Drag-and-drop file upload with previews.',
+    category: 'Input',
+  },
+  {
+    name: 'MentionSystem',
+    slug: 'mention-system',
+    description: '@-mention autocomplete for users and entities.',
+    category: 'Input',
+  },
+  {
+    name: 'StructuredInputBuilder',
+    slug: 'structured-input-builder',
+    description: 'Build structured prompts with form fields.',
+    category: 'Input',
+  },
+  {
+    name: 'OutputPreferenceSelector',
+    slug: 'output-preference-selector',
+    description: 'Select preferred output format (markdown, JSON, etc.).',
+    category: 'Input',
+  },
+
+  // ====== RENDERING COMPONENTS ======
+  {
+    name: 'MarkdownRenderer',
+    slug: 'markdown-renderer',
+    description: 'Enhanced markdown with syntax highlighting and LaTeX.',
+    category: 'Rendering',
+  },
+
+  // ====== STREAMING COMPONENTS ======
+  {
+    name: 'StreamingProgress',
+    slug: 'streaming-progress',
+    description: 'Real-time progress indicator for streaming responses.',
     category: 'Streaming',
   },
   {
-    name: 'CodeBlock',
-    slug: 'code-block',
-    description: 'Syntax highlighted code block with copy functionality.',
-    category: 'Content',
+    name: 'StreamingCodeBlock',
+    slug: 'streaming-code-block',
+    description: 'Live syntax-highlighted code streaming.',
+    category: 'Streaming',
   },
   {
-    name: 'ThemeProvider',
-    slug: 'theme-provider',
-    description: 'Context provider for theming and dark mode.',
+    name: 'StreamingTextRenderer',
+    slug: 'streaming-text-renderer',
+    description: 'Smooth text streaming with typewriter animation.',
+    category: 'Streaming',
+  },
+
+  // ====== TOKEN OPTIMIZATION ======
+  {
+    name: 'TokenUsageMeter',
+    slug: 'token-usage-meter',
+    description: 'Real-time token usage visualization.',
+    category: 'Token Optimization',
+  },
+  {
+    name: 'TokenBudgetBar',
+    slug: 'token-budget-bar',
+    description: 'Progress bar for token budget tracking.',
+    category: 'Token Optimization',
+  },
+  {
+    name: 'TokenOptimizationPanel',
+    slug: 'token-optimization-panel',
+    description: 'Control panel for token optimization settings.',
+    category: 'Token Optimization',
+  },
+  {
+    name: 'TokenOptimizationDashboard',
+    slug: 'token-optimization-dashboard',
+    description: 'Comprehensive dashboard for token analytics.',
+    category: 'Token Optimization',
+  },
+  {
+    name: 'TokenCostPreview',
+    slug: 'token-cost-preview',
+    description: 'Preview estimated costs before sending.',
+    category: 'Token Optimization',
+  },
+  {
+    name: 'TokenCounter',
+    slug: 'token-counter',
+    description: 'Simple token counter badge.',
+    category: 'Token Optimization',
+  },
+  {
+    name: 'TokenOptimizationBadge',
+    slug: 'token-optimization-badge',
+    description: 'Badge showing optimization status.',
+    category: 'Token Optimization',
+  },
+
+  // ====== MEMORY COMPONENTS ======
+  {
+    name: 'MemoryActivityIndicator',
+    slug: 'memory-activity-indicator',
+    description: 'Visual indicator for memory operations.',
+    category: 'Memory',
+  },
+  {
+    name: 'MemoryInspector',
+    slug: 'memory-inspector',
+    description: 'Debug tool for inspecting conversation memory.',
+    category: 'Memory',
+  },
+
+  // ====== NAVIGATION & COMMAND ======
+  {
+    name: 'CommandPalette',
+    slug: 'command-palette',
+    description: 'Quick action command palette (Cmd+K).',
+    category: 'Navigation',
+  },
+  {
+    name: 'CommandPaletteEnhanced',
+    slug: 'command-palette-enhanced',
+    description: 'Enhanced command palette with fuzzy search.',
+    category: 'Navigation',
+  },
+
+  // ====== SEARCH COMPONENTS ======
+  {
+    name: 'MessageSearch',
+    slug: 'message-search',
+    description: 'Basic message search with keyword filtering.',
+    category: 'Search',
+  },
+  {
+    name: 'AdvancedMessageSearch',
+    slug: 'advanced-message-search',
+    description: 'Advanced search with filters and operators.',
+    category: 'Search',
+  },
+  {
+    name: 'AdvancedMessageSearchSemantic',
+    slug: 'advanced-message-search-semantic',
+    description: 'Semantic search with AI-powered relevance.',
+    category: 'Search',
+  },
+  {
+    name: 'SemanticMessageSearch',
+    slug: 'semantic-message-search',
+    description: 'Natural language semantic search.',
+    category: 'Search',
+  },
+  {
+    name: 'SearchFiltersPanel',
+    slug: 'search-filters-panel',
+    description: 'Filter panel for search refinement.',
+    category: 'Search',
+  },
+  {
+    name: 'SearchResultsSummary',
+    slug: 'search-results-summary',
+    description: 'Summary of search results with statistics.',
+    category: 'Search',
+  },
+  {
+    name: 'SavedSearchesPanel',
+    slug: 'saved-searches-panel',
+    description: 'Save and manage frequently used searches.',
+    category: 'Search',
+  },
+
+  // ====== PROMPT COMPONENTS ======
+  {
+    name: 'PromptLibrary',
+    slug: 'prompt-library',
+    description: 'Browse and select from saved prompts.',
+    category: 'Prompts',
+  },
+  {
+    name: 'TemplateMarketplace',
+    slug: 'template-marketplace',
+    description: 'Discover and install prompt templates.',
+    category: 'Prompts',
+  },
+  {
+    name: 'PromptVariablesEditor',
+    slug: 'prompt-variables-editor',
+    description: 'Edit variables in prompt templates.',
+    category: 'Prompts',
+  },
+
+  // ====== CONVERSATION COMPONENTS ======
+  {
+    name: 'ConversationTimeline',
+    slug: 'conversation-timeline',
+    description: 'Timeline view of conversation history.',
+    category: 'Conversation',
+  },
+  {
+    name: 'ConversationList',
+    slug: 'conversation-list',
+    description: 'List of all conversations with search.',
+    category: 'Conversation',
+  },
+
+  // ====== THEME COMPONENTS ======
+  {
+    name: 'ThemeSwitcher',
+    slug: 'theme-switcher',
+    description: 'Toggle between light/dark/system themes.',
     category: 'Theming',
   },
   {
-    name: 'FloatingChatWidget',
-    slug: 'floating-chat-widget',
-    description:
-      'A floating chat button that expands into a full chat interface.',
-    category: 'Chat',
+    name: 'ThemeSelector',
+    slug: 'theme-selector',
+    description: 'Select from multiple theme presets.',
+    category: 'Theming',
+  },
+  {
+    name: 'ThemeCustomizer',
+    slug: 'theme-customizer',
+    description: 'Customize theme colors and settings.',
+    category: 'Theming',
+  },
+  {
+    name: 'ThemePreview',
+    slug: 'theme-preview',
+    description: 'Preview theme changes in real-time.',
+    category: 'Theming',
   },
 ]
 
