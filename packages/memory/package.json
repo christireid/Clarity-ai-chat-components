@@ -75,5 +75,8 @@
   "dependencies": {
     "@clarity-chat/token-optimization": "workspace:*",
     "@clarity-chat/utils": "workspace:*"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }

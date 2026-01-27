@@ -126,5 +126,8 @@
   "homepage": "https://github.com/clarity-ai/token-optimization#readme",
   "bugs": {
     "url": "https://github.com/clarity-ai/token-optimization/issues"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }
