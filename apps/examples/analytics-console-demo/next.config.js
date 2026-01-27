@@ -1,18 +1,22 @@
+// @ts-check
+const baseNextConfig = require('../../../config/examples/next.config.base.cjs')
+
 /**
  * Next.js 16 Configuration for Analytics Console Demo
  *
- * Standalone output for deployment flexibility.
+ * Extends base config with standalone output for deployment flexibility.
+ * @type {import('next').NextConfig}
  */
 const nextConfig = {
-    reactStrictMode: true,
-    // Turbopack configuration (Next.js 16 - stable)
-    turbopack: {},
-    // Standalone output for containerized deployments
-    output: 'standalone',
-    // Optimize package imports for tree-shaking
-    experimental: {
-        optimizePackageImports: ['lucide-react'],
-    },
-};
-export default nextConfig;
-//# sourceMappingURL=next.config.js.map
+  ...baseNextConfig,
+
+  // Override base 'export' with 'standalone' for containerized deployments
+  output: 'standalone',
+
+  // Optimize package imports for tree-shaking
+  experimental: {
+    optimizePackageImports: ['lucide-react'],
+  },
+}
+
+module.exports = nextConfig

@@ -191,7 +191,11 @@
     "accessibility",
     "wcag"
   ],
-  "author": "Christi Reid <christi@codeclarity.ai>",
+  "author": {
+    "name": "Code & Clarity",
+    "email": "hello@codeandclarity.com",
+    "url": "https://codeandclarity.com"
+  },
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/christireid/Clarity-ai-chat-components/issues"
