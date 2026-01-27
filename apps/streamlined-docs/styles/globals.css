@@ -1,9 +1,9 @@
+/* Import Shiki code block styles for Night Owl theme - must be first */
+@import './shiki-code-block.css';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-/* Import Shiki code block styles for Night Owl theme */
-@import './shiki-code-block.css';
 
 /* Enhanced animations for 2025 design */
 @keyframes shimmer {
