@@ -294,7 +294,7 @@ export function ConversationSharing({
     <div className={cn('space-y-4', className)}>
       {/* Header */}
       <Card>
-        <CardHeader>
+        <CardHeader className="">
           <div className="flex items-center justify-between">
             <CardTitle>Share Conversation</CardTitle>
             <Button onClick={() => setIsCreating(!isCreating)} size="sm">
@@ -430,7 +430,7 @@ export function ConversationSharing({
       {/* Existing shares */}
       {shares.length > 0 && (
         <Card>
-          <CardHeader>
+          <CardHeader className="">
             <CardTitle>Active Share Links ({shares.length})</CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
@@ -759,7 +759,7 @@ export function ShareAnalyticsDashboard({
   return (
     <div className={cn('space-y-4', className)}>
       <Card>
-        <CardHeader>
+        <CardHeader className="">
           <CardTitle>Share Analytics</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">

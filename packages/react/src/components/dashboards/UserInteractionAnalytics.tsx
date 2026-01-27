@@ -446,7 +446,7 @@ export function UserInteractionAnalytics({
           <CardHeader className="pb-2">
             <CardDescription>Total Sessions</CardDescription>
           </CardHeader>
-          <CardContent>
+          <CardContent className="">
             <div className="text-2xl font-bold">
               {metrics?.totalSessions || 0}
             </div>
@@ -457,7 +457,7 @@ export function UserInteractionAnalytics({
           <CardHeader className="pb-2">
             <CardDescription>Avg Duration</CardDescription>
           </CardHeader>
-          <CardContent>
+          <CardContent className="">
             <div className="text-2xl font-bold">
               {metrics ? formatDuration(metrics.avgSessionDuration) : '0s'}
             </div>
@@ -468,7 +468,7 @@ export function UserInteractionAnalytics({
           <CardHeader className="pb-2">
             <CardDescription>Bounce Rate</CardDescription>
           </CardHeader>
-          <CardContent>
+          <CardContent className="">
             <div className="text-2xl font-bold">
               {metrics ? `${(metrics.bounceRate * 100).toFixed(1)}%` : '0%'}
             </div>
@@ -479,7 +479,7 @@ export function UserInteractionAnalytics({
           <CardHeader className="pb-2">
             <CardDescription>Engagement Score</CardDescription>
           </CardHeader>
-          <CardContent>
+          <CardContent className="">
             <div className="text-2xl font-bold">
               {metrics?.engagementScore || 0}
               <span className="text-sm text-muted-foreground">/100</span>
@@ -489,10 +489,10 @@ export function UserInteractionAnalytics({
       </div>
 
       <Card>
-        <CardHeader>
+        <CardHeader className="">
           <CardTitle>Session Analytics</CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="">
           <div className="space-y-2">
             <div className="flex justify-between">
               <span className="text-sm text-muted-foreground">
@@ -524,11 +524,11 @@ export function UserInteractionAnalytics({
   const renderFeatures = () => (
     <div className="space-y-4">
       <Card>
-        <CardHeader>
+        <CardHeader className="">
           <CardTitle>Top Features</CardTitle>
           <CardDescription>Most discovered and used features</CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="">
           <div className="space-y-3">
             {metrics?.topFeatures.length === 0 && (
               <p className="text-sm text-muted-foreground text-center py-4">
@@ -573,11 +573,11 @@ export function UserInteractionAnalytics({
   const renderJourney = () => (
     <div className="space-y-4">
       <Card>
-        <CardHeader>
+        <CardHeader className="">
           <CardTitle>Recent User Journey</CardTitle>
           <CardDescription>Last 10 interactions</CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="">
           <div className="space-y-2">
             {events
               .slice(-10)
@@ -624,11 +624,11 @@ export function UserInteractionAnalytics({
   const renderHeatmap = () => (
     <div className="space-y-4">
       <Card>
-        <CardHeader>
+        <CardHeader className="">
           <CardTitle>Click Heatmap</CardTitle>
           <CardDescription>Click density visualization</CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="">
           <div className="space-y-2">
             <div className="text-sm text-muted-foreground">
               Total clicks: {heatmap.length}
@@ -665,7 +665,7 @@ export function UserInteractionAnalytics({
 
   return (
     <Card className={cn('w-full', className)}>
-      <CardHeader>
+      <CardHeader className="">
         <div className="flex items-center justify-between">
           <div>
             <CardTitle>User Interaction Analytics</CardTitle>
@@ -724,7 +724,7 @@ export function UserInteractionAnalytics({
         </div>
       </CardHeader>
 
-      <CardContent>
+      <CardContent className="">
         {prefersReducedMotion ? (
           <div key={selectedView}>
             {selectedView === 'overview' && renderOverview()}

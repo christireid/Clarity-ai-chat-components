@@ -325,7 +325,7 @@ function TemplatePreviewDialog({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-4xl max-h-[80vh]">
-        <DialogHeader>
+        <DialogHeader className="">
           <div className="flex items-center gap-3">
             <Avatar>
               <AvatarImage src={template.author.avatar} />
@@ -578,11 +578,11 @@ export function TemplateMarketplace({
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {Array.from({ length: 6 }).map((_, i) => (
           <Card key={i} className="animate-pulse">
-            <CardHeader>
+            <CardHeader className="">
               <div className="h-4 bg-muted rounded w-3/4 mb-2"></div>
               <div className="h-3 bg-muted rounded w-1/2"></div>
             </CardHeader>
-            <CardContent>
+            <CardContent className="">
               <div className="h-20 bg-muted rounded mb-4"></div>
               <div className="flex gap-2">
                 <div className="h-8 bg-muted rounded flex-1"></div>

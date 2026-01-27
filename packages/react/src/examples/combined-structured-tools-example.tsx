@@ -1,14 +1,14 @@
 /**
  * Combined Structured Output & Tools Example
- * 
+ *
  * Demonstrates using both useClarityObject and tool UI registry together
  * in a real-world scenario: an e-commerce assistant that generates product
  * recommendations and uses tools for additional information.
- * 
+ *
  * @example
  * ```tsx
  * import { ECommerceAssistantExample } from '@clarity-chat/react/examples/combined-structured-tools-example'
- * 
+ *
  * export default function Page() {
  *   return <ECommerceAssistantExample />
  * }
@@ -27,7 +27,15 @@ import {
   createToolUIRegistry,
   type ToolComponentProps,
 } from '@clarity-chat/react'
-import { Card, CardContent, CardHeader, CardTitle, Badge, Button, Input } from '@clarity-chat/primitives'
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  Badge,
+  Button,
+  Input,
+} from '@clarity-chat/primitives'
 
 /**
  * Product interface for structured output
@@ -55,8 +63,8 @@ interface ProductRecommendation {
 /**
  * Price Comparison Tool Result Component
  */
-function PriceComparisonToolResult({ 
-  data 
+function PriceComparisonToolResult({
+  data,
 }: ToolComponentProps<{
   productId: string
   comparisons: Array<{
@@ -66,24 +74,24 @@ function PriceComparisonToolResult({
     url?: string
   }>
 }>) {
-  const cheapest = data.comparisons.reduce((min, curr) => 
+  const cheapest = data.comparisons.reduce((min, curr) =>
     curr.price < min.price ? curr : min
   )
 
   return (
     <Card className="border-green-200 bg-green-50/50">
-      <CardHeader>
+      <CardHeader className="">
         <CardTitle className="text-base flex items-center gap-2">
           💰 Price Comparison
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-3">
         {data.comparisons.map((comparison, idx) => (
-          <div 
+          <div
             key={idx}
             className={`flex items-center justify-between p-2 rounded ${
-              comparison.store === cheapest.store 
-                ? 'bg-green-100 border border-green-300' 
+              comparison.store === cheapest.store
+                ? 'bg-green-100 border border-green-300'
                 : 'bg-muted/50'
             }`}
           >
@@ -94,11 +102,13 @@ function PriceComparisonToolResult({
               </div>
             </div>
             <div className="flex items-center gap-2">
-              <div className={`text-lg font-bold ${
-                comparison.store === cheapest.store 
-                  ? 'text-green-600' 
-                  : 'text-foreground'
-              }`}>
+              <div
+                className={`text-lg font-bold ${
+                  comparison.store === cheapest.store
+                    ? 'text-green-600'
+                    : 'text-foreground'
+                }`}
+              >
                 ${comparison.price.toFixed(2)}
               </div>
               {comparison.store === cheapest.store && (
@@ -117,8 +127,8 @@ function PriceComparisonToolResult({
 /**
  * Review Summary Tool Result Component
  */
-function ReviewSummaryToolResult({ 
-  data 
+function ReviewSummaryToolResult({
+  data,
 }: ToolComponentProps<{
   productId: string
   averageRating: number
@@ -129,12 +139,14 @@ function ReviewSummaryToolResult({
 }>) {
   return (
     <Card className="border-blue-200 bg-blue-50/50">
-      <CardHeader>
+      <CardHeader className="">
         <CardTitle className="text-base flex items-center gap-2">
           ⭐ Review Summary
         </CardTitle>
         <div className="flex items-center gap-2 text-sm">
-          <span className="text-2xl font-bold">{data.averageRating.toFixed(1)}</span>
+          <span className="text-2xl font-bold">
+            {data.averageRating.toFixed(1)}
+          </span>
           <span className="text-muted-foreground">
             ({data.totalReviews} reviews)
           </span>
@@ -183,13 +195,13 @@ const toolRegistry = createToolUIRegistry({
 
 /**
  * E-Commerce Assistant Example
- * 
+ *
  * Combines structured product recommendations with tool-based
  * price comparison and review summaries.
  */
 export function ECommerceAssistantExample() {
   const [searchQuery, setSearchQuery] = React.useState('gaming laptop')
-  
+
   // Structured object generation for product recommendations
   const productRecommendation = useClarityObject<ProductRecommendation>({
     api: '/api/generate-products',
@@ -248,7 +260,7 @@ export function ECommerceAssistantExample() {
                 }
               }}
             />
-            <Button 
+            <Button
               onClick={handleGenerateRecommendations}
               disabled={productRecommendation.isLoading}
             >
@@ -270,7 +282,7 @@ export function ECommerceAssistantExample() {
             </div>
             {productRecommendation.object.products.map((product, idx) => (
               <Card key={idx} className="hover:shadow-md transition-shadow">
-                <CardHeader>
+                <CardHeader className="">
                   <div className="flex items-start justify-between">
                     <CardTitle className="text-sm">{product.name}</CardTitle>
                     <div className="text-lg font-bold text-primary">
@@ -283,7 +295,7 @@ export function ECommerceAssistantExample() {
                     </div>
                   )}
                 </CardHeader>
-                <CardContent>
+                <CardContent className="">
                   <p className="text-xs text-muted-foreground line-clamp-2">
                     {product.description}
                   </p>
@@ -316,19 +328,21 @@ export function ECommerceAssistantExample() {
             <div className="text-sm font-medium text-muted-foreground">
               Tool Results ({toolResults.length})
             </div>
-            {Array.from(toolResultsByMessage.entries()).map(([messageId, results]) => (
-              <div key={messageId} className="space-y-2">
-                {results.map(({ toolCall, result }, idx) => (
-                  <ClarityToolResult
-                    key={`${messageId}-${idx}`}
-                    registry={toolRegistry}
-                    toolCall={toolCall}
-                    result={result}
-                    messages={chatMessages}
-                  />
-                ))}
-              </div>
-            ))}
+            {Array.from(toolResultsByMessage.entries()).map(
+              ([messageId, results]) => (
+                <div key={messageId} className="space-y-2">
+                  {results.map(({ toolCall, result }, idx) => (
+                    <ClarityToolResult
+                      key={`${messageId}-${idx}`}
+                      registry={toolRegistry}
+                      toolCall={toolCall}
+                      result={result}
+                      messages={chatMessages}
+                    />
+                  ))}
+                </div>
+              )
+            )}
           </div>
         )}
       </div>

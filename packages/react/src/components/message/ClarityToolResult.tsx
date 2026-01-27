@@ -102,13 +102,13 @@ function DefaultToolResult({
 
   return (
     <Card className="mt-2">
-      <CardHeader>
+      <CardHeader className="">
         <h4
           className="text-sm font-semibold"
           dangerouslySetInnerHTML={{ __html: `Tool: ${escapedName}` }}
         />
       </CardHeader>
-      <CardContent>
+      <CardContent className="">
         <pre className="text-xs overflow-auto max-h-64 bg-muted p-2 rounded">
           {sanitizedResult}
         </pre>
@@ -167,12 +167,12 @@ export function ClarityToolResult({
       errorFallback ||
       (({ error, toolCall }: { error: Error; toolCall: ClarityToolCall }) => (
         <Card className="mt-2 border-destructive/20 bg-destructive/5">
-          <CardHeader>
+          <CardHeader className="">
             <div className="text-sm font-semibold text-destructive">
               Error rendering tool: {toolCall.name}
             </div>
           </CardHeader>
-          <CardContent>
+          <CardContent className="">
             <p className="text-xs text-muted-foreground">
               {escapeHtml(error.message)}
             </p>

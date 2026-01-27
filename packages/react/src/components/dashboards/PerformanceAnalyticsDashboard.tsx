@@ -372,7 +372,7 @@ export function PerformanceAnalyticsDashboard({
     <div className={cn('space-y-4', className)}>
       {/* Header */}
       <Card className="shadow-sm">
-        <CardHeader>
+        <CardHeader className="">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
@@ -419,10 +419,10 @@ export function PerformanceAnalyticsDashboard({
       {/* Web Vitals */}
       {showWebVitals && data.webVitals.length > 0 && (
         <Card className="shadow-sm">
-          <CardHeader>
+          <CardHeader className="">
             <CardTitle className="text-sm">Core Web Vitals</CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="">
             <div
               className={cn(
                 'grid gap-4',
@@ -472,13 +472,13 @@ export function PerformanceAnalyticsDashboard({
       {/* Component Metrics */}
       {showComponentMetrics && data.componentMetrics.length > 0 && (
         <Card className="shadow-sm">
-          <CardHeader>
+          <CardHeader className="">
             <CardTitle className="text-sm">Component Performance</CardTitle>
             <CardDescription className="text-xs">
               {data.componentMetrics.length} components tracked
             </CardDescription>
           </CardHeader>
-          <CardContent>
+          <CardContent className="">
             <div className="space-y-2">
               {data.componentMetrics.slice(0, compact ? 3 : 5).map((metric) => (
                 <div
@@ -516,10 +516,10 @@ export function PerformanceAnalyticsDashboard({
       {/* Memory Usage */}
       {showMemoryUsage && data.memoryUsage && (
         <Card className="shadow-sm">
-          <CardHeader>
+          <CardHeader className="">
             <CardTitle className="text-sm">Memory Usage</CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="">
             <div className="space-y-3">
               <div className="flex items-center justify-between">
                 <span className="text-sm text-muted-foreground">Used</span>
@@ -558,13 +558,13 @@ export function PerformanceAnalyticsDashboard({
       {/* Network Metrics */}
       {showNetworkMetrics && data.networkMetrics.length > 0 && (
         <Card className="shadow-sm">
-          <CardHeader>
+          <CardHeader className="">
             <CardTitle className="text-sm">Network Performance</CardTitle>
             <CardDescription className="text-xs">
               {data.networkMetrics.length} requests tracked
             </CardDescription>
           </CardHeader>
-          <CardContent>
+          <CardContent className="">
             <div className="space-y-2">
               {data.networkMetrics
                 .slice(0, compact ? 3 : 5)

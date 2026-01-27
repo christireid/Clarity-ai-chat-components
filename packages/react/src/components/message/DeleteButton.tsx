@@ -125,7 +125,7 @@ export const DeleteButton: React.FC<DeleteButtonProps> = ({
       {/* Confirmation Dialog */}
       <Dialog open={showDialog} onOpenChange={setShowDialog}>
         <DialogContent>
-          <DialogHeader>
+          <DialogHeader className="">
             <DialogTitle>Delete message?</DialogTitle>
             <DialogDescription>
               {messageType === 'assistant'
@@ -133,7 +133,7 @@ export const DeleteButton: React.FC<DeleteButtonProps> = ({
                 : 'This will remove your message and any responses to it. This action cannot be undone.'}
             </DialogDescription>
           </DialogHeader>
-          <DialogFooter>
+          <DialogFooter className="">
             <Button variant="outline" onClick={() => setShowDialog(false)}>
               Cancel
             </Button>

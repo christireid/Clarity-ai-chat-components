@@ -36,7 +36,7 @@ vi.mock('../../hooks/use-clarity-chat', () => ({
 }))
 
 // Import the mocked hook for test manipulation
-import { useClarityChat } from '../../hooks/chat/use-clarity-chat'
+import { useClarityChat } from '../../hooks/use-clarity-chat'
 
 const mockUseClarityChat = vi.mocked(useClarityChat)
 

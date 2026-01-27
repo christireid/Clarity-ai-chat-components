@@ -433,7 +433,7 @@ Generation Time: ${summary.generationTime}ms
     <div className={cn('space-y-4', className)}>
       {/* Controls */}
       <Card className="shadow-sm">
-        <CardHeader>
+        <CardHeader className="">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
@@ -530,7 +530,7 @@ Generation Time: ${summary.generationTime}ms
         (prefersReducedMotion ? (
           <div key={currentSummary.id}>
             <Card className="shadow-md">
-              <CardHeader>
+              <CardHeader className="">
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
                     <div className="flex items-center gap-2">
@@ -645,7 +645,7 @@ Generation Time: ${summary.generationTime}ms
               viewport={{ once: true }}
             >
               <Card className="shadow-md">
-                <CardHeader>
+                <CardHeader className="">
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
                       <div className="flex items-center gap-2">
@@ -770,7 +770,7 @@ Generation Time: ${summary.generationTime}ms
       {/* Summary History */}
       {showHistory && summaryHistory.length > 1 && (
         <Card className="shadow-sm">
-          <CardHeader>
+          <CardHeader className="">
             <CardTitle className="text-sm">Summary History</CardTitle>
             <CardDescription className="text-xs">
               {summaryHistory.length} previous summaries

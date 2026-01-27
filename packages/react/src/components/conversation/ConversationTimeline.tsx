@@ -144,7 +144,7 @@ export const ConversationTimeline: React.FC<ConversationTimelineProps> = ({
           </CardDescription>
         </div>
       </CardHeader>
-      <CardContent>
+      <CardContent className="">
         <ol className="relative space-y-4 before:absolute before:left-[15px] before:top-2 before:h-[calc(100%-16px)] before:w-px before:bg-border/70">
           {prefersReducedMotion ? (
             sortedEvents.map((event, index) => {

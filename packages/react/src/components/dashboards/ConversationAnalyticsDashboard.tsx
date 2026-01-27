@@ -630,7 +630,7 @@ export function ConversationAnalyticsDashboard({
     >
       {/* Header */}
       <Card className="shadow-sm">
-        <CardHeader>
+        <CardHeader className="">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
@@ -704,10 +704,10 @@ export function ConversationAnalyticsDashboard({
           <div className="space-y-4">
             {/* Quality Score */}
             <Card className="shadow-sm">
-              <CardHeader>
+              <CardHeader className="">
                 <CardTitle className="text-sm">Conversation Quality</CardTitle>
               </CardHeader>
-              <CardContent>
+              <CardContent className="">
                 <div className="flex items-center gap-4">
                   <div className="text-4xl font-bold" aria-hidden="true">
                     {Math.round(analytics.quality.score)}
@@ -762,7 +762,7 @@ export function ConversationAnalyticsDashboard({
             {/* Topics */}
             {analytics.topics.length > 0 && (
               <Card className="shadow-sm">
-                <CardHeader>
+                <CardHeader className="">
                   <CardTitle className="text-sm">Topics Discussed</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-3">
@@ -838,10 +838,10 @@ export function ConversationAnalyticsDashboard({
 
             {/* Sentiment */}
             <Card className="shadow-sm">
-              <CardHeader>
+              <CardHeader className="">
                 <CardTitle className="text-sm">Sentiment Analysis</CardTitle>
               </CardHeader>
-              <CardContent>
+              <CardContent className="">
                 <div className="flex items-center gap-4 mb-4">
                   <Badge
                     variant={
@@ -892,7 +892,7 @@ export function ConversationAnalyticsDashboard({
             {/* Key Moments */}
             {detailed && analytics.keyMoments.length > 0 && (
               <Card className="shadow-sm">
-                <CardHeader>
+                <CardHeader className="">
                   <CardTitle className="text-sm">Key Moments</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-2">
@@ -925,7 +925,7 @@ export function ConversationAnalyticsDashboard({
 
             {/* Summary */}
             <Card className="shadow-sm">
-              <CardHeader>
+              <CardHeader className="">
                 <CardTitle className="text-sm">Conversation Summary</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
@@ -985,12 +985,12 @@ export function ConversationAnalyticsDashboard({
             >
               {/* Quality Score */}
               <Card className="shadow-sm">
-                <CardHeader>
+                <CardHeader className="">
                   <CardTitle className="text-sm">
                     Conversation Quality
                   </CardTitle>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="">
                   <div className="flex items-center gap-4">
                     <div className="text-4xl font-bold" aria-hidden="true">
                       {Math.round(analytics.quality.score)}
@@ -1038,7 +1038,7 @@ export function ConversationAnalyticsDashboard({
               {/* Topics */}
               {analytics.topics.length > 0 && (
                 <Card className="shadow-sm">
-                  <CardHeader>
+                  <CardHeader className="">
                     <CardTitle className="text-sm">Topics Discussed</CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-3">
@@ -1082,10 +1082,10 @@ export function ConversationAnalyticsDashboard({
 
               {/* Sentiment */}
               <Card className="shadow-sm">
-                <CardHeader>
+                <CardHeader className="">
                   <CardTitle className="text-sm">Sentiment Analysis</CardTitle>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="">
                   <div className="flex items-center gap-4 mb-4">
                     <Badge
                       variant={
@@ -1136,7 +1136,7 @@ export function ConversationAnalyticsDashboard({
               {/* Key Moments */}
               {detailed && analytics.keyMoments.length > 0 && (
                 <Card className="shadow-sm">
-                  <CardHeader>
+                  <CardHeader className="">
                     <CardTitle className="text-sm">Key Moments</CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-2">
@@ -1171,7 +1171,7 @@ export function ConversationAnalyticsDashboard({
 
               {/* Summary */}
               <Card className="shadow-sm">
-                <CardHeader>
+                <CardHeader className="">
                   <CardTitle className="text-sm">
                     Conversation Summary
                   </CardTitle>

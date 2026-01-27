@@ -103,7 +103,7 @@ export function UsageDashboard({
       role="region"
       aria-label="Usage Dashboard"
     >
-      <CardHeader>
+      <CardHeader className="">
         <div className="flex items-start justify-between">
           <div>
             <CardTitle className="flex items-center gap-2 text-foreground">

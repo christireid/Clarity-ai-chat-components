@@ -111,7 +111,7 @@ export const AgentRunFeed: React.FC<AgentRunFeedProps> = React.memo(
             </CardDescription>
           </div>
         </CardHeader>
-        <CardContent>
+        <CardContent className="">
           <ol className="space-y-4">
             {prefersReducedMotion ? (
               sortedSteps.map((step) => (

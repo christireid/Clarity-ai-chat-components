@@ -106,7 +106,7 @@ export function ContextManager({
 
   return (
     <Card className={cn('h-full flex flex-col', className)}>
-      <CardHeader>
+      <CardHeader className="">
         <div className="flex items-start justify-between">
           <div>
             <CardTitle className="flex items-center gap-2">

@@ -404,7 +404,7 @@ function TemplateShareDialog({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
-        <DialogHeader>
+        <DialogHeader className="">
           <DialogTitle>Share Template</DialogTitle>
           <DialogDescription>
             Share "{template?.name}" with the community or specific users.
@@ -435,7 +435,7 @@ function TemplateShareDialog({
           </div>
         </div>
 
-        <DialogFooter>
+        <DialogFooter className="">
           <Button variant="outline" onClick={() => onOpenChange(false)}>
             Cancel
           </Button>
@@ -480,7 +480,7 @@ function TemplateImportDialog({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-2xl">
-        <DialogHeader>
+        <DialogHeader className="">
           <DialogTitle>Import Templates</DialogTitle>
           <DialogDescription>
             Paste JSON data containing prompt templates to import them into your
@@ -507,7 +507,7 @@ function TemplateImportDialog({
           )}
         </div>
 
-        <DialogFooter>
+        <DialogFooter className="">
           <Button variant="outline" onClick={() => onOpenChange(false)}>
             Cancel
           </Button>

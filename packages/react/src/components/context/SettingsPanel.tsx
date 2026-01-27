@@ -84,7 +84,7 @@ export function SettingsPanel({
 
   return (
     <Card className={cn('h-full flex flex-col', className)}>
-      <CardHeader>
+      <CardHeader className="">
         <div className="flex items-start justify-between">
           <div>
             <CardTitle>Settings</CardTitle>

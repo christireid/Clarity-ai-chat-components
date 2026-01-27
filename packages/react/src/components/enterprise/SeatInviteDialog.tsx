@@ -57,7 +57,10 @@ export interface SeatInviteDialogProps {
 import { isValidEmail } from '@clarity-chat/utils/validation'
 
 const validateEmail = (email: string): boolean => {
-  return isValidEmail(email.trim(), { checkLimits: true, checkDoubleDots: true })
+  return isValidEmail(email.trim(), {
+    checkLimits: true,
+    checkDoubleDots: true,
+  })
 }
 
 const parseEmails = (input: string): string[] => {
@@ -202,7 +205,7 @@ export const SeatInviteDialog: React.FC<SeatInviteDialogProps> = ({
         </Button>
       </DialogTrigger>
       <DialogContent className="w-full max-w-lg">
-        <DialogHeader>
+        <DialogHeader className="">
           <DialogTitle>
             Invite teammate{allowBulkInvite && mode === 'bulk' ? 's' : ''}
           </DialogTitle>

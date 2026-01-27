@@ -573,7 +573,7 @@ export function ThreadList({
     <div className={cn('space-y-4', className)}>
       {/* Header */}
       <Card className="shadow-sm">
-        <CardHeader>
+        <CardHeader className="">
           <div className="flex items-center justify-between">
             <div>
               <CardTitle className="text-base">Threads</CardTitle>
@@ -595,7 +595,7 @@ export function ThreadList({
             </div>
           </div>
         </CardHeader>
-        <CardContent>
+        <CardContent className="">
           <input
             type="text"
             value={searchQuery}

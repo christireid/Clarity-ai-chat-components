@@ -66,7 +66,7 @@ export const FeedbackDialog: React.FC<FeedbackDialogProps> = ({
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent size="sm" animation="scale">
-        <DialogHeader>
+        <DialogHeader className="">
           <DialogTitle>What went wrong?</DialogTitle>
           <DialogDescription>
             Help us improve by sharing what could be better. This is optional.
@@ -81,7 +81,7 @@ export const FeedbackDialog: React.FC<FeedbackDialogProps> = ({
             autoFocus
           />
         </div>
-        <DialogFooter>
+        <DialogFooter className="">
           <Button variant="ghost" onClick={handleSkip}>
             Skip
           </Button>

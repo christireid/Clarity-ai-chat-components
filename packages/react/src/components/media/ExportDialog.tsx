@@ -120,7 +120,7 @@ export function ExportDialog({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className={cn('max-w-xl', className)}>
-        <DialogHeader>
+        <DialogHeader className="">
           <DialogTitle>Export {resourceType}</DialogTitle>
           <DialogDescription>
             Export "{resourceName}" in your preferred format
@@ -441,7 +441,7 @@ export function ExportDialog({
           )}
         </DialogBody>
 
-        <DialogFooter>
+        <DialogFooter className="">
           <Button
             variant="outline"
             onClick={() => onOpenChange(false)}

@@ -48,7 +48,7 @@ export function PerformanceDashboard({
   return (
     <div className={cn('space-y-6', className)}>
       <Card>
-        <CardHeader>
+        <CardHeader className="">
           <CardTitle>Performance Metrics</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">

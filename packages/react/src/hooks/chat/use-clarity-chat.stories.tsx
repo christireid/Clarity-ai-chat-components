@@ -304,10 +304,10 @@ export const AdvancedFeatures: Story = {
           </div>
 
           <Card>
-            <CardHeader>
+            <CardHeader className="">
               <h4 className="font-semibold">Configuration</h4>
             </CardHeader>
-            <CardContent>
+            <CardContent className="">
               <div className="space-y-2 text-sm">
                 <div>
                   <strong>Memory:</strong>{' '}

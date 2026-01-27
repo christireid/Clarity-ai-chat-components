@@ -11,7 +11,7 @@ import { useCallback, useMemo, useState } from 'react'
 import {
   useClarityChat,
   type UseClarityChatOptions,
-} from '../../../hooks/chat/use-clarity-chat'
+} from '../../../hooks/use-clarity-chat'
 import {
   useArchitectWorkflow,
   type UseArchitectWorkflowOptions,

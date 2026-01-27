@@ -295,7 +295,7 @@ export function PromptVariablesEditor({
         )}
       </CardHeader>
 
-      <CardContent>
+      <CardContent className="">
         {editableVariables.length === 0 ? (
           <div className="text-center py-8 text-muted-foreground">
             <div className="text-5xl mb-3">📝</div>

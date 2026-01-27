@@ -46,7 +46,7 @@ import * as React from 'react'
 import {
   useClarityChat,
   type UseClarityChatOptions,
-} from '../../hooks/chat/use-clarity-chat'
+} from '../../hooks/use-clarity-chat'
 import { useRateLimitedChat } from '../../hooks/ai/use-rate-limited-chat'
 import { useChatEditor } from '../../hooks/chat/use-chat-editor'
 import { useMessageNormalization } from '../../hooks/chat/use-message-normalization'

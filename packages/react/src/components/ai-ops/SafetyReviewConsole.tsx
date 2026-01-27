@@ -254,10 +254,7 @@ export const SafetyReviewConsole: React.FC<SafetyReviewConsoleProps> = ({
   return (
     <>
       <Card
-        className={cn(
-          'border-border/50 bg-background shadow-md',
-          className
-        )}
+        className={cn('border-border/50 bg-background shadow-md', className)}
         aria-busy={isProcessing || isLoading}
       >
         <CardHeader className="space-y-2">
@@ -477,8 +474,8 @@ export const SafetyReviewConsole: React.FC<SafetyReviewConsoleProps> = ({
 
       {/* Approve Confirmation Dialog */}
       <Dialog open={showApproveDialog} onOpenChange={setShowApproveDialog}>
-        <DialogContent>
-          <DialogHeader>
+        <DialogContent className="">
+          <DialogHeader className="">
             <DialogTitle>Approve with high severity issues?</DialogTitle>
             <DialogDescription>
               This response has {stats.high} high severity issue
@@ -486,7 +483,7 @@ export const SafetyReviewConsole: React.FC<SafetyReviewConsoleProps> = ({
               sure you want to approve it?
             </DialogDescription>
           </DialogHeader>
-          <DialogFooter>
+          <DialogFooter className="">
             <Button variant="ghost" onClick={() => setShowApproveDialog(false)}>
               Cancel
             </Button>
@@ -504,15 +501,15 @@ export const SafetyReviewConsole: React.FC<SafetyReviewConsoleProps> = ({
 
       {/* Reject Confirmation Dialog */}
       <Dialog open={showRejectDialog} onOpenChange={setShowRejectDialog}>
-        <DialogContent>
-          <DialogHeader>
+        <DialogContent className="">
+          <DialogHeader className="">
             <DialogTitle>Reject this response?</DialogTitle>
             <DialogDescription>
               This action will reject the response and it will not be sent. This
               action cannot be undone.
             </DialogDescription>
           </DialogHeader>
-          <DialogFooter>
+          <DialogFooter className="">
             <Button variant="ghost" onClick={() => setShowRejectDialog(false)}>
               Cancel
             </Button>

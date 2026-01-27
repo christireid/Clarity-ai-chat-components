@@ -156,7 +156,7 @@ export const EvaluationDashboard: React.FC<EvaluationDashboardProps> = ({
             )}
           </div>
         </CardHeader>
-        <CardContent>
+        <CardContent className="">
           <div
             className="grid gap-4 sm:grid-cols-2"
             role="region"
