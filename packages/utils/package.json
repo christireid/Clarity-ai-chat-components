@@ -63,7 +63,8 @@
     "dist",
     "README.md",
     "CHANGELOG.md",
-    "MIGRATION.md"
+    "MIGRATION.md",
+    "LICENSE"
   ],
   "scripts": {
     "build": "tsup",
