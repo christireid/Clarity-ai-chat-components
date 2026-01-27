@@ -414,6 +414,7 @@ export const referenceNavigation: NavItem[] = [
   {
     title: 'Enterprise AI',
     items: [
+      { title: '🔍 Enhanced RAG System', href: '/reference/rag-system' },
       { title: 'useRAGPipeline', href: '/reference/hooks/use-rag-pipeline' },
       { title: 'useAgent', href: '/reference/hooks/use-agent' },
       { title: 'useVectorStore', href: '/reference/hooks/use-vector-store' },
@@ -572,6 +573,7 @@ export const examplesNavigation: NavItem[] = [
       { title: 'Real-time Updates', href: '/examples/realtime' },
       { title: 'Custom Commands', href: '/examples/custom-commands' },
       { title: 'Token Optimization', href: '/examples/token-optimization' },
+      { title: '🔍 Enhanced RAG System', href: '/examples/enhanced-rag' },
     ],
   },
   {
