@@ -78,7 +78,16 @@ export {
   type MetadataFetcherConfig,
   type EmbedType,
 } from './link-preview/'
-export * from './progress'
+// Export Progress but exclude StreamingProgress and CircularProgress to avoid conflicts
+export {
+  Progress,
+  type ProgressProps,
+  UploadProgress,
+  type UploadProgressProps,
+  SkeletonProgress,
+  // StreamingProgress is excluded - use the one from components/ai instead
+  // CircularProgress is excluded - already exported from DashboardProgress
+} from './progress'
 export * from './ripple'
 export * from './skeleton'
 // Export toast module excluding 'toast' object to avoid conflict with sonner-toast

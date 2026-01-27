@@ -658,6 +658,7 @@ export {
 export * from './components/ui/skeleton'
 export * from './components/ui/AnimatedDots'
 export * from './components/ui/AnimatedList'
-export * from './components/ui/progress'
+// Note: progress exports are handled via ui/index.ts to avoid conflicts
+// export * from './components/ui/progress'
 export * from './components/ui/FeedbackAnimation'
 export * from './components/ui/InteractiveCard'

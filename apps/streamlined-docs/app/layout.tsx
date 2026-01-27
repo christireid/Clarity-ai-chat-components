@@ -14,15 +14,7 @@ import {
 } from '@/components/SEO/StructuredData'
 import { LIBRARY_STATS } from '@/lib/library-stats'
 import { TTFBMonitor } from '@/components/Monitoring/TTFBMonitor'
-
-// Lazy load the AI assistant to reduce initial bundle size
-// Using optimized dynamic component with loading skeleton
-const DocsAssistant = dynamic(() =>
-  import('@/components/Dynamic/DynamicDocsAssistant').then((mod) => ({
-    default: mod.DynamicDocsAssistant,
-  })),
-  { ssr: false }
-)
+import { ClientLayout } from '@/components/Layout/ClientLayout'
 
 // Lazy load scroll progress for better initial bundle
 const ScrollProgress = dynamic(() =>
@@ -35,20 +27,6 @@ const ScrollProgress = dynamic(() =>
 const ToastManager = dynamic(() =>
   import('@/components/UI/ToastManager').then((mod) => ({
     default: mod.ToastManager,
-  }))
-)
-
-// Lazy load mobile bottom nav
-const MobileBottomNav = dynamic(() =>
-  import('@/components/Enhanced/MobileBottomNav').then((mod) => ({
-    default: mod.MobileBottomNav,
-  }))
-)
-
-// Lazy load floating action button
-const FloatingActionButton = dynamic(() =>
-  import('@/components/Enhanced/FloatingActionButton').then((mod) => ({
-    default: mod.FloatingActionButton,
   }))
 )
 
@@ -137,7 +115,10 @@ export default function RootLayout({
           title="LLM-optimized documentation"
         />
       </head>
-      <body className="font-sans antialiased overflow-x-hidden" suppressHydrationWarning>
+      <body
+        className="font-sans antialiased overflow-x-hidden"
+        suppressHydrationWarning
+      >
         <AnalyticsScript />
         <TTFBMonitor />
         <Providers>
@@ -151,24 +132,8 @@ export default function RootLayout({
               {children}
             </main>
             <Footer />
-            <DocsAssistant />
-            <MobileBottomNav />
-            <FloatingActionButton
-              onSearchClick={() => {
-                // Trigger search dialog (handled by Navigation component via window event)
-                const event = new KeyboardEvent('keydown', { key: 'k', metaKey: true })
-                window.dispatchEvent(event)
-              }}
-              onShortcutsClick={() => {
-                const event = new KeyboardEvent('keydown', { key: '?' })
-                window.dispatchEvent(event)
-              }}
-              onAIClick={() => {
-                // Trigger AI assistant (Cmd+.)
-                const event = new KeyboardEvent('keydown', { key: '.', metaKey: true })
-                window.dispatchEvent(event)
-              }}
-            />
+            {/* ClientLayout handles MobileBottomNav and FloatingActionButton with client-side events */}
+            <ClientLayout />
           </div>
           <ToastManager />
           <AccessibilityAudit />

@@ -154,7 +154,8 @@ export * from './hooks/theme'
 
 // Re-export components from additional domains
 export * from './components/ui'
-export * from './components/ai'
+// Note: './components/ai' exports are handled explicitly in './public-api' to avoid conflicts
+// export * from './components/ai'
 export * from './components/context'
 // Note: Using explicit exports from './components/code' to avoid conflict with
 // getDarkThemes/getLightThemes exported from './theme'

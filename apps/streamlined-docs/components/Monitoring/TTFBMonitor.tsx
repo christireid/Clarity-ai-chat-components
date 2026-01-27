@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect } from 'react'
-import { onTTFB, onLCP, onFID, onCLS, type Metric } from 'web-vitals'
+import { onTTFB, onLCP, onINP, onCLS, type Metric } from 'web-vitals'
 
 /**
  * TTFB (Time to First Byte) Monitoring Component
@@ -11,14 +11,14 @@ import { onTTFB, onLCP, onFID, onCLS, type Metric } from 'web-vitals'
  * Monitors Core Web Vitals and tracks cache performance:
  * - TTFB: Time to First Byte
  * - LCP: Largest Contentful Paint
- * - FID: First Input Delay
+ * - INP: Interaction to Next Paint (replaces FID)
  * - CLS: Cumulative Layout Shift
  * - Cache Hit Rate: Whether page was served from cache
  *
  * Performance targets:
  * - TTFB: < 100ms (cached), < 800ms (uncached)
  * - LCP: < 2.5s
- * - FID: < 100ms
+ * - INP: < 200ms
  * - CLS: < 0.1
  * - Cache Hit Rate: > 95%
  */
@@ -49,13 +49,16 @@ export function TTFBMonitor() {
 
       // Track cache status
       if (performance.getEntriesByType) {
-        const navEntry = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming
+        const navEntry = performance.getEntriesByType(
+          'navigation'
+        )[0] as PerformanceNavigationTiming
 
         // Determine if served from cache
         const fromCache =
           navEntry?.deliveryType === 'cache' ||
           navEntry?.transferSize === 0 ||
-          (navEntry?.transferSize > 0 && navEntry?.transferSize < navEntry?.encodedBodySize * 0.1)
+          (navEntry?.transferSize > 0 &&
+            navEntry?.transferSize < navEntry?.encodedBodySize * 0.1)
 
         // Log cache status
         if (process.env.NODE_ENV === 'development') {
@@ -77,7 +80,9 @@ export function TTFBMonitor() {
 
         // Alert if TTFB is too high for cached content
         if (fromCache && ttfb > 100) {
-          console.warn(`[Performance Warning] High TTFB for cached content: ${Math.round(ttfb)}ms`)
+          console.warn(
+            `[Performance Warning] High TTFB for cached content: ${Math.round(ttfb)}ms`
+          )
         }
 
         // Alert if cache miss on static page
@@ -87,7 +92,9 @@ export function TTFBMonitor() {
           window.location.pathname.startsWith('/explore/')
 
         if (!fromCache && isStaticPage && ttfb > 800) {
-          console.warn(`[Performance Warning] Slow cache miss on static page: ${Math.round(ttfb)}ms`)
+          console.warn(
+            `[Performance Warning] Slow cache miss on static page: ${Math.round(ttfb)}ms`
+          )
         }
       }
     })
@@ -95,7 +102,9 @@ export function TTFBMonitor() {
     // Monitor LCP (Largest Contentful Paint)
     onLCP((metric: Metric) => {
       if (process.env.NODE_ENV === 'development') {
-        console.log(`[LCP] ${Math.round(metric.value)}ms`, { rating: metric.rating })
+        console.log(`[LCP] ${Math.round(metric.value)}ms`, {
+          rating: metric.rating,
+        })
       }
 
       if (window.gtag) {
@@ -109,16 +118,18 @@ export function TTFBMonitor() {
       }
     })
 
-    // Monitor FID (First Input Delay)
-    onFID((metric: Metric) => {
+    // Monitor INP (Interaction to Next Paint) - replaces FID in web-vitals 5.x
+    onINP((metric: Metric) => {
       if (process.env.NODE_ENV === 'development') {
-        console.log(`[FID] ${Math.round(metric.value)}ms`, { rating: metric.rating })
+        console.log(`[INP] ${Math.round(metric.value)}ms`, {
+          rating: metric.rating,
+        })
       }
 
       if (window.gtag) {
         window.gtag('event', 'web_vitals', {
           event_category: 'Performance',
-          event_label: 'FID',
+          event_label: 'INP',
           value: Math.round(metric.value),
           metric_rating: metric.rating,
           non_interaction: true,
@@ -129,7 +140,9 @@ export function TTFBMonitor() {
     // Monitor CLS (Cumulative Layout Shift)
     onCLS((metric: Metric) => {
       if (process.env.NODE_ENV === 'development') {
-        console.log(`[CLS] ${metric.value.toFixed(3)}`, { rating: metric.rating })
+        console.log(`[CLS] ${metric.value.toFixed(3)}`, {
+          rating: metric.rating,
+        })
       }
 
       if (window.gtag) {

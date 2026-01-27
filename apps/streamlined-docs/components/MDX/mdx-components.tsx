@@ -1,9 +1,22 @@
 import Link from 'next/link'
 import { CodeBlock } from './CodeBlock'
-import { InlineCode } from '@clarity-chat/react'
 import { Callout } from './Callout'
 import { LazyMermaid } from './LazyMermaid'
 import clsx from 'clsx'
+
+// Simple inline code component until @clarity-chat/react exports it
+const InlineCode = ({
+  className,
+  ...props
+}: React.HTMLAttributes<HTMLElement>) => (
+  <code
+    className={clsx(
+      'relative rounded bg-neutral-100 dark:bg-neutral-800 px-[0.3rem] py-[0.2rem] font-mono text-sm font-semibold',
+      className
+    )}
+    {...props}
+  />
+)
 
 // Custom components to use in MDX files
 export const mdxComponents = {
