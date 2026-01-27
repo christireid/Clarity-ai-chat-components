@@ -219,7 +219,9 @@ export type {
 
 // Re-export types that are commonly needed
 export type { CoreMessage } from './hooks/chat/use-chat-enhanced'
-export * from './types/chat-types'
+// Note: Commented out to avoid MessageRole conflict with public-api
+// If you need chat types, import from public-api instead: import type { MessageRole } from '@clarity-chat/react'
+// export * from './types/chat-types'
 export * from './utils/tools'
 export * from './utils/streaming'
 export { convertCoreMessagesToMessages } from './utils/message/message-conversion'

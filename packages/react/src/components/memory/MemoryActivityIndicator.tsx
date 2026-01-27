@@ -4,7 +4,7 @@ import * as React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { cn } from '@clarity-chat/primitives'
 import { useReducedMotion } from '../../hooks/ui/use-reduced-motion'
-import { ANIMATION_PRESETS } from '../../animations/constants'
+import { ANIMATION_PRESETS, DURATION_SECONDS } from '../../animations/constants'
 import type { MemoryActivity } from '../../hooks/memory/use-memory-feedback'
 import {
   getActivityLabel,
@@ -238,7 +238,7 @@ export function MemoryActivityIndicator({
                   }
             }
             transition={{
-              duration: durations.slower,
+              duration: DURATION_SECONDS.slower,
               repeat: 2,
               ease: 'easeInOut',
             }}

@@ -10,10 +10,12 @@
  *
  * **Basic Usage** (covers 90% of cases):
  * ```tsx
- * import { ClarityChatApp, Message } from '@clarity-chat/react'
+ * import { ClarityChatApp, useClarityChat } from '@clarity-chat/react'
  *
  * // Streaming chat in 3 minutes
- * <ClarityChatApp api="/api/chat" />
+ * export default function ChatPage() {
+ *   return <ClarityChatApp api="/api/chat" />
+ * }
  * ```
  *
  * **Advanced Usage** (power users only):
@@ -38,55 +40,41 @@ export {
   useClarityChat,
   type UseClarityChatOptions,
   type UseClarityChatReturn,
-} from './hooks/use-clarity-chat/use-clarity-chat'
+} from './hooks/use-clarity-chat'
 
 // 3. Message List - Virtualized, accessible message display
 export { VirtualizedMessageList as MessageList } from './components/chat/VirtualizedMessageList'
 export type { VirtualizedMessageListProps as MessageListProps } from './components/chat/VirtualizedMessageList'
 
 // 4. Chat Input - Feature-rich input component
-export { ChatInput } from './components/input/ChatInput'
-export type { ChatInputProps } from './components/input/ChatInput'
+export { ChatInput } from './components/chat/ChatInput'
+export type { ChatInputProps } from './components/chat/ChatInput'
 
-// 5. Markdown Renderer - The one true markdown renderer
+// 5. Markdown Renderer - Enhanced markdown with syntax highlighting
 export { EnhancedMarkdownRenderer as MarkdownRenderer } from './components/ai/EnhancedMarkdownRenderer'
 export type { EnhancedMarkdownRendererProps as MarkdownRendererProps } from './components/ai/EnhancedMarkdownRenderer'
 
 // ============================================================================
-// CORE TYPES (Essential type definitions)
+// CORE TYPES (Essential type definitions from @clarity-chat/types)
 // ============================================================================
 
 // Message types - What messages look like
 export type {
   Message,
-  UserMessage,
-  AssistantMessage,
-  SystemMessage,
   MessageRole,
-  MessageId,
-  ToolInvocation,
-  ToolResult,
+  MessageMetadata,
+  StreamMessage,
 } from '@clarity-chat/types'
 
-// Config types - How to configure the chat
-export type { ChatConfig, ChatFeatures, ChatPreset } from './types/config'
-
 // ============================================================================
-// UTILITIES (2 genuinely useful utilities)
+// UTILITIES (Re-export from primitives)
 // ============================================================================
 
-// 1. cn() - The only utility that matters (classname merging)
-export { cn } from './utils/cn'
-
-// 2. Message creators - Type-safe message creation
-export {
-  createUserMessage,
-  createAssistantMessage,
-  createSystemMessage,
-} from './utils/message-utils'
+// cn() - Classname merging utility (from primitives package)
+export { cn } from '@clarity-chat/primitives'
 
 // ============================================================================
-// THAT'S IT - EVERYTHING ELSE IS ADVANCED/ENTERPRISE/INTERNAL
+// THAT'S IT - 13 EXPORTS TOTAL
 // ============================================================================
 
 /**
@@ -94,21 +82,21 @@ export {
  *
  * @example Token Management
  * ```tsx
- * import { AccurateTokenCounter } from '@clarity-chat/react/token-optimization'
+ * import { AccurateTokenCounter } from '@clarity-chat/token-optimization'
  * ```
  *
  * @example Memory Features
  * ```tsx
- * import { MemoryPanel } from '@clarity-chat/react/memory'
+ * import { useMemory } from '@clarity-chat/memory'
  * ```
  *
- * @example Prompt Engineering
+ * @example Advanced Utilities
  * ```tsx
- * import { PromptLibrary } from '@clarity-chat/react/advanced'
+ * import { formatBytes, retry } from '@clarity-chat/utils'
  * ```
  *
- * @example Enterprise Features
+ * @example Error Handling
  * ```tsx
- * import { SecurityAudit } from '@clarity-chat/react/enterprise'
+ * import { ErrorBoundary } from '@clarity-chat/error-handling'
  * ```
  */
