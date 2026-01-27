@@ -125,7 +125,7 @@ export default function RootLayout({
           <a href="#main-content" className="skip-to-content">
             Skip to content
           </a>
-          <ScrollProgress variant="gradient" showScrollTop />
+          <ScrollProgress variant="gradient" showScrollTop={false} />
           <div className="min-h-screen flex flex-col">
             <Navigation />
             <main id="main-content" className="flex-1">

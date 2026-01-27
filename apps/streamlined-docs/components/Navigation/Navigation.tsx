@@ -41,9 +41,24 @@ const ANIMATION_EASE = [0.25, 0.1, 0.25, 1] as const
 
 // Primary nav items - aligned with new IA structure
 const primaryNav = [
-  { name: 'Get Started', href: '/get-started', icon: GraduationCap, description: 'Quick start guide' },
-  { name: 'Components', href: '/explore', icon: Play, description: 'Interactive demos' },
-  { name: 'API Reference', href: '/api', icon: Library, description: 'Complete API docs' },
+  {
+    name: 'Get Started',
+    href: '/get-started',
+    icon: GraduationCap,
+    description: 'Quick start guide',
+  },
+  {
+    name: 'Components',
+    href: '/explore',
+    icon: Play,
+    description: 'Interactive demos',
+  },
+  {
+    name: 'API Reference',
+    href: '/api',
+    icon: Library,
+    description: 'Complete API docs',
+  },
 ]
 
 // Secondary nav items in "More" dropdown
@@ -51,7 +66,6 @@ const moreNav = [
   { name: 'Build', href: '/build', icon: Map },
   { name: 'Playground', href: '/playground', icon: Code2 },
   { name: 'About', href: '/about', icon: BookOpen },
-  { name: 'Contributing', href: '/contributing', icon: GitCompare },
 ]
 
 // Combined for mobile
@@ -141,8 +155,15 @@ export function Navigation() {
 
   return (
     <>
-      <header role="banner" className="sticky top-0 z-50 w-full border-b border-neutral-200/60 dark:border-neutral-800/60 bg-white/80 dark:bg-neutral-950/80 backdrop-blur-xl">
-        <nav className="container-docs" role="navigation" aria-label="Main navigation">
+      <header
+        role="banner"
+        className="sticky top-0 z-50 w-full border-b border-neutral-200/60 dark:border-neutral-800/60 bg-white/80 dark:bg-neutral-950/80 backdrop-blur-xl"
+      >
+        <nav
+          className="container-docs"
+          role="navigation"
+          aria-label="Main navigation"
+        >
           <div className="flex h-14 items-center gap-6">
             {/* Logo - compact with hover glow */}
             <Link
@@ -151,9 +172,14 @@ export function Navigation() {
             >
               <div className="relative">
                 <BookOpen className="w-5 h-5 text-brand-500 relative z-10 transition-transform duration-200 group-hover:scale-110" />
-                <div className="absolute inset-0 bg-brand-500/20 blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-200" aria-hidden="true" />
+                <div
+                  className="absolute inset-0 bg-brand-500/20 blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+                  aria-hidden="true"
+                />
               </div>
-              <span className="bg-gradient-to-r from-neutral-900 to-neutral-700 dark:from-white dark:to-neutral-300 bg-clip-text text-transparent whitespace-nowrap">Clarity Chat</span>
+              <span className="bg-gradient-to-r from-neutral-900 to-neutral-700 dark:from-white dark:to-neutral-300 bg-clip-text text-transparent whitespace-nowrap">
+                Clarity Chat
+              </span>
             </Link>
 
             {/* Desktop Navigation - elevated with icons */}
@@ -167,7 +193,7 @@ export function Navigation() {
                     key={item.name}
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
-                    transition={{ duration: 0.15 }}
+                    transition={{ duration: durations.fast }}
                   >
                     <Link
                       href={item.href}
@@ -222,7 +248,7 @@ export function Navigation() {
                       initial={{ opacity: 0, y: 4, scale: 0.95 }}
                       animate={{ opacity: 1, y: 0, scale: 1 }}
                       exit={{ opacity: 0, y: 4, scale: 0.95 }}
-                      transition={{ duration: 0.12, ease: 'easeOut' }}
+                      transition={{ duration: durations.fast, ease: 'easeOut' }}
                       className="absolute top-full left-0 mt-2 py-1.5 bg-white dark:bg-neutral-900 border border-neutral-200/80 dark:border-neutral-800/80 rounded-xl shadow-xl shadow-black/5 dark:shadow-black/20 min-w-[160px] backdrop-blur-xl"
                     >
                       {moreNav.map((item) => {
@@ -231,7 +257,7 @@ export function Navigation() {
                           <motion.div
                             key={item.name}
                             whileHover={{ x: 2 }}
-                            transition={{ duration: 0.15 }}
+                            transition={{ duration: durations.fast }}
                           >
                             <Link
                               href={item.href}
@@ -263,7 +289,9 @@ export function Navigation() {
               >
                 <Search className="w-3.5 h-3.5 text-neutral-400 group-hover/search:text-brand-500 transition-colors" />
                 <span className="flex-1 text-left truncate">Search...</span>
-                <kbd className="text-[11px] text-neutral-400/80 bg-white dark:bg-neutral-800 border border-neutral-200/60 dark:border-neutral-700/60 px-1.5 py-0.5 rounded font-medium group-hover/search:border-brand-300 dark:group-hover/search:border-brand-700 transition-colors">⌘K</kbd>
+                <kbd className="text-[11px] text-neutral-400/80 bg-white dark:bg-neutral-800 border border-neutral-200/60 dark:border-neutral-700/60 px-1.5 py-0.5 rounded font-medium group-hover/search:border-brand-300 dark:group-hover/search:border-brand-700 transition-colors">
+                  ⌘K
+                </kbd>
               </button>
 
               {/* Mobile Search */}
@@ -306,17 +334,23 @@ export function Navigation() {
 
               {/* Accessibility - in More dropdown for cleaner nav */}
               <div className="hidden">
-                <AccessibilityButton onClick={() => setAccessibilityOpen(true)} />
+                <AccessibilityButton
+                  onClick={() => setAccessibilityOpen(true)}
+                />
               </div>
 
               {/* Mobile Menu */}
               <button
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
                 className="md:hidden p-2 text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-200 transition-colors"
-                aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
+                aria-label={mobileMenuOpen ? 'Close menu' : 'Open menu'}
                 aria-expanded={mobileMenuOpen}
               >
-                {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+                {mobileMenuOpen ? (
+                  <X className="w-5 h-5" />
+                ) : (
+                  <Menu className="w-5 h-5" />
+                )}
               </button>
             </div>
           </div>
@@ -393,7 +427,10 @@ export function Navigation() {
       <SearchDialog open={searchOpen} onClose={() => setSearchOpen(false)} />
 
       {/* Keyboard Shortcuts */}
-      <KeyboardShortcuts open={shortcutsOpen} onClose={() => setShortcutsOpen(false)} />
+      <KeyboardShortcuts
+        open={shortcutsOpen}
+        onClose={() => setShortcutsOpen(false)}
+      />
 
       {/* Accessibility Menu */}
       <AccessibilityMenu
