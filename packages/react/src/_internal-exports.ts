@@ -66,7 +66,7 @@ export {
   type ClarityChatErrorInfo,
   type ClarityPromptOptimizationOptions,
   type ClarityChatTokenStats,
-} from './hooks/chat/use-clarity-chat'
+} from './hooks/use-clarity-chat'
 
 // Tier 2: Composable
 export {

@@ -55,7 +55,7 @@ export type {
   ClarityChatErrorInfo,
   ClarityPromptOptimizationOptions,
   ClarityChatTokenStats,
-} from './hooks/chat/use-clarity-chat'
+} from './hooks/use-clarity-chat'
 
 // UseChatOptions and UseChatReturn were removed in v2.0
 // Use UseClarityChatOptions and UseClarityChatReturn instead

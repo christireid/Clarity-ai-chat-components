@@ -47,7 +47,7 @@ import {
   useClarityChat,
   type UseClarityChatOptions,
   type UseClarityChatReturn,
-} from './hooks/chat/use-clarity-chat'
+} from './hooks/use-clarity-chat'
 import {
   useChatHandlers,
   type UseChatHandlersOptions,

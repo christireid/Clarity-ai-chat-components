@@ -16,7 +16,7 @@ export { Message } from './components/message/message'
 export { ChatInput } from './components/chat/ChatInput'
 
 // Core Hook
-export { useClarityChat } from './hooks/chat/use-clarity-chat'
+export { useClarityChat } from './hooks/use-clarity-chat'
 export { useAutoScroll } from './hooks/ui/use-auto-scroll'
 
 // Essential Types

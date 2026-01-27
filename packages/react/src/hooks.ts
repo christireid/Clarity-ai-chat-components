@@ -67,7 +67,7 @@ export {
   type ClarityChatErrorInfo,
   type ClarityPromptOptimizationOptions,
   type ClarityChatTokenStats,
-} from './hooks/chat/use-clarity-chat'
+} from './hooks/use-clarity-chat'
 
 /**
  * @deprecated useChat was removed in v2.0. Use useClarityChat instead.
