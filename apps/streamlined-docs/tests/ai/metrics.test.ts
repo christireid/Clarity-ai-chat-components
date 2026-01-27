@@ -4,7 +4,7 @@
 
 import { describe, it, expect, beforeEach } from 'vitest'
 import { PromptMetricsLogger } from '@/lib/ai/metrics'
-import { QueryComplexity } from '@/lib/ai/complexity'
+import { QueryComplexity } from '@/lib/ai/query-complexity-classifier'
 
 describe('Prompt Metrics Logger', () => {
   let logger: PromptMetricsLogger

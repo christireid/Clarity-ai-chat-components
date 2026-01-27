@@ -57,7 +57,7 @@ import {
 } from '@/lib/security/rate-limit'
 import { validateRequestBody, validationErrorResponse } from '@/lib/validation'
 import { docsAssistantRequestSchema } from './schema'
-import { classifyQueryComplexity } from '@/lib/ai/complexity'
+import { classifyQueryComplexity } from '@/lib/ai/query-complexity-classifier'
 import { generateCoTPrompt } from '@/lib/ai/prompts/cot'
 import {
   generateCitationPrompt,
@@ -65,8 +65,19 @@ import {
   type Source,
 } from '@/lib/ai/prompts/citations'
 import { metricsLogger } from '@/lib/ai/metrics'
+import { processQuery, generateRAGPrompt } from '@/lib/ai/query-processing'
+import { validateResponse, calculateQualityScores } from '@/lib/ai/prompts/response-validation'
+import { ContextManager } from '@/lib/ai/contextManager'
 
 const logger = getLogger('docs-assistant-api')
+
+// Initialize context manager for conversation memory compression
+const contextManager = new ContextManager({
+  maxContextTokens: 100000, // Claude's context window
+  targetCompressionRatio: 0.3, // 30-70% token reduction
+  enableSummarization: true,
+  enablePrioritization: true,
+})
 
 export const runtime = 'nodejs' // Use Node.js runtime for fs/crypto access
 export const dynamic = 'force-dynamic'
@@ -185,13 +196,24 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Build messages array from session or request
-    const messages: ChatMessage[] = session?.messages.length
-      ? session.messages.map((m: SessionMessage) => ({
-          role: m.role,
-          content: m.content,
-        }))
-      : body.messages || []
+    // Build messages array from session or request with context optimization
+    let messages: ChatMessage[] = []
+
+    if (session?.messages.length) {
+      // Get optimized messages from session (respects token budget)
+      const { getOptimizedSessionMessages } = await import('@/lib/ai/sessionStore')
+      const optimizedMessages = await getOptimizedSessionMessages(
+        sessionId!,
+        128000 // Context window size
+      )
+
+      messages = optimizedMessages.map((m: SessionMessage) => ({
+        role: m.role,
+        content: m.content,
+      }))
+    } else if (body.messages) {
+      messages = body.messages
+    }
 
     // Add system prompt if not present
     if (messages.length === 0 || messages[0].role !== 'system') {
@@ -216,10 +238,35 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    // 🚀 NEW: Enhanced Query Processing Pipeline
+    // Process query with intent classification, expansion, and conversation context
+    const processedQuery = await processQuery(sanitizedMessage, {
+      conversationId: sessionId || undefined,
+      includeConversationHistory: !!sessionId,
+      domain: 'react', // Our docs are React-focused
+      includeSynonyms: true,
+      includeRelatedTerms: true,
+      expandAcronyms: true,
+      generatePerspectives: true,
+      useHyDE: true,
+    })
+
+    // Log query understanding for debugging
+    logger.debug('Query processed', {
+      intent: processedQuery.intent.primary,
+      confidence: processedQuery.intent.confidence,
+      complexity: processedQuery.complexity,
+      entities: processedQuery.entities.length,
+    })
+
     // Determine if we should use RAG (enhanced or legacy)
+    // Use processed query's requirements to make smarter decisions
     const useEnhancedRAG =
-      USE_ENHANCED_RAG && shouldUseEnhancedRAG(body.message)
-    const useLegacyRAG = !USE_ENHANCED_RAG && shouldUseRAG(body.message)
+      USE_ENHANCED_RAG &&
+      (shouldUseEnhancedRAG(body.message) || processedQuery.requirements.needsCitations)
+    const useLegacyRAG =
+      !USE_ENHANCED_RAG &&
+      (shouldUseRAG(body.message) || processedQuery.requirements.needsContext)
 
     // Smart model routing - determine optimal model based on query complexity
     let modelRouting: {
@@ -244,15 +291,17 @@ export async function POST(request: NextRequest) {
     const useTools = USE_TOOLS && hasAnthropic
 
     // Create streaming response - use tools when enabled, otherwise use RAG
+    // Pass processed query to all streaming functions for enhanced understanding
     const generator = useTools
-      ? streamWithTools(body.message, messages, body.currentPath, sessionId)
+      ? streamWithTools(body.message, messages, body.currentPath, sessionId, processedQuery)
       : useEnhancedRAG
         ? streamWithEnhancedRAG(
             body.message,
             messages,
             body.currentPath,
             sessionId,
-            modelRouting?.model
+            modelRouting?.model,
+            processedQuery
           )
         : useLegacyRAG
           ? streamWithRAG(
@@ -260,13 +309,15 @@ export async function POST(request: NextRequest) {
               messages,
               body.currentPath,
               sessionId,
-              modelRouting?.model
+              modelRouting?.model,
+              processedQuery
             )
           : streamWithoutRAG(
               body.message,
               messages,
               sessionId,
-              modelRouting?.model
+              modelRouting?.model,
+              processedQuery
             )
 
     return new Response(createSSEStream(generator), {
@@ -279,6 +330,12 @@ export async function POST(request: NextRequest) {
           'X-Model-Used': modelRouting.model,
           'X-Query-Complexity': modelRouting.classification.complexity,
         }),
+        // 🚀 NEW: Enhanced query understanding metadata
+        'X-Query-Intent': processedQuery.intent.primary,
+        'X-Query-Confidence': String(processedQuery.intent.confidence),
+        'X-Query-Complexity-Enhanced': processedQuery.complexity,
+        'X-Query-Requires-Code': String(processedQuery.requirements.needsCodeExample),
+        'X-Query-Entity-Count': String(processedQuery.entities.length),
       },
     })
   } catch (error) {

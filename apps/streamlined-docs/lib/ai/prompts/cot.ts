@@ -8,7 +8,7 @@
  * (Kojima et al., 2022 - Large Language Models are Zero-Shot Reasoners)
  */
 
-import { QueryComplexity } from '../complexity'
+import { QueryComplexity } from '../query-complexity-classifier'
 
 export interface CoTPrompt {
   systemPrompt: string

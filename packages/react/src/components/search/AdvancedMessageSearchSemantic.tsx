@@ -70,251 +70,35 @@ const SlidersIcon = Sliders as React.ComponentType<{ className?: string }>
 const TargetIcon = Target as React.ComponentType<{ className?: string }>
 const WandIcon = Wand2 as React.ComponentType<{ className?: string }>
 
-/**
- * Embedding provider configuration
- */
-export interface EmbeddingProvider {
-  type: 'openai' | 'cohere' | 'huggingface' | 'local' | 'custom'
-  model: string
-  apiKey?: string
-  endpoint?: string
-}
+// Import extracted types and utilities
+import type {
+  SemanticSearchConfig,
+  SemanticSearchResult,
+  SemanticMessageSearchProps,
+  SearchHistoryEntry,
+} from './AdvancedMessageSearchSemantic.types'
+import { defaultConfig } from './AdvancedMessageSearchSemantic.utils'
 
-/**
- * Semantic search configuration
- */
-export interface SemanticSearchConfig {
-  /** Embedding provider for vectorization */
-  embeddings: EmbeddingProvider
-  /** Hybrid search configuration */
-  hybrid: {
-    enabled: boolean
-    /** Weight for semantic search (0-1), remainder is keyword */
-    semanticWeight: number
-  }
-  /** Reranking configuration */
-  reranking?: {
-    enabled: boolean
-    provider: 'cohere' | 'jina' | 'custom'
-    apiKey?: string
-    endpoint?: string
-  }
-  /** Multi-language support */
-  multiLanguage?: boolean
-  /** Query expansion with synonyms */
-  queryExpansion?: boolean
-  /** Maximum results to return */
-  maxResults?: number
-  /** Minimum similarity threshold (0-1) */
-  similarityThreshold?: number
-}
+// Import extracted components
+import {
+  SearchHistoryPanel,
+  SearchConfigPanel,
+  SearchResultCard,
+} from './components'
 
-/**
- * Search result with relevance score
- */
-export interface SemanticSearchResult {
-  message: Message
-  score: number
-  highlights?: string[]
-  matchType: 'semantic' | 'keyword' | 'hybrid'
-  explanation?: string
-}
+// Import extracted hook
+import { useSemanticSearch } from './hooks/useSemanticSearch'
 
-/**
- * Props for SemanticMessageSearch
- */
-export interface SemanticMessageSearchProps {
-  /** Messages to search through */
-  messages: Message[]
-  /** Search configuration */
-  config?: Partial<SemanticSearchConfig>
-  /** Callback when results are found */
-  onResultsFound?: (results: SemanticSearchResult[]) => void
-  /** Callback when a result is selected */
-  onResultSelect?: (result: SemanticSearchResult) => void
-  /** Callback for custom embedding generation */
-  onGenerateEmbedding?: (text: string) => Promise<number[]>
-  /** Callback for custom reranking */
-  onRerank?: (
-    query: string,
-    results: SemanticSearchResult[]
-  ) => Promise<SemanticSearchResult[]>
-  /** Show search history */
-  showHistory?: boolean
-  /** Show configuration panel */
-  showConfig?: boolean
-  /** Placeholder text */
-  placeholder?: string
-  /** Compact mode */
-  compact?: boolean
-  className?: string
-}
+// Re-export types for external consumers
+export type {
+  SemanticSearchConfig,
+  SemanticSearchResult,
+  SemanticMessageSearchProps,
+  SearchHistoryEntry,
+  EmbeddingProvider,
+} from './AdvancedMessageSearchSemantic.types'
 
-/**
- * Search history entry
- */
-interface SearchHistoryEntry {
-  query: string
-  timestamp: number
-  resultCount: number
-}
-
-const defaultConfig: SemanticSearchConfig = {
-  embeddings: {
-    type: 'openai',
-    model: 'text-embedding-3-small',
-  },
-  hybrid: {
-    enabled: true,
-    semanticWeight: 0.7,
-  },
-  reranking: {
-    enabled: false,
-    provider: 'cohere',
-  },
-  multiLanguage: true,
-  queryExpansion: true,
-  maxResults: 10,
-  similarityThreshold: 0.6,
-}
-
-/**
- * Calculate cosine similarity between two vectors
- */
-function cosineSimilarity(a: number[], b: number[]): number {
-  if (a.length !== b.length) return 0
-
-  let dotProduct = 0
-  let normA = 0
-  let normB = 0
-
-  for (let i = 0; i < a.length; i++) {
-    const ai = a[i]!
-    const bi = b[i]!
-    dotProduct += ai * bi
-    normA += ai * ai
-    normB += bi * bi
-  }
-
-  const denominator = Math.sqrt(normA) * Math.sqrt(normB)
-  return denominator === 0 ? 0 : dotProduct / denominator
-}
-
-/**
- * Escape special regex characters to prevent ReDoS
- */
-function escapeRegex(str: string): string {
-  return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
-}
-
-/**
- * Simple keyword search with TF-IDF-like scoring
- */
-function keywordSearch(
-  query: string,
-  messages: Message[]
-): Map<string, number> {
-  const queryTerms = query
-    .toLowerCase()
-    .split(/\s+/)
-    .filter((t) => t.length > 2)
-  const scores = new Map<string, number>()
-  const queryLower = query.toLowerCase()
-
-  messages.forEach((message) => {
-    const content = message.content.toLowerCase()
-    let score = 0
-
-    queryTerms.forEach((term) => {
-      // Escape special regex characters to prevent ReDoS
-      const escapedTerm = escapeRegex(term)
-      const regex = new RegExp(`\\b${escapedTerm}\\b`, 'gi')
-      const matches = content.match(regex)
-      if (matches) {
-        score += Math.log(1 + matches.length)
-      }
-
-      if (content.includes(queryLower)) {
-        score += 5
-      }
-    })
-
-    if (score > 0) {
-      scores.set(message.id, score)
-    }
-  })
-
-  return scores
-}
-
-/**
- * Expand query with synonyms and related terms
- */
-function expandQuery(query: string): string[] {
-  const synonyms: Record<string, string[]> = {
-    error: ['bug', 'issue', 'problem', 'failure', 'exception', 'crash'],
-    fix: ['solve', 'repair', 'correct', 'patch', 'resolve', 'debug'],
-    code: ['function', 'script', 'program', 'implementation', 'snippet'],
-    explain: ['describe', 'clarify', 'elaborate', 'detail', 'break down'],
-    help: ['assist', 'support', 'aid', 'guide', 'show'],
-    create: ['make', 'build', 'generate', 'construct', 'develop'],
-    improve: ['enhance', 'optimize', 'refactor', 'upgrade', 'better'],
-    remove: ['delete', 'eliminate', 'drop', 'clear', 'purge'],
-    add: ['include', 'insert', 'append', 'attach', 'incorporate'],
-    update: ['modify', 'change', 'edit', 'alter', 'revise'],
-  }
-
-  const expansions = [query]
-  const terms = query.toLowerCase().split(/\s+/)
-
-  terms.forEach((term) => {
-    if (synonyms[term]) {
-      expansions.push(...synonyms[term])
-    }
-  })
-
-  return [...new Set(expansions)]
-}
-
-/**
- * Get match quality label
- */
-function getMatchQuality(score: number): {
-  label: string
-  color: string
-  icon: React.ReactNode
-} {
-  if (score >= 0.9) {
-    return {
-      label: 'Excellent',
-      color: 'bg-green-500',
-      icon: <TargetIcon className="h-3 w-3" />,
-    }
-  } else if (score >= 0.8) {
-    return {
-      label: 'Very Good',
-      color: 'bg-emerald-500',
-      icon: <TrendingIcon className="h-3 w-3" />,
-    }
-  } else if (score >= 0.7) {
-    return {
-      label: 'Good',
-      color: 'bg-blue-500',
-      icon: <CheckIcon className="h-3 w-3" />,
-    }
-  } else if (score >= 0.6) {
-    return {
-      label: 'Fair',
-      color: 'bg-yellow-500',
-      icon: <LightbulbIcon className="h-3 w-3" />,
-    }
-  }
-  return {
-    label: 'Partial',
-    color: 'bg-orange-500',
-    icon: <SearchIcon className="h-3 w-3" />,
-  }
-}
+// getMatchQuality function moved to SearchResultCard component
 
 /**
  * SemanticMessageSearch Component
@@ -358,35 +142,39 @@ export function SemanticMessageSearch({
   compact = false,
   className,
 }: SemanticMessageSearchProps) {
-  const config = React.useMemo(
-    () => ({ ...defaultConfig, ...userConfig }),
-    [userConfig]
-  )
+  // Merge user config with defaults
+  const [localConfig, setLocalConfig] = React.useState(() => ({
+    ...defaultConfig,
+    ...userConfig,
+  }))
 
+  // UI state
   const prefersReducedMotion = useReducedMotion()
   const [query, setQuery] = React.useState('')
   const [results, setResults] = React.useState<SemanticSearchResult[]>([])
   const [isSearching, setIsSearching] = React.useState(false)
   const [error, setError] = React.useState<string | null>(null)
-  const [searchHistory, setSearchHistory] = React.useState<
-    SearchHistoryEntry[]
-  >([])
-  const [expandedQueries, setExpandedQueries] = React.useState<string[]>([])
+  const [searchHistory, setSearchHistory] = React.useState<SearchHistoryEntry[]>([])
   const [showExpansions, setShowExpansions] = React.useState(false)
   const [showHistoryPanel, setShowHistoryPanel] = React.useState(false)
   const [showConfigPanel, setShowConfigPanel] = React.useState(false)
   const [copiedId, setCopiedId] = React.useState<string | null>(null)
-  const [expandedResults, setExpandedResults] = React.useState<Set<string>>(
-    new Set()
-  )
-  const [localConfig, setLocalConfig] = React.useState(config)
+  const [expandedResults, setExpandedResults] = React.useState<Set<string>>(new Set())
+
+  // Refs
   const inputRef = React.useRef<HTMLInputElement>(null)
-  const copyTimeoutRef = React.useRef<ReturnType<typeof setTimeout> | null>(
-    null
-  )
+  const copyTimeoutRef = React.useRef<ReturnType<typeof setTimeout> | null>(null)
   const searchAbortRef = React.useRef<AbortController | null>(null)
   const isMountedRef = React.useRef(true)
   const onResultsFoundRef = React.useRef(onResultsFound)
+
+  // Use semantic search hook
+  const { search: performSearch, expandedQueries } = useSemanticSearch({
+    messages,
+    config: localConfig,
+    onGenerateEmbedding,
+    onRerank,
+  })
 
   // Keep callback refs updated
   React.useEffect(() => {
@@ -407,152 +195,21 @@ export function SemanticMessageSearch({
     }
   }, [])
 
-  // Cache for message embeddings
-  const embeddingsCache = React.useRef<Map<string, number[]>>(new Map())
-
-  // Load history from localStorage with validation
+  // Load history from localStorage
   React.useEffect(() => {
     if (typeof window === 'undefined') return
     try {
       const history = localStorage.getItem('clarity-semantic-search-history')
       if (history) {
         const parsed = JSON.parse(history)
-        // Validate history structure
-        if (
-          Array.isArray(parsed) &&
-          parsed.every(
-            (h: unknown) =>
-              typeof h === 'object' &&
-              h !== null &&
-              'query' in h &&
-              'timestamp' in h &&
-              'resultCount' in h &&
-              typeof (h as SearchHistoryEntry).query === 'string' &&
-              typeof (h as SearchHistoryEntry).timestamp === 'number' &&
-              typeof (h as SearchHistoryEntry).resultCount === 'number'
-          )
-        ) {
+        if (Array.isArray(parsed)) {
           setSearchHistory(parsed)
         }
       }
     } catch {
-      // Silently fail - invalid data will use defaults
+      // Silently fail
     }
   }, [])
-
-  /**
-   * Generate embedding for text
-   */
-  const generateEmbedding = React.useCallback(
-    async (text: string): Promise<number[]> => {
-      if (embeddingsCache.current.has(text)) {
-        return embeddingsCache.current.get(text)!
-      }
-
-      if (onGenerateEmbedding) {
-        const embedding = await onGenerateEmbedding(text)
-        embeddingsCache.current.set(text, embedding)
-        return embedding
-      }
-
-      // Fallback: generate simple bag-of-words embedding
-      const words = text.toLowerCase().split(/\s+/)
-      const embedding = new Array(384).fill(0)
-
-      words.forEach((word) => {
-        const hash = word.split('').reduce((acc, char) => {
-          return ((acc << 5) - acc + char.charCodeAt(0)) | 0
-        }, 0)
-        const position = Math.abs(hash) % embedding.length
-        embedding[position] += 1
-      })
-
-      const norm = Math.sqrt(embedding.reduce((sum, val) => sum + val * val, 0))
-      const normalized = embedding.map((val) => val / (norm || 1))
-
-      embeddingsCache.current.set(text, normalized)
-      return normalized
-    },
-    [onGenerateEmbedding]
-  )
-
-  /**
-   * Perform semantic search
-   */
-  const performSemanticSearch = React.useCallback(
-    async (searchQuery: string): Promise<SemanticSearchResult[]> => {
-      const queries = localConfig.queryExpansion
-        ? expandQuery(searchQuery)
-        : [searchQuery]
-
-      setExpandedQueries(queries)
-
-      const primaryQuery = queries[0] ?? searchQuery
-      const queryEmbedding = await generateEmbedding(primaryQuery)
-
-      const semanticScores = new Map<string, number>()
-
-      for (const message of messages) {
-        const messageEmbedding = await generateEmbedding(message.content)
-        const similarity = cosineSimilarity(queryEmbedding, messageEmbedding)
-        semanticScores.set(message.id, similarity)
-      }
-
-      const keywordScores = keywordSearch(searchQuery, messages)
-
-      const combinedResults: SemanticSearchResult[] = []
-
-      messages.forEach((message) => {
-        const semanticScore = semanticScores.get(message.id) || 0
-        const keywordScore = keywordScores.get(message.id) || 0
-
-        let finalScore = 0
-        let matchType: 'semantic' | 'keyword' | 'hybrid' = 'semantic'
-
-        if (localConfig.hybrid.enabled) {
-          const normalizedKeywordScore = Math.min(keywordScore / 10, 1)
-
-          finalScore =
-            localConfig.hybrid.semanticWeight * semanticScore +
-            (1 - localConfig.hybrid.semanticWeight) * normalizedKeywordScore
-
-          matchType = 'hybrid'
-        } else {
-          finalScore = semanticScore
-        }
-
-        if (finalScore >= (localConfig.similarityThreshold || 0.6)) {
-          const highlights: string[] = []
-          const content = message.content
-          const queryTerms = searchQuery.toLowerCase().split(/\s+/)
-
-          queryTerms.forEach((term) => {
-            if (term.length < 3) return
-            // Escape special regex characters to prevent ReDoS
-            const escapedTerm = escapeRegex(term)
-            const regex = new RegExp(`(.{0,40})(${escapedTerm})(.{0,40})`, 'gi')
-            const match = content.match(regex)
-            if (match && match[0]) {
-              highlights.push(match[0])
-            }
-          })
-
-          combinedResults.push({
-            message,
-            score: finalScore,
-            highlights: highlights.slice(0, 3),
-            matchType,
-            explanation: `${Math.round(finalScore * 100)}% relevance`,
-          })
-        }
-      })
-
-      combinedResults.sort((a, b) => b.score - a.score)
-
-      return combinedResults.slice(0, localConfig.maxResults || 10)
-    },
-    [messages, localConfig, generateEmbedding]
-  )
 
   /**
    * Handle search with proper cleanup
@@ -574,19 +231,11 @@ export function SemanticMessageSearch({
       setError(null)
 
       try {
-        let searchResults = await performSemanticSearch(searchQuery)
+        const searchResults = await performSearch(searchQuery)
 
         // Check if component is still mounted and search wasn't aborted
         if (!isMountedRef.current || searchAbortRef.current?.signal.aborted) {
           return
-        }
-
-        if (localConfig.reranking?.enabled && onRerank) {
-          searchResults = await onRerank(searchQuery, searchResults)
-          // Check again after reranking
-          if (!isMountedRef.current || searchAbortRef.current?.signal.aborted) {
-            return
-          }
         }
 
         setResults(searchResults)
@@ -627,7 +276,7 @@ export function SemanticMessageSearch({
         }
       }
     },
-    [performSemanticSearch, localConfig.reranking, onRerank]
+    [performSearch]
   )
 
   // Debounced search
@@ -641,12 +290,11 @@ export function SemanticMessageSearch({
     return () => clearTimeout(timer)
   }, [query, handleSearch])
 
-  // Copy result content with timeout cleanup
+  // Copy result content
   const handleCopy = React.useCallback(async (result: SemanticSearchResult) => {
     try {
       await navigator.clipboard.writeText(result.message.content)
       setCopiedId(result.message.id)
-      // Clear any existing timeout
       if (copyTimeoutRef.current) {
         clearTimeout(copyTimeoutRef.current)
       }
@@ -831,214 +479,26 @@ export function SemanticMessageSearch({
 
                 {/* History button */}
                 {showHistory && (
-                  <Popover
-                    open={showHistoryPanel}
+                  <SearchHistoryPanel
+                    searchHistory={searchHistory}
+                    isOpen={showHistoryPanel}
                     onOpenChange={setShowHistoryPanel}
-                  >
-                    <PopoverTrigger asChild>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className={cn(
-                          'h-7 w-7 p-0',
-                          searchHistory.length > 0 && 'text-violet-500'
-                        )}
-                      >
-                        <ClockIcon className="h-4 w-4" />
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-72" align="end">
-                      <div className="space-y-3">
-                        <div className="flex items-center justify-between">
-                          <h4 className="text-sm font-medium">
-                            Recent Searches
-                          </h4>
-                          {searchHistory.length > 0 && (
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={clearHistory}
-                              className="h-6 text-xs text-muted-foreground hover:text-destructive"
-                            >
-                              Clear
-                            </Button>
-                          )}
-                        </div>
-                        {searchHistory.length > 0 ? (
-                          <div className="space-y-1 max-h-48 overflow-y-auto">
-                            {searchHistory.map((entry, index) => (
-                              <motion.button
-                                key={index}
-                                {...ANIMATION_PRESETS.slideLeft}
-                                transition={{ delay: index * 0.03 }}
-                                viewport={{ once: true }}
-                                onClick={() => {
-                                  setQuery(entry.query)
-                                  setShowHistoryPanel(false)
-                                }}
-                                className="w-full text-left px-2 py-1.5 rounded hover:bg-accent flex items-center justify-between"
-                              >
-                                <span className="text-sm truncate">
-                                  {entry.query}
-                                </span>
-                                <Badge variant="secondary" className="text-xs">
-                                  {entry.resultCount}
-                                </Badge>
-                              </motion.button>
-                            ))}
-                          </div>
-                        ) : (
-                          <p className="text-sm text-muted-foreground text-center py-4">
-                            No recent searches
-                          </p>
-                        )}
-                      </div>
-                    </PopoverContent>
-                  </Popover>
+                    onSelectEntry={(historyQuery) => {
+                      setQuery(historyQuery)
+                      setShowHistoryPanel(false)
+                    }}
+                    onClearHistory={clearHistory}
+                  />
                 )}
 
                 {/* Config button */}
                 {showConfig && (
-                  <Popover
-                    open={showConfigPanel}
+                  <SearchConfigPanel
+                    config={localConfig}
+                    isOpen={showConfigPanel}
                     onOpenChange={setShowConfigPanel}
-                  >
-                    <PopoverTrigger asChild>
-                      <Button variant="ghost" size="sm" className="h-7 w-7 p-0">
-                        <SlidersIcon className="h-4 w-4" />
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-80" align="end">
-                      <div className="space-y-4">
-                        <h4 className="text-sm font-medium flex items-center gap-2">
-                          <SettingsIcon className="h-4 w-4" />
-                          Search Settings
-                        </h4>
-
-                        {/* Semantic weight slider */}
-                        <div className="space-y-2">
-                          <div className="flex items-center justify-between">
-                            <label className="text-sm text-muted-foreground">
-                              Semantic Weight
-                            </label>
-                            <span className="text-sm font-medium">
-                              {Math.round(
-                                localConfig.hybrid.semanticWeight * 100
-                              )}
-                              %
-                            </span>
-                          </div>
-                          <input
-                            type="range"
-                            min="0"
-                            max="100"
-                            value={localConfig.hybrid.semanticWeight * 100}
-                            onChange={(e) =>
-                              setLocalConfig((prev) => ({
-                                ...prev,
-                                hybrid: {
-                                  ...prev.hybrid,
-                                  semanticWeight:
-                                    parseInt(e.target.value, 10) / 100,
-                                },
-                              }))
-                            }
-                            className="w-full h-2 bg-muted rounded-lg appearance-none cursor-pointer accent-violet-500"
-                          />
-                          <div className="flex justify-between text-xs text-muted-foreground">
-                            <span>Keyword</span>
-                            <span>Semantic</span>
-                          </div>
-                        </div>
-
-                        {/* Similarity threshold */}
-                        <div className="space-y-2">
-                          <div className="flex items-center justify-between">
-                            <label className="text-sm text-muted-foreground">
-                              Min Similarity
-                            </label>
-                            <span className="text-sm font-medium">
-                              {Math.round(
-                                (localConfig.similarityThreshold || 0.6) * 100
-                              )}
-                              %
-                            </span>
-                          </div>
-                          <input
-                            type="range"
-                            min="0"
-                            max="100"
-                            value={
-                              (localConfig.similarityThreshold || 0.6) * 100
-                            }
-                            onChange={(e) =>
-                              setLocalConfig((prev) => ({
-                                ...prev,
-                                similarityThreshold:
-                                  parseInt(e.target.value, 10) / 100,
-                              }))
-                            }
-                            className="w-full h-2 bg-muted rounded-lg appearance-none cursor-pointer accent-violet-500"
-                          />
-                        </div>
-
-                        {/* Max results */}
-                        <div className="space-y-2">
-                          <label className="text-sm text-muted-foreground">
-                            Max Results
-                          </label>
-                          <Input
-                            type="number"
-                            min="1"
-                            max="50"
-                            value={localConfig.maxResults || 10}
-                            onChange={(e) =>
-                              setLocalConfig((prev) => ({
-                                ...prev,
-                                maxResults: parseInt(e.target.value, 10) || 10,
-                              }))
-                            }
-                            className="h-8"
-                          />
-                        </div>
-
-                        {/* Toggle options */}
-                        <div className="space-y-2">
-                          <label className="flex items-center gap-2 cursor-pointer">
-                            <input
-                              type="checkbox"
-                              checked={localConfig.queryExpansion}
-                              onChange={(e) =>
-                                setLocalConfig((prev) => ({
-                                  ...prev,
-                                  queryExpansion: e.target.checked,
-                                }))
-                              }
-                              className="rounded"
-                            />
-                            <span className="text-sm">Query Expansion</span>
-                          </label>
-                          <label className="flex items-center gap-2 cursor-pointer">
-                            <input
-                              type="checkbox"
-                              checked={localConfig.hybrid.enabled}
-                              onChange={(e) =>
-                                setLocalConfig((prev) => ({
-                                  ...prev,
-                                  hybrid: {
-                                    ...prev.hybrid,
-                                    enabled: e.target.checked,
-                                  },
-                                }))
-                              }
-                              className="rounded"
-                            />
-                            <span className="text-sm">Hybrid Search</span>
-                          </label>
-                        </div>
-                      </div>
-                    </PopoverContent>
-                  </Popover>
+                    onConfigChange={setLocalConfig}
+                  />
                 )}
               </div>
             </div>
@@ -1195,135 +655,19 @@ export function SemanticMessageSearch({
               </div>
 
               {/* Result cards */}
-              {results.map((result, index) => {
-                const quality = getMatchQuality(result.score)
-                const isExpanded = expandedResults.has(result.message.id)
-
-                return (
-                  <div key={result.message.id}>
-                    <Card
-                      className={cn(
-                        'shadow-sm hover:shadow-md transition-all cursor-pointer overflow-hidden',
-                        'border-l-4',
-                        result.score >= 0.9
-                          ? 'border-l-green-500'
-                          : result.score >= 0.8
-                            ? 'border-l-emerald-500'
-                            : result.score >= 0.7
-                              ? 'border-l-blue-500'
-                              : result.score >= 0.6
-                                ? 'border-l-yellow-500'
-                                : 'border-l-orange-500'
-                      )}
-                      onClick={() => onResultSelect?.(result)}
-                    >
-                      <CardContent className="p-4">
-                        {/* Result header */}
-                        <div className="flex items-start justify-between gap-2 mb-3">
-                          <div className="flex items-center gap-2 flex-wrap">
-                            {/* Score badge */}
-                            <Badge
-                              className={cn(
-                                'text-xs gap-1 text-white',
-                                quality.color
-                              )}
-                            >
-                              {quality.icon}
-                              {Math.round(result.score * 100)}%
-                            </Badge>
-
-                            {/* Match type badge */}
-                            <Badge variant="outline" className="text-xs gap-1">
-                              {result.matchType === 'semantic' && (
-                                <BrainIcon className="h-3 w-3" />
-                              )}
-                              {result.matchType === 'keyword' && (
-                                <SearchIcon className="h-3 w-3" />
-                              )}
-                              {result.matchType === 'hybrid' && (
-                                <ZapIcon className="h-3 w-3" />
-                              )}
-                              {result.matchType}
-                            </Badge>
-
-                            {/* Role badge */}
-                            <Badge variant="secondary" className="text-xs">
-                              {result.message.role}
-                            </Badge>
-                          </div>
-
-                          {/* Actions */}
-                          <div className="flex items-center gap-1">
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={(e) => {
-                                e.stopPropagation()
-                                handleCopy(result)
-                              }}
-                              className="h-7 w-7 p-0"
-                            >
-                              {copiedId === result.message.id ? (
-                                <CheckIcon className="h-3.5 w-3.5 text-green-500" />
-                              ) : (
-                                <CopyIcon className="h-3.5 w-3.5" />
-                              )}
-                            </Button>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={(e) => {
-                                e.stopPropagation()
-                                toggleExpanded(result.message.id)
-                              }}
-                              className="h-7 w-7 p-0"
-                            >
-                              {isExpanded ? (
-                                <EyeOffIcon className="h-3.5 w-3.5" />
-                              ) : (
-                                <EyeIcon className="h-3.5 w-3.5" />
-                              )}
-                            </Button>
-                          </div>
-                        </div>
-
-                        {/* Content preview */}
-                        <div
-                          className={cn(
-                            'text-sm mb-2',
-                            !isExpanded && 'line-clamp-2'
-                          )}
-                        >
-                          {result.message.content}
-                        </div>
-
-                        {/* Highlights */}
-                        {result.highlights && result.highlights.length > 0 && (
-                          <div className="space-y-1 mt-3">
-                            {result.highlights.map((highlight, i) => (
-                              <div
-                                key={i}
-                                className="text-xs bg-yellow-100 dark:bg-yellow-900/30 px-2 py-1 rounded"
-                              >
-                                ...{highlight}...
-                              </div>
-                            ))}
-                          </div>
-                        )}
-
-                        {/* Quality indicator */}
-                        <div className="mt-3 pt-3 border-t flex items-center justify-between text-xs text-muted-foreground">
-                          <span className="flex items-center gap-1">
-                            {quality.icon}
-                            {quality.label} match
-                          </span>
-                          <span>{result.explanation}</span>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  </div>
-                )
-              })}
+              {results.map((result, index) => (
+                <SearchResultCard
+                  key={result.message.id}
+                  result={result}
+                  isExpanded={expandedResults.has(result.message.id)}
+                  isCopied={copiedId === result.message.id}
+                  index={index}
+                  onSelect={onResultSelect}
+                  onCopy={handleCopy}
+                  onToggleExpand={toggleExpanded}
+                  animated={false}
+                />
+              ))}
             </div>
           ) : query && !isSearching ? (
             <div key="no-results">
@@ -1419,140 +763,19 @@ export function SemanticMessageSearch({
               </div>
 
               {/* Result cards */}
-              {results.map((result, index) => {
-                const quality = getMatchQuality(result.score)
-                const isExpanded = expandedResults.has(result.message.id)
-
-                return (
-                  <motion.div
-                    key={result.message.id}
-                    {...ANIMATION_PRESETS.slideLeft}
-                    transition={{ delay: index * 0.05 }}
-                    viewport={{ once: true }}
-                  >
-                    <Card
-                      className={cn(
-                        'shadow-sm hover:shadow-md transition-all cursor-pointer overflow-hidden',
-                        'border-l-4',
-                        result.score >= 0.9
-                          ? 'border-l-green-500'
-                          : result.score >= 0.8
-                            ? 'border-l-emerald-500'
-                            : result.score >= 0.7
-                              ? 'border-l-blue-500'
-                              : result.score >= 0.6
-                                ? 'border-l-yellow-500'
-                                : 'border-l-orange-500'
-                      )}
-                      onClick={() => onResultSelect?.(result)}
-                    >
-                      <CardContent className="p-4">
-                        {/* Result header */}
-                        <div className="flex items-start justify-between gap-2 mb-3">
-                          <div className="flex items-center gap-2 flex-wrap">
-                            {/* Score badge */}
-                            <Badge
-                              className={cn(
-                                'text-xs gap-1 text-white',
-                                quality.color
-                              )}
-                            >
-                              {quality.icon}
-                              {Math.round(result.score * 100)}%
-                            </Badge>
-
-                            {/* Match type badge */}
-                            <Badge variant="outline" className="text-xs gap-1">
-                              {result.matchType === 'semantic' && (
-                                <BrainIcon className="h-3 w-3" />
-                              )}
-                              {result.matchType === 'keyword' && (
-                                <SearchIcon className="h-3 w-3" />
-                              )}
-                              {result.matchType === 'hybrid' && (
-                                <ZapIcon className="h-3 w-3" />
-                              )}
-                              {result.matchType}
-                            </Badge>
-
-                            {/* Role badge */}
-                            <Badge variant="secondary" className="text-xs">
-                              {result.message.role}
-                            </Badge>
-                          </div>
-
-                          {/* Actions */}
-                          <div className="flex items-center gap-1">
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={(e) => {
-                                e.stopPropagation()
-                                handleCopy(result)
-                              }}
-                              className="h-7 w-7 p-0"
-                            >
-                              {copiedId === result.message.id ? (
-                                <CheckIcon className="h-3.5 w-3.5 text-green-500" />
-                              ) : (
-                                <CopyIcon className="h-3.5 w-3.5" />
-                              )}
-                            </Button>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={(e) => {
-                                e.stopPropagation()
-                                toggleExpanded(result.message.id)
-                              }}
-                              className="h-7 w-7 p-0"
-                            >
-                              {isExpanded ? (
-                                <EyeOffIcon className="h-3.5 w-3.5" />
-                              ) : (
-                                <EyeIcon className="h-3.5 w-3.5" />
-                              )}
-                            </Button>
-                          </div>
-                        </div>
-
-                        {/* Content preview */}
-                        <div
-                          className={cn(
-                            'text-sm mb-2',
-                            !isExpanded && 'line-clamp-2'
-                          )}
-                        >
-                          {result.message.content}
-                        </div>
-
-                        {/* Highlights */}
-                        {result.highlights && result.highlights.length > 0 && (
-                          <div className="space-y-1 mt-3">
-                            {result.highlights.map((highlight, i) => (
-                              <div
-                                key={i}
-                                className="text-xs bg-yellow-100 dark:bg-yellow-900/30 px-2 py-1 rounded"
-                              >
-                                ...{highlight}...
-                              </div>
-                            ))}
-                          </div>
-                        )}
-
-                        {/* Quality indicator */}
-                        <div className="mt-3 pt-3 border-t flex items-center justify-between text-xs text-muted-foreground">
-                          <span className="flex items-center gap-1">
-                            {quality.icon}
-                            {quality.label} match
-                          </span>
-                          <span>{result.explanation}</span>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  </motion.div>
-                )
-              })}
+              {results.map((result, index) => (
+                <SearchResultCard
+                  key={result.message.id}
+                  result={result}
+                  isExpanded={expandedResults.has(result.message.id)}
+                  isCopied={copiedId === result.message.id}
+                  index={index}
+                  onSelect={onResultSelect}
+                  onCopy={handleCopy}
+                  onToggleExpand={toggleExpanded}
+                  animated={!prefersReducedMotion}
+                />
+              ))}
             </motion.div>
           ) : query && !isSearching ? (
             <motion.div key="no-results" {...ANIMATION_PRESETS.slideUp}>

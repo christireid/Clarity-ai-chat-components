@@ -35,9 +35,9 @@ const sharedRules = {
   'react/react-in-jsx-scope': 'off',
   'react/prop-types': 'off',
   'react-hooks/rules-of-hooks': 'error',
-  // Enabled as 'warn' following comprehensive hooks audit (2026-01-21)
-  // See HOOKS_AUDIT_REPORT.md for dependency array verification
-  'react-hooks/exhaustive-deps': 'warn',
+  // Upgraded to 'error' for stricter dependency array validation (2026-01-27)
+  // Prevents stale closures and missing dependencies
+  'react-hooks/exhaustive-deps': 'error',
   'jsx-a11y/alt-text': 'error',
   'jsx-a11y/aria-props': 'error',
   'jsx-a11y/aria-proptypes': 'error',
@@ -73,6 +73,8 @@ export default [
       '**/tsup.config.bundled_*.mjs',
       '**/tsup.config.bundled_*.d.mts',
       'apps/docs/.vitepress/examples/MarkdownDemo.tsx',
+      // Example templates contain placeholder syntax that shouldn't be linted
+      'apps/examples/_template/**',
       // Marketing site compiled output (TypeScript compiles .tsx to .js in same directory)
       'apps/marketing-site/components/**/*.js',
       'apps/marketing-site/components/**/*.d.ts',
@@ -145,6 +147,11 @@ export default [
       // Security: Detect dangerous React patterns
       'react/no-danger': 'warn',
       'react/no-danger-with-children': 'error',
+      // Code Complexity Rules (Added 2026-01-27)
+      'complexity': ['warn', 15],
+      'max-lines-per-function': ['warn', { max: 100, skipBlankLines: true, skipComments: true }],
+      'max-depth': ['warn', 4],
+      'max-nested-callbacks': ['warn', 3],
       // Clarity Animations rules
       'clarity-animations/no-hardcoded-duration': 'warn',
       'clarity-animations/no-layout-animation': 'error',

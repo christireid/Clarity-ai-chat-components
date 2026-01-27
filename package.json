@@ -15,9 +15,10 @@
     "dev:docs": "turbo run dev --filter=@clarity-chat/docs",
     "storybook": "pnpm --filter @clarity-chat/storybook dev",
     "// === BUILD ===": "",
-    "build": "NODE_OPTIONS='--max-old-space-size=4096' turbo run build --concurrency=2",
-    "build:packages": "NODE_OPTIONS='--max-old-space-size=4096' turbo run build --filter='./packages/*' --concurrency=2",
-    "build:sequential": "NODE_OPTIONS='--max-old-space-size=4096' turbo run build --concurrency=1",
+    "build": "NODE_OPTIONS='--max-old-space-size=2048' turbo run build --concurrency=2",
+    "build:packages": "NODE_OPTIONS='--max-old-space-size=2048' turbo run build --filter='./packages/*' --concurrency=2",
+    "build:sequential": "NODE_OPTIONS='--max-old-space-size=2048' turbo run build --concurrency=1",
+    "build:legacy": "NODE_OPTIONS='--max-old-space-size=4096' turbo run build --concurrency=2",
     "storybook:build": "pnpm --filter @clarity-chat/storybook build",
     "// === TESTING ===": "",
     "test": "NODE_OPTIONS='--max-old-space-size=4096' turbo run test",
@@ -41,6 +42,8 @@
     "generate:component": "plop component",
     "generate:hook": "plop hook",
     "generate:context": "plop context",
+    "generate:example": "tsx scripts/generate-example.ts",
+    "generate:example:interactive": "tsx scripts/generate-example.ts --interactive",
     "// === DOCUMENTATION ===": "",
     "docs": "pnpm --filter @clarity-chat/docs dev",
     "docs:build": "pnpm --filter @clarity-chat/docs build",
@@ -90,7 +93,14 @@
     "// === SECURITY ===": "",
     "security:audit": "tsx scripts/security-audit.ts",
     "security:audit:json": "tsx scripts/security-audit.ts --format json --output security-report.json",
-    "security:audit:markdown": "tsx scripts/security-audit.ts --format markdown --output SECURITY_AUDIT_REPORT.md"
+    "security:audit:markdown": "tsx scripts/security-audit.ts --format markdown --output SECURITY_AUDIT_REPORT.md",
+    "// === BUILD OPTIMIZATION ===": "",
+    "analyze:circular": "madge --circular --extensions ts,tsx packages/react/src",
+    "analyze:circular:graph": "madge --circular --image graph.svg --extensions ts,tsx packages/react/src",
+    "analyze:deps": "madge --extensions ts,tsx packages/react/src",
+    "analyze:ts-performance": "tsc --noEmit --extendedDiagnostics",
+    "analyze:ts-trace": "tsc --generateTrace trace --incremental false",
+    "build:optimized": "NODE_OPTIONS='--max-old-space-size=2048' turbo run build --concurrency=2"
   },
   "devDependencies": {
     "@changesets/changelog-github": "^0.5.2",
@@ -116,6 +126,7 @@
     "husky": "^9.1.7",
     "jsdom": "^27.3.0",
     "lint-staged": "^16.2.7",
+    "madge": "^8.0.0",
     "only-allow": "^1.2.1",
     "patch-package": "^8.0.0",
     "playwright": "^1.57.0",
@@ -153,7 +164,8 @@
       "undici": ">=7.18.2",
       "tar@<=7.5.2": ">=7.5.3",
       "lodash": ">=4.17.23",
-      "lodash-es": ">=4.17.23"
+      "lodash-es": ">=4.17.23",
+      "hono": ">=4.11.7"
     }
   },
   "engines": {

@@ -3,7 +3,7 @@
  */
 
 import { describe, it, expect } from 'vitest'
-import { classifyQueryComplexity, QueryComplexity } from '@/lib/ai/complexity'
+import { classifyQueryComplexity, QueryComplexity } from '@/lib/ai/query-complexity-classifier'
 
 describe('Query Complexity Classifier', () => {
   describe('Simple queries', () => {

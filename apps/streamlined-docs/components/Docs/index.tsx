@@ -86,8 +86,36 @@ export { FrameworkTabs, FrameworkGuide } from './FrameworkTabs'
 // Component Gallery
 export { ComponentGallery, sampleComponents } from './ComponentGallery'
 
+// Documentation Page Template System (NEW - Wave 3.5)
+export {
+  PropsTable,
+  type PropDefinition,
+  type PropsTableProps,
+} from './PropsTable'
+export {
+  Section,
+  SubSection,
+  type SectionProps,
+  type SubSectionProps,
+} from './Section'
+export {
+  TableOfContents,
+  type TocItem,
+  type TableOfContentsProps,
+} from './TableOfContents'
+export {
+  LiveDemoContainer,
+  type LiveDemoContainerProps,
+} from './LiveDemoContainer'
+export {
+  DocumentationPage,
+  type Badge,
+  type FeatureHighlight,
+  type RelatedAPI as DocRelatedAPI,
+  type FooterLink,
+  type DocumentationPageProps,
+} from './DocumentationPage'
+
 // Re-export existing enhanced components for convenience
-export { PropsTable } from '../Enhanced/PropsTable'
-export { Breadcrumbs, CollapsedBreadcrumbs } from '../Enhanced/Breadcrumbs'
-export { TableOfContents } from '../Enhanced/TableOfContents'
+export { Breadcrumbs, CollapsedBreadcrumbs } from '../Navigation/Breadcrumbs'
 export { LivePlayground } from '../Enhanced/LivePlayground'

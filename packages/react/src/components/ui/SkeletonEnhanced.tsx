@@ -10,4 +10,4 @@
  */
 
 // Re-export everything from the modular implementation
-export * from './SkeletonEnhanced'
+export * from './skeleton-enhanced'

@@ -16,27 +16,13 @@ import { getModelProfileOrDefault } from '../model-profiles'
 import type { ModelProfile } from '../model-profiles'
 import { optimizeMessagesForBudget } from '../optimizer'
 import type { OptimizationStrategy } from '../optimizer'
-// import type { CompressionStrategy } from '../compression-chain'
-export type CompressionStrategy =
-  | 'truncate'
-  | 'summarize'
-  | 'extract'
-  | 'adaptive'
-  | 'semantic-grouping'
-  | 'tool-condensing'
-  | 'intent-summarization' // Temp stub
+import type { CompressionStrategy, CompressionLog } from '../types/compression'
 import {
   estimateMessageTokens,
   getTokenizerForModel,
   estimateCost,
 } from '../tokenizer'
 // import { compressContext } from '../compression-chain' // TODO: Re-enable when compression-chain exists
-
-// Temporary stub types for compression-chain
-interface CompressionLog {
-  strategy: CompressionStrategy
-  description: string
-}
 
 // Temporary stub for compressContext until compression-chain is added back
 async function compressContext(

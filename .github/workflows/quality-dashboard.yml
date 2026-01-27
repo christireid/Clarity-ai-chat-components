@@ -1,0 +1,124 @@
+name: Quality Dashboard Update
+
+on:
+  schedule:
+    # Run daily at 9 AM UTC on weekdays
+    - cron: '0 9 * * 1-5'
+  workflow_dispatch:  # Allow manual trigger
+
+permissions:
+  contents: write  # Need write permission to commit metrics
+
+jobs:
+  update-dashboard:
+    name: Update Quality Dashboard
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'pnpm'
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: 8
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Collect quality metrics
+        id: collect
+        run: |
+          chmod +x .github/scripts/collect-quality-metrics.sh
+          ./.github/scripts/collect-quality-metrics.sh
+
+      - name: Generate dashboard
+        run: |
+          chmod +x .github/scripts/generate-dashboard.sh
+          ./.github/scripts/generate-dashboard.sh
+
+      - name: Commit and push metrics
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+
+          # Add metrics files
+          git add .github/metrics/quality-history.csv
+          git add .github/dashboards/quality-trends.md
+
+          # Check if there are changes
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+            exit 0
+          fi
+
+          # Commit and push
+          git commit -m "chore: update quality metrics dashboard [skip ci]
+
+          Daily update of quality metrics:
+          - Audit Score: ${{ steps.collect.outputs.audit_score }}/100
+          - Duplicate Code: ${{ steps.collect.outputs.duplicate_pct }}%
+          - Critical Vulnerabilities: ${{ steps.collect.outputs.vuln_critical }}
+          - Lighthouse Score: ${{ steps.collect.outputs.lighthouse_score }}/100
+
+          Generated: $(date -u +'%Y-%m-%d %H:%M:%S UTC')
+          "
+
+          git push origin main
+
+      - name: Create summary
+        run: |
+          cat >> $GITHUB_STEP_SUMMARY <<EOF
+          ## 📊 Quality Dashboard Updated
+
+          **Date**: $(date -u +'%Y-%m-%d %H:%M:%S UTC')
+
+          ### Current Metrics
+          | Metric | Value |
+          |--------|-------|
+          | Audit Score | ${{ steps.collect.outputs.audit_score }}/100 |
+          | Duplicate Code | ${{ steps.collect.outputs.duplicate_pct }}% |
+          | Critical Vulnerabilities | ${{ steps.collect.outputs.vuln_critical }} |
+          | High Vulnerabilities | ${{ steps.collect.outputs.vuln_high }} |
+          | Lighthouse Score | ${{ steps.collect.outputs.lighthouse_score }}/100 |
+          | Bundle Size | ${{ steps.collect.outputs.bundle_size_kb }}KB |
+
+          [View Full Dashboard](.github/dashboards/quality-trends.md)
+          EOF
+
+      - name: Send Slack notification
+        if: always()
+        uses: slackapi/slack-github-action@v1.26.0
+        with:
+          payload: |
+            {
+              "text": "📊 Quality Dashboard Updated",
+              "blocks": [
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "*Quality Dashboard Updated* 📊\n\n*Audit Score:* ${{ steps.collect.outputs.audit_score }}/100\n*Duplicate Code:* ${{ steps.collect.outputs.duplicate_pct }}%\n*Critical Vulns:* ${{ steps.collect.outputs.vuln_critical }}\n*Lighthouse:* ${{ steps.collect.outputs.lighthouse_score }}/100"
+                  }
+                },
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "<${{ github.server_url }}/${{ github.repository }}/blob/main/.github/dashboards/quality-trends.md|View Full Dashboard>"
+                  }
+                }
+              ]
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_QUALITY_WEBHOOK }}
+          SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK

@@ -37,6 +37,9 @@ Thumbs.db
 # Template files (Handlebars)
 *.hbs
 
+# Example templates with placeholder syntax
+apps/examples/_template/**
+
 # Commercial content with special formatting
 apps/docs/app/commercial/SALES_DECK_OUTLINE.md
 apps/docs/content/commercial/SALES_DECK_OUTLINE.md

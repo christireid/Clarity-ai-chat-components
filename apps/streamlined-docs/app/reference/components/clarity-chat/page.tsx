@@ -378,6 +378,7 @@ function LiveDemo() {
 
 const tableOfContents = [
   { id: 'overview', title: 'Overview' },
+  { id: 'comparison', title: 'Component Comparison' },
   { id: 'installation', title: 'Installation' },
   { id: 'demo', title: 'Live Demo' },
   { id: 'basic-usage', title: 'Basic Usage' },
@@ -403,6 +404,7 @@ const tableOfContents = [
       { id: 'example-streaming', title: 'With Streaming' },
       { id: 'example-memory', title: 'With Memory' },
       { id: 'example-tools', title: 'With Tools' },
+      { id: 'example-advanced', title: 'Advanced Configuration' },
     ],
   },
   { id: 'typescript', title: 'TypeScript' },
@@ -1274,21 +1276,21 @@ export default function ClarityChatPage() {
               className="grid grid-cols-2 md:grid-cols-4 gap-4"
             >
               {[
-                { icon: Zap, label: 'Streaming', desc: 'SSE & WebSocket' },
+                { icon: Zap, label: 'Built-in State', desc: 'No setup required' },
                 {
-                  icon: MessageSquare,
-                  label: 'Memory',
-                  desc: 'Context persistence',
+                  icon: Box,
+                  label: 'Batteries Included',
+                  desc: 'Memory, tools, rate limiting',
                 },
                 {
-                  icon: Wrench,
-                  label: 'Tools',
-                  desc: 'Agentic workflows',
+                  icon: Code2,
+                  label: 'Quick Start',
+                  desc: 'One line of code',
                 },
                 {
-                  icon: Accessibility,
-                  label: 'Accessible',
-                  desc: 'WCAG AA compliant',
+                  icon: Shield,
+                  label: 'Fully Typed',
+                  desc: 'TypeScript first',
                 },
               ].map(({ icon: Icon, label, desc }) => (
                 <div
@@ -1312,13 +1314,16 @@ export default function ClarityChatPage() {
                   <code>ClarityChat</code> is the recommended entry point for
                   most use cases. It combines the <code>useClarityChat</code>{' '}
                   hook and <code>ChatWindow</code> component into a single,
-                  easy-to-use interface.
+                  easy-to-use interface with built-in state management.
                 </p>
 
                 <h4 className="text-lg font-semibold mt-6 mb-3">
                   Key Features
                 </h4>
                 <ul className="space-y-2">
+                  <li>
+                    <strong>Built-in State Management:</strong> No need to manage chat state yourself
+                  </li>
                   <li>
                     <strong>Streaming Support:</strong> Real-time responses via
                     SSE or WebSocket
@@ -1346,6 +1351,87 @@ export default function ClarityChatPage() {
                 </ul>
 
                 <h4 className="text-lg font-semibold mt-6 mb-3">
+                  When to Use ClarityChat
+                </h4>
+                <p>
+                  Choose <code>ClarityChat</code> when you:
+                </p>
+                <ul className="space-y-2">
+                  <li>Want to add chat functionality quickly with minimal setup</li>
+                  <li>Do not need custom state management logic</li>
+                  <li>Prefer a batteries-included approach</li>
+                  <li>Are building a standard chat interface without heavy customization</li>
+                </ul>
+
+                <h4 className="text-lg font-semibold mt-6 mb-3">
+                  ClarityChat vs ChatWindow vs ClarityChatApp
+                </h4>
+                <div className="not-prose">
+                  <div className="overflow-x-auto rounded-lg border border-border/50 my-4">
+                    <table className="w-full text-sm">
+                      <thead>
+                        <tr className="border-b border-border/50 bg-muted/20">
+                          <th className="px-4 py-3 text-left font-semibold text-foreground">Feature</th>
+                          <th className="px-4 py-3 text-left font-semibold text-foreground">ClarityChat</th>
+                          <th className="px-4 py-3 text-left font-semibold text-foreground">ChatWindow</th>
+                          <th className="px-4 py-3 text-left font-semibold text-foreground">ClarityChatApp</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr className="border-b border-border/30">
+                          <td className="px-4 py-3 font-medium">State Management</td>
+                          <td className="px-4 py-3 text-green-600 dark:text-green-400">Built-in</td>
+                          <td className="px-4 py-3 text-amber-600 dark:text-amber-400">Manual (props)</td>
+                          <td className="px-4 py-3 text-green-600 dark:text-green-400">Built-in + Presets</td>
+                        </tr>
+                        <tr className="border-b border-border/30 bg-muted/10">
+                          <td className="px-4 py-3 font-medium">Setup Complexity</td>
+                          <td className="px-4 py-3">Simple</td>
+                          <td className="px-4 py-3">Moderate</td>
+                          <td className="px-4 py-3">Simplest</td>
+                        </tr>
+                        <tr className="border-b border-border/30">
+                          <td className="px-4 py-3 font-medium">Customization</td>
+                          <td className="px-4 py-3">High</td>
+                          <td className="px-4 py-3">Highest</td>
+                          <td className="px-4 py-3">Moderate</td>
+                        </tr>
+                        <tr className="border-b border-border/30 bg-muted/10">
+                          <td className="px-4 py-3 font-medium">Memory Support</td>
+                          <td className="px-4 py-3">✓</td>
+                          <td className="px-4 py-3">✓ (manual)</td>
+                          <td className="px-4 py-3">✓</td>
+                        </tr>
+                        <tr className="border-b border-border/30">
+                          <td className="px-4 py-3 font-medium">Tool Support</td>
+                          <td className="px-4 py-3">✓</td>
+                          <td className="px-4 py-3">✓ (manual)</td>
+                          <td className="px-4 py-3">✓</td>
+                        </tr>
+                        <tr className="border-b border-border/30 bg-muted/10">
+                          <td className="px-4 py-3 font-medium">Streaming</td>
+                          <td className="px-4 py-3">✓</td>
+                          <td className="px-4 py-3">✓</td>
+                          <td className="px-4 py-3">✓</td>
+                        </tr>
+                        <tr className="border-b border-border/30">
+                          <td className="px-4 py-3 font-medium">Use Case</td>
+                          <td className="px-4 py-3">Standard chat UI</td>
+                          <td className="px-4 py-3">Custom state logic</td>
+                          <td className="px-4 py-3">Quick prototypes</td>
+                        </tr>
+                        <tr className="bg-muted/10">
+                          <td className="px-4 py-3 font-medium">Best For</td>
+                          <td className="px-4 py-3">Production apps</td>
+                          <td className="px-4 py-3">Advanced control</td>
+                          <td className="px-4 py-3">Rapid development</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+
+                <h4 className="text-lg font-semibold mt-6 mb-3">
                   Architecture
                 </h4>
                 <p>
@@ -1354,6 +1440,148 @@ export default function ClarityChatPage() {
                   mid-level APIs like <code>ChatWindow</code> +{' '}
                   <code>useClarityChat</code> + <code>useChatHandlers</code>.
                 </p>
+              </div>
+            </Section>
+
+            {/* Comparison Section */}
+            <Section id="comparison" title="Component Comparison">
+              <p className="text-muted-foreground mb-6">
+                Clarity Chat provides three main ways to build chat interfaces,
+                each with different levels of control and complexity.
+              </p>
+
+              <div className="space-y-6">
+                {/* ClarityChat Card */}
+                <div className="p-6 rounded-lg border-2 border-brand-500/30 bg-brand-500/5">
+                  <div className="flex items-start gap-4 mb-4">
+                    <div className="p-3 rounded-lg bg-brand-500/10 text-brand-600 dark:text-brand-400">
+                      <Box className="w-6 h-6" />
+                    </div>
+                    <div className="flex-1">
+                      <h4 className="text-lg font-semibold text-foreground mb-2">
+                        ClarityChat
+                        <span className="ml-2 text-xs font-medium px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800">
+                          Recommended
+                        </span>
+                      </h4>
+                      <p className="text-sm text-muted-foreground mb-3">
+                        All-in-one component with built-in state management.
+                        Perfect for production applications.
+                      </p>
+                      <div className="flex flex-wrap gap-2">
+                        <span className="text-xs px-2 py-1 rounded bg-green-500/10 text-green-600 dark:text-green-400">
+                          Built-in State
+                        </span>
+                        <span className="text-xs px-2 py-1 rounded bg-green-500/10 text-green-600 dark:text-green-400">
+                          Batteries Included
+                        </span>
+                        <span className="text-xs px-2 py-1 rounded bg-green-500/10 text-green-600 dark:text-green-400">
+                          Quick Start
+                        </span>
+                        <span className="text-xs px-2 py-1 rounded bg-green-500/10 text-green-600 dark:text-green-400">
+                          Fully Typed
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                  <CodeBlock
+                    code={`<ClarityChat api="/api/chat" />`}
+                    language="tsx"
+                    showDownloadButton={false}
+                  />
+                </div>
+
+                {/* ChatWindow Card */}
+                <div className="p-6 rounded-lg border border-border/50 bg-card">
+                  <div className="flex items-start gap-4 mb-4">
+                    <div className="p-3 rounded-lg bg-purple-500/10 text-purple-600 dark:text-purple-400">
+                      <Layout className="w-6 h-6" />
+                    </div>
+                    <div className="flex-1">
+                      <h4 className="text-lg font-semibold text-foreground mb-2">
+                        ChatWindow
+                      </h4>
+                      <p className="text-sm text-muted-foreground mb-3">
+                        Mid-level UI component. You manage state with{' '}
+                        <code>useClarityChat</code>. Best for custom state logic.
+                      </p>
+                      <div className="flex flex-wrap gap-2">
+                        <span className="text-xs px-2 py-1 rounded bg-purple-500/10 text-purple-600 dark:text-purple-400">
+                          Manual State
+                        </span>
+                        <span className="text-xs px-2 py-1 rounded bg-purple-500/10 text-purple-600 dark:text-purple-400">
+                          High Control
+                        </span>
+                        <span className="text-xs px-2 py-1 rounded bg-purple-500/10 text-purple-600 dark:text-purple-400">
+                          Composable
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                  <CodeBlock
+                    code={`const chat = useClarityChat({ api: '/api/chat' })
+return <ChatWindow messages={chat.messages} onSendMessage={chat.append} />`}
+                    language="tsx"
+                    showDownloadButton={false}
+                  />
+                </div>
+
+                {/* ClarityChatApp Card */}
+                <div className="p-6 rounded-lg border border-border/50 bg-card">
+                  <div className="flex items-start gap-4 mb-4">
+                    <div className="p-3 rounded-lg bg-blue-500/10 text-blue-600 dark:text-blue-400">
+                      <Layers className="w-6 h-6" />
+                    </div>
+                    <div className="flex-1">
+                      <h4 className="text-lg font-semibold text-foreground mb-2">
+                        ClarityChatApp
+                      </h4>
+                      <p className="text-sm text-muted-foreground mb-3">
+                        Ultra-simple preset-based API. Great for prototypes and
+                        simple use cases.
+                      </p>
+                      <div className="flex flex-wrap gap-2">
+                        <span className="text-xs px-2 py-1 rounded bg-blue-500/10 text-blue-600 dark:text-blue-400">
+                          Presets
+                        </span>
+                        <span className="text-xs px-2 py-1 rounded bg-blue-500/10 text-blue-600 dark:text-blue-400">
+                          Zero Config
+                        </span>
+                        <span className="text-xs px-2 py-1 rounded bg-blue-500/10 text-blue-600 dark:text-blue-400">
+                          Rapid Dev
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                  <CodeBlock
+                    code={`import { chat } from '@clarity-chat/react'
+
+// Returns JSX.Element!
+export default chat('/api/chat')`}
+                    language="tsx"
+                    showDownloadButton={false}
+                  />
+                </div>
+              </div>
+
+              <div className="mt-6 p-4 rounded-lg bg-blue-500/10 border border-blue-200 dark:border-blue-800">
+                <h4 className="font-semibold text-foreground mb-2">
+                  Which Should I Choose?
+                </h4>
+                <ul className="text-sm text-muted-foreground space-y-2">
+                  <li>
+                    <strong className="text-foreground">ClarityChat:</strong>{' '}
+                    Start here for most production use cases
+                  </li>
+                  <li>
+                    <strong className="text-foreground">ChatWindow:</strong>{' '}
+                    Use when you need custom state management or complex workflows
+                  </li>
+                  <li>
+                    <strong className="text-foreground">ClarityChatApp:</strong>{' '}
+                    Use for quick prototypes or simple demos
+                  </li>
+                </ul>
               </div>
             </Section>
 
@@ -1555,6 +1783,185 @@ export default function ClarityChatPage() {
                   code={withToolsCode}
                   language="tsx"
                   filename="ChatWithTools.tsx"
+                  showLineNumbers
+                />
+              </SubSection>
+
+              <SubSection id="example-advanced" title="Advanced Configuration">
+                <p className="text-muted-foreground mb-4">
+                  Production-ready chat with memory, token optimization, rate
+                  limiting, and comprehensive error handling:
+                </p>
+                <CodeBlock
+                  code={`import { ClarityChat, MemoryProvider } from '@clarity-chat/react'
+import { useState } from 'react'
+
+// Advanced configuration for production use
+function ProductionChat() {
+  const [consentGiven, setConsentGiven] = useState(false)
+
+  return (
+    <MemoryProvider>
+      <ClarityChat
+        api="/api/chat"
+        chatId="user-123-session-456" // Persistent chat sessions
+
+        // Memory configuration
+        memory={{
+          enabled: true,
+          strategy: 'vector-store', // Best for semantic search
+          autoCapture: true,
+          requireConsent: true,
+          maxTokens: 4000,
+          retryOnError: true,
+          maxRetryAttempts: 3,
+          onConsentRequired: async () => {
+            // Show consent dialog
+            const result = await showConsentDialog({
+              title: 'Memory Consent',
+              message: 'Allow chat to remember context?',
+            })
+            setConsentGiven(result)
+            return result
+          },
+          onMemoryError: (error, operation) => {
+            console.error(\`Memory \${operation} failed:\`, error)
+            // Show user-friendly error toast
+            toast.error(\`Failed to \${operation === 'query' ? 'retrieve' : 'save'} context\`)
+          },
+        }}
+
+        // Rate limiting for high-traffic scenarios
+        rateLimiting={{
+          enable: true,
+          maxConcurrentRequests: 3,
+          maxQueueSize: 10,
+          showQueueStatus: true,
+          compactQueueStatus: false,
+          onRequestQueued: (position, estimatedWaitMs) => {
+            toast.info(
+              \`Request queued (position \${position}). Est. wait: \${Math.round(estimatedWaitMs / 1000)}s\`
+            )
+          },
+          onRateLimited: (resetAt) => {
+            const resetTime = new Date(resetAt).toLocaleTimeString()
+            toast.warning(\`Rate limited. Try again at \${resetTime}\`)
+          },
+          onQueueFull: () => {
+            toast.error('Request queue is full. Please try again later.')
+          },
+        }}
+
+        // Header configuration
+        header={{
+          show: true,
+          title: 'AI Assistant',
+          subtitle: consentGiven ? 'Memory enabled' : 'Memory disabled',
+          showMessageCount: true,
+          actions: (
+            <div className="flex gap-2">
+              <button
+                onClick={() => {/* Export chat */}}
+                className="p-2 hover:bg-muted rounded"
+                aria-label="Export chat"
+              >
+                <Download className="w-4 h-4" />
+              </button>
+              <button
+                onClick={() => {/* Clear chat */}}
+                className="p-2 hover:bg-muted rounded"
+                aria-label="Clear chat"
+              >
+                <Trash className="w-4 h-4" />
+              </button>
+            </div>
+          ),
+        }}
+
+        // Message actions
+        messageActions={{
+          onCopy: (id, content) => {
+            navigator.clipboard.writeText(content)
+            toast.success('Copied to clipboard')
+          },
+          onFeedback: async (messageId, type, comment) => {
+            await fetch('/api/feedback', {
+              method: 'POST',
+              body: JSON.stringify({ messageId, type, comment }),
+            })
+            toast.success('Feedback submitted')
+          },
+          onEdit: (messageId) => {
+            console.log('Edit message:', messageId)
+          },
+          onRegenerate: (messageId) => {
+            console.log('Regenerate message:', messageId)
+          },
+          onDelete: (messageId) => {
+            console.log('Delete message:', messageId)
+          },
+        }}
+
+        // Prompt suggestions
+        prompts={{
+          starterPrompts: [
+            { text: 'What can you help me with?', category: 'General' },
+            { text: 'Summarize recent conversations', category: 'Memory' },
+            { text: 'Search for information about X', category: 'Tools' },
+          ],
+          enableSuggestions: true,
+          maxSuggestions: 3,
+        }}
+
+        // Streaming configuration
+        stream={true}
+        transport="sse"
+        maxSteps={5} // Allow tool iterations
+
+        // Token optimization
+        showTokenCounter={true}
+        body={{
+          // Pass token budget to backend
+          maxTokens: 4000,
+          temperature: 0.7,
+        }}
+
+        // Additional options
+        autoScroll={true}
+        showNetworkStatus={true}
+        enableMessageOperations={true}
+
+        // Event handlers
+        onFinish={(message) => {
+          console.log('Stream finished:', message.id)
+          // Track analytics, update UI, etc.
+        }}
+        onError={(error) => {
+          console.error('Chat error:', error)
+          toast.error('Failed to send message. Please try again.')
+        }}
+
+        // Custom styling
+        className="h-[600px] rounded-xl border shadow-lg"
+        theme="default"
+      />
+    </MemoryProvider>
+  )
+}
+
+// Helper function for consent dialog
+async function showConsentDialog({ title, message }: {
+  title: string
+  message: string
+}): Promise<boolean> {
+  // Implementation depends on your UI library
+  return new Promise((resolve) => {
+    // Show modal, return user choice
+    resolve(true)
+  })
+}`}
+                  language="tsx"
+                  filename="ProductionChat.tsx"
                   showLineNumbers
                 />
               </SubSection>

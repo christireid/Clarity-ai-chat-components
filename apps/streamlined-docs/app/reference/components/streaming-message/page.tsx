@@ -12,33 +12,26 @@ import Link from 'next/link'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   Sparkles,
-  ExternalLink,
   Copy,
   Check,
   ChevronRight,
   Zap,
-  Palette,
-  Shield,
-  Accessibility,
-  Code2,
-  Settings,
-  MessageSquare,
-  Gauge,
-  Play,
-  Send,
   Wrench,
   AlertTriangle,
-  HelpCircle,
-  Keyboard,
   Brain,
   BookOpen,
   RefreshCw,
-  Timer,
+  Waves,
+  Radio,
+  Wifi,
+  Activity,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { durations } from '@/lib/animations'
 import { Breadcrumbs } from '@/components/Navigation/Breadcrumbs'
 import { CodeBlock } from '@/components/Docs/CodeBlock'
+import { DocumentationPage } from '@/components/Docs/DocumentationPage'
+import type { TocItem } from '@/components/Docs/TableOfContents'
 
 // ============================================================================
 // Copy Button Component
@@ -427,105 +420,6 @@ function LiveDemo() {
 }
 
 // ============================================================================
-// Table of Contents
-// ============================================================================
-
-const tableOfContents = [
-  { id: 'overview', title: 'Overview' },
-  { id: 'installation', title: 'Installation' },
-  { id: 'demo', title: 'Live Demo' },
-  { id: 'basic-usage', title: 'Basic Usage' },
-  {
-    id: 'props',
-    title: 'Props Reference',
-    children: [
-      { id: 'core-props', title: 'Core Props' },
-      { id: 'display-props', title: 'Display Props' },
-      { id: 'streaming-props', title: 'Streaming Props' },
-      { id: 'callback-props', title: 'Callbacks' },
-    ],
-  },
-  {
-    id: 'examples',
-    title: 'Examples',
-    children: [
-      { id: 'example-basic', title: 'Basic Streaming' },
-      { id: 'example-smooth', title: 'Smooth Streaming' },
-      { id: 'example-tools', title: 'With Tool Calls' },
-      { id: 'example-thinking', title: 'With Thinking Steps' },
-    ],
-  },
-  { id: 'typescript', title: 'TypeScript' },
-  { id: 'accessibility', title: 'Accessibility' },
-  { id: 'troubleshooting', title: 'Troubleshooting' },
-  { id: 'related', title: 'Related' },
-]
-
-function TableOfContents() {
-  const [activeId, setActiveId] = React.useState('')
-
-  React.useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            setActiveId(entry.target.id)
-          }
-        })
-      },
-      { rootMargin: '-100px 0px -66%' }
-    )
-
-    const headings = document.querySelectorAll('section[id], div[id]')
-    headings.forEach((heading) => observer.observe(heading))
-
-    return () => observer.disconnect()
-  }, [])
-
-  return (
-    <nav
-      className="sticky top-24 space-y-1 text-sm"
-      aria-label="Table of contents"
-    >
-      <p className="font-semibold text-foreground mb-3">On this page</p>
-      {tableOfContents.map((item) => (
-        <div key={item.id}>
-          <a
-            href={`#${item.id}`}
-            className={cn(
-              'block py-1 px-2 rounded transition-colors',
-              activeId === item.id
-                ? 'text-brand-600 dark:text-brand-400 bg-brand-500/10'
-                : 'text-muted-foreground hover:text-foreground'
-            )}
-          >
-            {item.title}
-          </a>
-          {item.children && (
-            <div className="ml-3 mt-1 space-y-1 border-l border-border/50 pl-2">
-              {item.children.map((child) => (
-                <a
-                  key={child.id}
-                  href={`#${child.id}`}
-                  className={cn(
-                    'block py-0.5 text-xs transition-colors',
-                    activeId === child.id
-                      ? 'text-brand-600 dark:text-brand-400'
-                      : 'text-muted-foreground hover:text-foreground'
-                  )}
-                >
-                  {child.title}
-                </a>
-              ))}
-            </div>
-          )}
-        </div>
-      ))}
-    </nav>
-  )
-}
-
-// ============================================================================
 // Props Data
 // ============================================================================
 
@@ -735,6 +629,82 @@ function AIResponseWithThinking() {
   )
 }`
 
+const sseIntegrationCode = `import { StreamingMessage } from '@clarity-chat/react'
+import { useStreamingSSE } from '@clarity-chat/react'
+
+function SSEStreamingChat() {
+  const { data, status, error, connect, disconnect } = useStreamingSSE({
+    url: '/api/chat/stream',
+    method: 'POST',
+    body: { message: 'Tell me about quantum computing' },
+    authToken: 'your-auth-token',
+    autoReconnect: true,
+    onMessage: (event) => {
+      // Handle special events
+      if (event.type === 'thinking') {
+        console.log('AI is thinking:', event.data)
+      }
+    },
+  })
+
+  return (
+    <div>
+      <button onClick={connect} disabled={status !== 'idle'}>
+        Start Stream
+      </button>
+      <button onClick={disconnect} disabled={status === 'idle'}>
+        Cancel
+      </button>
+
+      <StreamingMessage
+        content={data}
+        isStreaming={status === 'streaming'}
+        error={error?.message}
+        smoothStreaming={true}
+        streamingSpeed="normal"
+      />
+    </div>
+  )
+}`
+
+const websocketIntegrationCode = `import { StreamingMessage } from '@clarity-chat/react'
+import { useStreamingWebSocket } from '@clarity-chat/react'
+
+function WebSocketStreamingChat() {
+  const [content, setContent] = useState('')
+  const { status, connect, disconnect, send } = useStreamingWebSocket({
+    url: 'wss://api.example.com/chat',
+    autoReconnect: true,
+    enableHeartbeat: true,
+    onMessage: (message) => {
+      if (message.data.type === 'content') {
+        setContent(prev => prev + message.data.chunk)
+      }
+    },
+  })
+
+  const handleSendMessage = () => {
+    send({ type: 'chat', content: 'Hello!' })
+  }
+
+  return (
+    <div>
+      <button onClick={connect} disabled={status === 'connected'}>
+        Connect
+      </button>
+      <button onClick={handleSendMessage} disabled={status !== 'connected'}>
+        Send Message
+      </button>
+
+      <StreamingMessage
+        content={content}
+        isStreaming={status === 'connected'}
+        smoothStreaming={true}
+      />
+    </div>
+  )
+}`
+
 const typescriptCode = `// Main component props
 interface StreamingMessageProps {
   /** Accumulated message content */
@@ -798,99 +768,242 @@ const STREAMING_SPEEDS = {
 }`
 
 // ============================================================================
+// SSE vs WebSocket Comparison Component
+// ============================================================================
+
+function StreamingComparison() {
+  return (
+    <div className="grid md:grid-cols-2 gap-6">
+      {/* SSE */}
+      <div className="p-6 rounded-lg border border-border/50 bg-card">
+        <div className="flex items-center gap-3 mb-4">
+          <div className="p-2 rounded-lg bg-blue-500/10">
+            <Radio className="w-5 h-5 text-blue-500" />
+          </div>
+          <div>
+            <h4 className="font-semibold text-foreground">
+              Server-Sent Events (SSE)
+            </h4>
+            <p className="text-xs text-muted-foreground">Unidirectional</p>
+          </div>
+        </div>
+
+        <div className="space-y-3">
+          <div className="flex items-start gap-2">
+            <Check className="w-4 h-4 text-green-500 mt-0.5 shrink-0" />
+            <div className="text-sm">
+              <p className="font-medium text-foreground">Simple HTTP/2</p>
+              <p className="text-xs text-muted-foreground">
+                Works through firewalls, auto-reconnects
+              </p>
+            </div>
+          </div>
+          <div className="flex items-start gap-2">
+            <Check className="w-4 h-4 text-green-500 mt-0.5 shrink-0" />
+            <div className="text-sm">
+              <p className="font-medium text-foreground">Low Latency</p>
+              <p className="text-xs text-muted-foreground">
+                Ideal for OpenAI/Anthropic streaming
+              </p>
+            </div>
+          </div>
+          <div className="flex items-start gap-2">
+            <Check className="w-4 h-4 text-green-500 mt-0.5 shrink-0" />
+            <div className="text-sm">
+              <p className="font-medium text-foreground">Built-in Resume</p>
+              <p className="text-xs text-muted-foreground">
+                Last-Event-ID for continuation
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div className="mt-4 pt-4 border-t border-border/30">
+          <p className="text-xs font-medium text-muted-foreground mb-2">
+            Best For:
+          </p>
+          <p className="text-sm text-foreground">
+            AI responses, notifications, one-way updates
+          </p>
+        </div>
+      </div>
+
+      {/* WebSocket */}
+      <div className="p-6 rounded-lg border border-border/50 bg-card">
+        <div className="flex items-center gap-3 mb-4">
+          <div className="p-2 rounded-lg bg-purple-500/10">
+            <Wifi className="w-5 h-5 text-purple-500" />
+          </div>
+          <div>
+            <h4 className="font-semibold text-foreground">WebSocket</h4>
+            <p className="text-xs text-muted-foreground">Bidirectional</p>
+          </div>
+        </div>
+
+        <div className="space-y-3">
+          <div className="flex items-start gap-2">
+            <Check className="w-4 h-4 text-green-500 mt-0.5 shrink-0" />
+            <div className="text-sm">
+              <p className="font-medium text-foreground">Full Duplex</p>
+              <p className="text-xs text-muted-foreground">
+                Real-time two-way communication
+              </p>
+            </div>
+          </div>
+          <div className="flex items-start gap-2">
+            <Check className="w-4 h-4 text-green-500 mt-0.5 shrink-0" />
+            <div className="text-sm">
+              <p className="font-medium text-foreground">Binary Support</p>
+              <p className="text-xs text-muted-foreground">
+                Text and binary messages
+              </p>
+            </div>
+          </div>
+          <div className="flex items-start gap-2">
+            <Check className="w-4 h-4 text-green-500 mt-0.5 shrink-0" />
+            <div className="text-sm">
+              <p className="font-medium text-foreground">Persistent</p>
+              <p className="text-xs text-muted-foreground">
+                Long-lived connection
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div className="mt-4 pt-4 border-t border-border/30">
+          <p className="text-xs font-medium text-muted-foreground mb-2">
+            Best For:
+          </p>
+          <p className="text-sm text-foreground">
+            Chat, collaborative editing, gaming
+          </p>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// ============================================================================
 // Main Page Component
 // ============================================================================
 
 export default function StreamingMessagePage() {
+  const tableOfContents: TocItem[] = [
+    { id: 'overview', title: 'Overview' },
+    { id: 'installation', title: 'Installation' },
+    { id: 'demo', title: 'Live Demo' },
+    { id: 'basic-usage', title: 'Basic Usage' },
+    {
+      id: 'props',
+      title: 'Props Reference',
+      children: [
+        { id: 'core-props', title: 'Core Props' },
+        { id: 'display-props', title: 'Display Props' },
+        { id: 'streaming-props', title: 'Streaming Props' },
+        { id: 'callback-props', title: 'Callbacks' },
+      ],
+    },
+    {
+      id: 'examples',
+      title: 'Examples',
+      children: [
+        { id: 'example-basic', title: 'Basic Streaming' },
+        { id: 'example-smooth', title: 'Smooth Streaming' },
+        { id: 'example-tools', title: 'With Tool Calls' },
+        { id: 'example-thinking', title: 'With Thinking Steps' },
+        { id: 'example-sse', title: 'SSE Integration' },
+        { id: 'example-websocket', title: 'WebSocket Integration' },
+      ],
+    },
+    { id: 'sse-vs-websocket', title: 'SSE vs WebSocket' },
+    { id: 'streaming-hooks', title: 'Related Hooks' },
+    { id: 'typescript', title: 'TypeScript' },
+    { id: 'accessibility', title: 'Accessibility' },
+    { id: 'troubleshooting', title: 'Troubleshooting' },
+    { id: 'related', title: 'Related' },
+  ]
+
   return (
-    <div className="min-h-screen">
-      <Breadcrumbs />
+    <DocumentationPage
+      title="StreamingMessage"
+      description="A component for displaying AI responses with character-by-character streaming animation, tool call visualization, thinking steps, citations, and error states. Features smooth streaming for a polished, readable experience."
+      icon={Sparkles}
+      badges={[
+        { label: 'Stable', variant: 'stable' },
+        { label: 'Low-Level', variant: 'beta' },
+      ]}
+      packageName="@clarity-chat/react"
+      features={[
+        {
+          icon: Zap,
+          label: 'Smooth Streaming',
+          description: 'Consistent rendering pace',
+        },
+        {
+          icon: Wrench,
+          label: 'Tool Calls',
+          description: 'Approve/reject actions',
+        },
+        {
+          icon: Brain,
+          label: 'Thinking Steps',
+          description: 'Chain-of-thought display',
+        },
+        {
+          icon: BookOpen,
+          label: 'Citations',
+          description: 'Source references',
+        },
+      ]}
+      tableOfContents={tableOfContents}
+      relatedAPIs={[
+        {
+          name: 'MessageList',
+          type: 'component',
+          description: 'Container for rendering messages with animations',
+          href: '/reference/components/message-list',
+        },
+        {
+          name: 'Message',
+          type: 'component',
+          description: 'Base message bubble component',
+          href: '/reference/components/message',
+        },
+        {
+          name: 'useStreaming',
+          type: 'hook',
+          description: 'Low-level ReadableStream processing hook',
+          href: '/reference/hooks/use-streaming',
+        },
+        {
+          name: 'useStreamingSSE',
+          type: 'hook',
+          description: 'Server-Sent Events streaming hook',
+          href: '/reference/hooks/use-streaming-sse',
+        },
+        {
+          name: 'useStreamingWebSocket',
+          type: 'hook',
+          description: 'WebSocket streaming hook with reconnection',
+          href: '/reference/hooks/use-streaming-websocket',
+        },
+      ]}
+      footerNavigation={[
+        {
+          label: 'MessageList',
+          href: '/reference/components/message-list',
+          direction: 'previous',
+        },
+        {
+          label: 'Message',
+          href: '/reference/components/message',
+          direction: 'next',
+        },
+      ]}
+    >
 
-      <div className="container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex gap-8 py-8">
-          {/* Main content */}
-          <main className="flex-1 min-w-0 space-y-12">
-            {/* Page Header */}
-            <motion.header
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{
-                duration: durations.moderate,
-                ease: [0.25, 0.1, 0.25, 1],
-              }}
-            >
-              <div className="flex items-center gap-3 mb-4">
-                <div className="p-2.5 rounded-lg bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-200 dark:border-amber-800">
-                  <Sparkles className="w-6 h-6" aria-hidden="true" />
-                </div>
-                <div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800">
-                      Stable
-                    </span>
-                    <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-purple-500/10 text-purple-600 dark:text-purple-400 border border-purple-200 dark:border-purple-800">
-                      Low-Level
-                    </span>
-                    <span className="text-xs text-muted-foreground">
-                      @clarity-chat/react
-                    </span>
-                  </div>
-                </div>
-              </div>
-
-              <h1 className="text-4xl font-bold text-foreground mb-4">
-                StreamingMessage
-              </h1>
-
-              <p className="text-lg text-muted-foreground max-w-3xl">
-                A component for displaying AI responses with
-                character-by-character streaming animation, tool call
-                visualization, thinking steps, citations, and error states.
-                Features smooth streaming for a polished, readable experience.
-              </p>
-            </motion.header>
-
-            {/* Feature highlights */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{
-                duration: durations.slow,
-                delay: 0.1,
-                ease: [0.25, 0.1, 0.25, 1],
-              }}
-              className="grid grid-cols-2 md:grid-cols-4 gap-4"
-            >
-              {[
-                {
-                  icon: Zap,
-                  label: 'Smooth Streaming',
-                  desc: 'Consistent pace',
-                },
-                { icon: Wrench, label: 'Tool Calls', desc: 'Approve/reject' },
-                {
-                  icon: Brain,
-                  label: 'Thinking Steps',
-                  desc: 'Chain-of-thought',
-                },
-                { icon: BookOpen, label: 'Citations', desc: 'Source display' },
-              ].map(({ icon: Icon, label, desc }) => (
-                <div
-                  key={label}
-                  className="p-4 rounded-lg bg-muted/30 border border-border/50"
-                >
-                  <Icon
-                    className="w-5 h-5 text-brand-500 mb-2"
-                    aria-hidden="true"
-                  />
-                  <p className="font-medium text-foreground text-sm">{label}</p>
-                  <p className="text-xs text-muted-foreground">{desc}</p>
-                </div>
-              ))}
-            </motion.div>
-
-            {/* Overview Section */}
-            <Section id="overview" title="Overview">
+      {/* Overview Section */}
+      <Section id="overview" title="Overview">
               <div className="prose prose-neutral dark:prose-invert max-w-none">
                 <p>
                   <code>StreamingMessage</code> handles the complexity of
@@ -1066,6 +1179,28 @@ export default function StreamingMessagePage() {
                   filename="StreamingWithThinking.tsx"
                 />
               </SubSection>
+
+              <SubSection id="example-sse" title="SSE Integration">
+                <p className="text-muted-foreground mb-4">
+                  Complete example with useStreamingSSE:
+                </p>
+                <CodeBlock
+                  code={sseIntegrationCode}
+                  language="tsx"
+                  filename="SSEIntegration.tsx"
+                />
+              </SubSection>
+
+              <SubSection id="example-websocket" title="WebSocket Integration">
+                <p className="text-muted-foreground mb-4">
+                  Complete example with useStreamingWebSocket:
+                </p>
+                <CodeBlock
+                  code={websocketIntegrationCode}
+                  language="tsx"
+                  filename="WebSocketIntegration.tsx"
+                />
+              </SubSection>
             </Section>
 
             {/* TypeScript Section */}
@@ -1197,118 +1332,151 @@ export default function StreamingMessagePage() {
               </div>
             </Section>
 
-            {/* Related APIs Section */}
-            <Section id="related" title="Related">
-              <div className="grid gap-4 md:grid-cols-2">
-                {[
-                  {
-                    name: 'MessageList',
-                    type: 'component',
-                    description:
-                      'Container for rendering messages with animations',
-                    href: '/reference/components/message-list',
-                  },
-                  {
-                    name: 'Message',
-                    type: 'component',
-                    description: 'Base message bubble component',
-                    href: '/reference/components/message',
-                  },
-                  {
-                    name: 'ThinkingIndicator',
-                    type: 'component',
-                    description: 'Standalone thinking/processing indicator',
-                    href: '/reference/components/thinking-indicator',
-                  },
-                  {
-                    name: 'ToolInvocationCard',
-                    type: 'component',
-                    description: 'Detailed tool call display component',
-                    href: '/reference/components/tool-invocation-card',
-                  },
-                ].map((api) => (
-                  <Link
-                    key={api.name}
-                    href={api.href}
-                    className={cn(
-                      'group p-4 rounded-lg border border-border/50',
-                      'hover:border-brand-500/30 hover:shadow-sm transition-all',
-                      'focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500'
-                    )}
-                  >
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="font-semibold text-foreground group-hover:text-brand-600 dark:group-hover:text-brand-400 transition-colors">
-                        {api.name}
-                      </span>
-                      <span
-                        className={cn(
-                          'text-xs px-2 py-0.5 rounded-full',
-                          api.type === 'hook'
-                            ? 'bg-purple-500/10 text-purple-600 dark:text-purple-400'
-                            : 'bg-blue-500/10 text-blue-600 dark:text-blue-400'
-                        )}
-                      >
-                        {api.type}
-                      </span>
-                    </div>
-                    <p className="text-sm text-muted-foreground">
-                      {api.description}
-                    </p>
-                  </Link>
-                ))}
-              </div>
-            </Section>
+      {/* SSE vs WebSocket Section */}
+      <Section id="sse-vs-websocket" title="SSE vs WebSocket">
+        <p className="text-muted-foreground mb-6">
+          Choose the right transport protocol for your streaming needs:
+        </p>
+        <StreamingComparison />
 
-            {/* Footer Navigation */}
-            <div className="border-t border-border/50 pt-8 mt-12">
-              <div className="grid gap-4 sm:grid-cols-2">
-                <Link
-                  href="/reference/components/message-list"
-                  className={cn(
-                    'group flex items-center gap-3 p-4 rounded-lg border border-border/50',
-                    'hover:border-brand-500/30 hover:shadow-sm transition-all',
-                    'focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500'
-                  )}
-                >
-                  <ChevronRight className="w-5 h-5 text-muted-foreground rotate-180 group-hover:text-brand-500 transition-colors" />
-                  <div>
-                    <div className="text-xs text-muted-foreground mb-1">
-                      Previous
-                    </div>
-                    <div className="font-medium text-foreground group-hover:text-brand-600 dark:group-hover:text-brand-400 transition-colors">
-                      MessageList
-                    </div>
-                  </div>
-                </Link>
-                <Link
-                  href="/reference/components/message"
-                  className={cn(
-                    'group flex items-center gap-3 p-4 rounded-lg border border-border/50',
-                    'hover:border-brand-500/30 hover:shadow-sm transition-all',
-                    'focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500',
-                    'text-right'
-                  )}
-                >
-                  <div className="flex-1">
-                    <div className="text-xs text-muted-foreground mb-1">
-                      Next
-                    </div>
-                    <div className="font-medium text-foreground group-hover:text-brand-600 dark:group-hover:text-brand-400 transition-colors">
-                      Message
-                    </div>
-                  </div>
-                  <ChevronRight className="w-5 h-5 text-muted-foreground group-hover:text-brand-500 transition-colors" />
-                </Link>
+        <div className="mt-6 p-4 rounded-lg bg-blue-500/5 border border-blue-200 dark:border-blue-800">
+          <div className="flex items-start gap-3">
+            <Activity className="w-5 h-5 text-blue-500 mt-0.5 shrink-0" />
+            <div>
+              <h4 className="font-semibold text-foreground mb-2">
+                Recommendation
+              </h4>
+              <p className="text-sm text-muted-foreground">
+                For AI response streaming (OpenAI, Anthropic, etc.), use{' '}
+                <strong>SSE</strong> with <code>useStreamingSSE</code>. For
+                interactive chat with user input during streaming, use{' '}
+                <strong>WebSocket</strong> with{' '}
+                <code>useStreamingWebSocket</code>.
+              </p>
+            </div>
+          </div>
+        </div>
+      </Section>
+
+      {/* Related Streaming Hooks Section */}
+      <Section id="streaming-hooks" title="Related Streaming Hooks">
+        <p className="text-muted-foreground mb-6">
+          StreamingMessage works with these low-level and mid-level streaming
+          hooks:
+        </p>
+
+        <div className="space-y-4">
+          {/* useStreaming */}
+          <div className="p-4 rounded-lg border border-border/50 bg-card">
+            <div className="flex items-center gap-3 mb-3">
+              <div className="p-2 rounded-lg bg-purple-500/10">
+                <Waves className="w-4 h-4 text-purple-500" />
+              </div>
+              <div>
+                <h4 className="font-semibold text-foreground">useStreaming</h4>
+                <span className="text-xs px-2 py-0.5 rounded-full bg-purple-500/10 text-purple-600 dark:text-purple-400">
+                  hook
+                </span>
               </div>
             </div>
-          </main>
+            <p className="text-sm text-muted-foreground mb-3">
+              Low-level primitive for processing ReadableStream with automatic
+              text decoding and accumulation.
+            </p>
+            <CodeBlock
+              code={`const { content, isStreaming, startStreaming } = useStreaming({
+  onChunk: (chunk) => console.log('Chunk:', chunk),
+  onComplete: (full) => console.log('Done:', full),
+})
 
-          {/* Table of Contents Sidebar */}
-          <aside className="hidden xl:block w-64 shrink-0">
-            <TableOfContents />
-          </aside>
+// Use with fetch
+const response = await fetch('/api/stream')
+await startStreaming(response.body)`}
+              language="tsx"
+              showLineNumbers={false}
+            />
+          </div>
+
+          {/* useStreamingSSE */}
+          <div className="p-4 rounded-lg border border-border/50 bg-card">
+            <div className="flex items-center gap-3 mb-3">
+              <div className="p-2 rounded-lg bg-blue-500/10">
+                <Radio className="w-4 h-4 text-blue-500" />
+              </div>
+              <div>
+                <h4 className="font-semibold text-foreground">
+                  useStreamingSSE
+                </h4>
+                <span className="text-xs px-2 py-0.5 rounded-full bg-blue-500/10 text-blue-600 dark:text-blue-400">
+                  hook
+                </span>
+              </div>
+            </div>
+            <p className="text-sm text-muted-foreground mb-3">
+              Mid-level hook for Server-Sent Events with automatic reconnection,
+              heartbeat monitoring, and event parsing.
+            </p>
+            <CodeBlock
+              code={`const { data, status, connect, disconnect } = useStreamingSSE({
+  url: '/api/chat/stream',
+  method: 'POST',
+  body: { message: 'Hello' },
+  authToken: user.token,
+  onMessage: (event) => {
+    console.log('Event:', event.type, event.data)
+  },
+})
+
+// StreamingMessage integration
+<StreamingMessage
+  content={data}
+  isStreaming={status === 'streaming'}
+/>`}
+              language="tsx"
+              showLineNumbers={false}
+            />
+          </div>
+
+          {/* useStreamingWebSocket */}
+          <div className="p-4 rounded-lg border border-border/50 bg-card">
+            <div className="flex items-center gap-3 mb-3">
+              <div className="p-2 rounded-lg bg-purple-500/10">
+                <Wifi className="w-4 h-4 text-purple-500" />
+              </div>
+              <div>
+                <h4 className="font-semibold text-foreground">
+                  useStreamingWebSocket
+                </h4>
+                <span className="text-xs px-2 py-0.5 rounded-full bg-purple-500/10 text-purple-600 dark:text-purple-400">
+                  hook
+                </span>
+              </div>
+            </div>
+            <p className="text-sm text-muted-foreground mb-3">
+              Mid-level hook for WebSocket connections with automatic
+              reconnection, heartbeat/ping-pong, and bidirectional messaging.
+            </p>
+            <CodeBlock
+              code={`const { lastMessage, status, connect, send } = useStreamingWebSocket({
+  url: 'wss://api.example.com/chat',
+  autoReconnect: true,
+  enableHeartbeat: true,
+  onMessage: (msg) => {
+    console.log('Message:', msg.data)
+  },
+})
+
+// StreamingMessage integration
+<StreamingMessage
+  content={lastMessage?.data || ''}
+  isStreaming={status === 'connected'}
+/>`}
+              language="tsx"
+              showLineNumbers={false}
+            />
+          </div>
         </div>
-      </div>
-    </div>
+      </Section>
+    </DocumentationPage>
   )
 }
