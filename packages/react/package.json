@@ -2,7 +2,7 @@
   "name": "@clarity-chat/react",
   "version": "2.0.0",
   "type": "module",
-  "description": "Premium AI chat components for React - 200+ components, 95+ hooks, production-ready RAG (PDF/DOCX loaders, reranking, evaluation), rate limiting, cross-device sync, template marketplace, enterprise-ready. Optimized bundle: core peer dependencies externalized (React, Framer Motion, Lucide, Zod) + optional heavy libraries (Mermaid, PDF.js, Mammoth, Cohere, Shiki, JSZip, Prism, React Markdown)",
+  "description": "Complete AI chat components for React. Drop-in chat UI with streaming, token optimization, memory, command palette, search, and prompts. Type-safe and accessible. Advanced features available via subpath imports.",
   "keywords": [
     "react",
     "chat",
@@ -55,68 +55,17 @@
       "import": "./dist/index.js",
       "require": "./dist/index.cjs"
     },
-    "./core": {
-      "types": "./dist/core.d.ts",
-      "import": "./dist/core.js",
-      "require": "./dist/core.cjs"
-    },
-    "./core-minimal": {
-      "types": "./dist/core-minimal.d.ts",
-      "import": "./dist/core-minimal.js",
-      "require": "./dist/core-minimal.cjs"
-    },
-    "./animations": {
-      "types": "./dist/animations/index.d.ts",
-      "import": "./dist/animations/index.js",
-      "require": "./dist/animations/index.cjs"
-    },
-    "./utils": {
-      "types": "./dist/utils/index.d.ts",
-      "import": "./dist/utils/index.js",
-      "require": "./dist/utils/index.cjs"
-    },
-    "./prompt": {
-      "types": "./dist/prompt/index.d.ts",
-      "import": "./dist/prompt/index.js",
-      "require": "./dist/prompt/index.cjs"
-    },
-    "./analytics": {
-      "types": "./dist/analytics/index.d.ts",
-      "import": "./dist/analytics/index.js",
-      "require": "./dist/analytics/index.cjs"
-    },
-    "./memory": {
-      "types": "./dist/memory/index.d.ts",
-      "import": "./dist/memory/index.js",
-      "require": "./dist/memory/index.cjs"
-    },
-    "./adapters": {
-      "types": "./dist/adapters/index.d.ts",
-      "import": "./dist/adapters/index.js",
-      "require": "./dist/adapters/index.cjs"
-    },
-    "./test-utils": {
-      "types": "./dist/test-utils.d.ts",
-      "import": "./dist/test-utils.js",
-      "require": "./dist/test-utils.cjs"
+    "./advanced": {
+      "types": "./dist/advanced.d.ts",
+      "import": "./dist/advanced.js",
+      "require": "./dist/advanced.cjs"
     },
     "./internal": {
       "types": "./dist/internal.d.ts",
       "import": "./dist/internal.js",
       "require": "./dist/internal.cjs"
     },
-    "./slim": {
-      "types": "./dist/slim.d.ts",
-      "import": "./dist/slim.js",
-      "require": "./dist/slim.cjs"
-    },
-    "./namespaced": {
-      "types": "./dist/namespaced.d.ts",
-      "import": "./dist/namespaced.js",
-      "require": "./dist/namespaced.cjs"
-    },
-    "./styles.css": "./dist/styles/index.css",
-    "./dist/styles/index.css": "./dist/styles/index.css"
+    "./styles.css": "./dist/styles/index.css"
   },
   "files": [
     "dist",

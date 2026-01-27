@@ -5,8 +5,8 @@
  *
  * This is the ONLY public API surface. Everything else is internal.
  *
- * **Philosophy**: Ship 10 exports that cover 90% of use cases.
- * Everything else lives in subpath exports for advanced users.
+ * **Philosophy**: Ship essential features that cover 90% of use cases.
+ * Specialized utilities live in subpath exports for advanced users.
  *
  * **Basic Usage** (covers 90% of cases):
  * ```tsx
@@ -54,6 +54,38 @@ export type { ChatInputProps } from './components/chat/ChatInput'
 export { EnhancedMarkdownRenderer as MarkdownRenderer } from './components/ai/EnhancedMarkdownRenderer'
 export type { EnhancedMarkdownRendererProps as MarkdownRendererProps } from './components/ai/EnhancedMarkdownRenderer'
 
+// 6. Streaming Components - Real-time streaming UI
+export { StreamingMessage } from './components/message/StreamingMessage'
+export type { StreamingMessageProps } from './components/message/StreamingMessage'
+export { StreamStatusProgress as StreamingProgress } from './components/ai/StreamingProgress'
+export type { StreamStatusProgressProps as StreamingProgressProps } from './components/ai/StreamingProgress'
+
+// 7. Token Optimization - Usage tracking and cost preview
+export { TokenUsageMeter } from './components/token/TokenUsageMeter'
+export type { TokenUsageMeterProps } from './components/token/TokenUsageMeter'
+export { TokenBudgetBar } from './components/token/TokenBudgetBar'
+export type { TokenBudgetBarProps } from './components/token/TokenBudgetBar'
+export { useTokenBudget } from './prompt/hooks/use-token-budget'
+
+// 8. Memory Features - Conversation memory and feedback
+export { MemoryActivityIndicator } from './components/memory/MemoryActivityIndicator'
+export type { MemoryActivityIndicatorProps } from './components/memory/MemoryActivityIndicator'
+export { useMemoryFeedback } from './hooks/memory/use-memory-feedback'
+
+// 9. Command Palette - Quick actions and navigation
+export { CommandPalette } from './components/navigation/CommandPalette'
+export type { CommandPaletteProps } from './components/navigation/CommandPalette'
+
+// 10. Search - Conversation search and filtering
+export { SearchFiltersPanel } from './components/search/components/SearchFiltersPanel'
+export type { SearchFiltersPanelProps } from './components/search/components/SearchFiltersPanel'
+
+// 11. Prompts - Prompt library and templates
+export { PromptLibrary } from './components/prompt/PromptLibrary'
+export type { PromptLibraryProps } from './components/prompt/PromptLibrary'
+export { TemplateMarketplace } from './components/prompt/TemplateMarketplace'
+export type { TemplateMarketplaceProps } from './components/prompt/TemplateMarketplace'
+
 // ============================================================================
 // CORE TYPES (Essential type definitions from @clarity-chat/types)
 // ============================================================================
@@ -74,8 +106,17 @@ export type {
 export { cn } from '@clarity-chat/primitives'
 
 // ============================================================================
-// THAT'S IT - 13 EXPORTS TOTAL
+// CORE API COMPLETE
 // ============================================================================
+// Essential components and hooks for 90% of use cases:
+// - Chat: ClarityChatApp, MessageList, ChatInput
+// - Streaming: StreamingMessage, StreamingProgress
+// - Token Management: TokenUsageMeter, TokenBudgetBar, useTokenBudget
+// - Memory: MemoryActivityIndicator, useMemoryFeedback
+// - Navigation: CommandPalette
+// - Search: SearchFiltersPanel
+// - Prompts: PromptLibrary, TemplateMarketplace
+// - Rendering: MarkdownRenderer
 
 /**
  * For advanced features, use subpath imports:

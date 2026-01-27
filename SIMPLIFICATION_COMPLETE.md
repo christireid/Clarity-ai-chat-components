@@ -133,10 +133,12 @@ All three reviewers independently reached the same conclusion:
 ## Next Steps (This Week)
 
 1. ✅ Delete audit infrastructure
-2. ✅ Prune API (175 → 15)
-3. ⏳ Verify all checks pass
-4. ⏳ Update package.json exports map
-5. ⏳ Ship v2.0.0
+2. ✅ Prune API (175 → 13 exports)
+3. ✅ Update package.json exports map (15 subpaths → 3)
+4. ✅ Create advanced.ts for power users (~20 exports)
+5. ⏳ Verify all checks pass (build + typecheck in progress)
+6. ⏳ Commit changes
+7. ⏳ Ship v2.0.0
 
 **Timeline**: Ship by end of week (per DHH's recommendation)
 
