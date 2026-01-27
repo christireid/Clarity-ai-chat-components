@@ -32,6 +32,9 @@
  * @packageDocumentation
  */
 
+/* Import theme system with dark mode support */
+@import '../theme/theme.css';
+
 /* ============================================================================
    CSS Variables & Theme System
    Component-specific variables for .clarity-* React components
@@ -405,28 +408,36 @@ body {
 }
 
 /* Heading scale adjusts proportionally across breakpoints */
-h1, .text-4xl, .text-5xl, .text-6xl {
+h1,
+.text-4xl,
+.text-5xl,
+.text-6xl {
   font-size: clamp(1.75rem, 4vw + 0.5rem, 3rem);
 }
 
-h2, .text-3xl {
+h2,
+.text-3xl {
   font-size: clamp(1.5rem, 3vw + 0.5rem, 2.25rem);
 }
 
-h3, .text-2xl {
+h3,
+.text-2xl {
   font-size: clamp(1.25rem, 2.5vw + 0.5rem, 1.875rem);
 }
 
-h4, .text-xl {
+h4,
+.text-xl {
   font-size: clamp(1.125rem, 2vw + 0.25rem, 1.5rem);
 }
 
-h5, .text-lg {
+h5,
+.text-lg {
   font-size: clamp(1rem, 1.5vw + 0.25rem, 1.25rem);
 }
 
 /* Body text maintains readability across all sizes */
-body, .text-base {
+body,
+.text-base {
   font-size: clamp(0.875rem, 1.25vw + 0.25rem, 1rem);
   line-height: 1.6;
 }
@@ -446,7 +457,10 @@ body, .text-base {
   }
 
   /* Prevent text overflow at high zoom levels */
-  p, li, span, div {
+  p,
+  li,
+  span,
+  div {
     word-wrap: break-word;
     overflow-wrap: break-word;
     hyphens: auto;
@@ -463,7 +477,11 @@ body, .text-base {
   }
 
   /* Increase touch target sizes on mobile */
-  button, a, input, select, textarea {
+  button,
+  a,
+  input,
+  select,
+  textarea {
     min-height: 44px;
     min-width: 44px;
   }
@@ -488,7 +506,8 @@ body, .text-base {
   }
 
   /* Slightly increase line height for better readability on large screens */
-  body, .text-base {
+  body,
+  .text-base {
     line-height: 1.65;
   }
 }
@@ -500,7 +519,9 @@ body, .text-base {
   }
 
   /* Cap maximum text width for optimal reading */
-  .prose, article, .clarity-message-content {
+  .prose,
+  article,
+  .clarity-message-content {
     max-width: 75ch;
   }
 }
@@ -551,7 +572,9 @@ body, .text-base {
   background: hsl(var(--card));
   border: 1px solid hsl(var(--border) / 0.5);
   box-shadow: var(--shadow-soft);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .clarity-message-bubble:hover {
@@ -586,7 +609,8 @@ body, .text-base {
   /* Using global glass effect variables from /styles/globals.css */
   background: oklch(from var(--background) l c h / var(--glass-bg-opacity));
   backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
-  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+  -webkit-backdrop-filter: blur(var(--glass-blur))
+    saturate(var(--glass-saturate));
   border-top: 1px solid hsl(var(--border) / 0.4);
 }
 
@@ -705,11 +729,13 @@ body, .text-base {
   width: 2.5rem;
   height: 2.5rem;
   /* Using global glass effect variables */
-  border: 1px solid oklch(from var(--border) l c h / var(--glass-border-opacity));
+  border: 1px solid
+    oklch(from var(--border) l c h / var(--glass-border-opacity));
   border-radius: 50%;
   background: oklch(from var(--background) l c h / var(--glass-bg-opacity));
   backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
-  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+  -webkit-backdrop-filter: blur(var(--glass-blur))
+    saturate(var(--glass-saturate));
   color: hsl(var(--foreground));
   cursor: pointer;
   transition:
@@ -752,7 +778,9 @@ body, .text-base {
 }
 
 @keyframes thinking-pulse {
-  0%, 80%, 100% {
+  0%,
+  80%,
+  100% {
     transform: scale(0.8);
     opacity: 0.5;
   }
@@ -812,7 +840,8 @@ body, .text-base {
 }
 
 @keyframes float {
-  0%, 100% {
+  0%,
+  100% {
     transform: translateY(0);
   }
   50% {
@@ -897,7 +926,8 @@ body, .text-base {
   0% {
     left: -100%;
   }
-  20%, 100% {
+  20%,
+  100% {
     left: 150%;
   }
 }
@@ -1280,23 +1310,33 @@ body, .text-base {
 }
 
 .shadow-sm {
-  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+  box-shadow:
+    0 1px 3px 0 rgb(0 0 0 / 0.1),
+    0 1px 2px -1px rgb(0 0 0 / 0.1);
 }
 
 .shadow-DEFAULT {
-  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  box-shadow:
+    0 4px 6px -1px rgb(0 0 0 / 0.1),
+    0 2px 4px -2px rgb(0 0 0 / 0.1);
 }
 
 .shadow-md {
-  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  box-shadow:
+    0 4px 6px -1px rgb(0 0 0 / 0.1),
+    0 2px 4px -2px rgb(0 0 0 / 0.1);
 }
 
 .shadow-lg {
-  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  box-shadow:
+    0 10px 15px -3px rgb(0 0 0 / 0.1),
+    0 4px 6px -4px rgb(0 0 0 / 0.1);
 }
 
 .shadow-xl {
-  box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+  box-shadow:
+    0 20px 25px -5px rgb(0 0 0 / 0.1),
+    0 8px 10px -6px rgb(0 0 0 / 0.1);
 }
 
 .shadow-2xl {
