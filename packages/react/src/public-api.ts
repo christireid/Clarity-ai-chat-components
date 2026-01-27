@@ -74,6 +74,39 @@ export { MemoryActivityIndicator } from './components/memory/MemoryActivityIndic
 export type { MemoryActivityIndicatorProps } from './components/memory/MemoryActivityIndicator'
 export { useMemoryFeedback } from './hooks/memory/use-memory-feedback'
 
+// 8.5. Toast/Notification System
+export { useToast, type ToastContextValue } from './hooks/ui/use-toast'
+
+// 8.6. Additional Hooks
+export {
+  useStreaming,
+  type UseStreamingOptions,
+  type UseStreamingReturn,
+} from './hooks/streaming/use-streaming'
+export { useThrottledCallback } from './hooks/ui/use-throttle'
+export {
+  useLocalStorage,
+  type UseLocalStorageOptions,
+} from './hooks/storage/use-local-storage'
+export {
+  useAutoScroll,
+  type UseAutoScrollOptions,
+  type UseAutoScrollReturn,
+} from './hooks/ui/use-auto-scroll'
+export { useReducedMotion } from './hooks/ui/use-reduced-motion'
+export {
+  useClipboard,
+  type UseClipboardOptions,
+  type UseClipboardReturn,
+} from './hooks/ui/use-clipboard'
+
+// 8.7. Message Components
+export {
+  TypingIndicator,
+  type TypingIndicatorProps,
+  type TypingIndicatorVariant,
+} from './components/message/TypingIndicator'
+
 // 9. Command Palette - Quick actions and navigation
 export { CommandPalette } from './components/navigation/CommandPalette'
 export type { CommandPaletteProps } from './components/navigation/CommandPalette'
