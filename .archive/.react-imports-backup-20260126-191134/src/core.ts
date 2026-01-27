@@ -1,0 +1,113 @@
+'use client'
+
+/**
+ * @clarity-chat/react/core - Minimal Bundle Entry Point
+ *
+ * This file exports only the most essential APIs for a minimal bundle size.
+ * Use this entry point when you want just the basics without the full library.
+ *
+ * Bundle size: ~30% smaller than the full library
+ *
+ * ## When to Use
+ *
+ * Use this entry point when:
+ * - You only need basic chat functionality
+ * - Bundle size is critical (e.g., mobile apps)
+ * - You'll add features incrementally
+ *
+ * ## What's Included
+ *
+ * - Core Components: ClarityChat, ChatWindow, ChatInput, MessageList
+ * - Primary Hook: useClarityChat
+ * - Essential Types: Message, MessageRole
+ * - Error Handling: ChatWithErrorBoundary
+ * - Memory: createMemoryStore
+ *
+ * @example
+ * ```tsx
+ * import { ClarityChat, useClarityChat } from '@clarity-chat/react/core'
+ *
+ * function App() {
+ *   return <ClarityChat api="/api/chat" />
+ * }
+ * ```
+ *
+ * @example
+ * ```tsx
+ * // Start minimal, add features as needed from main package
+ * import { ClarityChat } from '@clarity-chat/react/core'
+ * import { TokenBudgetProvider } from '@clarity-chat/react'
+ * ```
+ *
+ * @packageDocumentation
+ */
+
+// Main high-level component
+export {
+  ClarityChat,
+  type ClarityChatProps,
+} from './components/chat/ClarityChat'
+export {
+  ClarityChatSimple,
+  type ClarityChatSimpleProps,
+} from './components/chat/ClarityChatSimple'
+
+// Types are exported above with their components
+
+// =============================================================================
+// PRIMARY HOOK
+// =============================================================================
+
+/**
+ * Primary chat state management hook
+ */
+export {
+  useClarityChat,
+  type UseClarityChatOptions,
+  type UseClarityChatReturn,
+} from './hooks/chat/use-clarity-chat'
+
+// Core components
+export { ChatWindow, type ChatWindowProps } from './components/chat/ChatWindow'
+export { ChatInput } from './components/chat/ChatInput'
+export { MessageList } from './components/message/MessageList'
+
+// =============================================================================
+// CORE TYPES
+// =============================================================================
+
+/**
+ * Essential message types
+ */
+export type { Message, MessageRole } from '@clarity-chat/types'
+
+// =============================================================================
+// MESSAGE UTILITIES
+// =============================================================================
+
+/**
+ * Message conversion utilities
+ */
+export {
+  convertCoreMessagesToMessages,
+  convertMessagesToCoreMessages,
+} from './utils/message/message-conversion'
+
+// Error handling
+export {
+  ChatWithErrorBoundary,
+  type ChatWithErrorBoundaryProps,
+} from './components/chat/ChatWithErrorBoundary'
+
+// =============================================================================
+// MEMORY
+// =============================================================================
+
+/**
+ * Memory store factory for conversation persistence
+ */
+export {
+  createMemoryStore,
+  type CreateMemoryStoreOptions,
+  type MemoryStore,
+} from './memory/create-memory-store'

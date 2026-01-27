@@ -1,0 +1,781 @@
+/**
+ * Clarity Chat Theme Variables
+ *
+ * CSS custom properties for theming Clarity Chat components.
+ * All variables are namespaced with --clarity- prefix for safety.
+ * Legacy unprefixed names are provided for backwards compatibility.
+ *
+ * Color Format: OKLCH (Oklab Lightness Chroma Hue)
+ * - Better perceptual uniformity than HSL
+ * - Wider gamut support for modern displays
+ * - More predictable color manipulation
+ *
+ * @see THEMING.md for documentation
+ */
+
+@layer clarity-tokens, base;
+
+@layer clarity-tokens {
+  :root {
+    /* ========================================
+       Color Tokens - Light Mode (Default)
+       All colors use OKLCH format: L C H
+       L = Lightness (0-1), C = Chroma (0-0.4), H = Hue (0-360)
+       ======================================== */
+
+    /* Base colors */
+    --clarity-background: 100% 0 0; /* white */
+    --clarity-foreground: 20% 0.02 250; /* near-black with subtle blue */
+
+    /* Surface colors */
+    --clarity-card: 100% 0 0;
+    --clarity-card-foreground: 20% 0.02 250;
+    --clarity-popover: 100% 0 0;
+    --clarity-popover-foreground: 20% 0.02 250;
+
+    /* Brand colors - vibrant blue-purple primary */
+    --clarity-primary: 60% 0.2 265;
+    --clarity-primary-foreground: 100% 0 0;
+    --clarity-secondary: 96% 0.01 265;
+    --clarity-secondary-foreground: 20% 0.02 250;
+    --clarity-accent: 96% 0.02 265;
+    --clarity-accent-foreground: 20% 0.02 250;
+
+    /* State colors */
+    --clarity-destructive: 55% 0.22 25;
+    --clarity-destructive-foreground: 100% 0 0;
+    --clarity-success: 55% 0.18 145;
+    --clarity-success-foreground: 100% 0 0;
+    --clarity-warning: 75% 0.18 70;
+    --clarity-warning-foreground: 25% 0.08 70;
+    --clarity-info: 60% 0.15 230;
+    --clarity-info-foreground: 100% 0 0;
+
+    /* UI colors */
+    --clarity-muted: 96% 0.01 265;
+    --clarity-muted-foreground: 55% 0.02 265;
+    --clarity-border: 90% 0.01 265;
+    --clarity-input: 90% 0.01 265;
+    --clarity-ring: 60% 0.2 265;
+
+    /* Extended surfaces */
+    --clarity-surface-muted: 96% 0.01 265;
+    --clarity-surface-elevated: 100% 0 0;
+    --clarity-surface-overlay: 100% 0 0;
+
+    /* Color function helper - use oklch() in components */
+    --color-space: oklch;
+
+    /* ========================================
+       Border Radius Tokens
+       ======================================== */
+    --clarity-radius: 0.5rem;
+    --clarity-radius-sm: calc(var(--clarity-radius) - 4px);
+    --clarity-radius-md: calc(var(--clarity-radius) - 2px);
+    --clarity-radius-lg: var(--clarity-radius);
+    --clarity-radius-xl: calc(var(--clarity-radius) + 4px);
+    --clarity-radius-2xl: calc(var(--clarity-radius) + 8px);
+    --clarity-radius-full: 9999px;
+
+    /* ========================================
+       Typography Tokens
+       ======================================== */
+    --clarity-font-sans:
+      system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+      'Helvetica Neue', Arial, sans-serif;
+    --clarity-font-mono:
+      'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, monospace;
+
+    /* Theme transition duration */
+    --clarity-theme-transition: 200ms;
+    --theme-transition-duration: var(--clarity-theme-transition);
+
+    /* ========================================
+       Backwards Compatibility Layer
+       Maps legacy variable names to new ones
+       ======================================== */
+    --background: var(--clarity-background);
+    --foreground: var(--clarity-foreground);
+    --card: var(--clarity-card);
+    --card-foreground: var(--clarity-card-foreground);
+    --popover: var(--clarity-popover);
+    --popover-foreground: var(--clarity-popover-foreground);
+    --primary: var(--clarity-primary);
+    --primary-foreground: var(--clarity-primary-foreground);
+    --secondary: var(--clarity-secondary);
+    --secondary-foreground: var(--clarity-secondary-foreground);
+    --muted: var(--clarity-muted);
+    --muted-foreground: var(--clarity-muted-foreground);
+    --accent: var(--clarity-accent);
+    --accent-foreground: var(--clarity-accent-foreground);
+    --destructive: var(--clarity-destructive);
+    --destructive-foreground: var(--clarity-destructive-foreground);
+    /* State colors use HSL format for Tailwind compatibility */
+    /* Use --clarity-* vars directly for OKLCH access */
+    --success: 142.1 76.2% 36.3%;
+    --success-foreground: 0 0% 100%;
+    --warning: 45.4 93.4% 47.5%;
+    --warning-foreground: 0 0% 0%;
+    --info: 217.2 91.2% 59.8%;
+    --info-foreground: 0 0% 100%;
+    --border: var(--clarity-border);
+    --input: var(--clarity-input);
+    --ring: var(--clarity-ring);
+    --radius: var(--clarity-radius);
+    --font-sans: var(--clarity-font-sans);
+    --font-mono: var(--clarity-font-mono);
+    --surface-muted: var(--clarity-surface-muted);
+    --surface-elevated: var(--clarity-surface-elevated);
+    --surface-overlay: var(--clarity-surface-overlay);
+
+    /* Shadows - Elevation System */
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --shadow-md:
+      0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    --shadow-lg:
+      0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    --shadow-xl:
+      0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    --shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    --shadow-inner: inset 0 2px 4px 0 rgba(0, 0, 0, 0.06);
+
+    /* Colored Shadows for Emphasis (OKLCH format) */
+    --shadow-primary: 0 8px 16px -4px oklch(var(--clarity-primary) / 0.3);
+    --shadow-success: 0 8px 16px -4px oklch(var(--clarity-success) / 0.3);
+    --shadow-warning: 0 8px 16px -4px oklch(var(--clarity-warning) / 0.3);
+    --shadow-error: 0 8px 16px -4px oklch(var(--clarity-destructive) / 0.3);
+
+    /* Focus Ring Colors (for semantic focus states) */
+    --ring-success: hsl(var(--success));
+    --ring-warning: hsl(var(--warning));
+    --ring-info: hsl(var(--info));
+    --ring-destructive: hsl(var(--destructive));
+
+    /* Animation Timing */
+    --duration-instant: 100ms;
+    --duration-fast: 150ms;
+    --duration-normal: 200ms;
+    --duration-slow: 300ms;
+    --duration-slower: 500ms;
+
+    /* Easing Functions */
+    --ease-in: cubic-bezier(0.4, 0, 1, 1);
+    --ease-out: cubic-bezier(0, 0, 0.2, 1);
+    --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+    --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+
+    /* Spacing Scale - Responsive with clamp() */
+    --space-1: 0.25rem; /* 4px - fixed for micro spacing */
+    --space-2: 0.5rem; /* 8px - fixed for small gaps */
+    --space-3: clamp(0.625rem, 0.5rem + 0.5vw, 0.75rem); /* 10-12px */
+    --space-4: clamp(0.875rem, 0.75rem + 0.5vw, 1rem); /* 14-16px */
+    --space-5: clamp(1rem, 0.875rem + 0.75vw, 1.25rem); /* 16-20px */
+    --space-6: clamp(1.25rem, 1rem + 1vw, 1.5rem); /* 20-24px */
+    --space-8: clamp(1.5rem, 1.25rem + 1.5vw, 2rem); /* 24-32px */
+    --space-10: clamp(2rem, 1.5rem + 2vw, 2.5rem); /* 32-40px */
+    --space-12: clamp(2.25rem, 1.75rem + 2.5vw, 3rem); /* 36-48px */
+    --space-16: clamp(3rem, 2.25rem + 3vw, 4rem); /* 48-64px */
+
+    /* Semantic spacing aliases */
+    --space-xs: var(--space-1);
+    --space-sm: var(--space-2);
+    --space-md: var(--space-4);
+    --space-lg: var(--space-6);
+    --space-xl: var(--space-8);
+
+    /* Z-index Scale */
+    --z-base: 0;
+    --z-dropdown: 1000;
+    --z-sticky: 1100;
+    --z-fixed: 1200;
+    --z-modal-backdrop: 1300;
+    --z-modal: 1400;
+    --z-popover: 1500;
+    --z-tooltip: 1600;
+    --z-toast: 1700;
+  }
+
+  /* Smooth theme transitions */
+  .theme-transitioning,
+  .theme-transitioning * {
+    transition:
+      background-color var(--theme-transition-duration) ease-in-out,
+      border-color var(--theme-transition-duration) ease-in-out,
+      color var(--theme-transition-duration) ease-in-out,
+      fill var(--theme-transition-duration) ease-in-out,
+      stroke var(--theme-transition-duration) ease-in-out !important;
+  }
+
+  /* Prevent transition on elements that should change immediately */
+  .theme-transitioning img,
+  .theme-transitioning video,
+  .theme-transitioning iframe,
+  .theme-transitioning [data-no-theme-transition] {
+    transition: none !important;
+  }
+
+  /* Respect user preference for reduced motion */
+  @media (prefers-reduced-motion: reduce) {
+    .theme-transitioning,
+    .theme-transitioning * {
+      transition: none !important;
+    }
+  }
+
+  /* Box shadow transition for cards and elevated elements */
+  .theme-transitioning .shadow,
+  .theme-transitioning [class*='shadow-'] {
+    transition:
+      box-shadow var(--theme-transition-duration) ease-in-out,
+      background-color var(--theme-transition-duration) ease-in-out,
+      border-color var(--theme-transition-duration) ease-in-out !important;
+  }
+
+  /* ========================================
+     Dark Mode (OKLCH)
+     ======================================== */
+  .dark,
+  [data-theme='dark'] {
+    /* Base colors */
+    --clarity-background: 20% 0.02 250;
+    --clarity-foreground: 95% 0.01 250;
+
+    /* Surface colors */
+    --clarity-card: 20% 0.02 250;
+    --clarity-card-foreground: 95% 0.01 250;
+    --clarity-popover: 20% 0.02 250;
+    --clarity-popover-foreground: 95% 0.01 250;
+
+    /* Brand colors */
+    --clarity-primary: 70% 0.2 265;
+    --clarity-primary-foreground: 100% 0 0;
+    --clarity-secondary: 25% 0.03 265;
+    --clarity-secondary-foreground: 95% 0.01 250;
+    --clarity-accent: 25% 0.03 265;
+    --clarity-accent-foreground: 95% 0.01 250;
+
+    /* State colors */
+    --clarity-destructive: 45% 0.2 25;
+    --clarity-destructive-foreground: 95% 0.01 250;
+    --clarity-success: 55% 0.18 145;
+    --clarity-success-foreground: 100% 0 0;
+    --clarity-warning: 75% 0.18 70;
+    --clarity-warning-foreground: 25% 0.08 70;
+    --clarity-info: 60% 0.15 230;
+    --clarity-info-foreground: 100% 0 0;
+
+    /* UI colors */
+    --clarity-muted: 25% 0.03 265;
+    --clarity-muted-foreground: 65% 0.02 265;
+    --clarity-border: 25% 0.03 265;
+    --clarity-input: 25% 0.03 265;
+    --clarity-ring: 70% 0.2 265;
+
+    /* Extended surfaces */
+    --clarity-surface-muted: 25% 0.03 265;
+    --clarity-surface-elevated: 23% 0.02 265;
+    --clarity-surface-overlay: 15% 0.02 265;
+
+    /* Dark mode shadows */
+    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.3);
+    --shadow-md:
+      0 4px 6px -1px rgb(0 0 0 / 0.4), 0 2px 4px -2px rgb(0 0 0 / 0.3);
+    --shadow-lg:
+      0 10px 15px -3px rgb(0 0 0 / 0.5), 0 4px 6px -4px rgb(0 0 0 / 0.3);
+    --shadow-xl:
+      0 20px 25px -5px rgb(0 0 0 / 0.5), 0 8px 10px -6px rgb(0 0 0 / 0.4);
+    --shadow-2xl: 0 25px 50px -12px rgb(0 0 0 / 0.6);
+    --shadow-inner: inset 0 2px 4px 0 rgb(0 0 0 / 0.3);
+
+    /* State colors - HSL format for Tailwind compatibility */
+    --success: 142.1 70.6% 45.3%;
+    --success-foreground: 0 0% 100%;
+    --warning: 45.4 93.4% 47.5%;
+    --warning-foreground: 0 0% 0%;
+    --info: 217.2 91.2% 59.8%;
+    --info-foreground: 222.2 47.4% 11.2%;
+
+    /* Colored shadows - more visible in dark mode */
+    --shadow-primary: 0 4px 14px -3px oklch(var(--clarity-primary) / 0.45);
+    --shadow-success: 0 4px 14px -3px oklch(var(--clarity-success) / 0.45);
+    --shadow-warning: 0 4px 14px -3px oklch(var(--clarity-warning) / 0.45);
+    --shadow-error: 0 4px 14px -3px oklch(var(--clarity-destructive) / 0.45);
+  }
+
+  /* ========================================
+     Zen Theme (Calm, Nature-inspired)
+     ======================================== */
+  [data-theme='zen'] {
+    /* Calm green-teal primary */
+    --clarity-primary: 60% 0.15 165;
+    --clarity-primary-foreground: 100% 0 0;
+    --clarity-accent: 92% 0.08 165;
+    --clarity-accent-foreground: 25% 0.05 165;
+    --clarity-ring: 60% 0.15 165;
+
+    /* Softer, warmer surfaces */
+    --clarity-background: 99% 0.005 90;
+    --clarity-foreground: 25% 0.02 90;
+    --clarity-card: 99% 0.005 90;
+    --clarity-card-foreground: 25% 0.02 90;
+    --clarity-muted: 95% 0.01 90;
+    --clarity-border: 88% 0.02 90;
+
+    /* Calmer state colors */
+    --clarity-success: 58% 0.14 145;
+    --clarity-warning: 72% 0.14 70;
+    --clarity-destructive: 52% 0.16 25;
+  }
+
+  [data-theme='zen'].dark,
+  .dark[data-theme='zen'] {
+    --clarity-background: 18% 0.02 165;
+    --clarity-foreground: 92% 0.01 165;
+    --clarity-card: 18% 0.02 165;
+    --clarity-card-foreground: 92% 0.01 165;
+    --clarity-muted: 22% 0.03 165;
+    --clarity-border: 25% 0.03 165;
+    --clarity-primary: 65% 0.15 165;
+    --clarity-accent: 28% 0.06 165;
+  }
+
+  /* ========================================
+     Vivid Theme (Creative, Energetic)
+     ======================================== */
+  [data-theme='vivid'] {
+    /* Bold pink-magenta primary */
+    --clarity-primary: 65% 0.25 340;
+    --clarity-primary-foreground: 100% 0 0;
+    --clarity-accent: 92% 0.12 340;
+    --clarity-accent-foreground: 30% 0.1 340;
+    --clarity-ring: 65% 0.25 340;
+
+    /* Vivid state colors */
+    --clarity-success: 60% 0.22 145;
+    --clarity-warning: 78% 0.2 65;
+    --clarity-destructive: 58% 0.25 25;
+    --clarity-info: 62% 0.18 240;
+  }
+
+  [data-theme='vivid'].dark,
+  .dark[data-theme='vivid'] {
+    --clarity-background: 15% 0.03 340;
+    --clarity-foreground: 95% 0.02 340;
+    --clarity-card: 15% 0.03 340;
+    --clarity-card-foreground: 95% 0.02 340;
+    --clarity-muted: 20% 0.04 340;
+    --clarity-border: 25% 0.05 340;
+    --clarity-primary: 70% 0.25 340;
+    --clarity-accent: 25% 0.1 340;
+  }
+
+  /* ========================================
+     Reduced Contrast Mode (Accessibility)
+     ======================================== */
+  [data-contrast='reduced'] {
+    /* Reduce chroma for less visual intensity */
+    --clarity-primary: 60% 0.1 265;
+    --clarity-accent: 90% 0.04 265;
+    --clarity-destructive: 55% 0.12 25;
+    --clarity-success: 55% 0.1 145;
+    --clarity-warning: 70% 0.1 70;
+    --clarity-info: 60% 0.08 230;
+
+    /* Softer text contrast */
+    --clarity-foreground: 30% 0.01 250;
+    --clarity-muted-foreground: 50% 0.01 265;
+  }
+
+  [data-contrast='reduced'].dark,
+  .dark[data-contrast='reduced'] {
+    --clarity-foreground: 85% 0.01 250;
+    --clarity-muted-foreground: 60% 0.01 265;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings:
+      'rlig' 1,
+      'calt' 1;
+  }
+}
+
+/* Animation utilities */
+@layer utilities {
+  .animate-in {
+    animation: enter 0.2s ease-out;
+  }
+
+  .animate-out {
+    animation: exit 0.15s ease-in forwards;
+  }
+
+  .fade-in {
+    animation: fadeIn 0.3s ease-out;
+  }
+
+  .fade-out {
+    animation: fadeOut 0.2s ease-in forwards;
+  }
+
+  .slide-in-from-top {
+    animation: slideInFromTop 0.3s ease-out;
+  }
+
+  .slide-in-from-bottom {
+    animation: slideInFromBottom 0.3s ease-out;
+  }
+
+  .scale-in {
+    animation: scaleIn 0.2s ease-out;
+  }
+}
+
+@keyframes enter {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes exit {
+  from {
+    opacity: 1;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes slideInFromTop {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInFromBottom {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Micro-interaction Animations */
+@keyframes pulse-soft {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+@keyframes bounce-subtle {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-4px);
+  }
+}
+
+@keyframes shake-x {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  10%,
+  30%,
+  50%,
+  70%,
+  90% {
+    transform: translateX(-4px);
+  }
+  20%,
+  40%,
+  60%,
+  80% {
+    transform: translateX(4px);
+  }
+}
+
+@keyframes glow {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 hsl(var(--primary) / 0.4);
+  }
+  50% {
+    box-shadow: 0 0 20px 4px hsl(var(--primary) / 0.2);
+  }
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes ping {
+  75%,
+  100% {
+    transform: scale(2);
+    opacity: 0;
+  }
+}
+
+/* List/Stagger Animations */
+@keyframes stagger-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Slide Animations */
+@keyframes slide-in-right {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slide-in-left {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slide-out-right {
+  from {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+}
+
+@keyframes slide-out-left {
+  from {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+}
+
+/* Success/Error Feedback */
+@keyframes success-checkmark {
+  0% {
+    transform: scale(0) rotate(-90deg);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.2) rotate(-45deg);
+  }
+  100% {
+    transform: scale(1) rotate(0deg);
+    opacity: 1;
+  }
+}
+
+@keyframes error-x {
+  0% {
+    transform: scale(0) rotate(90deg);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.2) rotate(45deg);
+  }
+  100% {
+    transform: scale(1) rotate(0deg);
+    opacity: 1;
+  }
+}
+
+/* Badge/Notification Pulse */
+@keyframes badge-pulse {
+  0% {
+    box-shadow: 0 0 0 0 hsl(var(--destructive) / 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 8px hsl(var(--destructive) / 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 hsl(var(--destructive) / 0);
+  }
+}
+
+/* Shimmer/Skeleton Loading */
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+/* Typing Indicator Dots */
+@keyframes typing-dot {
+  0%,
+  60%,
+  100% {
+    transform: translateY(0);
+    opacity: 0.4;
+  }
+  30% {
+    transform: translateY(-8px);
+    opacity: 1;
+  }
+}
+
+/* Ripple Effect Animation */
+@keyframes ripple {
+  0% {
+    transform: translate(-50%, -50%) scale(0);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(4);
+    opacity: 0;
+  }
+}
+
+/* Error Shake Animation */
+@keyframes error-shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  10%,
+  30%,
+  50%,
+  70%,
+  90% {
+    transform: translateX(-3px);
+  }
+  20%,
+  40%,
+  60%,
+  80% {
+    transform: translateX(3px);
+  }
+}
+
+/* Scale In Animation */
+@keyframes scale-in {
+  0% {
+    transform: scale(0.95);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* Fade Scale Animation (for dialogs/modals) */
+@keyframes fade-scale-in {
+  0% {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes fade-scale-out {
+  0% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+}
+
+/* Reduced motion - disable all animations */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

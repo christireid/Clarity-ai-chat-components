@@ -1,0 +1,823 @@
+/**
+ * useChatEnhanced - Internal Enhanced Chat Hook
+ *
+ * @internal
+ * This hook is for internal use only. External consumers should use `useClarityChat`.
+ *
+ * **Architecture Layer**: Mid-Level (Composable Building Blocks)
+ * **Domain**: Chat & Completions
+ *
+ * Enhanced chat hook with Vercel AI SDK compatibility.
+ * Provides a complete chat interface with streaming support, message management,
+ * and all features found in Vercel AI SDK's useChat, plus additional enterprise features.
+ *
+ * For external use, please use `useClarityChat` instead.
+ *
+ * @param options - Chat configuration options
+ * @param options.api - API endpoint URL (required)
+ * @param options.initialMessages - Initial messages array
+ * @param options.onFinish - Callback when stream finishes
+ * @param options.onError - Callback on error
+ * @returns Chat state and controls
+ *
+ * @example
+ * ```tsx
+ * // Internal usage only
+ * const { messages, append, isLoading } = useChatEnhanced({
+ *   api: '/api/chat',
+ *   initialMessages: [{ role: 'user', content: 'Hello' }],
+ *   onFinish: (message) => logger.debug('Finished:', message),
+ * })
+ *
+ * await append({ role: 'user', content: 'Tell me a joke' })
+ * ```
+ *
+ * @throws {Error} If API endpoint is invalid or missing
+ */
+
+'use client'
+
+import * as React from 'react'
+import type { MessageRole } from '@clarity-chat/types'
+import {
+  validateApiEndpoint,
+  validateStreamingProps,
+  validateMessages,
+  validateCallbacks,
+} from '../../utils/config/runtime-validation'
+
+// Re-export MessageRole for modules that import from this file
+export type { MessageRole }
+
+// Import ID generator from canonical utils package
+import { generateId } from '@clarity-chat/utils'
+
+/**
+ * Core message content type - supports text and multi-modal content
+ */
+export type CoreMessageContent =
+  | string
+  | Array<
+      | {
+          type: 'text'
+          text: string
+        }
+      | {
+          type: 'image'
+          image: string | ArrayBuffer
+        }
+      | {
+          type: 'tool-call'
+          toolCallId: string
+          toolName: string
+          args: Record<string, any>
+        }
+      | {
+          type: 'tool-result'
+          toolCallId: string
+          toolName: string
+          result: any
+        }
+    >
+
+/**
+ * Core message format compatible with Vercel AI SDK
+ */
+export interface CoreMessage {
+  id?: string
+  role: MessageRole | 'function' | 'tool'
+  content: CoreMessageContent
+  name?: string
+  toolCallId?: string
+  toolInvocations?: Array<{
+    toolCallId: string
+    toolName: string
+    args: Record<string, any>
+    state: 'partial-call' | 'call' | 'result'
+    result?: any
+  }>
+}
+
+/**
+ * Options for useChat hook (Vercel-compatible + enhancements)
+ */
+export interface UseChatOptions {
+  /** API endpoint URL */
+  api?: string
+
+  /** Initial messages */
+  initialMessages?: CoreMessage[]
+
+  /** Additional body data to send with requests */
+  body?: Record<string, any>
+
+  /** Custom headers */
+  headers?: Record<string, string>
+
+  /** Fetch credentials mode */
+  credentials?: RequestCredentials
+
+  /** Custom fetch implementation */
+  fetch?: typeof fetch
+
+  /** Maximum number of steps for agentic workflows */
+  maxSteps?: number
+
+  /** Stream protocol: 'sse' | 'data' */
+  streamProtocol?: 'sse' | 'data'
+
+  /** Generate unique ID for each message */
+  id?: () => string
+
+  /** Callback when response is received */
+  onResponse?: (response: Response) => void | Promise<void>
+
+  /** Callback when stream finishes */
+  onFinish?: (message: CoreMessage) => void | Promise<void>
+
+  /** Callback on error */
+  onError?: (error: Error) => void
+
+  /** Callback when message is appended */
+  onMessageAppend?: (message: CoreMessage) => void
+
+  /** Transform messages before sending */
+  transform?: (messages: CoreMessage[]) => CoreMessage[]
+
+  /** Experimental features */
+  experimental?: {
+    /** Custom streaming implementation */
+    streamProtocol?: 'sse' | 'data' | 'webstream'
+    /** Additional options */
+    [key: string]: any
+  }
+
+  /** Enable streaming (default: true) */
+  stream?: boolean
+
+  /** Keep previous messages when error occurs */
+  keepLastMessageOnError?: boolean
+
+  /** Send extra message fields */
+  sendExtraMessageFields?: boolean
+}
+
+/**
+ * Return type for useChat hook (mid-level API)
+ *
+ * Follows the standard hook return pattern:
+ * - Data: `messages`, `input`, `data` (current state)
+ * - State: `isLoading`, `error`
+ * - Actions: `append`, `reload`, `stop`, `handleSubmit`, `abort`, `setMessages`, `setInput`
+ *
+ * This is Vercel AI SDK compatible and provides enhanced features.
+ */
+export interface UseChatReturn {
+  /** Current messages (data) */
+  messages: CoreMessage[]
+
+  /** Set messages directly (action) */
+  setMessages: React.Dispatch<React.SetStateAction<CoreMessage[]>>
+
+  /** Append a message (action) */
+  append: (
+    message: CoreMessage | Pick<CoreMessage, 'role' | 'content'>,
+    options?: { data?: Record<string, any> }
+  ) => Promise<string | null>
+
+  /** Reload/retry the last assistant message (action) */
+  reload: (options?: { data?: Record<string, any> }) => Promise<string | null>
+
+  /** Stop the current stream (action) */
+  stop: () => void
+
+  /** Submit a user message (creates user message and triggers assistant response) (action) */
+  handleSubmit: (
+    event?: React.FormEvent<HTMLFormElement>,
+    options?: { data?: Record<string, any> }
+  ) => void
+
+  /** Input value (data) */
+  input: string
+
+  /** Set input value (action) */
+  setInput: React.Dispatch<React.SetStateAction<string>>
+
+  /** Whether currently loading (state) */
+  isLoading: boolean
+
+  /** Current error (state) */
+  error: Error | undefined
+
+  /** Current assistant message being streamed (data) */
+  data: CoreMessage | undefined
+
+  /** Abort controller for current request (action) */
+  abort: () => void
+}
+
+/**
+ * Enhanced useChat hook with full Vercel AI SDK compatibility
+ *
+ * @internal This hook is for internal use only. Use `useClarityChat` instead.
+ *
+ * @example
+ * ```tsx
+ * const { messages, append, isLoading, handleSubmit, input, setInput } = useChat({
+ *   api: '/api/chat',
+ *   initialMessages: [],
+ *   onFinish: (message) => logger.debug('Finished:', message),
+ *   onError: (error) => logger.logger.error('Error:', error),
+ * })
+ * ```
+ */
+export function useChat(options: UseChatOptions = {}): UseChatReturn {
+  const {
+    api = '/api/chat',
+    initialMessages = [],
+    body,
+    headers = {},
+    credentials,
+    fetch: customFetch = fetch,
+    maxSteps,
+    streamProtocol = 'sse',
+    id: generateMessageId = () => generateId(),
+    onResponse,
+    onFinish,
+    onError,
+    onMessageAppend,
+    transform,
+    experimental,
+    stream = true,
+    keepLastMessageOnError = false,
+    sendExtraMessageFields = false,
+  } = options
+
+  // Runtime validation (development mode only)
+  if (process.env['NODE_ENV'] === 'development') {
+    // Validate API endpoint
+    if (api) {
+      validateApiEndpoint(api, 'useChat')
+    }
+
+    // Validate initial messages
+    if (initialMessages.length > 0) {
+      validateMessages(initialMessages, 'useChat')
+    }
+
+    // Validate streaming props
+    validateStreamingProps(
+      {
+        stream,
+        streamProtocol: streamProtocol as 'sse' | 'data' | 'webstream',
+        maxSteps,
+        keepLastMessageOnError,
+      },
+      'useChat'
+    )
+
+    // Validate callbacks
+    validateCallbacks(
+      {
+        onResponse,
+        onFinish,
+        onError,
+        onMessageAppend,
+        transform,
+      },
+      'useChat'
+    )
+  }
+
+  const [messages, setMessages] = React.useState<CoreMessage[]>(initialMessages)
+  const [input, setInput] = React.useState('')
+  const [isLoading, setIsLoading] = React.useState(false)
+  const [error, setError] = React.useState<Error | undefined>()
+  const [data, setData] = React.useState<CoreMessage | undefined>()
+
+  const abortControllerRef = React.useRef<AbortController | null>(null)
+  const currentAssistantMessageRef = React.useRef<CoreMessage | null>(null)
+  const messagesRef = React.useRef<CoreMessage[]>(messages)
+  const messageIdRef = React.useRef<string | null>(null)
+  const rafRef = React.useRef<number | null>(null)
+  const readerRef = React.useRef<ReadableStreamDefaultReader | null>(null)
+  const connectionIdRef = React.useRef<number>(0)
+
+  // Keep messagesRef in sync with messages state to avoid stale closures
+  React.useEffect(() => {
+    messagesRef.current = messages
+  }, [messages])
+
+  // Track if component is mounted
+  const mountedRef = React.useRef(true)
+  React.useEffect(() => {
+    mountedRef.current = true
+    return () => {
+      mountedRef.current = false
+      // Cleanup RAF on unmount
+      if (rafRef.current !== null) {
+        cancelAnimationFrame(rafRef.current)
+        rafRef.current = null
+      }
+      // Cleanup reader on unmount
+      if (readerRef.current) {
+        readerRef.current.cancel().catch(() => {})
+        readerRef.current = null
+      }
+    }
+  }, [])
+
+  /**
+   * Abort current request
+   */
+  const abort = React.useCallback(() => {
+    // Invalidate current connection
+    connectionIdRef.current++
+
+    // Cancel reader to prevent dangling promises
+    if (readerRef.current) {
+      readerRef.current.cancel('User aborted stream').catch(() => {})
+      readerRef.current = null
+    }
+
+    // Abort fetch request
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort()
+      abortControllerRef.current = null
+    }
+
+    // Cancel pending RAF updates
+    if (rafRef.current !== null) {
+      cancelAnimationFrame(rafRef.current)
+      rafRef.current = null
+    }
+  }, [])
+
+  /**
+   * Stop streaming
+   */
+  const stop = React.useCallback(() => {
+    abort()
+    setIsLoading(false)
+    if (currentAssistantMessageRef.current && messageIdRef.current) {
+      setMessages((prev) =>
+        prev.map((msg) =>
+          msg.id === messageIdRef.current
+            ? {
+                ...currentAssistantMessageRef.current!,
+                id: messageIdRef.current,
+              }
+            : msg
+        )
+      )
+      currentAssistantMessageRef.current = null
+      messageIdRef.current = null
+    }
+  }, [abort])
+
+  /**
+   * Append a message and optionally trigger assistant response
+   */
+  const append = React.useCallback(
+    async (
+      message: CoreMessage | Pick<CoreMessage, 'role' | 'content'>,
+      options?: { data?: Record<string, any> }
+    ): Promise<string | null> => {
+      const messageId = generateMessageId()
+      const fullMessage: CoreMessage = {
+        ...message,
+        id: messageId,
+      }
+
+      // Add user message immediately
+      if (message.role === 'user') {
+        setMessages((prev) => [...prev, fullMessage])
+        onMessageAppend?.(fullMessage)
+      }
+
+      // If assistant message, don't auto-trigger API call
+      if (message.role === 'assistant') {
+        setMessages((prev) => [...prev, fullMessage])
+        onMessageAppend?.(fullMessage)
+        return messageId
+      }
+
+      // For user messages, trigger assistant response if API is configured
+      if (message.role === 'user' && api) {
+        setIsLoading(true)
+        setError(undefined)
+        setData(undefined)
+
+        // Increment connection ID to invalidate any previous streams
+        const currentConnectionId = ++connectionIdRef.current
+
+        abortControllerRef.current = new AbortController()
+        const assistantMessageId = generateMessageId()
+        messageIdRef.current = assistantMessageId
+
+        // Create placeholder assistant message
+        const assistantMessage: CoreMessage = {
+          id: assistantMessageId,
+          role: 'assistant',
+          content: '',
+        }
+        currentAssistantMessageRef.current = assistantMessage
+        setMessages((prev) => [...prev, assistantMessage])
+        setData(assistantMessage)
+
+        try {
+          // Prepare request body
+          const requestBody: Record<string, any> = {
+            ...body,
+            ...options?.data,
+            messages: transform
+              ? transform([...messages, fullMessage])
+              : [...messages, fullMessage],
+          }
+
+          if (maxSteps !== undefined) {
+            requestBody['maxSteps'] = maxSteps
+          }
+
+          // Make request
+          const response = await customFetch(api, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              ...headers,
+            },
+            credentials,
+            body: JSON.stringify(requestBody),
+            signal: abortControllerRef.current.signal,
+          })
+
+          await onResponse?.(response)
+
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`)
+          }
+
+          if (!stream || !response.body) {
+            // Non-streaming response
+            const result = await response.json()
+            const finalMessage: CoreMessage = {
+              id: assistantMessageId,
+              role: 'assistant',
+              content: result.content || result.text || '',
+            }
+
+            if (mountedRef.current) {
+              setMessages((prev) =>
+                prev.map((msg) =>
+                  msg.id === assistantMessageId ? finalMessage : msg
+                )
+              )
+              setData(finalMessage)
+              await onFinish?.(finalMessage)
+            }
+
+            return assistantMessageId
+          }
+
+          // Streaming response
+          const reader = response.body.getReader()
+          readerRef.current = reader // Store reader ref for cleanup
+          const decoder = new TextDecoder()
+          let accumulatedContent = ''
+          let currentMessage = { ...assistantMessage }
+
+          // Helper to schedule batched update
+          const scheduleUpdate = () => {
+            // Check if this stream is still active
+            if (connectionIdRef.current !== currentConnectionId) return
+
+            if (mountedRef.current && !rafRef.current) {
+              rafRef.current = requestAnimationFrame(() => {
+                rafRef.current = null
+                // Double-check connection is still active
+                if (
+                  !mountedRef.current ||
+                  connectionIdRef.current !== currentConnectionId
+                )
+                  return
+
+                setMessages((prev) =>
+                  prev.map((msg) =>
+                    msg.id === assistantMessageId ? currentMessage : msg
+                  )
+                )
+                setData(currentMessage)
+              })
+            }
+          }
+
+          while (true) {
+            // Check if this stream was cancelled by a newer request
+            if (connectionIdRef.current !== currentConnectionId) {
+              console.log('[useChat] Stream cancelled - newer request started')
+              break
+            }
+
+            const { done, value } = await reader.read()
+
+            if (done) break
+
+            const chunk = decoder.decode(value, { stream: true })
+            const lines = chunk.split('\n')
+
+            for (const line of lines) {
+              if (!line.trim()) continue
+
+              // Handle SSE format
+              if (line.startsWith('data: ')) {
+                const data = line.slice(6)
+                if (data === '[DONE]') {
+                  break
+                }
+
+                try {
+                  const parsed = JSON.parse(data)
+
+                  // Handle different streaming formats
+                  let contentDelta = ''
+
+                  if (parsed.choices?.[0]?.delta?.content) {
+                    // OpenAI chat completions format
+                    contentDelta = parsed.choices[0].delta.content
+                  } else if (parsed.choices?.[0]?.text) {
+                    // OpenAI completions format
+                    contentDelta = parsed.choices[0].text
+                  } else if (parsed.content) {
+                    // Direct content field
+                    contentDelta =
+                      typeof parsed.content === 'string' ? parsed.content : ''
+                  } else if (parsed.text) {
+                    // Text field
+                    contentDelta = parsed.text
+                  } else if (parsed.delta) {
+                    // Delta format
+                    contentDelta =
+                      typeof parsed.delta === 'string' ? parsed.delta : ''
+                  } else if (parsed.message?.content) {
+                    // Message wrapper format
+                    contentDelta = parsed.message.content
+                  } else if (typeof parsed === 'string') {
+                    // String response
+                    contentDelta = parsed
+                  }
+
+                  if (contentDelta) {
+                    accumulatedContent += contentDelta
+
+                    if (mountedRef.current) {
+                      currentMessage = {
+                        ...currentMessage,
+                        content: accumulatedContent,
+                      }
+                      currentAssistantMessageRef.current = currentMessage
+                      scheduleUpdate()
+                    }
+                  }
+                } catch {
+                  // Non-JSON line, treat as plain text
+                  if (data.trim() && data !== '[DONE]') {
+                    accumulatedContent += data
+                    if (mountedRef.current) {
+                      currentMessage = {
+                        ...currentMessage,
+                        content: accumulatedContent,
+                      }
+                      currentAssistantMessageRef.current = currentMessage
+                      scheduleUpdate()
+                    }
+                  }
+                }
+              } else if (line.trim()) {
+                // Plain text streaming
+                accumulatedContent += line
+                if (mountedRef.current) {
+                  currentMessage = {
+                    ...currentMessage,
+                    content: accumulatedContent,
+                  }
+                  currentAssistantMessageRef.current = currentMessage
+                  scheduleUpdate()
+                }
+              }
+            }
+          }
+
+          // Cancel any pending update before finalization
+          if (rafRef.current) {
+            cancelAnimationFrame(rafRef.current)
+            rafRef.current = null
+          }
+
+          // Clear reader ref
+          readerRef.current = null
+
+          // Finalize message (only if this stream is still active)
+          if (
+            mountedRef.current &&
+            connectionIdRef.current === currentConnectionId
+          ) {
+            const finalMessage: CoreMessage = {
+              ...currentMessage,
+              content: accumulatedContent,
+            }
+            setMessages((prev) =>
+              prev.map((msg) =>
+                msg.id === assistantMessageId ? finalMessage : msg
+              )
+            )
+            setData(finalMessage)
+            await onFinish?.(finalMessage)
+          }
+
+          return assistantMessageId
+        } catch (err) {
+          if (err instanceof Error && err.name === 'AbortError') {
+            // FIX: Issue #14 - Remove partial message on abort to prevent incomplete messages in history
+            if (!keepLastMessageOnError && mountedRef.current) {
+              setMessages((prev) =>
+                prev.filter((msg) => msg.id !== assistantMessageId)
+              )
+            }
+            return null
+          }
+
+          const error = err instanceof Error ? err : new Error(String(err))
+
+          // Only update state if this stream is still active
+          if (connectionIdRef.current === currentConnectionId) {
+            setError(error)
+            onError?.(error)
+
+            if (!keepLastMessageOnError && mountedRef.current) {
+              setMessages((prev) =>
+                prev.filter((msg) => msg.id !== assistantMessageId)
+              )
+            }
+          }
+
+          throw error
+        } finally {
+          // Cleanup reader ref
+          if (readerRef.current) {
+            readerRef.current.cancel().catch(() => {})
+            readerRef.current = null
+          }
+
+          // Only cleanup if this is still the active connection
+          if (
+            mountedRef.current &&
+            connectionIdRef.current === currentConnectionId
+          ) {
+            setIsLoading(false)
+            abortControllerRef.current = null
+            currentAssistantMessageRef.current = null
+            messageIdRef.current = null
+          }
+        }
+      }
+
+      return messageId
+    },
+    [
+      api,
+      body,
+      headers,
+      credentials,
+      customFetch,
+      maxSteps,
+      stream,
+      transform,
+      messages,
+      generateMessageId,
+      onResponse,
+      onFinish,
+      onError,
+      onMessageAppend,
+      keepLastMessageOnError,
+    ]
+  )
+
+  /**
+   * Reload/retry the last assistant message
+   */
+  const reload = React.useCallback(
+    async (options?: {
+      data?: Record<string, any>
+    }): Promise<string | null> => {
+      // Use ref to get current messages (avoid stale closure)
+      const currentMessages = messagesRef.current
+
+      // Find last user message (manual implementation for ES2022 compatibility)
+      let lastUserMessageIndex = -1
+      for (let i = currentMessages.length - 1; i >= 0; i--) {
+        if (currentMessages[i]?.role === 'user') {
+          lastUserMessageIndex = i
+          break
+        }
+      }
+      if (lastUserMessageIndex === -1) return null
+
+      // Remove messages after last user message
+      const messagesUpToUser = currentMessages.slice(
+        0,
+        lastUserMessageIndex + 1
+      )
+      setMessages(messagesUpToUser)
+
+      // Trigger new assistant response
+      const lastUserMessage = messagesUpToUser[lastUserMessageIndex]
+      if (!lastUserMessage) return null
+      return append(lastUserMessage, options)
+    },
+    [append]
+  )
+
+  /**
+   * Handle form submission
+   */
+  const handleSubmit = React.useCallback(
+    (
+      event?: React.FormEvent<HTMLFormElement>,
+      options?: { data?: Record<string, any> }
+    ) => {
+      event?.preventDefault()
+
+      // FIX: Issue #13 - Provide feedback when input is empty
+      if (!input.trim()) {
+        const error = new Error('Message cannot be empty')
+        onError?.(error)
+        return
+      }
+
+      // Check if already loading
+      if (isLoading) {
+        const error = new Error(
+          'Please wait for the current response to complete'
+        )
+        onError?.(error)
+        return
+      }
+
+      // FIX: Issue #21 - Credentials validation
+      // Ensure credentials are sent with cross-origin requests if mode is 'include'
+      if (
+        api &&
+        api.startsWith('http') &&
+        !api.includes(window.location.origin) &&
+        credentials === 'include'
+      ) {
+        // Just a warning in dev mode, but good practice to verify
+        if (process.env.NODE_ENV !== 'production') {
+          console.warn(
+            '[useChat] Cross-origin request with credentials: include. ' +
+              'Ensure your server sets Access-Control-Allow-Credentials: true'
+          )
+        }
+      }
+
+      const userMessage: CoreMessage = {
+        role: 'user',
+        content: input.trim(),
+      }
+
+      append(userMessage, options)
+        .then(() => {
+          setInput('')
+        })
+        .catch(() => {
+          // Error already handled in append
+        })
+    },
+    [input, isLoading, append, onError, api, credentials]
+  )
+
+  // Cleanup on unmount
+  React.useEffect(() => {
+    return () => {
+      abort()
+    }
+  }, [abort])
+
+  return {
+    messages,
+    setMessages,
+    append,
+    reload,
+    stop,
+    handleSubmit,
+    input,
+    setInput,
+    isLoading,
+    error,
+    data,
+    abort,
+  }
+}
+
+// Export as both useChat and useChatEnhanced for internal compatibility
+export { useChat as useChatEnhanced }
