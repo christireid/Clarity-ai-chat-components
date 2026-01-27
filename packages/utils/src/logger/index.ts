@@ -341,7 +341,13 @@ export function getLogger(
       error,
     }
 
-    if (process.env.NODE_ENV === 'development') {
+    // Allow logging in development, test, or when NODE_ENV is not set (default to logging)
+    const shouldOutput =
+      process.env.NODE_ENV === 'development' ||
+      process.env.NODE_ENV === 'test' ||
+      !process.env.NODE_ENV
+
+    if (shouldOutput) {
       const consoleFn =
         logLevel === LogLevel.ERROR
           ? console.error
