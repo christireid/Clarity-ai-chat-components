@@ -186,3 +186,4 @@ tools/vscode-extension/.vscode-test/
 
 # Benchmark results
 tools/benchmark-results/
+.archive/
