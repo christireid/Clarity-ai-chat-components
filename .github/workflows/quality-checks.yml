@@ -505,7 +505,7 @@ jobs:
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v3
         with:
-          category: "/language:javascript-typescript"
+          category: '/language:javascript-typescript'
 
   bundle-size-check:
     name: Bundle Size Check
@@ -740,7 +740,16 @@ jobs:
   quality-gate:
     name: Quality Gate
     runs-on: ubuntu-latest
-    needs: [detect-changes, duplicate-detection, audit-score, lint-and-format, security-scan, codeql-analysis, bundle-size-check]
+    needs:
+      [
+        detect-changes,
+        duplicate-detection,
+        audit-score,
+        lint-and-format,
+        security-scan,
+        codeql-analysis,
+        bundle-size-check,
+      ]
     if: always()
 
     steps:

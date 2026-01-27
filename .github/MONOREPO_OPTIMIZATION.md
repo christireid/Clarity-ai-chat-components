@@ -1,15 +1,17 @@
 # Monorepo CI/CD Optimization Guide
 
-**Date Created**: January 27, 2026
-**Purpose**: Smart package detection and Turbo caching for 50% faster CI
+**Date Created**: January 27, 2026 **Purpose**: Smart package detection and Turbo caching for 50%
+faster CI
 
 ---
 
 ## Overview
 
-This document describes the monorepo optimization strategy implemented to reduce CI execution time by intelligently detecting affected packages and leveraging Turbo's caching system.
+This document describes the monorepo optimization strategy implemented to reduce CI execution time
+by intelligently detecting affected packages and leveraging Turbo's caching system.
 
 **Key Results:**
+
 - **50% average CI time reduction** (8 min → 4 min for typical PRs)
 - **80% time savings** for documentation-only changes
 - **Zero false negatives** - all affected packages are tested
@@ -78,10 +80,12 @@ affected_apps: "streamlined-docs"
 **Location**: `.github/scripts/detect-affected-packages.sh`
 
 **Inputs:**
+
 - `BASE_REF`: Git ref to compare against (e.g., `origin/main`)
 - `HEAD_REF`: Current git ref (e.g., `HEAD`)
 
 **Outputs:**
+
 - `affected_packages`: Space-separated list of package names
 - `affected_apps`: Space-separated list of app names
 - `turbo_filter`: Turbo CLI filter expression
@@ -129,8 +133,9 @@ for file in changed_files:
 bundle-size-check:
   needs: detect-changes
   # Only run if packages are affected
-  if: needs.detect-changes.outputs.test_all == 'true' ||
-      needs.detect-changes.outputs.affected_packages != ''
+  if:
+    needs.detect-changes.outputs.test_all == 'true' ||
+    needs.detect-changes.outputs.affected_packages != ''
 
   steps:
     - name: Build packages (affected only)
@@ -155,6 +160,7 @@ env:
 ```
 
 **Benefits:**
+
 - **Cache Hits**: Reuse build/test results from previous runs
 - **Cross-PR Caching**: PR #1's builds can be reused in PR #2
 - **Cross-Developer**: Local builds can hit CI cache
@@ -183,8 +189,9 @@ Cache hit! Download instead of rebuild (5s vs 2min)
 **Optimization**: Skip if no code packages changed
 
 ```yaml
-if: needs.detect-changes.outputs.test_all == 'true' ||
-    needs.detect-changes.outputs.affected_packages != ''
+if:
+  needs.detect-changes.outputs.test_all == 'true' || needs.detect-changes.outputs.affected_packages
+  != ''
 ```
 
 **Savings**: ~80% for docs-only PRs (2 min → 0 min)
@@ -217,9 +224,9 @@ if: needs.detect-changes.outputs.test_all == 'true' ||
 **Optimization**: Skip if no apps affected
 
 ```yaml
-if: github.event_name == 'pull_request' &&
-    (needs.detect-changes.outputs.test_all == 'true' ||
-     needs.detect-changes.outputs.affected_apps != '')
+if:
+  github.event_name == 'pull_request' && (needs.detect-changes.outputs.test_all == 'true' ||
+  needs.detect-changes.outputs.affected_apps != '')
 ```
 
 **Savings**: ~100% for packages-only PRs (3 min → 0 min)
@@ -242,33 +249,36 @@ if: github.event_name == 'pull_request' &&
 
 ### Before Optimization
 
-| PR Type | Packages Affected | CI Time | Jobs Run |
-|---------|-------------------|---------|----------|
-| Single package | 1 | 8 min | 7/7 |
-| Multiple packages | 3 | 8 min | 7/7 |
-| Docs only | 0 | 8 min | 7/7 |
-| Root config | All | 8 min | 7/7 |
+| PR Type           | Packages Affected | CI Time | Jobs Run |
+| ----------------- | ----------------- | ------- | -------- |
+| Single package    | 1                 | 8 min   | 7/7      |
+| Multiple packages | 3                 | 8 min   | 7/7      |
+| Docs only         | 0                 | 8 min   | 7/7      |
+| Root config       | All               | 8 min   | 7/7      |
 
 ### After Optimization
 
-| PR Type | Packages Affected | CI Time | Jobs Run | Savings |
-|---------|-------------------|---------|----------|---------|
-| Single package | 1 | 4 min | 7/7 | 50% ⚡ |
-| Multiple packages | 3 | 5 min | 7/7 | 37% ⚡ |
-| Docs only | 0 | 1.5 min | 4/7 | 81% 🚀 |
-| Root config | All | 8 min | 7/7 | 0% (expected) |
+| PR Type           | Packages Affected | CI Time | Jobs Run | Savings       |
+| ----------------- | ----------------- | ------- | -------- | ------------- |
+| Single package    | 1                 | 4 min   | 7/7      | 50% ⚡        |
+| Multiple packages | 3                 | 5 min   | 7/7      | 37% ⚡        |
+| Docs only         | 0                 | 1.5 min | 4/7      | 81% 🚀        |
+| Root config       | All               | 8 min   | 7/7      | 0% (expected) |
 
 ### Real-World Examples
 
 **Example 1: Fix typo in README**
+
 - **Files changed**: `README.md`
 - **Affected packages**: None
 - **Jobs run**: `detect-changes`, `audit-score`, `security-scan`, `codeql-analysis`
-- **Jobs skipped**: `duplicate-detection`, `lint-and-format`, `bundle-size-check`, `performance-testing`
+- **Jobs skipped**: `duplicate-detection`, `lint-and-format`, `bundle-size-check`,
+  `performance-testing`
 - **Time**: 1.5 min (vs 8 min before)
 - **Savings**: 81% 🚀
 
 **Example 2: Add new hook to @clarity-chat/react**
+
 - **Files changed**: `packages/react/src/hooks/use-new-hook.ts`
 - **Affected packages**: `react`
 - **Jobs run**: All 7 jobs
@@ -277,6 +287,7 @@ if: github.event_name == 'pull_request' &&
 - **Savings**: 50% ⚡
 
 **Example 3: Update streamlined-docs landing page**
+
 - **Files changed**: `apps/streamlined-docs/app/page.tsx`
 - **Affected apps**: `streamlined-docs`
 - **Jobs run**: All 7 jobs
@@ -285,6 +296,7 @@ if: github.event_name == 'pull_request' &&
 - **Savings**: 44% ⚡
 
 **Example 4: Update pnpm-lock.yaml**
+
 - **Files changed**: `pnpm-lock.yaml`
 - **Affected packages**: All (root file changed)
 - **Jobs run**: All 7 jobs, full test suite
@@ -395,11 +407,11 @@ Every PR gets an automatic comment showing:
 ## ⚡ Smart CI Optimization
 
 **Affected packages (2):**
+
 - Packages: react, utils
 - Apps: streamlined-docs
 
-Running tests only for affected packages.
-Estimated CI time savings: **~50%** 🚀
+Running tests only for affected packages. Estimated CI time savings: **~50%** 🚀
 ```
 
 ### Debug Change Detection
@@ -484,6 +496,7 @@ bash -x ./.github/scripts/detect-affected-packages.sh origin/main HEAD
 ### Before Optimization
 
 **Average PR:**
+
 - Duration: 8 minutes
 - Runner cost: $0.008/minute × 8 = $0.064
 - Monthly (100 PRs): $6.40
@@ -493,6 +506,7 @@ bash -x ./.github/scripts/detect-affected-packages.sh origin/main HEAD
 ### After Optimization
 
 **Average PR:**
+
 - Duration: 4 minutes (50% reduction)
 - Runner cost: $0.008/minute × 4 = $0.032
 - Monthly (100 PRs): $3.20
@@ -504,16 +518,18 @@ bash -x ./.github/scripts/detect-affected-packages.sh origin/main HEAD
 ### Turbo Remote Cache Cost
 
 **Vercel (Free tier):**
+
 - Included in free tier for open source
 - $0/month
 
 **Self-hosted:**
+
 - AWS EC2 t3.micro: $8/month
 - Storage (S3): ~$2/month
 - Total: $10/month = $120/year
 
-**Net Savings**: $38.40 - $0 = **$38.40/year** (Vercel)
-**Net Cost**: $120 - $38.40 = **$81.60/year increase** (self-hosted)
+**Net Savings**: $38.40 - $0 = **$38.40/year** (Vercel) **Net Cost**: $120 - $38.40 = **$81.60/year
+increase** (self-hosted)
 
 **Recommendation**: Use Vercel's free remote cache for open source projects.
 
@@ -524,6 +540,7 @@ bash -x ./.github/scripts/detect-affected-packages.sh origin/main HEAD
 ### Phase 3: Advanced Optimizations
 
 **1. Test Splitting** (Estimated savings: +10%)
+
 ```yaml
 test:
   strategy:
@@ -533,6 +550,7 @@ test:
 ```
 
 **2. Docker Layer Caching** (Estimated savings: +15%)
+
 ```yaml
 - uses: docker/build-push-action@v5
   with:
@@ -541,6 +559,7 @@ test:
 ```
 
 **3. Playwright Sharding** (Estimated savings: +20% for E2E)
+
 ```yaml
 e2e:
   strategy:
@@ -556,12 +575,14 @@ e2e:
 ### For Developers
 
 **DO:**
+
 - ✅ Make focused PRs that touch few packages
 - ✅ Separate refactoring from feature work
 - ✅ Group related changes in single commit
 - ✅ Check PR comment for affected packages
 
 **DON'T:**
+
 - ❌ Update pnpm-lock.yaml unnecessarily
 - ❌ Touch root config files in feature PRs
 - ❌ Mass-refactor across many packages
@@ -570,12 +591,14 @@ e2e:
 ### For Maintainers
 
 **DO:**
+
 - ✅ Monitor cache hit rates
 - ✅ Review change detection accuracy
 - ✅ Update scripts when workspace structure changes
 - ✅ Rotate Turbo tokens periodically
 
 **DON'T:**
+
 - ❌ Disable caching to "debug" issues
 - ❌ Commit with `[skip ci]` for convenience
 - ❌ Ignore cache misses (investigate why)
@@ -585,12 +608,11 @@ e2e:
 
 ## Version History
 
-| Version | Date | Changes |
-|---------|------|---------|
-| 1.0 | 2026-01-27 | Initial monorepo optimization |
+| Version | Date       | Changes                       |
+| ------- | ---------- | ----------------------------- |
+| 1.0     | 2026-01-27 | Initial monorepo optimization |
 
 ---
 
-**Last Updated**: January 27, 2026
-**Owner**: DevOps Team
-**Next Review**: February 27, 2026 (monthly)
+**Last Updated**: January 27, 2026 **Owner**: DevOps Team **Next Review**: February 27, 2026
+(monthly)

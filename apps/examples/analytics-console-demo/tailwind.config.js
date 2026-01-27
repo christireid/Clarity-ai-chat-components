@@ -1,18 +1,5 @@
-const config = {
-    content: [
-        './src/pages/**/*.{js,ts,jsx,tsx,mdx}',
-        './src/components/**/*.{js,ts,jsx,tsx,mdx}',
-        './src/app/**/*.{js,ts,jsx,tsx,mdx}',
-    ],
-    theme: {
-        extend: {
-            colors: {
-                background: 'var(--background)',
-                foreground: 'var(--foreground)',
-            },
-        },
-    },
-    plugins: [],
-};
-export default config;
-//# sourceMappingURL=tailwind.config.js.map
+// @ts-check
+const baseConfig = require('../../../config/examples/tailwind.config.base.cjs')
+
+/** @type {import('tailwindcss').Config} */
+module.exports = baseConfig

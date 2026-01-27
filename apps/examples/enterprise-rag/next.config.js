@@ -1,10 +1,10 @@
-/**
- * Next.js 16 Configuration for RAG Workbench Demo
- */
+// @ts-check
+const baseNextConfig = require('../../../config/examples/next.config.base.cjs')
+
+/** @type {import('next').NextConfig} */
 const nextConfig = {
-    reactStrictMode: true,
-    // Turbopack configuration (Next.js 16 - stable)
-    turbopack: {},
-};
-export default nextConfig;
-//# sourceMappingURL=next.config.js.map
+  ...baseNextConfig,
+  // Add example-specific overrides here
+}
+
+module.exports = nextConfig

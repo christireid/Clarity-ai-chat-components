@@ -1,13 +1,14 @@
 # CI/CD Monitoring and Observability
 
-**Date Created**: January 27, 2026
-**Purpose**: Track workflow performance, quality trends, and system health
+**Date Created**: January 27, 2026 **Purpose**: Track workflow performance, quality trends, and
+system health
 
 ---
 
 ## Overview
 
-This document describes how to monitor the CI/CD quality automation system to ensure optimal performance, catch issues early, and track quality trends over time.
+This document describes how to monitor the CI/CD quality automation system to ensure optimal
+performance, catch issues early, and track quality trends over time.
 
 ---
 
@@ -15,32 +16,32 @@ This document describes how to monitor the CI/CD quality automation system to en
 
 ### 1. Workflow Execution Metrics
 
-| Metric | Target | Alert Threshold | Tool |
-|--------|--------|-----------------|------|
-| **Workflow Duration** | <8 minutes | >10 minutes | GitHub Actions |
-| **Success Rate** | >95% | <90% | GitHub Actions |
-| **Queue Time** | <30 seconds | >2 minutes | GitHub Actions |
-| **Concurrent Runs** | 3-5 | >10 | GitHub Actions |
+| Metric                | Target      | Alert Threshold | Tool           |
+| --------------------- | ----------- | --------------- | -------------- |
+| **Workflow Duration** | <8 minutes  | >10 minutes     | GitHub Actions |
+| **Success Rate**      | >95%        | <90%            | GitHub Actions |
+| **Queue Time**        | <30 seconds | >2 minutes      | GitHub Actions |
+| **Concurrent Runs**   | 3-5         | >10             | GitHub Actions |
 
 ### 2. Quality Score Metrics
 
-| Metric | Target | Alert Threshold | Tracking |
-|--------|--------|-----------------|----------|
-| **Audit Score** | 90/100 | <75 | `.api-dx-audit/` docs |
-| **Duplicate Files** | 0 | >5 | jscpd |
-| **Security Vulns (Critical)** | 0 | >0 | pnpm audit |
-| **Security Vulns (High)** | 0 | >3 | pnpm audit |
-| **Bundle Size** | <500KB | >600KB | Bundle check |
-| **Lighthouse Score** | >85 | <70 | Lighthouse CI |
+| Metric                        | Target | Alert Threshold | Tracking              |
+| ----------------------------- | ------ | --------------- | --------------------- |
+| **Audit Score**               | 90/100 | <75             | `.api-dx-audit/` docs |
+| **Duplicate Files**           | 0      | >5              | jscpd                 |
+| **Security Vulns (Critical)** | 0      | >0              | pnpm audit            |
+| **Security Vulns (High)**     | 0      | >3              | pnpm audit            |
+| **Bundle Size**               | <500KB | >600KB          | Bundle check          |
+| **Lighthouse Score**          | >85    | <70             | Lighthouse CI         |
 
 ### 3. Developer Experience Metrics
 
-| Metric | Target | Alert Threshold | Tracking |
-|--------|--------|-----------------|----------|
-| **PR Review Time** | <2 hours | >8 hours | Manual tracking |
-| **CI Blocking Time** | <5% PRs | >15% PRs | GitHub insights |
-| **False Positive Rate** | <5% | >15% | Issue labels |
-| **Emergency Bypasses** | 0/month | >2/month | Audit log |
+| Metric                  | Target   | Alert Threshold | Tracking        |
+| ----------------------- | -------- | --------------- | --------------- |
+| **PR Review Time**      | <2 hours | >8 hours        | Manual tracking |
+| **CI Blocking Time**    | <5% PRs  | >15% PRs        | GitHub insights |
+| **False Positive Rate** | <5%      | >15%            | Issue labels    |
+| **Emergency Bypasses**  | 0/month  | >2/month        | Audit log       |
 
 ---
 
@@ -51,12 +52,14 @@ This document describes how to monitor the CI/CD quality automation system to en
 **Location**: `https://github.com/[org]/[repo]/actions`
 
 **What to Monitor**:
+
 - Workflow runs timeline
 - Success/failure trends
 - Execution time trends
 - Most common failure points
 
 **Weekly Review Checklist**:
+
 ```markdown
 - [ ] Check success rate (target: >95%)
 - [ ] Review failed runs and common errors
@@ -70,36 +73,45 @@ This document describes how to monitor the CI/CD quality automation system to en
 **Location**: `.github/dashboards/quality-trends.md` (auto-generated)
 
 **Metrics Tracked**:
+
 ```markdown
 ## Quality Trends (Last 30 Days)
 
 ### Audit Score History
-| Date | Score | Change | Grade |
-|------|-------|--------|-------|
-| 2026-01-27 | 72/100 | +2 | C |
-| 2026-01-26 | 70/100 | +5 | C |
-| 2026-01-25 | 65/100 | +30 | D |
+
+| Date       | Score  | Change | Grade |
+| ---------- | ------ | ------ | ----- |
+| 2026-01-27 | 72/100 | +2     | C     |
+| 2026-01-26 | 70/100 | +5     | C     |
+| 2026-01-25 | 65/100 | +30    | D     |
 
 ### Duplicate Code Trend
+
 📉 Decreasing (Good!)
+
 - Week 1: 12 files
 - Week 2: 5 files
 - Week 3: 0 files ✅
 
 ### Security Vulnerabilities
+
 🔒 Stable
+
 - Critical: 0 ✅
 - High: 1 ⚠️
 - Moderate: 3
 
 ### Performance Metrics
+
 ⚡ Improving
+
 - Lighthouse Score: 78 → 85
 - LCP: 2800ms → 2200ms ✅
 - CLS: 0.15 → 0.08 ✅
 ```
 
 **Auto-generation Script**:
+
 ```bash
 # .github/scripts/generate-dashboard.sh
 
@@ -132,16 +144,17 @@ echo "✅ Dashboard generated"
 
 #### Channel Setup
 
-| Channel | Purpose | Notifications |
-|---------|---------|---------------|
-| **#engineering** | Main dev channel | Main branch CI failures |
-| **#quality** | Quality metrics | Daily quality report |
-| **#security** | Security alerts | Critical/high vulnerabilities |
-| **#oncall** | Incident response | Emergency bypasses |
+| Channel          | Purpose           | Notifications                 |
+| ---------------- | ----------------- | ----------------------------- |
+| **#engineering** | Main dev channel  | Main branch CI failures       |
+| **#quality**     | Quality metrics   | Daily quality report          |
+| **#security**    | Security alerts   | Critical/high vulnerabilities |
+| **#oncall**      | Incident response | Emergency bypasses            |
 
 #### Notification Configuration
 
 **Main Branch Failures** (Already implemented):
+
 ```yaml
 # In .github/workflows/quality-checks.yml
 - name: Send Slack notification on failure
@@ -158,6 +171,7 @@ echo "✅ Dashboard generated"
 ```
 
 **Daily Quality Report** (To be added):
+
 ```yaml
 # .github/workflows/daily-quality-report.yml
 
@@ -187,6 +201,7 @@ jobs:
 ### Email Alerts
 
 **Critical Issues**:
+
 ```yaml
 # Add to workflow for critical alerts
 
@@ -217,6 +232,7 @@ jobs:
 ### Workflow Execution Time Tracking
 
 **Script to Track Job Duration**:
+
 ```bash
 # .github/scripts/track-performance.sh
 
@@ -247,6 +263,7 @@ Workflow Performance Statistics (Last 50 runs):
 ```
 
 **Run Weekly**:
+
 ```bash
 # Add to cron or run manually
 ./github/scripts/track-performance.sh
@@ -255,6 +272,7 @@ Workflow Performance Statistics (Last 50 runs):
 ### Job-Level Performance Analysis
 
 **Identify Slowest Jobs**:
+
 ```bash
 # Fetch detailed timing for each job
 gh run view [RUN_ID] --json jobs | \
@@ -262,6 +280,7 @@ gh run view [RUN_ID] --json jobs | \
 ```
 
 **Optimization Targets**:
+
 1. Any job >3 minutes → investigate caching
 2. Install dependencies >1 minute → use cached node_modules
 3. Build step >2 minutes → use Turbo Cache
@@ -274,6 +293,7 @@ gh run view [RUN_ID] --json jobs | \
 ### Historical Data Collection
 
 **Store Quality Metrics**:
+
 ```bash
 # .github/scripts/store-quality-metrics.sh
 
@@ -298,6 +318,7 @@ git commit -m "chore: update quality metrics for $TIMESTAMP"
 ### Trend Visualization
 
 **Generate ASCII Charts**:
+
 ```bash
 # .github/scripts/visualize-trends.sh
 
@@ -308,27 +329,30 @@ cat .github/metrics/quality-history.csv | \
 ```
 
 **Weekly Email Report**:
+
 ```markdown
 # Weekly Quality Report (Week of Jan 21-27, 2026)
 
 ## Executive Summary
-📈 Quality improving overall
-✅ 5 PRs merged
-⚠️ 1 security vulnerability found (resolved)
+
+📈 Quality improving overall ✅ 5 PRs merged ⚠️ 1 security vulnerability found (resolved)
 
 ## Metrics
-| Metric | This Week | Last Week | Change |
-|--------|-----------|-----------|--------|
-| Audit Score | 72/100 | 70/100 | +2 ✅ |
-| PRs Merged | 5 | 8 | -3 |
-| CI Success Rate | 96% | 94% | +2% ✅ |
-| Avg PR Review Time | 1.5h | 2.2h | -0.7h ✅ |
+
+| Metric             | This Week | Last Week | Change   |
+| ------------------ | --------- | --------- | -------- |
+| Audit Score        | 72/100    | 70/100    | +2 ✅    |
+| PRs Merged         | 5         | 8         | -3       |
+| CI Success Rate    | 96%       | 94%       | +2% ✅   |
+| Avg PR Review Time | 1.5h      | 2.2h      | -0.7h ✅ |
 
 ## Top Contributors
+
 1. @developer1 - 3 PRs
 2. @developer2 - 2 PRs
 
 ## Issues to Address
+
 - Bundle size trending upward (480KB → 495KB)
 - 1 high-severity vulnerability in lodash (fix available)
 ```
@@ -340,16 +364,19 @@ cat .github/metrics/quality-history.csv | \
 ### Workflow Logs
 
 **Access Logs**:
+
 ```
 GitHub → Actions → Select workflow run → Select job → View logs
 ```
 
 **Download Logs for Analysis**:
+
 ```bash
 gh run download [RUN_ID] --name [JOB_NAME]-logs
 ```
 
 **Common Log Patterns to Monitor**:
+
 ```bash
 # Search for errors
 cat workflow.log | grep "ERROR"
@@ -364,19 +391,22 @@ cat workflow.log | grep "took"
 ### Artifact Analysis
 
 **Download All Artifacts**:
+
 ```bash
 gh run download [RUN_ID]
 ```
 
 **Artifact Retention Policy**:
+
 ```yaml
 # In workflow
 - uses: actions/upload-artifact@v4
   with:
-    retention-days: 7  # Keep for 7 days (vs 90 days default)
+    retention-days: 7 # Keep for 7 days (vs 90 days default)
 ```
 
 **Artifact Storage Monitoring**:
+
 ```bash
 # Check storage usage
 gh api -X GET /repos/:owner/:repo/actions/cache/usage | jq
@@ -436,6 +466,7 @@ echo "✅ Health check complete"
 ```
 
 **Run Daily**:
+
 ```yaml
 # .github/workflows/health-check.yml
 
@@ -474,53 +505,57 @@ jobs:
 ### Monthly Review Process
 
 **Agenda**:
+
 1. Review key metrics
 2. Analyze trends
 3. Identify pain points
 4. Plan improvements
 
 **Template**:
+
 ```markdown
 # CI/CD Monthly Review - [Month Year]
 
 ## Metrics Summary
+
 - Workflow Success Rate: XX%
 - Average Execution Time: XX minutes
 - Emergency Bypasses: X
 - Quality Score: XX/100
 
 ## What Went Well
+
 - [Achievement 1]
 - [Achievement 2]
 
 ## Areas for Improvement
+
 - [Issue 1]
 - [Issue 2]
 
 ## Action Items
+
 - [ ] [Action 1] - Owner: @developer - Due: YYYY-MM-DD
 - [ ] [Action 2] - Owner: @developer - Due: YYYY-MM-DD
 ```
 
 ### Optimization Ideas Backlog
 
-| Idea | Impact | Effort | Priority |
-|------|--------|--------|----------|
-| Add Turbo Cache for monorepo | High | Medium | P0 |
-| Parallel test execution | Medium | Low | P1 |
-| Self-hosted runners for heavy jobs | High | High | P2 |
-| Visual regression testing | Medium | High | P3 |
+| Idea                               | Impact | Effort | Priority |
+| ---------------------------------- | ------ | ------ | -------- |
+| Add Turbo Cache for monorepo       | High   | Medium | P0       |
+| Parallel test execution            | Medium | Low    | P1       |
+| Self-hosted runners for heavy jobs | High   | High   | P2       |
+| Visual regression testing          | Medium | High   | P3       |
 
 ---
 
 ## Version History
 
-| Version | Date | Changes |
-|---------|------|---------|
-| 1.0 | 2026-01-27 | Initial monitoring documentation |
+| Version | Date       | Changes                          |
+| ------- | ---------- | -------------------------------- |
+| 1.0     | 2026-01-27 | Initial monitoring documentation |
 
 ---
 
-**Last Updated**: January 27, 2026
-**Owner**: DevOps Team
-**Review Frequency**: Monthly
+**Last Updated**: January 27, 2026 **Owner**: DevOps Team **Review Frequency**: Monthly

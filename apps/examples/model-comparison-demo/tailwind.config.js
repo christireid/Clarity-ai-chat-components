@@ -1,12 +1,5 @@
-const config = {
-    content: [
-        './src/**/*.{js,ts,jsx,tsx,mdx}',
-        './node_modules/@clarity-chat/react/**/*.{js,jsx,ts,tsx}',
-    ],
-    theme: {
-        extend: {},
-    },
-    plugins: [],
-};
-export default config;
-//# sourceMappingURL=tailwind.config.js.map
+// @ts-check
+const baseConfig = require('../../../config/examples/tailwind.config.base.cjs')
+
+/** @type {import('tailwindcss').Config} */
+module.exports = baseConfig

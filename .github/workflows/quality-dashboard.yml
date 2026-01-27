@@ -4,10 +4,10 @@ on:
   schedule:
     # Run daily at 9 AM UTC on weekdays
     - cron: '0 9 * * 1-5'
-  workflow_dispatch:  # Allow manual trigger
+  workflow_dispatch: # Allow manual trigger
 
 permissions:
-  contents: write  # Need write permission to commit metrics
+  contents: write # Need write permission to commit metrics
 
 jobs:
   update-dashboard:
