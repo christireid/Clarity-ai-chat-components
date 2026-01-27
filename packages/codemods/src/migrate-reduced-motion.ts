@@ -1,4 +1,4 @@
-import { API, FileInfo, Options } from 'jscodeshift'
+import type { API, FileInfo, Options } from 'jscodeshift'
 
 /**
  * Reduced Motion Hook Migration Codemod
@@ -24,7 +24,8 @@ export function migrateReducedMotion(
   root
     .find(j.ImportDeclaration)
     .filter((path) => {
-      return path.node.source.value.includes('use-reduced-motion')
+      const sourceValue = path.node.source.value
+      return typeof sourceValue === 'string' && sourceValue.includes('use-reduced-motion')
     })
     .forEach((path) => {
       // Check if it's not already from primitives

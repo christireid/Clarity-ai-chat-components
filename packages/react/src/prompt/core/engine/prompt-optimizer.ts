@@ -41,6 +41,9 @@ async function compressContext(
 }
 import { chooseOptimizationStrategy } from '../strategy-router'
 
+// Re-export types for external use
+export type { CompressionStrategy } from '../types/compression'
+
 /**
  * Optimization stage result
  */

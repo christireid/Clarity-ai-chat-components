@@ -71,13 +71,13 @@ const TargetIcon = Target as React.ComponentType<{ className?: string }>
 const WandIcon = Wand2 as React.ComponentType<{ className?: string }>
 
 // Import extracted types and utilities
-import type {
-  SemanticSearchConfig,
-  SemanticSearchResult,
-  SemanticMessageSearchProps,
-  SearchHistoryEntry,
+import {
+  type SemanticSearchConfig,
+  type SemanticSearchResult,
+  type SemanticMessageSearchProps,
+  type SearchHistoryEntry,
+  defaultConfig,
 } from './AdvancedMessageSearchSemantic.types'
-import { defaultConfig } from './AdvancedMessageSearchSemantic.utils'
 
 // Import extracted components
 import {
@@ -143,10 +143,12 @@ export function SemanticMessageSearch({
   className,
 }: SemanticMessageSearchProps) {
   // Merge user config with defaults
-  const [localConfig, setLocalConfig] = React.useState(() => ({
-    ...defaultConfig,
-    ...userConfig,
-  }))
+  const [localConfig, setLocalConfig] = React.useState<SemanticSearchConfig>(
+    () => ({
+      ...defaultConfig,
+      ...userConfig,
+    })
+  )
 
   // UI state
   const prefersReducedMotion = useReducedMotion()

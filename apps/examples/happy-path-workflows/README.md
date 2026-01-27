@@ -18,7 +18,7 @@ Examples showing the primary workflows that real users care about, implemented w
 
 ```tsx
 import { ClarityChat } from '@clarity-chat/react'
-import '@clarity-chat/react/dist/styles/index.css'
+import '@clarity-chat/react/styles.css'
 
 export default function App() {
   return (
@@ -35,7 +35,7 @@ export default function App() {
 
 ```tsx
 import { ClarityChat } from '@clarity-chat/react'
-import '@clarity-chat/react/dist/styles/index.css'
+import '@clarity-chat/react/styles.css'
 
 export default function App() {
   return (
@@ -71,7 +71,7 @@ export default function App() {
 ```tsx
 import { useChatSimple, ChatWindow } from '@clarity-chat/react'
 import { useRAGPipeline } from '@clarity-chat/react'
-import '@clarity-chat/react/dist/styles/index.css'
+import '@clarity-chat/react/styles.css'
 
 function App() {
   const chat = useChatSimple({ api: '/api/chat' })

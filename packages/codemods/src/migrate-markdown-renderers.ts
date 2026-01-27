@@ -1,4 +1,4 @@
-import { API, FileInfo, Options } from 'jscodeshift'
+import type { API, FileInfo, Options } from 'jscodeshift'
 
 /**
  * Markdown Renderers Migration Codemod

@@ -5,7 +5,7 @@
  */
 
 import { ClarityChat } from '@clarity-chat/react'
-import '@clarity-chat/react/dist/styles/index.css'
+import '@clarity-chat/react/styles.css'
 
 export default function App() {
   return (

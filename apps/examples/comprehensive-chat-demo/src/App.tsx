@@ -20,7 +20,7 @@ import {
   ErrorBoundary,
   MessageSearch,
 } from '@clarity-chat/react'
-import '@clarity-chat/react/dist/styles/index.css'
+import '@clarity-chat/react/styles.css'
 import type { Message } from '@clarity-chat/types'
 
 // Local Citation type that matches CitationCard props

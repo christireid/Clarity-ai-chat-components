@@ -559,7 +559,7 @@ globalThis.fetch = async (
 }
 
 // Import styles
-import '@clarity-chat/react/dist/styles/index.css'
+import '@clarity-chat/react/styles.css'
 
 // ============================================================================
 // TYPES

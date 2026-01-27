@@ -1,4 +1,4 @@
-import { API, FileInfo, Options } from 'jscodeshift'
+import type { API, FileInfo, Options } from 'jscodeshift'
 
 /**
  * Toast Migration Codemod
@@ -56,11 +56,11 @@ export function migrateToast(file: FileInfo, api: API, _options: Options) {
         const newImports = ['ClarityToaster', 'toast']
         newImports.forEach((importName) => {
           if (
-            !path.node.specifiers.some(
+            !path.node.specifiers?.some(
               (spec: any) => spec.imported?.name === importName
             )
           ) {
-            path.node.specifiers.push(
+            path.node.specifiers?.push(
               j.importSpecifier(j.identifier(importName))
             )
           }
@@ -81,7 +81,9 @@ export function migrateToast(file: FileInfo, api: API, _options: Options) {
     })
     .forEach((path) => {
       // Replace ToastProvider with ClarityToaster (self-closing)
-      path.node.openingElement.name.name = 'ClarityToaster'
+      if (path.node.openingElement.name.type === 'JSXIdentifier') {
+        path.node.openingElement.name.name = 'ClarityToaster'
+      }
       path.node.openingElement.selfClosing = true
 
       // Remove any children and closing element
