@@ -8,6 +8,18 @@
 import type { Tool } from '../../agents/types'
 
 /**
+ * Valid model prefixes
+ */
+const VALID_MODEL_PREFIXES = [
+  'gpt-',
+  'claude-',
+  'gemini-',
+  'llama-',
+  'mistral-',
+  'command-',
+]
+
+/**
  * Validate a model identifier
  * @throws Error if model is invalid
  */
@@ -18,6 +30,17 @@ export function validateModel(model: string): void {
 
   if (model.trim().length === 0) {
     throw new Error('Model cannot be an empty string')
+  }
+
+  // Check for known model prefixes in development
+  const isValidPrefix = VALID_MODEL_PREFIXES.some((prefix) =>
+    model.toLowerCase().startsWith(prefix)
+  )
+
+  if (!isValidPrefix && process.env['NODE_ENV'] === 'development') {
+    console.warn(
+      `[validateModel] Unknown model prefix: ${model}. Expected one of: ${VALID_MODEL_PREFIXES.join(', ')}`
+    )
   }
 }
 
@@ -32,7 +55,11 @@ export function validateTools(tools: Tool[]): void {
 
   for (const tool of tools) {
     if (!tool.name || typeof tool.name !== 'string') {
-      throw new Error('Each tool must have a name string')
+      throw new Error('Each tool must have a valid name')
+    }
+
+    if (!tool.description || typeof tool.description !== 'string') {
+      throw new Error(`Tool "${tool.name}" must have a description`)
     }
 
     if (typeof tool.execute !== 'function') {

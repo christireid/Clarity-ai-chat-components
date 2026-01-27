@@ -630,7 +630,7 @@ CodeBlockComponent.displayName = 'CodeBlock'
  * CodeBlock with error boundary
  */
 export const CodeBlock = (props: CodeBlockProps) => (
-  <ContentErrorBoundary variant="minimal">
+  <ContentErrorBoundary>
     <CodeBlockComponent {...props} />
   </ContentErrorBoundary>
 )

@@ -14,7 +14,7 @@ import {
   DURATION_SECONDS as durations,
   ANIMATION_PRESETS,
 } from '../../animations/constants'
-import { useReducedMotion } from '@/hooks/ui/use-reduced-motion'
+import { useReducedMotion } from '../../hooks/ui/use-reduced-motion'
 
 export interface SessionSummaryHighlights {
   title: string

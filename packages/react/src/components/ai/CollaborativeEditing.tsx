@@ -4,8 +4,8 @@ import * as React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Card, CardContent, Badge, Button, cn } from '@clarity-chat/primitives'
 import type { Message } from '@clarity-chat/types'
-import { ANIMATION_PRESETS } from '@/animations/constants'
-import { useReducedMotion } from '@/hooks/ui/use-reduced-motion'
+import { ANIMATION_PRESETS } from '../../animations/constants'
+import { useReducedMotion } from '../../hooks/ui/use-reduced-motion'
 
 /**
  * User presence status

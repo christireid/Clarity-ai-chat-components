@@ -11,8 +11,8 @@ import {
   CloseIcon,
 } from '../ui/icons'
 import { useIsMounted } from '../../hooks/ui/use-is-mounted'
-import { useReducedMotion } from '@/hooks/ui/use-reduced-motion'
-import { ANIMATION_PRESETS } from '@/animations/constants'
+import { useReducedMotion } from '../../hooks/ui/use-reduced-motion'
+import { ANIMATION_PRESETS } from '../../animations/constants'
 
 /**
  * Supported document platforms

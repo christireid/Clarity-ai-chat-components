@@ -4,7 +4,7 @@ import * as React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Button, Card, CardContent, Badge, cn } from '@clarity-chat/primitives'
 import type { Message } from '@clarity-chat/types'
-import { useReducedMotion } from '@/hooks/ui/use-reduced-motion'
+import { useReducedMotion } from '../../hooks/ui/use-reduced-motion'
 import { Skeleton } from '../ui/skeleton'
 import {
   EASING_FRAMER,

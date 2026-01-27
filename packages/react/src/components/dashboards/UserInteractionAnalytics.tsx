@@ -12,8 +12,8 @@ import {
   Button,
   cn,
 } from '@clarity-chat/primitives'
-import { useReducedMotion } from '@/hooks/ui/use-reduced-motion'
-import { ANIMATION_PRESETS } from '@/animations/constants'
+import { useReducedMotion } from '../../hooks/ui/use-reduced-motion'
+import { ANIMATION_PRESETS } from '../../animations/constants'
 
 /**
  * Interaction event types

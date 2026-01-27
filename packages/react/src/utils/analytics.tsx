@@ -740,35 +740,10 @@ export function createEventHandler(
   }
 }
 
-/**
- * Performance measurement utility
- */
-export function measurePerformance<T>(
-  componentName: string,
-  operation: string,
-  fn: () => T
-): T {
-  const startTime = performance.now()
-  try {
-    const result = fn()
-    const duration = performance.now() - startTime
-
-    analyticsManager.trackPerformance(componentName, 'render', {
-      duration,
-    })
-
-    return result
-  } catch (error) {
-    const duration = performance.now() - startTime
-
-    analyticsManager.trackError(error as Error, componentName, {
-      operation,
-      duration,
-    })
-
-    throw error
-  }
-}
+// NOTE: measurePerformance has been removed from this file.
+// Use the canonical version from @clarity-chat/react/internal/debug
+// which provides better production mode handling and 16ms frame budget warnings.
+// For analytics integration, use analyticsManager.trackPerformance directly.
 
 /**
  * Batch analytics events

@@ -25,8 +25,8 @@ import {
   XMarkIcon,
   PauseIcon,
 } from '../ui/icons'
-import { ANIMATION_PRESETS } from '@/animations/constants'
-import { useReducedMotion } from '@/hooks/ui/use-reduced-motion'
+import { ANIMATION_PRESETS } from '../../animations/constants'
+import { useReducedMotion } from '../../hooks/ui/use-reduced-motion'
 
 export interface RequestQueueStatusProps {
   /** Queue status */

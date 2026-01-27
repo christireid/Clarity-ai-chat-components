@@ -45,27 +45,8 @@ export function classifyError(error: Error): ErrorType {
   return classifyErrorUtil(error) as ErrorType
 }
 
-/**
- * Retry an async operation with exponential backoff
- * @deprecated Import retry from @clarity-chat/utils/async instead
- *
- * @internal
- * @param operation - The async operation to retry
- * @param maxAttempts - Maximum number of retry attempts (default: 2)
- * @param delayMs - Base delay in milliseconds (default: 1000)
- */
-export async function retryOperation<T>(
-  operation: () => Promise<T>,
-  maxAttempts: number = 2,
-  delayMs: number = 1000
-): Promise<T> {
-  const { retry } = await import('@clarity-chat/utils/async')
-  return retry(operation, {
-    retries: maxAttempts - 1, // retry() counts retries, not total attempts
-    delay: delayMs,
-    backoffFactor: 2,
-  })
-}
+// NOTE: retryOperation() has been removed from this file.
+// Import retry from @clarity-chat/utils/async or use retryWithBackoff from @clarity-chat/react/utils/resilience/retry-with-backoff
 
 /**
  * Extract text content from a message

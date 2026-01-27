@@ -49,7 +49,7 @@ import {
 } from '../../animations/constants'
 import { ConfettiAnimation } from './ConfettiAnimation'
 import { useToast } from '../ui/toast'
-import { useReducedMotion } from '@/hooks/ui/use-reduced-motion'
+import { useReducedMotion } from '../../hooks/ui/use-reduced-motion'
 
 // Animation constants for feedback interactions
 const THUMBS_UP_CELEBRATION = {

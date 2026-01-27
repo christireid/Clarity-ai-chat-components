@@ -38,12 +38,10 @@ const AccessibilityAudit = dynamic(() =>
 )
 
 // Lazy load docs assistant (client-only)
-const DocsAssistant = dynamic(
-  () =>
-    import('@/components/AI/DocsAssistantSimplified').then((mod) => ({
-      default: mod.DocsAssistant,
-    })),
-  { ssr: false }
+const DocsAssistant = dynamic(() =>
+  import('@/components/AI/DocsAssistantSimplified').then((mod) => ({
+    default: mod.DocsAssistant,
+  }))
 )
 
 // Font CSS classes using system font stacks (no external font loading required)

@@ -8,7 +8,7 @@ import {
   DURATION_SECONDS as durations,
   ANIMATION_PRESETS,
 } from '../../animations/constants'
-import { useReducedMotion } from '@/hooks/ui/use-reduced-motion'
+import { useReducedMotion } from '../../hooks/ui/use-reduced-motion'
 
 /** Maximum recommended content length before warning */
 const MAX_CONTENT_LENGTH = 10000

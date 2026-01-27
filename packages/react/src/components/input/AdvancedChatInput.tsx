@@ -13,8 +13,8 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { Textarea, Button, Badge, cn } from '@clarity-chat/primitives'
 import type { SavedPrompt, MessageAttachment } from '@clarity-chat/types'
 import { useMergedRef } from '../../hooks/ui/use-merged-ref'
-import { useReducedMotion } from '@/hooks/ui/use-reduced-motion'
-import { ANIMATION_PRESETS } from '@/animations/constants'
+import { useReducedMotion } from '../../hooks/ui/use-reduced-motion'
+import { ANIMATION_PRESETS } from '../../animations/constants'
 
 export interface InputSuggestion {
   id: string

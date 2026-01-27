@@ -9,7 +9,7 @@ import {
   CardDescription,
   cn,
 } from '@clarity-chat/primitives'
-import { useReducedMotion } from '@/hooks/ui/use-reduced-motion'
+import { useReducedMotion } from '../../hooks/ui/use-reduced-motion'
 
 export interface ResponseQualityMetric {
   id: string

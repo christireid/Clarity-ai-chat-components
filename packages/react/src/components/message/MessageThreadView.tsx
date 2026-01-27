@@ -14,7 +14,7 @@ import {
 import { formatRelativeTime } from '../../internal/helpers'
 import { useReducedMotion } from '../../hooks/ui/use-reduced-motion'
 import type { Message } from '@clarity-chat/types'
-import { ANIMATION_PRESETS } from '@/animations/constants'
+import { ANIMATION_PRESETS } from '../../animations/constants'
 
 /**
  * Thread configuration

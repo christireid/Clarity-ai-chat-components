@@ -23,7 +23,7 @@ import {
   ANIMATION_PRESETS,
 } from '../../animations/constants'
 import type { Citation } from '../../adapters/types'
-import { useReducedMotion } from '@/hooks/ui/use-reduced-motion'
+import { useReducedMotion } from '../../hooks/ui/use-reduced-motion'
 
 // Helper to safely render metadata values
 const renderMetadataValue = (value: unknown): React.ReactNode => {

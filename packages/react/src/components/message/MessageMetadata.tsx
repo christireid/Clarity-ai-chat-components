@@ -10,7 +10,7 @@ import {
   TrendingUp as TrendingUpIcon,
   Shield as ShieldIcon,
 } from 'lucide-react'
-import { useReducedMotion } from '@/hooks/ui/use-reduced-motion'
+import { useReducedMotion } from '../../hooks/ui/use-reduced-motion'
 
 // Type assertions to fix React 18/19 compatibility
 const ClockIconComponent = ClockIcon as React.ComponentType<{

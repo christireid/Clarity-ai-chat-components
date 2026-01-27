@@ -94,35 +94,8 @@ export function deepMerge<T extends Record<string, unknown>>(
  */
 export { clamp } from '@clarity-chat/utils'
 
-/**
- * Retry an async operation with exponential backoff
- * @deprecated Import retry from @clarity-chat/utils/async instead
- */
-export async function retry<T>(
-  fn: () => Promise<T>,
-  options: {
-    maxAttempts?: number
-    baseDelay?: number
-    maxDelay?: number
-    shouldRetry?: (error: unknown) => boolean
-  } = {}
-): Promise<T> {
-  const { retry: retryUtil } = await import('@clarity-chat/utils/async')
-  const {
-    maxAttempts = 3,
-    baseDelay = 1000,
-    maxDelay = 30000,
-    shouldRetry = () => true,
-  } = options
-
-  return retryUtil(fn, {
-    retries: maxAttempts - 1, // retry() counts retries, not total attempts
-    delay: baseDelay,
-    backoffFactor: 2,
-    maxDelay,
-    shouldRetry: (error) => shouldRetry(error),
-  })
-}
+// NOTE: retry() has been removed from this file.
+// Import retry from @clarity-chat/utils/async or use retryWithBackoff from @clarity-chat/react/utils/resilience/retry-with-backoff
 
 /**
  * Format bytes to human-readable string

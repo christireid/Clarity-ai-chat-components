@@ -15,7 +15,7 @@ import {
 } from '@clarity-chat/primitives'
 import { TrashIcon } from '../ui/icons'
 import { DURATION_SECONDS as durations } from '../../animations/constants'
-import { useReducedMotion } from '@/hooks/ui/use-reduced-motion'
+import { useReducedMotion } from '../../hooks/ui/use-reduced-motion'
 
 // Animation variants for buttons
 const buttonVariants = {

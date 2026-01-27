@@ -24,7 +24,7 @@ import { useEmbeddings } from '../embeddings/react'
 import {
   validateVectorStoreProvider,
   validateEmbeddingProvider,
-} from '../utils/runtime-validation'
+} from '../../utils/config/runtime-validation'
 
 /**
  * Options for useRAGPipeline

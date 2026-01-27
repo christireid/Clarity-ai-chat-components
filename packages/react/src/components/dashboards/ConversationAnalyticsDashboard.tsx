@@ -17,7 +17,7 @@ import {
   ANIMATION_PRESETS,
 } from '../../animations/constants'
 import type { Message } from '@clarity-chat/types'
-import { useReducedMotion } from '@/hooks/ui/use-reduced-motion'
+import { useReducedMotion } from '../../hooks/ui/use-reduced-motion'
 
 /**
  * Topic cluster

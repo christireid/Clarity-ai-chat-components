@@ -14,8 +14,8 @@
 import React, { useMemo, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { cn } from '@clarity-chat/primitives'
-import { ANIMATION_PRESETS } from '@/animations/constants'
-import { useReducedMotion } from '@/hooks/ui/use-reduced-motion'
+import { ANIMATION_PRESETS } from '../../animations/constants'
+import { useReducedMotion } from '../../hooks/ui/use-reduced-motion'
 
 // ============================================================================
 // Types

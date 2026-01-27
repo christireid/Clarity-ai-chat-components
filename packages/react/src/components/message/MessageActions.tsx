@@ -21,7 +21,7 @@ import { ConfettiAnimation } from './ConfettiAnimation'
 import { FeedbackDialog } from './FeedbackDialog'
 import { DeleteButton } from './DeleteButton'
 import { useToast } from '../ui/toast'
-import { useReducedMotion } from '@/hooks/ui/use-reduced-motion'
+import { useReducedMotion } from '../../hooks/ui/use-reduced-motion'
 
 export interface MessageActionsProps {
   messageContent: string

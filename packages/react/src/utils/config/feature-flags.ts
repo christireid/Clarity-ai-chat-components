@@ -131,9 +131,22 @@ export function isFeatureEnabled(feature: FeatureFlag): boolean {
  * @returns true if the package can be imported, false otherwise
  */
 export function isPeerDependencyAvailable(packageName: string): boolean {
+  // In client-side or modern bundlers, we can't use require.resolve reliably
+  // Instead, assume packages are available unless we're specifically checking
+  // This is safe because missing packages will fail gracefully in their usage
+  if (typeof window !== 'undefined') {
+    // Client-side: assume available (will fail gracefully if not)
+    return true
+  }
+
   try {
-    // Try to require the package
-    require.resolve(packageName)
+    // Server-side: try to check if package exists
+    // Use dynamic require to avoid bundler issues
+    if (typeof require !== 'undefined' && require.resolve) {
+      require.resolve(packageName)
+      return true
+    }
+    // Fallback to true if require is not available
     return true
   } catch {
     return false

@@ -17,7 +17,7 @@ import {
 } from '@clarity-chat/primitives'
 import { DURATION_SECONDS as durations } from '../../animations/constants'
 import type { ExportOptions, ExportFormat } from '@clarity-chat/types'
-import { useReducedMotion } from '@/hooks/ui/use-reduced-motion'
+import { useReducedMotion } from '../../hooks/ui/use-reduced-motion'
 
 export interface ExportDialogProps {
   open: boolean

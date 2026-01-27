@@ -597,7 +597,7 @@ export function useMarkdownFeatures(content: string) {
 export const EnhancedMarkdownRenderer = (
   props: EnhancedMarkdownRendererProps
 ) => (
-  <ContentErrorBoundary variant="minimal">
+  <ContentErrorBoundary>
     <EnhancedMarkdownRendererComponent {...props} />
   </ContentErrorBoundary>
 )

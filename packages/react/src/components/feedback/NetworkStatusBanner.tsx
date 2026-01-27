@@ -4,7 +4,7 @@ import * as React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { cn, Button } from '@clarity-chat/primitives'
 import { duration, EASING_FRAMER } from '../../animations/constants'
-import { useReducedMotion } from '@/hooks/ui/use-reduced-motion'
+import { useReducedMotion } from '../../hooks/ui/use-reduced-motion'
 
 export type NetworkStatus = 'online' | 'offline' | 'reconnecting' | 'slow'
 
