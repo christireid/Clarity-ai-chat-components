@@ -1,5 +1,5 @@
 // @ts-check
-const baseNextConfig = require('../../../config/examples/next.config.base.cjs')
+import baseNextConfig from '../../../config/examples/next.config.base.js'
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
@@ -7,4 +7,4 @@ const nextConfig = {
   // Add example-specific overrides here
 }
 
-module.exports = nextConfig
+export default nextConfig

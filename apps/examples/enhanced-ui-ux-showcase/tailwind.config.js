@@ -1,5 +1,5 @@
 // @ts-check
-const baseConfig = require('../../../config/examples/tailwind.config.base.cjs')
+import baseConfig from '../../../config/examples/tailwind.config.base.js'
 
 /** @type {import('tailwindcss').Config} */
-module.exports = baseConfig
+export default baseConfig

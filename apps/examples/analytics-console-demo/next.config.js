@@ -1,5 +1,5 @@
 // @ts-check
-import baseNextConfig from '../../../config/examples/next.config.base.cjs';
+import baseNextConfig from '../../../config/examples/next.config.base.js'
 
 /**
  * Next.js 16 Configuration for Analytics Console Demo
@@ -19,4 +19,4 @@ const nextConfig = {
   },
 }
 
-export default nextConfig;
+export default nextConfig

@@ -1,10 +1,11 @@
 /**
  * Base Tailwind Configuration for Clarity Chat Examples
- * 
+ *
  * All examples extend this configuration.
  * Includes Clarity brand colors, animations, and design system defaults.
+ * @type {import('tailwindcss').Config}
  */
-module.exports = {
+const baseConfig = {
   content: ['./src/**/*.{js,ts,jsx,tsx,mdx}'],
   theme: {
     extend: {
@@ -56,3 +57,5 @@ module.exports = {
   },
   plugins: [],
 }
+
+export default baseConfig
