@@ -37,6 +37,15 @@ const AccessibilityAudit = dynamic(() =>
   }))
 )
 
+// Lazy load docs assistant (client-only)
+const DocsAssistant = dynamic(
+  () =>
+    import('@/components/AI/DocsAssistantSimplified').then((mod) => ({
+      default: mod.DocsAssistant,
+    })),
+  { ssr: false }
+)
+
 // Font CSS classes using system font stacks (no external font loading required)
 const fontClasses = {
   sans: 'font-sans',
@@ -137,6 +146,7 @@ export default function RootLayout({
           </div>
           <ToastManager />
           <AccessibilityAudit />
+          <DocsAssistant />
         </Providers>
       </body>
     </html>
