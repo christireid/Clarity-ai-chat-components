@@ -183,7 +183,11 @@
     "install-peers:full": "node scripts/install-peers-ci.js full",
     "install-peers:document": "node scripts/install-peers-ci.js document",
     "install-peers:cmd": "node scripts/get-install-command.js",
-    "prepublishOnly": "npm run clean && npm run build && npm run test && npm run verify:externals"
+    "validate": "pnpm run validate:exports && pnpm run validate:duplicates && pnpm run validate:bundle",
+    "validate:exports": "tsx scripts/verify-exports.ts",
+    "validate:duplicates": "node scripts/detect-duplicates.cjs",
+    "validate:bundle": "node scripts/check-bundle-size.cjs",
+    "prepublishOnly": "npm run clean && npm run build && npm run test && npm run verify:externals && npm run validate"
   },
   "peerDependencies": {
     "framer-motion": "^12.23.25",
