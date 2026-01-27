@@ -383,7 +383,7 @@ export {
   encodeToon,
   decodeToon,
   validateToon,
-} from './formats/toon-optimizer'
+} from './formats/toon-optimizer/index'
 export type {
   ToonConfig,
   TOONSchema,
@@ -392,7 +392,7 @@ export type {
   ValidationError as TOONValidationError,
   SavingsEstimate,
   SavingsInfo,
-} from './formats/toon-optimizer'
+} from './formats/toon-optimizer/index'
 
 // Markdown Optimization - Strip/compress markdown for token reduction
 export {

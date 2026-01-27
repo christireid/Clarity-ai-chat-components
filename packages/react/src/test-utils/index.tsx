@@ -5,6 +5,7 @@
  * for use in component tests.
  */
 
+import { vi } from 'vitest'
 import { render } from '@testing-library/react'
 import type { RenderOptions } from '@testing-library/react'
 import type { ReactElement, ReactNode } from 'react'

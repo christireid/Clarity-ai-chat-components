@@ -5,4 +5,4 @@
  * @deprecated Import from 'toon-optimizer' directory instead
  */
 
-export * from './toon-optimizer/index'
+export * from './toon-optimizer'
