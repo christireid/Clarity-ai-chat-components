@@ -11,11 +11,11 @@
 
 import type { CoreMessage } from '../../../hooks/chat/use-chat-enhanced'
 import { toonToMessages } from '../toon'
-import type type, { ToonNode } from '../toon'
+import type { ToonNode } from '../toon'
 import { getModelProfileOrDefault } from '../model-profiles'
-import type type, { ModelProfile } from '../model-profiles'
+import type { ModelProfile } from '../model-profiles'
 import { optimizeMessagesForBudget } from '../optimizer'
-import type type, { OptimizationStrategy } from '../optimizer'
+import type { OptimizationStrategy } from '../optimizer'
 // import type { CompressionStrategy } from '../compression-chain'
 export type CompressionStrategy =
   | 'truncate'

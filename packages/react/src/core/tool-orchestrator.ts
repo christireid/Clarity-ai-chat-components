@@ -17,7 +17,7 @@
 import { ToolRegistry } from './tool-registry'
 import { ToolExecutor } from './tool-executor'
 import { ToolLifecycleManager } from './tool-lifecycle'
-import type type, { ToolCallRecord, ToolCallStatus } from './tool-lifecycle'
+import type { ToolCallRecord, ToolCallStatus } from './tool-lifecycle'
 import type {
   ToolDefinition,
   ToolArguments,

@@ -26,7 +26,7 @@ import React, {
   useState,
 } from 'react'
 import { VariableSizeList as List } from 'react-window'
-import type type, { ListChildComponentProps } from 'react-window'
+import type { ListChildComponentProps } from 'react-window'
 import AutoSizer from 'react-virtualized-auto-sizer'
 import type { Message } from '@clarity-chat/types'
 import { useScreenReaderDetection } from '../../hooks/accessibility/use-screen-reader'

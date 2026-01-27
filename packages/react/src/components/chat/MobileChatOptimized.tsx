@@ -2,8 +2,14 @@
 
 import * as React from 'react'
 import { motion, useMotionValue, useTransform } from 'framer-motion'
-import type type, { PanInfo } from 'framer-motion'
-import { Button, Card, CardContent, cn, useReducedMotion } from '@clarity-chat/primitives'
+import type { PanInfo } from 'framer-motion'
+import {
+  Button,
+  Card,
+  CardContent,
+  cn,
+  useReducedMotion,
+} from '@clarity-chat/primitives'
 import type { Message } from '@clarity-chat/types'
 import { DURATION_SECONDS, ANIMATION_PRESETS } from '../../animations/constants'
 import {

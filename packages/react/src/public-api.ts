@@ -502,16 +502,8 @@ export {
 export { SetupWizard, QuickSetup, interactiveSetup } from './utils/setup-wizard'
 
 // Lazy Loading - Performance optimizations
-export {
-  createLazyComponent,
-  createLazyComponentWithBoundary,
-  preloadComponent,
-  loadWhen,
-  FeatureFlags,
-  loadFeature,
-  LazyComponents,
-  LazyLoadPerformanceMonitor,
-} from './utils/lazy-loading'
+// Lazy Loading Utilities - Removed (file doesn't exist)
+// TODO: Re-implement lazy loading utilities if needed
 
 // Migration Helpers - Smooth API transitions
 // Note: Some migration helpers were planned but not implemented

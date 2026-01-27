@@ -16,7 +16,7 @@
  */
 
 import { validateToolDefinition } from '../types/tool-definition'
-import type type, { IToolRegistry, ToolDefinition } from '../types/tool-definition'
+import type { IToolRegistry, ToolDefinition } from '../types/tool-definition'
 import { validateToolImplementationStrict } from './tool-implementation-validator'
 
 // =============================================================================

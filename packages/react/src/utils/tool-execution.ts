@@ -11,7 +11,10 @@
  * @module utils/tool-execution
  */
 
-import type type, { OrchestrationResult, ToolOrchestrator } from '../core/tool-orchestrator'
+import type {
+  OrchestrationResult,
+  ToolOrchestrator,
+} from '../core/tool-orchestrator'
 import type { ToolArguments, ToolResult } from '../types/tool-definition'
 
 // =============================================================================

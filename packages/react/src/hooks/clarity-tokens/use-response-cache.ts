@@ -2,7 +2,7 @@
 
 import * as React from 'react'
 import { ExactCache } from '@clarity-chat/token-optimization'
-import type type, { ExactCacheConfig } from '@clarity-chat/token-optimization'
+import type { ExactCacheConfig } from '@clarity-chat/token-optimization'
 import type {
   UseResponseCacheConfig,
   UseResponseCacheReturn,

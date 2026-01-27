@@ -46,7 +46,7 @@ import {
 import { buildModelPrompt } from '../../prompt/core/builder'
 // debounce import removed as we use inline setTimeout for effect cleanup pattern
 import { MODEL_PRESETS } from '../../prompt/core/tokenizer'
-import type type, { ModelMetadata } from '../../prompt/core/tokenizer'
+import type { ModelMetadata } from '../../prompt/core/tokenizer'
 
 // Internal helpers
 import {
@@ -496,7 +496,12 @@ export function useClarityChat(
     } else {
       setMemoryStats({ count: 0, contextItems: 0 })
     }
-  }, [memory?.enabled, memoryContext, chat.messages.length, currentMemoryContext])
+  }, [
+    memory?.enabled,
+    memoryContext,
+    chat.messages.length,
+    currentMemoryContext,
+  ])
 
   // Calculate memory info
   const memoryInfo: ClarityChatMemoryInfo = React.useMemo(() => {

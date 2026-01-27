@@ -8,7 +8,7 @@ import { useMemo, useCallback } from 'react'
 import type { CoreMessage } from '../../hooks/chat/use-chat-enhanced'
 import type { ModelMetadata } from '../core/tokenizer'
 import { optimizeMessagesForBudget } from '../core/optimizer'
-import type type, { MessagePriority, OptimizationStrategy } from '../core/optimizer'
+import type { MessagePriority, OptimizationStrategy } from '../core/optimizer'
 import {
   estimateMessageTokens,
   getTokenizerForModel,

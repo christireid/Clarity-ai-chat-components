@@ -2,7 +2,7 @@
 
 import * as React from 'react'
 import { AccurateTokenCounter } from '@clarity-chat/token-optimization'
-import type type, { ChatMessage } from '@clarity-chat/token-optimization'
+import type { ChatMessage } from '@clarity-chat/token-optimization'
 import {
   MODEL_REGISTRY,
   getModelConfig,

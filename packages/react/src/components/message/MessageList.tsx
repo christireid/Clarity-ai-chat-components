@@ -1,7 +1,7 @@
 'use client'
 
 import * as React from 'react'
-import type type, { ReactNode } from 'react'
+import type { ReactNode } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import type { Message as MessageType } from '@clarity-chat/types'
 import { Message } from './message'
