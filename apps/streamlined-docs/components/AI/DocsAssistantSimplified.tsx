@@ -7,9 +7,16 @@
  * Can be enhanced as more token optimization components become available.
  */
 
-import { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
-import { X, BookOpen, Sparkles, Send, AlertTriangle } from 'lucide-react'
+import {
+  X,
+  BookOpen,
+  Sparkles,
+  Send,
+  AlertTriangle,
+  Loader2,
+} from 'lucide-react'
 import { ChatButton } from './ChatButton'
 import { useDocsChat } from './hooks'
 import { cn } from '@/lib/utils'
@@ -79,7 +86,9 @@ function DocsAssistantInner({ className }: DocsAssistantProps) {
   return (
     <>
       {/* Floating Chat Button */}
-      {!isOpen && <ChatButton onClick={() => setIsOpen(true)} isOpen={false} />}
+      {!isOpen && (
+        <ChatButton onClick={() => setIsOpen(true)} isOpen={isOpen} />
+      )}
 
       {/* Main Assistant Dialog */}
       <AnimatePresence>
@@ -143,6 +152,7 @@ function DocsAssistantInner({ className }: DocsAssistantProps) {
                     <button
                       onClick={handleClear}
                       className="px-3 py-1.5 text-xs rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors"
+                      aria-label="Clear conversation history"
                     >
                       Clear
                     </button>
@@ -151,6 +161,7 @@ function DocsAssistantInner({ className }: DocsAssistantProps) {
                     onClick={() => setIsOpen(false)}
                     className="p-2 rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors"
                     title="Close (Esc)"
+                    aria-label="Close documentation assistant"
                   >
                     <X className="w-4 h-4" />
                   </button>
@@ -170,7 +181,7 @@ function DocsAssistantInner({ className }: DocsAssistantProps) {
               )}
 
               {/* Messages Area */}
-              <div className="flex-1 overflow-y-auto p-4 space-y-4">
+              <div className="flex-1 overflow-y-auto scrollbar-hide p-4 space-y-4">
                 {messages.length === 0 ? (
                   <div className="flex items-center justify-center h-full">
                     <div className="text-center max-w-md">
@@ -185,11 +196,13 @@ function DocsAssistantInner({ className }: DocsAssistantProps) {
                         best practices.
                       </p>
                       <div className="flex flex-wrap gap-2 justify-center">
-                        {suggestionButtons.map((suggestion, idx) => (
+                        {suggestionButtons.map((suggestion) => (
                           <button
-                            key={idx}
+                            key={suggestion}
                             onClick={() => handleSendMessage(suggestion)}
                             className="px-3 py-1.5 text-xs rounded-lg bg-neutral-100 dark:bg-neutral-800 hover:bg-neutral-200 dark:hover:bg-neutral-700 transition-colors"
+                            aria-label={`Ask: ${suggestion}`}
+                            disabled={isLoading}
                           >
                             {suggestion}
                           </button>
@@ -199,30 +212,43 @@ function DocsAssistantInner({ className }: DocsAssistantProps) {
                   </div>
                 ) : (
                   <>
-                    {messages.map((message) => (
-                      <div
-                        key={message.id}
-                        className={cn(
-                          'flex gap-3',
-                          message.role === 'user'
-                            ? 'justify-end'
-                            : 'justify-start'
-                        )}
-                      >
+                    {messages.map((message) => {
+                      const isError = message.id.includes('-error')
+                      return (
                         <div
+                          key={message.id}
                           className={cn(
-                            'max-w-[85%] rounded-2xl px-4 py-3',
+                            'flex gap-3',
                             message.role === 'user'
-                              ? 'bg-brand-500 text-white'
-                              : 'bg-neutral-100 dark:bg-neutral-800'
+                              ? 'justify-end'
+                              : 'justify-start'
                           )}
                         >
-                          <p className="text-sm whitespace-pre-wrap">
-                            {message.content}
-                          </p>
+                          <div
+                            className={cn(
+                              'max-w-[85%] rounded-2xl px-4 py-3',
+                              message.role === 'user'
+                                ? 'bg-brand-500 text-white'
+                                : isError
+                                  ? 'bg-red-500/10 dark:bg-red-500/20 border border-red-500/30'
+                                  : 'bg-neutral-100 dark:bg-neutral-800'
+                            )}
+                          >
+                            {isError && (
+                              <div className="flex items-center gap-2 mb-2">
+                                <AlertTriangle className="w-4 h-4 text-red-500" />
+                                <span className="text-xs font-semibold text-red-600 dark:text-red-400">
+                                  Error
+                                </span>
+                              </div>
+                            )}
+                            <p className="text-sm whitespace-pre-wrap">
+                              {message.content}
+                            </p>
+                          </div>
                         </div>
-                      </div>
-                    ))}
+                      )
+                    })}
 
                     {isLoading && (
                       <div className="flex gap-3">
@@ -293,8 +319,15 @@ function DocsAssistantInner({ className }: DocsAssistantProps) {
                     onClick={handleSend}
                     disabled={isLoading || !inputValue.trim()}
                     className="px-4 py-2 rounded-lg bg-brand-500 hover:bg-brand-600 text-white font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                    aria-label={
+                      isLoading ? 'Sending message...' : 'Send message'
+                    }
                   >
-                    <Send className="w-4 h-4" />
+                    {isLoading ? (
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                    ) : (
+                      <Send className="w-4 h-4" />
+                    )}
                   </button>
                 </div>
                 <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-2">
@@ -309,36 +342,55 @@ function DocsAssistantInner({ className }: DocsAssistantProps) {
   )
 }
 
-// Export with error boundary wrapper
-export function DocsAssistant({ className }: DocsAssistantProps) {
-  const [error, setError] = useState<Error | null>(null)
+// Export with proper error boundary
+export class DocsAssistantErrorBoundary extends React.Component<
+  { children: React.ReactNode },
+  { hasError: boolean; error: Error | null }
+> {
+  constructor(props: { children: React.ReactNode }) {
+    super(props)
+    this.state = { hasError: false, error: null }
+  }
 
-  if (error) {
-    return (
-      <div className="fixed bottom-4 right-4 p-4 bg-red-500/10 border border-red-500/20 rounded-lg shadow-lg max-w-sm z-[100]">
-        <div className="flex items-start gap-3">
-          <AlertTriangle className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" />
-          <div className="space-y-2">
-            <h3 className="font-semibold">Assistant Error</h3>
-            <p className="text-sm text-neutral-600 dark:text-neutral-400">
-              {error.message}
-            </p>
-            <button
-              onClick={() => setError(null)}
-              className="text-sm font-medium text-brand-500 hover:underline"
-            >
-              Try Again
-            </button>
+  static getDerivedStateFromError(error: Error) {
+    return { hasError: true, error }
+  }
+
+  componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
+    console.error('DocsAssistant error:', error, errorInfo)
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div className="fixed bottom-4 right-4 p-4 bg-red-500/10 border border-red-500/20 rounded-lg shadow-lg max-w-sm z-[100]">
+          <div className="flex items-start gap-3">
+            <AlertTriangle className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" />
+            <div className="space-y-2">
+              <h3 className="font-semibold">Assistant Error</h3>
+              <p className="text-sm text-neutral-600 dark:text-neutral-400">
+                {this.state.error?.message || 'An unexpected error occurred'}
+              </p>
+              <button
+                onClick={() => this.setState({ hasError: false, error: null })}
+                className="text-sm font-medium text-brand-500 hover:underline"
+              >
+                Try Again
+              </button>
+            </div>
           </div>
         </div>
-      </div>
-    )
-  }
+      )
+    }
 
-  try {
-    return <DocsAssistantInner className={className} />
-  } catch (err) {
-    setError(err as Error)
-    return null
+    return this.props.children
   }
+}
+
+export function DocsAssistant({ className }: DocsAssistantProps) {
+  return (
+    <DocsAssistantErrorBoundary>
+      <DocsAssistantInner className={className} />
+    </DocsAssistantErrorBoundary>
+  )
 }

@@ -75,8 +75,11 @@ export {
 export { VoiceInput, type VoiceInputProps } from './components/input/VoiceInput'
 export { FileUpload, type FileUploadProps } from './components/input/FileUpload'
 export {
-  MentionSystem,
-  type MentionSystemProps,
+  MentionInput,
+  MentionList,
+  type MentionInputProps,
+  type MentionListProps,
+  useMentions,
 } from './components/input/MentionSystem'
 export {
   StructuredInputBuilder,
@@ -184,14 +187,7 @@ export {
   AdvancedMessageSearch,
   type AdvancedMessageSearchProps,
 } from './components/search/AdvancedMessageSearch'
-export {
-  AdvancedMessageSearchSemantic,
-  type AdvancedMessageSearchSemanticProps,
-} from './components/search/AdvancedMessageSearchSemantic'
-export {
-  SemanticMessageSearch,
-  type SemanticMessageSearchProps,
-} from './components/search/semantic/SemanticMessageSearch'
+export { SemanticMessageSearch } from './components/search/semantic/SemanticMessageSearch'
 export {
   SearchFiltersPanel,
   type SearchFiltersPanelProps,

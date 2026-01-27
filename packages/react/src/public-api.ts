@@ -56,6 +56,10 @@ export type { ChatInputProps } from './components/chat/ChatInput'
 export { EnhancedMarkdownRenderer as MarkdownRenderer } from './components/ai/EnhancedMarkdownRenderer'
 export type { EnhancedMarkdownRendererProps as MarkdownRendererProps } from './components/ai/EnhancedMarkdownRenderer'
 
+// 5.5. Code Block - Syntax highlighted code display
+export { CodeBlock } from './components/code/CodeBlock'
+export type { CodeBlockProps } from './components/code/CodeBlock'
+
 // 6. Streaming Components - Real-time streaming UI
 export { StreamingMessage } from './components/message/StreamingMessage'
 export type { StreamingMessageProps } from './components/message/StreamingMessage'
@@ -106,6 +110,53 @@ export {
   type TypingIndicatorProps,
   type TypingIndicatorVariant,
 } from './components/message/TypingIndicator'
+export { CitationCard } from './components/message/CitationCard'
+export type { CitationCardProps } from './components/message/CitationCard'
+
+// 8.8. Chat Components
+export { ChatWindow } from './components/chat/ChatWindow'
+export type { ChatWindowProps } from './components/chat/ChatWindow'
+export { FollowUpSuggestions } from './components/chat/FollowUpSuggestions'
+export type { FollowUpSuggestionsProps } from './components/chat/FollowUpSuggestions'
+export { DefaultEmptyState as EmptyChatState } from './components/chat/EmptyState'
+export type { DefaultEmptyStateProps as EmptyChatStateProps } from './components/chat/EmptyState'
+
+// 8.9. UI Components
+export { BaseErrorBoundary as ErrorBoundary } from './components/ui/ErrorBoundary'
+export type { ErrorBoundaryProps } from './components/ui/ErrorBoundary'
+
+// 8.10. Media Components
+export { ExportDialog } from './components/media/ExportDialog'
+export type { ExportDialogProps } from './components/media/ExportDialog'
+
+// 8.11. Input Components
+export { VoiceInput } from './components/input/VoiceInput'
+export type { VoiceInputProps } from './components/input/VoiceInput'
+
+// 8.12. Token Components
+export { TokenCounter } from './components/token/TokenCounter'
+export type { TokenCounterProps } from './components/token/TokenCounter'
+
+// 8.13. Feedback Components
+export { NetworkStatus } from './components/feedback/NetworkStatus'
+export type { NetworkStatusProps } from './components/feedback/NetworkStatus'
+
+// 8.14. Keyboard Hooks
+export {
+  useKeyboardShortcuts,
+  type KeyboardShortcut,
+  type KeyboardShortcutsHelpProps,
+} from './hooks/keyboard'
+
+// 8.15. Accessibility Hooks
+export {
+  useFocusTrap,
+  type UseFocusTrapOptions,
+} from './hooks/ui/use-focus-trap'
+export {
+  useFocusRestoration,
+  type UseFocusRestorationReturn,
+} from './hooks/ui/use-focus-restoration'
 
 // 9. Command Palette - Quick actions and navigation
 export { CommandPalette } from './components/navigation/CommandPalette'
@@ -114,12 +165,19 @@ export type { CommandPaletteProps } from './components/navigation/CommandPalette
 // 10. Search - Conversation search and filtering
 export { SearchFiltersPanel } from './components/search/components/SearchFiltersPanel'
 export type { SearchFiltersPanelProps } from './components/search/components/SearchFiltersPanel'
+export { MessageSearch } from './components/search/MessageSearch'
+export type { MessageSearchProps } from './components/search/MessageSearch'
 
 // 11. Prompts - Prompt library and templates
 export { PromptLibrary } from './components/prompt/PromptLibrary'
 export type { PromptLibraryProps } from './components/prompt/PromptLibrary'
 export { TemplateMarketplace } from './components/prompt/TemplateMarketplace'
 export type { TemplateMarketplaceProps } from './components/prompt/TemplateMarketplace'
+export {
+  PromptSuggestions,
+  type PromptSuggestion,
+  type PromptSuggestionType,
+} from './components/prompt/PromptSuggestions'
 
 // ============================================================================
 // CORE TYPES (Essential type definitions from @clarity-chat/types)

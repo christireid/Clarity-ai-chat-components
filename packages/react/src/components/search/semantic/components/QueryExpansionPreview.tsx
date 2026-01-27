@@ -4,7 +4,7 @@ import * as React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Badge } from '@clarity-chat/primitives'
 import { Wand2, ChevronDown, ChevronUp } from 'lucide-react'
-import { DURATION_SECONDS as durations } from '@/animations/constants'
+import { DURATION_SECONDS as durations } from '../../../../animations/constants'
 
 // Type assertions for icons
 const WandIcon = Wand2 as React.ComponentType<{ className?: string }>

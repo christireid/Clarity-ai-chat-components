@@ -43,7 +43,7 @@ export {
   deepClone,
   deepMerge,
   clamp,
-  retry,
+  // Note: retry is not exported from helpers - use @clarity-chat/utils/async instead
   formatBytes,
   isBrowser,
   isServer,

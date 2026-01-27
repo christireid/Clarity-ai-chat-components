@@ -153,7 +153,32 @@ export * from './hooks/theme'
 // export * from './theme'
 
 // Re-export components from additional domains
-export * from './components/ui'
+// Note: EmptyChatState is already exported from public-api, so we exclude it here
+export {
+  EmptyState,
+  type EmptyStateProps,
+  NoSearchResultsState,
+  NoConversationsState,
+  NoFilesState,
+  ErrorState,
+  SuccessState,
+  InfoState,
+  LoadingState,
+  LoadingStateWithTimeout,
+  OfflineState,
+} from './components/ui/EmptyState'
+// Export all other ui components
+// Note: Spinner, LoadingIndicator, TypingIndicator don't exist in ./components/ui
+export * from './components/ui/AnimatedDots'
+export * from './components/ui/BatteryIndicator'
+export * from './components/ui/DashboardSkeleton'
+export * from './components/ui/FeedbackAnimation'
+export * from './components/ui/InteractiveCard'
+export * from './components/ui/SonnerToast'
+export * from './components/ui/draggable'
+// Note: error-fallback and progress don't exist in ./components/ui
+// Progress components are exported from public-api to avoid conflicts
+export * from './components/ui/skeleton-enhanced'
 // Note: './components/ai' exports are handled explicitly in './public-api' to avoid conflicts
 // export * from './components/ai'
 export * from './components/context'
@@ -292,7 +317,7 @@ export {
   deepClone,
   deepMerge,
   clamp,
-  retry,
+  // Note: retry is not exported from ./internal/index
   formatBytes,
 } from './internal/index'
 

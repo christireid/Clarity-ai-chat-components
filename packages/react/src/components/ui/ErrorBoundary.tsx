@@ -5,28 +5,23 @@
  * All error boundaries and error utilities are now centralized in @clarity-chat/error-handling.
  */
 
+import * as React from 'react'
+
 // Re-export error boundaries and utilities from canonical location
 export {
   // Main error boundaries
-  EnhancedErrorBoundary as BaseErrorBoundary,
-  EnhancedErrorBoundary as ContentErrorBoundary,
-  InlineErrorBoundary as InlineContentErrorBoundary,
-  MediaErrorBoundary,
-  EnhancedErrorBoundary as AsyncContentErrorBoundary,
-  PreviewErrorBoundary as ResilientErrorBoundary,
-  EnhancedErrorBoundary as ReportableErrorBoundary,
+  ChatErrorBoundary as BaseErrorBoundary,
+  ChatErrorBoundary as ContentErrorBoundary,
+  ChatErrorBoundary as ErrorBoundary,
 
   // Error boundary props and types
-  type EnhancedErrorBoundaryProps as ErrorBoundaryProps,
-  type EnhancedErrorBoundaryProps as BaseErrorBoundaryProps,
-  type FallbackProps as ErrorFallbackProps,
+  type ChatErrorBoundaryProps as ErrorBoundaryProps,
+  type ChatErrorBoundaryProps as BaseErrorBoundaryProps,
 
   // Error handling hooks
-  useErrorBoundary as useErrorHandler,
-  useErrorBoundary as useAsyncErrorHandler,
-
-  // HOC
-  useErrorBoundary,
+  useErrorHandler,
+  useErrorBoundaryThrow as useErrorBoundary,
+  useAsyncError,
 
   // Error reporter
   errorReporter,
@@ -34,21 +29,21 @@ export {
 } from '@clarity-chat/error-handling'
 
 // Re-export fallback components (these are built into the error boundaries now)
-export const ContentErrorFallback = null as any // Replaced by EnhancedErrorBoundary's default fallback
-export const InlineErrorFallback = null as any // Replaced by InlineErrorBoundary's fallback
-export const EmptyStateErrorFallback = null as any // Replaced by EnhancedErrorBoundary's fallback
+export const ContentErrorFallback = null as any // Replaced by ChatErrorBoundary's default fallback
+export const InlineErrorFallback = null as any // Replaced by ChatErrorBoundary's fallback
+export const EmptyStateErrorFallback = null as any // Replaced by ChatErrorBoundary's fallback
 
 // withErrorBoundary HOC
 export function withErrorBoundary<P extends object>(
   Component: React.ComponentType<P>,
   errorBoundaryProps: Omit<any, 'children'> = {}
 ) {
-  const { EnhancedErrorBoundary } = require('@clarity-chat/error-handling')
+  const { ChatErrorBoundary } = require('@clarity-chat/error-handling')
 
   const WrappedComponent = (props: P) => (
-    <EnhancedErrorBoundary {...errorBoundaryProps}>
+    <ChatErrorBoundary {...errorBoundaryProps}>
       <Component {...props} />
-    </EnhancedErrorBoundary>
+    </ChatErrorBoundary>
   )
 
   WrappedComponent.displayName = `withErrorBoundary(${Component.displayName || Component.name})`

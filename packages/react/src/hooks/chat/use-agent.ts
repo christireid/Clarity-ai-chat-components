@@ -19,9 +19,12 @@
 'use client'
 
 import * as React from 'react'
-import { ReactAgent } from '../agents/react-agent'
-import type { Tool, AgentConfig } from '../agents/types'
-import { validateModel, validateTools } from '../utils/runtime-validation'
+import { ReactAgent } from '../../agents/react-agent'
+import type { Tool, AgentConfig } from '../../agents/types'
+import {
+  validateModel,
+  validateTools,
+} from '../../utils/config/runtime-validation'
 
 /**
  * Options for useAgent

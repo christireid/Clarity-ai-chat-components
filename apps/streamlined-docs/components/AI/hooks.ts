@@ -2,7 +2,7 @@
  * Custom hooks for DocsAssistantEnhanced
  */
 
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useMemo, useRef } from 'react'
 import type { Message } from '@clarity-chat/react'
 
 export interface UseDocsChatReturn {
@@ -40,6 +40,13 @@ export function useDocsChat(): UseDocsChatReturn {
   const [isLoading, setIsLoading] = useState(false)
   const [tokenCount, setTokenCount] = useState(0)
 
+  // Fix: Use useMemo to prevent sessionId from regenerating on every render
+  const sessionId = useMemo(() => `session-${Date.now()}`, [])
+
+  // Fix: Use ref to avoid stale closure in handleSendMessage
+  const messagesRef = useRef<Message[]>([])
+  messagesRef.current = messages
+
   const handleSendMessage = useCallback(
     async (content: string) => {
       // Add user message
@@ -54,12 +61,12 @@ export function useDocsChat(): UseDocsChatReturn {
       setIsLoading(true)
 
       try {
-        // Call docs assistant API
+        // Fix: Use messagesRef.current to get latest messages (avoid stale closure)
         const response = await fetch('/api/docs-assistant', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            messages: [...messages, userMessage],
+            messages: [...messagesRef.current, userMessage],
           }),
         })
 
@@ -97,7 +104,7 @@ export function useDocsChat(): UseDocsChatReturn {
         setIsLoading(false)
       }
     },
-    [messages]
+    [] // No dependencies - using ref for messages
   )
 
   const handleMessageRetry = useCallback(
@@ -158,7 +165,7 @@ export function useDocsChat(): UseDocsChatReturn {
     isLoading,
     aiStatus: isLoading ? 'Thinking...' : null,
     currentCitations: [],
-    sessionId: 'session-' + Date.now(),
+    sessionId, // Use memoized sessionId
     tokenTracker: { tokenCount },
     isOnline: true,
     messageQueue: [],

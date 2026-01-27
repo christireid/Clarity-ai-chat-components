@@ -52,12 +52,14 @@ import type { ModelMetadata } from '../../prompt/core/tokenizer'
 import {
   useMemorySafe,
   classifyError,
-  retryOperation,
   extractTextContent,
   validateApiEndpoint,
   warnIfMemoryMisconfigured,
   warnIfTooManyMessages,
 } from './helpers'
+
+// Retry utility
+import { retryWithBackoff } from '../../utils/resilience/retry-with-backoff'
 
 // Debug utilities
 import { debug } from '../../internal/debug'
@@ -278,7 +280,10 @@ export function useClarityChat(
           }
 
           if (memory.retryOnError !== false) {
-            await retryOperation(storeMemory, memory.maxRetryAttempts || 2, 500)
+            const { result } = await retryWithBackoff(storeMemory, {
+              maxRetries: (memory.maxRetryAttempts || 2) - 1, // maxRetries is retries after first attempt
+              baseDelay: 500,
+            })
           } else {
             await storeMemory()
           }
@@ -343,17 +348,18 @@ export function useClarityChat(
             try {
               const memoryResults =
                 memory.retryOnError !== false
-                  ? await retryOperation(
-                      queryMemory,
-                      memory.maxRetryAttempts || 2,
-                      500
-                    )
+                  ? (
+                      await retryWithBackoff(queryMemory, {
+                        maxRetries: (memory.maxRetryAttempts || 2) - 1,
+                        baseDelay: 500,
+                      })
+                    ).result
                   : await queryMemory()
 
               const contextString =
                 memoryResults.length > 0
                   ? memoryResults
-                      .map((result) => result.memory.content)
+                      .map((result: any) => result.memory.content)
                       .join('\n\n')
                   : ''
 
