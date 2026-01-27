@@ -1,14 +1,14 @@
 'use client'
 
 /**
- * @clarity-chat/react/core - Complete Component Library
+ * @clarity-chat/react/extended - Complete Component Library
  *
- * ALL components, hooks, and utilities. Nothing is removed.
- * This is the comprehensive export - every feature is available here.
+ * The comprehensive, well-designed library with all necessary components.
+ * Everything you need for a complete AI chat experience, nothing you don't.
  *
  * @example
  * ```tsx
- * import { TokenOptimizationDashboard, useMemoryFeedback } from '@clarity-chat/react/core'
+ * import { TokenOptimizationDashboard, CommandPaletteEnhanced } from '@clarity-chat/react/extended'
  * ```
  *
  * @packageDocumentation
@@ -33,7 +33,10 @@ export {
 
 export { ChatWindow, type ChatWindowProps } from './components/chat/ChatWindow'
 export { ChatInput, type ChatInputProps } from './components/chat/ChatInput'
-export { MobileChatWindow, type MobileChatWindowProps } from './components/chat/MobileChatOptimized'
+export {
+  MobileChatWindow,
+  type MobileChatWindowProps,
+} from './components/chat/MobileChatOptimized'
 
 export {
   ChatWithErrorBoundary,
@@ -44,10 +47,22 @@ export {
 // MESSAGE COMPONENTS
 // ============================================================================
 
-export { MessageList, type MessageListProps } from './components/message/MessageList'
-export { VirtualizedMessageList, type VirtualizedMessageListProps } from './components/chat/VirtualizedMessageList'
-export { StreamingMessage, type StreamingMessageProps } from './components/message/StreamingMessage'
-export { MessageThreadView, type MessageThreadViewProps } from './components/message/MessageThreadView'
+export {
+  MessageList,
+  type MessageListProps,
+} from './components/message/MessageList'
+export {
+  VirtualizedMessageList,
+  type VirtualizedMessageListProps,
+} from './components/chat/VirtualizedMessageList'
+export {
+  StreamingMessage,
+  type StreamingMessageProps,
+} from './components/message/StreamingMessage'
+export {
+  MessageThreadView,
+  type MessageThreadViewProps,
+} from './components/message/MessageThreadView'
 
 // ============================================================================
 // INPUT COMPONENTS
@@ -59,63 +74,151 @@ export { VoiceInput, type VoiceInputProps } from './components/input/VoiceInput'
 // RENDERING COMPONENTS
 // ============================================================================
 
-export { EnhancedMarkdownRenderer as MarkdownRenderer, type EnhancedMarkdownRendererProps as MarkdownRendererProps } from './components/ai/EnhancedMarkdownRenderer'
+export {
+  EnhancedMarkdownRenderer as MarkdownRenderer,
+  type EnhancedMarkdownRendererProps as MarkdownRendererProps,
+} from './components/ai/EnhancedMarkdownRenderer'
 
 // ============================================================================
 // STREAMING COMPONENTS
 // ============================================================================
 
-export { StreamStatusProgress as StreamingProgress, type StreamStatusProgressProps as StreamingProgressProps } from './components/ai/StreamingProgress'
-export { StreamingCodeBlock, type StreamingCodeBlockProps } from './components/code/StreamingCodeBlock'
-export { StreamingTextRenderer, type StreamingTextRendererProps } from './components/message/StreamingTextRenderer'
+export {
+  StreamStatusProgress as StreamingProgress,
+  type StreamStatusProgressProps as StreamingProgressProps,
+} from './components/ai/StreamingProgress'
+export {
+  StreamingCodeBlock,
+  type StreamingCodeBlockProps,
+} from './components/code/StreamingCodeBlock'
+export {
+  StreamingTextRenderer,
+  type StreamingTextRendererProps,
+} from './components/message/StreamingTextRenderer'
 
 // ============================================================================
 // TOKEN OPTIMIZATION COMPONENTS
 // ============================================================================
 
-export { TokenUsageMeter, type TokenUsageMeterProps } from './components/token/TokenUsageMeter'
-export { TokenBudgetBar, type TokenBudgetBarProps } from './components/token/TokenBudgetBar'
-export { TokenOptimizationPanel, type TokenOptimizationPanelProps } from './components/token/TokenOptimizationPanel'
-export { TokenOptimizationDashboard, type TokenOptimizationDashboardProps } from './components/token/TokenOptimizationDashboard'
-export { TokenCostPreview, type TokenCostPreviewProps } from './components/token/TokenCostPreview'
-export { TokenCounter, type TokenCounterProps } from './components/token/TokenCounter'
-export { TokenOptimizationBadge, type TokenOptimizationBadgeProps } from './components/token/TokenOptimizationBadge'
+export {
+  TokenUsageMeter,
+  type TokenUsageMeterProps,
+} from './components/token/TokenUsageMeter'
+export {
+  TokenBudgetBar,
+  type TokenBudgetBarProps,
+} from './components/token/TokenBudgetBar'
+export {
+  TokenOptimizationPanel,
+  type TokenOptimizationPanelProps,
+} from './components/token/TokenOptimizationPanel'
+export {
+  TokenOptimizationDashboard,
+  type TokenOptimizationDashboardProps,
+} from './components/token/TokenOptimizationDashboard'
+export {
+  TokenCostPreview,
+  type TokenCostPreviewProps,
+} from './components/token/TokenCostPreview'
+export {
+  TokenCounter,
+  type TokenCounterProps,
+} from './components/token/TokenCounter'
+export {
+  TokenOptimizationBadge,
+  type TokenOptimizationBadgeProps,
+} from './components/token/TokenOptimizationBadge'
 
 // ============================================================================
 // MEMORY COMPONENTS
 // ============================================================================
 
-export { MemoryActivityIndicator, type MemoryActivityIndicatorProps } from './components/memory/MemoryActivityIndicator'
-export { MemoryInspector, type MemoryInspectorProps } from './components/context/MemoryInspector'
+export {
+  MemoryActivityIndicator,
+  type MemoryActivityIndicatorProps,
+} from './components/memory/MemoryActivityIndicator'
+export {
+  MemoryInspector,
+  type MemoryInspectorProps,
+} from './components/context/MemoryInspector'
 
 // ============================================================================
 // NAVIGATION & COMMAND COMPONENTS
 // ============================================================================
 
-export { CommandPalette, type CommandPaletteProps } from './components/navigation/CommandPalette'
-export { CommandPaletteEnhanced, type CommandPaletteEnhancedProps } from './components/navigation/CommandPaletteEnhanced'
+export {
+  CommandPalette,
+  type CommandPaletteProps,
+} from './components/navigation/CommandPalette'
+export {
+  CommandPaletteEnhanced,
+  type CommandPaletteEnhancedProps,
+} from './components/navigation/CommandPaletteEnhanced'
 
 // ============================================================================
 // SEARCH COMPONENTS
 // ============================================================================
 
-export { SearchFiltersPanel, type SearchFiltersPanelProps } from './components/search/components/SearchFiltersPanel'
-export { SearchResultsSummary, type SearchResultsSummaryProps } from './components/search/components/SearchResultsSummary'
+export {
+  SearchFiltersPanel,
+  type SearchFiltersPanelProps,
+} from './components/search/components/SearchFiltersPanel'
+export {
+  SearchResultsSummary,
+  type SearchResultsSummaryProps,
+} from './components/search/components/SearchResultsSummary'
 
 // ============================================================================
 // PROMPT COMPONENTS
 // ============================================================================
 
-export { PromptLibrary, type PromptLibraryProps } from './components/prompt/PromptLibrary'
-export { TemplateMarketplace, type TemplateMarketplaceProps } from './components/prompt/TemplateMarketplace'
-export { PromptVariablesEditor, type PromptVariablesEditorProps } from './components/prompt/PromptVariablesEditor'
+export {
+  PromptLibrary,
+  type PromptLibraryProps,
+} from './components/prompt/PromptLibrary'
+export {
+  TemplateMarketplace,
+  type TemplateMarketplaceProps,
+} from './components/prompt/TemplateMarketplace'
+export {
+  PromptVariablesEditor,
+  type PromptVariablesEditorProps,
+} from './components/prompt/PromptVariablesEditor'
 
 // ============================================================================
 // CONVERSATION COMPONENTS
 // ============================================================================
 
-export { ConversationTimeline, type ConversationTimelineProps } from './components/conversation/ConversationTimeline'
-export { ConversationList, type ConversationListProps } from './components/conversation/ConversationList'
+export {
+  ConversationTimeline,
+  type ConversationTimelineProps,
+} from './components/conversation/ConversationTimeline'
+export {
+  ConversationList,
+  type ConversationListProps,
+} from './components/conversation/ConversationList'
+
+// ============================================================================
+// THEME COMPONENTS
+// ============================================================================
+
+export {
+  ThemeSwitcher,
+  type ThemeSwitcherProps,
+  useSimpleTheme,
+} from './components/theme-components/ThemeSwitcher'
+export {
+  ThemeSelector,
+  type ThemeSelectorProps,
+} from './components/theme-components/ThemeSelector'
+export {
+  ThemeCustomizer,
+  type ThemeCustomizerProps,
+} from './components/theme-components/ThemeCustomizer'
+export {
+  ThemePreview,
+  type ThemePreviewProps,
+} from './components/theme-components/ThemePreview'
 
 // ============================================================================
 // HOOKS

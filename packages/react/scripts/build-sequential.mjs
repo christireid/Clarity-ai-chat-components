@@ -36,7 +36,7 @@ const externals = [
 
 const entries = [
   { name: 'main', entry: 'src/index.ts src/styles/index.css', css: true },
-  { name: 'core', entry: 'src/core.ts' },
+  { name: 'extended', entry: 'src/extended.ts' },
   { name: 'core-minimal', entry: 'src/core-minimal.ts' },
   { name: 'utils', entry: 'src/utils/index.ts', outDir: 'dist/utils' },
   { name: 'animations', entry: 'src/animations/index.ts', outDir: 'dist/animations' },

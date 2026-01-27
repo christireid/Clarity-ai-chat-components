@@ -1,12 +1,12 @@
 /**
  * @clarity-chat/react/advanced - Advanced Features
  *
- * Power-user exports for advanced use cases.
- * Most users won't need these - stick to the main package.
+ * Power-user exports for specialized use cases.
+ * Most users should use @clarity-chat/react (core) or @clarity-chat/react/extended.
  *
  * @example
  * ```tsx
- * import { PromptLibrary, useTokenBudget } from '@clarity-chat/react/advanced'
+ * import { optimizePrompt, useClarityObject } from '@clarity-chat/react/advanced'
  * ```
  *
  * @packageDocumentation

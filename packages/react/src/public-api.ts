@@ -1,14 +1,12 @@
 'use client'
 
 /**
- * @clarity-chat/react - Minimal Public API
+ * @clarity-chat/react - Core Package (Essential Components)
  *
- * This is the ONLY public API surface. Everything else is internal.
+ * The essential, easy-to-understand library for 90% of use cases.
+ * Simple by default, comprehensive when needed.
  *
- * **Philosophy**: Ship essential features that cover 90% of use cases.
- * Specialized utilities live in subpath exports for advanced users.
- *
- * **Basic Usage** (covers 90% of cases):
+ * **Core Package** (you're here - essential 15 exports):
  * ```tsx
  * import { ClarityChatApp, useClarityChat } from '@clarity-chat/react'
  *
@@ -18,10 +16,14 @@
  * }
  * ```
  *
- * **Advanced Usage** (power users only):
+ * **Extended Package** (comprehensive library - all necessary components):
  * ```tsx
- * import { PromptLibrary } from '@clarity-chat/react/advanced'
- * import { TokenOptimizer } from '@clarity-chat/react/enterprise'
+ * import { CommandPaletteEnhanced, TokenOptimizationDashboard } from '@clarity-chat/react/extended'
+ * ```
+ *
+ * **Advanced Package** (power users - specialized features):
+ * ```tsx
+ * import { optimizePrompt, useClarityObject } from '@clarity-chat/react/advanced'
  * ```
  *
  * @packageDocumentation
