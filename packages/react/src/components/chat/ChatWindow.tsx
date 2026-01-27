@@ -500,8 +500,11 @@ export function ChatWindow({
           border: 'light',
           animated: 'none',
         }),
-        'flex h-full flex-col overflow-hidden',
+        'flex h-full w-full flex-col overflow-hidden',
         'relative',
+        // Responsive defaults - gracefully adapt to any container
+        'min-h-[400px] md:min-h-[500px]',
+        'max-w-full',
         className
       )}
       role="region"

@@ -40,9 +40,6 @@ import { durations } from '@/lib/animations'
 import { Breadcrumbs } from '@/components/Navigation/Breadcrumbs'
 import { CodeBlock } from '@/components/Docs/CodeBlock'
 
-// ISR Configuration: API documentation changes with code updates
-export const revalidate = 3600
-
 // ============================================================================
 // Copy Button Component
 // ============================================================================

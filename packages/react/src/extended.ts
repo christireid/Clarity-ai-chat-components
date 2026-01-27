@@ -1,0 +1,201 @@
+'use client'
+
+/**
+ * @clarity-chat/react/core - Complete Component Library
+ *
+ * ALL components, hooks, and utilities. Nothing is removed.
+ * This is the comprehensive export - every feature is available here.
+ *
+ * @example
+ * ```tsx
+ * import { TokenOptimizationDashboard, useMemoryFeedback } from '@clarity-chat/react/core'
+ * ```
+ *
+ * @packageDocumentation
+ */
+
+// ============================================================================
+// CHAT COMPONENTS
+// ============================================================================
+
+export { ClarityChatApp } from './app-api'
+export type { ClarityChatAppProps } from './app-api'
+
+export {
+  ClarityChat,
+  type ClarityChatProps,
+} from './components/chat/ClarityChat'
+
+export {
+  ClarityChatSimple,
+  type ClarityChatSimpleProps,
+} from './components/chat/ClarityChatSimple'
+
+export { ChatWindow, type ChatWindowProps } from './components/chat/ChatWindow'
+export { ChatInput, type ChatInputProps } from './components/chat/ChatInput'
+export { MobileChatWindow, type MobileChatWindowProps } from './components/chat/MobileChatOptimized'
+
+export {
+  ChatWithErrorBoundary,
+  type ChatWithErrorBoundaryProps,
+} from './components/chat/ChatWithErrorBoundary'
+
+// ============================================================================
+// MESSAGE COMPONENTS
+// ============================================================================
+
+export { MessageList, type MessageListProps } from './components/message/MessageList'
+export { VirtualizedMessageList, type VirtualizedMessageListProps } from './components/chat/VirtualizedMessageList'
+export { StreamingMessage, type StreamingMessageProps } from './components/message/StreamingMessage'
+export { MessageThreadView, type MessageThreadViewProps } from './components/message/MessageThreadView'
+
+// ============================================================================
+// INPUT COMPONENTS
+// ============================================================================
+
+export { VoiceInput, type VoiceInputProps } from './components/input/VoiceInput'
+
+// ============================================================================
+// RENDERING COMPONENTS
+// ============================================================================
+
+export { EnhancedMarkdownRenderer as MarkdownRenderer, type EnhancedMarkdownRendererProps as MarkdownRendererProps } from './components/ai/EnhancedMarkdownRenderer'
+
+// ============================================================================
+// STREAMING COMPONENTS
+// ============================================================================
+
+export { StreamStatusProgress as StreamingProgress, type StreamStatusProgressProps as StreamingProgressProps } from './components/ai/StreamingProgress'
+export { StreamingCodeBlock, type StreamingCodeBlockProps } from './components/code/StreamingCodeBlock'
+export { StreamingTextRenderer, type StreamingTextRendererProps } from './components/message/StreamingTextRenderer'
+
+// ============================================================================
+// TOKEN OPTIMIZATION COMPONENTS
+// ============================================================================
+
+export { TokenUsageMeter, type TokenUsageMeterProps } from './components/token/TokenUsageMeter'
+export { TokenBudgetBar, type TokenBudgetBarProps } from './components/token/TokenBudgetBar'
+export { TokenOptimizationPanel, type TokenOptimizationPanelProps } from './components/token/TokenOptimizationPanel'
+export { TokenOptimizationDashboard, type TokenOptimizationDashboardProps } from './components/token/TokenOptimizationDashboard'
+export { TokenCostPreview, type TokenCostPreviewProps } from './components/token/TokenCostPreview'
+export { TokenCounter, type TokenCounterProps } from './components/token/TokenCounter'
+export { TokenOptimizationBadge, type TokenOptimizationBadgeProps } from './components/token/TokenOptimizationBadge'
+
+// ============================================================================
+// MEMORY COMPONENTS
+// ============================================================================
+
+export { MemoryActivityIndicator, type MemoryActivityIndicatorProps } from './components/memory/MemoryActivityIndicator'
+export { MemoryInspector, type MemoryInspectorProps } from './components/context/MemoryInspector'
+
+// ============================================================================
+// NAVIGATION & COMMAND COMPONENTS
+// ============================================================================
+
+export { CommandPalette, type CommandPaletteProps } from './components/navigation/CommandPalette'
+export { CommandPaletteEnhanced, type CommandPaletteEnhancedProps } from './components/navigation/CommandPaletteEnhanced'
+
+// ============================================================================
+// SEARCH COMPONENTS
+// ============================================================================
+
+export { SearchFiltersPanel, type SearchFiltersPanelProps } from './components/search/components/SearchFiltersPanel'
+export { SearchResultsSummary, type SearchResultsSummaryProps } from './components/search/components/SearchResultsSummary'
+
+// ============================================================================
+// PROMPT COMPONENTS
+// ============================================================================
+
+export { PromptLibrary, type PromptLibraryProps } from './components/prompt/PromptLibrary'
+export { TemplateMarketplace, type TemplateMarketplaceProps } from './components/prompt/TemplateMarketplace'
+export { PromptVariablesEditor, type PromptVariablesEditorProps } from './components/prompt/PromptVariablesEditor'
+
+// ============================================================================
+// CONVERSATION COMPONENTS
+// ============================================================================
+
+export { ConversationTimeline, type ConversationTimelineProps } from './components/conversation/ConversationTimeline'
+export { ConversationList, type ConversationListProps } from './components/conversation/ConversationList'
+
+// ============================================================================
+// HOOKS
+// ============================================================================
+
+// Core Chat Hooks
+export {
+  useClarityChat,
+  type UseClarityChatOptions,
+  type UseClarityChatReturn,
+} from './hooks/use-clarity-chat'
+
+// Advanced Chat Hooks
+export {
+  useClarityChatWithTools,
+  type UseClarityChatWithToolsOptions,
+  type UseClarityChatWithToolsReturn,
+} from './hooks/chat/use-clarity-chat-with-tools'
+
+export {
+  useClarityObject,
+  type UseClarityObjectOptions,
+  type UseClarityObjectReturn,
+} from './hooks/chat/use-clarity-object'
+
+// Token Management Hooks
+export { useTokenBudget } from './prompt/hooks/use-token-budget'
+export { usePromptRecipe } from './prompt/hooks/use-prompt-recipe'
+
+// Memory Hooks
+export { useMemoryFeedback } from './hooks/memory/use-memory-feedback'
+
+// UI Hooks
+export { useReducedMotion } from './hooks/ui/use-reduced-motion'
+
+// ============================================================================
+// UTILITIES
+// ============================================================================
+
+// Prompt Building
+export { buildModelPrompt } from './prompt/core/builder'
+export { optimizePrompt } from './prompt/core/engine/prompt-optimizer'
+
+// Tool Execution
+export {
+  executeWithRetry,
+  executeWithFallback,
+  executeWithTimeout,
+  executeWithLogging,
+  executeWithAll,
+} from './utils/tool-execution'
+
+// Message Conversion
+export {
+  convertCoreMessagesToMessages,
+  convertMessagesToCoreMessages,
+} from './utils/message/message-conversion'
+
+// Memory
+export {
+  createMemoryStore,
+  type CreateMemoryStoreOptions,
+  type MemoryStore,
+} from './memory/create-memory-store'
+
+// Classname Utility
+export { cn } from '@clarity-chat/primitives'
+
+// ============================================================================
+// TYPES
+// ============================================================================
+
+// Message Types
+export type {
+  Message,
+  MessageRole,
+  MessageMetadata,
+  StreamMessage,
+} from '@clarity-chat/types'
+
+// Prompt Types
+export type { PromptRecipe } from './prompt/core/recipe'
+export type { TokenBudgetConfig } from './utils/tokenization/token-budget-validator'

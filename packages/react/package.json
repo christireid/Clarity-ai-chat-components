@@ -55,6 +55,11 @@
       "import": "./dist/index.js",
       "require": "./dist/index.cjs"
     },
+    "./core": {
+      "types": "./dist/core.d.ts",
+      "import": "./dist/core.js",
+      "require": "./dist/core.cjs"
+    },
     "./advanced": {
       "types": "./dist/advanced.d.ts",
       "import": "./dist/advanced.js",

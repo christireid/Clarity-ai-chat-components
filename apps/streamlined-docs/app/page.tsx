@@ -5,13 +5,13 @@ import { QuickStartTutorial } from '@/components/Layout/QuickStartTutorial'
 import { ScrollReveal, KineticText } from '@/components/Enhanced/ScrollReveal'
 import {
   Zap,
-  Palette,
-  Globe,
   Accessibility,
   Code2,
-  Sparkles,
-  Package,
-  Shield,
+  DollarSign,
+  Brain,
+  Command,
+  Search,
+  Library,
 } from 'lucide-react'
 
 // ISR Configuration: Home page has high traffic, revalidate every 30 minutes
@@ -24,14 +24,14 @@ export default function Page() {
       <HeroSection
         title={
           <>
-            Build Beautiful Chat Interfaces
+            Build Production AI Chat Interfaces
             <br />
             <span className="bg-gradient-to-r from-brand-500 via-purple-500 to-pink-500 bg-clip-text text-transparent">
-              In Minutes, Not Weeks
+              With Token Tracking & Streaming Built-In
             </span>
           </>
         }
-        description="A comprehensive React UI library for building beautiful, accessible chat interfaces with 155+ components, 70+ hooks, and 15 themes. Production-ready, fully typed, and optimized for performance."
+        description="React components focused on production AI features: token optimization, real-time streaming, conversation memory, and command palettes. TypeScript-first, accessible, and battle-tested."
         primaryCta={{
           text: 'Get Started',
           href: '/get-started',
@@ -62,52 +62,52 @@ export default function Page() {
           <FeaturesGrid
             features={[
               {
-                icon: <Package className="w-5 h-5" />,
-                title: 'Production Ready',
+                icon: <DollarSign className="w-5 h-5" />,
+                title: 'Token Optimization',
                 description:
-                  '155+ components battle-tested in production. Built with TypeScript, fully typed, and documented.',
+                  'TokenUsageMeter, TokenBudgetBar, and useTokenBudget hook for real-time AI cost tracking and control.',
               },
               {
                 icon: <Zap className="w-5 h-5" />,
-                title: 'Lightning Fast',
+                title: 'True Streaming',
                 description:
-                  'Optimized bundle size, tree-shakeable, lazy-loaded. Sub-second page loads with 99 Lighthouse score.',
+                  'StreamingMessage and StreamingProgress for smooth, real-time AI responses with proper loading states.',
+              },
+              {
+                icon: <Brain className="w-5 h-5" />,
+                title: 'Conversation Memory',
+                description:
+                  'MemoryActivityIndicator and useMemoryFeedback for context-aware chat experiences.',
+              },
+              {
+                icon: <Command className="w-5 h-5" />,
+                title: 'Command Palette',
+                description:
+                  'Built-in CommandPalette component for keyboard-first navigation and quick actions.',
+              },
+              {
+                icon: <Search className="w-5 h-5" />,
+                title: 'Advanced Search',
+                description:
+                  'SearchFiltersPanel for filtering and finding messages in long conversations.',
+              },
+              {
+                icon: <Library className="w-5 h-5" />,
+                title: 'Prompt Library',
+                description:
+                  'PromptLibrary and TemplateMarketplace for managing reusable prompt templates.',
+              },
+              {
+                icon: <Code2 className="w-5 h-5" />,
+                title: 'TypeScript First',
+                description:
+                  'Fully typed with comprehensive IntelliSense. Catch errors before runtime.',
               },
               {
                 icon: <Accessibility className="w-5 h-5" />,
                 title: 'Accessible by Default',
                 description:
-                  'WCAG AA compliant. Keyboard navigation, screen readers, focus management all included.',
-              },
-              {
-                icon: <Palette className="w-5 h-5" />,
-                title: '15 Beautiful Themes',
-                description:
-                  'Pre-built themes with dark mode support. Customize every aspect with Tailwind CSS.',
-              },
-              {
-                icon: <Code2 className="w-5 h-5" />,
-                title: 'Developer Experience',
-                description:
-                  'IntelliSense auto-complete, comprehensive docs, copy-paste examples. Start in < 5 minutes.',
-              },
-              {
-                icon: <Sparkles className="w-5 h-5" />,
-                title: 'Framer Motion',
-                description:
-                  'Smooth, performant animations built-in. Respect user motion preferences automatically.',
-              },
-              {
-                icon: <Globe className="w-5 h-5" />,
-                title: 'Framework Agnostic',
-                description:
-                  'Works with Next.js, Vite, CRA, Remix. Server components, client components, both supported.',
-              },
-              {
-                icon: <Shield className="w-5 h-5" />,
-                title: 'Enterprise Ready',
-                description:
-                  'Token optimization, cost tracking, error boundaries. Built for scale with production safeguards.',
+                  'WCAG AA compliant with keyboard navigation, screen readers, and focus management.',
               },
             ]}
           />
@@ -139,11 +139,11 @@ export default function Page() {
 
           <div className="container-docs relative z-10 text-center">
             <KineticText className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4">
-              Ready to build something amazing?
+              Ready to Build Production AI Chat?
             </KineticText>
             <p className="text-base sm:text-lg text-neutral-600 dark:text-neutral-400 mb-8 max-w-2xl mx-auto">
-              Join thousands of developers building beautiful chat interfaces
-              with Clarity Chat UI.
+              Stop rebuilding token tracking, streaming UI, and memory management.
+              Start with components built for production.
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <a

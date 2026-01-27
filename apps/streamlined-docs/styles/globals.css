@@ -697,6 +697,37 @@ tbody tr:hover {
   scrollbar-width: none;
 }
 
+/* Hide scrollbars globally by default (cleaner design) */
+*::-webkit-scrollbar {
+  width: 0px;
+  height: 0px;
+}
+
+* {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Opt-in for visible scrollbars when explicitly needed */
+.scrollbar-visible::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.scrollbar-visible::-webkit-scrollbar-track {
+  background: var(--color-bg-secondary);
+}
+
+.scrollbar-visible::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: 4px;
+}
+
+.scrollbar-visible {
+  -ms-overflow-style: auto;
+  scrollbar-width: thin;
+}
+
 /* Accessibility Features */
 .high-contrast {
   --color-text-primary: #000000 !important;

@@ -49,6 +49,7 @@ function StatItem({ icon, value, label, trend }: StatItemProps) {
           scale: isHovered ? 1.1 : 1,
         }}
         transition={{ duration: durations.slow }}
+        viewport={{ once: true }}
       >
         {icon}
       </motion.div>
@@ -60,6 +61,7 @@ function StatItem({ icon, value, label, trend }: StatItemProps) {
           scale: isHovered ? 1.05 : 1,
         }}
         transition={{ duration: durations.normal }}
+        viewport={{ once: true }}
       >
         {value}
       </motion.div>
@@ -83,6 +85,7 @@ function StatItem({ icon, value, label, trend }: StatItemProps) {
               duration: durations.slower,
               repeat: isHovered ? Infinity : 0,
             }}
+            viewport={{ once: true }}
           >
             <TrendingUp className="w-3 h-3" />
           </motion.div>
@@ -137,27 +140,27 @@ export function SocialProof() {
   const stats = [
     {
       icon: <Star className="w-8 h-8" />,
-      value: githubStats ? formatNumber(githubStats.stars) : '2.5K+',
+      value: githubStats ? formatNumber(githubStats.stars) : 'Loading',
       label: 'GitHub Stars',
-      trend: 'Live count',
+      trend: 'Open Source',
     },
     {
       icon: <Download className="w-8 h-8" />,
-      value: '50K+',
-      label: 'NPM Downloads',
-      trend: '+12% this month',
+      value: '~15',
+      label: 'Core Components',
+      trend: 'Production Ready',
     },
     {
-      icon: <Users className="w-8 h-8" />,
-      value: '10K+',
-      label: 'Developers',
-      trend: 'Worldwide',
+      icon: <GitFork className="w-8 h-8" />,
+      value: githubStats ? formatNumber(githubStats.forks) : 'Loading',
+      label: 'GitHub Forks',
+      trend: 'Community',
     },
     {
-      icon: <span className="text-3xl">🏆</span>,
-      value: '100%',
-      label: 'WCAG AAA',
-      trend: 'Certified',
+      icon: <span className="text-3xl">✓</span>,
+      value: '85%',
+      label: 'WCAG AA',
+      trend: 'Compliant',
     },
   ]
 

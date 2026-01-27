@@ -161,33 +161,48 @@ export function Navigation() {
               {primaryNav.map((item) => {
                 const Icon = item.icon
                 const isHighlight = 'highlight' in item && item.highlight
+                const isActive = pathname?.startsWith(item.href)
                 return (
-                  <Link
+                  <motion.div
                     key={item.name}
-                    href={item.href}
-                    aria-current={pathname?.startsWith(item.href) ? 'page' : undefined}
-                    className={clsx(
-                      'flex items-center gap-1.5 px-2.5 py-1.5 text-[13px] font-medium transition-all',
-                      isHighlight
-                        ? 'text-indigo-600 dark:text-indigo-300 bg-indigo-50 dark:bg-indigo-950/50 rounded-full border border-indigo-200 dark:border-indigo-800/50 hover:bg-indigo-100 dark:hover:bg-indigo-900/50'
-                        : pathname?.startsWith(item.href)
-                          ? 'text-neutral-900 dark:text-white'
-                          : 'text-neutral-500 hover:text-neutral-800 dark:text-neutral-400 dark:hover:text-neutral-200'
-                    )}
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    transition={{ duration: 0.15 }}
                   >
-                    <Icon className={clsx('w-3.5 h-3.5', isHighlight && 'text-indigo-500 dark:text-indigo-400')} />
-                    {item.name}
-                  </Link>
+                    <Link
+                      href={item.href}
+                      aria-current={isActive ? 'page' : undefined}
+                      className={clsx(
+                        'group flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium transition-all rounded-lg whitespace-nowrap',
+                        isHighlight
+                          ? 'text-indigo-600 dark:text-indigo-300 bg-indigo-50 dark:bg-indigo-950/50 border border-indigo-200 dark:border-indigo-800/50 hover:bg-indigo-100 dark:hover:bg-indigo-900/50 hover:shadow-sm'
+                          : isActive
+                            ? 'text-neutral-900 dark:text-white bg-neutral-100 dark:bg-neutral-800'
+                            : 'text-neutral-600 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-white hover:bg-neutral-50 dark:hover:bg-neutral-800/50'
+                      )}
+                    >
+                      <Icon
+                        className={clsx(
+                          'w-4 h-4 transition-transform group-hover:scale-110',
+                          isHighlight && 'text-indigo-500 dark:text-indigo-400',
+                          isActive && 'text-brand-500'
+                        )}
+                      />
+                      <span>{item.name}</span>
+                    </Link>
+                  </motion.div>
                 )
               })}
 
               {/* More dropdown - refined */}
               <div className="relative">
-                <button
+                <motion.button
                   onClick={(e) => {
                     e.stopPropagation()
                     setMoreOpen(!moreOpen)
                   }}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
                   aria-label="Browse all sections"
                   aria-expanded={moreOpen}
                   aria-haspopup="menu"
@@ -199,7 +214,7 @@ export function Navigation() {
                   )}
                 >
                   <MoreHorizontal className="w-4 h-4" />
-                </button>
+                </motion.button>
 
                 <AnimatePresence>
                   {moreOpen && (
@@ -213,15 +228,20 @@ export function Navigation() {
                       {moreNav.map((item) => {
                         const Icon = item.icon
                         return (
-                          <Link
+                          <motion.div
                             key={item.name}
-                            href={item.href}
-                            onClick={() => setMoreOpen(false)}
-                            className="flex items-center gap-2.5 px-3 py-2 text-[13px] text-neutral-600 dark:text-neutral-400 hover:bg-neutral-50 dark:hover:bg-neutral-800/50 hover:text-neutral-900 dark:hover:text-white transition-colors"
+                            whileHover={{ x: 2 }}
+                            transition={{ duration: 0.15 }}
                           >
-                            <Icon className="w-3.5 h-3.5 text-neutral-400" />
-                            {item.name}
-                          </Link>
+                            <Link
+                              href={item.href}
+                              onClick={() => setMoreOpen(false)}
+                              className="group flex items-center gap-2.5 px-3 py-2 text-sm text-neutral-600 dark:text-neutral-400 hover:bg-neutral-50 dark:hover:bg-neutral-800/50 hover:text-neutral-900 dark:hover:text-white transition-all whitespace-nowrap"
+                            >
+                              <Icon className="w-4 h-4 text-neutral-400 group-hover:text-brand-500 transition-colors group-hover:scale-110" />
+                              <span>{item.name}</span>
+                            </Link>
+                          </motion.div>
                         )
                       })}
                     </motion.div>
@@ -313,7 +333,7 @@ export function Navigation() {
                   duration: durations.moderate,
                   ease: [0.25, 0.1, 0.25, 1],
                 }}
-                className="md:hidden overflow-hidden border-t border-border"
+                className="md:hidden overflow-hidden border-t border-border scrollbar-hide"
                 role="navigation"
                 aria-label="Mobile navigation"
               >
@@ -331,7 +351,7 @@ export function Navigation() {
                       },
                     },
                   }}
-                  className="flex flex-col gap-2 py-4"
+                  className="flex flex-col gap-2 py-4 max-h-[70vh] overflow-y-auto scrollbar-hide"
                 >
                   {navigation.map((item) => {
                     const Icon = item.icon

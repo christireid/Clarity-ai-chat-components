@@ -20,9 +20,6 @@ import {
 import { cn } from '@/lib/utils'
 import { Breadcrumbs } from '@/components/Navigation/Breadcrumbs'
 
-// ISR Configuration
-export const revalidate = 3600
-
 interface ComponentInfo {
   name: string
   slug: string
