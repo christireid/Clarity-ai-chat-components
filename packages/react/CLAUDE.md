@@ -197,6 +197,59 @@ export function MessageList({ messages }: Props) {
 }
 ```
 
+### 4. Make Components Responsive by Default
+
+All components should adapt gracefully from mobile to desktop:
+
+```tsx
+// ✅ Good: Responsive defaults with mobile-first breakpoints
+export function ChatWindow({ className, ...props }: ChatWindowProps) {
+  return (
+    <div
+      className={cn(
+        'flex h-full w-full flex-col overflow-hidden',
+        'min-h-[400px] md:min-h-[500px]', // Adaptive height
+        'max-w-full', // Prevent overflow
+        'scrollbar-hide', // Hidden scrollbar
+        className
+      )}
+    >
+      {/* Content */}
+    </div>
+  )
+}
+
+// ❌ Bad: Fixed width, not responsive
+export function ChatWindow({ className, ...props }: ChatWindowProps) {
+  return <div className={cn('w-96 h-[600px]', className)}>{/* Content */}</div>
+}
+```
+
+**Responsive Principles:**
+
+- **Mobile-First Breakpoints**: Start with mobile styles, add `sm:`, `md:`, `lg:` as needed
+- **Hidden Scrollbars**: Use `scrollbar-hide` for cleaner UI (globally configured)
+- **Viewport-Aware Sizing**: Use `w-[min(90vw,280px)]` patterns to prevent overflow
+- **Self-Contained Styles**: Components work without external CSS configuration
+
+**Common Responsive Patterns:**
+
+```tsx
+// Responsive container
+<div className="w-full sm:w-96 md:w-[400px] lg:w-96 max-w-[95vw]">
+
+// Scrollable with hidden scrollbar
+<div className="overflow-y-auto scrollbar-hide max-h-[70vh]">
+
+// Mobile-first grid
+<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+
+// Viewport-aware popup
+<div className="w-[min(90vw,280px)] sm:min-w-[250px] md:max-w-md">
+```
+
+See [RESPONSIVE_DESIGN_GUIDE.md](../../docs/RESPONSIVE_DESIGN_GUIDE.md) for complete patterns.
+
 ### 5. Provide Sensible Defaults
 
 ```tsx

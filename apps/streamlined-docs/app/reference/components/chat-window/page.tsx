@@ -1014,6 +1014,34 @@ export default function ChatWindowPage() {
                 </p>
 
                 <h4 className="text-lg font-semibold mt-6 mb-3">
+                  Responsive by Default
+                </h4>
+                <p>
+                  ChatWindow is fully responsive with self-contained styles. It
+                  automatically adapts from mobile (320px) to desktop (2560px+)
+                  with mobile-first breakpoints and hidden scrollbars for a
+                  clean UI. No additional CSS configuration needed.
+                </p>
+                <ul className="space-y-2">
+                  <li>
+                    <strong>Mobile-First:</strong> Uses <code>sm:</code>,{' '}
+                    <code>md:</code>, <code>lg:</code> breakpoints
+                  </li>
+                  <li>
+                    <strong>Self-Contained:</strong> All styles included, works
+                    out-of-the-box
+                  </li>
+                  <li>
+                    <strong>Clean UI:</strong> Hidden scrollbars by default (
+                    <code>scrollbar-hide</code>)
+                  </li>
+                  <li>
+                    <strong>Viewport-Aware:</strong> Prevents overflow with
+                    adaptive sizing
+                  </li>
+                </ul>
+
+                <h4 className="text-lg font-semibold mt-6 mb-3">
                   When to Use ChatWindow
                 </h4>
                 <ul className="space-y-2">

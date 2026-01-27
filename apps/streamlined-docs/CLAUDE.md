@@ -1,12 +1,12 @@
 # Clarity AI Chat Components - Claude Development Guide
 
-> **Last Updated**: January 26, 2026
-> **Version**: 1.0+
-> **Status**: Production Ready
+> **Last Updated**: January 26, 2026 **Version**: 1.0+ **Status**: Production Ready
 
 ## Overview
 
-This document provides guidance for Claude (AI assistant) when working on the Clarity AI Chat Components codebase. It covers architecture decisions, coding patterns, best practices, and recent improvements.
+This document provides guidance for Claude (AI assistant) when working on the Clarity AI Chat
+Components codebase. It covers architecture decisions, coding patterns, best practices, and recent
+improvements.
 
 ---
 
@@ -14,12 +14,13 @@ This document provides guidance for Claude (AI assistant) when working on the Cl
 
 1. [Project Structure](#project-structure)
 2. [Recent Improvements (Wave 3)](#wave-3-improvements-january-2026)
-3. [Development Patterns](#development-patterns)
-4. [Component Architecture](#component-architecture)
-5. [Performance Considerations](#performance-considerations)
-6. [Security Guidelines](#security-guidelines)
-7. [Testing Strategy](#testing-strategy)
-8. [Migration Notes](#migration-notes)
+3. [Responsive Design](#responsive-design)
+4. [Development Patterns](#development-patterns)
+5. [Component Architecture](#component-architecture)
+6. [Performance Considerations](#performance-considerations)
+7. [Security Guidelines](#security-guidelines)
+8. [Testing Strategy](#testing-strategy)
+9. [Migration Notes](#migration-notes)
 
 ---
 
@@ -186,6 +187,122 @@ None. All changes are backwards-compatible.
 
 ---
 
+## Responsive Design
+
+**Status**: ✅ Complete (January 27, 2026)
+
+All 245 components are now responsive by default with self-contained styles. Components gracefully
+adapt from mobile (320px) to desktop (2560px+) without additional configuration.
+
+### Key Achievements
+
+- **245 components reviewed and updated** with mobile-first breakpoints
+- **50 files updated** with `scrollbar-hide` for cleaner UI
+- **100% functional programming** (no class-based components)
+- **442 animation presets** working throughout
+- **Self-contained styles** - components work out-of-the-box
+
+### Responsive Principles
+
+#### 1. Mobile-First Breakpoints
+
+All components use Tailwind's mobile-first system:
+
+```tsx
+// ✅ Good - Mobile first
+className = 'w-full sm:w-96 md:w-[400px] lg:w-96'
+
+// ❌ Bad - Desktop first
+className = 'w-96 sm:w-full'
+```
+
+#### 2. Hidden Scrollbars by Default
+
+Global CSS hides all scrollbars for cleaner UI:
+
+```tsx
+// ✅ All overflow containers
+className = 'overflow-y-auto scrollbar-hide'
+
+// Opt-in visible scrollbars (rare)
+className = 'overflow-y-auto scrollbar-visible'
+```
+
+#### 3. Viewport-Aware Constraints
+
+Use `min()` for responsive sizing:
+
+```tsx
+// ✅ Good - Never overflow viewport
+className = 'w-[min(90vw,280px)] sm:min-w-[250px] md:max-w-md'
+
+// ❌ Bad - Fixed width
+className = 'w-96'
+```
+
+#### 4. Self-Contained Components
+
+Components work without external CSS:
+
+```tsx
+// ✅ Drop-in ready
+<ChatWindow messages={messages} onSend={handleSend} />
+// Automatically responsive with sensible defaults
+```
+
+### Breakpoint Reference
+
+| Breakpoint | Min Width | Usage             |
+| ---------- | --------- | ----------------- |
+| `sm:`      | 640px     | Tablets portrait  |
+| `md:`      | 768px     | Tablets landscape |
+| `lg:`      | 1024px    | Laptops           |
+| `xl:`      | 1280px    | Desktops          |
+| `2xl:`     | 1536px    | Large displays    |
+
+### Common Patterns
+
+**Pattern 1: Responsive Container**
+
+```tsx
+<div className="w-full sm:w-96 md:w-[400px] lg:w-96 max-w-[95vw]">
+  {/* Content adapts to screen size */}
+</div>
+```
+
+**Pattern 2: Scrollable with Hidden Scrollbar**
+
+```tsx
+<div className="overflow-y-auto scrollbar-hide max-h-[70vh]">
+  {/* Scrollable without visible scrollbar */}
+</div>
+```
+
+**Pattern 3: Mobile-First Grid**
+
+```tsx
+<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+  {items.map((item) => (
+    <Card key={item.id} {...item} />
+  ))}
+</div>
+```
+
+**Pattern 4: Viewport-Aware Sizing**
+
+```tsx
+<div className="w-[min(90vw,400px)] h-[min(70vh,500px)]">{/* Never overflow viewport */}</div>
+```
+
+### Documentation
+
+For comprehensive responsive design documentation, see:
+
+- [RESPONSIVE_DESIGN_GUIDE.md](../../docs/RESPONSIVE_DESIGN_GUIDE.md) - Complete guide with all
+  patterns and updates
+
+---
+
 ## Development Patterns
 
 ### Component Development
@@ -228,7 +345,6 @@ export function ChatMessage(props: any) {
   <TrashIcon />
 </div>
 ```
-
 
 ### Performance Patterns
 
@@ -634,6 +750,7 @@ Co-Authored-By: Claude Sonnet 4.5 <noreply@anthropic.com>
 
 ## Conclusion
 
-This guide covers the essential patterns and practices for developing Clarity AI Chat Components. For specific implementation details, refer to the linked documentation and example code.
+This guide covers the essential patterns and practices for developing Clarity AI Chat Components.
+For specific implementation details, refer to the linked documentation and example code.
 
 **Last Updated**: Wave 3.4 completion (January 26, 2026)
