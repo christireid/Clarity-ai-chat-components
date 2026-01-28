@@ -598,7 +598,6 @@ const batchedTyping = (content: string, config: BatchConfig) => {
 
 ```tsx
 import { VirtualizedText } from '@clarity/react-virtualized'
-
 ;<StreamingText
   content={longResponse}
   virtualized
