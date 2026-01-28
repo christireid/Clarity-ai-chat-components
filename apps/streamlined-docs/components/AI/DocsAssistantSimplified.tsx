@@ -16,6 +16,12 @@ import {
   Send,
   AlertTriangle,
   Loader2,
+  Target,
+  Zap,
+  FileCode,
+  Users,
+  CheckCircle2,
+  Link2,
 } from 'lucide-react'
 import { ChatButton } from './ChatButton'
 import { useDocsChat } from './hooks'
@@ -33,8 +39,16 @@ function DocsAssistantInner({ className }: DocsAssistantProps) {
   const inputRef = useRef<HTMLTextAreaElement>(null)
   const messagesEndRef = useRef<HTMLDivElement>(null)
 
-  const { messages, isLoading, tokenTracker, handleSendMessage, handleClear } =
-    useDocsChat()
+  const {
+    messages,
+    isLoading,
+    aiStatus,
+    currentCitations,
+    tokenTracker,
+    ragMetadata,
+    handleSendMessage,
+    handleClear,
+  } = useDocsChat()
 
   // Auto-scroll to bottom when new messages arrive
   useEffect(() => {
@@ -177,6 +191,90 @@ function DocsAssistantInner({ className }: DocsAssistantProps) {
                   <span className="font-mono font-semibold text-brand-500">
                     {tokenTracker.tokenCount.toLocaleString()}
                   </span>
+                </div>
+              )}
+
+              {/* RAG Metadata Display */}
+              {ragMetadata && (
+                <div className="px-4 py-3 bg-gradient-to-r from-purple-500/5 to-brand-500/5 border-b border-purple-500/20">
+                  <div className="flex flex-wrap items-center gap-2 text-xs">
+                    {/* Query Intent */}
+                    {ragMetadata.intent && (
+                      <div className="flex items-center gap-1.5 px-2 py-1 rounded-full bg-white/50 dark:bg-neutral-900/50 border border-purple-500/20">
+                        <Target className="w-3 h-3 text-purple-600 dark:text-purple-400" />
+                        <span className="font-medium text-purple-700 dark:text-purple-300">
+                          {ragMetadata.intent.replace(/_/g, ' ')}
+                        </span>
+                      </div>
+                    )}
+
+                    {/* Confidence Score */}
+                    {ragMetadata.confidence !== undefined && (
+                      <div className="flex items-center gap-1.5 px-2 py-1 rounded-full bg-white/50 dark:bg-neutral-900/50 border border-green-500/20">
+                        <CheckCircle2 className="w-3 h-3 text-green-600 dark:text-green-400" />
+                        <span className="font-medium text-green-700 dark:text-green-300">
+                          {(ragMetadata.confidence * 100).toFixed(0)}% confident
+                        </span>
+                      </div>
+                    )}
+
+                    {/* Complexity */}
+                    {ragMetadata.complexity && (
+                      <div className="flex items-center gap-1.5 px-2 py-1 rounded-full bg-white/50 dark:bg-neutral-900/50 border border-orange-500/20">
+                        <Zap className="w-3 h-3 text-orange-600 dark:text-orange-400" />
+                        <span className="font-medium text-orange-700 dark:text-orange-300 capitalize">
+                          {ragMetadata.complexity}
+                        </span>
+                      </div>
+                    )}
+
+                    {/* Code Example Required */}
+                    {ragMetadata.requiresCode && (
+                      <div className="flex items-center gap-1.5 px-2 py-1 rounded-full bg-white/50 dark:bg-neutral-900/50 border border-blue-500/20">
+                        <FileCode className="w-3 h-3 text-blue-600 dark:text-blue-400" />
+                        <span className="font-medium text-blue-700 dark:text-blue-300">
+                          Code needed
+                        </span>
+                      </div>
+                    )}
+
+                    {/* Entity Count */}
+                    {ragMetadata.entityCount !== undefined &&
+                      ragMetadata.entityCount > 0 && (
+                        <div className="flex items-center gap-1.5 px-2 py-1 rounded-full bg-white/50 dark:bg-neutral-900/50 border border-indigo-500/20">
+                          <Users className="w-3 h-3 text-indigo-600 dark:text-indigo-400" />
+                          <span className="font-medium text-indigo-700 dark:text-indigo-300">
+                            {ragMetadata.entityCount}{' '}
+                            {ragMetadata.entityCount === 1
+                              ? 'entity'
+                              : 'entities'}
+                          </span>
+                        </div>
+                      )}
+
+                    {/* Model Used */}
+                    {ragMetadata.modelUsed && (
+                      <div className="flex items-center gap-1.5 px-2 py-1 rounded-full bg-white/50 dark:bg-neutral-900/50 border border-neutral-500/20">
+                        <Sparkles className="w-3 h-3 text-neutral-600 dark:text-neutral-400" />
+                        <span className="font-medium text-neutral-700 dark:text-neutral-300 text-[10px]">
+                          {ragMetadata.modelUsed
+                            .replace('claude-', '')
+                            .replace('gpt-', 'GPT-')}
+                        </span>
+                      </div>
+                    )}
+
+                    {/* Sources Count */}
+                    {currentCitations.length > 0 && (
+                      <div className="flex items-center gap-1.5 px-2 py-1 rounded-full bg-white/50 dark:bg-neutral-900/50 border border-cyan-500/20">
+                        <Link2 className="w-3 h-3 text-cyan-600 dark:text-cyan-400" />
+                        <span className="font-medium text-cyan-700 dark:text-cyan-300">
+                          {currentCitations.length}{' '}
+                          {currentCitations.length === 1 ? 'source' : 'sources'}
+                        </span>
+                      </div>
+                    )}
+                  </div>
                 </div>
               )}
 
