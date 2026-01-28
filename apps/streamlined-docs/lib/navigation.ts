@@ -510,10 +510,10 @@ export const cookbookNavigation: NavItem[] = [
     title: 'Advanced Patterns',
     items: [
       {
-        title: 'Streaming with Memory',
+        title: '🌊 Streaming with Memory',
         href: '/cookbook/streaming-with-memory',
       },
-      { title: 'RAG Document Chat', href: '/cookbook/rag-document-chat' },
+      { title: '📚 RAG Document Chat', href: '/cookbook/rag-document-chat' },
       { title: 'Multi-Modal Chat', href: '/cookbook/multi-modal-chat' },
       { title: 'Voice Input', href: '/cookbook/voice-input' },
       {
@@ -574,6 +574,7 @@ export const examplesNavigation: NavItem[] = [
       { title: 'Custom Commands', href: '/examples/custom-commands' },
       { title: 'Token Optimization', href: '/examples/token-optimization' },
       { title: '🔍 Enhanced RAG System', href: '/examples/enhanced-rag' },
+      { title: '⚖️ RAG Comparison Demo', href: '/examples/rag-comparison' },
     ],
   },
   {
