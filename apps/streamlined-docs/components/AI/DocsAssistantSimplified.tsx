@@ -22,6 +22,8 @@ import {
   Users,
   CheckCircle2,
   Link2,
+  Download,
+  MessageCircle,
 } from 'lucide-react'
 import { ChatButton } from './ChatButton'
 import { useDocsChat } from './hooks'
@@ -35,9 +37,11 @@ interface DocsAssistantProps {
 function DocsAssistantInner({ className }: DocsAssistantProps) {
   const [isOpen, setIsOpen] = useState(false)
   const [inputValue, setInputValue] = useState('')
+  const [showExportMenu, setShowExportMenu] = useState(false)
   const dialogRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLTextAreaElement>(null)
   const messagesEndRef = useRef<HTMLDivElement>(null)
+  const exportButtonRef = useRef<HTMLButtonElement>(null)
 
   const {
     messages,
@@ -46,8 +50,10 @@ function DocsAssistantInner({ className }: DocsAssistantProps) {
     currentCitations,
     tokenTracker,
     ragMetadata,
+    suggestedFollowUps,
     handleSendMessage,
     handleClear,
+    handleExportWithFormat,
   } = useDocsChat()
 
   // Auto-scroll to bottom when new messages arrive
@@ -83,13 +89,42 @@ function DocsAssistantInner({ className }: DocsAssistantProps) {
       }
       // Escape to close
       if (e.key === 'Escape' && isOpen) {
-        setIsOpen(false)
+        if (showExportMenu) {
+          setShowExportMenu(false)
+        } else {
+          setIsOpen(false)
+        }
       }
     }
 
     window.addEventListener('keydown', handleKeyDown)
     return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [isOpen])
+  }, [isOpen, showExportMenu])
+
+  // Close export menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (
+        showExportMenu &&
+        exportButtonRef.current &&
+        !exportButtonRef.current.contains(e.target as Node)
+      ) {
+        setShowExportMenu(false)
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [showExportMenu])
+
+  // Handle export
+  const handleExport = async (format: 'json' | 'markdown' | 'html') => {
+    setShowExportMenu(false)
+    await handleExportWithFormat({
+      format,
+      includeMetadata: true,
+    })
+  }
 
   const suggestionButtons = [
     'How do I optimize token usage?',
@@ -163,13 +198,58 @@ function DocsAssistantInner({ className }: DocsAssistantProps) {
 
                 <div className="flex items-center gap-2">
                   {messages.length > 0 && (
-                    <button
-                      onClick={handleClear}
-                      className="px-3 py-1.5 text-xs rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors"
-                      aria-label="Clear conversation history"
-                    >
-                      Clear
-                    </button>
+                    <>
+                      <div className="relative" ref={exportButtonRef}>
+                        <button
+                          onClick={() => setShowExportMenu((prev) => !prev)}
+                          className="px-3 py-1.5 text-xs rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors flex items-center gap-1.5"
+                          aria-label="Export conversation"
+                          aria-expanded={showExportMenu}
+                          aria-haspopup="true"
+                        >
+                          <Download className="w-3 h-3" />
+                          Export
+                        </button>
+                        <AnimatePresence>
+                          {showExportMenu && (
+                            <motion.div
+                              initial={{ opacity: 0, y: -10 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              exit={{ opacity: 0, y: -10 }}
+                              transition={{ duration: durations.faster }}
+                              className="absolute top-full right-0 mt-1 w-40 rounded-lg bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 shadow-lg overflow-hidden z-10"
+                              viewport={{ once: true }}
+                            >
+                              <button
+                                onClick={() => handleExport('markdown')}
+                                className="w-full px-3 py-2 text-left text-sm hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors"
+                              >
+                                Markdown (.md)
+                              </button>
+                              <button
+                                onClick={() => handleExport('json')}
+                                className="w-full px-3 py-2 text-left text-sm hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors"
+                              >
+                                JSON (.json)
+                              </button>
+                              <button
+                                onClick={() => handleExport('html')}
+                                className="w-full px-3 py-2 text-left text-sm hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors"
+                              >
+                                HTML (.html)
+                              </button>
+                            </motion.div>
+                          )}
+                        </AnimatePresence>
+                      </div>
+                      <button
+                        onClick={handleClear}
+                        className="px-3 py-1.5 text-xs rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors"
+                        aria-label="Clear conversation history"
+                      >
+                        Clear
+                      </button>
+                    </>
                   )}
                   <button
                     onClick={() => setIsOpen(false)}
@@ -390,6 +470,39 @@ function DocsAssistantInner({ className }: DocsAssistantProps) {
                           </div>
                         </div>
                       </div>
+                    )}
+
+                    {/* Follow-up Suggestions */}
+                    {!isLoading && suggestedFollowUps.length > 0 && (
+                      <motion.div
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: durations.moderate }}
+                        className="pt-4 border-t border-neutral-200/50 dark:border-neutral-800/50"
+                        viewport={{ once: true }}
+                      >
+                        <div className="flex items-center gap-2 mb-3">
+                          <MessageCircle className="w-4 h-4 text-brand-500" />
+                          <span className="text-xs font-medium text-neutral-600 dark:text-neutral-400">
+                            Suggested follow-ups:
+                          </span>
+                        </div>
+                        <div className="flex flex-wrap gap-2">
+                          {suggestedFollowUps.map((suggestion, index) => (
+                            <button
+                              key={index}
+                              onClick={() => {
+                                setInputValue(suggestion)
+                                inputRef.current?.focus()
+                              }}
+                              className="px-3 py-2 text-sm rounded-lg bg-brand-500/10 hover:bg-brand-500/20 text-brand-700 dark:text-brand-300 border border-brand-500/20 hover:border-brand-500/30 transition-colors text-left"
+                              disabled={isLoading}
+                            >
+                              {suggestion}
+                            </button>
+                          ))}
+                        </div>
+                      </motion.div>
                     )}
 
                     <div ref={messagesEndRef} />
