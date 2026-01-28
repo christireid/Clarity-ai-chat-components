@@ -68,7 +68,9 @@ export function migrateMarkdownRenderers(
     })
     .forEach((path) => {
       // Replace component name
-      path.node.openingElement.name.name = 'EnhancedMarkdownRenderer'
+      if (path.node.openingElement.name.type === 'JSXIdentifier') {
+        path.node.openingElement.name.name = 'EnhancedMarkdownRenderer'
+      }
 
       // Update props if needed (old API used individual boolean props, new uses config object)
       const attributes = path.node.openingElement.attributes || []
@@ -96,11 +98,11 @@ export function migrateMarkdownRenderers(
             const propValue = attr.value
 
             if (propName === 'enableHighlight') {
-              configProps.enableSyntaxHighlight = propValue
+              configProps['enableSyntaxHighlight'] = propValue
             } else if (propName === 'enableGFM') {
-              configProps.enableGFM = propValue
+              configProps['enableGFM'] = propValue
             } else if (propName === 'enableMath') {
-              configProps.enableKaTeX = propValue
+              configProps['enableKaTeX'] = propValue
             }
           }
         })
@@ -152,7 +154,9 @@ export function migrateMarkdownRenderers(
     .forEach((path) => {
       // Replace with EnhancedMarkdownRenderer or remove if not needed
       // For now, replace with EnhancedMarkdownRenderer
-      path.node.openingElement.name.name = 'EnhancedMarkdownRenderer'
+      if (path.node.openingElement.name.type === 'JSXIdentifier') {
+        path.node.openingElement.name.name = 'EnhancedMarkdownRenderer'
+      }
 
       // Copy content prop if it exists
       hasChanges = true

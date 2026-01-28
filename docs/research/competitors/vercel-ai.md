@@ -1,6 +1,7 @@
 # Vercel AI SDK
 
 ## Overview
+
 - Repository URL: https://github.com/vercel/ai
 - Documentation URL: https://ai-sdk.dev/
 - GitHub stars: 21,300+
@@ -15,13 +16,17 @@
 
 The Vercel AI SDK **does not provide pre-built UI components**. Instead, it provides:
 
-**Headless Hooks** - Framework-agnostic state management hooks that developers use to build their own UI:
+**Headless Hooks** - Framework-agnostic state management hooks that developers use to build their
+own UI:
+
 - `useChat` - Chat interface state management
 - `useCompletion` - Text completion state management
 - `useObject` - Structured object generation state management
 - Framework support: React, Svelte, Vue, Angular, Solid
 
-**Philosophy**: Vercel takes a "bring your own UI" approach, providing state management and stream handling while leaving visual design to developers. This contrasts with component libraries that provide ready-to-use UI elements.
+**Philosophy**: Vercel takes a "bring your own UI" approach, providing state management and stream
+handling while leaving visual design to developers. This contrasts with component libraries that
+provide ready-to-use UI elements.
 
 ## Hooks & Utilities
 
@@ -143,6 +148,7 @@ sendMessage(
 ```
 
 **Key Features**:
+
 - Multiple transport types (HTTP, direct agent, text stream)
 - File upload support (FileList or custom file objects)
 - Granular status states (submitted, streaming, ready, error)
@@ -165,51 +171,52 @@ const {
   setInput,
   handleInputChange,
   handleSubmit,
-  isLoading
-} = useCompletion(options);
+  isLoading,
+} = useCompletion(options)
 
 // Options Interface
 interface UseCompletionOptions {
-  api?: string;                     // Default: '/api/completion'
-  id?: string;                      // Unique identifier
-  initialInput?: string;            // Starting prompt
-  initialCompletion?: string;       // Starting result
-  onFinish?: (prompt: string, completion: string) => void;
-  onError?: (error: Error) => void;
-  headers?: Record<string, string> | Headers;
-  body?: object;
-  credentials?: 'omit' | 'same-origin' | 'include';
-  streamProtocol?: 'text' | 'data'; // Default: 'data'
-  fetch?: FetchFunction;
-  experimental_throttle?: number;   // React: throttle UI updates (ms)
+  api?: string // Default: '/api/completion'
+  id?: string // Unique identifier
+  initialInput?: string // Starting prompt
+  initialCompletion?: string // Starting result
+  onFinish?: (prompt: string, completion: string) => void
+  onError?: (error: Error) => void
+  headers?: Record<string, string> | Headers
+  body?: object
+  credentials?: 'omit' | 'same-origin' | 'include'
+  streamProtocol?: 'text' | 'data' // Default: 'data'
+  fetch?: FetchFunction
+  experimental_throttle?: number // React: throttle UI updates (ms)
 }
 
 // Return Value
 interface UseCompletionReturn {
-  completion: string;               // Current generated text
+  completion: string // Current generated text
   complete: (
     prompt: string,
     options?: { headers?: object; body?: object }
-  ) => Promise<string | null | undefined>;
-  error: Error | undefined;
-  setCompletion: (completion: string) => void;
-  stop: () => void;
-  input: string;                    // User input state
-  setInput: React.Dispatch<React.SetStateAction<string>>;
-  handleInputChange: (event: any) => void;  // Form helper
-  handleSubmit: (event?: { preventDefault?: () => void }) => void;
-  isLoading: boolean;
+  ) => Promise<string | null | undefined>
+  error: Error | undefined
+  setCompletion: (completion: string) => void
+  stop: () => void
+  input: string // User input state
+  setInput: React.Dispatch<React.SetStateAction<string>>
+  handleInputChange: (event: any) => void // Form helper
+  handleSubmit: (event?: { preventDefault?: () => void }) => void
+  isLoading: boolean
 }
 
 // Usage Example
 const { completion, complete, isLoading } = useCompletion({
-  api: '/api/completion'
-});
+  api: '/api/completion',
+})
 
-await complete('Write a poem about TypeScript');
+await complete('Write a poem about TypeScript')
 ```
 
 **Differences from useChat**:
+
 - No message history management (single completion per request)
 - Simpler state model (just completion text, not message array)
 - Form helper methods (handleInputChange, handleSubmit)
@@ -265,6 +272,7 @@ submit('Generate a todo list');
 ```
 
 **Key Features**:
+
 - Streams and parses JSON objects incrementally
 - Schema validation (Zod or JSON Schema)
 - Type-safe structured data
@@ -273,11 +281,14 @@ submit('Generate a todo list');
 
 ### useAssistant Hook
 
-**Status**: Referenced in documentation navigation but detailed docs returned 500 error. Based on naming and Vercel's patterns, this likely integrates with OpenAI Assistants API, providing thread management and persistent assistant conversations.
+**Status**: Referenced in documentation navigation but detailed docs returned 500 error. Based on
+naming and Vercel's patterns, this likely integrates with OpenAI Assistants API, providing thread
+management and persistent assistant conversations.
 
 ### Other Hooks
 
 **Supporting Utilities**:
+
 - `convertToModelMessages` - Convert UIMessage format to provider-specific format
 - `pruneMessages` - Optimize message history for token limits
 - `readUIMessageStream` - Client-side stream consumption
@@ -313,6 +324,7 @@ submit('Generate a todo list');
    - **Status**: Experimental, docs recommend AI SDK UI for production
 
 **Design Philosophy**:
+
 - **Headless by default** - Provide logic, not UI
 - **Framework agnostic** - Adapters for major frameworks
 - **Provider agnostic** - Switch providers with one line of code
@@ -324,6 +336,7 @@ submit('Generate a todo list');
 **40+ Providers** supported through unified API:
 
 **Official Providers**:
+
 - OpenAI, Azure OpenAI
 - Anthropic
 - Google (Generative AI, Vertex AI)
@@ -338,24 +351,26 @@ submit('Generate a todo list');
 - 15+ additional specialized providers
 
 **Community Providers** (40+):
+
 - Ollama, OpenRouter
 - Cloudflare Workers AI
 - llama.cpp
 - And many more
 
 **Provider Registry Pattern**:
+
 ```typescript
-import { createProviderRegistry, customProvider } from 'ai';
+import { createProviderRegistry, customProvider } from 'ai'
 
 // Switch providers by changing import
-import { openai } from '@ai-sdk/openai';
-import { anthropic } from '@ai-sdk/anthropic';
+import { openai } from '@ai-sdk/openai'
+import { anthropic } from '@ai-sdk/anthropic'
 
 // Same code, different provider
 const result = streamText({
-  model: openai('gpt-4o'),  // or anthropic('claude-opus-4-5')
-  prompt: 'Hello'
-});
+  model: openai('gpt-4o'), // or anthropic('claude-opus-4-5')
+  prompt: 'Hello',
+})
 ```
 
 **Key Feature**: "Switch between AI providers by changing a single line of code"
@@ -365,12 +380,14 @@ const result = streamText({
 **Advanced Streaming Infrastructure**:
 
 **Stream Types**:
+
 - Text streams (progressive text output)
 - Object streams (incremental JSON parsing)
 - UI streams (React components from server - RSC)
 - Value streams (arbitrary data streaming)
 
 **Stream Utilities**:
+
 - `smoothStream` - Progressive output refinement
 - `simulateReadableStream` - Testing support
 - Backpressure management - Flow control
@@ -378,34 +395,36 @@ const result = streamText({
 - `experimental_throttle` - UI update throttling
 
 **Client-Side**:
+
 ```typescript
 // Messages stream progressively
-const { messages, status } = useChat();
+const { messages, status } = useChat()
 // status: 'submitted' -> 'streaming' -> 'ready'
 
 // Object builds incrementally
-const { object } = useObject({ schema });
+const { object } = useObject({ schema })
 // object: { title: "..." } -> { title: "...", items: [...] }
 ```
 
 **Server-Side**:
+
 ```typescript
-import { streamText } from 'ai';
+import { streamText } from 'ai'
 
 const result = streamText({
   model,
   messages,
-});
+})
 
 return result.toUIMessageStreamResponse({
-  sendReasoning: true,    // Include reasoning parts
-  sendSources: true,      // Include source citations
+  sendReasoning: true, // Include reasoning parts
+  sendSources: true, // Include source citations
   messageMetadata: ({ part }) => {
     if (part.type === 'finish') {
-      return { totalTokens: part.totalUsage.totalTokens };
+      return { totalTokens: part.totalUsage.totalTokens }
     }
-  }
-});
+  },
+})
 ```
 
 ## React Server Components
@@ -417,6 +436,7 @@ return result.toUIMessageStreamResponse({
 **Core Concept**: Stream React components directly from server to client, not just data.
 
 **Primary APIs**:
+
 - `streamUI()` - Main function for streaming UI
 - `createAI()` - Setup provider context
 - `createStreamableUI()` - Build streamable components
@@ -455,6 +475,7 @@ export async function generateUI(prompt: string) {
 ### Streaming from Server
 
 **Capabilities**:
+
 - Progressive component rendering
 - Multi-step interfaces
 - State persistence
@@ -462,19 +483,21 @@ export async function generateUI(prompt: string) {
 - Authentication support
 
 **Client Consumption**:
-```typescript
-import { useActions, useUIState } from 'ai/rsc';
 
-const { generateUI } = useActions();
-const [messages, setMessages] = useUIState();
+```typescript
+import { useActions, useUIState } from 'ai/rsc'
+
+const { generateUI } = useActions()
+const [messages, setMessages] = useUIState()
 
 const handleSubmit = async () => {
-  const response = await generateUI(input);
-  setMessages([...messages, response]);
-};
+  const response = await generateUI(input)
+  setMessages([...messages, response])
+}
 ```
 
-**Recommendation**: While powerful, Vercel recommends **AI SDK UI for production** due to RSC's experimental status.
+**Recommendation**: While powerful, Vercel recommends **AI SDK UI for production** due to RSC's
+experimental status.
 
 ## API Design Patterns
 
@@ -490,6 +513,7 @@ const handleSubmit = async () => {
 6. **Rich Type System** - Full TypeScript support with generics
 
 **Example of Progressive API**:
+
 ```typescript
 // Simple - just works
 useChat({ transport: new DefaultChatTransport({ api: '/api/chat' }) })
@@ -498,18 +522,16 @@ useChat({ transport: new DefaultChatTransport({ api: '/api/chat' }) })
 useChat({
   transport: new DefaultChatTransport({
     api: '/api/chat',
-    headers: { 'X-API-Key': key }
-  })
+    headers: { 'X-API-Key': key },
+  }),
 })
 
 // Override per request
-sendMessage(
-  { text: input },
-  { headers: { 'X-Custom': 'value' } }
-)
+sendMessage({ text: input }, { headers: { 'X-Custom': 'value' } })
 ```
 
 **Transport Abstraction** - Pluggable communication layer:
+
 - `DefaultChatTransport` - Standard HTTP
 - `TextStreamChatTransport` - Plain text streaming
 - `DirectChatTransport` - In-process agent (no HTTP)
@@ -517,30 +539,34 @@ sendMessage(
 ### Type Safety
 
 **Schema Integration**:
+
 - Zod schemas (primary)
 - JSON Schema
 - Valibot schemas
 
 **Type Inference**:
+
 ```typescript
 const schema = z.object({
   title: z.string(),
-  items: z.array(z.string())
-});
+  items: z.array(z.string()),
+})
 
-const { object } = useObject({ schema });
+const { object } = useObject({ schema })
 // object type: DeepPartial<{ title: string; items: string[] }>
 ```
 
 **Generic Hooks**:
+
 ```typescript
 experimental_useObject<RESULT, INPUT>(...)
 // Full type safety from schema to return value
 ```
 
 **Provider Model Types**:
+
 ```typescript
-import { LanguageModel } from 'ai';
+import { LanguageModel } from 'ai'
 
 function myFunction(model: LanguageModel) {
   // Works with any provider
@@ -560,6 +586,7 @@ function myFunction(model: LanguageModel) {
 7. **Stream Management** - No manual stream handling needed
 
 **Community Feedback** (from homepage):
+
 - "From idea → working ai app in 15 mins"
 - "Probably the best way to build an ai app right now"
 - "The barrier to implementing it is just a matter of minutes"
@@ -570,25 +597,27 @@ function myFunction(model: LanguageModel) {
 ### Client-Side Streaming
 
 **Automatic Stream Handling**:
+
 ```typescript
-const { messages, status } = useChat();
+const { messages, status } = useChat()
 
 // Status progression:
 // 'submitted' -> 'streaming' -> 'ready'
 
 // Messages update in real-time as tokens arrive
-messages.map(msg =>
-  msg.parts.map(part => {
-    if (part.type === 'text') return part.text;
+messages.map((msg) =>
+  msg.parts.map((part) => {
+    if (part.type === 'text') return part.text
     // Incremental rendering
   })
 )
 ```
 
 **Throttling** (React):
+
 ```typescript
 useChat({
-  experimental_throttle: 50  // Update UI max every 50ms
+  experimental_throttle: 50, // Update UI max every 50ms
 })
 ```
 
@@ -624,13 +653,14 @@ for await (const partialObject of result.partialObjectStream) {
 ```
 
 **Stream Response Options**:
+
 ```typescript
 result.toUIMessageStreamResponse({
-  sendReasoning: true,     // Include model reasoning
-  sendSources: true,       // Include source citations
+  sendReasoning: true, // Include model reasoning
+  sendSources: true, // Include source citations
   messageMetadata: ({ part }) => ({
-    tokens: part.totalUsage?.totalTokens
-  })
+    tokens: part.totalUsage?.totalTokens,
+  }),
 })
 ```
 
@@ -639,6 +669,7 @@ result.toUIMessageStreamResponse({
 **Common Streaming Patterns**:
 
 1. **Progressive Text Display**:
+
 ```typescript
 const { completion, isLoading } = useCompletion();
 
@@ -651,6 +682,7 @@ return (
 ```
 
 2. **Message List with Streaming**:
+
 ```typescript
 const { messages, status } = useChat();
 
@@ -665,6 +697,7 @@ return messages.map((msg, i) => (
 ```
 
 3. **Incremental Object Building**:
+
 ```typescript
 const { object } = useObject({ schema });
 
@@ -679,6 +712,7 @@ return (
 ```
 
 4. **Stop/Regenerate Controls**:
+
 ```typescript
 const { stop, regenerate, status } = useChat();
 
@@ -697,6 +731,7 @@ const { stop, regenerate, status } = useChat();
 ```
 
 **Advanced**: Multi-part messages with tool calls, reasoning, sources:
+
 ```typescript
 msg.parts.map(part => {
   switch (part.type) {
@@ -712,9 +747,12 @@ msg.parts.map(part => {
 
 ## Visual Design
 
-**N/A** - Vercel AI SDK does not provide UI components or visual design. It's a headless library focused on state management and streaming logic. Developers bring their own UI components and styling.
+**N/A** - Vercel AI SDK does not provide UI components or visual design. It's a headless library
+focused on state management and streaming logic. Developers bring their own UI components and
+styling.
 
 This is a deliberate design choice to:
+
 - Remain framework agnostic
 - Not impose design opinions
 - Allow integration with any design system
@@ -734,6 +772,7 @@ This is a deliberate design choice to:
 10. **Transport Abstraction** - HTTP, direct agent, or custom transport layers
 
 **Unique Features**:
+
 - `experimental_useObject` - Stream and parse JSON incrementally
 - `ToolLoopAgent` - Multi-step autonomous reasoning
 - `DirectChatTransport` - No HTTP, direct agent integration
@@ -838,6 +877,7 @@ This is a deliberate design choice to:
 ## Notable Examples
 
 **From Documentation** (specific examples encountered 500 errors, but docs reference):
+
 - Next.js chatbot implementations (App Router and Pages Router)
 - Svelte chat applications
 - Vue.js completions
@@ -846,6 +886,7 @@ This is a deliberate design choice to:
 - Agent loop implementations
 
 **Community Examples** (referenced in homepage):
+
 - Production AI apps built in 15 minutes
 - Typed JSON object generation
 - Multi-provider switching demos
@@ -857,27 +898,30 @@ This is a deliberate design choice to:
 **Extremely Simple**:
 
 1. Install package:
+
 ```bash
 npm install ai @ai-sdk/openai
 ```
 
 2. Create API route:
+
 ```typescript
 // app/api/chat/route.ts
-import { streamText } from 'ai';
-import { openai } from '@ai-sdk/openai';
+import { streamText } from 'ai'
+import { openai } from '@ai-sdk/openai'
 
 export async function POST(req: Request) {
-  const { messages } = await req.json();
+  const { messages } = await req.json()
   const result = streamText({
     model: openai('gpt-4o'),
     messages,
-  });
-  return result.toDataStreamResponse();
+  })
+  return result.toDataStreamResponse()
 }
 ```
 
 3. Use hook:
+
 ```typescript
 'use client';
 import { useChat } from '@ai-sdk/react';
@@ -901,12 +945,14 @@ export default function Chat() {
 ### Learning Curve
 
 **Progressive Complexity**:
+
 - **Basic usage**: 15-30 minutes to working app
 - **Understanding transports**: 1-2 hours
 - **Advanced features** (tools, agents): Few hours
 - **Multi-modal**: Additional learning per modality
 
 **Steepness**: Low to Medium
+
 - Simple cases are very simple
 - Complexity scales with requirements
 - Good defaults minimize configuration
@@ -914,18 +960,21 @@ export default function Chat() {
 ### Documentation Quality
 
 **Strengths**:
+
 - Clear getting started guides
 - Comprehensive API reference
 - Multiple framework examples
 - Good TypeScript documentation
 
 **Weaknesses**:
+
 - Some 500 errors on documentation pages
 - RSC docs incomplete/experimental
 - Limited advanced examples
 - Could use more UI implementation guidance
 
 **Rating**: 7.5/10
+
 - Excellent for basic use cases
 - Good API reference
 - Some gaps in advanced topics
@@ -935,18 +984,21 @@ export default function Chat() {
 **Exceptional**:
 
 1. **Full Type Safety**:
+
 ```typescript
-const { object } = useObject<{ title: string; items: string[] }>();
+const { object } = useObject<{ title: string; items: string[] }>()
 // object: DeepPartial<{ title: string; items: string[] }> | undefined
 ```
 
 2. **Schema Integration**:
+
 ```typescript
-const schema = z.object({ title: z.string() });
-useObject({ schema });  // Types inferred from schema
+const schema = z.object({ title: z.string() })
+useObject({ schema }) // Types inferred from schema
 ```
 
 3. **Generic APIs**:
+
 ```typescript
 interface UseChatReturn { ... }
 interface UseChatOptions { ... }
@@ -954,6 +1006,7 @@ interface UseChatOptions { ... }
 ```
 
 4. **Provider Type Safety**:
+
 ```typescript
 import { LanguageModel } from 'ai';
 function works(model: LanguageModel) { ... }
@@ -1046,6 +1099,7 @@ function works(model: LanguageModel) { ... }
 ### Key Takeaways for Clarity Chat
 
 **DO**:
+
 - Provide headless hooks in addition to UI components
 - Support request-level configuration overrides
 - Include granular status states beyond loading/error
@@ -1056,6 +1110,7 @@ function works(model: LanguageModel) { ... }
 - Provide sensible defaults with deep customization
 
 **DON'T**:
+
 - Couple state management to UI implementation
 - Force single configuration style
 - Use only boolean loading states
@@ -1066,6 +1121,7 @@ function works(model: LanguageModel) { ... }
 - Make simple cases require complex configuration
 
 **COMPETITIVE EDGE**:
+
 - Vercel has no UI components - Clarity can provide both hooks AND components
 - RSC is experimental - Clarity can focus on production-ready patterns
 - Documentation gaps - Clarity can have comprehensive docs from day one
