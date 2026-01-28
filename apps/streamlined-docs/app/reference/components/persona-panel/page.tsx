@@ -67,6 +67,176 @@ function CopyButton({ text, className }: { text: string; className?: string }) {
 }
 
 // ============================================================================
+// Live Demo Component
+// ============================================================================
+
+function PersonaPanelDemo() {
+  const [activePersonaId, setActivePersonaId] = React.useState('coder')
+
+  const personas = [
+    {
+      id: 'coder',
+      name: 'Code Assistant',
+      role: 'Developer' as const,
+      summary: 'Expert in software development and debugging',
+      expertise: ['JavaScript', 'TypeScript', 'React', 'Node.js'],
+      temperature: 0.7,
+      tags: ['coding', 'debugging'],
+      avatar: '💻',
+    },
+    {
+      id: 'researcher',
+      name: 'Research Analyst',
+      role: 'Researcher' as const,
+      summary: 'Deep dive into topics with thorough analysis',
+      expertise: ['Research', 'Analysis', 'Data Science'],
+      temperature: 0.5,
+      tags: ['research', 'analysis'],
+      avatar: '🔬',
+    },
+    {
+      id: 'creative',
+      name: 'Creative Writer',
+      role: 'Writer' as const,
+      summary: 'Imaginative storytelling and content creation',
+      expertise: ['Writing', 'Storytelling', 'Marketing'],
+      temperature: 0.9,
+      tags: ['creative', 'writing'],
+      avatar: '✍️',
+    },
+  ]
+
+  const activePersona = personas.find((p) => p.id === activePersonaId)
+
+  return (
+    <div className="space-y-4">
+      {/* Persona Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        {personas.map((persona) => {
+          const isActive = persona.id === activePersonaId
+          return (
+            <motion.button
+              key={persona.id}
+              onClick={() => setActivePersonaId(persona.id)}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              viewport={{ once: true }}
+              className={cn(
+                'p-4 rounded-xl border-2 transition-all text-left',
+                isActive
+                  ? 'border-brand-500 bg-brand-500/10 shadow-lg'
+                  : 'border-border/50 bg-card hover:border-brand-300'
+              )}
+            >
+              <div className="flex items-start gap-3">
+                <div className="text-3xl">{persona.avatar}</div>
+                <div className="flex-1 min-w-0">
+                  <h4 className="font-semibold text-foreground truncate">
+                    {persona.name}
+                  </h4>
+                  <p className="text-xs text-muted-foreground mt-0.5">
+                    {persona.role}
+                  </p>
+                  <p className="text-sm text-muted-foreground mt-2 line-clamp-2">
+                    {persona.summary}
+                  </p>
+                  <div className="flex flex-wrap gap-1.5 mt-3">
+                    {persona.expertise.slice(0, 2).map((skill) => (
+                      <span
+                        key={skill}
+                        className="text-xs px-2 py-0.5 rounded-full bg-muted text-muted-foreground"
+                      >
+                        {skill}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+                {isActive && (
+                  <Check className="w-5 h-5 text-brand-500 shrink-0" />
+                )}
+              </div>
+            </motion.button>
+          )
+        })}
+      </div>
+
+      {/* Active Persona Details */}
+      {activePersona && (
+        <motion.div
+          key={activePersona.id}
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: durations.normal }}
+          viewport={{ once: true }}
+          className="p-6 rounded-xl border border-border/50 bg-card"
+        >
+          <div className="flex items-start justify-between mb-4">
+            <div className="flex items-center gap-3">
+              <div className="text-4xl">{activePersona.avatar}</div>
+              <div>
+                <h3 className="text-xl font-bold text-foreground">
+                  {activePersona.name}
+                </h3>
+                <p className="text-sm text-muted-foreground">Active Persona</p>
+              </div>
+            </div>
+            <div className="flex flex-col items-end gap-1">
+              <span className="text-xs text-muted-foreground">Temperature</span>
+              <span className="text-lg font-mono font-semibold">
+                {activePersona.temperature}
+              </span>
+            </div>
+          </div>
+
+          <div className="space-y-4">
+            <div>
+              <h4 className="text-sm font-semibold text-foreground mb-2">
+                Summary
+              </h4>
+              <p className="text-sm text-muted-foreground">
+                {activePersona.summary}
+              </p>
+            </div>
+
+            <div>
+              <h4 className="text-sm font-semibold text-foreground mb-2">
+                Areas of Expertise
+              </h4>
+              <div className="flex flex-wrap gap-2">
+                {activePersona.expertise.map((skill) => (
+                  <span
+                    key={skill}
+                    className="text-sm px-3 py-1 rounded-lg bg-brand-500/10 text-brand-700 dark:text-brand-300 border border-brand-500/20"
+                  >
+                    {skill}
+                  </span>
+                ))}
+              </div>
+            </div>
+
+            <div>
+              <h4 className="text-sm font-semibold text-foreground mb-2">
+                Tags
+              </h4>
+              <div className="flex flex-wrap gap-2">
+                {activePersona.tags.map((tag) => (
+                  <span
+                    key={tag}
+                    className="text-xs px-2 py-1 rounded-md bg-muted text-muted-foreground"
+                  >
+                    #{tag}
+                  </span>
+                ))}
+              </div>
+            </div>
+          </div>
+        </motion.div>
+      )}
+    </div>
+  )
+}
+
+// ============================================================================
 // Props Table Component
 // ============================================================================
 
@@ -255,7 +425,10 @@ export default function PersonaPanelPage() {
               className="grid grid-cols-2 md:grid-cols-4 gap-4"
             >
               <div className="p-4 rounded-lg bg-muted/30 border border-border/50">
-                <Brain className="w-5 h-5 text-brand-500 mb-2" aria-hidden="true" />
+                <Brain
+                  className="w-5 h-5 text-brand-500 mb-2"
+                  aria-hidden="true"
+                />
                 <p className="font-medium text-foreground text-sm">
                   Multiple Personas
                 </p>
@@ -264,7 +437,10 @@ export default function PersonaPanelPage() {
                 </p>
               </div>
               <div className="p-4 rounded-lg bg-muted/30 border border-border/50">
-                <Settings className="w-5 h-5 text-brand-500 mb-2" aria-hidden="true" />
+                <Settings
+                  className="w-5 h-5 text-brand-500 mb-2"
+                  aria-hidden="true"
+                />
                 <p className="font-medium text-foreground text-sm">
                   Custom Configuration
                 </p>
@@ -273,7 +449,10 @@ export default function PersonaPanelPage() {
                 </p>
               </div>
               <div className="p-4 rounded-lg bg-muted/30 border border-border/50">
-                <Target className="w-5 h-5 text-brand-500 mb-2" aria-hidden="true" />
+                <Target
+                  className="w-5 h-5 text-brand-500 mb-2"
+                  aria-hidden="true"
+                />
                 <p className="font-medium text-foreground text-sm">
                   Role-Based
                 </p>
@@ -282,7 +461,10 @@ export default function PersonaPanelPage() {
                 </p>
               </div>
               <div className="p-4 rounded-lg bg-muted/30 border border-border/50">
-                <Accessibility className="w-5 h-5 text-brand-500 mb-2" aria-hidden="true" />
+                <Accessibility
+                  className="w-5 h-5 text-brand-500 mb-2"
+                  aria-hidden="true"
+                />
                 <p className="font-medium text-foreground text-sm">
                   Accessible
                 </p>
@@ -353,6 +535,15 @@ function App() {
                   showLineNumbers
                 />
               </div>
+            </Section>
+
+            {/* Live Demo Section */}
+            <Section id="demo" title="Live Demo">
+              <p className="text-muted-foreground mb-6">
+                Interact with different AI personas. Click on a persona card to
+                activate it and see how the interface responds.
+              </p>
+              <PersonaPanelDemo />
             </Section>
 
             {/* Props Section */}
@@ -739,18 +930,33 @@ function PersonaChat() {
                   </h4>
                   <ul className="text-sm text-muted-foreground space-y-1 ml-6">
                     <li>
-                      • <kbd className="px-1.5 py-0.5 rounded bg-muted text-xs font-mono">Tab</kbd> -
-                      Navigate between personas
+                      •{' '}
+                      <kbd className="px-1.5 py-0.5 rounded bg-muted text-xs font-mono">
+                        Tab
+                      </kbd>{' '}
+                      - Navigate between personas
                     </li>
                     <li>
-                      • <kbd className="px-1.5 py-0.5 rounded bg-muted text-xs font-mono">Enter</kbd> /
-                      <kbd className="px-1.5 py-0.5 rounded bg-muted text-xs font-mono">Space</kbd> -
-                      Select persona
+                      •{' '}
+                      <kbd className="px-1.5 py-0.5 rounded bg-muted text-xs font-mono">
+                        Enter
+                      </kbd>{' '}
+                      /
+                      <kbd className="px-1.5 py-0.5 rounded bg-muted text-xs font-mono">
+                        Space
+                      </kbd>{' '}
+                      - Select persona
                     </li>
                     <li>
-                      • <kbd className="px-1.5 py-0.5 rounded bg-muted text-xs font-mono">↑</kbd> /
-                      <kbd className="px-1.5 py-0.5 rounded bg-muted text-xs font-mono">↓</kbd> -
-                      Navigate list items
+                      •{' '}
+                      <kbd className="px-1.5 py-0.5 rounded bg-muted text-xs font-mono">
+                        ↑
+                      </kbd>{' '}
+                      /
+                      <kbd className="px-1.5 py-0.5 rounded bg-muted text-xs font-mono">
+                        ↓
+                      </kbd>{' '}
+                      - Navigate list items
                     </li>
                   </ul>
                 </div>
@@ -760,18 +966,12 @@ function PersonaChat() {
                     Screen Reader Support
                   </h4>
                   <ul className="text-sm text-muted-foreground space-y-1 ml-6">
-                    <li>
-                      • All personas have descriptive labels and roles
-                    </li>
-                    <li>
-                      • Active persona state is announced
-                    </li>
+                    <li>• All personas have descriptive labels and roles</li>
+                    <li>• Active persona state is announced</li>
                     <li>
                       • Temperature and expertise information is accessible
                     </li>
-                    <li>
-                      • Configuration buttons have clear purpose labels
-                    </li>
+                    <li>• Configuration buttons have clear purpose labels</li>
                   </ul>
                 </div>
 
@@ -780,15 +980,9 @@ function PersonaChat() {
                     Visual Indicators
                   </h4>
                   <ul className="text-sm text-muted-foreground space-y-1 ml-6">
-                    <li>
-                      • Clear focus indicators for keyboard users
-                    </li>
-                    <li>
-                      • High contrast active state
-                    </li>
-                    <li>
-                      • Color-blind friendly status indicators
-                    </li>
+                    <li>• Clear focus indicators for keyboard users</li>
+                    <li>• High contrast active state</li>
+                    <li>• Color-blind friendly status indicators</li>
                   </ul>
                 </div>
               </div>
@@ -803,12 +997,10 @@ function PersonaChat() {
                     Do
                   </h4>
                   <ul className="text-sm text-muted-foreground space-y-2 ml-6">
+                    <li>• Provide clear, descriptive names for each persona</li>
                     <li>
-                      • Provide clear, descriptive names for each persona
-                    </li>
-                    <li>
-                      • Use appropriate temperature settings (0.7 for
-                      balanced, 0.3-0.5 for precise, 0.8-1.0 for creative)
+                      • Use appropriate temperature settings (0.7 for balanced,
+                      0.3-0.5 for precise, 0.8-1.0 for creative)
                     </li>
                     <li>
                       • Include relevant expertise areas to help users choose
@@ -816,9 +1008,7 @@ function PersonaChat() {
                     <li>
                       • Persist the active persona selection across sessions
                     </li>
-                    <li>
-                      • Provide visual feedback when switching personas
-                    </li>
+                    <li>• Provide visual feedback when switching personas</li>
                   </ul>
                 </div>
 
@@ -828,23 +1018,19 @@ function PersonaChat() {
                     Don't
                   </h4>
                   <ul className="text-sm text-muted-foreground space-y-2 ml-6">
-                    <li>
-                      • Don't create too many personas (3-5 is ideal)
-                    </li>
+                    <li>• Don't create too many personas (3-5 is ideal)</li>
                     <li>
                       • Don't use vague or overlapping persona descriptions
                     </li>
                     <li>
-                      • Don't forget to apply the persona's system prompt to
-                      the chat
+                      • Don't forget to apply the persona's system prompt to the
+                      chat
                     </li>
                     <li>
                       • Don't change personas mid-conversation without user
                       confirmation
                     </li>
-                    <li>
-                      • Don't hide the active persona indicator
-                    </li>
+                    <li>• Don't hide the active persona indicator</li>
                   </ul>
                 </div>
               </div>
@@ -869,8 +1055,8 @@ function PersonaChat() {
                     </span>
                   </div>
                   <p className="text-sm text-muted-foreground">
-                    Select AI models with visual indicators for speed, cost,
-                    and quality
+                    Select AI models with visual indicators for speed, cost, and
+                    quality
                   </p>
                 </Link>
 
@@ -946,6 +1132,14 @@ function PersonaChat() {
                     className="text-muted-foreground hover:text-foreground transition-colors"
                   >
                     Overview
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="#demo"
+                    className="text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    Live Demo
                   </a>
                 </li>
                 <li>
