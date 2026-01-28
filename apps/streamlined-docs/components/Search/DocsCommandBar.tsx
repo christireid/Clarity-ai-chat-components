@@ -22,6 +22,7 @@ import {
   Search,
   Clock,
   Sparkles,
+  Filter,
 } from 'lucide-react'
 
 // Re-export CommandPalette from primitives or create wrapper
@@ -139,9 +140,24 @@ const DOCS_PAGES: Array<{
   },
 ]
 
+// Available categories for filtering
+const CATEGORIES = [
+  'All',
+  'Components',
+  'Hooks',
+  'Guides',
+  'Examples',
+  'Cookbook',
+  'Features',
+] as const
+
+type CategoryFilter = (typeof CATEGORIES)[number]
+
 export function DocsCommandBar() {
   const [isOpen, setIsOpen] = useState(false)
   const [search, setSearch] = useState('')
+  const [selectedCategory, setSelectedCategory] =
+    useState<CategoryFilter>('All')
   const [recentPages, setRecentPages] = useState<string[]>([])
   const router = useRouter()
   const pathname = usePathname()
@@ -190,8 +206,12 @@ export function DocsCommandBar() {
   }, [])
 
   // Build command items from pages
-  const commandItems = useBuildCommandItems(search, recentPages, router, () =>
-    setIsOpen(false)
+  const commandItems = useBuildCommandItems(
+    search,
+    selectedCategory,
+    recentPages,
+    router,
+    () => setIsOpen(false)
   )
 
   return (
@@ -201,6 +221,8 @@ export function DocsCommandBar() {
         <CommandPaletteOverlay
           search={search}
           onSearchChange={setSearch}
+          selectedCategory={selectedCategory}
+          onCategoryChange={setSelectedCategory}
           onClose={() => setIsOpen(false)}
           commandItems={commandItems}
         />
@@ -209,41 +231,122 @@ export function DocsCommandBar() {
   )
 }
 
+// Scoring function for search ranking
+function calculateSearchScore(
+  page: (typeof DOCS_PAGES)[number],
+  query: string,
+  isRecent: boolean
+): number {
+  const title = page.title.toLowerCase()
+  const description = (page.description || '').toLowerCase()
+  const lowerQuery = query.toLowerCase()
+
+  let score = 0
+
+  // Exact title match (highest priority)
+  if (title === lowerQuery) {
+    score += 100
+  }
+  // Title starts with query
+  else if (title.startsWith(lowerQuery)) {
+    score += 80
+  }
+  // Title word boundary match
+  else if (
+    new RegExp(`\\b${lowerQuery.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}`).test(
+      title
+    )
+  ) {
+    score += 60
+  }
+  // Title contains query
+  else if (title.includes(lowerQuery)) {
+    score += 40
+  }
+
+  // Description matches (lower priority)
+  if (description.includes(lowerQuery)) {
+    score += 20
+  }
+
+  // Recent page boost
+  if (isRecent) {
+    score += 10
+  }
+
+  // Earlier position in title = higher score
+  const titleIndex = title.indexOf(lowerQuery)
+  if (titleIndex !== -1) {
+    score += Math.max(0, 20 - titleIndex)
+  }
+
+  return score
+}
+
+// Helper to create command item from page
+function createCommandItem(
+  page: (typeof DOCS_PAGES)[number],
+  router: ReturnType<typeof useRouter>,
+  onClose: () => void
+): CommandItem {
+  return {
+    id: page.url,
+    label: page.title,
+    description: page.description,
+    category: page.category,
+    icon: getCategoryIcon(page.category),
+    url: page.url,
+    onSelect: () => {
+      router.push(page.url)
+      onClose()
+    },
+  }
+}
+
 // Hook to build command items
 function useBuildCommandItems(
   search: string,
+  selectedCategory: CategoryFilter,
   recentPages: string[],
   router: ReturnType<typeof useRouter>,
   onClose: () => void
 ): CommandItem[] {
   return useMemo(() => {
     const items: CommandItem[] = []
-
-    // Add search results from docs pages
     const query = search.toLowerCase()
-    const filteredPages = search
-      ? DOCS_PAGES.filter(
+
+    // Filter pages by category
+    let filteredPages =
+      selectedCategory === 'All'
+        ? DOCS_PAGES
+        : DOCS_PAGES.filter((page) => page.category === selectedCategory)
+
+    // Apply search and ranking
+    if (search) {
+      filteredPages
+        .filter(
           (page) =>
             page.title.toLowerCase().includes(query) ||
-            page.description?.toLowerCase().includes(query) ||
-            page.category.toLowerCase().includes(query)
+            page.description?.toLowerCase().includes(query)
         )
-      : DOCS_PAGES
-
-    filteredPages.forEach((page) => {
-      items.push({
-        id: page.url,
-        label: page.title,
-        description: page.description,
-        category: page.category,
-        icon: getCategoryIcon(page.category),
-        url: page.url,
-        onSelect: () => {
-          router.push(page.url)
-          onClose()
-        },
+        .map((page) => ({
+          page,
+          score: calculateSearchScore(
+            page,
+            query,
+            recentPages.includes(page.url)
+          ),
+        }))
+        .sort((a, b) => b.score - a.score)
+        .forEach(({ page }) => {
+          items.push(createCommandItem(page, router, onClose))
+        })
+    } else {
+      // No search: show all filtered pages
+      filteredPages.forEach((page) => {
+        items.push(createCommandItem(page, router, onClose))
       })
-    })
+    }
 
     // Add recent pages if no search query
     if (!search && recentPages.length > 0) {
@@ -309,7 +412,7 @@ function useBuildCommandItems(
     }
 
     return items
-  }, [search, recentPages, router, onClose])
+  }, [search, selectedCategory, recentPages, router, onClose])
 }
 
 // Search trigger button component
@@ -329,15 +432,72 @@ function SearchTriggerButton({ onOpen }: { onOpen: () => void }) {
   )
 }
 
+// Category filter bar component
+function CategoryFilterBar({
+  selectedCategory,
+  onCategoryChange,
+}: {
+  selectedCategory: CategoryFilter
+  onCategoryChange: (category: CategoryFilter) => void
+}) {
+  // Calculate counts for each category
+  const categoryCounts = useMemo(() => {
+    const counts: Record<CategoryFilter, number> = {
+      All: DOCS_PAGES.length,
+      Components: 0,
+      Hooks: 0,
+      Guides: 0,
+      Examples: 0,
+      Cookbook: 0,
+      Features: 0,
+    }
+
+    DOCS_PAGES.forEach((page) => {
+      const cat = page.category as CategoryFilter
+      if (counts[cat] !== undefined) {
+        counts[cat]++
+      }
+    })
+
+    return counts
+  }, [])
+
+  return (
+    <div className="px-4 py-3 border-b border-neutral-200/50 dark:border-neutral-800/50 overflow-x-auto scrollbar-hide">
+      <div className="flex items-center gap-2">
+        <Filter className="w-4 h-4 text-neutral-600 dark:text-neutral-400 shrink-0" />
+        {CATEGORIES.map((category) => (
+          <button
+            key={category}
+            onClick={() => onCategoryChange(category)}
+            className={`px-3 py-1.5 text-xs font-medium rounded-full transition-colors whitespace-nowrap ${
+              selectedCategory === category
+                ? 'bg-brand-500 text-white'
+                : 'bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-200 dark:hover:bg-neutral-700'
+            }`}
+          >
+            {category}{' '}
+            <span className="opacity-60">({categoryCounts[category]})</span>
+          </button>
+        ))}
+      </div>
+    </div>
+  )
+}
+
 // Command palette overlay component
 function CommandPaletteOverlay({
   search,
   onSearchChange,
+  selectedCategory,
+  onCategoryChange,
   onClose,
   commandItems,
 }: {
   search: string
   onSearchChange: (value: string) => void
+  selectedCategory: CategoryFilter
+  onCategoryChange: (category: CategoryFilter) => void
   onClose: () => void
   commandItems: CommandItem[]
 }) {
@@ -397,7 +557,13 @@ function CommandPaletteOverlay({
             )}
           </div>
 
-          <SearchResults commandItems={commandItems} />
+          {/* Category Filters */}
+          <CategoryFilterBar
+            selectedCategory={selectedCategory}
+            onCategoryChange={onCategoryChange}
+          />
+
+          <SearchResults commandItems={commandItems} searchQuery={search} />
 
           <CommandPaletteFooter resultsCount={commandItems.length} />
         </div>
@@ -407,7 +573,13 @@ function CommandPaletteOverlay({
 }
 
 // Search results component
-function SearchResults({ commandItems }: { commandItems: CommandItem[] }) {
+function SearchResults({
+  commandItems,
+  searchQuery,
+}: {
+  commandItems: CommandItem[]
+  searchQuery: string
+}) {
   if (commandItems.length === 0) {
     return (
       <div className="max-h-[60vh] overflow-y-auto scrollbar-hide p-2">
@@ -440,7 +612,11 @@ function SearchResults({ commandItems }: { commandItems: CommandItem[] }) {
             </div>
             <div className="space-y-1">
               {items.map((item) => (
-                <CommandItem key={item.id} item={item} />
+                <CommandItem
+                  key={item.id}
+                  item={item}
+                  searchQuery={searchQuery}
+                />
               ))}
             </div>
           </div>
@@ -450,8 +626,39 @@ function SearchResults({ commandItems }: { commandItems: CommandItem[] }) {
   )
 }
 
+// Highlight matching text in search results
+function highlightText(text: string, query: string): React.ReactNode {
+  if (!query.trim()) return text
+
+  const lowerText = text.toLowerCase()
+  const lowerQuery = query.toLowerCase()
+  const index = lowerText.indexOf(lowerQuery)
+
+  if (index === -1) return text
+
+  const before = text.slice(0, index)
+  const match = text.slice(index, index + query.length)
+  const after = text.slice(index + query.length)
+
+  return (
+    <>
+      {before}
+      <mark className="bg-brand-500/20 dark:bg-brand-500/30 text-inherit font-semibold rounded px-0.5">
+        {match}
+      </mark>
+      {highlightText(after, query)}
+    </>
+  )
+}
+
 // Individual command item component
-function CommandItem({ item }: { item: CommandItem }) {
+function CommandItem({
+  item,
+  searchQuery,
+}: {
+  item: CommandItem
+  searchQuery: string
+}) {
   return (
     <button
       onClick={item.onSelect}
@@ -463,10 +670,12 @@ function CommandItem({ item }: { item: CommandItem }) {
         </div>
       )}
       <div className="flex-1 min-w-0">
-        <div className="font-medium truncate">{item.label}</div>
+        <div className="font-medium truncate">
+          {highlightText(item.label, searchQuery)}
+        </div>
         {item.description && (
           <div className="text-sm text-neutral-600 dark:text-neutral-400 truncate">
-            {item.description}
+            {highlightText(item.description, searchQuery)}
           </div>
         )}
       </div>
