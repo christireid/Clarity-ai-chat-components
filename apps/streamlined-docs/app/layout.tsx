@@ -44,6 +44,13 @@ const DocsAssistant = dynamic(() =>
   }))
 )
 
+// Lazy load docs command bar (client-only)
+const DocsCommandBar = dynamic(() =>
+  import('@/components/Search/DocsCommandBar').then((mod) => ({
+    default: mod.DocsCommandBar,
+  }))
+)
+
 // Font CSS classes using system font stacks (no external font loading required)
 const fontClasses = {
   sans: 'font-sans',
@@ -145,6 +152,7 @@ export default function RootLayout({
           <ToastManager />
           <AccessibilityAudit />
           <DocsAssistant />
+          <DocsCommandBar />
         </Providers>
       </body>
     </html>
