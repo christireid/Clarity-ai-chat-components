@@ -4,7 +4,12 @@
  * Keyboard navigation, command palette, and focus management components.
  */
 
-export { CommandPalette, type CommandItem } from './CommandPalette'
+export {
+  CommandPalette,
+  type CommandItem,
+  type AIContext,
+  type CommandPaletteProps,
+} from './CommandPalette'
 export {
   CommandPaletteEnhanced,
   type CommandAction,

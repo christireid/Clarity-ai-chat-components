@@ -31,6 +31,24 @@ export interface CommandItem {
   onSelect: () => void
 }
 
+/**
+ * AI-specific context information displayed in the command palette footer
+ */
+export interface AIContext {
+  /** Current AI model name (e.g., "Claude 3.5 Sonnet") */
+  modelName?: string
+  /** Active conversation ID */
+  conversationId?: string
+  /** Token usage statistics */
+  tokenUsage?: {
+    input?: number
+    output?: number
+    total?: number
+  }
+  /** Additional metadata */
+  metadata?: Record<string, string | number>
+}
+
 export interface CommandPaletteProps {
   items: CommandItem[]
   open: boolean
@@ -41,6 +59,8 @@ export interface CommandPaletteProps {
   loading?: boolean
   /** Accessible label for the command palette */
   'aria-label'?: string
+  /** AI context information to display in footer */
+  aiContext?: AIContext
   ref?: React.Ref<HTMLDivElement>
 }
 
@@ -52,6 +72,7 @@ export function CommandPalette({
   className,
   loading = false,
   'aria-label': ariaLabel = 'Command palette',
+  aiContext,
   ref,
 }: CommandPaletteProps) {
   const [search, setSearch] = useState('')
@@ -519,27 +540,101 @@ export function CommandPalette({
               <motion.div
                 {...ANIMATION_PRESETS.fadeIn}
                 transition={{ delay: prefersReducedMotion ? 0 : 0.2 }}
-                className="px-4 py-3 border-t text-xs text-muted-foreground flex items-center justify-between bg-muted/50"
+                className="px-4 py-3 border-t text-xs text-muted-foreground bg-muted/50"
               >
-                <div className="flex gap-3 sm:gap-4" aria-hidden="true">
-                  <span className="flex items-center gap-1.5">
-                    <Kbd shortcut="up" size="sm" />
-                    <Kbd shortcut="down" size="sm" />
-                    <span className="hidden sm:inline">Navigate</span>
-                  </span>
-                  <span className="flex items-center gap-1.5">
-                    <Kbd shortcut="enter" size="sm" />
-                    <span className="hidden sm:inline">Select</span>
-                  </span>
-                  <span className="flex items-center gap-1.5">
-                    <Kbd shortcut="escape" size="sm" />
-                    <span className="hidden sm:inline">Close</span>
-                  </span>
+                {/* Keyboard hints */}
+                <div className="flex items-center justify-between mb-2">
+                  <div className="flex gap-3 sm:gap-4" aria-hidden="true">
+                    <span className="flex items-center gap-1.5">
+                      <Kbd shortcut="up" size="sm" />
+                      <Kbd shortcut="down" size="sm" />
+                      <span className="hidden sm:inline">Navigate</span>
+                    </span>
+                    <span className="flex items-center gap-1.5">
+                      <Kbd shortcut="enter" size="sm" />
+                      <span className="hidden sm:inline">Select</span>
+                    </span>
+                    <span className="flex items-center gap-1.5">
+                      <Kbd shortcut="escape" size="sm" />
+                      <span className="hidden sm:inline">Close</span>
+                    </span>
+                  </div>
+                  <div className="font-medium">
+                    {filteredItems.length}{' '}
+                    {filteredItems.length === 1 ? 'command' : 'commands'}
+                  </div>
                 </div>
-                <div className="font-medium">
-                  {filteredItems.length}{' '}
-                  {filteredItems.length === 1 ? 'command' : 'commands'}
-                </div>
+
+                {/* AI Context Display */}
+                {aiContext && (
+                  <div className="flex items-center gap-4 pt-2 border-t border-border/40">
+                    {aiContext.modelName && (
+                      <div className="flex items-center gap-1.5">
+                        <svg
+                          className="w-3.5 h-3.5 text-muted-foreground/70"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                          aria-hidden="true"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+                          />
+                        </svg>
+                        <span className="font-medium">
+                          {aiContext.modelName}
+                        </span>
+                      </div>
+                    )}
+
+                    {aiContext.conversationId && (
+                      <div className="flex items-center gap-1.5">
+                        <svg
+                          className="w-3.5 h-3.5 text-muted-foreground/70"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                          aria-hidden="true"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"
+                          />
+                        </svg>
+                        <span className="truncate max-w-[120px]">
+                          {aiContext.conversationId}
+                        </span>
+                      </div>
+                    )}
+
+                    {aiContext.tokenUsage?.total !== undefined && (
+                      <div className="flex items-center gap-1.5">
+                        <svg
+                          className="w-3.5 h-3.5 text-muted-foreground/70"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                          aria-hidden="true"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"
+                          />
+                        </svg>
+                        <span>
+                          {aiContext.tokenUsage.total.toLocaleString()} tokens
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                )}
               </motion.div>
             </motion.div>
           </>
