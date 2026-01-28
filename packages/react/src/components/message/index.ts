@@ -12,6 +12,19 @@ export { MessageMetadata } from './MessageMetadata'
 export { MessageOptimized } from './MessageOptimized'
 export { MessageThreadView, ThreadList } from './MessageThreadView'
 
+// MessageBubble - Modern message bubble with role-based styling
+export {
+  MessageBubble,
+  UserMessage,
+  AssistantMessage,
+  SystemMessage,
+  MessageGroup,
+  type MessageBubbleProps,
+  type MessageRole,
+  type MessageAvatar,
+  type MessageGroupProps,
+} from './MessageBubble'
+
 // Streaming Components
 export { StreamingMessage } from './StreamingMessage'
 export { StreamingTextRenderer } from './StreamingTextRenderer'

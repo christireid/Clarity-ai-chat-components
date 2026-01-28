@@ -5,12 +5,12 @@
   "type": "module",
   "description": "{{EXAMPLE_DESCRIPTION}}",
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "eslint .",
-    "test": "vitest run",
-    "test:watch": "vitest"
+    "dev": "echo 'Template: use ./scripts/create-example.sh to generate a new example' && exit 1",
+    "build": "echo 'Template: skipping build (use ./scripts/create-example.sh to generate example)' && exit 0",
+    "start": "echo 'Template: use ./scripts/create-example.sh to generate a new example' && exit 1",
+    "lint": "echo 'Template: skipping lint' && exit 0",
+    "test": "echo 'Template: skipping test' && exit 0",
+    "test:watch": "echo 'Template: skipping test:watch' && exit 0"
   },
   "dependencies": {
     "@clarity-chat/react": "workspace:*",

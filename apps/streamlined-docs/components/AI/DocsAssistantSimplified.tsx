@@ -34,6 +34,172 @@ interface DocsAssistantProps {
   className?: string
 }
 
+// Export Menu Component
+function ExportMenu({
+  showExportMenu,
+  onToggle,
+  onExport,
+  exportButtonRef,
+}: {
+  showExportMenu: boolean
+  onToggle: () => void
+  onExport: (format: 'json' | 'markdown' | 'html') => void
+  exportButtonRef: React.RefObject<HTMLButtonElement>
+}) {
+  return (
+    <div className="relative" ref={exportButtonRef}>
+      <button
+        onClick={onToggle}
+        className="px-3 py-1.5 text-xs rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors flex items-center gap-1.5"
+        aria-label="Export conversation"
+        aria-expanded={showExportMenu}
+        aria-haspopup="true"
+      >
+        <Download className="w-3 h-3" />
+        Export
+      </button>
+      <AnimatePresence>
+        {showExportMenu && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: durations.faster }}
+            className="absolute top-full right-0 mt-1 w-40 rounded-lg bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 shadow-lg overflow-hidden z-10"
+            viewport={{ once: true }}
+          >
+            <button
+              onClick={() => onExport('markdown')}
+              className="w-full px-3 py-2 text-left text-sm hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors"
+            >
+              Markdown (.md)
+            </button>
+            <button
+              onClick={() => onExport('json')}
+              className="w-full px-3 py-2 text-left text-sm hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors"
+            >
+              JSON (.json)
+            </button>
+            <button
+              onClick={() => onExport('html')}
+              className="w-full px-3 py-2 text-left text-sm hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors"
+            >
+              HTML (.html)
+            </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  )
+}
+
+// Header Component
+function AssistantHeader({
+  hasMessages,
+  showExportMenu,
+  onClose,
+  onClear,
+  onExport,
+  onToggleExportMenu,
+  exportButtonRef,
+}: {
+  hasMessages: boolean
+  showExportMenu: boolean
+  onClose: () => void
+  onClear: () => void
+  onExport: (format: 'json' | 'markdown' | 'html') => void
+  onToggleExportMenu: () => void
+  exportButtonRef: React.RefObject<HTMLButtonElement>
+}) {
+  return (
+    <div className="flex items-center justify-between p-4 border-b border-neutral-200 dark:border-neutral-800">
+      <div className="flex items-center gap-3">
+        <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-gradient-to-br from-brand-500 to-purple-600">
+          <BookOpen className="w-5 h-5 text-white" />
+        </div>
+        <div>
+          <h2 id="docs-assistant-title" className="font-semibold">
+            Documentation Assistant
+          </h2>
+          <p className="text-xs text-neutral-600 dark:text-neutral-400">
+            Ask me anything about Clarity Chat
+          </p>
+        </div>
+      </div>
+
+      <div className="flex items-center gap-2">
+        {hasMessages && (
+          <>
+            <ExportMenu
+              showExportMenu={showExportMenu}
+              onToggle={onToggleExportMenu}
+              onExport={onExport}
+              exportButtonRef={exportButtonRef}
+            />
+            <button
+              onClick={onClear}
+              className="px-3 py-1.5 text-xs rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors"
+              aria-label="Clear conversation history"
+            >
+              Clear
+            </button>
+          </>
+        )}
+        <button
+          onClick={onClose}
+          className="p-2 rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors"
+          title="Close (Esc)"
+          aria-label="Close documentation assistant"
+        >
+          <X className="w-4 h-4" />
+        </button>
+      </div>
+    </div>
+  )
+}
+
+// Follow-up Suggestions Component
+function FollowUpSuggestions({
+  suggestions,
+  isLoading,
+  onSuggestionClick,
+}: {
+  suggestions: string[]
+  isLoading: boolean
+  onSuggestionClick: (suggestion: string) => void
+}) {
+  if (isLoading || suggestions.length === 0) return null
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: durations.moderate }}
+      className="pt-4 border-t border-neutral-200/50 dark:border-neutral-800/50"
+      viewport={{ once: true }}
+    >
+      <div className="flex items-center gap-2 mb-3">
+        <MessageCircle className="w-4 h-4 text-brand-500" />
+        <span className="text-xs font-medium text-neutral-600 dark:text-neutral-400">
+          Suggested follow-ups:
+        </span>
+      </div>
+      <div className="flex flex-wrap gap-2">
+        {suggestions.map((suggestion, index) => (
+          <button
+            key={index}
+            onClick={() => onSuggestionClick(suggestion)}
+            className="px-3 py-2 text-sm rounded-lg bg-brand-500/10 hover:bg-brand-500/20 text-brand-700 dark:text-brand-300 border border-brand-500/20 hover:border-brand-500/30 transition-colors text-left"
+            disabled={isLoading}
+          >
+            {suggestion}
+          </button>
+        ))}
+      </div>
+    </motion.div>
+  )
+}
+
 function DocsAssistantInner({ className }: DocsAssistantProps) {
   const [isOpen, setIsOpen] = useState(false)
   const [inputValue, setInputValue] = useState('')
@@ -181,86 +347,15 @@ function DocsAssistantInner({ className }: DocsAssistantProps) {
               viewport={{ once: true }}
             >
               {/* Header */}
-              <div className="flex items-center justify-between p-4 border-b border-neutral-200 dark:border-neutral-800">
-                <div className="flex items-center gap-3">
-                  <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-gradient-to-br from-brand-500 to-purple-600">
-                    <BookOpen className="w-5 h-5 text-white" />
-                  </div>
-                  <div>
-                    <h2 id="docs-assistant-title" className="font-semibold">
-                      Documentation Assistant
-                    </h2>
-                    <p className="text-xs text-neutral-600 dark:text-neutral-400">
-                      Ask me anything about Clarity Chat
-                    </p>
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-2">
-                  {messages.length > 0 && (
-                    <>
-                      <div className="relative" ref={exportButtonRef}>
-                        <button
-                          onClick={() => setShowExportMenu((prev) => !prev)}
-                          className="px-3 py-1.5 text-xs rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors flex items-center gap-1.5"
-                          aria-label="Export conversation"
-                          aria-expanded={showExportMenu}
-                          aria-haspopup="true"
-                        >
-                          <Download className="w-3 h-3" />
-                          Export
-                        </button>
-                        <AnimatePresence>
-                          {showExportMenu && (
-                            <motion.div
-                              initial={{ opacity: 0, y: -10 }}
-                              animate={{ opacity: 1, y: 0 }}
-                              exit={{ opacity: 0, y: -10 }}
-                              transition={{ duration: durations.faster }}
-                              className="absolute top-full right-0 mt-1 w-40 rounded-lg bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 shadow-lg overflow-hidden z-10"
-                              viewport={{ once: true }}
-                            >
-                              <button
-                                onClick={() => handleExport('markdown')}
-                                className="w-full px-3 py-2 text-left text-sm hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors"
-                              >
-                                Markdown (.md)
-                              </button>
-                              <button
-                                onClick={() => handleExport('json')}
-                                className="w-full px-3 py-2 text-left text-sm hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors"
-                              >
-                                JSON (.json)
-                              </button>
-                              <button
-                                onClick={() => handleExport('html')}
-                                className="w-full px-3 py-2 text-left text-sm hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors"
-                              >
-                                HTML (.html)
-                              </button>
-                            </motion.div>
-                          )}
-                        </AnimatePresence>
-                      </div>
-                      <button
-                        onClick={handleClear}
-                        className="px-3 py-1.5 text-xs rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors"
-                        aria-label="Clear conversation history"
-                      >
-                        Clear
-                      </button>
-                    </>
-                  )}
-                  <button
-                    onClick={() => setIsOpen(false)}
-                    className="p-2 rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors"
-                    title="Close (Esc)"
-                    aria-label="Close documentation assistant"
-                  >
-                    <X className="w-4 h-4" />
-                  </button>
-                </div>
-              </div>
+              <AssistantHeader
+                hasMessages={messages.length > 0}
+                showExportMenu={showExportMenu}
+                onClose={() => setIsOpen(false)}
+                onClear={handleClear}
+                onExport={handleExport}
+                onToggleExportMenu={() => setShowExportMenu((prev) => !prev)}
+                exportButtonRef={exportButtonRef}
+              />
 
               {/* Token Counter */}
               {tokenTracker.tokenCount > 0 && (
@@ -473,37 +568,14 @@ function DocsAssistantInner({ className }: DocsAssistantProps) {
                     )}
 
                     {/* Follow-up Suggestions */}
-                    {!isLoading && suggestedFollowUps.length > 0 && (
-                      <motion.div
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: durations.moderate }}
-                        className="pt-4 border-t border-neutral-200/50 dark:border-neutral-800/50"
-                        viewport={{ once: true }}
-                      >
-                        <div className="flex items-center gap-2 mb-3">
-                          <MessageCircle className="w-4 h-4 text-brand-500" />
-                          <span className="text-xs font-medium text-neutral-600 dark:text-neutral-400">
-                            Suggested follow-ups:
-                          </span>
-                        </div>
-                        <div className="flex flex-wrap gap-2">
-                          {suggestedFollowUps.map((suggestion, index) => (
-                            <button
-                              key={index}
-                              onClick={() => {
-                                setInputValue(suggestion)
-                                inputRef.current?.focus()
-                              }}
-                              className="px-3 py-2 text-sm rounded-lg bg-brand-500/10 hover:bg-brand-500/20 text-brand-700 dark:text-brand-300 border border-brand-500/20 hover:border-brand-500/30 transition-colors text-left"
-                              disabled={isLoading}
-                            >
-                              {suggestion}
-                            </button>
-                          ))}
-                        </div>
-                      </motion.div>
-                    )}
+                    <FollowUpSuggestions
+                      suggestions={suggestedFollowUps}
+                      isLoading={isLoading}
+                      onSuggestionClick={(suggestion) => {
+                        setInputValue(suggestion)
+                        inputRef.current?.focus()
+                      }}
+                    />
 
                     <div ref={messagesEndRef} />
                   </>

@@ -38,3 +38,12 @@ export {
   type UseTokenEstimateOptions,
   type TokenEstimate,
 } from './TokenCostPreview'
+export {
+  TokenROICalculator,
+  type TokenROICalculatorProps,
+  type ROIPeriod,
+  type OptimizationScenario,
+  type CostBreakdown,
+  type ROIResults,
+  type ChartDataPoint,
+} from './TokenROICalculator'

@@ -1,9 +1,11 @@
-'use client'
-
 /**
  * @clarity-chat/react
  *
  * Premium AI Chat Components for React
+ *
+ * Note: Individual component files contain 'use client' directives.
+ * This barrel export file intentionally omits the directive to avoid
+ * bundling issues with tsup/esbuild.
  *
  * Quick Start (NEW - Recommended):
  * ```tsx

@@ -89,10 +89,10 @@ for (let i = 0; i < entries.length; i++) {
   }
 }
 
-// Ensure CSS is copied to dist/styles/ (tsup loader may not work consistently)
-console.log('📦 Copying CSS files to dist/styles/...')
+// Ensure CSS is copied to dist/styles/ and dist/theme/ (tsup loader may not work consistently)
+console.log('📦 Copying CSS files to dist/styles/ and dist/theme/...')
 try {
-  execSync('mkdir -p dist/styles && cp src/styles/*.css dist/styles/', {
+  execSync('mkdir -p dist/styles && cp src/styles/*.css dist/styles/ && mkdir -p dist/theme && cp src/theme/*.css dist/theme/', {
     cwd: resolve(__dirname, '..'),
     stdio: 'inherit',
   })

@@ -62,3 +62,69 @@ export * from './model'
 
 // Security Hooks
 export * from './security'
+
+// Generative UI Hooks
+export {
+  useAiState,
+  AiStateProvider,
+  useAiStateContext,
+  useAllAiStates,
+  type AiStateUpdateSource,
+  type AiStateUpdate,
+  type UseAiStateOptions,
+  type UseAiStateReturn,
+  type AiStateContextValue,
+  type AiStateProviderProps,
+} from './useAiState'
+
+export {
+  useTool,
+  useToolContext,
+  useTools,
+  useToolHistory,
+  usePendingTools,
+  ToolProvider,
+  defineTool,
+  defineTools,
+  createToolRegistry,
+  type Tool,
+  type ToolStatus,
+  type ToolCall,
+  type ToolRegistry,
+  type ToolContextValue,
+  type ToolProviderProps,
+} from './useTool'
+
+export {
+  useThread,
+  useThreadContext,
+  useThreadInput,
+  ThreadProvider,
+  type MessageRole,
+  type MessageStatus,
+  type MessageToolCall,
+  type RenderedComponent,
+  type ThreadMessage,
+  type Thread,
+  type UseThreadOptions,
+  type UseThreadReturn,
+  type ThreadContextValue,
+  type ThreadProviderProps,
+} from './useThread'
+
+export {
+  useStreamStatus,
+  useStreamStatusContext,
+  useIsStreaming,
+  useMultiStreamStatus,
+  useProgressiveContent,
+  StreamStatusProvider,
+  type StreamPhase,
+  type StreamStatusState,
+  type PropStatus,
+  type TokenUsage,
+  type UseStreamStatusOptions,
+  type UseStreamStatusReturn,
+  type StreamStatusContextValue,
+  type StreamStatusProviderProps,
+} from './useStreamStatus'

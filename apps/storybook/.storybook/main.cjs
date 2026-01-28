@@ -1,12 +1,12 @@
-// This file has been automatically migrated to valid ESM format by Storybook.
-import { fileURLToPath } from 'node:url'
-import type { StorybookConfig } from '@storybook/react-vite'
-import path, { dirname } from 'path'
+// Storybook configuration using CommonJS format for compatibility with esbuild-register
+const path = require('path');
 
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = dirname(__filename)
+function getAbsolutePath(value) {
+  return path.dirname(require.resolve(path.join(value, 'package.json')));
+}
 
-const config: StorybookConfig = {
+/** @type { import('@storybook/react-vite').StorybookConfig } */
+const config = {
   stories: [
     // IMPORTANT:
     // - Story sources in this repo are TypeScript.
@@ -23,7 +23,7 @@ const config: StorybookConfig = {
   addons: [
     getAbsolutePath('@storybook/addon-links'),
     getAbsolutePath('@storybook/addon-a11y'),
-    getAbsolutePath('@vueless/storybook-dark-mode'),
+    getAbsolutePath('storybook-dark-mode'),
     getAbsolutePath('@storybook/addon-docs'),
     './.storybook/addons/clarity-a11y/register.tsx',
     './.storybook/addons/peer-dependency-simulator/register.tsx',
@@ -48,9 +48,9 @@ const config: StorybookConfig = {
           return (
             !prop.parent.fileName.includes('node_modules') ||
             prop.parent.fileName.includes('@clarity-chat')
-          )
+          );
         }
-        return true
+        return true;
       },
     },
   },
@@ -65,7 +65,7 @@ const config: StorybookConfig = {
   },
 
   viteFinal: async (config) => {
-    config.resolve = config.resolve || {}
+    config.resolve = config.resolve || {};
     const existingAlias = Array.isArray(config.resolve.alias)
       ? config.resolve.alias
       : Object.entries(config.resolve.alias || {}).map(
@@ -73,7 +73,7 @@ const config: StorybookConfig = {
             find,
             replacement,
           })
-        )
+        );
 
     config.resolve.alias = [
       {
@@ -177,13 +177,13 @@ const config: StorybookConfig = {
         ),
       },
       ...existingAlias,
-    ]
+    ];
 
     // Configure build options for CSS imports and externals
-    config.build = config.build || {}
-    config.build.rollupOptions = config.build.rollupOptions || {}
+    config.build = config.build || {};
+    config.build.rollupOptions = config.build.rollupOptions || {};
     config.build.rollupOptions.external =
-      config.build.rollupOptions.external || []
+      config.build.rollupOptions.external || [];
 
     // Vite 7: Need to externalize dependencies properly
     if (Array.isArray(config.build.rollupOptions.external)) {
@@ -192,19 +192,15 @@ const config: StorybookConfig = {
         'katex/dist/katex.min.css',
         /^react-window$/,
         /^react-virtualized-auto-sizer$/
-      )
+      );
     }
 
     // Add process polyfill for browser compatibility
-    config.define = config.define || {}
-    config.define['process.env'] = JSON.stringify({})
+    config.define = config.define || {};
+    config.define['process.env'] = JSON.stringify({});
 
-    return config
+    return config;
   },
-}
+};
 
-export default config
-
-function getAbsolutePath(value: string): any {
-  return dirname(fileURLToPath(import.meta.resolve(`${value}/package.json`)))
-}
+module.exports = config;

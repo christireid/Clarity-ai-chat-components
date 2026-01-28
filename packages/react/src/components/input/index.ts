@@ -31,3 +31,13 @@ export {
   type TokenBreakdown,
 } from './structured-input-builder'
 export { VoiceInput, InlineVoiceInput } from './VoiceInput'
+
+// PillChatInput - Modern pill-shaped chat input
+export {
+  PillChatInput,
+  usePillChatInput,
+  type PillChatInputProps,
+  type PillChatInputVariant,
+  type UsePillChatInputOptions,
+  type UsePillChatInputReturn,
+} from './PillChatInput'

@@ -1,0 +1,3338 @@
+/**
+ * Clarity Chat - Enhanced Global Styles
+ *
+ * Design inspiration from:
+ * - prompt-kit: TextShimmer, ThinkingBar, 150ms animations
+ * - Ant Design X: RICH paradigm, Think component
+ * - shadcn/ui: Clean Tailwind patterns, CSS variables
+ *
+ * Uses HSL format for Tailwind compatibility
+ */
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ============================================================================
+   CSS VARIABLES - HSL Format for Tailwind Compatibility
+   ============================================================================ */
+
+@layer base {
+  :root {
+    /* ========================================
+       Core Colors - Light Mode
+       Format: H S% L% (no commas for Tailwind)
+       ======================================== */
+
+    /* Base surfaces */
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+
+    /* Card & popover */
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+
+    /* Brand colors */
+    --primary: 221.2 83.2% 53.3%;
+    --primary-foreground: 210 40% 98%;
+    --primary-rgb: 59, 130, 246;
+
+    /* Secondary */
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+
+    /* Muted */
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+
+    /* Accent */
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+
+    /* Semantic colors */
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+    --success: 142.1 76.2% 36.3%;
+    --success-foreground: 0 0% 100%;
+    --warning: 45.4 93.4% 47.5%;
+    --warning-foreground: 0 0% 0%;
+    --info: 217.2 91.2% 59.8%;
+    --info-foreground: 0 0% 100%;
+
+    /* UI elements */
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 221.2 83.2% 53.3%;
+
+    /* Message bubbles - WCAG AA compliant */
+    --message-user: 221.2 83.2% 53.3%;
+    --message-user-foreground: 210 40% 98%;
+    --message-assistant: 210 40% 98%;
+    --message-assistant-foreground: 222.2 47.4% 11.2%;
+    --message-system: 210 20% 96%;
+    --message-system-foreground: 220 15% 40%;
+
+    /* Extended surfaces */
+    --surface-muted: 210 40% 96.1%;
+    --surface-elevated: 0 0% 100%;
+    --surface-overlay: 0 0% 100%;
+
+    /* Border radius */
+    --radius: 0.625rem;
+
+    /* ========================================
+       Animation Timing (prompt-kit: 150ms)
+       ======================================== */
+    --duration-instant: 50ms;
+    --duration-faster: 100ms;
+    --duration-fast: 150ms;
+    --duration-normal: 200ms;
+    --duration-slow: 300ms;
+    --duration-slower: 400ms;
+
+    /* Easing */
+    --ease-in: cubic-bezier(0.4, 0, 1, 1);
+    --ease-out: cubic-bezier(0, 0, 0.2, 1);
+    --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+    --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+
+    /* ========================================
+       Shadows
+       ======================================== */
+    --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.04);
+    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
+    --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.05), 0 2px 4px rgba(0, 0, 0, 0.03);
+    --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.06), 0 4px 6px rgba(0, 0, 0, 0.03);
+    --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.08), 0 8px 10px rgba(0, 0, 0, 0.04);
+    --shadow-2xl: 0 25px 50px rgba(0, 0, 0, 0.12);
+
+    /* Colored shadows */
+    --shadow-primary: 0 4px 14px hsl(var(--primary) / 0.25);
+    --shadow-success: 0 4px 14px hsl(var(--success) / 0.25);
+    --shadow-destructive: 0 4px 14px hsl(var(--destructive) / 0.25);
+
+    /* ========================================
+       Glass Morphism
+       ======================================== */
+    --glass-bg-opacity: 0.7;
+    --glass-blur: 12px;
+    --glass-saturate: 150%;
+    --glass-border-opacity: 0.1;
+
+    /* ========================================
+       TextShimmer (prompt-kit inspired)
+       ======================================== */
+    --shimmer-from: hsl(var(--muted-foreground));
+    --shimmer-via: hsl(var(--foreground));
+    --shimmer-to: hsl(var(--muted-foreground));
+    --shimmer-duration: 2.5s;
+
+    /* ========================================
+       Thinking/Loading
+       ======================================== */
+    --thinking-dot-size: 6px;
+    --thinking-dot-gap: 4px;
+    --thinking-duration: 1.4s;
+
+    /* ========================================
+       Gradient Angle for animated backgrounds
+       ======================================== */
+    --gradient-angle: 135deg;
+    --gradient-speed: 8s;
+
+    /* ========================================
+       Pastel gradients (OKLCH for modern displays)
+       ======================================== */
+    --pastel-blue-start: oklch(95% 0.02 240);
+    --pastel-blue-end: oklch(97% 0.015 260);
+    --pastel-purple-start: oklch(95% 0.025 280);
+    --pastel-purple-end: oklch(97% 0.02 300);
+    --pastel-pink-start: oklch(96% 0.03 350);
+    --pastel-pink-end: oklch(98% 0.02 340);
+  }
+
+  /* ========================================
+     Dark Mode
+     ======================================== */
+  .dark {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+
+    --primary: 217.2 91.2% 59.8%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+    --primary-rgb: 96, 165, 250;
+
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    --success: 142.1 70.6% 45.3%;
+    --success-foreground: 0 0% 100%;
+    --warning: 45.4 93.4% 47.5%;
+    --warning-foreground: 0 0% 0%;
+    --info: 217.2 91.2% 59.8%;
+    --info-foreground: 222.2 47.4% 11.2%;
+
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 224.3 76.3% 48%;
+
+    --message-user: 217.2 91.2% 59.8%;
+    --message-user-foreground: 222.2 47.4% 11.2%;
+    --message-assistant: 217.2 32.6% 17.5%;
+    --message-assistant-foreground: 210 40% 98%;
+    --message-system: 217.2 28% 20%;
+    --message-system-foreground: 210 30% 80%;
+
+    --surface-muted: 217.2 32.6% 17.5%;
+    --surface-elevated: 222.2 47.4% 11.2%;
+    --surface-overlay: 222.2 84% 4.9%;
+
+    /* Dark shadows */
+    --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.2);
+    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3), 0 1px 2px rgba(0, 0, 0, 0.2);
+    --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.3), 0 2px 4px rgba(0, 0, 0, 0.2);
+    --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.35), 0 4px 6px rgba(0, 0, 0, 0.2);
+    --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.4), 0 8px 10px rgba(0, 0, 0, 0.25);
+    --shadow-2xl: 0 25px 50px rgba(0, 0, 0, 0.5);
+
+    --shadow-primary: 0 4px 14px hsl(var(--primary) / 0.35);
+
+    /* Dark glass */
+    --glass-bg-opacity: 0.8;
+    --glass-blur: 16px;
+    --glass-border-opacity: 0.15;
+
+    /* Dark pastel gradients */
+    --pastel-blue-start: oklch(18% 0.04 240);
+    --pastel-blue-end: oklch(20% 0.035 260);
+    --pastel-purple-start: oklch(18% 0.045 280);
+    --pastel-purple-end: oklch(20% 0.04 300);
+    --pastel-pink-start: oklch(19% 0.05 350);
+    --pastel-pink-end: oklch(21% 0.04 340);
+  }
+}
+
+/* ============================================================================
+   BASE STYLES
+   ============================================================================ */
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings: "rlig" 1, "calt" 1;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  ::selection {
+    @apply bg-primary/20;
+  }
+}
+
+/* ============================================================================
+   TEXT SHIMMER - prompt-kit Inspired Streaming Animation
+   ============================================================================ */
+
+@layer utilities {
+  .text-shimmer {
+    background: linear-gradient(
+      90deg,
+      var(--shimmer-from) 0%,
+      var(--shimmer-via) 50%,
+      var(--shimmer-to) 100%
+    );
+    background-size: 200% 100%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: text-shimmer var(--shimmer-duration) ease-in-out infinite;
+  }
+
+  .text-shimmer-fast {
+    --shimmer-duration: 1.5s;
+  }
+
+  .text-shimmer-slow {
+    --shimmer-duration: 4s;
+  }
+
+  /* Primary colored shimmer */
+  .text-shimmer-primary {
+    --shimmer-from: hsl(var(--primary) / 0.7);
+    --shimmer-via: hsl(var(--primary));
+    --shimmer-to: hsl(var(--primary) / 0.7);
+  }
+}
+
+@keyframes text-shimmer {
+  0% { background-position: 100% 50%; }
+  100% { background-position: -100% 50%; }
+}
+
+/* ============================================================================
+   THINKING BAR & TYPING INDICATOR
+   ============================================================================ */
+
+@layer components {
+  /* Thinking bar container */
+  .thinking-bar {
+    @apply inline-flex items-center gap-2 px-3 py-2 rounded-full;
+    background: hsl(var(--muted));
+  }
+
+  /* Animated shimmer text */
+  .thinking-bar-text {
+    @apply text-sm;
+    background: linear-gradient(
+      90deg,
+      hsl(var(--muted-foreground)) 0%,
+      hsl(var(--foreground)) 50%,
+      hsl(var(--muted-foreground)) 100%
+    );
+    background-size: 200% 100%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: text-shimmer 2s ease-in-out infinite;
+    border-bottom: 1px dotted hsl(var(--muted-foreground) / 0.5);
+    padding-bottom: 1px;
+  }
+
+  /* Stop button */
+  .thinking-bar-stop {
+    @apply inline-flex items-center justify-center w-5 h-5 rounded-full cursor-pointer transition-colors;
+    background: hsl(var(--muted-foreground) / 0.1);
+    color: hsl(var(--muted-foreground));
+  }
+
+  .thinking-bar-stop:hover {
+    background: hsl(var(--destructive) / 0.1);
+    color: hsl(var(--destructive));
+  }
+
+  /* Typing dots */
+  .typing-indicator {
+    @apply inline-flex items-center gap-1 px-3 py-2;
+  }
+
+  .typing-dot {
+    width: var(--thinking-dot-size);
+    height: var(--thinking-dot-size);
+    @apply rounded-full;
+    background: hsl(var(--muted-foreground));
+    animation: typing-bounce var(--thinking-duration) ease-in-out infinite;
+  }
+
+  .typing-dot:nth-child(1) { animation-delay: 0ms; }
+  .typing-dot:nth-child(2) { animation-delay: 160ms; }
+  .typing-dot:nth-child(3) { animation-delay: 320ms; }
+}
+
+@keyframes typing-bounce {
+  0%, 60%, 100% {
+    transform: translateY(0);
+    opacity: 0.4;
+  }
+  30% {
+    transform: translateY(-6px);
+    opacity: 1;
+  }
+}
+
+/* ============================================================================
+   MESSAGE BUBBLES - Modern Design
+   ============================================================================ */
+
+@layer components {
+  /* Message container */
+  .message {
+    @apply flex gap-3 py-2;
+    animation: message-enter var(--duration-normal) var(--ease-out);
+  }
+
+  .message-user {
+    @apply flex-row-reverse;
+  }
+
+  /* Message bubble base */
+  .message-bubble {
+    @apply max-w-[80%] px-4 py-3 text-base leading-relaxed relative;
+    border-radius: 1.25rem;
+  }
+
+  /* User message */
+  .message-bubble-user {
+    background: hsl(var(--message-user));
+    color: hsl(var(--message-user-foreground));
+    border-bottom-right-radius: 0.375rem;
+  }
+
+  /* Assistant message */
+  .message-bubble-assistant {
+    background: hsl(var(--message-assistant));
+    color: hsl(var(--message-assistant-foreground));
+    border: 1px solid hsl(var(--border));
+    border-bottom-left-radius: 0.375rem;
+  }
+
+  /* System message */
+  .message-bubble-system {
+    background: hsl(var(--message-system));
+    color: hsl(var(--message-system-foreground));
+    @apply text-sm text-center max-w-full border-dashed;
+    border: 1px dashed hsl(var(--border));
+    border-radius: 0.75rem;
+  }
+
+  /* Avatar */
+  .message-avatar {
+    @apply w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0;
+    background: hsl(var(--muted));
+  }
+
+  /* Streaming cursor */
+  .message-cursor {
+    @apply inline-block w-0.5 ml-0.5;
+    height: 1.2em;
+    background: hsl(var(--foreground));
+    animation: cursor-blink 0.8s step-end infinite;
+    vertical-align: text-bottom;
+  }
+}
+
+@keyframes message-enter {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes cursor-blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+/* ============================================================================
+   CHAT INPUT - Pill-Shaped (prompt-kit inspired)
+   ============================================================================ */
+
+@layer components {
+  .chat-input-container {
+    @apply relative p-4 border-t;
+    background: hsl(var(--background));
+    border-color: hsl(var(--border));
+  }
+
+  .chat-input-wrapper {
+    @apply flex items-end gap-2 px-3 py-2 transition-all;
+    background: hsl(var(--card));
+    border: 1px solid hsl(var(--border));
+    border-radius: 1.5rem;
+    box-shadow: var(--shadow-sm);
+    transition-duration: var(--duration-fast);
+  }
+
+  .chat-input-wrapper:focus-within {
+    border-color: hsl(var(--ring));
+    box-shadow: 0 0 0 3px hsl(var(--ring) / 0.1), var(--shadow-md);
+  }
+
+  .chat-input-textarea {
+    @apply flex-1 min-h-[24px] max-h-[200px] py-1.5 px-2 bg-transparent border-none outline-none resize-none text-base;
+    font-family: inherit;
+    color: hsl(var(--foreground));
+    line-height: 1.5;
+  }
+
+  .chat-input-textarea::placeholder {
+    color: hsl(var(--muted-foreground));
+  }
+
+  .chat-input-actions {
+    @apply flex items-center gap-1;
+  }
+
+  .chat-input-button {
+    @apply inline-flex items-center justify-center w-9 h-9 rounded-full bg-transparent border-none cursor-pointer transition-colors;
+    color: hsl(var(--muted-foreground));
+    transition-duration: var(--duration-fast);
+  }
+
+  .chat-input-button:hover {
+    background: hsl(var(--muted));
+    color: hsl(var(--foreground));
+  }
+
+  .chat-input-send {
+    background: hsl(var(--primary));
+    color: hsl(var(--primary-foreground));
+  }
+
+  .chat-input-send:hover {
+    background: hsl(var(--primary) / 0.9);
+    color: hsl(var(--primary-foreground));
+  }
+
+  .chat-input-send:disabled {
+    @apply opacity-50 cursor-not-allowed;
+  }
+}
+
+/* ============================================================================
+   CHAIN OF THOUGHT / REASONING
+   ============================================================================ */
+
+@layer components {
+  .reasoning-container {
+    @apply my-2 border rounded-lg overflow-hidden;
+    border-color: hsl(var(--border));
+  }
+
+  .reasoning-header {
+    @apply flex items-center justify-between px-3 py-2 cursor-pointer select-none transition-colors;
+    background: hsl(var(--muted));
+    transition-duration: var(--duration-fast);
+  }
+
+  .reasoning-header:hover {
+    background: hsl(var(--muted) / 0.8);
+  }
+
+  .reasoning-title {
+    @apply flex items-center gap-2 text-sm font-medium;
+    color: hsl(var(--muted-foreground));
+  }
+
+  .reasoning-chevron {
+    transition: transform var(--duration-fast) var(--ease-out);
+  }
+
+  .reasoning-chevron[data-open="true"] {
+    transform: rotate(180deg);
+  }
+
+  .reasoning-content {
+    @apply p-3 text-sm leading-relaxed border-t;
+    background: hsl(var(--card));
+    color: hsl(var(--muted-foreground));
+    border-color: hsl(var(--border));
+  }
+
+  .reasoning-step {
+    @apply flex gap-3 py-2;
+  }
+
+  .reasoning-step + .reasoning-step {
+    @apply border-t border-dashed;
+    border-color: hsl(var(--border));
+  }
+
+  .reasoning-step-dot {
+    @apply w-2 h-2 rounded-full flex-shrink-0 mt-1.5;
+    background: hsl(var(--primary));
+  }
+
+  .reasoning-step-line {
+    @apply flex-1 w-0.5;
+    background: hsl(var(--border));
+  }
+}
+
+/* ============================================================================
+   TOOL EXECUTION STATES
+   ============================================================================ */
+
+@layer components {
+  .tool-card {
+    @apply flex items-start gap-3 p-3 my-2 border rounded-lg;
+    background: hsl(var(--card));
+    border-color: hsl(var(--border));
+  }
+
+  .tool-icon {
+    @apply flex items-center justify-center w-8 h-8 rounded-md flex-shrink-0 relative;
+  }
+
+  .tool-content {
+    @apply flex-1 min-w-0;
+  }
+
+  .tool-name {
+    @apply text-sm font-medium mb-1;
+    color: hsl(var(--foreground));
+  }
+
+  .tool-status {
+    @apply text-xs;
+    color: hsl(var(--muted-foreground));
+  }
+
+  /* Pending state */
+  .tool-pending .tool-icon {
+    background: hsl(var(--muted));
+    color: hsl(var(--muted-foreground));
+    animation: pulse-soft 2s ease-in-out infinite;
+  }
+
+  /* Running state */
+  .tool-running .tool-icon {
+    background: hsl(var(--info) / 0.15);
+    color: hsl(var(--info));
+  }
+
+  .tool-running .tool-icon::after {
+    content: "";
+    @apply absolute inset-[-2px] rounded-md;
+    border: 2px solid hsl(var(--info) / 0.3);
+    border-top-color: hsl(var(--info));
+    animation: spin 1s linear infinite;
+  }
+
+  /* Success state */
+  .tool-success .tool-icon {
+    background: hsl(var(--success) / 0.15);
+    color: hsl(var(--success));
+  }
+
+  /* Error state */
+  .tool-error .tool-icon {
+    background: hsl(var(--destructive) / 0.15);
+    color: hsl(var(--destructive));
+  }
+
+  .tool-error .tool-card {
+    border-color: hsl(var(--destructive) / 0.3);
+  }
+}
+
+@keyframes pulse-soft {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ============================================================================
+   GLASS MORPHISM
+   ============================================================================ */
+
+@layer utilities {
+  .glass {
+    background: hsl(var(--background) / var(--glass-bg-opacity));
+    backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+    -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+    border: 1px solid hsl(var(--border) / var(--glass-border-opacity));
+  }
+
+  .glass-subtle {
+    --glass-blur: 8px;
+    --glass-bg-opacity: 0.5;
+  }
+
+  .glass-strong {
+    --glass-blur: 20px;
+    --glass-bg-opacity: 0.85;
+  }
+
+  .glass-panel {
+    background: linear-gradient(
+      var(--gradient-angle),
+      hsl(var(--background) / var(--glass-bg-opacity)) 0%,
+      hsl(var(--card) / calc(var(--glass-bg-opacity) - 0.1)) 100%
+    );
+    backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+    -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+    border: 1px solid hsl(var(--border) / var(--glass-border-opacity));
+  }
+
+  .glass-animated {
+    animation: gradient-shift var(--gradient-speed) ease infinite;
+    background-size: 200% 200%;
+  }
+}
+
+@keyframes gradient-shift {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+/* ============================================================================
+   LOADER VARIANTS
+   ============================================================================ */
+
+@layer components {
+  /* Spinner */
+  .loader-spinner {
+    @apply w-5 h-5 rounded-full;
+    border: 2px solid hsl(var(--muted));
+    border-top-color: hsl(var(--primary));
+    animation: spin 0.8s linear infinite;
+  }
+
+  .loader-spinner-sm { @apply w-4 h-4; }
+  .loader-spinner-lg { @apply w-6 h-6; }
+
+  /* Dots */
+  .loader-dots {
+    @apply flex gap-1;
+  }
+
+  .loader-dots span {
+    @apply w-1.5 h-1.5 rounded-full;
+    background: hsl(var(--primary));
+    animation: loader-dots 1.4s ease-in-out infinite;
+  }
+
+  .loader-dots span:nth-child(1) { animation-delay: 0ms; }
+  .loader-dots span:nth-child(2) { animation-delay: 160ms; }
+  .loader-dots span:nth-child(3) { animation-delay: 320ms; }
+
+  /* Pulse */
+  .loader-pulse {
+    @apply w-5 h-5 rounded-full;
+    background: hsl(var(--primary));
+    animation: loader-pulse 1.2s ease-in-out infinite;
+  }
+
+  /* Skeleton */
+  .skeleton {
+    @apply rounded-md;
+    background: linear-gradient(
+      90deg,
+      hsl(var(--muted)) 0%,
+      hsl(var(--muted) / 0.5) 50%,
+      hsl(var(--muted)) 100%
+    );
+    background-size: 200% 100%;
+    animation: skeleton-shimmer 1.5s ease-in-out infinite;
+  }
+}
+
+@keyframes loader-dots {
+  0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
+  30% { transform: translateY(-8px); opacity: 1; }
+}
+
+@keyframes loader-pulse {
+  0%, 100% { transform: scale(0.8); opacity: 0.5; }
+  50% { transform: scale(1); opacity: 1; }
+}
+
+@keyframes skeleton-shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* ============================================================================
+   SUGGESTION CHIPS
+   ============================================================================ */
+
+@layer components {
+  .suggestion-chip {
+    @apply inline-flex items-center gap-1.5 px-3 py-2 text-sm rounded-full cursor-pointer transition-all;
+    background: hsl(var(--card));
+    border: 1px solid hsl(var(--border));
+    color: hsl(var(--foreground));
+    transition-duration: var(--duration-fast);
+  }
+
+  .suggestion-chip:hover {
+    background: hsl(var(--muted));
+    border-color: hsl(var(--primary) / 0.3);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .suggestion-chip:active {
+    transform: scale(0.98);
+  }
+
+  .suggestion-chips-container {
+    @apply flex flex-wrap gap-2 py-3;
+  }
+}
+
+/* ============================================================================
+   SOURCE / CITATION COMPONENTS
+   ============================================================================ */
+
+@layer components {
+  /* Inline source pill */
+  .source-pill {
+    @apply relative inline-flex;
+  }
+
+  .source-pill-inner {
+    @apply inline-flex items-center justify-center;
+    @apply min-w-5 h-5 px-1.5 rounded-full;
+    @apply text-xs font-medium tabular-nums;
+    background: hsl(var(--primary) / 0.1);
+    color: hsl(var(--primary));
+    transition: all var(--duration-fast) var(--ease-out);
+  }
+
+  .source-pill-inner:hover {
+    background: hsl(var(--primary) / 0.2);
+  }
+
+  /* Hover card */
+  .source-hover-card {
+    @apply p-3 rounded-lg shadow-lg border;
+    min-width: 280px;
+    max-width: 360px;
+    background: hsl(var(--card));
+    border-color: hsl(var(--border));
+  }
+
+  /* Source card variant */
+  .source-card {
+    @apply p-4 rounded-lg border cursor-pointer transition-all;
+    background: hsl(var(--card));
+    border-color: hsl(var(--border));
+    transition-duration: var(--duration-fast);
+  }
+
+  .source-card:hover {
+    border-color: hsl(var(--primary) / 0.3);
+    box-shadow: var(--shadow-md);
+    transform: translateY(-1px);
+  }
+
+  .source-card-icon {
+    @apply w-10 h-10 flex-shrink-0 rounded-lg flex items-center justify-center p-2;
+    background: hsl(var(--muted));
+  }
+
+  .source-card-title {
+    @apply font-medium text-sm truncate;
+    color: hsl(var(--foreground));
+  }
+
+  .source-card-url {
+    @apply text-xs truncate mt-0.5;
+    color: hsl(var(--muted-foreground));
+  }
+
+  .source-card-description {
+    @apply text-sm mt-2 line-clamp-2;
+    color: hsl(var(--muted-foreground));
+  }
+
+  .source-card-quote {
+    @apply mt-2 pl-3 text-sm italic border-l-2;
+    border-color: hsl(var(--primary) / 0.3);
+    color: hsl(var(--muted-foreground));
+  }
+
+  .source-card-link {
+    @apply inline-flex items-center gap-1 text-xs font-medium;
+    color: hsl(var(--primary));
+  }
+
+  .source-card-link:hover {
+    text-decoration: underline;
+  }
+}
+
+/* ============================================================================
+   STEPS / WORKFLOW PROGRESS
+   ============================================================================ */
+
+@layer components {
+  .steps {
+    @apply relative;
+  }
+
+  .steps-vertical {
+    @apply space-y-0;
+  }
+
+  .steps-horizontal {
+    @apply flex items-start justify-between;
+  }
+
+  .steps-compact {
+    @apply space-y-0;
+  }
+
+  .steps-timeline {
+    @apply space-y-0;
+  }
+
+  /* Step indicator */
+  .step-indicator {
+    @apply flex-shrink-0 rounded-full;
+    @apply flex items-center justify-center;
+    @apply border-2 transition-colors;
+    transition-duration: var(--duration-fast);
+  }
+
+  /* Step connector */
+  .step-connector {
+    @apply rounded-full overflow-hidden;
+    background: hsl(var(--muted));
+  }
+
+  .step-connector-fill {
+    @apply h-full rounded-full;
+    background: hsl(var(--success));
+    transition: all var(--duration-normal) var(--ease-out);
+  }
+
+  /* Step content */
+  .step-title {
+    @apply font-medium;
+    color: hsl(var(--foreground));
+  }
+
+  .step-title-pending {
+    color: hsl(var(--muted-foreground));
+  }
+
+  .step-description {
+    color: hsl(var(--muted-foreground));
+  }
+
+  /* Status-specific styles */
+  .step-pending .step-indicator {
+    background: hsl(var(--muted));
+    color: hsl(var(--muted-foreground));
+    border-color: hsl(var(--muted));
+  }
+
+  .step-active .step-indicator {
+    background: hsl(var(--primary));
+    color: hsl(var(--primary-foreground));
+    border-color: hsl(var(--primary));
+  }
+
+  .step-complete .step-indicator {
+    background: hsl(var(--success));
+    color: hsl(var(--success-foreground));
+    border-color: hsl(var(--success));
+  }
+
+  .step-error .step-indicator {
+    background: hsl(var(--destructive));
+    color: hsl(var(--destructive-foreground));
+    border-color: hsl(var(--destructive));
+  }
+
+  .step-skipped .step-indicator {
+    background: hsl(var(--muted));
+    color: hsl(var(--muted-foreground));
+    border-color: hsl(var(--muted));
+    opacity: 0.6;
+  }
+}
+
+/* ============================================================================
+   SCROLLBAR
+   ============================================================================ */
+
+@layer base {
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: hsl(var(--muted-foreground) / 0.3);
+    border-radius: 4px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: hsl(var(--muted-foreground) / 0.5);
+  }
+
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: hsl(var(--muted-foreground) / 0.3) transparent;
+  }
+}
+
+/* ============================================================================
+   FOCUS RING
+   ============================================================================ */
+
+@layer utilities {
+  .focus-ring {
+    @apply outline-none;
+  }
+
+  .focus-ring:focus-visible {
+    outline: 2px solid hsl(var(--ring));
+    outline-offset: 2px;
+  }
+
+  .focus-ring-inset:focus-visible {
+    outline: 2px solid hsl(var(--ring));
+    outline-offset: -2px;
+  }
+}
+
+/* ============================================================================
+   ACCESSIBILITY - Reduced Motion
+   ============================================================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .text-shimmer,
+  .thinking-bar-text {
+    animation: none !important;
+    background: hsl(var(--foreground)) !important;
+    -webkit-text-fill-color: unset !important;
+  }
+}
+
+/* ============================================================================
+   ACCESSIBILITY - High Contrast
+   ============================================================================ */
+
+@media (prefers-contrast: high) {
+  :root {
+    --border: 214 32% 80%;
+  }
+
+  .glass,
+  .glass-panel {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    background: hsl(var(--card)) !important;
+    border-width: 2px !important;
+  }
+}
+
+/* ============================================================================
+   HIGH CONTRAST MODE CLASS
+   ============================================================================ */
+
+.high-contrast {
+  filter: contrast(1.5);
+}
+
+.high-contrast .bg-background {
+  background-color: #000 !important;
+  color: #fff !important;
+}
+
+.high-contrast button {
+  border: 2px solid #fff !important;
+}
+
+/* ============================================================================
+   LARGER TEXT MODE
+   ============================================================================ */
+
+.larger-text {
+  font-size: 1.25rem !important;
+  line-height: 1.6 !important;
+}
+
+.larger-text h1 { font-size: 2.5rem !important; }
+.larger-text h2 { font-size: 2rem !important; }
+.larger-text h3 { font-size: 1.75rem !important; }
+
+/* ============================================================================
+   STREAMING STABILITY
+   ============================================================================ */
+
+@layer utilities {
+  .streaming-stable {
+    contain: layout style;
+    min-height: 1.5em;
+  }
+
+  .streaming-text {
+    @apply inline whitespace-pre-wrap break-words;
+  }
+
+  .streaming-container {
+    contain: layout;
+  }
+}
+
+/* ============================================================================
+   GPU ACCELERATION
+   ============================================================================ */
+
+@layer utilities {
+  .gpu-accelerated {
+    transform: translateZ(0);
+    will-change: transform;
+  }
+
+  .will-change-transform {
+    will-change: transform;
+  }
+
+  .will-change-opacity {
+    will-change: opacity;
+  }
+}
+
+/* ============================================================================
+   SCREEN READER OPTIMIZATIONS
+   ============================================================================ */
+
+.screen-reader-mode .sr-only {
+  @apply absolute w-px h-px p-0 -m-px overflow-hidden whitespace-nowrap border-0;
+  clip: rect(0, 0, 0, 0);
+}
+
+.screen-reader-mode *:focus {
+  outline: 2px solid #3b82f6 !important;
+  outline-offset: 2px !important;
+}
+
+/* ============================================================================
+   PRINT STYLES
+   ============================================================================ */
+
+@media print {
+  .chat-input-container,
+  .thinking-bar,
+  .typing-indicator,
+  .message-cursor {
+    display: none !important;
+  }
+
+  .message-bubble {
+    break-inside: avoid;
+    border: 1px solid #000 !important;
+  }
+}
+
+/* ============================================================================
+   LINK PREVIEW COMPONENT
+   ============================================================================ */
+
+.link-preview {
+  @apply flex rounded-lg border border-border/50 bg-card/50 text-card-foreground
+         no-underline transition-all duration-200 overflow-hidden;
+}
+
+.link-preview:hover {
+  @apply border-border bg-card shadow-sm;
+}
+
+.link-preview-card {
+  @apply flex-col;
+}
+
+.link-preview-inline {
+  @apply items-center gap-3 px-3 py-2;
+}
+
+.link-preview-compact {
+  @apply items-center gap-2 px-2 py-1.5;
+}
+
+.link-preview-minimal {
+  @apply items-center gap-2 px-2 py-1 text-xs;
+}
+
+.link-preview-image-container {
+  @apply relative w-full aspect-video overflow-hidden;
+}
+
+.link-preview-image {
+  @apply w-full h-full object-cover;
+}
+
+.link-preview-type-badge {
+  @apply absolute top-2 right-2 px-2 py-0.5 bg-black/60 text-white text-xs rounded;
+}
+
+.link-preview-content {
+  @apply flex flex-col gap-1 p-3;
+}
+
+.link-preview-header {
+  @apply flex items-center gap-2 text-xs text-muted-foreground;
+}
+
+.link-preview-favicon {
+  @apply w-4 h-4 rounded;
+}
+
+.link-preview-domain {
+  @apply truncate;
+}
+
+.link-preview-author {
+  @apply text-muted-foreground/70;
+}
+
+.link-preview-title {
+  @apply font-medium text-foreground line-clamp-2 m-0;
+}
+
+.link-preview-description {
+  @apply text-sm text-muted-foreground line-clamp-2 m-0;
+}
+
+.link-preview-meta {
+  @apply text-xs text-muted-foreground/70;
+}
+
+.link-preview-list {
+  @apply flex flex-col gap-2;
+}
+
+.link-preview-list-horizontal {
+  @apply flex-row flex-wrap;
+}
+
+.link-preview-list-grid {
+  @apply grid grid-cols-2 md:grid-cols-3;
+}
+
+.link-preview-list-more {
+  @apply text-sm text-muted-foreground text-center py-2;
+}
+
+/* Loading skeleton */
+.link-preview-skeleton {
+  @apply animate-pulse;
+}
+
+.link-preview-skeleton-image {
+  @apply w-full aspect-video bg-muted/50;
+}
+
+.link-preview-skeleton-content {
+  @apply flex flex-col gap-2 p-3;
+}
+
+.link-preview-skeleton-title {
+  @apply h-4 w-3/4 bg-muted/50 rounded;
+}
+
+.link-preview-skeleton-description {
+  @apply h-3 w-full bg-muted/30 rounded;
+}
+
+.link-preview-skeleton-domain {
+  @apply h-3 w-1/4 bg-muted/30 rounded;
+}
+
+/* Error state */
+.link-preview-error {
+  @apply flex items-center gap-2 px-3 py-2 bg-destructive/10 text-destructive rounded-lg;
+}
+
+/* ============================================================================
+   TERMINAL COMPONENT
+   ============================================================================ */
+
+.terminal {
+  @apply rounded-lg overflow-hidden font-mono text-sm;
+  background-color: var(--terminal-bg, #011627);
+  color: var(--terminal-fg, #d6deeb);
+  border: 1px solid var(--terminal-border, #1d3b53);
+}
+
+.terminal-header {
+  @apply flex items-center gap-3 px-4 py-2 border-b;
+  background-color: color-mix(in srgb, var(--terminal-bg) 90%, white 10%);
+  border-color: var(--terminal-border);
+}
+
+.terminal-controls {
+  @apply flex gap-2;
+}
+
+.terminal-control {
+  @apply w-3 h-3 rounded-full;
+}
+
+.terminal-control-close {
+  @apply bg-red-500;
+}
+
+.terminal-control-minimize {
+  @apply bg-yellow-500;
+}
+
+.terminal-control-maximize {
+  @apply bg-green-500;
+}
+
+.terminal-title {
+  @apply flex-1 text-center text-xs opacity-70 truncate;
+}
+
+.terminal-copy-btn {
+  @apply p-1 rounded opacity-50 hover:opacity-100 transition-opacity;
+}
+
+.terminal-content {
+  @apply p-4 overflow-auto;
+}
+
+.terminal-line {
+  @apply flex items-start gap-2 py-0.5;
+}
+
+.terminal-line-number {
+  @apply w-8 text-right opacity-40 select-none;
+}
+
+.terminal-timestamp {
+  @apply text-xs opacity-50;
+}
+
+.terminal-prompt {
+  @apply select-none;
+  color: var(--terminal-prompt);
+}
+
+.terminal-line-content {
+  @apply flex-1;
+}
+
+.terminal-line-command .terminal-line-content {
+  color: var(--terminal-command);
+}
+
+.terminal-line-output .terminal-line-content {
+  color: var(--terminal-output);
+}
+
+.terminal-line-error .terminal-line-content {
+  color: var(--terminal-error);
+}
+
+.terminal-line-success .terminal-line-content {
+  color: var(--terminal-success);
+}
+
+.terminal-line-warning .terminal-line-content {
+  color: var(--terminal-warning);
+}
+
+.terminal-line-info .terminal-line-content {
+  color: var(--terminal-info);
+}
+
+.terminal-line-system .terminal-line-content {
+  color: var(--terminal-system);
+  font-style: italic;
+}
+
+.terminal-cursor {
+  color: var(--terminal-fg);
+}
+
+.terminal-input-form {
+  @apply flex items-center gap-2 mt-2;
+}
+
+.terminal-input {
+  @apply flex-1 bg-transparent border-none outline-none;
+  color: var(--terminal-command);
+  caret-color: var(--terminal-fg);
+}
+
+/* ============================================================================
+   PLAN COMPONENT
+   ============================================================================ */
+
+.plan {
+  @apply rounded-lg border border-border/50 bg-card/50 overflow-hidden;
+}
+
+.plan-header {
+  @apply flex items-start justify-between gap-4 p-4 border-b border-border/30;
+}
+
+.plan-header-info {
+  @apply flex flex-col gap-1;
+}
+
+.plan-title {
+  @apply font-semibold text-foreground m-0;
+}
+
+.plan-description {
+  @apply text-sm text-muted-foreground m-0;
+}
+
+.plan-header-meta {
+  @apply flex items-center gap-3 text-sm text-muted-foreground;
+}
+
+.plan-progress-container {
+  @apply flex items-center gap-3 px-4 py-2 bg-muted/30;
+}
+
+.plan-progress-bar {
+  @apply flex-1 h-2 bg-muted rounded-full overflow-hidden;
+}
+
+.plan-progress-fill {
+  @apply h-full bg-primary rounded-full transition-all duration-500;
+}
+
+.plan-progress-text {
+  @apply text-sm font-medium text-muted-foreground min-w-[3rem] text-right;
+}
+
+.plan-tasks {
+  @apply p-2;
+}
+
+.plan-task {
+  @apply rounded-md;
+}
+
+.plan-task-subtask {
+  @apply ml-6 border-l border-border/30 pl-4;
+}
+
+.plan-task-content {
+  @apply flex items-start gap-3 p-2 rounded-md cursor-default
+         hover:bg-muted/50 transition-colors;
+}
+
+.plan-task-status {
+  @apply flex items-center justify-center w-6 h-6 rounded-full border-2
+         transition-all duration-200 shrink-0 mt-0.5;
+}
+
+.plan-task-status-interactive {
+  @apply cursor-pointer;
+}
+
+.plan-task-pending .plan-task-status {
+  @apply border-muted-foreground/30 text-transparent;
+}
+
+.plan-task-in-progress .plan-task-status {
+  @apply border-primary bg-primary/10 text-primary;
+}
+
+.plan-task-completed .plan-task-status {
+  @apply border-green-500 bg-green-500 text-white;
+}
+
+.plan-task-failed .plan-task-status {
+  @apply border-destructive bg-destructive text-white;
+}
+
+.plan-task-skipped .plan-task-status {
+  @apply border-muted-foreground/50 bg-muted text-muted-foreground;
+}
+
+.plan-task-info {
+  @apply flex-1 min-w-0;
+}
+
+.plan-task-header {
+  @apply flex items-center gap-2 flex-wrap;
+}
+
+.plan-task-title {
+  @apply font-medium text-foreground;
+}
+
+.plan-task-title-completed {
+  @apply line-through text-muted-foreground;
+}
+
+.plan-task-priority {
+  @apply text-xs px-1.5 py-0.5 rounded font-medium;
+}
+
+.plan-task-priority-low {
+  @apply bg-muted text-muted-foreground;
+}
+
+.plan-task-priority-medium {
+  @apply bg-yellow-500/10 text-yellow-600;
+}
+
+.plan-task-priority-high {
+  @apply bg-orange-500/10 text-orange-600;
+}
+
+.plan-task-priority-critical {
+  @apply bg-red-500/10 text-red-600;
+}
+
+.plan-task-duration {
+  @apply text-xs text-muted-foreground;
+}
+
+.plan-task-description {
+  @apply text-sm text-muted-foreground mt-1;
+}
+
+.plan-task-tags {
+  @apply flex gap-1 mt-2 flex-wrap;
+}
+
+.plan-task-tag {
+  @apply text-xs px-1.5 py-0.5 bg-muted rounded;
+}
+
+.plan-task-progress {
+  @apply flex items-center gap-2 mt-2;
+}
+
+.plan-task-progress-bar {
+  @apply flex-1 h-1.5 bg-muted rounded-full overflow-hidden;
+}
+
+.plan-task-progress-text {
+  @apply text-xs text-muted-foreground;
+}
+
+.plan-task-expand {
+  @apply p-1 rounded hover:bg-muted transition-colors;
+}
+
+.plan-task-subtasks {
+  @apply overflow-hidden;
+}
+
+.plan-completed-section {
+  @apply mt-2 border-t border-border/30 pt-2;
+}
+
+.plan-completed-summary {
+  @apply text-sm text-muted-foreground cursor-pointer px-2 py-1 rounded
+         hover:bg-muted/50 transition-colors;
+}
+
+/* ============================================================================
+   PROGRESS TRACKER COMPONENT
+   ============================================================================ */
+
+.progress-tracker {
+  @apply flex items-center gap-2;
+}
+
+.progress-tracker-vertical {
+  @apply flex-col items-stretch;
+}
+
+.progress-tracker-step {
+  @apply flex items-center gap-3;
+}
+
+.progress-tracker-step-vertical {
+  @apply flex-col items-start;
+}
+
+.progress-tracker-indicator {
+  @apply flex items-center justify-center w-8 h-8 rounded-full border-2
+         font-medium text-sm transition-all duration-300;
+}
+
+.progress-tracker-indicator-completed {
+  @apply border-green-500 bg-green-500 text-white;
+}
+
+.progress-tracker-indicator-current {
+  @apply border-primary bg-primary/10 text-primary;
+}
+
+.progress-tracker-indicator-upcoming {
+  @apply border-muted-foreground/30 text-muted-foreground;
+}
+
+.progress-tracker-indicator-error {
+  @apply border-destructive bg-destructive text-white;
+}
+
+.progress-tracker-indicator-warning {
+  @apply border-yellow-500 bg-yellow-500/10 text-yellow-600;
+}
+
+.progress-tracker-indicator-clickable {
+  @apply cursor-pointer;
+}
+
+.progress-tracker-connector {
+  @apply flex-1 h-0.5 bg-muted-foreground/20 relative overflow-hidden;
+}
+
+.progress-tracker-connector-vertical {
+  @apply w-0.5 h-8 flex-none ml-4;
+}
+
+.progress-tracker-connector-fill {
+  @apply absolute inset-0 bg-green-500 origin-left;
+}
+
+.progress-tracker-step-content {
+  @apply flex flex-col;
+}
+
+.progress-tracker-step-label {
+  @apply font-medium text-sm text-foreground;
+}
+
+.progress-tracker-step-description {
+  @apply text-xs text-muted-foreground;
+}
+
+.progress-tracker-step-error {
+  @apply text-xs text-destructive;
+}
+
+/* Dots variant */
+.progress-tracker-dot {
+  @apply w-3 h-3 rounded-full transition-all duration-200;
+}
+
+.progress-tracker-dot-sm { @apply w-2 h-2; }
+.progress-tracker-dot-lg { @apply w-4 h-4; }
+
+.progress-tracker-dot-completed { @apply bg-green-500; }
+.progress-tracker-dot-current { @apply bg-primary ring-4 ring-primary/20; }
+.progress-tracker-dot-upcoming { @apply bg-muted-foreground/30; }
+.progress-tracker-dot-clickable { @apply cursor-pointer hover:scale-125; }
+
+/* Progress bar variant */
+.progress-tracker-bar {
+  @apply w-full;
+}
+
+.progress-tracker-bar-header {
+  @apply flex justify-between items-center mb-2;
+}
+
+.progress-tracker-bar-label {
+  @apply font-medium text-sm text-foreground;
+}
+
+.progress-tracker-bar-value {
+  @apply text-sm text-muted-foreground;
+}
+
+.progress-tracker-bar-track {
+  @apply h-2 bg-muted rounded-full overflow-hidden;
+}
+
+.progress-tracker-bar-sm .progress-tracker-bar-track { @apply h-1; }
+.progress-tracker-bar-lg .progress-tracker-bar-track { @apply h-3; }
+
+.progress-tracker-bar-fill {
+  @apply h-full bg-primary rounded-full;
+}
+
+.progress-tracker-time {
+  @apply text-xs text-muted-foreground mt-1;
+}
+
+/* Circular variant */
+.progress-tracker-circular-wrapper {
+  @apply flex flex-col items-center gap-2;
+}
+
+.progress-tracker-circular {
+  @apply relative;
+}
+
+.progress-tracker-circular-svg {
+  @apply transform -rotate-90;
+}
+
+.progress-tracker-circular-bg {
+  @apply opacity-20;
+}
+
+.progress-tracker-circular-progress {
+  @apply text-primary;
+}
+
+.progress-tracker-circular-content {
+  @apply absolute inset-0 flex flex-col items-center justify-center;
+}
+
+.progress-tracker-circular-value {
+  @apply font-bold;
+}
+
+.progress-tracker-circular-label {
+  @apply text-xs text-muted-foreground;
+}
+
+/* ============================================================================
+   STATS DISPLAY COMPONENT
+   ============================================================================ */
+
+.stats-display {
+  @apply w-full;
+}
+
+.stats-display-title {
+  @apply font-semibold text-foreground mb-4;
+}
+
+.stats-display-items {
+  @apply flex flex-wrap gap-4;
+}
+
+.stats-display-grid .stats-display-items {
+  @apply grid;
+}
+
+.stats-display-cols-2 .stats-display-items { @apply grid-cols-2; }
+.stats-display-cols-3 .stats-display-items { @apply grid-cols-3; }
+.stats-display-cols-4 .stats-display-items { @apply grid-cols-4; }
+
+.stats-display-inline .stats-display-items {
+  @apply flex-row flex-nowrap overflow-x-auto gap-6;
+}
+
+.stats-item {
+  @apply flex gap-3;
+}
+
+.stats-item-card {
+  @apply flex-col items-center text-center p-4 rounded-lg border border-border/50
+         bg-card/50 min-w-[120px];
+}
+
+.stats-item-compact {
+  @apply items-center p-2;
+}
+
+.stats-item-minimal {
+  @apply items-baseline gap-2;
+}
+
+.stats-item-clickable {
+  @apply cursor-pointer;
+}
+
+.stats-item-visual {
+  @apply flex items-center justify-center;
+}
+
+.stats-item-icon {
+  @apply text-2xl;
+}
+
+.stats-item-sm .stats-item-icon { @apply text-xl; }
+.stats-item-lg .stats-item-icon { @apply text-3xl; }
+
+.stats-item-progress-wrapper {
+  @apply relative;
+}
+
+.stats-item-icon-overlay {
+  @apply absolute inset-0 flex items-center justify-center text-lg;
+}
+
+.stats-item-content {
+  @apply flex flex-col gap-0.5;
+}
+
+.stats-item-header {
+  @apply flex items-center gap-2;
+}
+
+.stats-item-value {
+  @apply font-bold text-2xl text-foreground;
+}
+
+.stats-item-sm .stats-item-value { @apply text-lg; }
+.stats-item-lg .stats-item-value { @apply text-3xl; }
+
+.stats-item-trend {
+  @apply flex items-center gap-1 text-sm font-medium;
+}
+
+.stats-item-trend-up {
+  @apply text-green-500;
+}
+
+.stats-item-trend-down {
+  @apply text-red-500;
+}
+
+.stats-item-trend-neutral {
+  @apply text-muted-foreground;
+}
+
+.stats-item-change {
+  @apply text-xs;
+}
+
+.stats-item-label {
+  @apply text-sm text-muted-foreground;
+}
+
+.stats-item-description {
+  @apply text-xs text-muted-foreground/70;
+}
+
+.stats-item-progress-bar {
+  @apply h-1 bg-muted rounded-full overflow-hidden mt-2;
+}
+
+.stats-item-progress-fill {
+  @apply h-full bg-primary rounded-full transition-all duration-500;
+}
+
+.stats-item-progress-complete {
+  @apply bg-green-500;
+}
+
+.stats-item-goal {
+  @apply text-xs text-muted-foreground mt-1;
+}
+
+.stats-sparkline {
+  @apply mt-2;
+}
+
+.stats-sparkline-line {
+  @apply text-muted-foreground;
+}
+
+.stats-sparkline-up { @apply text-green-500; }
+.stats-sparkline-down { @apply text-red-500; }
+
+.stats-progress-ring-bg {
+  @apply text-muted opacity-30;
+}
+
+.stats-progress-ring-fill {
+  @apply text-primary;
+}
+
+.stats-progress-ring-complete {
+  @apply text-green-500;
+}
+
+/* Loading skeleton */
+.stats-item-loading {
+  @apply animate-pulse;
+}
+
+.stats-item-skeleton-value {
+  @apply h-8 w-20 bg-muted/50 rounded;
+}
+
+.stats-item-skeleton-label {
+  @apply h-4 w-16 bg-muted/30 rounded mt-1;
+}
+
+/* ============================================================================
+   ITEM CAROUSEL COMPONENT
+   ============================================================================ */
+
+.item-carousel {
+  @apply w-full;
+}
+
+.item-carousel-title {
+  @apply font-semibold text-foreground mb-4;
+}
+
+.item-carousel-wrapper {
+  @apply relative flex items-center gap-2;
+}
+
+.item-carousel-track-container {
+  @apply flex-1 overflow-hidden;
+}
+
+.item-carousel-track {
+  @apply flex;
+}
+
+.item-carousel-slide {
+  @apply shrink-0;
+}
+
+.item-carousel-arrow {
+  @apply flex items-center justify-center w-10 h-10 rounded-full
+         bg-background border border-border shadow-sm
+         hover:bg-muted transition-colors z-10;
+}
+
+.item-carousel-arrow-disabled {
+  @apply opacity-30 cursor-not-allowed;
+}
+
+.item-carousel-dots {
+  @apply flex justify-center gap-2 mt-4;
+}
+
+.item-carousel-dot {
+  @apply w-2 h-2 rounded-full bg-muted-foreground/30 transition-all duration-200;
+}
+
+.item-carousel-dot-active {
+  @apply bg-primary w-4;
+}
+
+/* Card variant */
+.carousel-item-card {
+  @apply rounded-lg border border-border/50 bg-card overflow-hidden;
+}
+
+.carousel-card-image {
+  @apply relative aspect-video overflow-hidden;
+}
+
+.carousel-card-image img {
+  @apply w-full h-full object-cover;
+}
+
+.carousel-card-content {
+  @apply p-4;
+}
+
+.carousel-card-avatar {
+  @apply w-10 h-10 rounded-full mb-2;
+}
+
+/* Avatar variant */
+.carousel-item-avatar {
+  @apply flex flex-col items-center gap-2 p-4;
+}
+
+.carousel-avatar-wrapper {
+  @apply relative;
+}
+
+.carousel-avatar {
+  @apply w-16 h-16 rounded-full object-cover;
+}
+
+.carousel-item-sm .carousel-avatar { @apply w-12 h-12; }
+.carousel-item-lg .carousel-avatar { @apply w-20 h-20; }
+
+.carousel-avatar-placeholder {
+  @apply flex items-center justify-center bg-primary text-primary-foreground font-bold text-xl;
+}
+
+.carousel-status {
+  @apply absolute bottom-0 right-0 w-4 h-4 rounded-full border-2 border-background;
+}
+
+.carousel-status-online { @apply bg-green-500; }
+.carousel-status-offline { @apply bg-muted-foreground; }
+.carousel-status-away { @apply bg-yellow-500; }
+.carousel-status-busy { @apply bg-red-500; }
+
+/* Image variant */
+.carousel-item-image {
+  @apply relative rounded-lg overflow-hidden aspect-video;
+}
+
+.carousel-image {
+  @apply w-full h-full object-cover;
+}
+
+.carousel-image-placeholder {
+  @apply flex items-center justify-center bg-muted text-muted-foreground;
+}
+
+.carousel-image-overlay {
+  @apply absolute inset-x-0 bottom-0 p-3 bg-gradient-to-t from-black/70 to-transparent;
+}
+
+/* Minimal variant */
+.carousel-item-minimal {
+  @apply flex items-center gap-3 p-3 rounded-lg hover:bg-muted/50 transition-colors;
+}
+
+.carousel-item-icon {
+  @apply w-10 h-10 rounded object-cover;
+}
+
+.carousel-item-info {
+  @apply flex flex-col;
+}
+
+/* Common item styles */
+.carousel-item-name {
+  @apply font-medium text-foreground;
+}
+
+.carousel-item-title {
+  @apply text-sm text-muted-foreground;
+}
+
+.carousel-item-description {
+  @apply text-sm text-muted-foreground line-clamp-2 mt-1;
+}
+
+.carousel-item-badge {
+  @apply absolute top-2 right-2 px-2 py-0.5 bg-primary text-primary-foreground
+         text-xs font-medium rounded;
+}
+
+/* ============================================================================
+   Attachments Component
+   ============================================================================ */
+
+.attachments {
+  @apply flex flex-col gap-2;
+}
+
+.attachments-grid {
+  @apply grid gap-3;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+}
+
+.attachments-list {
+  @apply flex flex-col gap-2;
+}
+
+.attachments-compact {
+  @apply flex flex-wrap gap-2;
+}
+
+.attachments-chips {
+  @apply flex flex-wrap gap-2;
+}
+
+.attachment-item {
+  @apply relative flex items-center gap-3 p-3 rounded-lg border border-border/50
+         bg-card hover:bg-accent/50 transition-colors cursor-pointer;
+}
+
+.attachments-grid .attachment-item {
+  @apply flex-col items-start p-4;
+}
+
+.attachments-chips .attachment-item {
+  @apply inline-flex p-2 gap-2;
+}
+
+.attachment-icon {
+  @apply flex-shrink-0 w-10 h-10 flex items-center justify-center rounded-lg
+         bg-muted text-muted-foreground;
+}
+
+.attachment-icon-image {
+  @apply w-10 h-10 rounded-lg object-cover;
+}
+
+.attachment-content {
+  @apply flex-1 min-w-0;
+}
+
+.attachment-name {
+  @apply font-medium text-foreground truncate;
+}
+
+.attachment-meta {
+  @apply text-xs text-muted-foreground flex items-center gap-2;
+}
+
+.attachment-progress {
+  @apply absolute bottom-0 left-0 right-0 h-1 bg-muted rounded-b-lg overflow-hidden;
+}
+
+.attachment-progress-bar {
+  @apply h-full bg-primary;
+}
+
+.attachment-actions {
+  @apply flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity;
+}
+
+.attachment-action {
+  @apply p-1.5 rounded hover:bg-muted text-muted-foreground hover:text-foreground;
+}
+
+.attachment-status-error {
+  @apply border-destructive/50 bg-destructive/5;
+}
+
+.attachment-status-error .attachment-icon {
+  @apply bg-destructive/10 text-destructive;
+}
+
+/* ============================================================================
+   Confirmation Component
+   ============================================================================ */
+
+.confirmation {
+  @apply relative flex gap-4 p-4 rounded-lg border border-border bg-card;
+}
+
+.confirmation-card {
+  @apply shadow-lg max-w-md;
+}
+
+.confirmation-inline {
+  @apply border-none bg-transparent p-0 shadow-none;
+}
+
+.confirmation-banner {
+  @apply rounded-none border-x-0 border-t-0;
+}
+
+.confirmation-compact {
+  @apply p-3 gap-3;
+}
+
+.confirmation-icon {
+  @apply flex-shrink-0 w-10 h-10 flex items-center justify-center rounded-full;
+}
+
+.confirmation-icon-default {
+  @apply bg-primary/10 text-primary;
+}
+
+.confirmation-icon-destructive {
+  @apply bg-destructive/10 text-destructive;
+}
+
+.confirmation-icon-warning {
+  @apply bg-yellow-500/10 text-yellow-600;
+}
+
+.confirmation-icon-info {
+  @apply bg-blue-500/10 text-blue-600;
+}
+
+.confirmation-content {
+  @apply flex-1 min-w-0;
+}
+
+.confirmation-title {
+  @apply font-semibold text-foreground mb-1;
+}
+
+.confirmation-description {
+  @apply text-sm text-muted-foreground;
+}
+
+.confirmation-countdown {
+  @apply mt-3 text-xs text-muted-foreground;
+}
+
+.confirmation-countdown-bar {
+  @apply h-1 bg-muted rounded-full mt-1 overflow-hidden;
+}
+
+.confirmation-countdown-fill {
+  @apply h-full bg-primary;
+}
+
+.confirmation-actions {
+  @apply flex items-center gap-2 mt-4;
+}
+
+.confirmation-action {
+  @apply px-4 py-2 rounded-lg font-medium text-sm transition-colors;
+}
+
+.confirmation-action-primary {
+  @apply bg-primary text-primary-foreground hover:bg-primary/90;
+}
+
+.confirmation-action-destructive {
+  @apply bg-destructive text-destructive-foreground hover:bg-destructive/90;
+}
+
+.confirmation-action-secondary {
+  @apply bg-secondary text-secondary-foreground hover:bg-secondary/80;
+}
+
+.confirmation-action-ghost {
+  @apply hover:bg-muted text-muted-foreground hover:text-foreground;
+}
+
+.confirmation-shortcut {
+  @apply ml-2 px-1.5 py-0.5 bg-muted rounded text-xs;
+}
+
+.confirmation-dismiss {
+  @apply absolute top-2 right-2 p-1.5 rounded-full hover:bg-muted
+         text-muted-foreground hover:text-foreground;
+}
+
+.confirmation-overlay {
+  @apply fixed inset-0 flex items-center justify-center bg-black/50 z-50;
+}
+
+.confirmation-spinner {
+  @apply w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin;
+}
+
+/* ============================================================================
+   Suggestion Component
+   ============================================================================ */
+
+.suggestion-list {
+  @apply flex flex-wrap gap-2;
+}
+
+.suggestion-list-vertical {
+  @apply flex-col;
+}
+
+.suggestion-list-horizontal {
+  @apply flex-row overflow-x-auto pb-1;
+}
+
+.suggestion-group {
+  @apply flex flex-col gap-2;
+}
+
+.suggestion-group-label {
+  @apply text-sm font-medium text-muted-foreground;
+}
+
+.suggestion {
+  @apply inline-flex items-center gap-2 px-3 py-2 rounded-lg border border-border
+         bg-card hover:bg-accent transition-colors cursor-pointer;
+}
+
+.suggestion-chips {
+  @apply rounded-full px-4;
+}
+
+.suggestion-cards {
+  @apply flex-col items-start p-4;
+}
+
+.suggestion-pills {
+  @apply rounded-full;
+}
+
+.suggestion-compact {
+  @apply px-2 py-1 text-sm;
+}
+
+.suggestion-sm { @apply text-sm py-1.5 px-2.5; }
+.suggestion-lg { @apply text-base py-3 px-4; }
+
+.suggestion-selected {
+  @apply border-primary bg-primary/5;
+}
+
+.suggestion-disabled {
+  @apply opacity-50 cursor-not-allowed hover:bg-card;
+}
+
+.suggestion-icon {
+  @apply flex-shrink-0 text-muted-foreground;
+}
+
+.suggestion-content {
+  @apply flex-1 min-w-0 text-left;
+}
+
+.suggestion-label {
+  @apply font-medium text-foreground;
+}
+
+.suggestion-description {
+  @apply text-sm text-muted-foreground line-clamp-2;
+}
+
+.suggestion-badge {
+  @apply px-2 py-0.5 bg-muted text-muted-foreground text-xs rounded-full;
+}
+
+/* ============================================================================
+   FileTree Component
+   ============================================================================ */
+
+.file-tree {
+  @apply font-mono text-sm;
+}
+
+.file-tree-search {
+  @apply flex items-center gap-2 px-3 py-2 mb-2 border border-border rounded-lg;
+}
+
+.file-tree-search-input {
+  @apply flex-1 bg-transparent border-none outline-none text-foreground;
+}
+
+.file-tree-container {
+  @apply overflow-auto;
+}
+
+.file-tree-node {
+  @apply flex items-center gap-1 py-1 px-2 rounded-md cursor-pointer
+         hover:bg-accent/50 transition-colors;
+}
+
+.file-tree-node-selected {
+  @apply bg-accent;
+}
+
+.file-tree-expand {
+  @apply p-0.5 rounded hover:bg-muted transition-colors;
+}
+
+.file-tree-checkbox {
+  @apply w-4 h-4 rounded border border-border;
+}
+
+.file-tree-icon {
+  @apply flex-shrink-0 w-4 h-4;
+}
+
+.file-tree-label {
+  @apply flex-1 truncate text-foreground;
+}
+
+.file-tree-meta {
+  @apply text-xs text-muted-foreground;
+}
+
+.file-tree-children {
+  @apply ml-4 border-l border-border/50 pl-2;
+}
+
+.file-tree-empty {
+  @apply text-center py-4 text-muted-foreground;
+}
+
+/* ============================================================================
+   CodeSnippet Component
+   ============================================================================ */
+
+.code-snippet {
+  @apply rounded-lg overflow-hidden border border-border;
+  font-family: 'Fira Code', 'JetBrains Mono', Monaco, Consolas, monospace;
+}
+
+.code-snippet-header {
+  @apply flex items-center justify-between px-4 py-2 border-b border-border;
+}
+
+.code-snippet-language {
+  @apply text-xs font-medium uppercase tracking-wide;
+}
+
+.code-snippet-filename {
+  @apply text-sm font-medium;
+}
+
+.code-snippet-actions {
+  @apply flex items-center gap-2;
+}
+
+.code-snippet-copy {
+  @apply p-1.5 rounded hover:bg-white/10 transition-colors;
+}
+
+.code-snippet-content {
+  @apply overflow-auto;
+}
+
+.code-snippet-table {
+  @apply w-full border-collapse;
+}
+
+.code-snippet-line {
+  @apply leading-relaxed;
+}
+
+.code-snippet-line-number {
+  @apply px-4 text-right select-none opacity-50 border-r border-border/20;
+}
+
+.code-snippet-line-content {
+  @apply px-4 whitespace-pre;
+}
+
+.code-snippet-line-highlighted {
+  @apply bg-yellow-500/10;
+}
+
+.code-snippet-line-added {
+  @apply bg-green-500/10;
+}
+
+.code-snippet-line-added::before {
+  content: '+';
+  @apply text-green-500 mr-2;
+}
+
+.code-snippet-line-removed {
+  @apply bg-red-500/10;
+}
+
+.code-snippet-line-removed::before {
+  content: '-';
+  @apply text-red-500 mr-2;
+}
+
+.code-snippet-group {
+  @apply rounded-lg overflow-hidden border border-border;
+}
+
+.code-snippet-tabs {
+  @apply flex border-b border-border overflow-x-auto;
+}
+
+.code-snippet-tab {
+  @apply px-4 py-2 text-sm font-medium text-muted-foreground
+         hover:text-foreground border-b-2 border-transparent transition-colors;
+}
+
+.code-snippet-tab-active {
+  @apply text-foreground border-primary;
+}
+
+/* ============================================================================
+   StackTrace Component
+   ============================================================================ */
+
+.stack-trace {
+  @apply rounded-lg overflow-hidden border border-border;
+  font-family: 'Fira Code', 'JetBrains Mono', Monaco, Consolas, monospace;
+}
+
+.stack-trace-header {
+  @apply flex items-center justify-between px-4 py-3 border-b border-border;
+}
+
+.stack-trace-error {
+  @apply flex items-center gap-2;
+}
+
+.stack-trace-error-icon {
+  @apply text-destructive;
+}
+
+.stack-trace-error-name {
+  @apply font-semibold;
+}
+
+.stack-trace-message {
+  @apply px-4 py-3 border-b border-border text-sm;
+}
+
+.stack-trace-frames {
+  @apply divide-y divide-border/50;
+}
+
+.stack-trace-frame {
+  @apply px-4 py-2 hover:bg-white/5 transition-colors cursor-pointer;
+}
+
+.stack-trace-frame-external {
+  @apply opacity-50;
+}
+
+.stack-trace-frame-header {
+  @apply flex items-center justify-between gap-4;
+}
+
+.stack-trace-function {
+  @apply font-medium;
+}
+
+.stack-trace-location {
+  @apply text-sm opacity-70;
+}
+
+.stack-trace-filename {
+  @apply font-medium;
+}
+
+.stack-trace-position {
+  @apply opacity-70;
+}
+
+.stack-trace-context {
+  @apply mt-2 pt-2 border-t border-border/30;
+}
+
+.stack-trace-context-line {
+  @apply flex text-sm;
+}
+
+.stack-trace-context-number {
+  @apply w-12 text-right pr-4 select-none opacity-50;
+}
+
+.stack-trace-context-current {
+  @apply bg-destructive/20;
+}
+
+.stack-trace-collapse-toggle {
+  @apply px-4 py-2 text-sm text-muted-foreground hover:text-foreground
+         border-t border-border transition-colors;
+}
+
+.stack-trace-actions {
+  @apply flex items-center gap-2;
+}
+
+.stack-trace-copy {
+  @apply p-1.5 rounded hover:bg-white/10 transition-colors;
+}
+
+/* ============================================================================
+   TestResults Component
+   ============================================================================ */
+
+.test-results {
+  @apply rounded-lg border border-border overflow-hidden;
+}
+
+.test-results-header {
+  @apply flex items-center justify-between px-4 py-3 border-b border-border bg-muted/30;
+}
+
+.test-results-title {
+  @apply font-semibold text-foreground;
+}
+
+.test-results-summary {
+  @apply flex items-center gap-4 text-sm;
+}
+
+.test-results-stat {
+  @apply flex items-center gap-1.5;
+}
+
+.test-results-stat-pass { @apply text-green-600; }
+.test-results-stat-fail { @apply text-red-600; }
+.test-results-stat-skip { @apply text-yellow-600; }
+
+.test-results-progress {
+  @apply h-1.5 bg-muted rounded-full overflow-hidden flex;
+}
+
+.test-results-progress-pass { @apply bg-green-500; }
+.test-results-progress-fail { @apply bg-red-500; }
+.test-results-progress-skip { @apply bg-yellow-500; }
+
+.test-results-content {
+  @apply divide-y divide-border;
+}
+
+.test-suite {
+  @apply border-b border-border last:border-b-0;
+}
+
+.test-suite-header {
+  @apply flex items-center justify-between px-4 py-3 cursor-pointer
+         hover:bg-muted/30 transition-colors;
+}
+
+.test-suite-title {
+  @apply flex items-center gap-2 font-medium;
+}
+
+.test-suite-meta {
+  @apply flex items-center gap-3 text-sm text-muted-foreground;
+}
+
+.test-suite-tests {
+  @apply divide-y divide-border/50;
+}
+
+.test-result-item {
+  @apply flex items-start gap-3 px-4 py-3 pl-8;
+}
+
+.test-result-icon {
+  @apply flex-shrink-0 mt-0.5;
+}
+
+.test-result-icon-pass { @apply text-green-500; }
+.test-result-icon-fail { @apply text-red-500; }
+.test-result-icon-skip { @apply text-yellow-500; }
+.test-result-icon-running { @apply text-blue-500 animate-spin; }
+
+.test-result-content {
+  @apply flex-1 min-w-0;
+}
+
+.test-result-name {
+  @apply font-medium text-foreground;
+}
+
+.test-result-duration {
+  @apply text-sm text-muted-foreground;
+}
+
+.test-result-error {
+  @apply mt-2 p-3 rounded bg-destructive/10 text-destructive text-sm font-mono;
+}
+
+.test-result-stack {
+  @apply mt-2 p-3 rounded bg-muted text-xs font-mono overflow-x-auto;
+}
+
+/* ============================================================================
+   ResponseActions Component
+   ============================================================================ */
+
+.response-actions {
+  @apply flex items-center gap-1;
+}
+
+.response-actions-inline {
+  @apply opacity-0 group-hover:opacity-100 transition-opacity;
+}
+
+.response-actions-toolbar {
+  @apply p-1 rounded-lg bg-muted/50 gap-2;
+}
+
+.response-actions-floating {
+  @apply absolute bottom-2 right-2 p-1 rounded-lg bg-card shadow-lg border border-border;
+}
+
+.response-actions-minimal {
+  @apply gap-0;
+}
+
+.response-action-btn {
+  @apply flex items-center justify-center rounded-lg text-muted-foreground
+         hover:text-foreground hover:bg-muted transition-colors;
+}
+
+.response-action-btn-active {
+  @apply text-primary;
+}
+
+.response-action-btn-disabled {
+  @apply opacity-50 cursor-not-allowed hover:bg-transparent hover:text-muted-foreground;
+}
+
+.response-action-label {
+  @apply ml-2 text-sm;
+}
+
+.response-action-shortcut {
+  @apply ml-2 px-1.5 py-0.5 bg-muted rounded text-xs;
+}
+
+.response-action-spinner {
+  @apply flex items-center justify-center;
+}
+
+/* ============================================================================
+   ImageGallery Component
+   ============================================================================ */
+
+.image-gallery {
+  @apply relative;
+}
+
+.image-gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  @apply gap-3;
+}
+
+.image-gallery-masonry {
+  @apply columns-2 md:columns-3 lg:columns-4 gap-3;
+}
+
+.image-gallery-masonry .image-gallery-item {
+  @apply mb-3 break-inside-avoid;
+}
+
+.image-gallery-carousel {
+  @apply flex overflow-x-auto gap-3 pb-2 snap-x snap-mandatory;
+}
+
+.image-gallery-carousel .image-gallery-item {
+  @apply flex-shrink-0 snap-start;
+}
+
+.image-gallery-stack {
+  @apply relative h-64;
+}
+
+.image-gallery-stack .image-gallery-item {
+  @apply absolute inset-0;
+}
+
+.image-gallery-item {
+  @apply relative rounded-lg overflow-hidden cursor-pointer group;
+}
+
+.image-gallery-image {
+  @apply w-full h-full object-cover transition-transform group-hover:scale-105;
+}
+
+.image-gallery-overlay {
+  @apply absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100
+         transition-opacity flex items-center justify-center;
+}
+
+.image-gallery-caption {
+  @apply absolute bottom-0 inset-x-0 p-3 bg-gradient-to-t from-black/70 to-transparent;
+}
+
+.image-gallery-caption-text {
+  @apply text-white text-sm;
+}
+
+/* Lightbox */
+.image-gallery-lightbox {
+  @apply fixed inset-0 z-50 bg-black/90 flex items-center justify-center;
+}
+
+.image-gallery-lightbox-content {
+  @apply relative max-w-[90vw] max-h-[90vh];
+}
+
+.image-gallery-lightbox-image {
+  @apply max-w-full max-h-[85vh] object-contain;
+}
+
+.image-gallery-lightbox-close {
+  @apply absolute top-4 right-4 p-2 rounded-full bg-white/10 text-white
+         hover:bg-white/20 transition-colors;
+}
+
+.image-gallery-lightbox-nav {
+  @apply absolute top-1/2 -translate-y-1/2 p-3 rounded-full bg-white/10 text-white
+         hover:bg-white/20 transition-colors;
+}
+
+.image-gallery-lightbox-prev {
+  @apply left-4;
+}
+
+.image-gallery-lightbox-next {
+  @apply right-4;
+}
+
+.image-gallery-lightbox-caption {
+  @apply absolute bottom-4 left-1/2 -translate-x-1/2 text-white text-center
+         px-4 py-2 bg-black/50 rounded-lg;
+}
+
+.image-gallery-lightbox-counter {
+  @apply absolute bottom-4 right-4 text-white text-sm bg-black/50 px-3 py-1 rounded;
+}
+
+/* ============================================================================
+   DataTable Component
+   ============================================================================ */
+
+.data-table {
+  @apply rounded-lg border border-border overflow-hidden;
+}
+
+.data-table-header {
+  @apply flex items-center justify-between px-4 py-3 border-b border-border bg-muted/30;
+}
+
+.data-table-search {
+  @apply flex items-center gap-2 px-3 py-1.5 border border-border rounded-lg;
+}
+
+.data-table-search-input {
+  @apply bg-transparent border-none outline-none text-sm;
+}
+
+.data-table-actions {
+  @apply flex items-center gap-2;
+}
+
+.data-table-container {
+  @apply overflow-x-auto;
+}
+
+.data-table-table {
+  @apply w-full border-collapse;
+}
+
+.data-table-head {
+  @apply bg-muted/50;
+}
+
+.data-table-th {
+  @apply px-4 py-3 text-left text-sm font-medium text-muted-foreground
+         border-b border-border;
+}
+
+.data-table-th-sortable {
+  @apply cursor-pointer hover:text-foreground transition-colors;
+}
+
+.data-table-sort-icon {
+  @apply inline-block ml-1 opacity-50;
+}
+
+.data-table-sort-icon-active {
+  @apply opacity-100 text-primary;
+}
+
+.data-table-td {
+  @apply px-4 py-3 text-sm border-b border-border;
+}
+
+.data-table-row {
+  @apply hover:bg-muted/30 transition-colors;
+}
+
+.data-table-row-selected {
+  @apply bg-primary/5;
+}
+
+.data-table-checkbox {
+  @apply w-4 h-4 rounded border border-border;
+}
+
+.data-table-footer {
+  @apply flex items-center justify-between px-4 py-3 border-t border-border bg-muted/30;
+}
+
+.data-table-pagination {
+  @apply flex items-center gap-1;
+}
+
+.data-table-page-btn {
+  @apply px-3 py-1.5 rounded text-sm hover:bg-muted transition-colors;
+}
+
+.data-table-page-btn-active {
+  @apply bg-primary text-primary-foreground;
+}
+
+.data-table-empty {
+  @apply text-center py-12 text-muted-foreground;
+}
+
+.data-table-loading {
+  @apply flex items-center justify-center py-12 gap-2;
+}
+
+.data-table-spinner {
+  @apply w-5 h-5 border-2 border-primary border-t-transparent rounded-full animate-spin;
+}
+
+/* ============================================================================
+   ApprovalCard Component
+   ============================================================================ */
+
+.approval-card {
+  @apply relative flex gap-4 p-4 rounded-lg border border-border bg-card;
+}
+
+.approval-card-default {
+  @apply border-primary/30;
+}
+
+.approval-card-warning {
+  @apply border-yellow-500/30 bg-yellow-50/5;
+}
+
+.approval-card-danger {
+  @apply border-destructive/30 bg-destructive/5;
+}
+
+.approval-card-info {
+  @apply border-blue-500/30 bg-blue-50/5;
+}
+
+.approval-card-sm { @apply p-3 gap-3; }
+.approval-card-lg { @apply p-5 gap-5; }
+
+.approval-card-icon {
+  @apply flex-shrink-0 w-10 h-10 flex items-center justify-center rounded-full;
+}
+
+.approval-card-icon-default { @apply bg-primary/10 text-primary; }
+.approval-card-icon-warning { @apply bg-yellow-500/10 text-yellow-600; }
+.approval-card-icon-danger { @apply bg-destructive/10 text-destructive; }
+.approval-card-icon-info { @apply bg-blue-500/10 text-blue-600; }
+
+.approval-card-content {
+  @apply flex-1 min-w-0;
+}
+
+.approval-card-title {
+  @apply font-semibold text-foreground;
+}
+
+.approval-card-description {
+  @apply text-sm text-muted-foreground mt-1;
+}
+
+.approval-card-details-wrapper {
+  @apply mt-3;
+}
+
+.approval-card-details-toggle {
+  @apply flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground
+         transition-colors;
+}
+
+.approval-card-details {
+  @apply mt-2 space-y-2 overflow-hidden;
+}
+
+.approval-card-detail {
+  @apply flex items-start gap-2 text-sm;
+}
+
+.approval-card-detail-label {
+  @apply text-muted-foreground min-w-[100px];
+}
+
+.approval-card-detail-value {
+  @apply text-foreground;
+}
+
+.approval-card-detail-code {
+  @apply font-mono text-xs bg-muted px-1.5 py-0.5 rounded;
+}
+
+.approval-card-countdown {
+  @apply mt-3 text-xs text-muted-foreground;
+}
+
+.approval-card-countdown-bar {
+  @apply h-1 bg-muted rounded-full mt-1 overflow-hidden;
+}
+
+.approval-card-countdown-fill {
+  @apply h-full bg-primary;
+}
+
+.approval-card-actions {
+  @apply flex items-center gap-2 mt-4;
+}
+
+.approval-card-action {
+  @apply px-4 py-2 rounded-lg font-medium text-sm transition-colors;
+}
+
+.approval-card-action-approve {
+  @apply bg-primary text-primary-foreground hover:bg-primary/90;
+}
+
+.approval-card-action-danger {
+  @apply bg-destructive text-destructive-foreground hover:bg-destructive/90;
+}
+
+.approval-card-action-reject {
+  @apply bg-secondary text-secondary-foreground hover:bg-secondary/80;
+}
+
+.approval-card-action-always {
+  @apply text-muted-foreground hover:text-foreground;
+}
+
+.approval-card-spinner {
+  @apply w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin;
+}
+
+/* ============================================================================
+   InlineCitation Component
+   ============================================================================ */
+
+.inline-citation-wrapper {
+  @apply relative inline;
+}
+
+.inline-citation {
+  @apply inline-flex items-center justify-center min-w-[1.25rem] h-5 px-1
+         text-xs font-medium rounded bg-primary/10 text-primary
+         hover:bg-primary/20 transition-colors cursor-pointer;
+}
+
+.inline-citation-bracket {
+  @apply px-0.5 bg-transparent text-primary;
+}
+
+.inline-citation-superscript sup {
+  @apply text-[10px];
+}
+
+.inline-citation-footnote sup {
+  @apply text-[10px] text-muted-foreground;
+}
+
+.inline-citation-link {
+  @apply inline-flex items-center gap-1 text-primary underline decoration-dotted
+         hover:decoration-solid;
+}
+
+.inline-citation-verified-source {
+  @apply bg-green-500/10 text-green-600;
+}
+
+.inline-citation-popover {
+  @apply absolute bottom-full left-1/2 -translate-x-1/2 mb-2 z-50;
+}
+
+.inline-citation-preview {
+  @apply w-72 p-3 rounded-lg border border-border bg-popover shadow-lg;
+}
+
+.inline-citation-preview-header {
+  @apply flex items-center gap-2 mb-2;
+}
+
+.inline-citation-preview-favicon {
+  @apply w-4 h-4 rounded;
+}
+
+.inline-citation-preview-icon {
+  @apply text-muted-foreground;
+}
+
+.inline-citation-preview-meta {
+  @apply flex-1 min-w-0;
+}
+
+.inline-citation-preview-publisher {
+  @apply text-xs font-medium text-foreground;
+}
+
+.inline-citation-preview-author {
+  @apply text-xs text-muted-foreground;
+}
+
+.inline-citation-verified {
+  @apply text-green-500;
+}
+
+.inline-citation-preview-title {
+  @apply font-medium text-sm text-foreground line-clamp-2;
+}
+
+.inline-citation-preview-snippet {
+  @apply text-xs text-muted-foreground mt-1 line-clamp-2;
+}
+
+.inline-citation-preview-footer {
+  @apply flex items-center gap-2 mt-2 text-xs text-muted-foreground;
+}
+
+.inline-citation-list {
+  @apply inline;
+}
+
+.inline-citation-separator {
+  @apply text-muted-foreground;
+}
+
+/* Citation Footnotes */
+.citation-footnotes {
+  @apply mt-8 pt-4 border-t border-border;
+}
+
+.citation-footnotes-title {
+  @apply text-lg font-semibold mb-4;
+}
+
+.citation-footnotes-list {
+  @apply space-y-3 list-none p-0 m-0;
+}
+
+.citation-footnote-item {
+  @apply flex gap-3;
+}
+
+.citation-footnote-number {
+  @apply text-sm font-medium text-muted-foreground min-w-[1.5rem];
+}
+
+.citation-footnote-content {
+  @apply flex-1;
+}
+
+.citation-footnote-header {
+  @apply flex items-center gap-2;
+}
+
+.citation-footnote-favicon {
+  @apply w-4 h-4 rounded;
+}
+
+.citation-footnote-title {
+  @apply font-medium text-foreground hover:underline;
+}
+
+.citation-footnote-verified {
+  @apply text-green-500;
+}
+
+.citation-footnote-meta {
+  @apply flex items-center gap-2 text-sm text-muted-foreground mt-0.5;
+}
+
+.citation-footnote-snippet {
+  @apply text-sm text-muted-foreground mt-1;
+}
+
+/* ============================================================================
+   OptionList Component
+   ============================================================================ */
+
+.option-list {
+  @apply flex flex-col gap-2;
+}
+
+.option-list-search {
+  @apply flex items-center gap-2 px-3 py-2 border border-border rounded-lg mb-2;
+}
+
+.option-list-search-input {
+  @apply flex-1 bg-transparent border-none outline-none text-foreground;
+}
+
+.option-list-container {
+  @apply flex flex-col gap-1;
+}
+
+.option-list-container-grid {
+  display: grid;
+  @apply gap-3;
+}
+
+.option-list-container-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  @apply gap-3;
+}
+
+.option-list-group {
+  @apply flex flex-col gap-1;
+}
+
+.option-list-group-label {
+  @apply text-sm font-medium text-muted-foreground px-2 py-1;
+}
+
+.option-list-item {
+  @apply flex items-start gap-3 px-3 py-2 rounded-lg cursor-pointer
+         hover:bg-accent/50 transition-colors;
+}
+
+.option-list-item-list {
+  @apply border border-transparent;
+}
+
+.option-list-item-cards {
+  @apply flex-col p-4 border border-border bg-card;
+}
+
+.option-list-item-radio,
+.option-list-item-checkbox {
+  @apply items-center;
+}
+
+.option-list-item-compact {
+  @apply py-1.5 px-2;
+}
+
+.option-list-item-sm { @apply text-sm py-1.5; }
+.option-list-item-lg { @apply text-base py-3; }
+
+.option-list-item-selected {
+  @apply bg-primary/5 border-primary/30;
+}
+
+.option-list-item-disabled {
+  @apply opacity-50 cursor-not-allowed hover:bg-transparent;
+}
+
+.option-list-indicator {
+  @apply flex-shrink-0 w-5 h-5 flex items-center justify-center
+         border-2 border-border transition-colors;
+}
+
+.option-list-indicator-radio {
+  @apply rounded-full;
+}
+
+.option-list-indicator-checkbox {
+  @apply rounded;
+}
+
+.option-list-item-selected .option-list-indicator {
+  @apply border-primary bg-primary text-primary-foreground;
+}
+
+.option-list-indicator-check {
+  @apply text-current;
+}
+
+.option-list-icon {
+  @apply flex-shrink-0 text-muted-foreground;
+}
+
+.option-list-content {
+  @apply flex-1 min-w-0;
+}
+
+.option-list-label-row {
+  @apply flex items-center gap-2;
+}
+
+.option-list-label {
+  @apply font-medium text-foreground;
+}
+
+.option-list-badge {
+  @apply px-2 py-0.5 bg-muted text-muted-foreground text-xs rounded-full;
+}
+
+.option-list-description {
+  @apply text-sm text-muted-foreground;
+}
+
+.option-list-meta {
+  @apply text-xs text-muted-foreground mt-1;
+}
+
+.option-list-selected-badge {
+  @apply absolute top-2 right-2 w-6 h-6 flex items-center justify-center
+         rounded-full bg-primary text-primary-foreground;
+}
+
+.option-list-empty {
+  @apply text-center py-8 text-muted-foreground;
+}
+
+.option-list-loading {
+  @apply flex items-center justify-center gap-2 py-8;
+}
+
+.option-list-spinner {
+  @apply w-5 h-5 border-2 border-primary border-t-transparent rounded-full;
+}
+
+.option-list-selection-count {
+  @apply text-sm text-muted-foreground mt-2;
+}
+
+/* ============================================================================
+   VirtualScroller Component
+   ============================================================================ */
+
+.virtual-scroller {
+  @apply relative;
+}
+
+.virtual-scroller::-webkit-scrollbar {
+  @apply w-2 h-2;
+}
+
+.virtual-scroller::-webkit-scrollbar-track {
+  @apply bg-muted/30 rounded;
+}
+
+.virtual-scroller::-webkit-scrollbar-thumb {
+  @apply bg-muted-foreground/30 rounded hover:bg-muted-foreground/50;
+}
+
+.virtual-scroller-inner {
+  @apply relative;
+}
+
+.virtual-scroller-item {
+  @apply absolute left-0 right-0;
+}
+
+.virtual-scroller-loading {
+  @apply sticky bottom-0 flex items-center justify-center gap-2 py-4
+         bg-gradient-to-t from-background to-transparent;
+}
+
+.virtual-scroller-spinner {
+  @apply w-5 h-5 border-2 border-primary border-t-transparent rounded-full;
+}
+
+.virtual-scroller-empty {
+  @apply flex items-center justify-center h-full text-muted-foreground;
+}
+
+/* ============================================================================
+   Interactable Component Wrapper
+   ============================================================================ */
+
+.interactable-wrapper {
+  @apply relative;
+}
+
+.interactable-updating {
+  @apply pointer-events-none;
+}
+
+.interactable-updating::after {
+  content: '';
+  @apply absolute inset-0 bg-primary/5 rounded-lg animate-pulse;
+}
+
+.interactable-updating-indicator {
+  @apply absolute top-2 right-2 flex items-center gap-2 px-2 py-1
+         bg-primary text-primary-foreground text-xs rounded-full;
+}
+
+.interactable-spinner {
+  @apply w-3 h-3 border-2 border-current border-t-transparent rounded-full animate-spin;
+}
+
+/* ============================================================================
+   Generative Component
+   ============================================================================ */
+
+.generative-component-error {
+  @apply p-4 rounded-lg border border-destructive/30 bg-destructive/5
+         text-destructive text-sm;
+}
+
+.generative-component-fallback {
+  @apply p-4 rounded-lg border border-border bg-muted/30 text-muted-foreground;
+}
+
+.generative-component-loading {
+  @apply flex items-center justify-center p-8;
+}
+
+.generative-component-loading-spinner {
+  @apply w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin;
+}
