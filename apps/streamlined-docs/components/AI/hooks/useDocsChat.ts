@@ -67,6 +67,16 @@ export function useDocsChat() {
   // Provider status - tracks which AI provider is active
   const [providerInfo, setProviderInfo] = useState<ProviderInfo | null>(null)
   const [apiError, setApiError] = useState<string | null>(null)
+  // RAG metadata from response headers
+  const [ragMetadata, setRagMetadata] = useState<{
+    intent?: string
+    confidence?: number
+    complexity?: string
+    requiresCode?: boolean
+    entityCount?: number
+    modelUsed?: string
+    queryComplexity?: string
+  } | null>(null)
 
   // Refs
   const abortControllerRef = useRef<AbortController | null>(null)
@@ -327,6 +337,25 @@ export function useDocsChat() {
         if (!response.ok) {
           throw new Error(`API error: ${response.status}`)
         }
+
+        // Capture RAG metadata from response headers
+        const metadata = {
+          intent: response.headers.get('X-Query-Intent') || undefined,
+          confidence: response.headers.get('X-Query-Confidence')
+            ? parseFloat(response.headers.get('X-Query-Confidence')!)
+            : undefined,
+          complexity:
+            response.headers.get('X-Query-Complexity-Enhanced') || undefined,
+          requiresCode:
+            response.headers.get('X-Query-Requires-Code') === 'true',
+          entityCount: response.headers.get('X-Query-Entity-Count')
+            ? parseInt(response.headers.get('X-Query-Entity-Count')!, 10)
+            : undefined,
+          modelUsed: response.headers.get('X-Model-Used') || undefined,
+          queryComplexity:
+            response.headers.get('X-Query-Complexity') || undefined,
+        }
+        setRagMetadata(metadata)
 
         const reader = response.body?.getReader()
         const decoder = new TextDecoder()
@@ -764,6 +793,8 @@ export function useDocsChat() {
     providerInfo,
     apiError,
     isDemoMode: providerInfo?.isDemoMode ?? false,
+    // RAG metadata for enhanced display
+    ragMetadata,
     handleSendMessage,
     handleMessageRetry,
     handleFeedback,

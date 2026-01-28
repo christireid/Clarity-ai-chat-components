@@ -45,7 +45,7 @@ const commonConfig = {
   },
   outExtension({ format }: { format: string }) {
     return {
-      js: `.${format === 'cjs' ? 'js' : 'mjs'}`,
+      js: `.${format === 'cjs' ? 'cjs' : 'js'}`,
     }
   },
 }
@@ -53,16 +53,12 @@ const commonConfig = {
 export default defineConfig([
   // Main entry
   {
-    entry: ['src/index.ts', 'src/styles/index.css'],
+    entry: { index: 'src/index.ts' },
     ...commonConfig,
     clean: true,
-    loader: {
-      '.css': 'copy',
-    },
     outExtension({ format }) {
       return {
-        js: `.${format === 'cjs' ? 'js' : 'mjs'}`,
-        css: '.css',
+        js: `.${format === 'cjs' ? 'cjs' : 'js'}`,
       }
     },
   },

@@ -37,6 +37,7 @@ const externals = [
 const entries = [
   { name: 'main', entry: 'src/index.ts src/styles/index.css', css: true },
   { name: 'extended', entry: 'src/extended.ts' },
+  { name: 'advanced', entry: 'src/advanced.ts' },
   { name: 'core-minimal', entry: 'src/core-minimal.ts' },
   { name: 'utils', entry: 'src/utils/index.ts', outDir: 'dist/utils' },
   { name: 'animations', entry: 'src/animations/index.ts', outDir: 'dist/animations' },
@@ -63,13 +64,14 @@ for (let i = 0; i < entries.length; i++) {
   try {
     const loaderFlag = css ? '--loader .css=copy' : ''
     const cleanFlag = isFirst ? '--clean' : ''
-    // DTS generation uses paths from tsconfig.json pointing to dist/ folders
-    const dtsFlag = '--dts'
+    // DTS generation disabled - causes memory exhaustion (~275-335s per entry)
+    // Types validated via separate 'pnpm typecheck' script
+    // const dtsFlag = '--dts'
     const outDirFlag = outDir ? `--out-dir ${outDir}` : ''
     const externalFlag = externals.map(e => `--external ${e}`).join(' ')
 
-    // Use config file for treeshake/minify/splitting settings, override only entry-specific options
-    const cmd = `npx tsup ${entry} --format cjs,esm ${dtsFlag} ${cleanFlag} ${loaderFlag} ${outDirFlag} ${externalFlag} --no-sourcemap`
+    // Build without config file to avoid conflicts with multi-entry config array
+    const cmd = `npx tsup ${entry} --format cjs,esm ${cleanFlag} ${loaderFlag} ${outDirFlag} ${externalFlag} --no-sourcemap --no-config --minify --splitting --treeshake`
 
     execSync(cmd, {
       cwd: resolve(__dirname, '..'),
