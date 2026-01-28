@@ -32,6 +32,12 @@ export {
 } from './structured-input-builder'
 export { VoiceInput, InlineVoiceInput } from './VoiceInput'
 
+// AudioRecorder - Browser-based audio recording with waveform visualization
+export {
+  AudioRecorder,
+  type AudioRecorderProps,
+} from './AudioRecorder'
+
 // PillChatInput - Modern pill-shaped chat input
 export {
   PillChatInput,
