@@ -41,7 +41,7 @@
 
 import * as React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { DURATION_SECONDS, EASING_FRAMER } from './animation-constants'
+import { DURATION_SECONDS, EASING_FRAMER } from '../../animations/constants'
 
 // ============================================================================
 // Types
@@ -228,7 +228,9 @@ export function usePrompts(options: UsePromptsOptions = {}): UsePromptsReturn {
   const [items, setItems] = React.useState<PromptItem[]>(initialItems)
   const [categories] = React.useState<PromptCategory[]>(initialCategories)
   const [searchQuery, setSearchQuery] = React.useState('')
-  const [activeCategory, setActiveCategory] = React.useState<string | null>(null)
+  const [activeCategory, setActiveCategory] = React.useState<string | null>(
+    null
+  )
   const [recentKeys, setRecentKeys] = React.useState<string[]>([])
   const [favoriteKeys, setFavoriteKeys] = React.useState<string[]>([])
 
@@ -252,7 +254,10 @@ export function usePrompts(options: UsePromptsOptions = {}): UsePromptsReturn {
   const saveToStorage = React.useCallback(() => {
     if (typeof window !== 'undefined' && storageKey) {
       try {
-        localStorage.setItem(storageKey, JSON.stringify({ recentKeys, favoriteKeys }))
+        localStorage.setItem(
+          storageKey,
+          JSON.stringify({ recentKeys, favoriteKeys })
+        )
       } catch (e) {
         console.warn('Failed to save prompts state:', e)
       }
@@ -336,11 +341,14 @@ export function usePrompts(options: UsePromptsOptions = {}): UsePromptsReturn {
     setItems((prev) => prev.filter((item) => item.key !== key))
   }, [])
 
-  const updatePrompt = React.useCallback((key: string, updates: Partial<PromptItem>) => {
-    setItems((prev) =>
-      prev.map((item) => (item.key === key ? { ...item, ...updates } : item))
-    )
-  }, [])
+  const updatePrompt = React.useCallback(
+    (key: string, updates: Partial<PromptItem>) => {
+      setItems((prev) =>
+        prev.map((item) => (item.key === key ? { ...item, ...updates } : item))
+      )
+    },
+    []
+  )
 
   return {
     items,
@@ -393,13 +401,15 @@ function PromptCard({
   onFavoriteToggle,
   onSubmit,
 }: PromptCardProps) {
-  const [variables, setVariables] = React.useState<Record<string, string>>(() => {
-    const initial: Record<string, string> = {}
-    item.variables?.forEach((v) => {
-      initial[v.name] = v.defaultValue || ''
-    })
-    return initial
-  })
+  const [variables, setVariables] = React.useState<Record<string, string>>(
+    () => {
+      const initial: Record<string, string> = {}
+      item.variables?.forEach((v) => {
+        initial[v.name] = v.defaultValue || ''
+      })
+      return initial
+    }
+  )
 
   const hasVariables = item.variables && item.variables.length > 0
 
@@ -506,7 +516,10 @@ function PromptCard({
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: 'auto', opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: DURATION_SECONDS.normal, ease: EASING_FRAMER }}
+            transition={{
+              duration: DURATION_SECONDS.normal,
+              ease: EASING_FRAMER,
+            }}
             viewport={{ once: true }}
             onSubmit={handleSubmit}
           >
@@ -514,14 +527,19 @@ function PromptCard({
               <div key={variable.name} className="prompts-variable">
                 <label className="prompts-variable-label">
                   {variable.label}
-                  {variable.required && <span className="prompts-variable-required">*</span>}
+                  {variable.required && (
+                    <span className="prompts-variable-required">*</span>
+                  )}
                 </label>
                 {variable.type === 'select' && variable.options ? (
                   <select
                     className="prompts-variable-select"
                     value={variables[variable.name] || ''}
                     onChange={(e) =>
-                      setVariables((prev) => ({ ...prev, [variable.name]: e.target.value }))
+                      setVariables((prev) => ({
+                        ...prev,
+                        [variable.name]: e.target.value,
+                      }))
                     }
                     required={variable.required}
                   >
@@ -539,7 +557,10 @@ function PromptCard({
                     value={variables[variable.name] || ''}
                     placeholder={variable.placeholder}
                     onChange={(e) =>
-                      setVariables((prev) => ({ ...prev, [variable.name]: e.target.value }))
+                      setVariables((prev) => ({
+                        ...prev,
+                        [variable.name]: e.target.value,
+                      }))
                     }
                     required={variable.required}
                   />
@@ -550,7 +571,10 @@ function PromptCard({
                     value={variables[variable.name] || ''}
                     placeholder={variable.placeholder}
                     onChange={(e) =>
-                      setVariables((prev) => ({ ...prev, [variable.name]: e.target.value }))
+                      setVariables((prev) => ({
+                        ...prev,
+                        [variable.name]: e.target.value,
+                      }))
                     }
                     required={variable.required}
                   />
@@ -611,12 +635,18 @@ export function Prompts({
   onCategoryChange,
 }: PromptsProps) {
   const [searchQuery, setSearchQuery] = React.useState('')
-  const [activeCategory, setActiveCategory] = React.useState<string | null>(null)
+  const [activeCategory, setActiveCategory] = React.useState<string | null>(
+    null
+  )
   const [expandedKey, setExpandedKey] = React.useState<string | null>(
     externalExpandedKey || null
   )
-  const [internalRecentKeys, setInternalRecentKeys] = React.useState<string[]>([])
-  const [internalFavoriteKeys, setInternalFavoriteKeys] = React.useState<string[]>([])
+  const [internalRecentKeys, setInternalRecentKeys] = React.useState<string[]>(
+    []
+  )
+  const [internalFavoriteKeys, setInternalFavoriteKeys] = React.useState<
+    string[]
+  >([])
 
   const recentKeys = externalRecentKeys || internalRecentKeys
   const favoriteKeys = externalFavoriteKeys || internalFavoriteKeys
@@ -687,7 +717,10 @@ export function Prompts({
     onExpand?.(newKey)
   }
 
-  const handleSelect = (item: PromptItem, variables?: Record<string, string>) => {
+  const handleSelect = (
+    item: PromptItem,
+    variables?: Record<string, string>
+  ) => {
     // Add to recent
     if (!externalRecentKeys) {
       setInternalRecentKeys((prev) => {
@@ -734,7 +767,9 @@ export function Prompts({
                 variant={variant}
                 size={size}
                 isSelected={
-                  multiSelect ? selectedKeys.includes(item.key) : selectedKey === item.key
+                  multiSelect
+                    ? selectedKeys.includes(item.key)
+                    : selectedKey === item.key
                 }
                 isExpanded={expandedKey === item.key}
                 isFavorite={favoriteKeys.includes(item.key)}
@@ -822,7 +857,9 @@ export function Prompts({
               }`}
               onClick={() => handleCategoryChange(cat.key)}
             >
-              {cat.icon && <span className="prompts-category-icon">{cat.icon}</span>}
+              {cat.icon && (
+                <span className="prompts-category-icon">{cat.icon}</span>
+              )}
               {cat.label}
             </button>
           ))}
@@ -832,14 +869,18 @@ export function Prompts({
       {/* Content */}
       <div className="prompts-content">
         {/* Recent prompts */}
-        {showRecent && recentItems.length > 0 && !searchQuery && !activeCategory && (
-          renderItems(recentItems, 'Recent')
-        )}
+        {showRecent &&
+          recentItems.length > 0 &&
+          !searchQuery &&
+          !activeCategory &&
+          renderItems(recentItems, 'Recent')}
 
         {/* Favorite prompts */}
-        {showFavorites && favoriteItems.length > 0 && !searchQuery && !activeCategory && (
-          renderItems(favoriteItems, 'Favorites')
-        )}
+        {showFavorites &&
+          favoriteItems.length > 0 &&
+          !searchQuery &&
+          !activeCategory &&
+          renderItems(favoriteItems, 'Favorites')}
 
         {/* All/filtered prompts */}
         {filteredItems.length > 0 ? (

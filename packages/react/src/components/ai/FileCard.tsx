@@ -31,7 +31,7 @@
 
 import * as React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { DURATION_SECONDS, EASING_FRAMER } from './animation-constants'
+import { DURATION_SECONDS, EASING_FRAMER } from '../../animations/constants'
 
 // ============================================================================
 // Types
@@ -211,11 +211,28 @@ export function getFileCategory(
     if (type.startsWith('image/')) return 'image'
     if (type.startsWith('video/')) return 'video'
     if (type.startsWith('audio/')) return 'audio'
-    if (type.includes('pdf') || type.includes('document') || type.includes('word') || type.includes('excel') || type.includes('powerpoint'))
+    if (
+      type.includes('pdf') ||
+      type.includes('document') ||
+      type.includes('word') ||
+      type.includes('excel') ||
+      type.includes('powerpoint')
+    )
       return 'document'
-    if (type.includes('zip') || type.includes('rar') || type.includes('tar') || type.includes('gzip'))
+    if (
+      type.includes('zip') ||
+      type.includes('rar') ||
+      type.includes('tar') ||
+      type.includes('gzip')
+    )
       return 'archive'
-    if (type.includes('javascript') || type.includes('typescript') || type.includes('json') || type.includes('html') || type.includes('css'))
+    if (
+      type.includes('javascript') ||
+      type.includes('typescript') ||
+      type.includes('json') ||
+      type.includes('html') ||
+      type.includes('css')
+    )
       return 'code'
   }
 
@@ -223,9 +240,40 @@ export function getFileCategory(
   const imageExts = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg', 'bmp', 'ico']
   const videoExts = ['mp4', 'webm', 'mov', 'avi', 'mkv', 'flv']
   const audioExts = ['mp3', 'wav', 'ogg', 'flac', 'aac', 'm4a']
-  const docExts = ['pdf', 'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx', 'txt', 'rtf', 'odt']
+  const docExts = [
+    'pdf',
+    'doc',
+    'docx',
+    'xls',
+    'xlsx',
+    'ppt',
+    'pptx',
+    'txt',
+    'rtf',
+    'odt',
+  ]
   const archiveExts = ['zip', 'rar', 'tar', 'gz', '7z', 'bz2']
-  const codeExts = ['js', 'ts', 'jsx', 'tsx', 'py', 'java', 'c', 'cpp', 'go', 'rs', 'rb', 'php', 'html', 'css', 'json', 'xml', 'yaml', 'yml', 'md']
+  const codeExts = [
+    'js',
+    'ts',
+    'jsx',
+    'tsx',
+    'py',
+    'java',
+    'c',
+    'cpp',
+    'go',
+    'rs',
+    'rb',
+    'php',
+    'html',
+    'css',
+    'json',
+    'xml',
+    'yaml',
+    'yml',
+    'md',
+  ]
 
   if (imageExts.includes(extension)) return 'image'
   if (videoExts.includes(extension)) return 'video'
@@ -244,7 +292,9 @@ export function getFileCategory(
 /**
  * Hook for managing files
  */
-export function useFileCard(options: UseFileCardOptions = {}): UseFileCardReturn {
+export function useFileCard(
+  options: UseFileCardOptions = {}
+): UseFileCardReturn {
   const {
     files: initialFiles = [],
     maxFiles = Infinity,
@@ -260,7 +310,9 @@ export function useFileCard(options: UseFileCardOptions = {}): UseFileCardReturn
     (file: FileData) => {
       const fileWithId = {
         ...file,
-        id: file.id || `file-${Date.now()}-${Math.random().toString(36).slice(2)}`,
+        id:
+          file.id ||
+          `file-${Date.now()}-${Math.random().toString(36).slice(2)}`,
       }
 
       setFiles((prev) => {
@@ -284,11 +336,14 @@ export function useFileCard(options: UseFileCardOptions = {}): UseFileCardReturn
     [onFileRemove]
   )
 
-  const updateFile = React.useCallback((id: string, updates: Partial<FileData>) => {
-    setFiles((prev) =>
-      prev.map((file) => (file.id === id ? { ...file, ...updates } : file))
-    )
-  }, [])
+  const updateFile = React.useCallback(
+    (id: string, updates: Partial<FileData>) => {
+      setFiles((prev) =>
+        prev.map((file) => (file.id === id ? { ...file, ...updates } : file))
+      )
+    },
+    []
+  )
 
   const clearFiles = React.useCallback(() => {
     setFiles([])
@@ -498,6 +553,7 @@ export function FileCard({
       } ${isUploading ? 'file-card-uploading' : ''} ${className}`}
       initial={{ opacity: 0, scale: 0.95 }}
       animate={{ opacity: 1, scale: 1 }}
+      viewport={{ once: true }}
       exit={{ opacity: 0, scale: 0.95 }}
       transition={{ duration: DURATION_SECONDS.fast, ease: EASING_FRAMER }}
       onClick={handleClick}
@@ -531,7 +587,9 @@ export function FileCard({
         {variant !== 'minimal' && (
           <div className="file-card-meta">
             {showSize && file.size !== undefined && (
-              <span className="file-card-size">{formatFileSize(file.size)}</span>
+              <span className="file-card-size">
+                {formatFileSize(file.size)}
+              </span>
             )}
             {showType && file.type && (
               <span className="file-card-type">{file.type}</span>
@@ -551,7 +609,9 @@ export function FileCard({
             className="file-card-progress-bar"
             style={{ width: `${progress}%` }}
           />
-          <span className="file-card-progress-text">{Math.round(progress)}%</span>
+          <span className="file-card-progress-text">
+            {Math.round(progress)}%
+          </span>
         </div>
       )}
 
@@ -567,7 +627,14 @@ export function FileCard({
                   onClick={handleRetry}
                   aria-label="Retry upload"
                 >
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <svg
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                  >
                     <polyline points="1 4 1 10 7 10" />
                     <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10" />
                   </svg>
@@ -580,7 +647,14 @@ export function FileCard({
                   onClick={handlePreview}
                   aria-label="Preview file"
                 >
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <svg
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                  >
                     <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
                     <circle cx="12" cy="12" r="3" />
                   </svg>
@@ -593,7 +667,14 @@ export function FileCard({
                   onClick={handleDownload}
                   aria-label="Download file"
                 >
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <svg
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                  >
                     <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
                     <polyline points="7 10 12 15 17 10" />
                     <line x1="12" y1="15" x2="12" y2="3" />
@@ -607,7 +688,14 @@ export function FileCard({
                   onClick={handleRemove}
                   aria-label="Remove file"
                 >
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <svg
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                  >
                     <line x1="18" y1="6" x2="6" y2="18" />
                     <line x1="6" y1="6" x2="18" y2="18" />
                   </svg>
@@ -676,7 +764,9 @@ export function FileCardList({
   }
 
   return (
-    <div className={`file-card-list ${directionClasses[direction]} ${className}`}>
+    <div
+      className={`file-card-list ${directionClasses[direction]} ${className}`}
+    >
       <AnimatePresence mode="popLayout">
         {displayedFiles.map((file) => (
           <FileCard

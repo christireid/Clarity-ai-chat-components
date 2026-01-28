@@ -31,7 +31,7 @@
 
 import * as React from 'react'
 import { motion } from 'framer-motion'
-import { DURATION_SECONDS, EASING_FRAMER } from './animation-constants'
+import { DURATION_SECONDS, EASING_FRAMER } from '../../animations/constants'
 
 // ============================================================================
 // Types
@@ -74,7 +74,12 @@ export interface WelcomeFeature {
 }
 
 /** Display variant */
-export type WelcomeVariant = 'default' | 'centered' | 'split' | 'minimal' | 'hero'
+export type WelcomeVariant =
+  | 'default'
+  | 'centered'
+  | 'split'
+  | 'minimal'
+  | 'hero'
 
 /** Size variant */
 export type WelcomeSize = 'sm' | 'md' | 'lg'
@@ -164,7 +169,8 @@ export function useWelcome(options: UseWelcomeOptions = {}): UseWelcomeReturn {
     trackUsage = true,
   } = options
 
-  const [suggestions, setSuggestions] = React.useState<WelcomeSuggestion[]>(initialSuggestions)
+  const [suggestions, setSuggestions] =
+    React.useState<WelcomeSuggestion[]>(initialSuggestions)
   const [actions, setActions] = React.useState<WelcomeAction[]>(initialActions)
   const [usageMap, setUsageMap] = React.useState<Record<string, number>>({})
 
@@ -297,7 +303,9 @@ function SuggestionCard({ suggestion, size, onClick }: SuggestionCardProps) {
       )}
       <span className="welcome-suggestion-text">{suggestion.text}</span>
       {suggestion.category && (
-        <span className="welcome-suggestion-category">{suggestion.category}</span>
+        <span className="welcome-suggestion-category">
+          {suggestion.category}
+        </span>
       )}
     </motion.button>
   )
@@ -318,11 +326,15 @@ function ActionButton({ action, size, onClick }: ActionButtonProps) {
       disabled={action.disabled}
       type="button"
     >
-      {action.icon && <span className="welcome-action-icon">{action.icon}</span>}
+      {action.icon && (
+        <span className="welcome-action-icon">{action.icon}</span>
+      )}
       <div className="welcome-action-content">
         <span className="welcome-action-label">{action.label}</span>
         {action.description && (
-          <span className="welcome-action-description">{action.description}</span>
+          <span className="welcome-action-description">
+            {action.description}
+          </span>
         )}
       </div>
     </motion.button>
@@ -404,7 +416,9 @@ export function Welcome({
     hero: 'welcome-hero',
   }
 
-  const MotionWrapper = animated ? motion.div : 'div' as unknown as typeof motion.div
+  const MotionWrapper = animated
+    ? motion.div
+    : ('div' as unknown as typeof motion.div)
 
   return (
     <MotionWrapper
@@ -418,10 +432,15 @@ export function Welcome({
       {children || (
         <>
           {/* Branding */}
-          <motion.div className="welcome-branding" variants={animated ? itemVariants : undefined}>
+          <motion.div
+            className="welcome-branding"
+            variants={animated ? itemVariants : undefined}
+          >
             {logo && <div className="welcome-logo">{logo}</div>}
             {title && <h1 className="welcome-title">{title}</h1>}
-            {description && <p className="welcome-description">{description}</p>}
+            {description && (
+              <p className="welcome-description">{description}</p>
+            )}
           </motion.div>
 
           {/* Features */}
@@ -545,11 +564,30 @@ export function WelcomeLogo({
     ),
     robot: (
       <>
-        <rect x="3" y="8" width="18" height="12" rx="2" stroke="currentColor" strokeWidth="2" fill="none" />
-        <path d="M7 8V6a5 5 0 0 1 10 0v2" stroke="currentColor" strokeWidth="2" fill="none" />
+        <rect
+          x="3"
+          y="8"
+          width="18"
+          height="12"
+          rx="2"
+          stroke="currentColor"
+          strokeWidth="2"
+          fill="none"
+        />
+        <path
+          d="M7 8V6a5 5 0 0 1 10 0v2"
+          stroke="currentColor"
+          strokeWidth="2"
+          fill="none"
+        />
         <circle cx="8.5" cy="14" r="1.5" fill="currentColor" />
         <circle cx="15.5" cy="14" r="1.5" fill="currentColor" />
-        <path d="M9 17.5h6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+        <path
+          d="M9 17.5h6"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+        />
       </>
     ),
   }
