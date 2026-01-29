@@ -200,7 +200,8 @@ export default function BatchOptimizationPage() {
                   </span>
                 </div>
                 <p className="text-lg text-muted-foreground">
-                  Intelligent batch processing with token optimization for massive cost reduction
+                  Intelligent batch processing with token optimization for
+                  massive cost reduction
                 </p>
               </div>
             </div>
@@ -210,29 +211,39 @@ export default function BatchOptimizationPage() {
               <div className="flex items-center gap-3 px-4 py-3 rounded-lg bg-muted/30 border border-border/50">
                 <TrendingDown className="w-5 h-5 text-green-500" />
                 <div>
-                  <p className="text-xs text-muted-foreground">Cost Reduction</p>
-                  <p className="text-sm font-semibold text-foreground">60-75%</p>
+                  <p className="text-xs text-muted-foreground">
+                    Cost Reduction
+                  </p>
+                  <p className="text-sm font-semibold text-foreground">
+                    60-75%
+                  </p>
                 </div>
               </div>
               <div className="flex items-center gap-3 px-4 py-3 rounded-lg bg-muted/30 border border-border/50">
                 <Database className="w-5 h-5 text-brand-500" />
                 <div>
                   <p className="text-xs text-muted-foreground">Shared Cache</p>
-                  <p className="text-sm font-semibold text-foreground">90% Savings</p>
+                  <p className="text-sm font-semibold text-foreground">
+                    90% Savings
+                  </p>
                 </div>
               </div>
               <div className="flex items-center gap-3 px-4 py-3 rounded-lg bg-muted/30 border border-border/50">
                 <GitMerge className="w-5 h-5 text-purple-500" />
                 <div>
                   <p className="text-xs text-muted-foreground">Patterns</p>
-                  <p className="text-sm font-semibold text-foreground">3 Types</p>
+                  <p className="text-sm font-semibold text-foreground">
+                    3 Types
+                  </p>
                 </div>
               </div>
               <div className="flex items-center gap-3 px-4 py-3 rounded-lg bg-muted/30 border border-border/50">
                 <Activity className="w-5 h-5 text-amber-500" />
                 <div>
                   <p className="text-xs text-muted-foreground">Tracking</p>
-                  <p className="text-sm font-semibold text-foreground">Real-time</p>
+                  <p className="text-sm font-semibold text-foreground">
+                    Real-time
+                  </p>
                 </div>
               </div>
             </div>
@@ -268,9 +279,10 @@ export default function BatchOptimizationPage() {
           {/* Overview */}
           <Section id="overview" title="Overview" className="mb-12">
             <p className="text-muted-foreground mb-6">
-              Batch processing combines multiple AI requests into groups for significant cost savings.
-              When combined with token optimization and provider caching, you can achieve 60-75%
-              overall cost reduction compared to individual requests.
+              Batch processing combines multiple AI requests into groups for
+              significant cost savings. When combined with token optimization
+              and provider caching, you can achieve 60-75% overall cost
+              reduction compared to individual requests.
             </p>
 
             <div className="p-6 rounded-xl border border-border/50 bg-gradient-to-r from-emerald-50 to-teal-50 dark:from-emerald-950/30 dark:to-teal-950/30">
@@ -284,16 +296,24 @@ export default function BatchOptimizationPage() {
                     <p className="font-medium text-red-700 dark:text-red-300 mb-2">
                       Individual Requests (1000×)
                     </p>
-                    <p className="font-mono text-sm">500 tokens × $3.00/1M × 1000</p>
-                    <p className="font-mono text-xl text-red-600 mt-2">= $1,500/month</p>
+                    <p className="font-mono text-sm">
+                      500 tokens × $3.00/1M × 1000
+                    </p>
+                    <p className="font-mono text-xl text-red-600 mt-2">
+                      = $1,500/month
+                    </p>
                   </div>
                   <div className="bg-white/60 dark:bg-neutral-900/50 p-4 rounded-lg">
                     <p className="font-medium text-emerald-700 dark:text-emerald-300 mb-2">
                       Batch + Cache (1000×)
                     </p>
                     <p className="font-mono text-sm">50% batch discount</p>
-                    <p className="font-mono text-sm">+ 90% cache on 80% requests</p>
-                    <p className="font-mono text-xl text-emerald-600 mt-2">= $450/month</p>
+                    <p className="font-mono text-sm">
+                      + 90% cache on 80% requests
+                    </p>
+                    <p className="font-mono text-xl text-emerald-600 mt-2">
+                      = $450/month
+                    </p>
                   </div>
                 </div>
                 <div className="pt-3 border-t border-emerald-300 dark:border-emerald-700">
@@ -318,11 +338,19 @@ yarn add @clarity-chat/react @clarity-chat/utils`}
           </Section>
 
           {/* Batch Patterns */}
-          <Section id="patterns" title="Batch Processing Patterns" className="mb-12">
-            <SubSection id="parallel-batch" title="1. Parallel Batching" className="mb-8">
+          <Section
+            id="patterns"
+            title="Batch Processing Patterns"
+            className="mb-12"
+          >
+            <SubSection
+              id="parallel-batch"
+              title="1. Parallel Batching"
+              className="mb-8"
+            >
               <p className="text-muted-foreground mb-4">
-                Process multiple independent requests simultaneously. Best for analytics, bulk
-                operations, and non-interactive tasks.
+                Process multiple independent requests simultaneously. Best for
+                analytics, bulk operations, and non-interactive tasks.
               </p>
               <CodeBlock
                 code={`import { BatchRequestManager } from '@clarity-chat/react'
@@ -363,18 +391,27 @@ console.log(\`Savings: $\${stats.totalSavings.toFixed(2)}\`)`}
                   Best for:
                 </p>
                 <ul className="text-sm text-blue-800 dark:text-blue-200 list-disc list-inside space-y-1">
-                  <li>Analytics and reporting (process 1000s of data points)</li>
-                  <li>Bulk content generation (product descriptions, summaries)</li>
+                  <li>
+                    Analytics and reporting (process 1000s of data points)
+                  </li>
+                  <li>
+                    Bulk content generation (product descriptions, summaries)
+                  </li>
                   <li>Batch translation or classification tasks</li>
                   <li>Scheduled jobs and background processing</li>
                 </ul>
               </div>
             </SubSection>
 
-            <SubSection id="sequential-batch" title="2. Sequential Batching" className="mb-8">
+            <SubSection
+              id="sequential-batch"
+              title="2. Sequential Batching"
+              className="mb-8"
+            >
               <p className="text-muted-foreground mb-4">
-                Process requests in order with dependencies. Ideal for multi-step workflows where
-                each step depends on the previous result.
+                Process requests in order with dependencies. Ideal for
+                multi-step workflows where each step depends on the previous
+                result.
               </p>
               <CodeBlock
                 code={`import { BatchRequestManager } from '@clarity-chat/react'
@@ -448,10 +485,15 @@ const results = await Promise.all(
               </div>
             </SubSection>
 
-            <SubSection id="rate-limited-batch" title="3. Rate-Limited Batching" className="mb-8">
+            <SubSection
+              id="rate-limited-batch"
+              title="3. Rate-Limited Batching"
+              className="mb-8"
+            >
               <p className="text-muted-foreground mb-4">
-                Control request throughput to stay within API rate limits while maximizing batch
-                efficiency. Essential for high-volume production systems.
+                Control request throughput to stay within API rate limits while
+                maximizing batch efficiency. Essential for high-volume
+                production systems.
               </p>
               <CodeBlock
                 code={`import { BatchRequestManager } from '@clarity-chat/react'
@@ -519,7 +561,9 @@ console.log(\`Processed \${results.length} requests within rate limits\`)`}
                   Best for:
                 </p>
                 <ul className="text-sm text-amber-800 dark:text-amber-200 list-disc list-inside space-y-1">
-                  <li>High-volume production systems (1000s of daily requests)</li>
+                  <li>
+                    High-volume production systems (1000s of daily requests)
+                  </li>
                   <li>Multi-tenant applications with shared quotas</li>
                   <li>Staying within tier-based rate limits</li>
                   <li>Preventing 429 rate limit errors</li>
@@ -529,14 +573,23 @@ console.log(\`Processed \${results.length} requests within rate limits\`)`}
           </Section>
 
           {/* Optimization Integration */}
-          <Section id="optimization" title="Integration with Token Optimization" className="mb-12">
-            <SubSection id="shared-cache" title="Shared Provider Cache" className="mb-8">
+          <Section
+            id="optimization"
+            title="Integration with Token Optimization"
+            className="mb-12"
+          >
+            <SubSection
+              id="shared-cache"
+              title="Shared Provider Cache"
+              className="mb-8"
+            >
               <p className="text-muted-foreground mb-4">
-                When batching requests with common context (system prompts, documentation), share
-                provider-level cache across all batch items for 90% savings on cached content.
+                When batching requests with common context (system prompts,
+                documentation), share provider-level cache across all batch
+                items for 90% savings on cached content.
               </p>
               <CodeBlock
-                code={`import { BatchRequestManager, formatForCaching } from '@clarity-chat/react'
+                code={`import { BatchRequestManager, formatMessagesForProviderCaching } from '@clarity-chat/react'
 
 // Large shared context (3000+ tokens)
 const systemPrompt = \`You are a customer support AI.
@@ -548,7 +601,7 @@ const systemPrompt = \`You are a customer support AI.
 \${guidelines}   // 1000 tokens\`
 
 // Format for provider caching
-const cachedMessages = await formatForCaching(
+const cachedMessages = await formatMessagesForProviderCaching(
   [{ role: 'system', content: systemPrompt }],
   { provider: 'anthropic', minTokens: 1024 }
 )
@@ -592,42 +645,62 @@ const results = await Promise.all(promises)
               />
 
               <div className="mt-4 p-6 rounded-xl bg-gradient-to-r from-emerald-50 to-teal-50 dark:from-emerald-950/30 dark:to-teal-950/30 border border-emerald-200 dark:border-emerald-800/50">
-                <h4 className="font-semibold mb-4">💰 Real-World Savings Example</h4>
+                <h4 className="font-semibold mb-4">
+                  💰 Real-World Savings Example
+                </h4>
                 <div className="space-y-3 text-sm">
-                  <p className="font-medium">Scenario: 10,000 customer support queries/day with shared context</p>
+                  <p className="font-medium">
+                    Scenario: 10,000 customer support queries/day with shared
+                    context
+                  </p>
                   <div className="grid md:grid-cols-2 gap-4">
                     <div className="bg-white/60 dark:bg-neutral-900/50 p-4 rounded-lg">
-                      <p className="font-medium text-red-700 dark:text-red-300 mb-2">Without Batching</p>
+                      <p className="font-medium text-red-700 dark:text-red-300 mb-2">
+                        Without Batching
+                      </p>
                       <p className="font-mono text-xs">10K requests</p>
                       <p className="font-mono text-xs">3K token context each</p>
                       <p className="font-mono text-xs">No caching</p>
-                      <p className="font-mono text-lg text-red-600 mt-2">$300/day</p>
+                      <p className="font-mono text-lg text-red-600 mt-2">
+                        $300/day
+                      </p>
                     </div>
                     <div className="bg-white/60 dark:bg-neutral-900/50 p-4 rounded-lg">
-                      <p className="font-medium text-emerald-700 dark:text-emerald-300 mb-2">With Batch + Cache</p>
+                      <p className="font-medium text-emerald-700 dark:text-emerald-300 mb-2">
+                        With Batch + Cache
+                      </p>
                       <p className="font-mono text-xs">200 batches of 50</p>
                       <p className="font-mono text-xs">90% cache hit rate</p>
                       <p className="font-mono text-xs">50% batch discount</p>
-                      <p className="font-mono text-lg text-emerald-600 mt-2">$75/day</p>
+                      <p className="font-mono text-lg text-emerald-600 mt-2">
+                        $75/day
+                      </p>
                     </div>
                   </div>
                   <div className="pt-3 border-t border-emerald-300 dark:border-emerald-700">
-                    <p className="font-bold text-lg">Monthly Savings: $6,750 (75% reduction)</p>
+                    <p className="font-bold text-lg">
+                      Monthly Savings: $6,750 (75% reduction)
+                    </p>
                   </div>
                 </div>
               </div>
             </SubSection>
 
-            <SubSection id="compression" title="Batch with Compression" className="mb-8">
+            <SubSection
+              id="compression"
+              title="Batch with Compression"
+              className="mb-8"
+            >
               <p className="text-muted-foreground mb-4">
-                Combine batching with prompt compression for even greater savings. Compress
-                context before batching to reduce tokens across all requests.
+                Combine batching with prompt compression for even greater
+                savings. Compress context before batching to reduce tokens
+                across all requests.
               </p>
               <CodeBlock
                 code={`import {
   BatchRequestManager,
   compressContext,
-  formatForCaching
+  formatMessagesForProviderCaching
 } from '@clarity-chat/react'
 
 // Large context to compress
@@ -646,7 +719,7 @@ const compressed = await compressContext(originalContext, {
 // Result: ~4000 tokens (60% reduction)
 
 // Format compressed context for caching
-const cachedMessages = await formatForCaching(
+const cachedMessages = await formatMessagesForProviderCaching(
   [{ role: 'system', content: compressed.text }],
   { provider: 'anthropic', minTokens: 1024 }
 )
@@ -678,8 +751,16 @@ const requests = userQueries.map((query, i) => ({
           </Section>
 
           {/* Cost Tracking */}
-          <Section id="cost-tracking" title="Cost Tracking Across Batches" className="mb-12">
-            <SubSection id="real-time-monitoring" title="Real-Time Cost Monitoring" className="mb-8">
+          <Section
+            id="cost-tracking"
+            title="Cost Tracking Across Batches"
+            className="mb-12"
+          >
+            <SubSection
+              id="real-time-monitoring"
+              title="Real-Time Cost Monitoring"
+              className="mb-8"
+            >
               <CodeBlock
                 code={`import { BatchRequestManager, CostTracker } from '@clarity-chat/react'
 
@@ -743,7 +824,11 @@ console.log(JSON.stringify(costTracker.getDetailedReport(), null, 2))`}
               />
             </SubSection>
 
-            <SubSection id="batch-analytics" title="Batch Analytics Dashboard" className="mb-8">
+            <SubSection
+              id="batch-analytics"
+              title="Batch Analytics Dashboard"
+              className="mb-8"
+            >
               <CodeBlock
                 code={`import { BatchRequestManager, useBatchAnalytics } from '@clarity-chat/react'
 
@@ -831,7 +916,11 @@ function BatchDashboard() {
           </Section>
 
           {/* Performance Benchmarks */}
-          <Section id="benchmarks" title="Performance Benchmarks" className="mb-12">
+          <Section
+            id="benchmarks"
+            title="Performance Benchmarks"
+            className="mb-12"
+          >
             <div className="space-y-6">
               <div className="p-6 rounded-xl border border-border/50 bg-muted/30">
                 <h4 className="font-semibold text-foreground mb-4">
@@ -874,7 +963,9 @@ function BatchDashboard() {
                         <td className="py-3 px-4 font-mono">200</td>
                         <td className="py-3 px-4">~120s</td>
                         <td className="py-3 px-4">75 req/min</td>
-                        <td className="py-3 px-4 text-emerald-700 font-semibold">78%</td>
+                        <td className="py-3 px-4 text-emerald-700 font-semibold">
+                          78%
+                        </td>
                         <td className="py-3 px-4">Bulk processing</td>
                       </tr>
                     </tbody>
@@ -890,9 +981,10 @@ function BatchDashboard() {
                       Optimization Tip
                     </p>
                     <p className="text-sm text-blue-800 dark:text-blue-200">
-                      Larger batches (50-100) provide the best cost savings but require longer wait
-                      times. For interactive applications, use smaller batches (10-20) with sequential
-                      processing. For analytics, maximize batch size (100-200).
+                      Larger batches (50-100) provide the best cost savings but
+                      require longer wait times. For interactive applications,
+                      use smaller batches (10-20) with sequential processing.
+                      For analytics, maximize batch size (100-200).
                     </p>
                   </div>
                 </div>
@@ -901,8 +993,16 @@ function BatchDashboard() {
           </Section>
 
           {/* Error Handling */}
-          <Section id="error-handling" title="Error Handling & Retry Logic" className="mb-12">
-            <SubSection id="retry-failed" title="Automatic Retry on Failure" className="mb-8">
+          <Section
+            id="error-handling"
+            title="Error Handling & Retry Logic"
+            className="mb-12"
+          >
+            <SubSection
+              id="retry-failed"
+              title="Automatic Retry on Failure"
+              className="mb-8"
+            >
               <CodeBlock
                 code={`import { BatchRequestManager, RetryStrategy } from '@clarity-chat/react'
 
@@ -961,7 +1061,11 @@ async function processWithFallback(requests: any[]) {
               />
             </SubSection>
 
-            <SubSection id="partial-failures" title="Handling Partial Failures" className="mb-8">
+            <SubSection
+              id="partial-failures"
+              title="Handling Partial Failures"
+              className="mb-8"
+            >
               <CodeBlock
                 code={`import { BatchRequestManager } from '@clarity-chat/react'
 
@@ -1015,7 +1119,11 @@ async function processBatchWithPartialFailureHandling(requests: any[]) {
           </Section>
 
           {/* Related APIs */}
-          <Section id="related" title="Related Components & APIs" className="mb-12">
+          <Section
+            id="related"
+            title="Related Components & APIs"
+            className="mb-12"
+          >
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <Link
                 href="/cookbook/provider-caching-setup"
@@ -1029,7 +1137,8 @@ async function processBatchWithPartialFailureHandling(requests: any[]) {
                   Provider Caching Setup
                 </h3>
                 <p className="text-sm text-muted-foreground">
-                  Configure provider-level caching for 90% savings on repeated content
+                  Configure provider-level caching for 90% savings on repeated
+                  content
                 </p>
               </Link>
 
@@ -1045,7 +1154,8 @@ async function processBatchWithPartialFailureHandling(requests: any[]) {
                   Token Optimization System
                 </h3>
                 <p className="text-sm text-muted-foreground">
-                  Complete token optimization guide with cost estimation and monitoring
+                  Complete token optimization guide with cost estimation and
+                  monitoring
                 </p>
               </Link>
 
@@ -1093,9 +1203,12 @@ async function processBatchWithPartialFailureHandling(requests: any[]) {
                     Progress Announcements
                   </h4>
                   <p className="text-sm text-muted-foreground">
-                    Batch progress updates include ARIA live regions for screen reader announcements.
-                    Use the <code className="text-xs bg-muted px-1.5 py-0.5 rounded">onProgress</code> callback
-                    to provide real-time status updates.
+                    Batch progress updates include ARIA live regions for screen
+                    reader announcements. Use the{' '}
+                    <code className="text-xs bg-muted px-1.5 py-0.5 rounded">
+                      onProgress
+                    </code>{' '}
+                    callback to provide real-time status updates.
                   </p>
                 </div>
               </div>
@@ -1107,9 +1220,9 @@ async function processBatchWithPartialFailureHandling(requests: any[]) {
                     Visual Progress Indicators
                   </h4>
                   <p className="text-sm text-muted-foreground">
-                    All batch processing UI components include accessible progress bars with
-                    aria-valuemin, aria-valuemax, and aria-valuenow attributes for assistive
-                    technologies.
+                    All batch processing UI components include accessible
+                    progress bars with aria-valuemin, aria-valuemax, and
+                    aria-valuenow attributes for assistive technologies.
                   </p>
                 </div>
               </div>

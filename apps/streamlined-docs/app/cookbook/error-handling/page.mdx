@@ -331,34 +331,48 @@ export default function ChatWithCircuitBreaker() {
 ### With Offline Support
 
 ```tsx
-import { useNetworkStatus } from '@clarity-chat/react'
+import { useState, useEffect } from 'react'
+import { useClarityChat, MessageList, ChatInput } from '@clarity-chat/react'
+// Import NetworkStatusBanner from the components path
+import { NetworkStatusBanner } from '@clarity-chat/react/components/feedback/NetworkStatusBanner'
 
 export default function ChatWithOfflineSupport() {
-  const { isOnline } = useNetworkStatus()
+  const [networkStatus, setNetworkStatus] = useState<'online' | 'offline'>('online')
+
+  // Detect network status
+  useEffect(() => {
+    const updateOnlineStatus = () => {
+      setNetworkStatus(navigator.onLine ? 'online' : 'offline')
+    }
+
+    window.addEventListener('online', updateOnlineStatus)
+    window.addEventListener('offline', updateOnlineStatus)
+
+    return () => {
+      window.removeEventListener('online', updateOnlineStatus)
+      window.removeEventListener('offline', updateOnlineStatus)
+    }
+  }, [])
 
   const { messages, append, isLoading } = useClarityChat({
     api: '/api/chat',
     onError: (err) => {
-      if (!isOnline) {
-        toast.error('You are offline. Message will send when reconnected.')
-        // Queue message for later
-        queueOfflineMessage(err.request)
-      }
+      console.error('Chat error:', err)
     },
   })
 
   return (
     <div className="flex h-screen flex-col">
-      {!isOnline && (
-        <div className="bg-yellow-50 p-2 text-center text-sm text-yellow-800">
-          ⚠️ You are offline. Messages will be sent when reconnected.
-        </div>
-      )}
+      <NetworkStatusBanner
+        status={networkStatus}
+        show={networkStatus !== 'online'}
+        onRetry={() => window.location.reload()}
+      />
 
       <MessageList messages={messages} isLoading={isLoading} />
       <ChatInput
         onSubmit={(content) => append({ role: 'user', content })}
-        disabled={!isOnline && isLoading}
+        disabled={isLoading || networkStatus === 'offline'}
       />
     </div>
   )

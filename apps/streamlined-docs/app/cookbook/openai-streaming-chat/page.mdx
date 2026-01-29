@@ -296,7 +296,7 @@ async function getWeather(location: string, unit: string) {
 
 ```tsx
 // app/api/openai/chat/route.ts
-import { createAnthropicAdapter } from '@clarity-chat/react/adapters'
+import { anthropicAdapter } from '@clarity-chat/react/adapters'
 
 // Use Anthropic for prompt caching (90% cheaper for repeated context)
 const anthropic = new Anthropic({
@@ -421,17 +421,19 @@ export async function POST(req: Request) {
 
 ```tsx
 import { useClarityChat } from '@clarity-chat/react'
-import { compressMessages } from '@clarity-chat/token-optimization'
+import { compressText } from '@clarity-chat/token-optimization'
 
 export default function ChatWithHistory() {
   const { messages, append } = useClarityChat({
     api: '/api/openai/chat',
     onBeforeRequest: async (messages) => {
       // Compress old messages to stay within token limit
-      const compressed = await compressMessages(messages, {
-        maxTokens: 6000, // Leave room for response
-        preserveRecent: 5, // Keep last 5 messages uncompressed
-      })
+      const compressed = await Promise.all(
+        messages.map(msg => compressText(msg.content, {
+          maxTokens: 6000, // Leave room for response
+          preserveRecent: 5, // Keep last 5 messages uncompressed
+        }))
+      )
 
       return compressed
     },
@@ -475,12 +477,12 @@ async function makeRequest() {
 **Solution:** Monitor token count and truncate.
 
 ```tsx
-import { countTokens } from '@clarity-chat/token-optimization'
+import { useTokenCount } from '@clarity-chat/token-optimization'
 
-const totalTokens = messages.reduce(
-  (sum, msg) => sum + countTokens(msg.content, 'gpt-4'),
-  0
-)
+const totalTokens = messages.reduce((sum, msg) => {
+  const { count } = useTokenCount(msg.content, { model: 'gpt-4' })
+  return sum + count
+}, 0)
 
 if (totalTokens > 6000) {
   // Truncate old messages
@@ -541,19 +543,21 @@ const openai = new OpenAI({
 **Solution:** Track and alert on usage.
 
 ```tsx
-import { trackUsage } from '@clarity-chat/token-optimization'
+import { CostTracker } from '@clarity-chat/token-optimization'
+
+const tracker = new CostTracker()
 
 const stream = OpenAIStream(response, {
   onFinal: async (completion) => {
     const tokens = countTokens(completion)
-    const cost = calculateCost(tokens, 'gpt-4-turbo-preview')
 
-    await trackUsage({
-      userId,
-      tokens,
-      cost,
+    tracker.trackUsage({
       model: 'gpt-4-turbo-preview',
+      inputTokens: Math.floor(tokens * 0.4), // Approximate input/output split
+      outputTokens: Math.floor(tokens * 0.6),
     })
+
+    const cost = tracker.getTotalCost()
 
     // Alert if over budget
     if (cost > DAILY_BUDGET) {

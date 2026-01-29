@@ -365,7 +365,8 @@ const cacheOptionsProps: PropDefinition[] = [
     name: 'maxSize',
     type: 'number',
     default: '100',
-    description: 'Maximum number of cache entries. Uses LRU eviction when exceeded.',
+    description:
+      'Maximum number of cache entries. Uses LRU eviction when exceeded.',
   },
   {
     name: 'defaultTTL',
@@ -377,7 +378,8 @@ const cacheOptionsProps: PropDefinition[] = [
     name: 'costPerToken',
     type: 'number',
     default: '0',
-    description: 'Cost per token for savings calculation (e.g., 0.000003 for GPT-4).',
+    description:
+      'Cost per token for savings calculation (e.g., 0.000003 for GPT-4).',
   },
 ]
 
@@ -765,7 +767,7 @@ function SemanticChatCache() {
   )
 }`
 
-const formatForCachingCode = `import { useSmartCache, formatForCaching } from '@clarity-chat/react'
+const formatForCachingCode = `import { useSmartCache, formatMessagesForProviderCaching } from '@clarity-chat/react'
 
 function CacheIntegration() {
   const cache = useSmartCache<string>()
@@ -776,7 +778,7 @@ function CacheIntegration() {
     context: string[]
   ) => {
     // Format for caching (marks cache breakpoints)
-    const formatted = formatForCaching({
+    const formatted = formatMessagesForProviderCaching({
       systemPrompt,
       context,
       userMessage: userQuery,
@@ -1378,7 +1380,10 @@ export default function UseSmartCachePage() {
                 </div>
               </SubSection>
 
-              <SubSection id="cache-hit-tracking" title="Cache Hit Rate Tracking">
+              <SubSection
+                id="cache-hit-tracking"
+                title="Cache Hit Rate Tracking"
+              >
                 <p className="text-muted-foreground mb-4">
                   Track cache performance and analytics:
                 </p>
@@ -1417,9 +1422,7 @@ export default function UseSmartCachePage() {
                         Static System Prompt
                       </td>
                       <td className="px-4 py-3 text-muted-foreground">1</td>
-                      <td className="px-4 py-3 text-muted-foreground">
-                        99.9%
-                      </td>
+                      <td className="px-4 py-3 text-muted-foreground">99.9%</td>
                       <td className="px-4 py-3 text-emerald-600 dark:text-emerald-400 font-semibold">
                         90%
                       </td>
@@ -1445,9 +1448,7 @@ export default function UseSmartCachePage() {
                       </td>
                     </tr>
                     <tr>
-                      <td className="px-4 py-3 font-medium">
-                        Semantic Search
-                      </td>
+                      <td className="px-4 py-3 font-medium">Semantic Search</td>
                       <td className="px-4 py-3 text-muted-foreground">500</td>
                       <td className="px-4 py-3 text-muted-foreground">82%</td>
                       <td className="px-4 py-3 text-emerald-600 dark:text-emerald-400 font-semibold">
@@ -1517,12 +1518,8 @@ export default function UseSmartCachePage() {
                     <li>
                       Reduce <code>maxSize</code> to limit entries
                     </li>
-                    <li>
-                      Set aggressive TTL to expire entries faster
-                    </li>
-                    <li>
-                      Use tags to selectively clear large categories
-                    </li>
+                    <li>Set aggressive TTL to expire entries faster</li>
+                    <li>Use tags to selectively clear large categories</li>
                     <li>
                       Consider storing only IDs and fetching data separately
                     </li>
@@ -1542,12 +1539,8 @@ export default function UseSmartCachePage() {
                       Implement tag-based invalidation for related content
                     </li>
                     <li>Set appropriate TTL for data freshness requirements</li>
-                    <li>
-                      Clear cache manually on data updates
-                    </li>
-                    <li>
-                      Use event-driven invalidation for real-time updates
-                    </li>
+                    <li>Clear cache manually on data updates</li>
+                    <li>Use event-driven invalidation for real-time updates</li>
                   </ul>
                 </div>
               </div>
@@ -1567,7 +1560,8 @@ export default function UseSmartCachePage() {
                   {
                     name: 'useMemory',
                     type: 'hook',
-                    description: 'Conversation memory with automatic compression',
+                    description:
+                      'Conversation memory with automatic compression',
                     href: '/reference/hooks/use-memory',
                   },
                   {

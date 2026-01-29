@@ -1,7 +1,10 @@
 import type { Metadata } from 'next'
 import { DocumentationPage } from '../../../../../components/Docs/DocumentationPage'
 import { Section } from '../../../../../components/Docs/Section'
-import { PropsTable, PropDefinition } from '../../../../../components/Docs/PropsTable'
+import {
+  PropsTable,
+  PropDefinition,
+} from '../../../../../components/Docs/PropsTable'
 import { CodeBlock } from '../../../../../components/Docs/CodeBlock'
 import { TocItem } from '../../../../../components/Docs/TableOfContents'
 import { Alert } from '../../../../../components/Docs/Alert'
@@ -30,7 +33,11 @@ const tableOfContents: TocItem[] = [
   { id: 'openai', title: 'OpenAI Caching', level: 3 },
   { id: 'google', title: 'Google Gemini Caching', level: 3 },
   { id: 'basic-usage', title: 'Basic Usage', level: 2 },
-  { id: 'format-integration', title: 'Integration with formatForCaching', level: 2 },
+  {
+    id: 'format-integration',
+    title: 'Integration with formatForCaching',
+    level: 2,
+  },
   { id: 'cache-invalidation', title: 'Cache Invalidation Patterns', level: 2 },
   { id: 'best-practices', title: 'Best Practices', level: 2 },
   { id: 'examples', title: 'Usage Examples', level: 2 },
@@ -174,17 +181,18 @@ export default function CachingOptionsPage() {
       <Section id="overview" title="Overview">
         <p className="text-neutral-600 dark:text-neutral-400 mb-4">
           The <code className="text-sm">CachingOptions</code> type configures
-          provider-native prompt caching to achieve significant cost reductions on
-          repeated context. Different providers offer different caching capabilities and
-          pricing models.
+          provider-native prompt caching to achieve significant cost reductions
+          on repeated context. Different providers offer different caching
+          capabilities and pricing models.
         </p>
 
         <Alert variant="success" className="mb-6">
           <h4 className="font-semibold mb-2">💰 Cost Impact</h4>
           <p className="text-sm">
-            Configure for <strong>90% savings on cached tokens</strong> with Anthropic,
-            50% with OpenAI, and 75% with Google Gemini. When combined with other
-            optimization strategies, achieve 50-70% overall cost reduction.
+            Configure for <strong>90% savings on cached tokens</strong> with
+            Anthropic, 50% with OpenAI, and 75% with Google Gemini. When
+            combined with other optimization strategies, achieve 50-70% overall
+            cost reduction.
           </p>
         </Alert>
 
@@ -198,18 +206,20 @@ export default function CachingOptionsPage() {
               (Anthropic)
             </li>
             <li>
-              <strong>Multi-Provider:</strong> Unified API for Anthropic, OpenAI, and
-              Google
+              <strong>Multi-Provider:</strong> Unified API for Anthropic,
+              OpenAI, and Google
             </li>
             <li>
-              <strong>Automatic Management:</strong> Optimal cache breakpoints selected
-              automatically
+              <strong>Automatic Management:</strong> Optimal cache breakpoints
+              selected automatically
             </li>
             <li>
-              <strong>Analytics Built-In:</strong> Track hit rates and actual savings
+              <strong>Analytics Built-In:</strong> Track hit rates and actual
+              savings
             </li>
             <li>
-              <strong>Smart Invalidation:</strong> Cache expires only when needed
+              <strong>Smart Invalidation:</strong> Cache expires only when
+              needed
             </li>
           </ul>
         </div>
@@ -289,7 +299,9 @@ export interface CachingOptions {
           <div className="space-y-4">
             <div className="grid md:grid-cols-3 gap-4">
               <div className="bg-white/60 dark:bg-neutral-900/50 p-4 rounded-lg">
-                <div className="text-2xl font-bold text-purple-600 mb-1">90%</div>
+                <div className="text-2xl font-bold text-purple-600 mb-1">
+                  90%
+                </div>
                 <div className="text-sm font-medium">Anthropic Claude</div>
                 <div className="text-xs text-neutral-600 dark:text-neutral-400 mt-1">
                   $0.30 vs $3.00 per 1M tokens
@@ -305,7 +317,9 @@ export interface CachingOptions {
               </div>
 
               <div className="bg-white/60 dark:bg-neutral-900/50 p-4 rounded-lg">
-                <div className="text-2xl font-bold text-green-600 mb-1">75%</div>
+                <div className="text-2xl font-bold text-green-600 mb-1">
+                  75%
+                </div>
                 <div className="text-sm font-medium">Google Gemini</div>
                 <div className="text-xs text-neutral-600 dark:text-neutral-400 mt-1">
                   $0.125 vs $0.50 per 1M tokens
@@ -315,9 +329,10 @@ export interface CachingOptions {
 
             <Alert variant="warning" className="mt-4">
               <p className="text-sm">
-                <strong>Important:</strong> These percentages apply to cached tokens
-                only. Overall cost reduction will be 50-70% when combining provider
-                caching with compression and model routing strategies.
+                <strong>Important:</strong> These percentages apply to cached
+                tokens only. Overall cost reduction will be 50-70% when
+                combining provider caching with compression and model routing
+                strategies.
               </p>
             </Alert>
 
@@ -325,8 +340,8 @@ export interface CachingOptions {
               <h4 className="font-semibold mb-3">Example: 10,000 Requests</h4>
               <div className="text-sm space-y-2">
                 <p>
-                  <strong>Scenario:</strong> 2000-token system prompt, 90% cache hit
-                  rate
+                  <strong>Scenario:</strong> 2000-token system prompt, 90% cache
+                  hit rate
                 </p>
                 <div className="flex justify-between items-center py-2 border-b border-neutral-200 dark:border-neutral-800">
                   <span>Without Caching</span>
@@ -334,11 +349,15 @@ export interface CachingOptions {
                 </div>
                 <div className="flex justify-between items-center py-2 border-b border-neutral-200 dark:border-neutral-800">
                   <span>With Caching (Anthropic)</span>
-                  <span className="font-mono text-emerald-600">$11.40/month</span>
+                  <span className="font-mono text-emerald-600">
+                    $11.40/month
+                  </span>
                 </div>
                 <div className="flex justify-between items-center py-2 font-bold">
                   <span>Monthly Savings</span>
-                  <span className="font-mono text-emerald-600">$48.60 (81%)</span>
+                  <span className="font-mono text-emerald-600">
+                    $48.60 (81%)
+                  </span>
                 </div>
               </div>
             </div>
@@ -350,7 +369,9 @@ export interface CachingOptions {
       <Section id="provider-options" title="Provider-Specific Options">
         {/* Anthropic */}
         <div id="anthropic" className="mb-8">
-          <h3 className="text-xl font-semibold mb-4">Anthropic Prompt Caching</h3>
+          <h3 className="text-xl font-semibold mb-4">
+            Anthropic Prompt Caching
+          </h3>
 
           <div className="bg-purple-50 dark:bg-purple-950/20 border border-purple-200 dark:border-purple-800/50 rounded-lg p-4 mb-4">
             <h4 className="font-semibold mb-2">Key Features</h4>
@@ -368,7 +389,7 @@ export interface CachingOptions {
           <div className="mt-4">
             <CodeBlock
               language="typescript"
-              code={`import { formatForCaching } from '@clarity-chat/token-optimization'
+              code={`import { formatMessagesForProviderCaching } from '@clarity-chat/token-optimization'
 
 const options: CachingOptions = {
   provider: 'anthropic',
@@ -384,7 +405,7 @@ const options: CachingOptions = {
   },
 }
 
-const result = await formatForCaching(messages, options)
+const result = await formatMessagesForProviderCaching(messages, options)
 // System prompt and long user messages automatically cached`}
             />
           </div>
@@ -420,7 +441,7 @@ const result = await formatForCaching(messages, options)
   },
 }
 
-const result = await formatForCaching(messages, options)
+const result = await formatMessagesForProviderCaching(messages, options)
 // OpenAI automatically caches message prefixes`}
             />
           </div>
@@ -459,7 +480,7 @@ const result = await formatForCaching(messages, options)
   },
 }
 
-const result = await formatForCaching(messages, options)
+const result = await formatMessagesForProviderCaching(messages, options)
 // Only caches if content exceeds 32K tokens`}
             />
           </div>
@@ -501,16 +522,19 @@ const customOptions: CachingOptions = {
       </Section>
 
       {/* Integration with formatForCaching */}
-      <Section id="format-integration" title="Integration with formatForCaching">
+      <Section
+        id="format-integration"
+        title="Integration with formatForCaching"
+      >
         <p className="text-neutral-600 dark:text-neutral-400 mb-4">
           CachingOptions integrates seamlessly with the{' '}
-          <code className="text-sm">formatForCaching()</code> utility to automatically
-          add cache control markers to your messages.
+          <code className="text-sm">formatForCaching()</code> utility to
+          automatically add cache control markers to your messages.
         </p>
 
         <CodeBlock
           language="typescript"
-          code={`import { formatForCaching, CachingOptions } from '@clarity-chat/token-optimization'
+          code={`import { formatMessagesForProviderCaching, CachingOptions } from '@clarity-chat/token-optimization'
 
 const messages = [
   {
@@ -531,7 +555,7 @@ const options: CachingOptions = {
 }
 
 // Format messages with cache markers
-const result = await formatForCaching(messages, options)
+const result = await formatMessagesForProviderCaching(messages, options)
 
 console.log(result.messages)
 // [
@@ -568,8 +592,8 @@ console.log('Savings:', result.stats.estimatedSavings)`}
       {/* Cache Invalidation Patterns */}
       <Section id="cache-invalidation" title="Cache Invalidation Patterns">
         <p className="text-neutral-600 dark:text-neutral-400 mb-4">
-          Understanding cache invalidation is crucial for optimal performance and cost
-          savings.
+          Understanding cache invalidation is crucial for optimal performance
+          and cost savings.
         </p>
 
         <div className="space-y-6">
@@ -604,19 +628,19 @@ const googleOptions: CachingOptions = {
 const systemPrompt = 'You are a helpful assistant.'
 
 // First request - creates cache
-await formatForCaching([
+await formatMessagesForProviderCaching([
   { role: 'system', content: systemPrompt },
   { role: 'user', content: 'Hello' },
 ], options)
 
 // Second request - cache hit (same system prompt)
-await formatForCaching([
+await formatMessagesForProviderCaching([
   { role: 'system', content: systemPrompt },
   { role: 'user', content: 'How are you?' },
 ], options)
 
 // Third request - cache miss (different system prompt)
-await formatForCaching([
+await formatMessagesForProviderCaching([
   { role: 'system', content: 'You are a code assistant.' }, // Changed!
   { role: 'user', content: 'Write a function' },
 ], options)
@@ -672,8 +696,8 @@ await Promise.all(warmingRequests.map(async (req) => {
               ✅ DO: Place Cacheable Content First
             </h4>
             <p className="text-sm text-neutral-600 dark:text-neutral-400 mb-2">
-              Put static content (system prompts, documentation) at the beginning of your
-              message array for optimal caching.
+              Put static content (system prompts, documentation) at the
+              beginning of your message array for optimal caching.
             </p>
             <CodeBlock
               language="typescript"
@@ -690,7 +714,8 @@ const messages = [
               ✅ DO: Keep System Prompts Consistent
             </h4>
             <p className="text-sm text-neutral-600 dark:text-neutral-400 mb-2">
-              Use the exact same system prompt across requests to maximize cache hits.
+              Use the exact same system prompt across requests to maximize cache
+              hits.
             </p>
             <CodeBlock
               language="typescript"
@@ -748,7 +773,7 @@ if (tokens < 1024) {
   trackStats: true, // Enable statistics
 }
 
-const result = await formatForCaching(messages, options)
+const result = await formatMessagesForProviderCaching(messages, options)
 
 // Check performance
 console.log('Cache hit rate:', result.stats.hitRate)
@@ -764,8 +789,8 @@ console.log('Cost saved:', result.stats.costSaved)
               ❌ DON'T: Cache Frequently Changing Content
             </h4>
             <p className="text-sm text-neutral-600 dark:text-neutral-400 mb-2">
-              Avoid caching content that changes on every request - you'll pay cache
-              creation costs without benefits.
+              Avoid caching content that changes on every request - you'll pay
+              cache creation costs without benefits.
             </p>
             <CodeBlock
               language="typescript"
@@ -798,8 +823,8 @@ const messages = [
               ❌ DON'T: Expect 90% Overall Savings
             </h4>
             <p className="text-sm text-neutral-600 dark:text-neutral-400 mb-2">
-              The 90% discount applies only to cached tokens, not your entire bill.
-              Realistic overall savings are 50-70%.
+              The 90% discount applies only to cached tokens, not your entire
+              bill. Realistic overall savings are 50-70%.
             </p>
             <CodeBlock
               language="typescript"
@@ -819,10 +844,12 @@ const messages = [
       <Section id="examples" title="Usage Examples">
         <div className="space-y-6">
           <div>
-            <h4 className="font-semibold mb-3">Example 1: Customer Support Bot</h4>
+            <h4 className="font-semibold mb-3">
+              Example 1: Customer Support Bot
+            </h4>
             <CodeBlock
               language="typescript"
-              code={`import { formatForCaching, CachingOptions } from '@clarity-chat/token-optimization'
+              code={`import { formatMessagesForProviderCaching, CachingOptions } from '@clarity-chat/token-optimization'
 
 const supportDocs = \`
 # Product Documentation
@@ -850,7 +877,7 @@ const messages1 = [
   { role: 'user', content: 'How do I reset my password?' },
 ]
 
-const result1 = await formatForCaching(messages1, options)
+const result1 = await formatMessagesForProviderCaching(messages1, options)
 // Cache miss - pays full price for system prompt
 
 // Second customer query (5 seconds later)
@@ -859,7 +886,7 @@ const messages2 = [
   { role: 'user', content: 'How do I cancel my subscription?' },
 ]
 
-const result2 = await formatForCaching(messages2, options)
+const result2 = await formatMessagesForProviderCaching(messages2, options)
 // Cache hit - pays 90% less for system prompt
 // Savings: ~$0.014 per request on 4500 tokens`}
             />
@@ -891,7 +918,7 @@ const messages = [
   { role: 'user', content: 'Implement authentication' },
 ]
 
-const result = await formatForCaching(messages, options)
+const result = await formatMessagesForProviderCaching(messages, options)
 // OpenAI automatically caches the system prompt prefix
 // 50% savings on subsequent requests with same prefix`}
             />
@@ -920,7 +947,7 @@ const options: CachingOptions = {
   },
 }
 
-const result = await formatForCaching(
+const result = await formatMessagesForProviderCaching(
   [
     { role: 'system', content: massiveDocs },
     { role: 'user', content: 'Summarize section 5' },
@@ -935,7 +962,9 @@ const result = await formatForCaching(
           </div>
 
           <div>
-            <h4 className="font-semibold mb-3">Example 4: Multi-Breakpoint Caching</h4>
+            <h4 className="font-semibold mb-3">
+              Example 4: Multi-Breakpoint Caching
+            </h4>
             <CodeBlock
               language="typescript"
               code={`const options: CachingOptions = {

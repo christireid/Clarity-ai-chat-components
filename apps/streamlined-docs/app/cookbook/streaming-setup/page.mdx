@@ -428,12 +428,12 @@ export const runtime = 'edge'
 ### 2. Use Compression
 
 ```tsx
-import { compress } from '@clarity-chat/token-optimization'
+import { compressText } from '@clarity-chat/token-optimization'
 
 const stream = OpenAIStream(response, {
   onToken: async (token) => {
     // Optional: Compress before sending
-    return compress(token)
+    return compressText(token)
   },
 })
 ```
