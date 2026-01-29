@@ -1,5 +1,4 @@
-'use client'
-
+import { Metadata } from 'next'
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
@@ -37,6 +36,40 @@ import {
   Percent,
 } from 'lucide-react'
 import Link from 'next/link'
+
+export const metadata: Metadata = {
+  title: 'Token Optimization Guide | Reduce AI Costs by 50-70%',
+  description:
+    'Comprehensive guide to reducing AI costs by 50-70% through provider caching (up to 90% on cached tokens), token compression (50-70% reduction), and smart model routing (10-15% additional savings). Production-ready strategies with real-world examples, cost calculators, and implementation guides.',
+  keywords: [
+    'token optimization',
+    'AI cost reduction',
+    '50-70% savings',
+    'provider caching',
+    'prompt caching',
+    'model routing',
+    'compression',
+    'token compression',
+    'LLM optimization',
+    'AI cost savings',
+    'cost reduction strategies',
+  ],
+  openGraph: {
+    title: 'Token Optimization Guide - Reduce AI Costs by 50-70%',
+    description:
+      'Complete guide to token optimization. Provider caching (90% on cached tokens), compression (50-70%), and smart routing (10-15%). Real-world examples and calculators included.',
+    type: 'article',
+    url: '/guides/token-optimization',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Token Optimization - 50-70% AI Cost Reduction',
+    description:
+      'Reduce AI costs by 50-70% with provider caching, compression, and routing. Comprehensive guide with production examples.',
+  },
+}
+
+'use client'
 
 // Cost comparison table data
 const providerCostData = [
@@ -90,6 +123,12 @@ const savingsExamples = [
     after: '$480/mo',
     savings: '80%',
     techniques: ['Model Routing', 'Prompt Caching', 'Response Caching'],
+    breakdown: [
+      { strategy: 'Provider caching (system prompts)', savings: '60%' },
+      { strategy: 'Compression (user context)', savings: '15%' },
+      { strategy: 'Smart routing (simple queries)', savings: '5%' },
+    ],
+    note: 'This example shows how combining multiple strategies achieves 80% savings, exceeding the 50-70% baseline.',
   },
   {
     scenario: 'Document Analysis',
@@ -97,6 +136,12 @@ const savingsExamples = [
     after: '$1,700/mo',
     savings: '80%',
     techniques: ['Context Compression', 'Semantic Caching', 'Chunking'],
+    breakdown: [
+      { strategy: 'Context compression (2-20x)', savings: '50%' },
+      { strategy: 'Provider caching (document chunks)', savings: '25%' },
+      { strategy: 'Smart chunking strategy', savings: '5%' },
+    ],
+    note: 'Aggressive compression combined with caching enables 80% savings on document-heavy workloads.',
   },
   {
     scenario: 'Code Assistant',
@@ -104,6 +149,12 @@ const savingsExamples = [
     after: '$3,600/mo',
     savings: '70%',
     techniques: ['Model Routing', 'Provider Caching', 'Budget Limits'],
+    breakdown: [
+      { strategy: 'Provider caching (codebase context)', savings: '45%' },
+      { strategy: 'Model routing (complexity-based)', savings: '20%' },
+      { strategy: 'Budget limits (auto-trim)', savings: '5%' },
+    ],
+    note: 'Code-heavy use cases benefit from caching large codebases and routing simple queries to cheaper models.',
   },
 ]
 
@@ -575,7 +626,7 @@ export default function TokenOptimizationGuidePage() {
           <div className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-50 dark:bg-emerald-950/50 border border-emerald-200 dark:border-emerald-800/50 rounded-full mb-6">
             <TrendingDown className="w-4 h-4 text-emerald-500" />
             <span className="text-sm font-medium text-emerald-600 dark:text-emerald-400">
-              Save 80%+ on AI Costs
+              Reduce AI Costs by 50-70%
             </span>
           </div>
 
@@ -584,15 +635,18 @@ export default function TokenOptimizationGuidePage() {
           </KineticText>
 
           <p className="text-lg text-neutral-600 dark:text-neutral-400 max-w-2xl mx-auto mb-8">
-            Reduce your AI costs by 80% or more using Clarity Chat&apos;s comprehensive token
+            Reduce your AI costs by 50-70% using Clarity Chat&apos;s comprehensive token
             optimization toolkit. From real-time counting to intelligent caching and model routing.
+          </p>
+          <p className="text-base text-neutral-500 dark:text-neutral-500 max-w-2xl mx-auto">
+            Up to 90% with provider caching
           </p>
 
           {/* Savings Highlight */}
           <div className="inline-flex items-center gap-6 p-4 rounded-2xl bg-gradient-to-r from-emerald-50 to-teal-50 dark:from-emerald-950/30 dark:to-teal-950/30 border border-emerald-200 dark:border-emerald-800/50">
             <div className="text-center">
-              <div className="text-3xl font-bold text-emerald-600 dark:text-emerald-400">80%</div>
-              <div className="text-sm text-neutral-600 dark:text-neutral-400">Avg. Savings</div>
+              <div className="text-3xl font-bold text-emerald-600 dark:text-emerald-400">50-70%</div>
+              <div className="text-sm text-neutral-600 dark:text-neutral-400">Baseline Savings</div>
             </div>
             <div className="h-12 w-px bg-emerald-200 dark:bg-emerald-800" />
             <div className="text-center">
@@ -793,11 +847,28 @@ export default function TokenOptimizationGuidePage() {
             <div className="flex items-center justify-center w-10 h-10 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 text-white">
               <Database className="w-5 h-5" />
             </div>
-            <h2 className="text-2xl font-bold">Prompt Caching</h2>
+            <h2 className="text-2xl font-bold">Prompt Caching - Up to 90% on Cached Content</h2>
+          </div>
+
+          {/* Important Warning Banner */}
+          <div className="mb-6 bg-amber-500/10 border border-amber-500/30 p-4 rounded-lg">
+            <div className="flex items-start gap-3">
+              <AlertTriangle className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
+              <div>
+                <p className="font-semibold text-amber-900 dark:text-amber-100">
+                  Important: Provider caching achieves 90% savings on <strong>cached tokens only</strong>
+                </p>
+                <p className="text-sm text-amber-800 dark:text-amber-200 mt-1">
+                  Your overall cost reduction will be 50-70% baseline when combining provider caching with other
+                  strategies across all tokens. The 90% rate applies only to static content like system prompts
+                  that meet the caching threshold.
+                </p>
+              </div>
+            </div>
           </div>
 
           <p className="text-neutral-600 dark:text-neutral-400 mb-6">
-            Provider-native caching reduces costs by up to 90% on repeated content like system prompts.
+            Provider-native caching reduces costs by up to 90% on cached tokens (repeated content like system prompts).
             Clarity Chat supports Anthropic, OpenAI, and Google caching with a unified API.
           </p>
 
@@ -1031,21 +1102,40 @@ export default function TokenOptimizationGuidePage() {
             {savingsExamples.map((example, i) => (
               <div key={i} className="p-6 rounded-xl bg-white/60 dark:bg-white/[0.02] backdrop-blur-sm border border-neutral-200/60 dark:border-white/[0.06]">
                 <h3 className="font-semibold text-lg mb-4">{example.scenario}</h3>
-                <div className="space-y-3 mb-4">
-                  <div className="flex items-center justify-between">
-                    <span className="text-neutral-500">Before:</span>
-                    <span className="font-mono text-red-500 line-through">{example.before}</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-neutral-500">After:</span>
-                    <span className="font-mono text-emerald-500 font-semibold">{example.after}</span>
-                  </div>
-                  <div className="flex items-center justify-between pt-2 border-t border-neutral-200 dark:border-neutral-800">
-                    <span className="font-medium">Savings:</span>
-                    <span className="text-2xl font-bold text-emerald-500">{example.savings}</span>
+
+                {/* Cost comparison */}
+                <div className="bg-neutral-50 dark:bg-neutral-900/50 p-4 rounded-lg mb-4">
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-neutral-600 dark:text-neutral-400">Before optimization:</span>
+                      <span className="font-mono font-semibold text-red-500">{example.before}</span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-neutral-600 dark:text-neutral-400">After optimization:</span>
+                      <span className="font-mono font-semibold text-emerald-500">{example.after}</span>
+                    </div>
+                    <div className="flex items-center justify-between pt-2 border-t border-neutral-200 dark:border-neutral-800">
+                      <span className="font-semibold text-emerald-700 dark:text-emerald-300">Total savings:</span>
+                      <span className="text-2xl font-bold text-emerald-600 dark:text-emerald-400">{example.savings}</span>
+                    </div>
                   </div>
                 </div>
-                <div className="space-y-1">
+
+                {/* Optimization breakdown */}
+                <div className="bg-brand-500/10 border border-brand-500/30 p-4 rounded-lg mb-4">
+                  <p className="font-semibold mb-2 text-sm">How We Achieved {example.savings} Savings:</p>
+                  <ul className="space-y-1 text-xs text-neutral-700 dark:text-neutral-300">
+                    {example.breakdown.map((item, j) => (
+                      <li key={j}>✓ {item.strategy}: {item.savings} savings</li>
+                    ))}
+                  </ul>
+                  <p className="mt-3 text-xs text-neutral-600 dark:text-neutral-400 italic">
+                    {example.note}
+                  </p>
+                </div>
+
+                {/* Techniques used */}
+                <div className="space-y-2">
                   <span className="text-xs text-neutral-500 uppercase tracking-wide">Techniques Used:</span>
                   <div className="flex flex-wrap gap-1">
                     {example.techniques.map((tech, j) => (

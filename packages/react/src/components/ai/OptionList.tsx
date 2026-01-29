@@ -387,7 +387,7 @@ export function OptionList({
           <motion.div
             className="option-list-spinner"
             animate={{ rotate: 360 }}
-            transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+            transition={{ duration: durations.slower, repeat: Infinity, ease: 'linear' }}
           />
           <span>Loading options...</span>
         </div>

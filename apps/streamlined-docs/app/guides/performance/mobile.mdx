@@ -1,0 +1,1337 @@
+---
+title: 'Mobile Performance Optimization'
+description: 'Comprehensive guide to optimizing Clarity Chat Components for mobile devices with touch optimization, reduced motion, battery efficiency, and responsive design patterns.'
+lastUpdated: '2026-01-28'
+category: 'Performance'
+tags: ['mobile', 'performance', 'responsive', 'touch', 'battery', 'optimization']
+---
+
+# Mobile Performance Optimization
+
+> **Last Updated:** 2026-01-28
+> **Status:** Production-Ready
+
+Comprehensive guide for optimizing Clarity Chat Components on mobile devices. Covers touch interactions, animation throttling, battery efficiency, responsive design, and real device testing.
+
+---
+
+## Table of Contents
+
+1. [Touch Optimization](#touch-optimization)
+2. [Reduced Motion Preferences](#reduced-motion-preferences)
+3. [Battery Efficiency](#battery-efficiency)
+4. [Mobile-First Responsive Design](#mobile-first-responsive-design)
+5. [Viewport Optimization](#viewport-optimization)
+6. [Testing on Real Devices](#testing-on-real-devices)
+7. [Performance Monitoring](#performance-monitoring)
+8. [Mobile-Specific Patterns](#mobile-specific-patterns)
+
+---
+
+## Touch Optimization
+
+### No Hover States on Touch Devices
+
+Remove hover effects on touch devices to prevent sticky hover states and improve performance.
+
+#### Detection Pattern
+
+```tsx
+import { useState, useEffect } from 'react'
+
+/**
+ * Detect if the primary input is touch
+ */
+export function useTouchDevice(): boolean {
+  const [isTouchDevice, setIsTouchDevice] = useState(false)
+
+  useEffect(() => {
+    // Check for touch capability
+    const hasTouch =
+      'ontouchstart' in window ||
+      navigator.maxTouchPoints > 0 ||
+      (navigator as any).msMaxTouchPoints > 0
+
+    setIsTouchDevice(hasTouch)
+  }, [])
+
+  return isTouchDevice
+}
+
+/**
+ * Detect primary input type with media query
+ */
+export function usePrimaryPointer(): 'touch' | 'mouse' | 'none' {
+  const [pointerType, setPointerType] = useState<'touch' | 'mouse' | 'none'>('none')
+
+  useEffect(() => {
+    // Use pointer media query (most reliable)
+    const coarse = window.matchMedia('(pointer: coarse)').matches
+    const fine = window.matchMedia('(pointer: fine)').matches
+
+    if (coarse) {
+      setPointerType('touch')
+    } else if (fine) {
+      setPointerType('mouse')
+    } else {
+      setPointerType('none')
+    }
+  }, [])
+
+  return pointerType
+}
+```
+
+#### Conditional Hover Styles
+
+```tsx
+import { usePrimaryPointer } from '@/hooks/usePrimaryPointer'
+import { cn } from '@clarity-chat/primitives'
+
+export function MessageCard({ message }: Props) {
+  const pointerType = usePrimaryPointer()
+  const isMouse = pointerType === 'mouse'
+
+  return (
+    <div
+      className={cn(
+        'p-4 rounded-lg border transition-colors',
+        // Only apply hover on mouse devices
+        isMouse && 'hover:bg-accent hover:shadow-md',
+        // Touch devices get active state instead
+        !isMouse && 'active:bg-accent active:scale-[0.98]'
+      )}
+    >
+      {message.content}
+    </div>
+  )
+}
+```
+
+#### CSS-Only Approach
+
+Use `@media (hover: hover)` to conditionally apply hover styles:
+
+```css
+/* Only apply hover on devices that support it */
+@media (hover: hover) {
+  .message-card:hover {
+    background-color: var(--color-accent);
+    box-shadow: var(--shadow-md);
+  }
+}
+
+/* Touch devices get active state */
+@media (hover: none) {
+  .message-card:active {
+    background-color: var(--color-accent);
+    transform: scale(0.98);
+  }
+}
+```
+
+### Touch Target Sizing
+
+Ensure all interactive elements meet the **WCAG 2.1 AA** minimum size of **48x48 CSS pixels**.
+
+```tsx
+export function ChatInput() {
+  return (
+    <div className="flex gap-2">
+      <textarea
+        placeholder="Type a message..."
+        className={cn(
+          'flex-1 px-4 py-3',
+          'min-h-[48px]', // ✅ Minimum touch target
+          'rounded-lg border resize-none'
+        )}
+      />
+      <button
+        aria-label="Send message"
+        className={cn(
+          'w-12 h-12', // ✅ 48x48px minimum
+          'rounded-lg bg-primary text-white',
+          'flex items-center justify-center',
+          'active:scale-95 transition-transform'
+        )}
+      >
+        <SendIcon className="w-5 h-5" />
+      </button>
+    </div>
+  )
+}
+```
+
+### Touch Gestures
+
+Implement native-like gestures for better mobile UX:
+
+```tsx
+import { useRef } from 'react'
+import { motion, PanInfo } from 'framer-motion'
+
+export function SwipeableMessage({ message, onDelete }: Props) {
+  const constraintsRef = useRef(null)
+
+  const handleDragEnd = (event: any, info: PanInfo) => {
+    // Swipe left to delete
+    if (info.offset.x < -100) {
+      onDelete(message.id)
+    }
+  }
+
+  return (
+    <motion.div
+      ref={constraintsRef}
+      drag="x"
+      dragConstraints={{ left: -120, right: 0 }}
+      dragElastic={0.2}
+      onDragEnd={handleDragEnd}
+      className="relative"
+    >
+      {/* Delete indicator (revealed on swipe) */}
+      <div className="absolute right-0 top-0 bottom-0 w-20 bg-red-500 flex items-center justify-center">
+        <TrashIcon className="w-5 h-5 text-white" />
+      </div>
+
+      {/* Message content */}
+      <div className="bg-card p-4 rounded-lg">{message.content}</div>
+    </motion.div>
+  )
+}
+```
+
+### Haptic Feedback
+
+Provide tactile feedback on touch interactions:
+
+```tsx
+/**
+ * Trigger haptic feedback on supported devices
+ */
+export function hapticFeedback(style: 'light' | 'medium' | 'heavy' = 'medium') {
+  if ('vibrate' in navigator) {
+    const duration = style === 'light' ? 10 : style === 'medium' ? 20 : 30
+    navigator.vibrate(duration)
+  }
+}
+
+export function SendButton({ onClick }: Props) {
+  const handleClick = () => {
+    hapticFeedback('medium')
+    onClick()
+  }
+
+  return (
+    <button onClick={handleClick} className="send-button">
+      Send
+    </button>
+  )
+}
+```
+
+---
+
+## Reduced Motion Preferences
+
+Respect user's motion preferences for accessibility and battery savings.
+
+### useReducedMotion Hook
+
+```tsx
+import { useEffect, useState } from 'react'
+
+/**
+ * Detect if user prefers reduced motion
+ * Respects system-level accessibility settings
+ */
+export function useReducedMotion(): boolean {
+  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false)
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
+
+    // Set initial value
+    setPrefersReducedMotion(mediaQuery.matches)
+
+    // Listen for changes
+    const handler = (event: MediaQueryListEvent) => {
+      setPrefersReducedMotion(event.matches)
+    }
+
+    mediaQuery.addEventListener('change', handler)
+    return () => mediaQuery.removeEventListener('change', handler)
+  }, [])
+
+  return prefersReducedMotion
+}
+```
+
+### Conditional Animations
+
+```tsx
+import { motion } from 'framer-motion'
+import { useReducedMotion } from '@clarity-chat/react/utils/animations'
+
+export function AnimatedMessage({ message }: Props) {
+  const prefersReducedMotion = useReducedMotion()
+
+  return (
+    <motion.div
+      initial={prefersReducedMotion ? {} : { opacity: 0, y: 20 }}
+      animate={prefersReducedMotion ? {} : { opacity: 1, y: 0 }}
+      transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.3 }}
+      className="message"
+    >
+      {message.content}
+    </motion.div>
+  )
+}
+```
+
+### Animation Presets
+
+Use the built-in animation utilities that respect reduced motion:
+
+```tsx
+import {
+  ANIMATION_PRESETS,
+  useReducedMotion,
+  getReducedMotionVariants,
+} from '@clarity-chat/react/utils/animations'
+import { motion } from 'framer-motion'
+
+export function MessageList({ messages }: Props) {
+  const prefersReducedMotion = useReducedMotion()
+
+  // Automatically respects reduced motion
+  const variants = getReducedMotionVariants(
+    ANIMATION_PRESETS.messageEnter,
+    prefersReducedMotion
+  )
+
+  return (
+    <div>
+      {messages.map((message) => (
+        <motion.div key={message.id} variants={variants}>
+          {message.content}
+        </motion.div>
+      ))}
+    </div>
+  )
+}
+```
+
+### CSS Approach
+
+Use CSS for reduced motion preferences:
+
+```css
+/* Default animations */
+.message {
+  animation: slideIn 0.3s ease-out;
+}
+
+/* Disable animations for users who prefer reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .message {
+    animation: none;
+    transition: none;
+  }
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+```
+
+---
+
+## Battery Efficiency
+
+Optimize for battery life on mobile devices.
+
+### Throttle Animations
+
+Reduce animation frequency when battery is low:
+
+```tsx
+import { useState, useEffect } from 'react'
+import { useReducedMotion } from '@clarity-chat/react/utils/animations'
+
+/**
+ * Detect battery status and adjust performance
+ */
+export function useBatteryOptimization() {
+  const [isLowBattery, setIsLowBattery] = useState(false)
+  const [isBatteryCharging, setIsBatteryCharging] = useState(false)
+  const prefersReducedMotion = useReducedMotion()
+
+  useEffect(() => {
+    const checkBattery = async () => {
+      if ('getBattery' in navigator) {
+        const battery = await (navigator as any).getBattery()
+
+        const updateBatteryStatus = () => {
+          setIsLowBattery(battery.level < 0.2) // Below 20%
+          setIsBatteryCharging(battery.charging)
+        }
+
+        updateBatteryStatus()
+
+        battery.addEventListener('levelchange', updateBatteryStatus)
+        battery.addEventListener('chargingchange', updateBatteryStatus)
+
+        return () => {
+          battery.removeEventListener('levelchange', updateBatteryStatus)
+          battery.removeEventListener('chargingchange', updateBatteryStatus)
+        }
+      }
+    }
+
+    checkBattery()
+  }, [])
+
+  // Determine if we should reduce animations
+  const shouldReduceAnimations = prefersReducedMotion || (isLowBattery && !isBatteryCharging)
+
+  return {
+    isLowBattery,
+    isBatteryCharging,
+    shouldReduceAnimations,
+  }
+}
+```
+
+### Conditional Animation Quality
+
+```tsx
+import { useBatteryOptimization } from '@/hooks/useBatteryOptimization'
+import { motion } from 'framer-motion'
+
+export function OptimizedMessage({ message }: Props) {
+  const { shouldReduceAnimations } = useBatteryOptimization()
+
+  return (
+    <motion.div
+      initial={shouldReduceAnimations ? {} : { opacity: 0, y: 10 }}
+      animate={shouldReduceAnimations ? {} : { opacity: 1, y: 0 }}
+      transition={
+        shouldReduceAnimations
+          ? { duration: 0 }
+          : {
+              duration: 0.3,
+              ease: 'easeOut',
+            }
+      }
+    >
+      {message.content}
+    </motion.div>
+  )
+}
+```
+
+### Debounce Heavy Operations
+
+Reduce processing frequency for expensive operations:
+
+```tsx
+import { useCallback } from 'react'
+import { debounce } from '@clarity-chat/react/utils'
+
+export function SearchInput() {
+  // Debounce search to reduce API calls
+  const handleSearch = useCallback(
+    debounce((query: string) => {
+      // Expensive search operation
+      performSearch(query)
+    }, 300),
+    []
+  )
+
+  return <input onChange={(e) => handleSearch(e.target.value)} placeholder="Search messages..." />
+}
+```
+
+### Lazy Load Heavy Components
+
+Defer loading of components until needed:
+
+```tsx
+import { lazy, Suspense } from 'react'
+
+// Lazy load heavy components
+const CodeEditor = lazy(() => import('./CodeEditor'))
+const VideoPlayer = lazy(() => import('./VideoPlayer'))
+const PDFViewer = lazy(() => import('./PDFViewer'))
+
+export function MessageContent({ message }: Props) {
+  return (
+    <div>
+      {message.type === 'code' && (
+        <Suspense fallback={<CodeSkeleton />}>
+          <CodeEditor code={message.content} />
+        </Suspense>
+      )}
+
+      {message.type === 'video' && (
+        <Suspense fallback={<VideoSkeleton />}>
+          <VideoPlayer url={message.videoUrl} />
+        </Suspense>
+      )}
+
+      {message.type === 'pdf' && (
+        <Suspense fallback={<PDFSkeleton />}>
+          <PDFViewer url={message.pdfUrl} />
+        </Suspense>
+      )}
+    </div>
+  )
+}
+```
+
+### Optimize Scroll Performance
+
+Use passive event listeners and throttle scroll handlers:
+
+```tsx
+import { useEffect, useRef } from 'react'
+import { throttle } from '@clarity-chat/react/utils'
+
+export function MessageList({ messages }: Props) {
+  const containerRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const container = containerRef.current
+    if (!container) return
+
+    // Throttle scroll handler to 60fps (16.67ms)
+    const handleScroll = throttle(() => {
+      // Handle scroll position
+      const scrollPosition = container.scrollTop
+      // Update UI based on scroll
+    }, 16)
+
+    // Use passive listener for better scroll performance
+    container.addEventListener('scroll', handleScroll, { passive: true })
+
+    return () => {
+      container.removeEventListener('scroll', handleScroll)
+    }
+  }, [])
+
+  return (
+    <div ref={containerRef} className="overflow-y-auto scrollbar-hide h-full">
+      {messages.map((message) => (
+        <Message key={message.id} message={message} />
+      ))}
+    </div>
+  )
+}
+```
+
+---
+
+## Mobile-First Responsive Design
+
+Build components that adapt gracefully from mobile to desktop.
+
+### Mobile-First Breakpoints
+
+Start with mobile styles, then add larger breakpoints:
+
+```tsx
+import { cn } from '@clarity-chat/primitives'
+
+export function ChatWindow() {
+  return (
+    <div
+      className={cn(
+        // Mobile (default)
+        'w-full min-h-[400px] flex flex-col',
+        // Tablet
+        'sm:min-h-[500px]',
+        // Desktop
+        'md:min-h-[600px] md:max-w-4xl md:mx-auto',
+        // Large desktop
+        'lg:max-w-5xl xl:max-w-6xl'
+      )}
+    >
+      <MessageList />
+      <ChatInput />
+    </div>
+  )
+}
+```
+
+### Responsive Typography
+
+Scale text appropriately across devices:
+
+```tsx
+export function Message({ content }: Props) {
+  return (
+    <div
+      className={cn(
+        // Mobile: smaller, tighter spacing
+        'text-sm leading-relaxed',
+        // Tablet: slightly larger
+        'sm:text-base',
+        // Desktop: comfortable reading size
+        'md:text-base md:leading-loose'
+      )}
+    >
+      {content}
+    </div>
+  )
+}
+```
+
+### Adaptive Layouts
+
+Switch layouts based on screen size:
+
+```tsx
+export function ChatInterface() {
+  return (
+    <div
+      className={cn(
+        // Mobile: single column
+        'flex flex-col h-screen',
+        // Desktop: sidebar + main
+        'md:flex-row'
+      )}
+    >
+      {/* Sidebar - drawer on mobile, fixed on desktop */}
+      <aside
+        className={cn(
+          // Mobile: full screen drawer
+          'w-full',
+          // Desktop: fixed sidebar
+          'md:w-80 md:border-r md:flex-shrink-0'
+        )}
+      >
+        <ConversationList />
+      </aside>
+
+      {/* Main content */}
+      <main className="flex-1 flex flex-col min-h-0">
+        <MessageList />
+        <ChatInput />
+      </main>
+    </div>
+  )
+}
+```
+
+### Container Queries (Modern Approach)
+
+Use container queries for truly responsive components:
+
+```tsx
+export function MessageCard({ message }: Props) {
+  return (
+    <div
+      className={cn(
+        // Container for responsive sizing
+        '@container',
+        'p-4 rounded-lg border'
+      )}
+    >
+      <div
+        className={cn(
+          // Stack on small containers
+          'flex flex-col gap-2',
+          // Row layout on larger containers
+          '@md:flex-row @md:items-center'
+        )}
+      >
+        <Avatar user={message.user} />
+        <div className="flex-1">{message.content}</div>
+        <MessageActions message={message} />
+      </div>
+    </div>
+  )
+}
+```
+
+---
+
+## Viewport Optimization
+
+Optimize for mobile viewports and keyboard interactions.
+
+### Viewport Meta Tag
+
+Ensure proper viewport configuration:
+
+```html
+<!-- app/layout.tsx or index.html -->
+<meta
+  name="viewport"
+  content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes"
+/>
+```
+
+### Handle Mobile Keyboard
+
+Adjust UI when keyboard appears:
+
+```tsx
+import { useEffect, useState } from 'react'
+
+/**
+ * Detect when mobile keyboard is visible
+ */
+export function useKeyboardVisible(): boolean {
+  const [isKeyboardVisible, setIsKeyboardVisible] = useState(false)
+
+  useEffect(() => {
+    const handleResize = () => {
+      // On mobile, visualViewport changes when keyboard appears
+      if (window.visualViewport) {
+        const viewportHeight = window.visualViewport.height
+        const windowHeight = window.innerHeight
+
+        // Keyboard is visible if viewport is significantly smaller
+        setIsKeyboardVisible(viewportHeight < windowHeight * 0.75)
+      }
+    }
+
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener('resize', handleResize)
+      return () => window.visualViewport.removeEventListener('resize', handleResize)
+    }
+  }, [])
+
+  return isKeyboardVisible
+}
+
+export function ChatInput() {
+  const isKeyboardVisible = useKeyboardVisible()
+
+  return (
+    <div
+      className={cn(
+        'transition-all duration-300',
+        // Reduce padding when keyboard is visible
+        isKeyboardVisible ? 'py-2' : 'py-4'
+      )}
+    >
+      <textarea placeholder="Type a message..." className="w-full" />
+    </div>
+  )
+}
+```
+
+### Prevent Zoom on Input Focus
+
+Prevent annoying zoom behavior on iOS:
+
+```css
+/* Prevent zoom on input focus (iOS) */
+input,
+textarea,
+select {
+  font-size: 16px; /* iOS only zooms if font-size < 16px */
+}
+
+/* Or use a specific input style */
+.chat-input {
+  font-size: max(16px, 1rem); /* Never below 16px */
+}
+```
+
+### Safe Area Insets
+
+Handle notches and rounded corners:
+
+```css
+/* Respect safe areas (iPhone notch, etc.) */
+.chat-container {
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+/* In Tailwind */
+.chat-container {
+  @apply pl-[env(safe-area-inset-left)] pr-[env(safe-area-inset-right)] pb-[env(safe-area-inset-bottom)];
+}
+```
+
+### Viewport Units
+
+Use appropriate viewport units:
+
+```tsx
+export function FullscreenChat() {
+  return (
+    <div
+      className={cn(
+        // Use dvh (dynamic viewport height) to account for mobile browser UI
+        'h-[100dvh]', // Falls back to 100vh
+        'flex flex-col'
+      )}
+    >
+      <MessageList />
+      <ChatInput />
+    </div>
+  )
+}
+```
+
+---
+
+## Testing on Real Devices
+
+Emulators are not enough - test on actual devices.
+
+### Device Test Matrix
+
+Test on a range of real devices:
+
+| Device Type    | Resolution | Notes                         |
+| -------------- | ---------- | ----------------------------- |
+| iPhone SE      | 375x667    | Small iOS device              |
+| iPhone 13/14   | 390x844    | Standard iOS                  |
+| iPhone 14 Pro  | 393x852    | Dynamic Island                |
+| Samsung Galaxy | 360x800    | Common Android size           |
+| Google Pixel   | 412x915    | Android reference device      |
+| iPad           | 768x1024   | Tablet portrait               |
+| iPad Pro       | 1024x1366  | Large tablet                  |
+
+### Remote Testing Tools
+
+Use remote device testing services:
+
+```bash
+# BrowserStack
+npm install -g browserstack-local
+
+# Sauce Labs
+npm install -g sauce-connect-launcher
+
+# AWS Device Farm
+# Configure via AWS Console
+```
+
+### Performance Profiling
+
+Profile performance on real devices:
+
+```tsx
+import { useEffect } from 'react'
+
+/**
+ * Log performance metrics in development
+ */
+export function usePerformanceMonitor(componentName: string) {
+  useEffect(() => {
+    if (process.env.NODE_ENV !== 'development') return
+
+    const mark = `${componentName}-render`
+    performance.mark(mark)
+
+    return () => {
+      performance.measure(`${componentName} render`, mark)
+
+      const measurements = performance.getEntriesByName(`${componentName} render`)
+      if (measurements.length > 0) {
+        const duration = measurements[0].duration
+        if (duration > 16.67) {
+          // Slower than 60fps
+          console.warn(`⚠️ ${componentName} render took ${duration.toFixed(2)}ms`)
+        }
+      }
+
+      performance.clearMarks(mark)
+      performance.clearMeasures(`${componentName} render`)
+    }
+  })
+}
+
+export function MessageList({ messages }: Props) {
+  usePerformanceMonitor('MessageList')
+
+  return (
+    <div>
+      {messages.map((message) => (
+        <Message key={message.id} message={message} />
+      ))}
+    </div>
+  )
+}
+```
+
+### Network Throttling
+
+Test with throttled network conditions:
+
+```tsx
+/**
+ * Simulate slow network in development
+ */
+export function withNetworkThrottling<T extends (...args: any[]) => Promise<any>>(
+  fn: T,
+  delayMs: number = 1000
+): T {
+  if (process.env.NODE_ENV !== 'development') {
+    return fn
+  }
+
+  return (async (...args: any[]) => {
+    await new Promise((resolve) => setTimeout(resolve, delayMs))
+    return fn(...args)
+  }) as T
+}
+
+// Usage
+const fetchMessages = withNetworkThrottling(async (conversationId: string) => {
+  const response = await fetch(`/api/messages/${conversationId}`)
+  return response.json()
+}, 2000) // Simulate 2G network
+```
+
+### Visual Regression Testing
+
+Capture screenshots across devices:
+
+```typescript
+// playwright.config.ts
+import { defineConfig, devices } from '@playwright/test'
+
+export default defineConfig({
+  projects: [
+    {
+      name: 'Mobile Chrome',
+      use: { ...devices['Pixel 5'] },
+    },
+    {
+      name: 'Mobile Safari',
+      use: { ...devices['iPhone 13'] },
+    },
+    {
+      name: 'iPad',
+      use: { ...devices['iPad Pro'] },
+    },
+  ],
+})
+```
+
+```typescript
+// tests/mobile.spec.ts
+import { test, expect } from '@playwright/test'
+
+test.describe('Mobile Chat', () => {
+  test('renders correctly on mobile', async ({ page }) => {
+    await page.goto('/chat')
+
+    // Take screenshot
+    await expect(page).toHaveScreenshot('mobile-chat.png')
+
+    // Test touch interactions
+    await page.tap('[data-testid="send-button"]')
+    await expect(page.locator('[data-testid="message-list"]')).toBeVisible()
+  })
+})
+```
+
+---
+
+## Performance Monitoring
+
+Track mobile performance metrics in production.
+
+### Core Web Vitals
+
+Monitor key performance metrics:
+
+```tsx
+import { useEffect } from 'react'
+
+/**
+ * Report Core Web Vitals
+ */
+export function useWebVitals() {
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+
+    // LCP - Largest Contentful Paint
+    const observeLCP = () => {
+      const observer = new PerformanceObserver((list) => {
+        const entries = list.getEntries()
+        const lastEntry = entries[entries.length - 1] as any
+
+        console.log('LCP:', lastEntry.renderTime || lastEntry.loadTime)
+        // Send to analytics
+        analytics.track('web_vital_lcp', {
+          value: lastEntry.renderTime || lastEntry.loadTime,
+        })
+      })
+
+      observer.observe({ entryTypes: ['largest-contentful-paint'] })
+      return observer
+    }
+
+    // FID - First Input Delay
+    const observeFID = () => {
+      const observer = new PerformanceObserver((list) => {
+        const entries = list.getEntries()
+        entries.forEach((entry: any) => {
+          console.log('FID:', entry.processingStart - entry.startTime)
+          analytics.track('web_vital_fid', {
+            value: entry.processingStart - entry.startTime,
+          })
+        })
+      })
+
+      observer.observe({ entryTypes: ['first-input'] })
+      return observer
+    }
+
+    // CLS - Cumulative Layout Shift
+    const observeCLS = () => {
+      let clsScore = 0
+      const observer = new PerformanceObserver((list) => {
+        for (const entry of list.getEntries()) {
+          if (!(entry as any).hadRecentInput) {
+            clsScore += (entry as any).value
+          }
+        }
+
+        console.log('CLS:', clsScore)
+        analytics.track('web_vital_cls', { value: clsScore })
+      })
+
+      observer.observe({ entryTypes: ['layout-shift'] })
+      return observer
+    }
+
+    const lcpObserver = observeLCP()
+    const fidObserver = observeFID()
+    const clsObserver = observeCLS()
+
+    return () => {
+      lcpObserver?.disconnect()
+      fidObserver?.disconnect()
+      clsObserver?.disconnect()
+    }
+  }, [])
+}
+```
+
+### Frame Rate Monitoring
+
+Track animation performance:
+
+```tsx
+export function useFrameRate() {
+  const [fps, setFps] = useState(60)
+
+  useEffect(() => {
+    let lastTime = performance.now()
+    let frames = 0
+    let rafId: number
+
+    const measureFPS = (currentTime: number) => {
+      frames++
+
+      if (currentTime >= lastTime + 1000) {
+        const currentFps = Math.round((frames * 1000) / (currentTime - lastTime))
+        setFps(currentFps)
+
+        if (currentFps < 30) {
+          console.warn('⚠️ Low frame rate detected:', currentFps, 'fps')
+        }
+
+        frames = 0
+        lastTime = currentTime
+      }
+
+      rafId = requestAnimationFrame(measureFPS)
+    }
+
+    rafId = requestAnimationFrame(measureFPS)
+
+    return () => cancelAnimationFrame(rafId)
+  }, [])
+
+  return fps
+}
+```
+
+### Memory Usage
+
+Monitor memory consumption:
+
+```tsx
+export function useMemoryMonitor() {
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if ('memory' in performance) {
+        const memory = (performance as any).memory
+        const usedMB = memory.usedJSHeapSize / 1048576
+        const totalMB = memory.totalJSHeapSize / 1048576
+
+        console.log(`Memory: ${usedMB.toFixed(2)}MB / ${totalMB.toFixed(2)}MB`)
+
+        if (usedMB > totalMB * 0.9) {
+          console.warn('⚠️ High memory usage detected')
+        }
+      }
+    }, 5000) // Check every 5 seconds
+
+    return () => clearInterval(interval)
+  }, [])
+}
+```
+
+---
+
+## Mobile-Specific Patterns
+
+Common patterns for mobile optimization.
+
+### Pull-to-Refresh
+
+Implement native-like pull-to-refresh:
+
+```tsx
+import { useRef, useState } from 'react'
+
+export function MessageList({ onRefresh }: Props) {
+  const [isRefreshing, setIsRefreshing] = useState(false)
+  const startY = useRef(0)
+  const currentY = useRef(0)
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    startY.current = e.touches[0].clientY
+  }
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    currentY.current = e.touches[0].clientY
+
+    // Check if scrolled to top and pulling down
+    const element = e.currentTarget
+    const isPullingDown = currentY.current > startY.current
+    const isAtTop = element.scrollTop === 0
+
+    if (isAtTop && isPullingDown && !isRefreshing) {
+      const pullDistance = currentY.current - startY.current
+
+      if (pullDistance > 80) {
+        setIsRefreshing(true)
+        onRefresh().finally(() => setIsRefreshing(false))
+      }
+    }
+  }
+
+  return (
+    <div
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      className="overflow-y-auto scrollbar-hide h-full"
+    >
+      {isRefreshing && (
+        <div className="flex items-center justify-center py-4">
+          <div className="animate-spin h-6 w-6 border-2 border-primary rounded-full border-t-transparent" />
+        </div>
+      )}
+
+      <MessageListContent />
+    </div>
+  )
+}
+```
+
+### Bottom Sheet
+
+Mobile-optimized bottom sheet:
+
+```tsx
+import { motion, PanInfo } from 'framer-motion'
+import { useState } from 'react'
+
+export function BottomSheet({ children, isOpen, onClose }: Props) {
+  const [isDragging, setIsDragging] = useState(false)
+
+  const handleDragEnd = (event: any, info: PanInfo) => {
+    setIsDragging(false)
+
+    // Close if dragged down more than 50%
+    if (info.offset.y > 150) {
+      onClose()
+    }
+  }
+
+  return (
+    <motion.div
+      initial={{ y: '100%' }}
+      animate={{ y: isOpen ? 0 : '100%' }}
+      drag="y"
+      dragConstraints={{ top: 0, bottom: 0 }}
+      dragElastic={0.2}
+      onDragStart={() => setIsDragging(true)}
+      onDragEnd={handleDragEnd}
+      className={cn(
+        'fixed bottom-0 left-0 right-0',
+        'bg-card rounded-t-2xl shadow-2xl',
+        'max-h-[90vh] overflow-hidden',
+        'z-50'
+      )}
+    >
+      {/* Drag handle */}
+      <div className="flex justify-center py-3">
+        <div className="w-10 h-1 bg-muted-foreground/30 rounded-full" />
+      </div>
+
+      {/* Content */}
+      <div className="overflow-y-auto scrollbar-hide px-4 pb-safe">{children}</div>
+    </motion.div>
+  )
+}
+```
+
+### Infinite Scroll
+
+Efficient infinite scrolling for mobile:
+
+```tsx
+import { useEffect, useRef } from 'react'
+
+export function InfiniteMessageList({ messages, loadMore, hasMore }: Props) {
+  const observerTarget = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && hasMore) {
+          loadMore()
+        }
+      },
+      {
+        threshold: 0.5,
+        // Add rootMargin to trigger slightly early
+        rootMargin: '100px',
+      }
+    )
+
+    const target = observerTarget.current
+    if (target) {
+      observer.observe(target)
+    }
+
+    return () => {
+      if (target) {
+        observer.unobserve(target)
+      }
+    }
+  }, [loadMore, hasMore])
+
+  return (
+    <div className="overflow-y-auto scrollbar-hide h-full">
+      {messages.map((message) => (
+        <Message key={message.id} message={message} />
+      ))}
+
+      {/* Sentinel element to trigger loading */}
+      <div ref={observerTarget} className="h-4" />
+
+      {hasMore && (
+        <div className="flex justify-center py-4">
+          <div className="animate-spin h-6 w-6 border-2 border-primary rounded-full border-t-transparent" />
+        </div>
+      )}
+    </div>
+  )
+}
+```
+
+### Virtual Keyboard Spacer
+
+Add space when keyboard appears:
+
+```tsx
+import { useKeyboardVisible } from '@/hooks/useKeyboardVisible'
+
+export function ChatInputContainer() {
+  const isKeyboardVisible = useKeyboardVisible()
+
+  return (
+    <>
+      <div className="p-4 border-t bg-card">
+        <ChatInput />
+      </div>
+
+      {/* Spacer when keyboard is visible */}
+      {isKeyboardVisible && <div className="h-[env(keyboard-inset-height,0px)]" />}
+    </>
+  )
+}
+```
+
+---
+
+## Summary
+
+### Mobile Optimization Checklist
+
+- [ ] Remove hover states on touch devices
+- [ ] Minimum 48x48px touch targets
+- [ ] Implement touch gestures (swipe, pinch, etc.)
+- [ ] Add haptic feedback for actions
+- [ ] Respect `prefers-reduced-motion`
+- [ ] Throttle animations when battery is low
+- [ ] Lazy load heavy components
+- [ ] Use passive scroll listeners
+- [ ] Mobile-first responsive design
+- [ ] Test typography scales across devices
+- [ ] Handle mobile keyboard visibility
+- [ ] Prevent zoom on input focus
+- [ ] Respect safe area insets
+- [ ] Test on real devices (not just emulators)
+- [ ] Profile performance on low-end devices
+- [ ] Monitor Core Web Vitals
+- [ ] Track frame rates in production
+- [ ] Implement pull-to-refresh
+- [ ] Use bottom sheets for mobile actions
+- [ ] Optimize infinite scroll with Intersection Observer
+
+### Performance Targets
+
+| Metric                      | Target    | Mobile-Specific |
+| --------------------------- | --------- | --------------- |
+| First Contentful Paint      | < 1.8s    | < 2.5s on 3G    |
+| Largest Contentful Paint    | < 2.5s    | < 4.0s on 3G    |
+| First Input Delay           | < 100ms   | < 200ms on 3G   |
+| Cumulative Layout Shift     | < 0.1     | < 0.1           |
+| Time to Interactive         | < 3.8s    | < 5.0s on 3G    |
+| Frame Rate                  | 60fps     | 30fps minimum   |
+| Touch Response Time         | < 100ms   | Critical        |
+| Animation Duration (normal) | 300ms     | 0ms when low power |
+| Bundle Size (initial)       | < 200KB   | < 150KB gzipped |
+
+### Resources
+
+- [Web.dev: Mobile Performance](https://web.dev/mobile/)
+- [MDN: Touch Events](https://developer.mozilla.org/en-US/docs/Web/API/Touch_events)
+- [WCAG 2.1: Touch Target Size](https://www.w3.org/WAI/WCAG21/Understanding/target-size.html)
+- [MDN: prefers-reduced-motion](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion)
+- [Battery Status API](https://developer.mozilla.org/en-US/docs/Web/API/Battery_Status_API)
+
+---
+
+**Next Steps:**
+
+1. Review [Responsive Design Guide](/docs/RESPONSIVE_DESIGN_GUIDE.md)
+2. Explore [Animation Utilities](/packages/react/src/utils/animations.ts)
+3. Check [Accessibility Guidelines](/docs/accessibility.md)
+4. See [Performance Best Practices](/guides/performance/best-practices)

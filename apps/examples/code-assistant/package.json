@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "AI-powered code assistant with syntax highlighting, debugging, and code generation",
   "private": true,
+  "type": "module",
   "scripts": {
     "dev": "next dev",
     "build": "next build",

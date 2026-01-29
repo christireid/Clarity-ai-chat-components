@@ -1,0 +1,113 @@
+{
+  "// ============================================================================": "",
+  "// CLARITY AI CHAT COMPONENTS - VSCODE DEBUGGING": "",
+  "// ============================================================================": "",
+  "// Save this file to: .vscode/launch.json": "",
+  "// ============================================================================": "",
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Next.js: Debug Server",
+      "type": "node",
+      "request": "launch",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": ["dev"],
+      "cwd": "${workspaceFolder}/apps/streamlined-docs",
+      "skipFiles": ["<node_internals>/**"],
+      "env": {
+        "NODE_OPTIONS": "--inspect"
+      },
+      "console": "integratedTerminal",
+      "serverReadyAction": {
+        "pattern": "ready started server on .+, url: (https?://.+)",
+        "uriFormat": "%s",
+        "action": "debugWithChrome"
+      }
+    },
+    {
+      "name": "Next.js: Debug Client",
+      "type": "chrome",
+      "request": "launch",
+      "url": "http://localhost:3000",
+      "webRoot": "${workspaceFolder}/apps/streamlined-docs",
+      "sourceMapPathOverrides": {
+        "webpack://_N_E/*": "${webRoot}/*"
+      }
+    },
+    {
+      "name": "Vitest: Debug Current File",
+      "type": "node",
+      "request": "launch",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": [
+        "test",
+        "--run",
+        "${relativeFile}"
+      ],
+      "cwd": "${workspaceFolder}",
+      "skipFiles": ["<node_internals>/**"],
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen"
+    },
+    {
+      "name": "Vitest: Debug All Tests",
+      "type": "node",
+      "request": "launch",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": [
+        "test",
+        "--run"
+      ],
+      "cwd": "${workspaceFolder}",
+      "skipFiles": ["<node_internals>/**"],
+      "console": "integratedTerminal"
+    },
+    {
+      "name": "Playwright: Debug Test",
+      "type": "node",
+      "request": "launch",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": [
+        "test:e2e",
+        "--debug"
+      ],
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal"
+    },
+    {
+      "name": "Build Package",
+      "type": "node",
+      "request": "launch",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": ["build"],
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal"
+    },
+    {
+      "name": "TypeScript: Compile Current File",
+      "type": "node",
+      "request": "launch",
+      "program": "${workspaceFolder}/node_modules/.bin/tsc",
+      "args": [
+        "--noEmit",
+        "${file}"
+      ],
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal"
+    }
+  ],
+  "compounds": [
+    {
+      "name": "Next.js: Full Stack Debug",
+      "configurations": [
+        "Next.js: Debug Server",
+        "Next.js: Debug Client"
+      ],
+      "presentation": {
+        "hidden": false,
+        "group": "Next.js",
+        "order": 1
+      }
+    }
+  ]
+}

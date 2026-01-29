@@ -170,3 +170,62 @@ export function getAdapter(provider: string): ModelAdapter {
       throw new Error(`Unknown provider: ${provider}`)
   }
 }
+
+// =============================================================================
+// Clarity-Chat Adapter Types and Utilities
+// =============================================================================
+
+export type {
+  // Chat adapter types
+  ChatMessageAttachment,
+  ClarityChatMessage,
+  ClarityChatStreamChunk,
+  ClarityChatStreamStatus,
+  ClarityChatToolExecution,
+  ClarityChatStreamableResponse,
+  ClarityChatAdapter,
+  ClarityChatAdapterCapabilities,
+  ClarityChatAdapterFactoryOptions,
+  ClarityChatAdapterEventType,
+  ClarityChatAdapterEvent,
+  ClarityChatAdapterWithEvents,
+} from './types'
+
+export {
+  createBaseClarityChatAdapter,
+  withClarityChatEvents,
+} from './types'
+
+// Vercel AI adapter
+export {
+  createVercelAIAdapter,
+  useVercelAIBridge,
+} from './vercel-ai'
+
+export type {
+  VercelAIAdapterOptions,
+  VercelAIBridgeResult,
+} from './vercel-ai'
+
+// LangChain adapter
+export {
+  createLangChainAdapter,
+  useLangChainAdapter,
+  useLangChainBridge,
+} from './langchain'
+
+export type {
+  LangChainMessage,
+  LangChainHumanMessage,
+  LangChainAIMessage,
+  LangChainToolMessage,
+  LangChainSystemMessage,
+  LangChainToolCall,
+  LangChainModel,
+  LangChainStreamChunk,
+  LangChainRunnable,
+  LangChainStreamEvent,
+  LangChainAdapterOptions,
+  LangChainBridgeResult,
+  UseLangChainAdapterResult,
+} from './langchain'

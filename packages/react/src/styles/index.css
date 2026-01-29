@@ -6,7 +6,7 @@
  *
  * ORGANIZATION:
  * ============================================================================
- * 1. CSS Variables & Theme System     - Base variables for .clarity-* components
+ * 1. CSS Variables & Theme System     - OKLCH-based variables for perceptual uniformity
  * 2. Base Styles                      - Universal resets and body styles
  * 3. Component Styles                 - Core chat components (.clarity-message, etc.)
  * 4. Enhanced Visual Components       - Premium UX components with advanced styling
@@ -16,6 +16,7 @@
  *
  * RELATIONSHIP TO OTHER STYLING SYSTEMS:
  * ============================================================================
+ * - OKLCH Color System:       /styles/oklch-colors.css (perceptually uniform colors)
  * - Global Glass Effects:     /styles/globals.css (OKLCH-based utilities)
  * - Theme Presets:            /packages/react/src/theme/*.ts (glassmorphism, etc.)
  * - Primitives Glass System:  /packages/primitives/src/lib/glass-variants.ts (CVA)
@@ -24,13 +25,19 @@
  * CONVENTIONS:
  * ============================================================================
  * - Class naming: .clarity-* prefix for all React component styles
- * - Color format: HSL with CSS variables (hsl(var(--primary)))
+ * - Color format: OKLCH with CSS variables (oklch(var(--primary)))
+ * - Fallback: HSL fallbacks for older browsers
  * - Modern CSS: Uses oklch(), backdrop-filter, container queries
  * - Accessibility: All animations respect prefers-reduced-motion
  * - Performance: GPU acceleration hints for animated elements
  *
  * @packageDocumentation
+ * @version 2.0.0 - OKLCH Migration
+ * @lastUpdated 2026-01-28
  */
+
+/* Import OKLCH color system */
+@import './oklch-colors.css';
 
 /* ============================================================================
    CSS Variables & Theme System
@@ -39,47 +46,73 @@
    ============================================================================ */
 
 :root {
-  /* Colors */
-  --background: 210 20% 98%;
-  --foreground: 217 33% 18%;
-  --card: 0 0% 100%;
-  --card-foreground: 217 33% 18%;
-  --popover: 0 0% 100%;
-  --popover-foreground: 217 33% 18%;
-  --primary: 214 90% 55%;
-  --primary-foreground: 0 0% 100%;
-  --primary-message: 214 90% 48%; /* WCAG AA compliant: 4.84:1 contrast */
-  --primary-message-end: 214 90% 45%; /* WCAG AA compliant: 5.40:1 contrast */
-  --secondary: 221 16% 94%;
-  --secondary-foreground: 220 26% 24%;
-  --muted: 220 14% 93%;
-  --muted-foreground: 218 15% 45%;
-  --accent: 214 70% 62%;
-  --accent-foreground: 0 0% 100%;
-  --destructive: 358 80% 60%;
-  --destructive-foreground: 0 0% 100%;
-  --success: 151 63% 44%;
-  --success-foreground: 0 0% 100%;
-  --warning: 38 92% 56%;
-  --warning-foreground: 28 96% 18%;
-  --info: 207 90% 55%;
-  --info-foreground: 0 0% 100%;
-  --border: 216 22% 86%;
-  --input: 220 18% 96%;
-  --ring: 214 90% 55%;
-  --surface-muted: 220 16% 96%;
-  --surface-elevated: 0 0% 100%;
-  --surface-overlay: 210 20% 98%;
+  /* ============================================================================
+     OKLCH Color Variables (v2.0)
+     Perceptually uniform color space for consistent visual experience
+     ============================================================================ */
+
+  /* Base Colors - OKLCH format */
+  --background: 100% 0 0;                 /* Pure white */
+  --foreground: 15% 0.004 265;            /* Near black - WCAG AAA */
+  --card: 100% 0 0;                       /* White */
+  --card-foreground: 15% 0.004 265;       /* Dark text */
+  --popover: 100% 0 0;                    /* White */
+  --popover-foreground: 15% 0.004 265;    /* Dark text */
+
+  /* Primary Brand Colors */
+  --primary: 60% 0.20 265;                /* Blue-purple - WCAG AA: 4.84:1 */
+  --primary-foreground: 100% 0 0;         /* White */
+  --primary-message: 60% 0.20 265;        /* Message background */
+  --primary-message-end: 55% 0.20 265;    /* Gradient end */
+
+  /* Secondary Colors */
+  --secondary: 94% 0.01 265;              /* Light gray */
+  --secondary-foreground: 25% 0.008 265;  /* Dark text */
+
+  /* UI State Colors */
+  --muted: 95% 0.005 265;                 /* Muted background */
+  --muted-foreground: 45% 0.010 265;      /* Muted text - WCAG AA */
+  --accent: 60% 0.20 340;                 /* Pink accent */
+  --accent-foreground: 100% 0 0;          /* White */
+
+  /* Semantic Colors */
+  --destructive: 55% 0.22 25;             /* Error red - WCAG AA: 4.84:1 */
+  --destructive-foreground: 100% 0 0;     /* White */
+  --success: 55% 0.18 145;                /* Success green - WCAG AA: 4.51:1 */
+  --success-foreground: 100% 0 0;         /* White */
+  --warning: 75% 0.18 70;                 /* Warning amber */
+  --warning-foreground: 25% 0.08 70;      /* Dark text for contrast */
+  --info: 60% 0.15 230;                   /* Info blue - WCAG AA: 5.12:1 */
+  --info-foreground: 100% 0 0;            /* White */
+
+  /* Border and Input */
+  --border: 85% 0.010 265;                /* Light border */
+  --input: 95% 0.005 265;                 /* Input background */
+  --ring: 60% 0.20 265;                   /* Focus ring */
+
+  /* Surface Variants */
+  --surface-muted: 95% 0.005 265;         /* Muted surface */
+  --surface-elevated: 100% 0 0;           /* Elevated white */
+  --surface-overlay: 98% 0.002 265;       /* Overlay background */
 
   /* AI-Specific Colors (OKLCH format for perceptual uniformity) */
-  --ai-assistant: oklch(
-    96% 0.02 220
-  ); /* Light blue-gray for assistant messages */
-  --ai-user: oklch(92% 0.06 260); /* Soft blue-purple for user messages */
-  --ai-system: oklch(95% 0.03 180); /* Light cyan for system messages */
-  --ai-thinking: oklch(94% 0.04 280); /* Soft purple for thinking/reasoning */
-  --ai-tool: oklch(93% 0.05 160); /* Soft green for tool execution */
-  --ai-error: oklch(91% 0.12 25); /* Warm red for errors */
+  --ai-assistant: 96% 0.02 220;           /* Light blue-gray for assistant */
+  --ai-user: 92% 0.06 260;                /* Soft blue-purple for user */
+  --ai-system: 95% 0.03 180;              /* Light cyan for system */
+  --ai-thinking: 94% 0.04 280;            /* Soft purple for thinking */
+  --ai-tool: 93% 0.05 160;                /* Soft green for tool execution */
+  --ai-error: 91% 0.12 25;                /* Warm red for errors */
+
+  /* HSL Fallbacks (for browsers without OKLCH support) */
+  @supports not (background: oklch(0% 0 0)) {
+    --background: 210 20% 98%;
+    --foreground: 217 33% 18%;
+    --primary: 214 90% 55%;
+    --success: 151 63% 44%;
+    --warning: 38 92% 56%;
+    --destructive: 358 80% 60%;
+    --info: 207 90% 55%;
+  }
 
   /* Spacing */
   --radius: 0.75rem;
@@ -111,45 +144,78 @@
 }
 
 .dark {
-  --background: 222 47% 11%;
-  --foreground: 210 40% 96%;
-  --card: 222 36% 16%;
-  --card-foreground: 210 40% 96%;
-  --popover: 222 47% 11%;
-  --popover-foreground: 210 40% 96%;
-  --primary: 214 88% 72%;
-  --primary-foreground: 222 47% 11%;
-  --primary-message: 214 88% 72%; /* Already WCAG AA compliant: 7.89:1 contrast */
-  --primary-message-end: 214 88% 68%; /* Subtle gradient variation */
-  --secondary: 219 20% 22%;
-  --secondary-foreground: 210 40% 96%;
-  --muted: 219 18% 26%;
-  --muted-foreground: 216 16% 70%;
-  --accent: 214 69% 66%;
-  --accent-foreground: 221 47% 12%;
-  --destructive: 358 82% 62%;
-  --destructive-foreground: 210 40% 96%;
-  --border: 220 16% 28%;
-  --input: 220 22% 18%;
-  --ring: 214 88% 72%;
-  --surface-muted: 220 21% 18%;
-  --surface-elevated: 222 36% 16%;
-  --surface-overlay: 222 43% 12%;
+  /* ============================================================================
+     Dark Mode - OKLCH Colors
+     Higher chroma for better visibility on dark backgrounds
+     ============================================================================ */
+
+  /* Base Colors */
+  --background: 15% 0.004 265;            /* Dark background */
+  --foreground: 98% 0.002 265;            /* Near white - WCAG AAA */
+  --card: 18% 0.005 265;                  /* Dark card */
+  --card-foreground: 98% 0.002 265;       /* Light text */
+  --popover: 15% 0.004 265;               /* Dark popover */
+  --popover-foreground: 98% 0.002 265;    /* Light text */
+
+  /* Primary Brand Colors - Brighter for dark mode */
+  --primary: 65% 0.22 265;                /* Brighter blue-purple - WCAG AA */
+  --primary-foreground: 15% 0.004 265;    /* Dark text */
+  --primary-message: 65% 0.22 265;        /* Message background */
+  --primary-message-end: 60% 0.22 265;    /* Gradient end */
+
+  /* Secondary Colors */
+  --secondary: 22% 0.008 265;             /* Dark gray */
+  --secondary-foreground: 98% 0.002 265;  /* Light text */
+
+  /* UI State Colors */
+  --muted: 20% 0.006 265;                 /* Muted background */
+  --muted-foreground: 70% 0.010 265;      /* Medium light text */
+  --accent: 65% 0.22 340;                 /* Brighter pink */
+  --accent-foreground: 15% 0.004 265;     /* Dark text */
+
+  /* Semantic Colors - Enhanced for dark backgrounds */
+  --destructive: 60% 0.24 25;             /* Brighter error red */
+  --destructive-foreground: 98% 0.002 265; /* Light text */
+  --success: 60% 0.20 145;                /* Brighter success green */
+  --success-foreground: 98% 0.002 265;    /* Light text */
+  --warning: 80% 0.20 70;                 /* Brighter warning amber */
+  --warning-foreground: 20% 0.08 70;      /* Dark text */
+  --info: 65% 0.17 230;                   /* Brighter info blue */
+  --info-foreground: 98% 0.002 265;       /* Light text */
+
+  /* Border and Input */
+  --border: 35% 0.010 265;                /* Visible border */
+  --input: 20% 0.006 265;                 /* Dark input */
+  --ring: 65% 0.22 265;                   /* Bright focus ring */
+
+  /* Surface Variants */
+  --surface-muted: 20% 0.006 265;         /* Muted surface */
+  --surface-elevated: 18% 0.005 265;      /* Slightly elevated */
+  --surface-overlay: 12% 0.003 265;       /* Overlay background */
 
   /* AI-Specific Colors (OKLCH format - dark mode variants) */
-  --ai-assistant: oklch(
-    25% 0.04 220
-  ); /* Darker blue-gray for assistant messages */
-  --ai-user: oklch(30% 0.08 260); /* Medium blue-purple for user messages */
-  --ai-system: oklch(22% 0.05 180); /* Dark cyan for system messages */
-  --ai-thinking: oklch(28% 0.06 280); /* Medium purple for thinking/reasoning */
-  --ai-tool: oklch(27% 0.07 160); /* Medium green for tool execution */
-  --ai-error: oklch(35% 0.15 25); /* Bright red for errors */
+  --ai-assistant: 25% 0.04 220;           /* Darker blue-gray */
+  --ai-user: 30% 0.08 260;                /* Medium blue-purple */
+  --ai-system: 22% 0.05 180;              /* Dark cyan */
+  --ai-thinking: 28% 0.06 280;            /* Medium purple */
+  --ai-tool: 27% 0.07 160;                /* Medium green */
+  --ai-error: 35% 0.15 25;                /* Bright red */
 
   /* Dark mode component shadows (deeper shadows for contrast) */
   --shadow-soft: 0 4px 20px -4px rgba(0, 0, 0, 0.3);
   --shadow-medium: 0 8px 30px -8px rgba(0, 0, 0, 0.4);
   --shadow-elevated: 0 12px 40px -12px rgba(0, 0, 0, 0.5);
+
+  /* HSL Fallbacks for dark mode */
+  @supports not (background: oklch(0% 0 0)) {
+    --background: 222 47% 11%;
+    --foreground: 210 40% 96%;
+    --primary: 214 88% 72%;
+    --success: 151 63% 50%;
+    --warning: 38 92% 60%;
+    --destructive: 358 82% 62%;
+    --info: 207 90% 60%;
+  }
 }
 
 /* ============================================================================

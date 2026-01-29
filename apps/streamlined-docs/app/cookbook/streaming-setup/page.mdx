@@ -1,0 +1,488 @@
+# Streaming Setup - Real-Time Message Display
+
+> Enable streaming for instant, token-by-token AI responses with visual feedback
+
+## Problem
+
+Your AI chat shows a loading spinner while waiting for the complete response, creating a poor user experience. Users can't see progress and may assume the app is frozen.
+
+## Solution
+
+Implement streaming to display tokens as they arrive, providing immediate feedback and a more engaging experience. Users see responses build in real-time, just like ChatGPT.
+
+## Complete Code
+
+### Frontend with useClarityChat
+
+```tsx
+// app/chat/page.tsx
+'use client'
+
+import { useClarityChat, MessageList, ChatInput } from '@clarity-chat/react'
+
+export default function StreamingChatPage() {
+  const { messages, append, isLoading, error } = useClarityChat({
+    api: '/api/chat',
+    streamMode: 'text', // Enable streaming
+    onFinish: (message) => {
+      console.log('Message complete:', message)
+    },
+  })
+
+  return (
+    <div className="flex h-screen flex-col">
+      <MessageList
+        messages={messages}
+        isLoading={isLoading}
+        className="flex-1 overflow-y-auto"
+      />
+
+      <ChatInput
+        onSubmit={(content) => append({ role: 'user', content })}
+        disabled={isLoading}
+        placeholder="Type your message..."
+        className="border-t"
+      />
+
+      {error && (
+        <div className="bg-red-50 border-t border-red-200 p-4 text-red-700">
+          Error: {error.message}
+        </div>
+      )}
+    </div>
+  )
+}
+```
+
+### Backend with OpenAI
+
+```tsx
+// app/api/chat/route.ts
+import { OpenAI } from 'openai'
+import { OpenAIStream, StreamingTextResponse } from 'ai'
+
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY!,
+})
+
+export const runtime = 'edge' // Optional: Use Edge Runtime for lower latency
+
+export async function POST(req: Request) {
+  const { messages } = await req.json()
+
+  const response = await openai.chat.completions.create({
+    model: 'gpt-4-turbo-preview',
+    stream: true, // Enable streaming
+    messages,
+  })
+
+  // Convert OpenAI stream to Web ReadableStream
+  const stream = OpenAIStream(response, {
+    onStart: async () => {
+      console.log('Stream started')
+    },
+    onToken: async (token) => {
+      console.log('Token:', token)
+    },
+    onCompletion: async (completion) => {
+      console.log('Stream completed:', completion)
+    },
+  })
+
+  return new StreamingTextResponse(stream, {
+    headers: {
+      'Content-Type': 'text/event-stream',
+      'Cache-Control': 'no-cache',
+      Connection: 'keep-alive',
+    },
+  })
+}
+```
+
+### Backend with Anthropic
+
+```tsx
+// app/api/chat/route.ts
+import Anthropic from '@anthropic-ai/sdk'
+import { AnthropicStream, StreamingTextResponse } from 'ai'
+
+const anthropic = new Anthropic({
+  apiKey: process.env.ANTHROPIC_API_KEY!,
+})
+
+export async function POST(req: Request) {
+  const { messages } = await req.json()
+
+  const response = await anthropic.messages.create({
+    model: 'claude-3-5-sonnet-20241022',
+    stream: true, // Enable streaming
+    max_tokens: 4096,
+    messages,
+  })
+
+  const stream = AnthropicStream(response)
+  return new StreamingTextResponse(stream)
+}
+```
+
+## How It Works
+
+### 1. Client Initiates Request
+
+```tsx
+// User sends message
+append({ role: 'user', content: 'Explain React hooks' })
+```
+
+### 2. Server Streams Response
+
+```tsx
+// Server sends Server-Sent Events (SSE)
+0: "data: React"
+1: "data:  hooks"
+2: "data:  are"
+3: "data:  functions..."
+```
+
+### 3. Client Receives Tokens
+
+```tsx
+// Each token updates the UI immediately
+setMessages((prev) => {
+  const lastMessage = prev[prev.length - 1]
+  return [
+    ...prev.slice(0, -1),
+    {
+      ...lastMessage,
+      content: lastMessage.content + newToken,
+    },
+  ]
+})
+```
+
+### 4. Stream Completes
+
+```tsx
+// onFinish callback fires
+onFinish({
+  id: 'msg-123',
+  role: 'assistant',
+  content: 'Complete response text',
+})
+```
+
+## Variations
+
+### With Streaming Progress Indicator
+
+```tsx
+import {
+  useClarityChat,
+  MessageList,
+  ChatInput,
+  StreamingProgress,
+} from '@clarity-chat/react'
+
+export default function ChatWithProgress() {
+  const { messages, append, isLoading, streamStatus } = useClarityChat({
+    api: '/api/chat',
+    streamMode: 'text',
+  })
+
+  return (
+    <div className="flex h-screen flex-col">
+      <MessageList messages={messages} isLoading={isLoading} />
+
+      {isLoading && (
+        <StreamingProgress
+          status={streamStatus}
+          tokensReceived={streamStatus.tokensReceived}
+          estimatedTotal={streamStatus.estimatedTotal}
+        />
+      )}
+
+      <ChatInput
+        onSubmit={(content) => append({ role: 'user', content })}
+        disabled={isLoading}
+      />
+    </div>
+  )
+}
+```
+
+### With Custom Streaming UI
+
+```tsx
+import { useStreaming } from '@clarity-chat/react'
+
+export default function CustomStreamingChat() {
+  const {
+    currentToken,
+    tokensReceived,
+    isStreaming,
+    streamingSpeed, // tokens per second
+  } = useStreaming()
+
+  return (
+    <div className="space-y-2">
+      {isStreaming && (
+        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+          <div className="flex gap-1">
+            <div className="h-2 w-2 animate-bounce rounded-full bg-blue-500" />
+            <div className="h-2 w-2 animate-bounce rounded-full bg-blue-500 [animation-delay:0.1s]" />
+            <div className="h-2 w-2 animate-bounce rounded-full bg-blue-500 [animation-delay:0.2s]" />
+          </div>
+          <span>Streaming... {tokensReceived} tokens</span>
+          <span>({streamingSpeed.toFixed(0)} tokens/s)</span>
+        </div>
+      )}
+    </div>
+  )
+}
+```
+
+### With Server-Sent Events (SSE) Fallback
+
+```tsx
+// For older browsers or restrictive networks
+import { useClarityChat } from '@clarity-chat/react'
+
+export default function ChatWithSSEFallback() {
+  const { messages, append } = useClarityChat({
+    api: '/api/chat',
+    streamProtocol: 'sse', // Default: auto-detect
+    onError: (error) => {
+      if (error.message.includes('EventSource')) {
+        // Fallback to non-streaming
+        console.warn('SSE not supported, falling back to traditional mode')
+      }
+    },
+  })
+
+  // ... rest of component
+}
+```
+
+### With Abort Controller
+
+```tsx
+import { useClarityChat } from '@clarity-chat/react'
+import { useRef } from 'react'
+
+export default function ChatWithCancellation() {
+  const abortControllerRef = useRef<AbortController>()
+
+  const { messages, append, stop } = useClarityChat({
+    api: '/api/chat',
+    streamMode: 'text',
+  })
+
+  const handleStop = () => {
+    stop() // Built-in method to abort streaming
+  }
+
+  return (
+    <div>
+      {/* ... messages ... */}
+
+      {isLoading && (
+        <button
+          onClick={handleStop}
+          className="rounded-lg bg-red-600 px-4 py-2 text-white hover:bg-red-700"
+        >
+          Stop Generating
+        </button>
+      )}
+    </div>
+  )
+}
+```
+
+## Common Pitfalls
+
+### Pitfall 1: Not Setting stream: true
+
+**Problem:** API returns complete response instead of streaming.
+
+```tsx
+// ❌ Bad - Streaming not enabled
+const response = await openai.chat.completions.create({
+  model: 'gpt-4',
+  messages,
+})
+```
+
+**Solution:** Enable streaming in the API request.
+
+```tsx
+// ✅ Good - Streaming enabled
+const response = await openai.chat.completions.create({
+  model: 'gpt-4',
+  stream: true, // Critical!
+  messages,
+})
+```
+
+### Pitfall 2: Missing Content-Type Header
+
+**Problem:** Browser doesn't recognize stream, shows raw SSE data.
+
+```tsx
+// ❌ Bad - Wrong content type
+return new Response(stream, {
+  headers: {
+    'Content-Type': 'application/json',
+  },
+})
+```
+
+**Solution:** Use correct SSE content type.
+
+```tsx
+// ✅ Good - Proper SSE headers
+return new StreamingTextResponse(stream, {
+  headers: {
+    'Content-Type': 'text/event-stream',
+    'Cache-Control': 'no-cache',
+    Connection: 'keep-alive',
+  },
+})
+```
+
+### Pitfall 3: Buffering in Production
+
+**Problem:** Streaming works locally but buffers in production (Vercel, Cloudflare).
+
+**Solution:** Use Edge Runtime to bypass buffering.
+
+```tsx
+// app/api/chat/route.ts
+export const runtime = 'edge' // Force Edge Runtime
+
+export async function POST(req: Request) {
+  // ... streaming implementation
+}
+```
+
+### Pitfall 4: Memory Leaks from Unclosed Streams
+
+**Problem:** Streams continue running after user navigates away.
+
+**Solution:** Clean up streams in useEffect.
+
+```tsx
+useEffect(() => {
+  return () => {
+    // Cleanup function
+    abortController?.abort()
+  }
+}, [])
+```
+
+### Pitfall 5: Error Handling in Streams
+
+**Problem:** Errors during streaming crash the UI.
+
+**Solution:** Wrap stream handling in try-catch.
+
+```tsx
+export async function POST(req: Request) {
+  try {
+    const response = await openai.chat.completions.create({
+      model: 'gpt-4',
+      stream: true,
+      messages,
+    })
+
+    const stream = OpenAIStream(response, {
+      onError: (error) => {
+        console.error('Stream error:', error)
+        throw error // Re-throw to be caught by outer try-catch
+      },
+    })
+
+    return new StreamingTextResponse(stream)
+  } catch (error) {
+    console.error('API error:', error)
+    return new Response(
+      JSON.stringify({ error: 'Failed to generate response' }),
+      { status: 500 }
+    )
+  }
+}
+```
+
+## Performance Optimization
+
+### 1. Enable Edge Runtime
+
+```tsx
+export const runtime = 'edge'
+```
+
+**Benefits:**
+- ~50ms lower latency
+- No cold starts
+- Better streaming support
+
+### 2. Use Compression
+
+```tsx
+import { compress } from '@clarity-chat/token-optimization'
+
+const stream = OpenAIStream(response, {
+  onToken: async (token) => {
+    // Optional: Compress before sending
+    return compress(token)
+  },
+})
+```
+
+### 3. Implement Backpressure
+
+```tsx
+const stream = OpenAIStream(response, {
+  async onToken(token) {
+    // Wait if client buffer is full
+    await waitForClientReady()
+    return token
+  },
+})
+```
+
+## Testing
+
+### Test Streaming Locally
+
+```bash
+curl -N -X POST http://localhost:3000/api/chat \
+  -H "Content-Type: application/json" \
+  -d '{"messages":[{"role":"user","content":"Hello"}]}'
+```
+
+### Test Error Recovery
+
+```tsx
+// Simulate network failure
+const { messages, append, retry } = useClarityChat({
+  api: '/api/chat',
+  streamMode: 'text',
+  onError: (error) => {
+    // Show retry button
+    setShowRetry(true)
+  },
+})
+```
+
+## Next Steps
+
+- [Memory Integration](../memory-integration) - Add conversation memory
+- [Error Handling](../error-handling) - Robust error recovery
+- [Token Optimization](../token-optimization) - Reduce costs
+- [Custom Theming](../custom-theming) - Style your chat
+
+---
+
+**Time to implement:** 10 minutes
+**Difficulty:** Beginner
+**Dependencies:** `@clarity-chat/react`, `ai` (Vercel AI SDK)

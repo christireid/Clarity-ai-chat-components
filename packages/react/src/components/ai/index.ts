@@ -518,3 +518,94 @@ export {
   type UseWelcomeOptions,
   type UseWelcomeReturn,
 } from './Welcome'
+
+// ============================================================================
+// Composition & Layout Components
+// ============================================================================
+
+// ChatComposer - Declarative chat layout builder
+export {
+  ChatComposer,
+  useChatComposer,
+  useIsChatComposerChild,
+  useChatComposerBuilder,
+  // Prebuilt layouts
+  MinimalChat,
+  StandardChat,
+  AgentChat,
+  FullscreenChat,
+  // Types
+  type ChatComposerProps,
+  type ChatComposerLayout,
+  type ChatComposerFeature,
+  type ChatComposerSlot,
+  type ChatComposerContextValue,
+  type HeaderSlotProps,
+  type MessagesSlotProps,
+  type SidebarSlotProps,
+  type InputSlotProps,
+  type SlotProps as ChatComposerSlotProps,
+  type UseChatComposerOptions,
+  type UseChatComposerReturn,
+  type PrebuiltChatProps,
+} from './ChatComposer'
+
+// MessageRenderer - Plugin-based message rendering
+export {
+  MessageRenderer,
+  // Default plugins
+  defaultPlugins,
+  codeBlockPlugin,
+  inlineCodePlugin,
+  citationPlugin,
+  linkPlugin,
+  imagePlugin,
+  tablePlugin,
+  toolResultPlugin,
+  filePlugin,
+  boldPlugin,
+  italicPlugin,
+  strikethroughPlugin,
+  headingPlugin,
+  listPlugin,
+  blockquotePlugin,
+  hrPlugin,
+  // Plugin utilities
+  createPlugin,
+  createReplacementPlugin,
+  extendPlugins,
+  // Types
+  type MessageRendererProps,
+  type MessagePlugin,
+  type PluginMatch,
+  type PluginRenderContext,
+  type ComponentOverrides,
+  type CodeBlockProps,
+  type InlineCodeProps,
+  type CitationProps as MessageCitationProps,
+  type LinkProps as MessageLinkProps,
+  type ImageProps as MessageImageProps,
+  type TableProps as MessageTableProps,
+  type ToolResultProps as MessageToolResultProps,
+  type FileCardProps as MessageFileCardProps,
+  type TextProps as MessageTextProps,
+} from './MessageRenderer'
+
+// AgentPanel - Unified agent execution view
+export {
+  AgentPanel,
+  useAgentPanel,
+  useIsAgentPanelChild,
+  useConnectedAgentPanel,
+  // Types
+  type AgentPanelProps,
+  type AgentPanelVariant,
+  type AgentPanelSection,
+  type AgentPanelContextValue,
+  type PlanSectionProps,
+  type ThinkingSectionProps,
+  type ToolsSectionProps,
+  type ApprovalsSectionProps,
+  type SlotProps as AgentPanelSlotProps,
+  type ConnectedAgentPanelProps,
+} from './AgentPanel'

@@ -1,0 +1,72 @@
+{
+  "generatedAt": "2026-01-28T00:00:00Z",
+  "totalFiles": 2023,
+  "packages": {
+    "token-optimization": {
+      "path": "packages/token-optimization",
+      "description": "Count and optimize LLM tokens. Provider-native caching can reduce costs up to 90%",
+      "sourceFiles": 140,
+      "mainExports": "packages/token-optimization/src/index.ts",
+      "exportPaths": {
+        ".": "dist/index.js",
+        "./react": "dist/react.js",
+        "./compression": "dist/compression.js",
+        "./cache": "dist/cache.js"
+      },
+      "modules": {
+        "tokenizers": ["accurate-counter.ts", "provider-native-counter.ts"],
+        "compression": ["basic-engine.ts", "markdown-compressor.ts", "advanced-engine.ts"],
+        "cache": ["exact-cache.ts", "smart-cache.ts", "tiered-cache.ts"],
+        "caching": ["advanced-cache.ts", "advanced-semantic-cache.ts"],
+        "routing": ["model-router.ts", "complexity-analyzer.ts", "simple-router.ts", "intelligent-routing.ts"],
+        "analytics": ["cost-calculator.ts"],
+        "providers": ["prompt-caching.ts", "simple-caching.ts"],
+        "security": ["token-security.ts", "enhanced-security.ts", "input-validator.ts"],
+        "hooks": ["use-token-count.ts", "use-token-optimization.ts", "use-model-router.ts", "use-tiered-cache.ts", "use-optimization-pipeline.ts"],
+        "components": ["TokenCostPreview.tsx", "TokenOptimizationBadge.tsx", "TokenOptimizationDashboard.tsx", "TokenUsageMeter.tsx"],
+        "models": ["model-registry.ts", "model-pricing.ts"],
+        "quality": ["quality-gate.ts"],
+        "health": ["index.ts"],
+        "observability": ["index.ts"],
+        "resilience": ["circuit-breaker.ts"],
+        "errors": ["index.ts"],
+        "accessibility": ["announcer.ts", "hooks.ts", "token-display.tsx"],
+        "formats": ["toon-optimizer", "markdown-optimizer.ts", "html-optimizer.ts"],
+        "chunking": ["text-chunker.ts"],
+        "budget": ["memory-budget.ts", "advanced-budget.ts"],
+        "files": ["file-optimizer.ts"]
+      }
+    },
+    "react": {
+      "path": "packages/react",
+      "sourceFiles": "~500",
+      "tokenOptimizationModules": [
+        "src/utils/tokenization/",
+        "src/utils/optimization/",
+        "src/context/token-budget-context.tsx"
+      ]
+    },
+    "memory": {
+      "path": "packages/memory",
+      "sourceFiles": "~50",
+      "tokenOptimizationModules": [
+        "src/token-optimizer.ts",
+        "src/context/token-budget.ts",
+        "src/utils/token-counter.ts",
+        "src/utils/context-optimizer.ts"
+      ]
+    }
+  },
+  "keyTokenOptimizationModules": [
+    "packages/token-optimization/src/tokenizers/accurate-counter.ts",
+    "packages/token-optimization/src/tokenizers/provider-native-counter.ts",
+    "packages/token-optimization/src/compression/",
+    "packages/token-optimization/src/cache/",
+    "packages/token-optimization/src/caching/",
+    "packages/token-optimization/src/routing/",
+    "packages/token-optimization/src/analytics/cost-calculator.ts",
+    "packages/token-optimization/src/providers/prompt-caching.ts",
+    "packages/token-optimization/src/hooks/",
+    "packages/token-optimization/src/react/components/"
+  ]
+}

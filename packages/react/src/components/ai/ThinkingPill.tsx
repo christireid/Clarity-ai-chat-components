@@ -155,7 +155,7 @@ const AnimatedDots = React.memo(function AnimatedDots({
               : { y: [-1, -4, -1], opacity: [0.4, 1, 0.4] }
           }
           transition={{
-            duration: 0.6,
+            duration: durations.slower,
             delay: i * 0.15,
             repeat: Infinity,
             ease: 'easeInOut',
@@ -293,7 +293,7 @@ export function ThinkingPill({
             <motion.span
               animate={prefersReducedMotion ? {} : { rotate: [0, 5, -5, 0] }}
               transition={{
-                duration: 2,
+                duration: durations.slower,
                 repeat: Infinity,
                 ease: 'easeInOut',
               }}

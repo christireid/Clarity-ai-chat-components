@@ -17,6 +17,10 @@ export default defineConfig({
     globals: true,
     environment: 'happy-dom',
     setupFiles: ['./vitest.setup.ts'],
+    // Set NODE_ENV for development warnings in tests
+    env: {
+      NODE_ENV: 'development',
+    },
     // Vitest v4: Leveraging improved thread pool configuration
     pool: 'threads',
     poolOptions: {

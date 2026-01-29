@@ -1,0 +1,1350 @@
+---
+title: 'CommandPalette Advanced Usage Patterns'
+description: 'Advanced customization patterns for CommandPalette including keyboard shortcuts, theme customization, fuzzy search, category organization, and router integration'
+category: 'Advanced'
+status: 'stable'
+lastUpdated: '2026-01-28'
+---
+
+# CommandPalette Advanced Usage Patterns
+
+This guide covers advanced customization patterns for the CommandPalette component, including custom keyboard shortcuts, theme customization, search algorithm configuration, category organization, dynamic command generation, and Next.js router integration.
+
+<div className="p-4 rounded-lg bg-blue-500/10 border border-blue-200 dark:border-blue-800 mt-6">
+  <div className="flex items-start gap-3">
+    <svg className="w-5 h-5 text-blue-500 mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+    </svg>
+    <div>
+      <h4 className="font-semibold text-foreground mb-1">Prerequisites</h4>
+      <p className="text-sm text-muted-foreground">
+        Familiarity with the basic CommandPalette API is recommended. See the <a href="/reference/components/command-palette" className="text-brand-500 hover:underline">component reference</a> for basics.
+      </p>
+    </div>
+  </div>
+</div>
+
+## Table of Contents
+
+- [Custom Keyboard Shortcuts](#custom-keyboard-shortcuts)
+- [Theme Customization](#theme-customization)
+- [Search Algorithm Configuration](#search-algorithm-configuration)
+- [Category Organization](#category-organization)
+- [Dynamic Command Generation](#dynamic-command-generation)
+- [Router Integration](#router-integration)
+- [Complete Examples](#complete-examples)
+
+---
+
+## Custom Keyboard Shortcuts
+
+The CommandPalette integrates with the `useCommandPalette` hook to provide flexible keyboard shortcut registration.
+
+### Basic Shortcut Registration
+
+```tsx
+import { CommandPalette, useCommandPalette } from '@clarity-chat/react'
+
+function MyApp() {
+  // Default: Cmd+K (Mac) or Ctrl+K (Windows/Linux)
+  const { isOpen, close, shortcutDisplay } = useCommandPalette()
+
+  return (
+    <>
+      <button onClick={() => setIsOpen(true)}>
+        Open Palette ({shortcutDisplay})
+      </button>
+      <CommandPalette
+        items={commands}
+        open={isOpen}
+        onClose={close}
+      />
+    </>
+  )
+}
+```
+
+### Custom Shortcut Keys
+
+```tsx
+// Use Cmd+P instead of Cmd+K
+const { isOpen, close } = useCommandPalette({
+  shortcut: 'mod+p', // 'mod' = Cmd on Mac, Ctrl on Windows/Linux
+})
+
+// Use Ctrl+Shift+P (regardless of platform)
+const { isOpen, close } = useCommandPalette({
+  shortcut: 'ctrl+shift+p',
+})
+
+// Multiple shortcuts for the same action
+// Note: useCommandPalette only supports one shortcut
+// For multiple, use useKeyboardShortcuts directly
+import { useKeyboardShortcuts } from '@clarity-chat/react'
+
+const [isOpen, setIsOpen] = useState(false)
+
+useKeyboardShortcuts([
+  {
+    key: 'mod+k',
+    callback: () => setIsOpen(true),
+    description: 'Open command palette',
+  },
+  {
+    key: 'mod+p',
+    callback: () => setIsOpen(true),
+    description: 'Open command palette (alt)',
+  },
+])
+```
+
+### Shortcut Configuration Options
+
+```tsx
+const { isOpen, close } = useCommandPalette({
+  // Keyboard shortcut
+  shortcut: 'mod+k',
+
+  // Enable shortcut in input fields (default: false)
+  enableInInput: false,
+
+  // Disable shortcut temporarily
+  shortcutEnabled: true,
+
+  // Callbacks
+  onOpen: () => {
+    console.log('Palette opened')
+    trackEvent('command_palette_opened')
+  },
+  onClose: () => {
+    console.log('Palette closed')
+  },
+  onToggle: (isOpen) => {
+    console.log('Palette toggled:', isOpen)
+  },
+})
+```
+
+### Per-Command Shortcuts
+
+Each command can have its own keyboard shortcut displayed in the palette:
+
+```tsx
+const commands: CommandItem[] = [
+  {
+    id: 'new-chat',
+    label: 'New Chat',
+    shortcut: ['⌘', 'N'], // Displayed as visual hint
+    onSelect: () => createNewChat(),
+  },
+  {
+    id: 'search',
+    label: 'Search Messages',
+    shortcut: ['⌘', 'F'],
+    onSelect: () => openSearch(),
+  },
+]
+
+// Register the actual shortcuts separately
+useKeyboardShortcuts([
+  {
+    key: 'mod+n',
+    callback: () => createNewChat(),
+    description: 'New chat',
+  },
+  {
+    key: 'mod+f',
+    callback: () => openSearch(),
+    description: 'Search messages',
+  },
+])
+```
+
+---
+
+## Theme Customization
+
+Customize the CommandPalette appearance using CSS variables and Tailwind classes.
+
+### Custom Colors and Shadows
+
+```tsx
+<CommandPalette
+  items={commands}
+  open={isOpen}
+  onClose={onClose}
+  className="
+    bg-gradient-to-br from-slate-50 to-slate-100
+    dark:from-slate-900 dark:to-slate-950
+    shadow-[0_24px_48px_-12px_rgb(0_0_0_/_0.25)]
+    border-2 border-brand-500/20
+    backdrop-blur-xl
+  "
+/>
+```
+
+### Custom Animation Durations
+
+```tsx
+import { DURATION_SECONDS, EASING_FRAMER } from '@clarity-chat/react'
+import { motion, AnimatePresence } from 'framer-motion'
+
+function CustomPalette() {
+  return (
+    <AnimatePresence>
+      {open && (
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95, y: -20 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          exit={{ opacity: 0, scale: 0.95, y: -20 }}
+          transition={{
+            duration: DURATION_SECONDS.slow, // 300ms
+            ease: EASING_FRAMER.spring, // Spring easing
+          }}
+        >
+          <CommandPalette {...props} />
+        </motion.div>
+      )}
+    </AnimatePresence>
+  )
+}
+```
+
+### Custom Selected Item Style
+
+Use CSS to customize the selected item appearance:
+
+```css
+/* In your global CSS or component styles */
+.command-palette-item[aria-selected="true"] {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  box-shadow: 0 8px 16px rgba(102, 126, 234, 0.4);
+}
+```
+
+```tsx
+<CommandPalette
+  items={commands.map(cmd => ({
+    ...cmd,
+    className: 'command-palette-item',
+  }))}
+  open={isOpen}
+  onClose={onClose}
+/>
+```
+
+### Dark Mode Support
+
+The CommandPalette automatically adapts to dark mode using Tailwind's dark mode classes:
+
+```tsx
+// Customize dark mode colors
+<CommandPalette
+  className="
+    bg-white dark:bg-slate-900
+    border-gray-200 dark:border-slate-700
+    text-gray-900 dark:text-gray-100
+  "
+  items={commands}
+  open={isOpen}
+  onClose={onClose}
+/>
+```
+
+---
+
+## Search Algorithm Configuration
+
+Implement custom search algorithms for better relevance ranking.
+
+### Basic Fuzzy Search
+
+```tsx
+import { useMemo } from 'react'
+
+function useFilteredCommands(commands: CommandItem[], query: string) {
+  return useMemo(() => {
+    if (!query) return commands
+
+    const lowerQuery = query.toLowerCase()
+
+    return commands.filter(cmd =>
+      cmd.label.toLowerCase().includes(lowerQuery) ||
+      cmd.description?.toLowerCase().includes(lowerQuery) ||
+      cmd.category?.toLowerCase().includes(lowerQuery)
+    )
+  }, [commands, query])
+}
+
+function MyApp() {
+  const [search, setSearch] = useState('')
+  const filteredCommands = useFilteredCommands(allCommands, search)
+
+  return (
+    <CommandPalette
+      items={filteredCommands}
+      open={isOpen}
+      onClose={onClose}
+      placeholder="Search..."
+    />
+  )
+}
+```
+
+### Advanced Ranking Algorithm
+
+```tsx
+interface ScoredCommand extends CommandItem {
+  score: number
+}
+
+function calculateRelevanceScore(
+  command: CommandItem,
+  query: string,
+  options: {
+    recentCommands?: string[]
+    favoriteCommands?: string[]
+  }
+): number {
+  const lowerQuery = query.toLowerCase()
+  const lowerLabel = command.label.toLowerCase()
+  const lowerDesc = (command.description || '').toLowerCase()
+
+  let score = 0
+
+  // Exact match (highest priority)
+  if (lowerLabel === lowerQuery) {
+    score += 100
+  }
+
+  // Starts with query
+  if (lowerLabel.startsWith(lowerQuery)) {
+    score += 80
+  }
+
+  // Word boundary match
+  if (new RegExp(`\\b${lowerQuery.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}`).test(lowerLabel)) {
+    score += 60
+  }
+
+  // Contains query
+  if (lowerLabel.includes(lowerQuery)) {
+    score += 40
+  }
+
+  // Description match (lower weight)
+  if (lowerDesc.includes(lowerQuery)) {
+    score += 20
+  }
+
+  // Position bonus (earlier = better)
+  const position = lowerLabel.indexOf(lowerQuery)
+  if (position !== -1) {
+    score += Math.max(0, 20 - position)
+  }
+
+  // Recent command boost
+  if (options.recentCommands?.includes(command.id)) {
+    score += 15
+  }
+
+  // Favorite command boost
+  if (options.favoriteCommands?.includes(command.id)) {
+    score += 10
+  }
+
+  return score
+}
+
+function useRankedCommands(
+  commands: CommandItem[],
+  query: string,
+  options: { recentCommands?: string[]; favoriteCommands?: string[] }
+) {
+  return useMemo(() => {
+    if (!query) return commands
+
+    const scored: ScoredCommand[] = commands
+      .map(cmd => ({
+        ...cmd,
+        score: calculateRelevanceScore(cmd, query, options),
+      }))
+      .filter(cmd => cmd.score > 0)
+      .sort((a, b) => b.score - a.score)
+
+    return scored
+  }, [commands, query, options])
+}
+```
+
+### Fuzzy Match with Highlighting
+
+```tsx
+function highlightMatch(text: string, query: string): React.ReactNode {
+  if (!query.trim()) return text
+
+  const lowerText = text.toLowerCase()
+  const lowerQuery = query.toLowerCase()
+  const index = lowerText.indexOf(lowerQuery)
+
+  if (index === -1) return text
+
+  const before = text.slice(0, index)
+  const match = text.slice(index, index + query.length)
+  const after = text.slice(index + query.length)
+
+  return (
+    <>
+      {before}
+      <mark className="bg-yellow-200 dark:bg-yellow-800/40 text-inherit font-semibold rounded px-0.5">
+        {match}
+      </mark>
+      {highlightMatch(after, query)}
+    </>
+  )
+}
+
+// Use in command items
+const enhancedCommands = filteredCommands.map(cmd => ({
+  ...cmd,
+  label: highlightMatch(cmd.label, search),
+  description: cmd.description && highlightMatch(cmd.description, search),
+}))
+```
+
+### Debounced Search
+
+```tsx
+import { useDebounce } from '@clarity-chat/react'
+
+function MyApp() {
+  const [search, setSearch] = useState('')
+  const debouncedSearch = useDebounce(search, 150) // 150ms delay
+
+  const filteredCommands = useMemo(() => {
+    if (!debouncedSearch) return commands
+    return commands.filter(/* search logic */)
+  }, [commands, debouncedSearch])
+
+  return (
+    <CommandPalette
+      items={filteredCommands}
+      open={isOpen}
+      onClose={onClose}
+      placeholder="Type to search..."
+    />
+  )
+}
+```
+
+---
+
+## Category Organization
+
+Organize commands into logical groups with custom icons and styling.
+
+### Basic Categories
+
+```tsx
+const commands: CommandItem[] = [
+  // AI category
+  {
+    id: 'change-model',
+    label: 'Change AI Model',
+    description: 'Switch between Claude, GPT, and other models',
+    category: 'AI',
+    icon: <Bot className="w-4 h-4" />,
+    onSelect: () => openModelSelector(),
+  },
+  {
+    id: 'prompt-library',
+    label: 'Prompt Library',
+    description: 'Browse saved prompts',
+    category: 'AI',
+    icon: <Sparkles className="w-4 h-4" />,
+    onSelect: () => openPromptLibrary(),
+  },
+
+  // Actions category
+  {
+    id: 'new-chat',
+    label: 'New Chat',
+    description: 'Start a new conversation',
+    category: 'Actions',
+    icon: <MessageSquare className="w-4 h-4" />,
+    onSelect: () => createNewChat(),
+  },
+
+  // Settings category
+  {
+    id: 'settings',
+    label: 'Settings',
+    description: 'Configure preferences',
+    category: 'Settings',
+    icon: <Settings className="w-4 h-4" />,
+    onSelect: () => openSettings(),
+  },
+]
+```
+
+### Dynamic Category Icons
+
+```tsx
+function getCategoryIcon(category: string): React.ReactNode {
+  const iconMap: Record<string, React.ReactNode> = {
+    AI: <Bot className="w-4 h-4" />,
+    Actions: <Zap className="w-4 h-4" />,
+    Navigation: <Compass className="w-4 h-4" />,
+    Settings: <Settings className="w-4 h-4" />,
+    Tools: <Wrench className="w-4 h-4" />,
+    Recent: <Clock className="w-4 h-4" />,
+  }
+
+  return iconMap[category] || <FileText className="w-4 h-4" />
+}
+
+const enhancedCommands = commands.map(cmd => ({
+  ...cmd,
+  icon: cmd.icon || getCategoryIcon(cmd.category || 'Other'),
+}))
+```
+
+### Category Filtering
+
+```tsx
+function CommandPaletteWithFilters() {
+  const [selectedCategory, setSelectedCategory] = useState<string>('All')
+
+  const categories = ['All', 'AI', 'Actions', 'Navigation', 'Settings']
+
+  const filteredCommands = useMemo(() => {
+    if (selectedCategory === 'All') return commands
+    return commands.filter(cmd => cmd.category === selectedCategory)
+  }, [commands, selectedCategory])
+
+  return (
+    <>
+      {/* Category filter bar */}
+      <div className="flex gap-2 px-4 py-3 border-b">
+        {categories.map(cat => (
+          <button
+            key={cat}
+            onClick={() => setSelectedCategory(cat)}
+            className={cn(
+              'px-3 py-1.5 text-xs font-medium rounded-full transition-colors',
+              selectedCategory === cat
+                ? 'bg-brand-500 text-white'
+                : 'bg-muted hover:bg-muted/80'
+            )}
+          >
+            {cat}
+          </button>
+        ))}
+      </div>
+
+      <CommandPalette
+        items={filteredCommands}
+        open={isOpen}
+        onClose={onClose}
+      />
+    </>
+  )
+}
+```
+
+### Category-Based Priority
+
+```tsx
+const categoryPriority: Record<string, number> = {
+  Recent: 100,
+  AI: 80,
+  Actions: 60,
+  Navigation: 40,
+  Settings: 20,
+  Other: 0,
+}
+
+const sortedCommands = [...commands].sort((a, b) => {
+  const aPriority = categoryPriority[a.category || 'Other'] || 0
+  const bPriority = categoryPriority[b.category || 'Other'] || 0
+  return bPriority - aPriority
+})
+```
+
+---
+
+## Dynamic Command Generation
+
+Generate commands dynamically based on application state and context.
+
+### Context-Aware Commands
+
+```tsx
+function useContextualCommands() {
+  const { conversations } = useConversations()
+  const { currentModel } = useAI()
+  const { isOnline } = useNetwork()
+
+  return useMemo(() => {
+    const commands: CommandItem[] = []
+
+    // Recent conversations
+    conversations.slice(0, 5).forEach(conv => {
+      commands.push({
+        id: `conv-${conv.id}`,
+        label: conv.title,
+        description: `${conv.messageCount} messages`,
+        category: 'Recent Conversations',
+        icon: <MessageSquare className="w-4 h-4" />,
+        onSelect: () => router.push(`/chat/${conv.id}`),
+      })
+    })
+
+    // Model-specific commands
+    if (currentModel === 'claude-3-5-sonnet') {
+      commands.push({
+        id: 'artifacts',
+        label: 'Create Artifact',
+        description: 'Generate code or content artifact',
+        category: 'AI',
+        icon: <Sparkles className="w-4 h-4" />,
+        onSelect: () => openArtifactCreator(),
+      })
+    }
+
+    // Online-only commands
+    if (isOnline) {
+      commands.push({
+        id: 'sync',
+        label: 'Sync Conversations',
+        description: 'Sync with cloud',
+        category: 'Actions',
+        icon: <Cloud className="w-4 h-4" />,
+        onSelect: () => syncConversations(),
+      })
+    }
+
+    return commands
+  }, [conversations, currentModel, isOnline])
+}
+```
+
+### Command Templates
+
+```tsx
+interface CommandTemplate {
+  id: string
+  labelTemplate: (data: any) => string
+  descriptionTemplate?: (data: any) => string
+  category: string
+  icon: React.ReactNode
+  onSelect: (data: any) => void
+}
+
+function useTemplatedCommands(templates: CommandTemplate[], data: any[]) {
+  return useMemo(() => {
+    return data.flatMap(item =>
+      templates.map(template => ({
+        id: `${template.id}-${item.id}`,
+        label: template.labelTemplate(item),
+        description: template.descriptionTemplate?.(item),
+        category: template.category,
+        icon: template.icon,
+        onSelect: () => template.onSelect(item),
+      }))
+    )
+  }, [templates, data])
+}
+
+// Usage
+const conversationTemplate: CommandTemplate = {
+  id: 'conversation',
+  labelTemplate: (conv) => conv.title,
+  descriptionTemplate: (conv) => `${conv.messageCount} messages • ${formatDate(conv.lastActivity)}`,
+  category: 'Recent',
+  icon: <MessageSquare className="w-4 h-4" />,
+  onSelect: (conv) => router.push(`/chat/${conv.id}`),
+}
+```
+
+### Conditional Command Groups
+
+```tsx
+function useConditionalCommands() {
+  const { user } = useAuth()
+  const { hasSelection } = useTextSelection()
+  const { clipboardText } = useClipboard()
+
+  return useMemo(() => {
+    const commands: CommandItem[] = []
+
+    // Admin-only commands
+    if (user?.role === 'admin') {
+      commands.push({
+        id: 'admin-panel',
+        label: 'Admin Panel',
+        description: 'Access admin tools',
+        category: 'Admin',
+        icon: <Shield className="w-4 h-4" />,
+        onSelect: () => router.push('/admin'),
+      })
+    }
+
+    // Selection-based commands
+    if (hasSelection) {
+      commands.push({
+        id: 'explain-selection',
+        label: 'Explain Selection',
+        description: 'Ask AI to explain selected text',
+        category: 'Actions',
+        icon: <Sparkles className="w-4 h-4" />,
+        onSelect: () => explainSelection(),
+      })
+    }
+
+    // Clipboard-based commands
+    if (clipboardText) {
+      commands.push({
+        id: 'paste-and-send',
+        label: 'Paste and Send',
+        description: `Send: "${clipboardText.slice(0, 50)}..."`,
+        category: 'Actions',
+        icon: <Clipboard className="w-4 h-4" />,
+        onSelect: () => pasteAndSend(clipboardText),
+      })
+    }
+
+    return commands
+  }, [user, hasSelection, clipboardText])
+}
+```
+
+---
+
+## Router Integration
+
+Integrate CommandPalette with Next.js App Router for navigation.
+
+### Basic Navigation Commands
+
+```tsx
+'use client'
+
+import { useRouter, usePathname } from 'next/navigation'
+import { CommandPalette, useCommandPalette } from '@clarity-chat/react'
+
+function NavigationCommandPalette() {
+  const router = useRouter()
+  const pathname = usePathname()
+  const { isOpen, close } = useCommandPalette()
+
+  const commands: CommandItem[] = [
+    {
+      id: 'home',
+      label: 'Home',
+      description: 'Go to homepage',
+      category: 'Navigation',
+      icon: <Home className="w-4 h-4" />,
+      shortcut: ['⌘', 'H'],
+      onSelect: () => {
+        router.push('/')
+        close()
+      },
+    },
+    {
+      id: 'chat',
+      label: 'Chat',
+      description: 'Open chat interface',
+      category: 'Navigation',
+      icon: <MessageSquare className="w-4 h-4" />,
+      onSelect: () => {
+        router.push('/chat')
+        close()
+      },
+    },
+    {
+      id: 'settings',
+      label: 'Settings',
+      description: 'Configure preferences',
+      category: 'Navigation',
+      icon: <Settings className="w-4 h-4" />,
+      shortcut: ['⌘', ','],
+      onSelect: () => {
+        router.push('/settings')
+        close()
+      },
+    },
+  ]
+
+  return (
+    <CommandPalette
+      items={commands}
+      open={isOpen}
+      onClose={close}
+    />
+  )
+}
+```
+
+### Prefetching on Hover
+
+```tsx
+function NavigationCommandsWithPrefetch() {
+  const router = useRouter()
+
+  const commands: CommandItem[] = pages.map(page => ({
+    id: page.id,
+    label: page.title,
+    description: page.description,
+    category: 'Navigation',
+    onSelect: () => {
+      router.push(page.url)
+    },
+    // Prefetch on hover for instant navigation
+    onMouseEnter: () => {
+      router.prefetch(page.url)
+    },
+  }))
+
+  return <CommandPalette items={commands} {...props} />
+}
+```
+
+### Query Parameter Navigation
+
+```tsx
+function SearchCommandPalette() {
+  const router = useRouter()
+  const searchParams = useSearchParams()
+
+  const commands: CommandItem[] = [
+    {
+      id: 'filter-recent',
+      label: 'Show Recent',
+      description: 'Filter by recent messages',
+      category: 'Filters',
+      onSelect: () => {
+        const params = new URLSearchParams(searchParams)
+        params.set('filter', 'recent')
+        router.push(`/chat?${params.toString()}`)
+      },
+    },
+    {
+      id: 'clear-filters',
+      label: 'Clear Filters',
+      description: 'Remove all filters',
+      category: 'Filters',
+      onSelect: () => {
+        router.push('/chat')
+      },
+    },
+  ]
+
+  return <CommandPalette items={commands} {...props} />
+}
+```
+
+### Breadcrumb Navigation
+
+```tsx
+function BreadcrumbCommands() {
+  const pathname = usePathname()
+  const router = useRouter()
+
+  const breadcrumbs = useMemo(() => {
+    const parts = pathname.split('/').filter(Boolean)
+    return parts.map((part, index) => {
+      const path = '/' + parts.slice(0, index + 1).join('/')
+      return {
+        id: `breadcrumb-${index}`,
+        label: `Go to ${part}`,
+        description: path,
+        category: 'Navigation',
+        icon: <ChevronRight className="w-4 h-4" />,
+        onSelect: () => router.push(path),
+      }
+    })
+  }, [pathname])
+
+  return <CommandPalette items={[...commands, ...breadcrumbs]} {...props} />
+}
+```
+
+---
+
+## Complete Examples
+
+### Example 1: Full-Featured Documentation Search
+
+Complete implementation of a documentation search command palette with fuzzy search, category filtering, and recent pages.
+
+```tsx
+'use client'
+
+import { useState, useEffect, useMemo } from 'react'
+import { useRouter, usePathname } from 'next/navigation'
+import {
+  CommandPalette,
+  useCommandPalette,
+  useDebounce,
+} from '@clarity-chat/react'
+import {
+  FileText,
+  Box,
+  Zap,
+  BookOpen,
+  Code,
+  Clock,
+  Sparkles,
+} from 'lucide-react'
+
+interface Page {
+  title: string
+  url: string
+  description?: string
+  category: string
+}
+
+const DOCS_PAGES: Page[] = [
+  {
+    title: 'Getting Started',
+    url: '/docs/getting-started',
+    description: 'Installation and setup guide',
+    category: 'Guides',
+  },
+  {
+    title: 'Chat Window',
+    url: '/docs/components/chat-window',
+    description: 'Main chat interface component',
+    category: 'Components',
+  },
+  {
+    title: 'useClarityChat',
+    url: '/docs/hooks/use-clarity-chat',
+    description: 'Core chat functionality hook',
+    category: 'Hooks',
+  },
+  // ... more pages
+]
+
+export function DocsCommandPalette() {
+  const router = useRouter()
+  const pathname = usePathname()
+  const { isOpen, close } = useCommandPalette()
+
+  const [search, setSearch] = useState('')
+  const [recentPages, setRecentPages] = useState<string[]>([])
+
+  // Debounce search input
+  const debouncedSearch = useDebounce(search, 150)
+
+  // Load recent pages from localStorage
+  useEffect(() => {
+    const stored = localStorage.getItem('docs-recent-pages')
+    if (stored) {
+      try {
+        setRecentPages(JSON.parse(stored))
+      } catch {}
+    }
+  }, [])
+
+  // Track current page
+  useEffect(() => {
+    if (pathname && pathname !== '/') {
+      setRecentPages(prev => {
+        const updated = [pathname, ...prev.filter(p => p !== pathname)].slice(0, 5)
+        localStorage.setItem('docs-recent-pages', JSON.stringify(updated))
+        return updated
+      })
+    }
+  }, [pathname])
+
+  // Search and rank commands
+  const commands = useMemo(() => {
+    const items: CommandItem[] = []
+
+    // Calculate relevance scores
+    const scored = DOCS_PAGES.map(page => {
+      const lowerQuery = debouncedSearch.toLowerCase()
+      const lowerTitle = page.title.toLowerCase()
+      const lowerDesc = (page.description || '').toLowerCase()
+
+      let score = 0
+
+      // Scoring logic
+      if (lowerTitle === lowerQuery) score += 100
+      else if (lowerTitle.startsWith(lowerQuery)) score += 80
+      else if (lowerTitle.includes(lowerQuery)) score += 40
+
+      if (lowerDesc.includes(lowerQuery)) score += 20
+
+      // Recent page boost
+      if (recentPages.includes(page.url)) score += 15
+
+      return { page, score }
+    })
+      .filter(({ score }) => !debouncedSearch || score > 0)
+      .sort((a, b) => b.score - a.score)
+
+    // Convert to command items
+    scored.forEach(({ page }) => {
+      items.push({
+        id: page.url,
+        label: page.title,
+        description: page.description,
+        category: page.category,
+        icon: getCategoryIcon(page.category),
+        onSelect: () => {
+          router.push(page.url)
+          close()
+        },
+      })
+    })
+
+    // Add recent pages section if no search
+    if (!debouncedSearch && recentPages.length > 0) {
+      recentPages.forEach(url => {
+        const page = DOCS_PAGES.find(p => p.url === url)
+        if (page) {
+          items.unshift({
+            id: `recent-${url}`,
+            label: page.title,
+            description: page.description,
+            category: 'Recent',
+            icon: <Clock className="w-4 h-4" />,
+            onSelect: () => {
+              router.push(url)
+              close()
+            },
+          })
+        }
+      })
+    }
+
+    return items
+  }, [debouncedSearch, recentPages, router, close])
+
+  return (
+    <CommandPalette
+      items={commands}
+      open={isOpen}
+      onClose={close}
+      placeholder="Search documentation..."
+      loading={search !== debouncedSearch}
+    />
+  )
+}
+
+function getCategoryIcon(category: string): React.ReactNode {
+  const icons: Record<string, React.ReactNode> = {
+    Components: <Box className="w-4 h-4" />,
+    Hooks: <Zap className="w-4 h-4" />,
+    Guides: <FileText className="w-4 h-4" />,
+    Examples: <Sparkles className="w-4 h-4" />,
+    Cookbook: <BookOpen className="w-4 h-4" />,
+    Features: <Code className="w-4 h-4" />,
+  }
+  return icons[category] || <FileText className="w-4 h-4" />
+}
+```
+
+### Example 2: AI Chat Command Palette
+
+Command palette for AI chat application with model switching, conversation management, and context display.
+
+```tsx
+'use client'
+
+import { useMemo } from 'react'
+import { CommandPalette, useCommandPalette } from '@clarity-chat/react'
+import { useClarityChat } from '@clarity-chat/react'
+import {
+  Bot,
+  MessageSquare,
+  Sparkles,
+  Download,
+  Trash2,
+  GitBranch,
+  Settings,
+} from 'lucide-react'
+
+export function AICommandPalette() {
+  const { isOpen, close } = useCommandPalette()
+  const {
+    messages,
+    model,
+    conversationId,
+    tokenUsage,
+    switchModel,
+    clearConversation,
+    exportConversation,
+  } = useClarityChat()
+
+  const commands = useMemo(() => [
+    // Model commands
+    {
+      id: 'model-claude',
+      label: 'Switch to Claude 3.5 Sonnet',
+      description: 'Most capable model for complex tasks',
+      category: 'AI Models',
+      icon: <Bot className="w-4 h-4" />,
+      shortcut: ['⌘', '1'],
+      onSelect: () => {
+        switchModel('claude-3-5-sonnet-20241022')
+        close()
+      },
+    },
+    {
+      id: 'model-haiku',
+      label: 'Switch to Claude 3.5 Haiku',
+      description: 'Fast and efficient for quick tasks',
+      category: 'AI Models',
+      icon: <Bot className="w-4 h-4" />,
+      shortcut: ['⌘', '2'],
+      onSelect: () => {
+        switchModel('claude-3-5-haiku-20241022')
+        close()
+      },
+    },
+
+    // Conversation actions
+    {
+      id: 'new-conversation',
+      label: 'New Conversation',
+      description: 'Start a fresh conversation',
+      category: 'Actions',
+      icon: <MessageSquare className="w-4 h-4" />,
+      shortcut: ['⌘', 'N'],
+      onSelect: () => {
+        clearConversation()
+        close()
+      },
+    },
+    {
+      id: 'branch-conversation',
+      label: 'Branch Conversation',
+      description: 'Create a new branch from here',
+      category: 'Actions',
+      icon: <GitBranch className="w-4 h-4" />,
+      shortcut: ['⌘', 'B'],
+      onSelect: () => {
+        // Implementation for branching
+        close()
+      },
+    },
+    {
+      id: 'export-conversation',
+      label: 'Export Conversation',
+      description: 'Download as JSON or Markdown',
+      category: 'Actions',
+      icon: <Download className="w-4 h-4" />,
+      onSelect: () => {
+        exportConversation()
+        close()
+      },
+    },
+    {
+      id: 'clear-conversation',
+      label: 'Clear Conversation',
+      description: 'Delete all messages',
+      category: 'Actions',
+      icon: <Trash2 className="w-4 h-4 text-red-500" />,
+      onSelect: () => {
+        if (confirm('Are you sure you want to clear this conversation?')) {
+          clearConversation()
+          close()
+        }
+      },
+    },
+
+    // Settings
+    {
+      id: 'settings',
+      label: 'Settings',
+      description: 'Configure AI preferences',
+      category: 'Settings',
+      icon: <Settings className="w-4 h-4" />,
+      shortcut: ['⌘', ','],
+      onSelect: () => {
+        router.push('/settings')
+        close()
+      },
+    },
+  ], [model, switchModel, clearConversation, exportConversation, close])
+
+  // AI context for footer display
+  const aiContext = useMemo(() => ({
+    modelName: model,
+    conversationId,
+    tokenUsage: {
+      input: tokenUsage?.input || 0,
+      output: tokenUsage?.output || 0,
+      total: (tokenUsage?.input || 0) + (tokenUsage?.output || 0),
+    },
+  }), [model, conversationId, tokenUsage])
+
+  return (
+    <CommandPalette
+      items={commands}
+      open={isOpen}
+      onClose={close}
+      placeholder="Type a command or search..."
+      aiContext={aiContext}
+    />
+  )
+}
+```
+
+### Example 3: Theme-Aware Command Palette
+
+Fully customized command palette with theme switching and custom styling.
+
+```tsx
+'use client'
+
+import { useTheme } from 'next-themes'
+import { CommandPalette, useCommandPalette } from '@clarity-chat/react'
+import { ANIMATION_PRESETS, DURATION_SECONDS, EASING_FRAMER } from '@clarity-chat/react'
+import { motion, AnimatePresence, useReducedMotion } from 'framer-motion'
+import { Sun, Moon, Monitor, Palette } from 'lucide-react'
+
+export function ThemedCommandPalette() {
+  const { theme, setTheme, themes } = useTheme()
+  const { isOpen, close } = useCommandPalette()
+  const prefersReducedMotion = useReducedMotion()
+
+  const commands = [
+    // Theme commands
+    {
+      id: 'theme-light',
+      label: 'Light Theme',
+      description: 'Switch to light mode',
+      category: 'Appearance',
+      icon: <Sun className="w-4 h-4" />,
+      onSelect: () => {
+        setTheme('light')
+        close()
+      },
+    },
+    {
+      id: 'theme-dark',
+      label: 'Dark Theme',
+      description: 'Switch to dark mode',
+      category: 'Appearance',
+      icon: <Moon className="w-4 h-4" />,
+      onSelect: () => {
+        setTheme('dark')
+        close()
+      },
+    },
+    {
+      id: 'theme-system',
+      label: 'System Theme',
+      description: 'Match system preferences',
+      category: 'Appearance',
+      icon: <Monitor className="w-4 h-4" />,
+      onSelect: () => {
+        setTheme('system')
+        close()
+      },
+    },
+  ]
+
+  // Custom animation wrapper
+  return (
+    <AnimatePresence>
+      {isOpen && (
+        <>
+          {/* Custom backdrop */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{
+              duration: prefersReducedMotion ? 0 : DURATION_SECONDS.normal,
+            }}
+            onClick={close}
+            className="fixed inset-0 bg-black/60 backdrop-blur-md z-50"
+          />
+
+          {/* Custom palette wrapper */}
+          <motion.div
+            initial={prefersReducedMotion ? {} : { opacity: 0, scale: 0.9, y: -20 }}
+            animate={prefersReducedMotion ? {} : { opacity: 1, scale: 1, y: 0 }}
+            exit={prefersReducedMotion ? {} : { opacity: 0, scale: 0.9, y: -20 }}
+            transition={{
+              duration: DURATION_SECONDS.slow,
+              ease: EASING_FRAMER.spring,
+            }}
+            className="fixed top-[20%] left-1/2 -translate-x-1/2 z-50"
+          >
+            <CommandPalette
+              items={commands}
+              open={isOpen}
+              onClose={close}
+              className="
+                max-w-2xl
+                bg-gradient-to-br from-white to-gray-50
+                dark:from-gray-900 dark:to-gray-950
+                shadow-[0_24px_48px_-12px_rgba(0,0,0,0.25)]
+                dark:shadow-[0_24px_48px_-12px_rgba(0,0,0,0.5)]
+                border-2 border-gray-200/50 dark:border-gray-800/50
+                backdrop-blur-xl
+              "
+            />
+          </motion.div>
+        </>
+      )}
+    </AnimatePresence>
+  )
+}
+```
+
+---
+
+## Best Practices
+
+### Performance
+
+1. **Debounce search input** to prevent excessive filtering on rapid typing
+2. **Memoize filtered commands** with `useMemo` to avoid unnecessary recalculations
+3. **Lazy load command icons** for large command sets
+4. **Use virtual scrolling** for 100+ commands
+
+### Accessibility
+
+1. **Always provide keyboard shortcuts** for critical commands
+2. **Use semantic HTML** with proper ARIA attributes
+3. **Ensure high contrast** for selected items (4.5:1 minimum)
+4. **Respect reduced motion** preferences
+
+### User Experience
+
+1. **Show recent/frequent commands** at the top when no search query
+2. **Highlight matching text** in search results
+3. **Group related commands** in categories
+4. **Provide visual feedback** for command execution
+5. **Close palette automatically** after command execution
+
+### Code Organization
+
+1. **Separate command definitions** from component logic
+2. **Use custom hooks** for complex command generation
+3. **Type command items strictly** with TypeScript
+4. **Document command purposes** with clear labels and descriptions
+
+---
+
+## Related Documentation
+
+- [CommandPalette API Reference](/reference/components/command-palette) - Complete prop documentation
+- [useCommandPalette Hook](/reference/hooks/use-command-palette) - Hook API and examples
+- [Keyboard Shortcuts Guide](/guides/keyboard-shortcuts) - Global shortcut patterns
+- [Theme Customization](/guides/theme-customization) - Styling and theming
+
+---
+
+## Feedback
+
+Have questions or suggestions for CommandPalette? [Open an issue](https://github.com/clarity-ai-chat/clarity-ai-chat-components/issues) or [start a discussion](https://github.com/clarity-ai-chat/clarity-ai-chat-components/discussions).

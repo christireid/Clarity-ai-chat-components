@@ -1,0 +1,2677 @@
+---
+title: Audio Input Processing
+description: Complete guide to audio transcription, format conversion, quality optimization, and browser compatibility
+category: Guides
+subcategory: Advanced
+---
+
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { Callout } from '@/components/ui/callout'
+
+# Audio Input Processing
+
+Complete audio pipeline implementation covering transcription service integration, format conversion, quality optimization, silence detection, noise reduction, and cross-browser compatibility.
+
+## Table of Contents
+
+- [Architecture Overview](#architecture-overview)
+- [Transcription Services](#transcription-services)
+- [Format Conversion](#format-conversion)
+- [Quality Optimization](#quality-optimization)
+- [Silence Detection](#silence-detection)
+- [Noise Reduction](#noise-reduction)
+- [Browser Compatibility](#browser-compatibility)
+- [Complete Implementation](#complete-implementation)
+
+---
+
+## Architecture Overview
+
+### Audio Processing Pipeline
+
+```
+┌─────────────────┐
+│ Microphone Input│
+└────────┬────────┘
+         │
+         ▼
+┌─────────────────┐
+│ MediaRecorder   │ ← Browser API
+│ Web Audio API   │
+└────────┬────────┘
+         │
+         ▼
+┌─────────────────┐
+│ Audio Processing│
+│ - Noise Cancel  │
+│ - Echo Cancel   │
+│ - AGC           │
+└────────┬────────┘
+         │
+         ▼
+┌─────────────────┐
+│ Format Convert  │
+│ WebM → WAV/MP3  │
+└────────┬────────┘
+         │
+         ▼
+┌─────────────────┐
+│ Quality Check   │
+│ - Bitrate       │
+│ - Sample Rate   │
+│ - Silence Trim  │
+└────────┬────────┘
+         │
+         ▼
+┌─────────────────┐
+│ Transcription   │
+│ Whisper/Deepgram│
+└────────┬────────┘
+         │
+         ▼
+┌─────────────────┐
+│ Text Output     │
+└─────────────────┘
+```
+
+### Data Flow
+
+```typescript
+// Audio processing flow
+interface AudioPipeline {
+  // 1. Capture
+  capture: () => Promise<MediaStream>
+
+  // 2. Process
+  process: (stream: MediaStream) => ProcessedAudio
+
+  // 3. Convert
+  convert: (audio: ProcessedAudio) => ConvertedAudio
+
+  // 4. Optimize
+  optimize: (audio: ConvertedAudio) => OptimizedAudio
+
+  // 5. Transcribe
+  transcribe: (audio: OptimizedAudio) => Promise<string>
+}
+```
+
+---
+
+## Transcription Services
+
+### 1. OpenAI Whisper Integration
+
+<Tabs defaultValue="whisper-api">
+  <TabsList>
+    <TabsTrigger value="whisper-api">Whisper API</TabsTrigger>
+    <TabsTrigger value="whisper-local">Local Whisper</TabsTrigger>
+    <TabsTrigger value="whisper-streaming">Streaming</TabsTrigger>
+  </TabsList>
+
+  <TabsContent value="whisper-api">
+```typescript
+// Whisper API integration
+import OpenAI from 'openai'
+
+interface WhisperConfig {
+  apiKey: string
+  model?: 'whisper-1'
+  language?: string
+  temperature?: number
+  responseFormat?: 'json' | 'text' | 'srt' | 'verbose_json' | 'vtt'
+}
+
+export class WhisperTranscriber {
+  private client: OpenAI
+  private config: WhisperConfig
+
+  constructor(config: WhisperConfig) {
+    this.client = new OpenAI({ apiKey: config.apiKey })
+    this.config = config
+  }
+
+  /**
+   * Transcribe audio file to text
+   */
+  async transcribe(audioFile: File | Blob): Promise<string> {
+    try {
+      const formData = new FormData()
+      formData.append('file', audioFile, 'audio.webm')
+      formData.append('model', this.config.model || 'whisper-1')
+
+      if (this.config.language) {
+        formData.append('language', this.config.language)
+      }
+
+      if (this.config.temperature !== undefined) {
+        formData.append('temperature', this.config.temperature.toString())
+      }
+
+      formData.append('response_format', this.config.responseFormat || 'text')
+
+      const response = await this.client.audio.transcriptions.create({
+        file: audioFile as File,
+        model: this.config.model || 'whisper-1',
+        language: this.config.language,
+        temperature: this.config.temperature,
+        response_format: this.config.responseFormat || 'text',
+      })
+
+      return typeof response === 'string' ? response : response.text
+    } catch (error) {
+      console.error('Whisper transcription error:', error)
+      throw new Error(`Transcription failed: ${error.message}`)
+    }
+  }
+
+  /**
+   * Transcribe with timestamps
+   */
+  async transcribeWithTimestamps(audioFile: File | Blob) {
+    const response = await this.client.audio.transcriptions.create({
+      file: audioFile as File,
+      model: this.config.model || 'whisper-1',
+      response_format: 'verbose_json',
+      timestamp_granularities: ['word', 'segment'],
+    })
+
+    return response
+  }
+
+  /**
+   * Translate audio to English
+   */
+  async translate(audioFile: File | Blob): Promise<string> {
+    const response = await this.client.audio.translations.create({
+      file: audioFile as File,
+      model: this.config.model || 'whisper-1',
+    })
+
+    return response.text
+  }
+}
+
+// Usage
+const transcriber = new WhisperTranscriber({
+  apiKey: process.env.OPENAI_API_KEY!,
+  language: 'en',
+  temperature: 0,
+})
+
+const text = await transcriber.transcribe(audioBlob)
+console.log('Transcription:', text)
+```
+  </TabsContent>
+
+  <TabsContent value="whisper-local">
+```typescript
+// Local Whisper.cpp integration (Node.js)
+import { spawn } from 'child_process'
+import { writeFileSync, unlinkSync } from 'fs'
+import { join } from 'path'
+
+interface LocalWhisperConfig {
+  modelPath: string // Path to GGML model
+  whisperCppPath: string // Path to whisper.cpp binary
+  threads?: number
+  language?: string
+}
+
+export class LocalWhisperTranscriber {
+  private config: LocalWhisperConfig
+
+  constructor(config: LocalWhisperConfig) {
+    this.config = config
+  }
+
+  /**
+   * Transcribe audio using local Whisper.cpp
+   */
+  async transcribe(audioBuffer: Buffer): Promise<string> {
+    // Save audio to temp file
+    const tempFile = join('/tmp', `audio-${Date.now()}.wav`)
+    writeFileSync(tempFile, audioBuffer)
+
+    try {
+      const args = [
+        '-m', this.config.modelPath,
+        '-f', tempFile,
+        '-t', (this.config.threads || 4).toString(),
+        '-l', this.config.language || 'en',
+        '--output-txt',
+      ]
+
+      return await this.runWhisper(args, tempFile)
+    } finally {
+      // Cleanup temp file
+      try {
+        unlinkSync(tempFile)
+      } catch {}
+    }
+  }
+
+  private runWhisper(args: string[], tempFile: string): Promise<string> {
+    return new Promise((resolve, reject) => {
+      const process = spawn(this.config.whisperCppPath, args)
+      let stdout = ''
+      let stderr = ''
+
+      process.stdout.on('data', (data) => {
+        stdout += data.toString()
+      })
+
+      process.stderr.on('data', (data) => {
+        stderr += data.toString()
+      })
+
+      process.on('close', (code) => {
+        if (code === 0) {
+          // Read output text file
+          const outputFile = tempFile.replace('.wav', '.txt')
+          try {
+            const text = readFileSync(outputFile, 'utf-8')
+            unlinkSync(outputFile)
+            resolve(text.trim())
+          } catch (error) {
+            reject(new Error('Failed to read output file'))
+          }
+        } else {
+          reject(new Error(`Whisper process exited with code ${code}: ${stderr}`))
+        }
+      })
+    })
+  }
+}
+
+// Usage
+const transcriber = new LocalWhisperTranscriber({
+  modelPath: './models/ggml-base.en.bin',
+  whisperCppPath: './whisper.cpp/main',
+  threads: 8,
+  language: 'en',
+})
+
+const text = await transcriber.transcribe(audioBuffer)
+```
+  </TabsContent>
+
+  <TabsContent value="whisper-streaming">
+```typescript
+// Real-time streaming transcription
+import { EventEmitter } from 'events'
+
+interface StreamingConfig {
+  apiKey: string
+  chunkDuration?: number // seconds
+  onPartialResult?: (text: string) => void
+}
+
+export class StreamingTranscriber extends EventEmitter {
+  private config: StreamingConfig
+  private mediaRecorder: MediaRecorder | null = null
+  private audioChunks: Blob[] = []
+  private transcriber: WhisperTranscriber
+
+  constructor(config: StreamingConfig) {
+    super()
+    this.config = config
+    this.transcriber = new WhisperTranscriber({ apiKey: config.apiKey })
+  }
+
+  /**
+   * Start streaming transcription
+   */
+  async start(stream: MediaStream) {
+    this.mediaRecorder = new MediaRecorder(stream, {
+      mimeType: 'audio/webm;codecs=opus',
+    })
+
+    // Process chunks every N seconds
+    const chunkDuration = this.config.chunkDuration || 5
+    this.mediaRecorder.start(chunkDuration * 1000)
+
+    this.mediaRecorder.ondataavailable = async (event) => {
+      if (event.data.size > 0) {
+        this.audioChunks.push(event.data)
+
+        // Transcribe chunk
+        try {
+          const text = await this.transcriber.transcribe(event.data)
+          this.emit('partial', text)
+          this.config.onPartialResult?.(text)
+        } catch (error) {
+          this.emit('error', error)
+        }
+      }
+    }
+
+    this.mediaRecorder.onstop = async () => {
+      // Final transcription of all chunks
+      const finalBlob = new Blob(this.audioChunks, { type: 'audio/webm' })
+      try {
+        const text = await this.transcriber.transcribe(finalBlob)
+        this.emit('complete', text)
+      } catch (error) {
+        this.emit('error', error)
+      }
+
+      this.audioChunks = []
+    }
+  }
+
+  /**
+   * Stop streaming transcription
+   */
+  stop() {
+    if (this.mediaRecorder && this.mediaRecorder.state !== 'inactive') {
+      this.mediaRecorder.stop()
+    }
+  }
+}
+
+// Usage
+const streaming = new StreamingTranscriber({
+  apiKey: process.env.OPENAI_API_KEY!,
+  chunkDuration: 3,
+  onPartialResult: (text) => {
+    console.log('Partial:', text)
+  },
+})
+
+streaming.on('complete', (text) => {
+  console.log('Final:', text)
+})
+
+const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
+await streaming.start(stream)
+
+// Stop after 30 seconds
+setTimeout(() => streaming.stop(), 30000)
+```
+  </TabsContent>
+</Tabs>
+
+### 2. Deepgram Integration
+
+```typescript
+// Deepgram real-time transcription
+import { createClient, LiveTranscriptionEvents } from '@deepgram/sdk'
+
+interface DeepgramConfig {
+  apiKey: string
+  model?: string
+  language?: string
+  punctuate?: boolean
+  diarize?: boolean
+}
+
+export class DeepgramTranscriber {
+  private client: ReturnType<typeof createClient>
+  private config: DeepgramConfig
+
+  constructor(config: DeepgramConfig) {
+    this.client = createClient(config.apiKey)
+    this.config = config
+  }
+
+  /**
+   * Transcribe pre-recorded audio
+   */
+  async transcribeFile(audioFile: Buffer | File): Promise<string> {
+    const { result, error } = await this.client.listen.prerecorded.transcribeFile(
+      audioFile,
+      {
+        model: this.config.model || 'nova-2',
+        language: this.config.language || 'en-US',
+        punctuate: this.config.punctuate !== false,
+        diarize: this.config.diarize || false,
+      }
+    )
+
+    if (error) {
+      throw new Error(`Deepgram error: ${error.message}`)
+    }
+
+    return result.results.channels[0].alternatives[0].transcript
+  }
+
+  /**
+   * Real-time transcription
+   */
+  async transcribeRealtime(stream: MediaStream, onTranscript: (text: string) => void) {
+    const connection = this.client.listen.live({
+      model: this.config.model || 'nova-2',
+      language: this.config.language || 'en-US',
+      punctuate: this.config.punctuate !== false,
+      interim_results: true,
+      endpointing: 300,
+    })
+
+    connection.on(LiveTranscriptionEvents.Open, () => {
+      console.log('Deepgram connection opened')
+    })
+
+    connection.on(LiveTranscriptionEvents.Transcript, (data) => {
+      const transcript = data.channel.alternatives[0].transcript
+      if (transcript && transcript.length > 0) {
+        onTranscript(transcript)
+      }
+    })
+
+    connection.on(LiveTranscriptionEvents.Error, (error) => {
+      console.error('Deepgram error:', error)
+    })
+
+    // Send audio data to Deepgram
+    const audioContext = new AudioContext()
+    const source = audioContext.createMediaStreamSource(stream)
+    const processor = audioContext.createScriptProcessor(4096, 1, 1)
+
+    source.connect(processor)
+    processor.connect(audioContext.destination)
+
+    processor.onaudioprocess = (event) => {
+      const audioData = event.inputBuffer.getChannelData(0)
+      const buffer = new Int16Array(audioData.length)
+
+      for (let i = 0; i < audioData.length; i++) {
+        buffer[i] = Math.max(-32768, Math.min(32767, audioData[i] * 32768))
+      }
+
+      connection.send(buffer.buffer)
+    }
+
+    return {
+      stop: () => {
+        processor.disconnect()
+        source.disconnect()
+        connection.finish()
+      },
+    }
+  }
+}
+
+// Usage
+const deepgram = new DeepgramTranscriber({
+  apiKey: process.env.DEEPGRAM_API_KEY!,
+  model: 'nova-2',
+  language: 'en-US',
+  punctuate: true,
+  diarize: true,
+})
+
+// Pre-recorded
+const text = await deepgram.transcribeFile(audioFile)
+
+// Real-time
+const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
+const { stop } = await deepgram.transcribeRealtime(stream, (text) => {
+  console.log('Transcript:', text)
+})
+```
+
+### 3. Assembly AI Integration
+
+```typescript
+// AssemblyAI transcription with advanced features
+import { AssemblyAI } from 'assemblyai'
+
+interface AssemblyConfig {
+  apiKey: string
+  languageCode?: string
+  punctuate?: boolean
+  formatText?: boolean
+  diarization?: boolean
+  speakerLabels?: boolean
+  sentimentAnalysis?: boolean
+  entityDetection?: boolean
+  summarization?: boolean
+}
+
+export class AssemblyTranscriber {
+  private client: AssemblyAI
+  private config: AssemblyConfig
+
+  constructor(config: AssemblyConfig) {
+    this.client = new AssemblyAI({ apiKey: config.apiKey })
+    this.config = config
+  }
+
+  /**
+   * Transcribe audio with advanced features
+   */
+  async transcribe(audioUrl: string) {
+    const transcript = await this.client.transcripts.transcribe({
+      audio_url: audioUrl,
+      language_code: this.config.languageCode || 'en_us',
+      punctuate: this.config.punctuate !== false,
+      format_text: this.config.formatText !== false,
+      speaker_labels: this.config.speakerLabels || false,
+      sentiment_analysis: this.config.sentimentAnalysis || false,
+      entity_detection: this.config.entityDetection || false,
+      summarization: this.config.summarization || false,
+      summary_type: 'bullets',
+      summary_model: 'conversational',
+    })
+
+    if (transcript.status === 'error') {
+      throw new Error(`AssemblyAI error: ${transcript.error}`)
+    }
+
+    return {
+      text: transcript.text,
+      words: transcript.words,
+      speakers: transcript.utterances,
+      sentiment: transcript.sentiment_analysis_results,
+      entities: transcript.entities,
+      summary: transcript.summary,
+    }
+  }
+
+  /**
+   * Upload audio file and get URL
+   */
+  async uploadFile(audioFile: Buffer | File): Promise<string> {
+    const uploadUrl = await this.client.files.upload(audioFile)
+    return uploadUrl
+  }
+
+  /**
+   * Real-time transcription
+   */
+  async transcribeRealtime(
+    onTranscript: (text: string) => void,
+    onError?: (error: Error) => void
+  ) {
+    const realtime = this.client.realtime.transcriber({
+      sampleRate: 16000,
+    })
+
+    realtime.on('open', () => {
+      console.log('AssemblyAI connection opened')
+    })
+
+    realtime.on('transcript', (transcript) => {
+      if (transcript.text) {
+        onTranscript(transcript.text)
+      }
+    })
+
+    realtime.on('error', (error) => {
+      console.error('AssemblyAI error:', error)
+      onError?.(error)
+    })
+
+    await realtime.connect()
+
+    return realtime
+  }
+}
+
+// Usage
+const assembly = new AssemblyTranscriber({
+  apiKey: process.env.ASSEMBLYAI_API_KEY!,
+  languageCode: 'en_us',
+  punctuate: true,
+  speakerLabels: true,
+  sentimentAnalysis: true,
+  summarization: true,
+})
+
+// Upload and transcribe
+const audioUrl = await assembly.uploadFile(audioFile)
+const result = await assembly.transcribe(audioUrl)
+
+console.log('Transcript:', result.text)
+console.log('Speakers:', result.speakers)
+console.log('Summary:', result.summary)
+```
+
+---
+
+## Format Conversion
+
+### Audio Format Converter
+
+<Tabs defaultValue="ffmpeg">
+  <TabsList>
+    <TabsTrigger value="ffmpeg">FFmpeg</TabsTrigger>
+    <TabsTrigger value="browser">Browser API</TabsTrigger>
+    <TabsTrigger value="lamejs">LameJS MP3</TabsTrigger>
+  </TabsList>
+
+  <TabsContent value="ffmpeg">
+```typescript
+// FFmpeg-based conversion (server-side)
+import ffmpeg from 'fluent-ffmpeg'
+import { Readable } from 'stream'
+
+interface ConversionOptions {
+  format: 'mp3' | 'wav' | 'flac' | 'ogg' | 'webm'
+  bitrate?: string // e.g., '128k', '192k', '320k'
+  sampleRate?: number // e.g., 16000, 44100, 48000
+  channels?: 1 | 2 // mono or stereo
+  codec?: string
+}
+
+export class AudioConverter {
+  /**
+   * Convert audio to specified format
+   */
+  static async convert(
+    inputBuffer: Buffer,
+    options: ConversionOptions
+  ): Promise<Buffer> {
+    return new Promise((resolve, reject) => {
+      const chunks: Buffer[] = []
+      const inputStream = Readable.from(inputBuffer)
+
+      let command = ffmpeg(inputStream)
+        .format(options.format)
+
+      // Audio codec
+      if (options.codec) {
+        command = command.audioCodec(options.codec)
+      } else {
+        // Default codecs
+        const codecMap: Record<string, string> = {
+          mp3: 'libmp3lame',
+          wav: 'pcm_s16le',
+          flac: 'flac',
+          ogg: 'libvorbis',
+          webm: 'libopus',
+        }
+        command = command.audioCodec(codecMap[options.format])
+      }
+
+      // Bitrate
+      if (options.bitrate) {
+        command = command.audioBitrate(options.bitrate)
+      }
+
+      // Sample rate
+      if (options.sampleRate) {
+        command = command.audioFrequency(options.sampleRate)
+      }
+
+      // Channels
+      if (options.channels) {
+        command = command.audioChannels(options.channels)
+      }
+
+      command
+        .on('error', (error) => {
+          reject(new Error(`Conversion failed: ${error.message}`))
+        })
+        .pipe()
+        .on('data', (chunk) => {
+          chunks.push(chunk)
+        })
+        .on('end', () => {
+          resolve(Buffer.concat(chunks))
+        })
+    })
+  }
+
+  /**
+   * Convert WebM to WAV (common for Whisper)
+   */
+  static async webmToWav(webmBuffer: Buffer): Promise<Buffer> {
+    return this.convert(webmBuffer, {
+      format: 'wav',
+      codec: 'pcm_s16le',
+      sampleRate: 16000,
+      channels: 1,
+    })
+  }
+
+  /**
+   * Convert WebM to MP3
+   */
+  static async webmToMp3(webmBuffer: Buffer, bitrate = '192k'): Promise<Buffer> {
+    return this.convert(webmBuffer, {
+      format: 'mp3',
+      codec: 'libmp3lame',
+      bitrate,
+      sampleRate: 44100,
+      channels: 2,
+    })
+  }
+
+  /**
+   * Get audio metadata
+   */
+  static async getMetadata(audioBuffer: Buffer): Promise<any> {
+    return new Promise((resolve, reject) => {
+      const inputStream = Readable.from(audioBuffer)
+
+      ffmpeg.ffprobe(inputStream, (err, metadata) => {
+        if (err) {
+          reject(err)
+        } else {
+          resolve(metadata)
+        }
+      })
+    })
+  }
+}
+
+// Usage
+const wavBuffer = await AudioConverter.webmToWav(webmBuffer)
+const mp3Buffer = await AudioConverter.webmToMp3(webmBuffer, '320k')
+const metadata = await AudioConverter.getMetadata(audioBuffer)
+```
+  </TabsContent>
+
+  <TabsContent value="browser">
+```typescript
+// Browser-based conversion using Web Audio API
+export class BrowserAudioConverter {
+  private audioContext: AudioContext
+
+  constructor() {
+    this.audioContext = new (window.AudioContext || (window as any).webkitAudioContext)()
+  }
+
+  /**
+   * Convert audio blob to WAV format
+   */
+  async toWav(audioBlob: Blob, sampleRate = 16000): Promise<Blob> {
+    // Decode audio data
+    const arrayBuffer = await audioBlob.arrayBuffer()
+    const audioBuffer = await this.audioContext.decodeAudioData(arrayBuffer)
+
+    // Resample if needed
+    let channelData: Float32Array
+    if (audioBuffer.sampleRate !== sampleRate) {
+      const resampledBuffer = await this.resample(audioBuffer, sampleRate)
+      channelData = resampledBuffer.getChannelData(0)
+    } else {
+      channelData = audioBuffer.getChannelData(0)
+    }
+
+    // Convert to WAV
+    const wavBuffer = this.encodeWav(channelData, sampleRate)
+    return new Blob([wavBuffer], { type: 'audio/wav' })
+  }
+
+  /**
+   * Resample audio buffer
+   */
+  private async resample(
+    audioBuffer: AudioBuffer,
+    targetSampleRate: number
+  ): Promise<AudioBuffer> {
+    const offlineContext = new OfflineAudioContext(
+      1,
+      audioBuffer.duration * targetSampleRate,
+      targetSampleRate
+    )
+
+    const source = offlineContext.createBufferSource()
+    source.buffer = audioBuffer
+    source.connect(offlineContext.destination)
+    source.start()
+
+    return await offlineContext.startRendering()
+  }
+
+  /**
+   * Encode PCM data to WAV format
+   */
+  private encodeWav(samples: Float32Array, sampleRate: number): ArrayBuffer {
+    const buffer = new ArrayBuffer(44 + samples.length * 2)
+    const view = new DataView(buffer)
+
+    // WAV header
+    const writeString = (offset: number, string: string) => {
+      for (let i = 0; i < string.length; i++) {
+        view.setUint8(offset + i, string.charCodeAt(i))
+      }
+    }
+
+    writeString(0, 'RIFF')
+    view.setUint32(4, 36 + samples.length * 2, true)
+    writeString(8, 'WAVE')
+    writeString(12, 'fmt ')
+    view.setUint32(16, 16, true) // fmt chunk size
+    view.setUint16(20, 1, true) // PCM format
+    view.setUint16(22, 1, true) // mono
+    view.setUint32(24, sampleRate, true)
+    view.setUint32(28, sampleRate * 2, true) // byte rate
+    view.setUint16(32, 2, true) // block align
+    view.setUint16(34, 16, true) // bits per sample
+    writeString(36, 'data')
+    view.setUint32(40, samples.length * 2, true)
+
+    // Write PCM samples
+    let offset = 44
+    for (let i = 0; i < samples.length; i++, offset += 2) {
+      const sample = Math.max(-1, Math.min(1, samples[i]))
+      view.setInt16(offset, sample < 0 ? sample * 0x8000 : sample * 0x7fff, true)
+    }
+
+    return buffer
+  }
+
+  /**
+   * Convert to MP3 (requires MediaRecorder support)
+   */
+  async toMp3(audioBlob: Blob): Promise<Blob> {
+    // Check if MP3 recording is supported
+    if (!MediaRecorder.isTypeSupported('audio/mp3')) {
+      throw new Error('MP3 encoding not supported in this browser')
+    }
+
+    const stream = await this.blobToStream(audioBlob)
+    const recorder = new MediaRecorder(stream, { mimeType: 'audio/mp3' })
+
+    return new Promise((resolve, reject) => {
+      const chunks: Blob[] = []
+
+      recorder.ondataavailable = (event) => {
+        if (event.data.size > 0) {
+          chunks.push(event.data)
+        }
+      }
+
+      recorder.onstop = () => {
+        resolve(new Blob(chunks, { type: 'audio/mp3' }))
+      }
+
+      recorder.onerror = (error) => {
+        reject(error)
+      }
+
+      recorder.start()
+      setTimeout(() => recorder.stop(), 100)
+    })
+  }
+
+  /**
+   * Convert blob to MediaStream
+   */
+  private async blobToStream(blob: Blob): Promise<MediaStream> {
+    const arrayBuffer = await blob.arrayBuffer()
+    const audioBuffer = await this.audioContext.decodeAudioData(arrayBuffer)
+
+    const source = this.audioContext.createBufferSource()
+    source.buffer = audioBuffer
+
+    const destination = this.audioContext.createMediaStreamDestination()
+    source.connect(destination)
+    source.start()
+
+    return destination.stream
+  }
+}
+
+// Usage
+const converter = new BrowserAudioConverter()
+
+// Convert WebM to WAV
+const wavBlob = await converter.toWav(webmBlob, 16000)
+
+// Try to convert to MP3 (browser-dependent)
+try {
+  const mp3Blob = await converter.toMp3(audioBlob)
+} catch (error) {
+  console.error('MP3 conversion not supported')
+}
+```
+  </TabsContent>
+
+  <TabsContent value="lamejs">
+```typescript
+// MP3 encoding using lamejs (browser-compatible)
+import lamejs from 'lamejs'
+
+export class Mp3Encoder {
+  /**
+   * Convert WAV to MP3 using lamejs
+   */
+  static async wavToMp3(
+    wavBlob: Blob,
+    bitrate = 128
+  ): Promise<Blob> {
+    // Decode WAV
+    const arrayBuffer = await wavBlob.arrayBuffer()
+    const dataView = new DataView(arrayBuffer)
+
+    // Parse WAV header
+    const channels = dataView.getUint16(22, true)
+    const sampleRate = dataView.getUint32(24, true)
+    const bitsPerSample = dataView.getUint16(34, true)
+
+    // Find data chunk
+    let offset = 12
+    while (offset < arrayBuffer.byteLength) {
+      const chunkId = String.fromCharCode(
+        dataView.getUint8(offset),
+        dataView.getUint8(offset + 1),
+        dataView.getUint8(offset + 2),
+        dataView.getUint8(offset + 3)
+      )
+      const chunkSize = dataView.getUint32(offset + 4, true)
+
+      if (chunkId === 'data') {
+        offset += 8
+        break
+      }
+
+      offset += 8 + chunkSize
+    }
+
+    // Extract PCM data
+    const samples = new Int16Array(
+      arrayBuffer,
+      offset,
+      (arrayBuffer.byteLength - offset) / 2
+    )
+
+    // Encode to MP3
+    const mp3encoder = new lamejs.Mp3Encoder(channels, sampleRate, bitrate)
+    const mp3Data: Uint8Array[] = []
+
+    const sampleBlockSize = 1152
+    for (let i = 0; i < samples.length; i += sampleBlockSize * channels) {
+      const leftChannel = []
+      const rightChannel = []
+
+      for (let j = 0; j < sampleBlockSize; j++) {
+        const index = i + j * channels
+        if (index >= samples.length) break
+
+        leftChannel.push(samples[index])
+        if (channels === 2 && index + 1 < samples.length) {
+          rightChannel.push(samples[index + 1])
+        }
+      }
+
+      const mp3buf = channels === 2
+        ? mp3encoder.encodeBuffer(
+            new Int16Array(leftChannel),
+            new Int16Array(rightChannel)
+          )
+        : mp3encoder.encodeBuffer(new Int16Array(leftChannel))
+
+      if (mp3buf.length > 0) {
+        mp3Data.push(mp3buf)
+      }
+    }
+
+    // Flush remaining data
+    const mp3buf = mp3encoder.flush()
+    if (mp3buf.length > 0) {
+      mp3Data.push(mp3buf)
+    }
+
+    return new Blob(mp3Data, { type: 'audio/mp3' })
+  }
+
+  /**
+   * Convert audio blob to MP3
+   */
+  static async toMp3(
+    audioBlob: Blob,
+    bitrate = 128
+  ): Promise<Blob> {
+    // First convert to WAV, then to MP3
+    const converter = new BrowserAudioConverter()
+    const wavBlob = await converter.toWav(audioBlob)
+    return this.wavToMp3(wavBlob, bitrate)
+  }
+}
+
+// Usage
+const mp3Blob = await Mp3Encoder.toMp3(webmBlob, 192)
+```
+  </TabsContent>
+</Tabs>
+
+---
+
+## Quality Optimization
+
+### Audio Quality Analyzer
+
+```typescript
+// Audio quality analysis and optimization
+export class AudioQualityOptimizer {
+  private audioContext: AudioContext
+
+  constructor() {
+    this.audioContext = new (window.AudioContext || (window as any).webkitAudioContext)()
+  }
+
+  /**
+   * Analyze audio quality metrics
+   */
+  async analyze(audioBlob: Blob): Promise<AudioQualityMetrics> {
+    const arrayBuffer = await audioBlob.arrayBuffer()
+    const audioBuffer = await this.audioContext.decodeAudioData(arrayBuffer)
+
+    const channelData = audioBuffer.getChannelData(0)
+
+    return {
+      duration: audioBuffer.duration,
+      sampleRate: audioBuffer.sampleRate,
+      channels: audioBuffer.numberOfChannels,
+      bitDepth: 16, // Assumed for WebM
+      fileSize: audioBlob.size,
+      peakAmplitude: this.getPeakAmplitude(channelData),
+      rmsLevel: this.getRMSLevel(channelData),
+      dynamicRange: this.getDynamicRange(channelData),
+      silenceRatio: this.getSilenceRatio(channelData),
+      clippingRatio: this.getClippingRatio(channelData),
+      snr: this.estimateSNR(channelData),
+    }
+  }
+
+  /**
+   * Optimize audio quality
+   */
+  async optimize(audioBlob: Blob, options: OptimizationOptions = {}): Promise<Blob> {
+    const arrayBuffer = await audioBlob.arrayBuffer()
+    const audioBuffer = await this.audioContext.decodeAudioData(arrayBuffer)
+
+    let processedBuffer = audioBuffer
+
+    // Normalize audio levels
+    if (options.normalize !== false) {
+      processedBuffer = this.normalize(processedBuffer, options.targetLevel || -3)
+    }
+
+    // Remove DC offset
+    if (options.removeDCOffset !== false) {
+      processedBuffer = this.removeDCOffset(processedBuffer)
+    }
+
+    // Apply high-pass filter (remove rumble)
+    if (options.highPassFilter) {
+      processedBuffer = await this.applyHighPassFilter(
+        processedBuffer,
+        options.highPassCutoff || 80
+      )
+    }
+
+    // Apply low-pass filter (remove high-frequency noise)
+    if (options.lowPassFilter) {
+      processedBuffer = await this.applyLowPassFilter(
+        processedBuffer,
+        options.lowPassCutoff || 8000
+      )
+    }
+
+    // Compress dynamic range
+    if (options.compress) {
+      processedBuffer = await this.compress(processedBuffer, options.compressionRatio || 3)
+    }
+
+    // Convert back to blob
+    return this.bufferToBlob(processedBuffer)
+  }
+
+  /**
+   * Get peak amplitude
+   */
+  private getPeakAmplitude(channelData: Float32Array): number {
+    let peak = 0
+    for (let i = 0; i < channelData.length; i++) {
+      const abs = Math.abs(channelData[i])
+      if (abs > peak) peak = abs
+    }
+    return peak
+  }
+
+  /**
+   * Get RMS level (dBFS)
+   */
+  private getRMSLevel(channelData: Float32Array): number {
+    let sum = 0
+    for (let i = 0; i < channelData.length; i++) {
+      sum += channelData[i] * channelData[i]
+    }
+    const rms = Math.sqrt(sum / channelData.length)
+    return 20 * Math.log10(rms)
+  }
+
+  /**
+   * Get dynamic range
+   */
+  private getDynamicRange(channelData: Float32Array): number {
+    const peak = this.getPeakAmplitude(channelData)
+    const rms = Math.sqrt(
+      channelData.reduce((sum, sample) => sum + sample * sample, 0) / channelData.length
+    )
+    return 20 * Math.log10(peak / rms)
+  }
+
+  /**
+   * Get silence ratio
+   */
+  private getSilenceRatio(channelData: Float32Array, threshold = 0.01): number {
+    let silentSamples = 0
+    for (let i = 0; i < channelData.length; i++) {
+      if (Math.abs(channelData[i]) < threshold) {
+        silentSamples++
+      }
+    }
+    return silentSamples / channelData.length
+  }
+
+  /**
+   * Get clipping ratio
+   */
+  private getClippingRatio(channelData: Float32Array, threshold = 0.99): number {
+    let clippedSamples = 0
+    for (let i = 0; i < channelData.length; i++) {
+      if (Math.abs(channelData[i]) > threshold) {
+        clippedSamples++
+      }
+    }
+    return clippedSamples / channelData.length
+  }
+
+  /**
+   * Estimate signal-to-noise ratio
+   */
+  private estimateSNR(channelData: Float32Array): number {
+    // Simple SNR estimation based on dynamic range
+    const sorted = Array.from(channelData).sort((a, b) => Math.abs(b) - Math.abs(a))
+    const signalLevel = sorted.slice(0, Math.floor(sorted.length * 0.1))
+    const noiseLevel = sorted.slice(Math.floor(sorted.length * 0.9))
+
+    const signalRMS = Math.sqrt(
+      signalLevel.reduce((sum, s) => sum + s * s, 0) / signalLevel.length
+    )
+    const noiseRMS = Math.sqrt(
+      noiseLevel.reduce((sum, s) => sum + s * s, 0) / noiseLevel.length
+    )
+
+    return 20 * Math.log10(signalRMS / noiseRMS)
+  }
+
+  /**
+   * Normalize audio levels
+   */
+  private normalize(audioBuffer: AudioBuffer, targetLevelDB: number): AudioBuffer {
+    const targetLevel = Math.pow(10, targetLevelDB / 20)
+    const channelData = audioBuffer.getChannelData(0)
+    const peak = this.getPeakAmplitude(channelData)
+    const gain = targetLevel / peak
+
+    const normalizedBuffer = this.audioContext.createBuffer(
+      audioBuffer.numberOfChannels,
+      audioBuffer.length,
+      audioBuffer.sampleRate
+    )
+
+    for (let channel = 0; channel < audioBuffer.numberOfChannels; channel++) {
+      const inputData = audioBuffer.getChannelData(channel)
+      const outputData = normalizedBuffer.getChannelData(channel)
+
+      for (let i = 0; i < inputData.length; i++) {
+        outputData[i] = inputData[i] * gain
+      }
+    }
+
+    return normalizedBuffer
+  }
+
+  /**
+   * Remove DC offset
+   */
+  private removeDCOffset(audioBuffer: AudioBuffer): AudioBuffer {
+    const processedBuffer = this.audioContext.createBuffer(
+      audioBuffer.numberOfChannels,
+      audioBuffer.length,
+      audioBuffer.sampleRate
+    )
+
+    for (let channel = 0; channel < audioBuffer.numberOfChannels; channel++) {
+      const inputData = audioBuffer.getChannelData(channel)
+      const outputData = processedBuffer.getChannelData(channel)
+
+      // Calculate DC offset
+      const sum = inputData.reduce((acc, sample) => acc + sample, 0)
+      const offset = sum / inputData.length
+
+      // Remove offset
+      for (let i = 0; i < inputData.length; i++) {
+        outputData[i] = inputData[i] - offset
+      }
+    }
+
+    return processedBuffer
+  }
+
+  /**
+   * Apply high-pass filter
+   */
+  private async applyHighPassFilter(
+    audioBuffer: AudioBuffer,
+    cutoffFrequency: number
+  ): Promise<AudioBuffer> {
+    const offlineContext = new OfflineAudioContext(
+      audioBuffer.numberOfChannels,
+      audioBuffer.length,
+      audioBuffer.sampleRate
+    )
+
+    const source = offlineContext.createBufferSource()
+    source.buffer = audioBuffer
+
+    const filter = offlineContext.createBiquadFilter()
+    filter.type = 'highpass'
+    filter.frequency.value = cutoffFrequency
+    filter.Q.value = 1
+
+    source.connect(filter)
+    filter.connect(offlineContext.destination)
+    source.start()
+
+    return await offlineContext.startRendering()
+  }
+
+  /**
+   * Apply low-pass filter
+   */
+  private async applyLowPassFilter(
+    audioBuffer: AudioBuffer,
+    cutoffFrequency: number
+  ): Promise<AudioBuffer> {
+    const offlineContext = new OfflineAudioContext(
+      audioBuffer.numberOfChannels,
+      audioBuffer.length,
+      audioBuffer.sampleRate
+    )
+
+    const source = offlineContext.createBufferSource()
+    source.buffer = audioBuffer
+
+    const filter = offlineContext.createBiquadFilter()
+    filter.type = 'lowpass'
+    filter.frequency.value = cutoffFrequency
+    filter.Q.value = 1
+
+    source.connect(filter)
+    filter.connect(offlineContext.destination)
+    source.start()
+
+    return await offlineContext.startRendering()
+  }
+
+  /**
+   * Apply dynamic range compression
+   */
+  private async compress(
+    audioBuffer: AudioBuffer,
+    ratio: number
+  ): Promise<AudioBuffer> {
+    const offlineContext = new OfflineAudioContext(
+      audioBuffer.numberOfChannels,
+      audioBuffer.length,
+      audioBuffer.sampleRate
+    )
+
+    const source = offlineContext.createBufferSource()
+    source.buffer = audioBuffer
+
+    const compressor = offlineContext.createDynamicsCompressor()
+    compressor.threshold.value = -24
+    compressor.knee.value = 30
+    compressor.ratio.value = ratio
+    compressor.attack.value = 0.003
+    compressor.release.value = 0.25
+
+    source.connect(compressor)
+    compressor.connect(offlineContext.destination)
+    source.start()
+
+    return await offlineContext.startRendering()
+  }
+
+  /**
+   * Convert AudioBuffer to Blob
+   */
+  private bufferToBlob(audioBuffer: AudioBuffer): Blob {
+    const channelData = audioBuffer.getChannelData(0)
+    const samples = new Int16Array(channelData.length)
+
+    for (let i = 0; i < channelData.length; i++) {
+      const sample = Math.max(-1, Math.min(1, channelData[i]))
+      samples[i] = sample < 0 ? sample * 0x8000 : sample * 0x7fff
+    }
+
+    // Create WAV blob
+    const buffer = new ArrayBuffer(44 + samples.length * 2)
+    const view = new DataView(buffer)
+
+    const writeString = (offset: number, string: string) => {
+      for (let i = 0; i < string.length; i++) {
+        view.setUint8(offset + i, string.charCodeAt(i))
+      }
+    }
+
+    writeString(0, 'RIFF')
+    view.setUint32(4, 36 + samples.length * 2, true)
+    writeString(8, 'WAVE')
+    writeString(12, 'fmt ')
+    view.setUint32(16, 16, true)
+    view.setUint16(20, 1, true)
+    view.setUint16(22, 1, true)
+    view.setUint32(24, audioBuffer.sampleRate, true)
+    view.setUint32(28, audioBuffer.sampleRate * 2, true)
+    view.setUint16(32, 2, true)
+    view.setUint16(34, 16, true)
+    writeString(36, 'data')
+    view.setUint32(40, samples.length * 2, true)
+
+    let offset = 44
+    for (let i = 0; i < samples.length; i++, offset += 2) {
+      view.setInt16(offset, samples[i], true)
+    }
+
+    return new Blob([buffer], { type: 'audio/wav' })
+  }
+}
+
+interface AudioQualityMetrics {
+  duration: number
+  sampleRate: number
+  channels: number
+  bitDepth: number
+  fileSize: number
+  peakAmplitude: number
+  rmsLevel: number
+  dynamicRange: number
+  silenceRatio: number
+  clippingRatio: number
+  snr: number
+}
+
+interface OptimizationOptions {
+  normalize?: boolean
+  targetLevel?: number
+  removeDCOffset?: boolean
+  highPassFilter?: boolean
+  highPassCutoff?: number
+  lowPassFilter?: boolean
+  lowPassCutoff?: number
+  compress?: boolean
+  compressionRatio?: number
+}
+
+// Usage
+const optimizer = new AudioQualityOptimizer()
+
+// Analyze quality
+const metrics = await optimizer.analyze(audioBlob)
+console.log('SNR:', metrics.snr, 'dB')
+console.log('Silence:', (metrics.silenceRatio * 100).toFixed(1), '%')
+
+// Optimize
+const optimized = await optimizer.optimize(audioBlob, {
+  normalize: true,
+  targetLevel: -3,
+  highPassFilter: true,
+  highPassCutoff: 80,
+  compress: true,
+  compressionRatio: 3,
+})
+```
+
+---
+
+## Silence Detection
+
+### Voice Activity Detection (VAD)
+
+```typescript
+// Advanced silence detection and trimming
+export class SilenceDetector {
+  private audioContext: AudioContext
+
+  constructor() {
+    this.audioContext = new (window.AudioContext || (window as any).webkitAudioContext)()
+  }
+
+  /**
+   * Detect silence regions in audio
+   */
+  async detectSilence(
+    audioBlob: Blob,
+    threshold = 0.01,
+    minSilenceDuration = 0.5
+  ): Promise<SilenceRegion[]> {
+    const arrayBuffer = await audioBlob.arrayBuffer()
+    const audioBuffer = await this.audioContext.decodeAudioData(arrayBuffer)
+    const channelData = audioBuffer.getChannelData(0)
+    const sampleRate = audioBuffer.sampleRate
+
+    const regions: SilenceRegion[] = []
+    let silenceStart: number | null = null
+    const minSilenceSamples = minSilenceDuration * sampleRate
+
+    for (let i = 0; i < channelData.length; i++) {
+      const amplitude = Math.abs(channelData[i])
+
+      if (amplitude < threshold) {
+        // Silence detected
+        if (silenceStart === null) {
+          silenceStart = i
+        }
+      } else {
+        // Voice detected
+        if (silenceStart !== null) {
+          const silenceDuration = i - silenceStart
+          if (silenceDuration >= minSilenceSamples) {
+            regions.push({
+              start: silenceStart / sampleRate,
+              end: i / sampleRate,
+              duration: silenceDuration / sampleRate,
+            })
+          }
+          silenceStart = null
+        }
+      }
+    }
+
+    // Handle trailing silence
+    if (silenceStart !== null) {
+      const silenceDuration = channelData.length - silenceStart
+      if (silenceDuration >= minSilenceSamples) {
+        regions.push({
+          start: silenceStart / sampleRate,
+          end: channelData.length / sampleRate,
+          duration: silenceDuration / sampleRate,
+        })
+      }
+    }
+
+    return regions
+  }
+
+  /**
+   * Trim silence from audio
+   */
+  async trimSilence(
+    audioBlob: Blob,
+    options: TrimOptions = {}
+  ): Promise<Blob> {
+    const {
+      threshold = 0.01,
+      minSilenceDuration = 0.5,
+      leadingPadding = 0.1,
+      trailingPadding = 0.1,
+      removeInternalSilence = false,
+    } = options
+
+    const arrayBuffer = await audioBlob.arrayBuffer()
+    const audioBuffer = await this.audioContext.decodeAudioData(arrayBuffer)
+    const channelData = audioBuffer.getChannelData(0)
+    const sampleRate = audioBuffer.sampleRate
+
+    // Find first non-silent sample
+    let start = 0
+    for (let i = 0; i < channelData.length; i++) {
+      if (Math.abs(channelData[i]) >= threshold) {
+        start = Math.max(0, i - leadingPadding * sampleRate)
+        break
+      }
+    }
+
+    // Find last non-silent sample
+    let end = channelData.length
+    for (let i = channelData.length - 1; i >= 0; i--) {
+      if (Math.abs(channelData[i]) >= threshold) {
+        end = Math.min(channelData.length, i + trailingPadding * sampleRate)
+        break
+      }
+    }
+
+    // Create trimmed buffer
+    let trimmedBuffer: AudioBuffer
+
+    if (removeInternalSilence) {
+      // Remove internal silence regions
+      const silenceRegions = await this.detectSilence(
+        audioBlob,
+        threshold,
+        minSilenceDuration
+      )
+
+      // Calculate total non-silent duration
+      let totalDuration = (end - start) / sampleRate
+      for (const region of silenceRegions) {
+        if (region.start >= start / sampleRate && region.end <= end / sampleRate) {
+          totalDuration -= region.duration
+        }
+      }
+
+      const trimmedLength = Math.floor(totalDuration * sampleRate)
+      trimmedBuffer = this.audioContext.createBuffer(
+        audioBuffer.numberOfChannels,
+        trimmedLength,
+        sampleRate
+      )
+
+      // Copy non-silent regions
+      let outputOffset = 0
+      let inputOffset = start
+
+      for (const channel of Array.from({ length: audioBuffer.numberOfChannels })) {
+        const inputData = audioBuffer.getChannelData(channel as number)
+        const outputData = trimmedBuffer.getChannelData(channel as number)
+
+        for (const region of silenceRegions) {
+          const regionStart = Math.floor(region.start * sampleRate)
+          const regionEnd = Math.floor(region.end * sampleRate)
+
+          if (regionStart > inputOffset) {
+            const copyLength = regionStart - inputOffset
+            outputData.set(inputData.subarray(inputOffset, regionStart), outputOffset)
+            outputOffset += copyLength
+          }
+
+          inputOffset = regionEnd
+        }
+
+        // Copy remaining audio
+        if (inputOffset < end) {
+          outputData.set(inputData.subarray(inputOffset, end), outputOffset)
+        }
+      }
+    } else {
+      // Simple trim leading/trailing silence
+      const trimmedLength = end - start
+      trimmedBuffer = this.audioContext.createBuffer(
+        audioBuffer.numberOfChannels,
+        trimmedLength,
+        sampleRate
+      )
+
+      for (let channel = 0; channel < audioBuffer.numberOfChannels; channel++) {
+        const inputData = audioBuffer.getChannelData(channel)
+        const outputData = trimmedBuffer.getChannelData(channel)
+        outputData.set(inputData.subarray(start, end))
+      }
+    }
+
+    // Convert back to blob
+    return this.bufferToBlob(trimmedBuffer)
+  }
+
+  /**
+   * Split audio on silence
+   */
+  async splitOnSilence(
+    audioBlob: Blob,
+    threshold = 0.01,
+    minSilenceDuration = 1.0
+  ): Promise<Blob[]> {
+    const silenceRegions = await this.detectSilence(
+      audioBlob,
+      threshold,
+      minSilenceDuration
+    )
+
+    const arrayBuffer = await audioBlob.arrayBuffer()
+    const audioBuffer = await this.audioContext.decodeAudioData(arrayBuffer)
+    const sampleRate = audioBuffer.sampleRate
+
+    const segments: Blob[] = []
+    let lastEnd = 0
+
+    for (const region of silenceRegions) {
+      const segmentStart = lastEnd
+      const segmentEnd = Math.floor(region.start * sampleRate)
+
+      if (segmentEnd > segmentStart) {
+        const segmentBuffer = this.audioContext.createBuffer(
+          audioBuffer.numberOfChannels,
+          segmentEnd - segmentStart,
+          sampleRate
+        )
+
+        for (let channel = 0; channel < audioBuffer.numberOfChannels; channel++) {
+          const inputData = audioBuffer.getChannelData(channel)
+          const outputData = segmentBuffer.getChannelData(channel)
+          outputData.set(inputData.subarray(segmentStart, segmentEnd))
+        }
+
+        segments.push(this.bufferToBlob(segmentBuffer))
+      }
+
+      lastEnd = Math.floor(region.end * sampleRate)
+    }
+
+    // Add final segment
+    if (lastEnd < audioBuffer.length) {
+      const segmentBuffer = this.audioContext.createBuffer(
+        audioBuffer.numberOfChannels,
+        audioBuffer.length - lastEnd,
+        sampleRate
+      )
+
+      for (let channel = 0; channel < audioBuffer.numberOfChannels; channel++) {
+        const inputData = audioBuffer.getChannelData(channel)
+        const outputData = segmentBuffer.getChannelData(channel)
+        outputData.set(inputData.subarray(lastEnd))
+      }
+
+      segments.push(this.bufferToBlob(segmentBuffer))
+    }
+
+    return segments
+  }
+
+  /**
+   * Real-time VAD for streaming
+   */
+  createRealtimeVAD(
+    onSpeechStart: () => void,
+    onSpeechEnd: () => void,
+    threshold = 0.01,
+    minSpeechDuration = 0.3
+  ) {
+    let isSpeaking = false
+    let speechStartTime = 0
+    let lastSpeechTime = 0
+
+    return {
+      process: (audioData: Float32Array, timestamp: number) => {
+        // Calculate RMS amplitude
+        let sum = 0
+        for (let i = 0; i < audioData.length; i++) {
+          sum += audioData[i] * audioData[i]
+        }
+        const rms = Math.sqrt(sum / audioData.length)
+
+        if (rms >= threshold) {
+          // Speech detected
+          if (!isSpeaking) {
+            speechStartTime = timestamp
+            if (timestamp - lastSpeechTime >= minSpeechDuration * 1000) {
+              isSpeaking = true
+              onSpeechStart()
+            }
+          }
+          lastSpeechTime = timestamp
+        } else {
+          // Silence detected
+          if (isSpeaking && timestamp - lastSpeechTime >= minSpeechDuration * 1000) {
+            isSpeaking = false
+            onSpeechEnd()
+          }
+        }
+
+        return isSpeaking
+      },
+      reset: () => {
+        isSpeaking = false
+        speechStartTime = 0
+        lastSpeechTime = 0
+      },
+    }
+  }
+
+  private bufferToBlob(audioBuffer: AudioBuffer): Blob {
+    const channelData = audioBuffer.getChannelData(0)
+    const samples = new Int16Array(channelData.length)
+
+    for (let i = 0; i < channelData.length; i++) {
+      const sample = Math.max(-1, Math.min(1, channelData[i]))
+      samples[i] = sample < 0 ? sample * 0x8000 : sample * 0x7fff
+    }
+
+    const buffer = new ArrayBuffer(44 + samples.length * 2)
+    const view = new DataView(buffer)
+
+    const writeString = (offset: number, string: string) => {
+      for (let i = 0; i < string.length; i++) {
+        view.setUint8(offset + i, string.charCodeAt(i))
+      }
+    }
+
+    writeString(0, 'RIFF')
+    view.setUint32(4, 36 + samples.length * 2, true)
+    writeString(8, 'WAVE')
+    writeString(12, 'fmt ')
+    view.setUint32(16, 16, true)
+    view.setUint16(20, 1, true)
+    view.setUint16(22, 1, true)
+    view.setUint32(24, audioBuffer.sampleRate, true)
+    view.setUint32(28, audioBuffer.sampleRate * 2, true)
+    view.setUint16(32, 2, true)
+    view.setUint16(34, 16, true)
+    writeString(36, 'data')
+    view.setUint32(40, samples.length * 2, true)
+
+    let offset = 44
+    for (let i = 0; i < samples.length; i++, offset += 2) {
+      view.setInt16(offset, samples[i], true)
+    }
+
+    return new Blob([buffer], { type: 'audio/wav' })
+  }
+}
+
+interface SilenceRegion {
+  start: number
+  end: number
+  duration: number
+}
+
+interface TrimOptions {
+  threshold?: number
+  minSilenceDuration?: number
+  leadingPadding?: number
+  trailingPadding?: number
+  removeInternalSilence?: boolean
+}
+
+// Usage
+const detector = new SilenceDetector()
+
+// Detect silence
+const regions = await detector.detectSilence(audioBlob, 0.01, 0.5)
+console.log('Silence regions:', regions)
+
+// Trim silence
+const trimmed = await detector.trimSilence(audioBlob, {
+  threshold: 0.01,
+  leadingPadding: 0.1,
+  trailingPadding: 0.1,
+  removeInternalSilence: true,
+})
+
+// Split on silence
+const segments = await detector.splitOnSilence(audioBlob, 0.01, 1.0)
+console.log('Segments:', segments.length)
+
+// Real-time VAD
+const vad = detector.createRealtimeVAD(
+  () => console.log('Speech started'),
+  () => console.log('Speech ended'),
+  0.01,
+  0.3
+)
+```
+
+---
+
+## Noise Reduction
+
+### Spectral Subtraction Noise Reduction
+
+```typescript
+// Advanced noise reduction using spectral subtraction
+export class NoiseReducer {
+  private audioContext: AudioContext
+
+  constructor() {
+    this.audioContext = new (window.AudioContext || (window as any).webkitAudioContext)()
+  }
+
+  /**
+   * Apply noise reduction to audio
+   */
+  async reduce(
+    audioBlob: Blob,
+    options: NoiseReductionOptions = {}
+  ): Promise<Blob> {
+    const {
+      noiseProfile = null,
+      sensitivity = 0.5,
+      smoothing = 0.5,
+      preserveSpeech = true,
+    } = options
+
+    const arrayBuffer = await audioBlob.arrayBuffer()
+    const audioBuffer = await this.audioContext.decodeAudioData(arrayBuffer)
+
+    // If no noise profile provided, estimate from first 0.5 seconds
+    let profile = noiseProfile
+    if (!profile) {
+      profile = await this.estimateNoiseProfile(audioBuffer, 0.5)
+    }
+
+    // Apply spectral subtraction
+    const cleanedBuffer = await this.spectralSubtraction(
+      audioBuffer,
+      profile,
+      sensitivity,
+      smoothing,
+      preserveSpeech
+    )
+
+    return this.bufferToBlob(cleanedBuffer)
+  }
+
+  /**
+   * Estimate noise profile from audio
+   */
+  async estimateNoiseProfile(
+    audioBuffer: AudioBuffer,
+    duration: number
+  ): Promise<Float32Array> {
+    const sampleRate = audioBuffer.sampleRate
+    const samples = Math.min(
+      Math.floor(duration * sampleRate),
+      audioBuffer.length
+    )
+
+    const channelData = audioBuffer.getChannelData(0)
+    const fftSize = 2048
+    const profile = new Float32Array(fftSize / 2)
+
+    // Compute average spectrum of noise region
+    const numFrames = Math.floor(samples / fftSize)
+    for (let frame = 0; frame < numFrames; frame++) {
+      const offset = frame * fftSize
+      const frameData = channelData.slice(offset, offset + fftSize)
+      const spectrum = this.fft(frameData)
+
+      for (let i = 0; i < profile.length; i++) {
+        profile[i] += spectrum[i] / numFrames
+      }
+    }
+
+    return profile
+  }
+
+  /**
+   * Spectral subtraction algorithm
+   */
+  private async spectralSubtraction(
+    audioBuffer: AudioBuffer,
+    noiseProfile: Float32Array,
+    sensitivity: number,
+    smoothing: number,
+    preserveSpeech: boolean
+  ): Promise<AudioBuffer> {
+    const channelData = audioBuffer.getChannelData(0)
+    const fftSize = 2048
+    const hopSize = fftSize / 4
+    const numFrames = Math.floor((channelData.length - fftSize) / hopSize) + 1
+
+    const outputData = new Float32Array(channelData.length)
+    const window = this.hannWindow(fftSize)
+
+    for (let frame = 0; frame < numFrames; frame++) {
+      const offset = frame * hopSize
+      const frameData = new Float32Array(fftSize)
+
+      // Extract frame with windowing
+      for (let i = 0; i < fftSize; i++) {
+        frameData[i] = (channelData[offset + i] || 0) * window[i]
+      }
+
+      // Forward FFT
+      const spectrum = this.fft(frameData)
+      const phase = this.getPhase(frameData)
+
+      // Spectral subtraction
+      const cleanSpectrum = new Float32Array(spectrum.length)
+      for (let i = 0; i < spectrum.length; i++) {
+        const noisePower = noiseProfile[i] * sensitivity
+        const signalPower = spectrum[i]
+
+        if (preserveSpeech) {
+          // Over-subtraction with spectral floor
+          const floor = 0.1
+          cleanSpectrum[i] = Math.max(
+            signalPower - noisePower,
+            floor * signalPower
+          )
+        } else {
+          // Simple subtraction
+          cleanSpectrum[i] = Math.max(0, signalPower - noisePower)
+        }
+
+        // Spectral smoothing
+        if (i > 0) {
+          cleanSpectrum[i] = (1 - smoothing) * cleanSpectrum[i] +
+                             smoothing * cleanSpectrum[i - 1]
+        }
+      }
+
+      // Inverse FFT
+      const cleanFrame = this.ifft(cleanSpectrum, phase)
+
+      // Overlap-add
+      for (let i = 0; i < fftSize; i++) {
+        outputData[offset + i] += cleanFrame[i] * window[i]
+      }
+    }
+
+    // Normalize
+    const max = Math.max(...Array.from(outputData).map(Math.abs))
+    if (max > 0) {
+      for (let i = 0; i < outputData.length; i++) {
+        outputData[i] /= max
+      }
+    }
+
+    // Create output buffer
+    const outputBuffer = this.audioContext.createBuffer(
+      audioBuffer.numberOfChannels,
+      audioBuffer.length,
+      audioBuffer.sampleRate
+    )
+
+    outputBuffer.getChannelData(0).set(outputData)
+
+    return outputBuffer
+  }
+
+  /**
+   * FFT (Fast Fourier Transform) - simplified implementation
+   */
+  private fft(input: Float32Array): Float32Array {
+    const n = input.length
+    const output = new Float32Array(n / 2)
+
+    // Simple magnitude spectrum calculation
+    for (let k = 0; k < n / 2; k++) {
+      let real = 0
+      let imag = 0
+
+      for (let t = 0; t < n; t++) {
+        const angle = (2 * Math.PI * k * t) / n
+        real += input[t] * Math.cos(angle)
+        imag -= input[t] * Math.sin(angle)
+      }
+
+      output[k] = Math.sqrt(real * real + imag * imag)
+    }
+
+    return output
+  }
+
+  /**
+   * Get phase from signal
+   */
+  private getPhase(input: Float32Array): Float32Array {
+    const n = input.length
+    const phase = new Float32Array(n / 2)
+
+    for (let k = 0; k < n / 2; k++) {
+      let real = 0
+      let imag = 0
+
+      for (let t = 0; t < n; t++) {
+        const angle = (2 * Math.PI * k * t) / n
+        real += input[t] * Math.cos(angle)
+        imag -= input[t] * Math.sin(angle)
+      }
+
+      phase[k] = Math.atan2(imag, real)
+    }
+
+    return phase
+  }
+
+  /**
+   * Inverse FFT
+   */
+  private ifft(magnitude: Float32Array, phase: Float32Array): Float32Array {
+    const n = magnitude.length * 2
+    const output = new Float32Array(n)
+
+    for (let t = 0; t < n; t++) {
+      let sum = 0
+
+      for (let k = 0; k < magnitude.length; k++) {
+        const angle = (2 * Math.PI * k * t) / n + phase[k]
+        sum += magnitude[k] * Math.cos(angle)
+      }
+
+      output[t] = sum / n
+    }
+
+    return output
+  }
+
+  /**
+   * Hann window function
+   */
+  private hannWindow(size: number): Float32Array {
+    const window = new Float32Array(size)
+    for (let i = 0; i < size; i++) {
+      window[i] = 0.5 * (1 - Math.cos((2 * Math.PI * i) / (size - 1)))
+    }
+    return window
+  }
+
+  private bufferToBlob(audioBuffer: AudioBuffer): Blob {
+    const channelData = audioBuffer.getChannelData(0)
+    const samples = new Int16Array(channelData.length)
+
+    for (let i = 0; i < channelData.length; i++) {
+      const sample = Math.max(-1, Math.min(1, channelData[i]))
+      samples[i] = sample < 0 ? sample * 0x8000 : sample * 0x7fff
+    }
+
+    const buffer = new ArrayBuffer(44 + samples.length * 2)
+    const view = new DataView(buffer)
+
+    const writeString = (offset: number, string: string) => {
+      for (let i = 0; i < string.length; i++) {
+        view.setUint8(offset + i, string.charCodeAt(i))
+      }
+    }
+
+    writeString(0, 'RIFF')
+    view.setUint32(4, 36 + samples.length * 2, true)
+    writeString(8, 'WAVE')
+    writeString(12, 'fmt ')
+    view.setUint32(16, 16, true)
+    view.setUint16(20, 1, true)
+    view.setUint16(22, 1, true)
+    view.setUint32(24, audioBuffer.sampleRate, true)
+    view.setUint32(28, audioBuffer.sampleRate * 2, true)
+    view.setUint16(32, 2, true)
+    view.setUint16(34, 16, true)
+    writeString(36, 'data')
+    view.setUint32(40, samples.length * 2, true)
+
+    let offset = 44
+    for (let i = 0; i < samples.length; i++, offset += 2) {
+      view.setInt16(offset, samples[i], true)
+    }
+
+    return new Blob([buffer], { type: 'audio/wav' })
+  }
+}
+
+interface NoiseReductionOptions {
+  noiseProfile?: Float32Array
+  sensitivity?: number
+  smoothing?: number
+  preserveSpeech?: boolean
+}
+
+// Usage
+const reducer = new NoiseReducer()
+
+// Automatic noise reduction
+const cleaned = await reducer.reduce(audioBlob, {
+  sensitivity: 0.5,
+  smoothing: 0.5,
+  preserveSpeech: true,
+})
+
+// Custom noise profile
+const noiseProfile = await reducer.estimateNoiseProfile(audioBuffer, 1.0)
+const cleanedWithProfile = await reducer.reduce(audioBlob, {
+  noiseProfile,
+  sensitivity: 0.7,
+})
+```
+
+---
+
+## Browser Compatibility
+
+### Cross-Browser Audio Handler
+
+```typescript
+// Handle browser-specific audio quirks
+export class BrowserAudioCompat {
+  /**
+   * Get supported MIME types for recording
+   */
+  static getSupportedMimeTypes(): string[] {
+    const types = [
+      'audio/webm;codecs=opus',
+      'audio/webm',
+      'audio/ogg;codecs=opus',
+      'audio/ogg',
+      'audio/wav',
+      'audio/mp4',
+      'audio/mpeg',
+    ]
+
+    return types.filter((type) => MediaRecorder.isTypeSupported(type))
+  }
+
+  /**
+   * Get best MIME type for current browser
+   */
+  static getBestMimeType(): string {
+    const supported = this.getSupportedMimeTypes()
+
+    // Prefer opus codec for quality and compression
+    if (supported.includes('audio/webm;codecs=opus')) {
+      return 'audio/webm;codecs=opus'
+    }
+
+    if (supported.includes('audio/ogg;codecs=opus')) {
+      return 'audio/ogg;codecs=opus'
+    }
+
+    // Fallback to basic formats
+    return supported[0] || 'audio/webm'
+  }
+
+  /**
+   * Check MediaRecorder support
+   */
+  static isMediaRecorderSupported(): boolean {
+    return 'MediaRecorder' in window
+  }
+
+  /**
+   * Check Web Audio API support
+   */
+  static isWebAudioSupported(): boolean {
+    return 'AudioContext' in window || 'webkitAudioContext' in window
+  }
+
+  /**
+   * Check getUserMedia support
+   */
+  static isGetUserMediaSupported(): boolean {
+    return !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia)
+  }
+
+  /**
+   * Get browser-specific constraints
+   */
+  static getOptimalConstraints(options: {
+    echoCancellation?: boolean
+    noiseSuppression?: boolean
+    autoGainControl?: boolean
+  } = {}): MediaStreamConstraints {
+    const {
+      echoCancellation = true,
+      noiseSuppression = true,
+      autoGainControl = true,
+    } = options
+
+    // Safari requires specific constraint format
+    const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent)
+
+    if (isSafari) {
+      return {
+        audio: {
+          echoCancellation,
+          noiseSuppression,
+          autoGainControl,
+          // Safari-specific
+          sampleRate: { ideal: 48000 },
+          sampleSize: { ideal: 16 },
+        } as any,
+      }
+    }
+
+    // Chrome/Firefox/Edge
+    return {
+      audio: {
+        echoCancellation,
+        noiseSuppression,
+        autoGainControl,
+        sampleRate: { ideal: 48000 },
+        channelCount: { ideal: 1 },
+      },
+    }
+  }
+
+  /**
+   * Handle browser-specific audio context
+   */
+  static createAudioContext(): AudioContext {
+    const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext
+
+    if (!AudioContextClass) {
+      throw new Error('Web Audio API not supported')
+    }
+
+    const context = new AudioContextClass()
+
+    // Resume on user interaction (required by some browsers)
+    if (context.state === 'suspended') {
+      const resumeContext = () => {
+        context.resume()
+        document.removeEventListener('click', resumeContext)
+        document.removeEventListener('touchstart', resumeContext)
+      }
+
+      document.addEventListener('click', resumeContext)
+      document.addEventListener('touchstart', resumeContext)
+    }
+
+    return context
+  }
+
+  /**
+   * Feature detection report
+   */
+  static getFeatureReport(): BrowserFeatureReport {
+    return {
+      mediaRecorder: this.isMediaRecorderSupported(),
+      webAudio: this.isWebAudioSupported(),
+      getUserMedia: this.isGetUserMediaSupported(),
+      supportedMimeTypes: this.getSupportedMimeTypes(),
+      bestMimeType: this.getBestMimeType(),
+      browser: this.detectBrowser(),
+    }
+  }
+
+  /**
+   * Detect browser
+   */
+  private static detectBrowser(): BrowserInfo {
+    const ua = navigator.userAgent
+
+    if (/chrome|crios|crmo/i.test(ua)) {
+      return { name: 'Chrome', version: this.extractVersion(ua, /chrome\/(\d+)/i) }
+    }
+
+    if (/firefox|fxios/i.test(ua)) {
+      return { name: 'Firefox', version: this.extractVersion(ua, /firefox\/(\d+)/i) }
+    }
+
+    if (/safari/i.test(ua) && !/chrome/i.test(ua)) {
+      return { name: 'Safari', version: this.extractVersion(ua, /version\/(\d+)/i) }
+    }
+
+    if (/edg/i.test(ua)) {
+      return { name: 'Edge', version: this.extractVersion(ua, /edg\/(\d+)/i) }
+    }
+
+    return { name: 'Unknown', version: 0 }
+  }
+
+  private static extractVersion(ua: string, regex: RegExp): number {
+    const match = ua.match(regex)
+    return match ? parseInt(match[1], 10) : 0
+  }
+}
+
+interface BrowserFeatureReport {
+  mediaRecorder: boolean
+  webAudio: boolean
+  getUserMedia: boolean
+  supportedMimeTypes: string[]
+  bestMimeType: string
+  browser: BrowserInfo
+}
+
+interface BrowserInfo {
+  name: string
+  version: number
+}
+
+// Usage
+const report = BrowserAudioCompat.getFeatureReport()
+console.log('Browser:', report.browser.name, report.browser.version)
+console.log('MediaRecorder:', report.mediaRecorder)
+console.log('Best MIME type:', report.bestMimeType)
+
+// Get optimal recording configuration
+const constraints = BrowserAudioCompat.getOptimalConstraints({
+  echoCancellation: true,
+  noiseSuppression: true,
+  autoGainControl: true,
+})
+
+const stream = await navigator.mediaDevices.getUserMedia(constraints)
+const mimeType = BrowserAudioCompat.getBestMimeType()
+const recorder = new MediaRecorder(stream, { mimeType })
+```
+
+---
+
+## Complete Implementation
+
+### Full Audio Processing Pipeline
+
+```typescript
+// Complete audio processing pipeline
+import { AudioRecorder } from '@clarity-chat/react'
+
+export class AudioPipeline {
+  private transcriber: WhisperTranscriber
+  private converter: AudioConverter
+  private optimizer: AudioQualityOptimizer
+  private silenceDetector: SilenceDetector
+  private noiseReducer: NoiseReducer
+
+  constructor(config: PipelineConfig) {
+    this.transcriber = new WhisperTranscriber({
+      apiKey: config.openaiApiKey,
+    })
+    this.converter = AudioConverter
+    this.optimizer = new AudioQualityOptimizer()
+    this.silenceDetector = new SilenceDetector()
+    this.noiseReducer = new NoiseReducer()
+  }
+
+  /**
+   * Process and transcribe audio
+   */
+  async processAndTranscribe(
+    audioBlob: Blob,
+    options: ProcessingOptions = {}
+  ): Promise<ProcessingResult> {
+    const startTime = Date.now()
+    const steps: string[] = []
+
+    try {
+      // Step 1: Analyze quality
+      steps.push('Analyzing audio quality')
+      const metrics = await this.optimizer.analyze(audioBlob)
+
+      // Step 2: Reduce noise if needed
+      let processedBlob = audioBlob
+      if (options.noiseReduction !== false && metrics.snr < 20) {
+        steps.push('Reducing noise')
+        processedBlob = await this.noiseReducer.reduce(processedBlob, {
+          sensitivity: 0.5,
+          preserveSpeech: true,
+        })
+      }
+
+      // Step 3: Trim silence
+      if (options.trimSilence !== false) {
+        steps.push('Trimming silence')
+        processedBlob = await this.silenceDetector.trimSilence(processedBlob, {
+          threshold: 0.01,
+          leadingPadding: 0.1,
+          trailingPadding: 0.1,
+          removeInternalSilence: options.removeInternalSilence || false,
+        })
+      }
+
+      // Step 4: Optimize quality
+      if (options.optimize !== false) {
+        steps.push('Optimizing audio quality')
+        processedBlob = await this.optimizer.optimize(processedBlob, {
+          normalize: true,
+          targetLevel: -3,
+          highPassFilter: true,
+          highPassCutoff: 80,
+          compress: true,
+          compressionRatio: 2,
+        })
+      }
+
+      // Step 5: Convert format if needed
+      if (options.outputFormat && options.outputFormat !== 'webm') {
+        steps.push(`Converting to ${options.outputFormat}`)
+        const buffer = await processedBlob.arrayBuffer()
+        const converted = await this.converter.convert(Buffer.from(buffer), {
+          format: options.outputFormat,
+          bitrate: options.bitrate || '128k',
+          sampleRate: options.sampleRate || 16000,
+          channels: 1,
+        })
+        processedBlob = new Blob([converted], { type: `audio/${options.outputFormat}` })
+      }
+
+      // Step 6: Transcribe
+      steps.push('Transcribing audio')
+      const text = await this.transcriber.transcribe(processedBlob)
+
+      const processingTime = Date.now() - startTime
+
+      return {
+        success: true,
+        text,
+        originalMetrics: metrics,
+        processedAudio: processedBlob,
+        steps,
+        processingTime,
+      }
+    } catch (error) {
+      return {
+        success: false,
+        error: error.message,
+        steps,
+        processingTime: Date.now() - startTime,
+      }
+    }
+  }
+
+  /**
+   * Real-time processing with streaming transcription
+   */
+  async processRealtime(
+    onTranscript: (text: string) => void,
+    onError?: (error: Error) => void
+  ) {
+    const stream = await navigator.mediaDevices.getUserMedia({
+      audio: BrowserAudioCompat.getOptimalConstraints({
+        echoCancellation: true,
+        noiseSuppression: true,
+        autoGainControl: true,
+      }).audio,
+    })
+
+    const streaming = new StreamingTranscriber({
+      apiKey: this.transcriber['config'].apiKey,
+      chunkDuration: 3,
+      onPartialResult: onTranscript,
+    })
+
+    streaming.on('error', (error) => {
+      onError?.(error)
+    })
+
+    await streaming.start(stream)
+
+    return {
+      stop: () => {
+        streaming.stop()
+        stream.getTracks().forEach((track) => track.stop())
+      },
+    }
+  }
+}
+
+interface PipelineConfig {
+  openaiApiKey: string
+}
+
+interface ProcessingOptions {
+  noiseReduction?: boolean
+  trimSilence?: boolean
+  removeInternalSilence?: boolean
+  optimize?: boolean
+  outputFormat?: 'mp3' | 'wav' | 'ogg' | 'webm'
+  bitrate?: string
+  sampleRate?: number
+}
+
+interface ProcessingResult {
+  success: boolean
+  text?: string
+  originalMetrics?: AudioQualityMetrics
+  processedAudio?: Blob
+  steps: string[]
+  processingTime: number
+  error?: string
+}
+
+// Usage Example
+const pipeline = new AudioPipeline({
+  openaiApiKey: process.env.OPENAI_API_KEY!,
+})
+
+// Process pre-recorded audio
+const result = await pipeline.processAndTranscribe(audioBlob, {
+  noiseReduction: true,
+  trimSilence: true,
+  removeInternalSilence: true,
+  optimize: true,
+  outputFormat: 'wav',
+  bitrate: '128k',
+  sampleRate: 16000,
+})
+
+console.log('Transcript:', result.text)
+console.log('Processing time:', result.processingTime, 'ms')
+console.log('Steps:', result.steps)
+
+// Real-time processing
+const { stop } = await pipeline.processRealtime(
+  (text) => console.log('Transcript:', text),
+  (error) => console.error('Error:', error)
+)
+
+// Stop after 60 seconds
+setTimeout(() => stop(), 60000)
+```
+
+### React Component Integration
+
+```tsx
+// Complete React integration
+'use client'
+
+import { useState } from 'react'
+import { AudioRecorder } from '@clarity-chat/react'
+import { AudioPipeline } from './audio-pipeline'
+
+export function VoiceTranscriptionDemo() {
+  const [transcript, setTranscript] = useState('')
+  const [isProcessing, setIsProcessing] = useState(false)
+  const [processingSteps, setProcessingSteps] = useState<string[]>([])
+  const [metrics, setMetrics] = useState<AudioQualityMetrics | null>(null)
+
+  const pipeline = new AudioPipeline({
+    openaiApiKey: process.env.NEXT_PUBLIC_OPENAI_API_KEY!,
+  })
+
+  const handleStop = async (audioBlob: Blob) => {
+    setIsProcessing(true)
+    setProcessingSteps([])
+    setTranscript('')
+
+    try {
+      const result = await pipeline.processAndTranscribe(audioBlob, {
+        noiseReduction: true,
+        trimSilence: true,
+        removeInternalSilence: true,
+        optimize: true,
+        outputFormat: 'wav',
+      })
+
+      if (result.success) {
+        setTranscript(result.text || '')
+        setMetrics(result.originalMetrics || null)
+        setProcessingSteps(result.steps)
+      } else {
+        console.error('Processing failed:', result.error)
+      }
+    } catch (error) {
+      console.error('Transcription error:', error)
+    } finally {
+      setIsProcessing(false)
+    }
+  }
+
+  return (
+    <div className="space-y-6">
+      <AudioRecorder
+        maxDuration={120}
+        outputFormat="webm"
+        enableNoiseCancellation={true}
+        enableEchoCancellation={true}
+        enableAutoGainControl={true}
+        voiceActivityDetection={true}
+        onStop={handleStop}
+        showWaveform={true}
+        showDuration={true}
+      />
+
+      {isProcessing && (
+        <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+          <p className="font-medium text-blue-900">Processing audio...</p>
+          <ul className="mt-2 space-y-1 text-sm text-blue-700">
+            {processingSteps.map((step, index) => (
+              <li key={index}>✓ {step}</li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {transcript && (
+        <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
+          <h3 className="font-medium text-green-900 mb-2">Transcript</h3>
+          <p className="text-green-800">{transcript}</p>
+        </div>
+      )}
+
+      {metrics && (
+        <div className="p-4 bg-gray-50 border border-gray-200 rounded-lg">
+          <h3 className="font-medium text-gray-900 mb-2">Audio Quality</h3>
+          <dl className="grid grid-cols-2 gap-2 text-sm">
+            <dt className="text-gray-600">Duration:</dt>
+            <dd className="font-mono">{metrics.duration.toFixed(2)}s</dd>
+
+            <dt className="text-gray-600">Sample Rate:</dt>
+            <dd className="font-mono">{metrics.sampleRate} Hz</dd>
+
+            <dt className="text-gray-600">SNR:</dt>
+            <dd className="font-mono">{metrics.snr.toFixed(1)} dB</dd>
+
+            <dt className="text-gray-600">Silence:</dt>
+            <dd className="font-mono">{(metrics.silenceRatio * 100).toFixed(1)}%</dd>
+          </dl>
+        </div>
+      )}
+    </div>
+  )
+}
+```
+
+---
+
+## Best Practices
+
+<Callout type="success" title="Production Recommendations">
+
+### Quality Settings
+
+- **Sample Rate**: 16kHz for speech, 48kHz for music
+- **Bitrate**: 128kbps minimum, 192kbps recommended
+- **Channels**: Mono (1) for speech, stereo (2) for music
+- **Format**: WebM/Opus for best quality/size ratio
+
+### Performance
+
+- Process audio in chunks for large files
+- Use Web Workers for heavy processing
+- Implement progress callbacks
+- Cache noise profiles
+
+### Error Handling
+
+- Check browser compatibility before recording
+- Handle microphone permission denial gracefully
+- Validate audio quality before transcription
+- Implement retry logic for transcription
+
+### Security
+
+- Never store API keys in client code
+- Use environment variables for sensitive data
+- Validate audio file sizes
+- Sanitize transcript output
+
+</Callout>
+
+---
+
+## Related Resources
+
+- [AudioRecorder Component](/reference/components/audio-recorder)
+- [Voice Input Integration](/cookbook/voice-input)
+- [Browser Compatibility Guide](/guides/browser-compatibility)
+- [Web Audio API Docs](https://developer.mozilla.org/en-US/docs/Web/API/Web_Audio_API)

@@ -23,6 +23,7 @@ import {
   Zap,
   MoreHorizontal,
   Keyboard,
+  TrendingDown,
 } from 'lucide-react'
 import { SearchDialog } from './SearchDialog'
 import { KeyboardShortcuts } from '@/components/Enhanced/KeyboardShortcuts'
@@ -39,6 +40,16 @@ import { durations } from '@/lib/animations'
 const ANIMATION_DURATION = 0.3
 const ANIMATION_EASE = [0.25, 0.1, 0.25, 1] as const
 
+// Token Optimization submenu
+const tokenOptimizationNav = [
+  { name: 'Quick Start', href: '/token-optimization', icon: Zap },
+  { name: 'Hero Recipes', href: '/cookbook/token-optimization', icon: ChefHat },
+  { name: 'API Reference', href: '/reference/components/token-optimization', icon: Library },
+  { name: 'Cookbook', href: '/guides/token-optimization', icon: BookOpen },
+  { name: 'Examples', href: '/examples/token-optimization', icon: Code2 },
+  { name: 'ROI Calculator', href: '/tools/token-roi-calculator', icon: TrendingDown },
+]
+
 // Primary nav items - aligned with new IA structure
 const primaryNav = [
   {
@@ -52,6 +63,16 @@ const primaryNav = [
     href: '/explore',
     icon: Play,
     description: 'Interactive demos',
+  },
+  {
+    name: 'Token Optimization',
+    href: '/token-optimization',
+    icon: TrendingDown,
+    description: 'Reduce AI costs by 50-90%',
+    highlight: true,
+    badge: '50-90% Savings',
+    hasSubmenu: true,
+    submenu: tokenOptimizationNav,
   },
   {
     name: 'API Reference',
@@ -76,6 +97,7 @@ export function Navigation() {
   const [searchOpen, setSearchOpen] = useState(false)
   const [accessibilityOpen, setAccessibilityOpen] = useState(false)
   const [moreOpen, setMoreOpen] = useState(false)
+  const [tokenOptimizationOpen, setTokenOptimizationOpen] = useState(false)
   const [shortcutsOpen, setShortcutsOpen] = useState(false)
   const [mounted, setMounted] = useState(false)
   const { theme, setTheme } = useTheme()
@@ -153,6 +175,15 @@ export function Navigation() {
     }
   }, [moreOpen])
 
+  // Close token optimization dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = () => setTokenOptimizationOpen(false)
+    if (tokenOptimizationOpen) {
+      document.addEventListener('click', handleClickOutside)
+      return () => document.removeEventListener('click', handleClickOutside)
+    }
+  }, [tokenOptimizationOpen])
+
   return (
     <>
       <header
@@ -187,7 +218,96 @@ export function Navigation() {
               {primaryNav.map((item) => {
                 const Icon = item.icon
                 const isHighlight = 'highlight' in item && item.highlight
+                const hasBadge = 'badge' in item && item.badge
+                const hasSubmenu = 'hasSubmenu' in item && item.hasSubmenu
                 const isActive = pathname?.startsWith(item.href)
+
+                // Special handling for Token Optimization with dropdown
+                if (hasSubmenu && 'submenu' in item) {
+                  return (
+                    <div key={item.name} className="relative">
+                      <motion.button
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          setTokenOptimizationOpen(!tokenOptimizationOpen)
+                        }}
+                        onMouseEnter={() => setTokenOptimizationOpen(true)}
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                        transition={{ duration: durations.fast }}
+                        aria-expanded={tokenOptimizationOpen}
+                        aria-haspopup="menu"
+                        className={clsx(
+                          'group flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium transition-all rounded-lg whitespace-nowrap relative',
+                          isHighlight
+                            ? 'text-purple-700 dark:text-purple-300 bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-950/50 dark:to-pink-950/50 border border-purple-200 dark:border-purple-800/50 hover:from-purple-100 hover:to-pink-100 dark:hover:from-purple-900/50 dark:hover:to-pink-900/50 hover:shadow-md hover:shadow-purple-200/50 dark:hover:shadow-purple-900/50'
+                            : isActive
+                              ? 'text-neutral-900 dark:text-white bg-neutral-100 dark:bg-neutral-800'
+                              : 'text-neutral-600 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-white hover:bg-neutral-50 dark:hover:bg-neutral-800/50'
+                        )}
+                      >
+                        <Icon
+                          className={clsx(
+                            'w-4 h-4 transition-transform group-hover:scale-110',
+                            isHighlight && 'text-purple-600 dark:text-purple-400',
+                            isActive && 'text-brand-500'
+                          )}
+                        />
+                        <span>{item.name}</span>
+                        {hasBadge && (
+                          <span className="ml-1 px-1.5 py-0.5 text-[10px] font-semibold rounded-full bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-sm">
+                            {item.badge}
+                          </span>
+                        )}
+                      </motion.button>
+
+                      {/* Token Optimization Dropdown */}
+                      <AnimatePresence>
+                        {tokenOptimizationOpen && (
+                          <motion.div
+                            initial={{ opacity: 0, y: 4, scale: 0.95 }}
+                            animate={{ opacity: 1, y: 0, scale: 1 }}
+                            exit={{ opacity: 0, y: 4, scale: 0.95 }}
+                            transition={{ duration: durations.fast, ease: 'easeOut' }}
+                            onMouseLeave={() => setTokenOptimizationOpen(false)}
+                            className="absolute top-full left-0 mt-2 py-2 bg-white dark:bg-neutral-900 border border-purple-200/80 dark:border-purple-800/80 rounded-xl shadow-xl shadow-purple-500/10 dark:shadow-purple-900/20 min-w-[220px] backdrop-blur-xl z-50"
+                          >
+                            {item.submenu?.map((subItem) => {
+                              const SubIcon = subItem.icon
+                              const isSubActive = pathname === subItem.href
+                              return (
+                                <motion.div
+                                  key={subItem.name}
+                                  whileHover={{ x: 2 }}
+                                  transition={{ duration: durations.fast }}
+                                >
+                                  <Link
+                                    href={subItem.href}
+                                    onClick={() => setTokenOptimizationOpen(false)}
+                                    className={clsx(
+                                      'group flex items-center gap-2.5 px-4 py-2.5 text-sm transition-all whitespace-nowrap',
+                                      isSubActive
+                                        ? 'bg-purple-50 dark:bg-purple-950/50 text-purple-700 dark:text-purple-300 font-medium'
+                                        : 'text-neutral-600 dark:text-neutral-400 hover:bg-purple-50/50 dark:hover:bg-purple-950/30 hover:text-purple-700 dark:hover:text-purple-300'
+                                    )}
+                                  >
+                                    <SubIcon className={clsx(
+                                      'w-4 h-4 transition-all group-hover:scale-110',
+                                      isSubActive ? 'text-purple-600 dark:text-purple-400' : 'text-neutral-400 group-hover:text-purple-500'
+                                    )} />
+                                    <span>{subItem.name}</span>
+                                  </Link>
+                                </motion.div>
+                              )
+                            })}
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                    </div>
+                  )
+                }
+
+                // Regular nav items without submenu
                 return (
                   <motion.div
                     key={item.name}
@@ -199,9 +319,9 @@ export function Navigation() {
                       href={item.href}
                       aria-current={isActive ? 'page' : undefined}
                       className={clsx(
-                        'group flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium transition-all rounded-lg whitespace-nowrap',
+                        'group flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium transition-all rounded-lg whitespace-nowrap relative',
                         isHighlight
-                          ? 'text-indigo-600 dark:text-indigo-300 bg-indigo-50 dark:bg-indigo-950/50 border border-indigo-200 dark:border-indigo-800/50 hover:bg-indigo-100 dark:hover:bg-indigo-900/50 hover:shadow-sm'
+                          ? 'text-purple-700 dark:text-purple-300 bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-950/50 dark:to-pink-950/50 border border-purple-200 dark:border-purple-800/50 hover:from-purple-100 hover:to-pink-100 dark:hover:from-purple-900/50 dark:hover:to-pink-900/50 hover:shadow-md hover:shadow-purple-200/50 dark:hover:shadow-purple-900/50'
                           : isActive
                             ? 'text-neutral-900 dark:text-white bg-neutral-100 dark:bg-neutral-800'
                             : 'text-neutral-600 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-white hover:bg-neutral-50 dark:hover:bg-neutral-800/50'
@@ -210,11 +330,16 @@ export function Navigation() {
                       <Icon
                         className={clsx(
                           'w-4 h-4 transition-transform group-hover:scale-110',
-                          isHighlight && 'text-indigo-500 dark:text-indigo-400',
+                          isHighlight && 'text-purple-600 dark:text-purple-400',
                           isActive && 'text-brand-500'
                         )}
                       />
                       <span>{item.name}</span>
+                      {hasBadge && (
+                        <span className="ml-1 px-1.5 py-0.5 text-[10px] font-semibold rounded-full bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-sm">
+                          {item.badge}
+                        </span>
+                      )}
                     </Link>
                   </motion.div>
                 )
@@ -390,6 +515,10 @@ export function Navigation() {
                   {navigation.map((item) => {
                     const Icon = item.icon
                     const isActive = pathname?.startsWith(item.href)
+                    const isHighlight = 'highlight' in item && item.highlight
+                    const hasBadge = 'badge' in item && item.badge
+                    const hasSubmenu = 'hasSubmenu' in item && item.hasSubmenu
+
                     return (
                       <motion.div
                         key={item.name}
@@ -404,15 +533,48 @@ export function Navigation() {
                           onClick={() => setMobileMenuOpen(false)}
                           aria-current={isActive ? 'page' : undefined}
                           className={clsx(
-                            'flex items-center gap-3 px-4 py-3 min-h-[48px] rounded-lg text-sm font-medium transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500',
-                            isActive
-                              ? 'bg-bg-tertiary text-brand-500'
-                              : 'text-text-secondary hover:text-text-primary hover:bg-bg-secondary'
+                            'flex items-center gap-3 px-4 py-3 min-h-[48px] rounded-lg text-sm font-medium transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 relative',
+                            isHighlight
+                              ? 'bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-950/50 dark:to-pink-950/50 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800/50'
+                              : isActive
+                                ? 'bg-bg-tertiary text-brand-500'
+                                : 'text-text-secondary hover:text-text-primary hover:bg-bg-secondary'
                           )}
                         >
                           <Icon className="w-4 h-4" aria-hidden="true" />
-                          {item.name}
+                          <span className="flex-1">{item.name}</span>
+                          {hasBadge && (
+                            <span className="px-2 py-0.5 text-[10px] font-semibold rounded-full bg-gradient-to-r from-purple-600 to-pink-600 text-white">
+                              {item.badge}
+                            </span>
+                          )}
                         </Link>
+
+                        {/* Mobile submenu for Token Optimization */}
+                        {hasSubmenu && 'submenu' in item && item.submenu && (
+                          <div className="ml-8 mt-1 space-y-1">
+                            {item.submenu.map((subItem) => {
+                              const SubIcon = subItem.icon
+                              const isSubActive = pathname === subItem.href
+                              return (
+                                <Link
+                                  key={subItem.name}
+                                  href={subItem.href}
+                                  onClick={() => setMobileMenuOpen(false)}
+                                  className={clsx(
+                                    'flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm transition-colors',
+                                    isSubActive
+                                      ? 'bg-purple-50 dark:bg-purple-950/50 text-purple-700 dark:text-purple-300 font-medium'
+                                      : 'text-neutral-600 dark:text-neutral-400 hover:bg-purple-50/50 dark:hover:bg-purple-950/30 hover:text-purple-700 dark:hover:text-purple-300'
+                                  )}
+                                >
+                                  <SubIcon className="w-3.5 h-3.5" />
+                                  <span>{subItem.name}</span>
+                                </Link>
+                              )
+                            })}
+                          </div>
+                        )}
                       </motion.div>
                     )
                   })}

@@ -1,0 +1,1544 @@
+---
+title: ToolCard Display Variants
+description: Comprehensive guide to ToolCard layout modes, display patterns, and responsive design considerations
+category: Components
+subcategory: AI
+---
+
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+
+# ToolCard Display Variants
+
+The ToolCard component offers flexible layout modes for displaying AI tool execution status across different contexts. From compact inline indicators to fully expanded detail views, ToolCard adapts to your UI needs while maintaining accessibility and performance.
+
+## Overview
+
+ToolCard supports multiple display variants optimized for different use cases:
+
+- **Compact Mode**: Icon and name only for space-constrained layouts
+- **Expanded Mode**: Full details including parameters, results, and errors
+- **Grid Layout**: Multiple tools displayed in responsive grid
+- **List Layout**: Vertical stacking with consistent spacing
+- **Card Display**: Elevated cards with shadows and borders
+- **Inline Display**: Embedded within message flows
+
+All variants support responsive design, status indicators, and interactive elements.
+
+---
+
+## Display Modes
+
+### 1. Compact Mode
+
+**Use case**: Space-constrained layouts, inline tool mentions, notification lists
+
+Compact mode displays only essential information: icon, tool name, and status badge. Perfect for showing tool execution without overwhelming the UI.
+
+<Tabs defaultValue="preview">
+  <TabsList>
+    <TabsTrigger value="preview">Preview</TabsTrigger>
+    <TabsTrigger value="code">Code</TabsTrigger>
+  </TabsList>
+
+  <TabsContent value="preview">
+```tsx
+import { ToolCard } from '@clarity-chat/react'
+
+function CompactToolDisplay() {
+  return (
+    <div className="space-y-2">
+      <ToolCard
+        name="web_search"
+        status="success"
+        size="sm"
+        duration={1250}
+      />
+      <ToolCard
+        name="code_interpreter"
+        status="running"
+        size="sm"
+      />
+      <ToolCard
+        name="image_generator"
+        status="pending"
+        size="sm"
+      />
+    </div>
+  )
+}
+```
+  </TabsContent>
+
+  <TabsContent value="code">
+```tsx
+import { ToolCard } from '@clarity-chat/react'
+import type { ToolCardStatus } from '@clarity-chat/react'
+
+interface CompactToolProps {
+  tools: Array<{
+    id: string
+    name: string
+    status: ToolCardStatus
+    duration?: number
+  }>
+}
+
+export function CompactToolDisplay({ tools }: CompactToolProps) {
+  return (
+    <div className="flex flex-col gap-1.5 w-full">
+      {tools.map((tool) => (
+        <ToolCard
+          key={tool.id}
+          name={tool.name}
+          status={tool.status}
+          duration={tool.duration}
+          size="sm"
+          className="w-full"
+        />
+      ))}
+    </div>
+  )
+}
+```
+  </TabsContent>
+</Tabs>
+
+**Characteristics**:
+- **Size**: `sm` (height: 32px)
+- **Content**: Icon + Name + Badge + Optional duration
+- **Expandable**: No
+- **Interactive**: Click handler optional
+- **Best for**: Lists, notifications, inline mentions
+
+**Responsive Behavior**:
+```tsx
+// Compact mode adapts text size on mobile
+<ToolCard
+  size="sm"
+  className="text-xs sm:text-sm" // Smaller text on mobile
+/>
+```
+
+---
+
+### 2. Standard Mode
+
+**Use case**: Default display for most tool executions, message lists, activity feeds
+
+Standard mode provides balanced information display with optional expandable sections for parameters and results.
+
+<Tabs defaultValue="preview">
+  <TabsList>
+    <TabsTrigger value="preview">Preview</TabsTrigger>
+    <TabsTrigger value="code">Code</TabsTrigger>
+  </TabsList>
+
+  <TabsContent value="preview">
+```tsx
+import { ToolCard } from '@clarity-chat/react'
+
+function StandardToolDisplay() {
+  return (
+    <ToolCard
+      name="database_query"
+      status="success"
+      size="md"
+      duration={850}
+      args={{ table: 'users', limit: 100 }}
+      result={{ rows: 42, time: '850ms' }}
+      showArgs
+      showResult
+    />
+  )
+}
+```
+  </TabsContent>
+
+  <TabsContent value="code">
+```tsx
+import { ToolCard } from '@clarity-chat/react'
+import { useState } from 'react'
+
+export function StandardToolDisplay() {
+  const [expanded, setExpanded] = useState(false)
+
+  return (
+    <ToolCard
+      name="database_query"
+      status="success"
+      size="md"
+      duration={850}
+      args={{
+        table: 'users',
+        filter: { active: true },
+        limit: 100,
+        orderBy: 'created_at'
+      }}
+      result={{
+        rows: 42,
+        executionTime: '850ms',
+        cached: false
+      }}
+      showArgs
+      showResult
+      expanded={expanded}
+      onToggleExpand={() => setExpanded(!expanded)}
+      className="w-full max-w-2xl"
+    />
+  )
+}
+```
+  </TabsContent>
+</Tabs>
+
+**Characteristics**:
+- **Size**: `md` (height: 40px collapsed, auto expanded)
+- **Content**: Full metadata with expandable details
+- **Expandable**: Yes (click or chevron to toggle)
+- **Interactive**: Full keyboard navigation
+- **Best for**: Message lists, activity feeds, tool logs
+
+**Responsive Behavior**:
+```tsx
+// Standard mode adapts padding and font sizes
+<ToolCard
+  size="md"
+  className="px-2 py-1.5 sm:px-3 sm:py-2" // Smaller padding on mobile
+/>
+```
+
+---
+
+### 3. Expanded Mode
+
+**Use case**: Detailed tool inspection, debugging views, documentation
+
+Expanded mode shows full tool details by default with all parameters, results, and metadata visible.
+
+<Tabs defaultValue="preview">
+  <TabsList>
+    <TabsTrigger value="preview">Preview</TabsTrigger>
+    <TabsTrigger value="code">Code</TabsTrigger>
+  </TabsList>
+
+  <TabsContent value="preview">
+```tsx
+import { ToolCard } from '@clarity-chat/react'
+
+function ExpandedToolDisplay() {
+  return (
+    <ToolCard
+      name="api_call"
+      status="success"
+      size="lg"
+      duration={2340}
+      args={{
+        endpoint: '/api/users',
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: { name: 'Alice', email: 'alice@example.com' }
+      }}
+      result={{
+        status: 201,
+        data: { id: 'usr_123', created: true },
+        headers: { 'x-request-id': 'req_abc' }
+      }}
+      showArgs
+      showResult
+      expanded={true}
+    />
+  )
+}
+```
+  </TabsContent>
+
+  <TabsContent value="code">
+```tsx
+import { ToolCard } from '@clarity-chat/react'
+
+export function ExpandedToolDisplay() {
+  return (
+    <div className="space-y-4">
+      <ToolCard
+        name="api_call"
+        status="success"
+        size="lg"
+        duration={2340}
+        args={{
+          endpoint: '/api/users',
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer [redacted]'
+          },
+          body: {
+            name: 'Alice',
+            email: 'alice@example.com',
+            role: 'admin'
+          }
+        }}
+        result={{
+          status: 201,
+          statusText: 'Created',
+          data: {
+            id: 'usr_123',
+            name: 'Alice',
+            created: true,
+            createdAt: '2026-01-28T12:00:00Z'
+          },
+          headers: {
+            'x-request-id': 'req_abc123',
+            'x-ratelimit-remaining': '99'
+          }
+        }}
+        showArgs
+        showResult
+        expanded={true}
+        className="w-full max-w-3xl"
+      />
+    </div>
+  )
+}
+```
+  </TabsContent>
+</Tabs>
+
+**Characteristics**:
+- **Size**: `lg` (height: auto, minimum 56px)
+- **Content**: All details visible by default
+- **Expandable**: Optional (can be locked open)
+- **Interactive**: Copy buttons, retry actions
+- **Best for**: Debug panels, tool documentation, detailed logs
+
+**Responsive Behavior**:
+```tsx
+// Expanded mode uses scrollable code blocks on mobile
+<ToolCard
+  size="lg"
+  expanded={true}
+  className="w-full overflow-x-auto" // Horizontal scroll for wide content
+/>
+```
+
+---
+
+## Layout Patterns
+
+### 4. Grid Layout
+
+**Use case**: Tool dashboard, multi-tool views, gallery displays
+
+Display multiple tools in a responsive grid that adapts from single column on mobile to multiple columns on desktop.
+
+<Tabs defaultValue="preview">
+  <TabsList>
+    <TabsTrigger value="preview">Preview</TabsTrigger>
+    <TabsTrigger value="code">Code</TabsTrigger>
+  </TabsList>
+
+  <TabsContent value="preview">
+```tsx
+import { ToolCard } from '@clarity-chat/react'
+
+function GridToolLayout() {
+  const tools = [
+    { id: '1', name: 'web_search', status: 'success' as const },
+    { id: '2', name: 'calculator', status: 'success' as const },
+    { id: '3', name: 'weather_api', status: 'running' as const },
+    { id: '4', name: 'translator', status: 'pending' as const },
+  ]
+
+  return (
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
+      {tools.map((tool) => (
+        <ToolCard
+          key={tool.id}
+          name={tool.name}
+          status={tool.status}
+          size="md"
+          className="w-full"
+        />
+      ))}
+    </div>
+  )
+}
+```
+  </TabsContent>
+
+  <TabsContent value="code">
+```tsx
+import { ToolCard } from '@clarity-chat/react'
+import type { ToolCardStatus } from '@clarity-chat/react'
+
+interface Tool {
+  id: string
+  name: string
+  status: ToolCardStatus
+  duration?: number
+  args?: Record<string, unknown>
+  result?: unknown
+}
+
+interface GridToolLayoutProps {
+  tools: Tool[]
+  columns?: {
+    sm?: number
+    md?: number
+    lg?: number
+    xl?: number
+  }
+  gap?: 'sm' | 'md' | 'lg'
+  showDetails?: boolean
+}
+
+export function GridToolLayout({
+  tools,
+  columns = { sm: 2, md: 2, lg: 3, xl: 4 },
+  gap = 'md',
+  showDetails = false
+}: GridToolLayoutProps) {
+  const gapClasses = {
+    sm: 'gap-2',
+    md: 'gap-3',
+    lg: 'gap-4'
+  }
+
+  const gridClasses = [
+    'grid',
+    'grid-cols-1',
+    `sm:grid-cols-${columns.sm}`,
+    `md:grid-cols-${columns.md}`,
+    `lg:grid-cols-${columns.lg}`,
+    `xl:grid-cols-${columns.xl}`,
+    gapClasses[gap]
+  ].join(' ')
+
+  return (
+    <div className={gridClasses}>
+      {tools.map((tool) => (
+        <ToolCard
+          key={tool.id}
+          name={tool.name}
+          status={tool.status}
+          duration={tool.duration}
+          args={tool.args}
+          result={tool.result}
+          showArgs={showDetails}
+          showResult={showDetails}
+          size="md"
+          className="w-full h-full"
+        />
+      ))}
+    </div>
+  )
+}
+```
+  </TabsContent>
+</Tabs>
+
+**Responsive Grid Breakpoints**:
+- **Mobile** (< 640px): 1 column
+- **Tablet** (640px - 1024px): 2 columns
+- **Laptop** (1024px - 1280px): 3 columns
+- **Desktop** (1280px+): 4 columns
+
+**Grid Spacing**:
+```tsx
+// Adaptive gap sizing
+const gaps = {
+  sm: 'gap-2',      // 8px
+  md: 'gap-3',      // 12px
+  lg: 'gap-4'       // 16px
+}
+```
+
+---
+
+### 5. List Layout
+
+**Use case**: Activity logs, execution history, sequential tool calls
+
+Vertical list with consistent spacing and optional dividers between items.
+
+<Tabs defaultValue="preview">
+  <TabsList>
+    <TabsTrigger value="preview">Preview</TabsTrigger>
+    <TabsTrigger value="code">Code</TabsTrigger>
+  </TabsList>
+
+  <TabsContent value="preview">
+```tsx
+import { ToolCardList } from '@clarity-chat/react'
+
+function ListToolLayout() {
+  const tools = [
+    {
+      id: '1',
+      name: 'web_search',
+      status: 'success' as const,
+      duration: 1250,
+      result: { results: 42 }
+    },
+    {
+      id: '2',
+      name: 'code_interpreter',
+      status: 'success' as const,
+      duration: 850,
+      result: { output: 'Hello, World!' }
+    },
+    {
+      id: '3',
+      name: 'calculator',
+      status: 'running' as const
+    }
+  ]
+
+  return (
+    <ToolCardList
+      tools={tools}
+      size="md"
+      gap="md"
+      showResult
+    />
+  )
+}
+```
+  </TabsContent>
+
+  <TabsContent value="code">
+```tsx
+import { ToolCardList } from '@clarity-chat/react'
+import type { ToolCardStatus } from '@clarity-chat/react'
+
+interface Tool {
+  id: string
+  name: string
+  status: ToolCardStatus
+  duration?: number
+  args?: Record<string, unknown>
+  result?: unknown
+  error?: string
+}
+
+interface ListToolLayoutProps {
+  tools: Tool[]
+  size?: 'sm' | 'md' | 'lg'
+  gap?: 'sm' | 'md' | 'lg'
+  showArgs?: boolean
+  showResult?: boolean
+  dividers?: boolean
+  maxHeight?: string
+}
+
+export function ListToolLayout({
+  tools,
+  size = 'md',
+  gap = 'sm',
+  showArgs = false,
+  showResult = false,
+  dividers = false,
+  maxHeight
+}: ListToolLayoutProps) {
+  return (
+    <div
+      className="w-full overflow-y-auto scrollbar-hide"
+      style={{ maxHeight }}
+    >
+      <ToolCardList
+        tools={tools}
+        size={size}
+        gap={gap}
+        showArgs={showArgs}
+        showResult={showResult}
+        className={dividers ? 'divide-y divide-border' : undefined}
+      />
+    </div>
+  )
+}
+```
+  </TabsContent>
+</Tabs>
+
+**List Variations**:
+```tsx
+// Compact list with dividers
+<ToolCardList
+  tools={tools}
+  size="sm"
+  gap="sm"
+  className="divide-y divide-border"
+/>
+
+// Spacious list without dividers
+<ToolCardList
+  tools={tools}
+  size="lg"
+  gap="lg"
+/>
+
+// Scrollable list with max height
+<div className="max-h-[400px] overflow-y-auto scrollbar-hide">
+  <ToolCardList tools={tools} />
+</div>
+```
+
+---
+
+### 6. Card Display
+
+**Use case**: Featured tools, standalone widgets, dashboard cards
+
+Elevated card layout with shadows, borders, and optional hover effects.
+
+<Tabs defaultValue="preview">
+  <TabsList>
+    <TabsTrigger value="preview">Preview</TabsTrigger>
+    <TabsTrigger value="code">Code</TabsTrigger>
+  </TabsList>
+
+  <TabsContent value="preview">
+```tsx
+import { ToolCard } from '@clarity-chat/react'
+
+function CardToolDisplay() {
+  return (
+    <div className="rounded-lg border bg-card shadow-sm p-4">
+      <ToolCard
+        name="api_call"
+        status="success"
+        size="md"
+        duration={1850}
+        args={{ endpoint: '/api/data' }}
+        result={{ status: 200 }}
+        showArgs
+        showResult
+        className="border-0 shadow-none"
+      />
+    </div>
+  )
+}
+```
+  </TabsContent>
+
+  <TabsContent value="code">
+```tsx
+import { ToolCard } from '@clarity-chat/react'
+import { cn } from '@clarity-chat/primitives'
+import type { ToolCardStatus } from '@clarity-chat/react'
+
+interface CardToolDisplayProps {
+  name: string
+  status: ToolCardStatus
+  duration?: number
+  args?: Record<string, unknown>
+  result?: unknown
+  error?: string
+  interactive?: boolean
+  onClick?: () => void
+}
+
+export function CardToolDisplay({
+  name,
+  status,
+  duration,
+  args,
+  result,
+  error,
+  interactive = false,
+  onClick
+}: CardToolDisplayProps) {
+  return (
+    <div
+      className={cn(
+        'rounded-lg border bg-card shadow-sm p-4',
+        'transition-all duration-200',
+        interactive && [
+          'cursor-pointer',
+          'hover:shadow-md hover:border-primary/50',
+          'active:scale-[0.98]'
+        ]
+      )}
+      onClick={onClick}
+    >
+      <ToolCard
+        name={name}
+        status={status}
+        size="md"
+        duration={duration}
+        args={args}
+        result={result}
+        error={error}
+        showArgs={!!args}
+        showResult={!!result}
+        className="border-0 shadow-none"
+      />
+    </div>
+  )
+}
+```
+  </TabsContent>
+</Tabs>
+
+**Card Styling Options**:
+```tsx
+// Elevated card with shadow
+className="rounded-lg border bg-card shadow-md p-4"
+
+// Flat card without shadow
+className="rounded-lg border bg-card p-4"
+
+// Interactive card with hover effect
+className="rounded-lg border bg-card shadow-sm p-4 hover:shadow-lg transition-shadow"
+
+// Status-colored border
+className={cn(
+  "rounded-lg border-2 bg-card shadow-sm p-4",
+  status === 'success' && 'border-green-500',
+  status === 'error' && 'border-red-500',
+  status === 'running' && 'border-blue-500'
+)}
+```
+
+---
+
+### 7. Inline Display
+
+**Use case**: Embedded in message flows, conversation context, inline mentions
+
+Seamlessly integrated within text content or message streams.
+
+<Tabs defaultValue="preview">
+  <TabsList>
+    <TabsTrigger value="preview">Preview</TabsTrigger>
+    <TabsTrigger value="code">Code</TabsTrigger>
+  </TabsList>
+
+  <TabsContent value="preview">
+```tsx
+import { ToolCard } from '@clarity-chat/react'
+
+function InlineToolDisplay() {
+  return (
+    <div className="prose max-w-none">
+      <p>
+        The AI assistant performed{' '}
+        <span className="inline-flex align-middle">
+          <ToolCard
+            name="web_search"
+            status="success"
+            size="sm"
+            className="inline-flex"
+          />
+        </span>{' '}
+        to find the answer.
+      </p>
+    </div>
+  )
+}
+```
+  </TabsContent>
+
+  <TabsContent value="code">
+```tsx
+import { ToolCard } from '@clarity-chat/react'
+import type { ToolCardStatus } from '@clarity-chat/react'
+
+interface InlineToolMentionProps {
+  name: string
+  status: ToolCardStatus
+  duration?: number
+  onClick?: () => void
+}
+
+export function InlineToolMention({
+  name,
+  status,
+  duration,
+  onClick
+}: InlineToolMentionProps) {
+  return (
+    <span className="inline-flex items-center align-middle mx-1">
+      <ToolCard
+        name={name}
+        status={status}
+        duration={duration}
+        size="sm"
+        onClick={onClick}
+        className="inline-flex max-w-[200px]"
+      />
+    </span>
+  )
+}
+
+// Usage in message content
+export function MessageWithTools() {
+  return (
+    <div className="prose max-w-none">
+      <p>
+        I performed{' '}
+        <InlineToolMention
+          name="web_search"
+          status="success"
+          duration={1250}
+        />{' '}
+        and found that the answer is 42. I then used{' '}
+        <InlineToolMention
+          name="calculator"
+          status="success"
+          duration={50}
+        />{' '}
+        to verify the calculation.
+      </p>
+    </div>
+  )
+}
+```
+  </TabsContent>
+</Tabs>
+
+**Inline Alignment**:
+```tsx
+// Center-aligned with text
+<span className="inline-flex items-center align-middle">
+  <ToolCard name="tool" status="success" size="sm" />
+</span>
+
+// Baseline-aligned (better for small text)
+<span className="inline-flex items-baseline">
+  <ToolCard name="tool" status="success" size="sm" />
+</span>
+
+// With spacing around
+<span className="inline-flex items-center align-middle mx-1">
+  <ToolCard name="tool" status="success" size="sm" />
+</span>
+```
+
+---
+
+## Status Indicators
+
+All ToolCard variants support consistent status visualization:
+
+### Status Colors
+
+```tsx
+// Status color mapping (from globals.css)
+const statusColors = {
+  pending: 'bg-yellow-100 text-yellow-900 border-yellow-200',
+  running: 'bg-blue-100 text-blue-900 border-blue-200',
+  success: 'bg-green-100 text-green-900 border-green-200',
+  error: 'bg-red-100 text-red-900 border-red-200'
+}
+```
+
+### Status Icons
+
+- **Pending**: Clock icon (static)
+- **Running**: Spinner icon (animated)
+- **Success**: Checkmark icon (static)
+- **Error**: X icon (static)
+
+### Status Labels
+
+- **Pending**: "Pending"
+- **Running**: "Running"
+- **Success**: "Complete"
+- **Error**: "Failed"
+
+**Example with all statuses**:
+```tsx
+<div className="space-y-2">
+  <ToolCard name="pending_tool" status="pending" size="md" />
+  <ToolCard name="running_tool" status="running" size="md" />
+  <ToolCard name="success_tool" status="success" size="md" />
+  <ToolCard name="error_tool" status="error" error="Connection timeout" size="md" />
+</div>
+```
+
+---
+
+## Interactive Elements
+
+### 1. Expand/Collapse
+
+Toggle between compact and expanded states:
+
+```tsx
+import { ToolCard } from '@clarity-chat/react'
+import { useState } from 'react'
+
+function ExpandableToolCard() {
+  const [expanded, setExpanded] = useState(false)
+
+  return (
+    <ToolCard
+      name="database_query"
+      status="success"
+      args={{ query: 'SELECT * FROM users' }}
+      result={{ rows: 42 }}
+      showArgs
+      showResult
+      expanded={expanded}
+      onToggleExpand={() => setExpanded(!expanded)}
+    />
+  )
+}
+```
+
+**Accessibility**:
+- Keyboard: `Enter` or `Space` to toggle
+- ARIA: `aria-expanded` attribute
+- Screen reader: "Expanded" or "Collapsed" announced
+
+### 2. Copy Button
+
+Copy tool arguments or results to clipboard:
+
+```tsx
+import { ToolCard } from '@clarity-chat/react'
+import { useState } from 'react'
+
+function CopyableToolCard() {
+  const [copied, setCopied] = useState(false)
+
+  const handleCopy = () => {
+    const content = JSON.stringify(args, null, 2)
+    navigator.clipboard.writeText(content)
+    setCopied(true)
+    setTimeout(() => setCopied(false), 2000)
+  }
+
+  return (
+    <div className="relative">
+      <ToolCard
+        name="api_call"
+        status="success"
+        args={args}
+        showArgs
+        expanded={true}
+      />
+      <button
+        onClick={handleCopy}
+        className="absolute top-2 right-2 px-2 py-1 text-xs rounded bg-primary text-primary-foreground"
+      >
+        {copied ? 'Copied!' : 'Copy'}
+      </button>
+    </div>
+  )
+}
+```
+
+### 3. Retry Action
+
+Retry failed tool executions:
+
+```tsx
+import { ToolCard } from '@clarity-chat/react'
+
+function RetryableToolCard({ onRetry }: { onRetry: () => void }) {
+  return (
+    <div className="space-y-2">
+      <ToolCard
+        name="api_call"
+        status="error"
+        error="Connection timeout after 30s"
+        size="md"
+      />
+      <button
+        onClick={onRetry}
+        className="w-full px-3 py-1.5 text-sm rounded bg-primary text-primary-foreground hover:bg-primary/90"
+      >
+        Retry
+      </button>
+    </div>
+  )
+}
+```
+
+### 4. Click Handler
+
+Custom click behavior for tool cards:
+
+```tsx
+import { ToolCard } from '@clarity-chat/react'
+
+function ClickableToolCard() {
+  const handleClick = () => {
+    console.log('Tool card clicked')
+    // Open modal, navigate, etc.
+  }
+
+  return (
+    <ToolCard
+      name="web_search"
+      status="success"
+      duration={1250}
+      onClick={handleClick}
+      size="md"
+      className="cursor-pointer hover:bg-muted/50 transition-colors"
+    />
+  )
+}
+```
+
+**Accessibility for interactive elements**:
+```tsx
+// Proper keyboard navigation
+<ToolCard
+  onClick={handleClick}
+  role="button"
+  tabIndex={0}
+  onKeyDown={(e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault()
+      handleClick()
+    }
+  }}
+  aria-label={`${name} tool execution details`}
+/>
+```
+
+---
+
+## Responsive Design
+
+### Mobile-First Approach
+
+All ToolCard variants use mobile-first responsive design:
+
+```tsx
+// Base styles for mobile, enhanced for larger screens
+<ToolCard
+  size="sm"
+  className="
+    w-full
+    px-2 py-1.5
+    text-xs
+    sm:px-3 sm:py-2 sm:text-sm
+    md:px-4 md:py-2.5 md:text-base
+  "
+/>
+```
+
+### Breakpoint Strategy
+
+| Breakpoint | Width | ToolCard Behavior |
+|------------|-------|-------------------|
+| Mobile | < 640px | Single column, compact size, truncated text |
+| Tablet | 640px - 1024px | 2-column grid, standard size, full text |
+| Laptop | 1024px - 1280px | 3-column grid, standard size |
+| Desktop | 1280px+ | 4-column grid, large size option |
+
+### Responsive Patterns
+
+**Pattern 1: Adaptive sizing**
+```tsx
+<ToolCard
+  size="sm" // Base size
+  className="sm:px-3 sm:py-2 md:px-4 md:py-3" // Responsive padding
+/>
+```
+
+**Pattern 2: Responsive grid**
+```tsx
+<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-3 lg:gap-4">
+  {tools.map(tool => (
+    <ToolCard key={tool.id} {...tool} />
+  ))}
+</div>
+```
+
+**Pattern 3: Hide details on mobile**
+```tsx
+<ToolCard
+  {...props}
+  showArgs={false} // Hide on all screens
+  className="sm:flex-row" // Row layout on tablet+
+>
+  <div className="hidden sm:block">
+    {/* Additional details shown on tablet+ */}
+  </div>
+</ToolCard>
+```
+
+**Pattern 4: Scrollable on mobile**
+```tsx
+<div className="
+  overflow-x-auto
+  scrollbar-hide
+  -mx-4 px-4
+  sm:mx-0 sm:px-0
+">
+  <ToolCard {...props} className="min-w-[300px]" />
+</div>
+```
+
+### Touch-Friendly Interactions
+
+Optimize for touch devices:
+
+```tsx
+<ToolCard
+  {...props}
+  className="
+    touch-manipulation // Disable double-tap zoom
+    active:scale-[0.98] // Visual feedback on tap
+    min-h-[44px] // Minimum touch target (iOS guideline)
+  "
+  onClick={handleClick}
+/>
+```
+
+### Viewport-Aware Layout
+
+Adapt based on available space:
+
+```tsx
+import { useWindowSize } from '@/hooks/useWindowSize'
+
+function AdaptiveToolLayout({ tools }) {
+  const { width } = useWindowSize()
+  const isMobile = width < 640
+  const size = isMobile ? 'sm' : width < 1024 ? 'md' : 'lg'
+
+  return (
+    <ToolCardList
+      tools={tools}
+      size={size}
+      gap={isMobile ? 'sm' : 'md'}
+      showArgs={!isMobile}
+      showResult={!isMobile}
+    />
+  )
+}
+```
+
+---
+
+## Accessibility
+
+### ARIA Attributes
+
+All ToolCard variants include proper ARIA attributes:
+
+```tsx
+<ToolCard
+  name="web_search"
+  status="success"
+  // Automatically includes:
+  role="article" // or "button" if interactive
+  aria-label="Tool: web_search, Status: Complete"
+  aria-expanded={expanded} // if expandable
+/>
+```
+
+### Keyboard Navigation
+
+Full keyboard support:
+
+- **Tab**: Focus next/previous card
+- **Enter**: Activate button or toggle expansion
+- **Space**: Toggle expansion
+- **Escape**: Collapse if expanded
+
+```tsx
+// Keyboard navigation example
+<ToolCard
+  onKeyDown={(e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault()
+      handleToggle()
+    }
+    if (e.key === 'Escape' && expanded) {
+      setExpanded(false)
+    }
+  }}
+/>
+```
+
+### Screen Reader Support
+
+Announce status changes:
+
+```tsx
+import { ToolCard } from '@clarity-chat/react'
+
+function LiveToolCard() {
+  return (
+    <div aria-live="polite" aria-atomic="true">
+      <ToolCard
+        name="long_task"
+        status={status}
+        // Screen reader announces: "long_task tool is now Running"
+      />
+    </div>
+  )
+}
+```
+
+### Focus Management
+
+Visible focus indicators:
+
+```tsx
+<ToolCard
+  className="
+    focus-visible:ring-2
+    focus-visible:ring-primary
+    focus-visible:ring-offset-2
+    focus-visible:outline-none
+  "
+/>
+```
+
+### Color Contrast
+
+All status colors meet WCAG 2.1 AA standards:
+
+- **Pending**: Yellow (4.5:1 contrast)
+- **Running**: Blue (4.5:1 contrast)
+- **Success**: Green (4.5:1 contrast)
+- **Error**: Red (4.5:1 contrast)
+
+### Reduced Motion
+
+Respect user preferences:
+
+```tsx
+import { useReducedMotion } from '@clarity-chat/primitives'
+
+function AnimatedToolCard() {
+  const prefersReducedMotion = useReducedMotion()
+
+  return (
+    <ToolCard
+      disableAnimations={prefersReducedMotion}
+      // Animations automatically disabled
+    />
+  )
+}
+```
+
+---
+
+## Performance Considerations
+
+### Virtual Scrolling
+
+For large lists (100+ tools), use virtual scrolling:
+
+```tsx
+import { useVirtualizer } from '@tanstack/react-virtual'
+import { ToolCard } from '@clarity-chat/react'
+import { useRef } from 'react'
+
+function VirtualizedToolList({ tools }) {
+  const parentRef = useRef<HTMLDivElement>(null)
+
+  const virtualizer = useVirtualizer({
+    count: tools.length,
+    getScrollElement: () => parentRef.current,
+    estimateSize: () => 50, // Estimated height per item
+  })
+
+  return (
+    <div
+      ref={parentRef}
+      className="h-[600px] overflow-y-auto scrollbar-hide"
+    >
+      <div
+        style={{
+          height: `${virtualizer.getTotalSize()}px`,
+          position: 'relative'
+        }}
+      >
+        {virtualizer.getVirtualItems().map((virtualItem) => (
+          <div
+            key={virtualItem.key}
+            style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              width: '100%',
+              height: `${virtualItem.size}px`,
+              transform: `translateY(${virtualItem.start}px)`
+            }}
+          >
+            <ToolCard {...tools[virtualItem.index]} />
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
+```
+
+### Memoization
+
+Prevent unnecessary re-renders:
+
+```tsx
+import { ToolCard } from '@clarity-chat/react'
+import { memo } from 'react'
+
+const MemoizedToolCard = memo(ToolCard, (prevProps, nextProps) => {
+  return (
+    prevProps.status === nextProps.status &&
+    prevProps.name === nextProps.name &&
+    prevProps.expanded === nextProps.expanded
+  )
+})
+
+export function OptimizedToolList({ tools }) {
+  return (
+    <div>
+      {tools.map(tool => (
+        <MemoizedToolCard key={tool.id} {...tool} />
+      ))}
+    </div>
+  )
+}
+```
+
+### Lazy Expansion
+
+Load expandable content on-demand:
+
+```tsx
+import { ToolCard } from '@clarity-chat/react'
+import { useState, useEffect } from 'react'
+
+function LazyExpandToolCard({ toolId }) {
+  const [expanded, setExpanded] = useState(false)
+  const [details, setDetails] = useState(null)
+
+  useEffect(() => {
+    if (expanded && !details) {
+      fetchToolDetails(toolId).then(setDetails)
+    }
+  }, [expanded, toolId])
+
+  return (
+    <ToolCard
+      name="api_call"
+      status="success"
+      args={details?.args}
+      result={details?.result}
+      showArgs={!!details}
+      showResult={!!details}
+      expanded={expanded}
+      onToggleExpand={() => setExpanded(!expanded)}
+    />
+  )
+}
+```
+
+### Throttling Updates
+
+Limit re-renders during rapid status changes:
+
+```tsx
+import { ToolCard } from '@clarity-chat/react'
+import { useThrottle } from '@/hooks/useThrottle'
+
+function ThrottledToolCard({ status, ...props }) {
+  const throttledStatus = useThrottle(status, 200) // Update max every 200ms
+
+  return <ToolCard status={throttledStatus} {...props} />
+}
+```
+
+---
+
+## Best Practices
+
+### 1. Choose the Right Size
+
+Match size to context:
+
+```tsx
+// Compact inline mentions
+<ToolCard size="sm" />
+
+// Standard message lists
+<ToolCard size="md" />
+
+// Detailed inspection views
+<ToolCard size="lg" />
+```
+
+### 2. Limit Expandable Content
+
+Show details only when necessary:
+
+```tsx
+// ✅ Good: Expand only with meaningful content
+<ToolCard
+  showArgs={args && Object.keys(args).length > 0}
+  showResult={result !== null}
+/>
+
+// ❌ Bad: Always expandable
+<ToolCard showArgs showResult />
+```
+
+### 3. Use Consistent Status Mapping
+
+Maintain consistent status representation:
+
+```tsx
+// Map API statuses to ToolCard statuses
+const mapStatus = (apiStatus: string): ToolCardStatus => {
+  switch (apiStatus) {
+    case 'queued': return 'pending'
+    case 'in_progress': return 'running'
+    case 'completed': return 'success'
+    case 'failed': return 'error'
+    default: return 'pending'
+  }
+}
+```
+
+### 4. Handle Errors Gracefully
+
+Provide actionable error messages:
+
+```tsx
+<ToolCard
+  status="error"
+  error="API timeout (30s). Check network connection and try again."
+  // Include retry button if applicable
+/>
+```
+
+### 5. Optimize for Scanning
+
+Make status immediately visible:
+
+```tsx
+// ✅ Good: Status badge always visible
+<ToolCard name="tool" status="success" size="md" />
+
+// ❌ Bad: Status hidden in expandable section
+<ToolCard name="tool" status="success" expanded={false} />
+// Status indicator should always be visible
+```
+
+### 6. Respect User Preferences
+
+Support reduced motion and dark mode:
+
+```tsx
+<ToolCard
+  disableAnimations={prefersReducedMotion}
+  className="dark:bg-gray-800 dark:text-gray-100"
+/>
+```
+
+---
+
+## Examples
+
+### Real-World Use Cases
+
+#### Agent Activity Dashboard
+
+```tsx
+import { ToolCardList } from '@clarity-chat/react'
+import { useState, useEffect } from 'react'
+
+function AgentDashboard({ agentId }) {
+  const [tools, setTools] = useState([])
+
+  useEffect(() => {
+    const ws = new WebSocket(`/api/agents/${agentId}/tools`)
+    ws.onmessage = (event) => {
+      const update = JSON.parse(event.data)
+      setTools(prev => [...prev, update])
+    }
+    return () => ws.close()
+  }, [agentId])
+
+  return (
+    <div className="space-y-4">
+      <h2 className="text-lg font-semibold">Agent Activity</h2>
+      <div className="max-h-[600px] overflow-y-auto scrollbar-hide">
+        <ToolCardList
+          tools={tools}
+          size="md"
+          gap="sm"
+          showResult
+          className="divide-y divide-border"
+        />
+      </div>
+    </div>
+  )
+}
+```
+
+#### Tool Execution Timeline
+
+```tsx
+import { ToolCard } from '@clarity-chat/react'
+
+function ExecutionTimeline({ executions }) {
+  return (
+    <div className="relative">
+      {/* Timeline line */}
+      <div className="absolute left-6 top-0 bottom-0 w-0.5 bg-border" />
+
+      {/* Timeline items */}
+      <div className="space-y-6">
+        {executions.map((exec, index) => (
+          <div key={exec.id} className="relative pl-12">
+            {/* Timeline dot */}
+            <div className={cn(
+              "absolute left-4 top-2 w-4 h-4 rounded-full border-2",
+              exec.status === 'success' && 'bg-green-500 border-green-600',
+              exec.status === 'error' && 'bg-red-500 border-red-600'
+            )} />
+
+            {/* Tool card */}
+            <ToolCard
+              name={exec.name}
+              status={exec.status}
+              duration={exec.duration}
+              args={exec.args}
+              result={exec.result}
+              error={exec.error}
+              showArgs
+              showResult
+              size="md"
+            />
+
+            {/* Timestamp */}
+            <p className="text-xs text-muted-foreground mt-1">
+              {new Date(exec.timestamp).toLocaleTimeString()}
+            </p>
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
+```
+
+---
+
+## API Reference
+
+See the [ToolCard API documentation](/reference/components/tool-card) for complete props and type definitions.
+
+## Related Components
+
+- [ToolCardList](/reference/components/tool-card/list) - List container for multiple tools
+- [ToolApproval](/reference/components/tool-approval) - Tool execution approval workflow
+- [StreamingProgress](/reference/components/streaming-progress) - Real-time execution progress
+
+## Further Reading
+
+- [Animation Guidelines](/guides/animations) - Motion design principles
+- [Accessibility Standards](/guides/accessibility) - WCAG compliance
+- [Responsive Design](/guides/responsive-design) - Mobile-first patterns
+- [Performance Optimization](/guides/performance) - Bundle size and runtime optimization

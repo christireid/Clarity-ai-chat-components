@@ -521,3 +521,297 @@ export async function collectStreamText(
   }
   return text
 }
+
+// =============================================================================
+// Chat Adapter Types for ClarityChatProvider Integration
+// =============================================================================
+
+/**
+ * Message attachment for chat messages
+ * Consistent with ClarityChatProvider attachment types
+ */
+export interface ChatMessageAttachment {
+  id: string
+  type: 'image' | 'file' | 'audio' | 'video' | 'code'
+  name: string
+  url?: string
+  data?: string
+  mimeType?: string
+  size?: number
+  metadata?: Record<string, unknown>
+}
+
+/**
+ * Extended chat message with all clarity-chat features
+ * Adds attachments and thinking to base ChatMessage
+ */
+export interface ClarityChatMessage extends ChatMessage {
+  /** Unique message ID */
+  id: string
+  /** Creation timestamp */
+  createdAt: Date
+  /** Message attachments */
+  attachments?: ChatMessageAttachment[]
+  /** Thinking steps (for extended thinking) */
+  thinkingSteps?: Array<{
+    id: string
+    content: string
+    status: 'pending' | 'active' | 'complete'
+  }>
+  /** Whether message is still streaming */
+  isStreaming?: boolean
+}
+
+/**
+ * Stream chunk for clarity-chat streaming
+ * Extends base StreamChunk with thinking support
+ */
+export interface ClarityChatStreamChunk extends StreamChunk {
+  /** Message ID this chunk belongs to */
+  messageId?: string
+  /** Thinking step content */
+  thinking?: {
+    id: string
+    content: string
+    status: 'active' | 'complete'
+  }
+}
+
+/**
+ * Stream status for clarity-chat
+ */
+export interface ClarityChatStreamStatus {
+  isStreaming: boolean
+  phase: 'idle' | 'connecting' | 'receiving' | 'complete' | 'error'
+  progress: number
+  tokensUsed: number
+  tokensTotal?: number
+  startedAt: Date | null
+  estimatedCompletion: Date | null
+}
+
+/**
+ * Tool execution for clarity-chat
+ */
+export interface ClarityChatToolExecution {
+  id: string
+  name: string
+  description?: string
+  input: Record<string, unknown>
+  output?: unknown
+  status: 'pending' | 'waiting_approval' | 'approved' | 'rejected' | 'executing' | 'complete' | 'error'
+  requiresApproval: boolean
+  approvalReason?: string
+  startedAt?: Date
+  completedAt?: Date
+  error?: string
+}
+
+/**
+ * Streamable response for clarity-chat
+ */
+export interface ClarityChatStreamableResponse {
+  /** Async iterator for streaming */
+  stream: () => AsyncIterable<ClarityChatStreamChunk>
+  /** Promise that resolves when complete */
+  promise: Promise<ClarityChatMessage>
+  /** Abort the stream */
+  abort: () => void
+  /** Message ID */
+  messageId: string
+}
+
+/**
+ * Chat adapter for ClarityChatProvider
+ * Integrates with external AI SDKs (Vercel AI, LangChain, etc.)
+ */
+export interface ClarityChatAdapter {
+  /** Adapter name */
+  name: string
+
+  /** Send a message (non-streaming) */
+  sendMessage: (
+    message: string,
+    attachments?: ChatMessageAttachment[],
+    config?: ModelConfig
+  ) => Promise<ClarityChatMessage>
+
+  /** Stream a message */
+  streamMessage: (
+    message: string,
+    attachments?: ChatMessageAttachment[],
+    config?: ModelConfig
+  ) => ClarityChatStreamableResponse
+
+  /** Stop current generation */
+  stopGeneration: () => void
+
+  /** Regenerate a message */
+  regenerate?: (messageId: string) => ClarityChatStreamableResponse
+
+  /** Handle tool call */
+  handleToolCall?: (tool: ClarityChatToolExecution) => Promise<unknown>
+
+  /** Approve tool execution */
+  approveTool?: (toolId: string) => Promise<void>
+
+  /** Reject tool execution */
+  rejectTool?: (toolId: string, reason?: string) => Promise<void>
+
+  /** Map external messages to ClarityChatMessage */
+  mapMessages: (externalMessages: unknown[]) => ClarityChatMessage[]
+
+  /** Map external stream status */
+  mapStreamStatus: (externalStatus: unknown) => ClarityChatStreamStatus
+
+  /** Map external tool calls */
+  mapToolCalls?: (externalToolCalls: unknown[]) => ClarityChatToolExecution[]
+
+  /** Get adapter capabilities */
+  capabilities: ClarityChatAdapterCapabilities
+
+  /** Cleanup resources */
+  dispose?: () => void
+}
+
+/**
+ * Capabilities for clarity-chat adapters
+ */
+export interface ClarityChatAdapterCapabilities {
+  /** Supports streaming */
+  streaming: boolean
+  /** Supports tool calling */
+  tools: boolean
+  /** Supports extended thinking */
+  thinking: boolean
+  /** Supports attachments */
+  attachments: boolean
+  /** Supports message regeneration */
+  regeneration: boolean
+  /** Supports conversation history */
+  history: boolean
+  /** Supports multiple models */
+  multiModel: boolean
+  /** Supports tool approval workflow */
+  toolApproval: boolean
+}
+
+/**
+ * Adapter factory options for clarity-chat
+ */
+export interface ClarityChatAdapterFactoryOptions<TExternal = unknown> {
+  /** External SDK instance or hooks */
+  sdk: TExternal
+  /** Adapter configuration */
+  config?: ModelConfig
+  /** Custom message mapper */
+  messageMapper?: (external: unknown) => ClarityChatMessage
+  /** Custom stream status mapper */
+  statusMapper?: (external: unknown) => ClarityChatStreamStatus
+  /** Error handler */
+  onError?: (error: Error) => void
+}
+
+/**
+ * Create a base clarity-chat adapter with defaults
+ */
+export function createBaseClarityChatAdapter(name: string): ClarityChatAdapter {
+  return {
+    name,
+    sendMessage: async () => {
+      throw new Error(`${name}: sendMessage not implemented`)
+    },
+    streamMessage: () => {
+      throw new Error(`${name}: streamMessage not implemented`)
+    },
+    stopGeneration: () => {
+      // No-op by default
+    },
+    mapMessages: () => [],
+    mapStreamStatus: () => ({
+      isStreaming: false,
+      phase: 'idle',
+      progress: 0,
+      tokensUsed: 0,
+      startedAt: null,
+      estimatedCompletion: null,
+    }),
+    capabilities: {
+      streaming: false,
+      tools: false,
+      thinking: false,
+      attachments: false,
+      regeneration: false,
+      history: false,
+      multiModel: false,
+      toolApproval: false,
+    },
+  }
+}
+
+/**
+ * Event types for clarity-chat adapters
+ * Consistent with ClarityChatProvider events
+ */
+export type ClarityChatAdapterEventType =
+  | 'message:sent'
+  | 'message:received'
+  | 'message:error'
+  | 'stream:start'
+  | 'stream:chunk'
+  | 'stream:complete'
+  | 'stream:error'
+  | 'tool:started'
+  | 'tool:completed'
+  | 'tool:error'
+  | 'tool:approval:requested'
+  | 'tool:approved'
+  | 'tool:rejected'
+  | 'thinking:started'
+  | 'thinking:step'
+  | 'thinking:completed'
+
+/**
+ * Event for clarity-chat adapters
+ */
+export interface ClarityChatAdapterEvent {
+  type: ClarityChatAdapterEventType
+  payload?: unknown
+  timestamp: Date
+}
+
+/**
+ * Clarity-chat adapter with event support
+ */
+export interface ClarityChatAdapterWithEvents extends ClarityChatAdapter {
+  /** Subscribe to events */
+  on: (type: ClarityChatAdapterEventType, handler: (event: ClarityChatAdapterEvent) => void) => () => void
+  /** Emit an event */
+  emit: (type: ClarityChatAdapterEventType, payload?: unknown) => void
+}
+
+/**
+ * Add event support to a clarity-chat adapter
+ */
+export function withClarityChatEvents(adapter: ClarityChatAdapter): ClarityChatAdapterWithEvents {
+  const handlers = new Map<ClarityChatAdapterEventType, Set<(event: ClarityChatAdapterEvent) => void>>()
+
+  const on = (type: ClarityChatAdapterEventType, handler: (event: ClarityChatAdapterEvent) => void): (() => void) => {
+    if (!handlers.has(type)) {
+      handlers.set(type, new Set())
+    }
+    handlers.get(type)!.add(handler)
+    return () => handlers.get(type)?.delete(handler)
+  }
+
+  const emit = (type: ClarityChatAdapterEventType, payload?: unknown) => {
+    const event: ClarityChatAdapterEvent = { type, payload, timestamp: new Date() }
+    handlers.get(type)?.forEach((handler) => handler(event))
+  }
+
+  return {
+    ...adapter,
+    on,
+    emit,
+  }
+}

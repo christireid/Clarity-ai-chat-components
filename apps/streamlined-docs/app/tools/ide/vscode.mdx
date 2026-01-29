@@ -1,0 +1,1029 @@
+---
+title: VSCode Integration Guide
+description: Complete VSCode setup for developing with Clarity AI Chat Components
+---
+
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+
+# VSCode Integration Guide
+
+Complete VSCode configuration for optimal development experience with Clarity AI Chat Components. This guide includes TypeScript IntelliSense, code snippets, auto-imports, debugging, and workspace settings.
+
+## Quick Setup
+
+Install recommended extensions and apply workspace settings:
+
+```bash
+# 1. Open project in VSCode
+code /path/to/Clarity-ai-chat-components
+
+# 2. Install recommended extensions
+# Press Cmd+Shift+P (Mac) or Ctrl+Shift+P (Windows/Linux)
+# Type: "Extensions: Show Recommended Extensions"
+# Click "Install All"
+
+# 3. Reload window
+# Press Cmd+Shift+P / Ctrl+Shift+P
+# Type: "Developer: Reload Window"
+```
+
+---
+
+## Extension Recommendations
+
+### Required Extensions
+
+Create `.vscode/extensions.json`:
+
+```json
+{
+  "recommendations": [
+    // TypeScript & JavaScript
+    "dbaeumer.vscode-eslint",
+    "esbenp.prettier-vscode",
+    "usernamehw.errorlens",
+
+    // React & JSX
+    "dsznajder.es7-react-js-snippets",
+    "formulahendry.auto-rename-tag",
+    "bradlc.vscode-tailwindcss",
+
+    // TypeScript Enhancement
+    "yoavbls.pretty-ts-errors",
+    "mike-co.import-sorter",
+
+    // Testing
+    "vitest.explorer",
+    "playwright.playwright",
+
+    // Utilities
+    "christian-kohler.path-intellisense",
+    "visualstudioexptteam.vscodeintellicode",
+    "wix.vscode-import-cost",
+    "streetsidesoftware.code-spell-checker",
+
+    // Git
+    "eamodio.gitlens",
+
+    // Markdown
+    "yzhang.markdown-all-in-one",
+    "davidanson.vscode-markdownlint"
+  ],
+  "unwantedRecommendations": []
+}
+```
+
+### Extension Descriptions
+
+| Extension | Purpose | Priority |
+|-----------|---------|----------|
+| **ESLint** | Lint JavaScript/TypeScript code | Required |
+| **Prettier** | Code formatting | Required |
+| **Error Lens** | Inline error messages | Required |
+| **Tailwind CSS IntelliSense** | Tailwind class autocomplete | Required |
+| **Pretty TypeScript Errors** | Readable TS error messages | Recommended |
+| **Vitest Explorer** | Run tests from sidebar | Recommended |
+| **Import Cost** | Show bundle size inline | Recommended |
+| **GitLens** | Enhanced Git features | Optional |
+
+---
+
+## Workspace Settings
+
+Create `.vscode/settings.json`:
+
+```json
+{
+  // ============================================================================
+  // EDITOR SETTINGS
+  // ============================================================================
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.formatOnSave": true,
+  "editor.formatOnPaste": false,
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit",
+    "source.organizeImports": "explicit",
+    "source.sortImports": "never"
+  },
+  "editor.tabSize": 2,
+  "editor.insertSpaces": true,
+  "editor.detectIndentation": false,
+  "editor.wordWrap": "on",
+  "editor.rulers": [80, 100],
+  "editor.linkedEditing": true,
+  "editor.bracketPairColorization.enabled": true,
+  "editor.guides.bracketPairs": "active",
+  "editor.inlineSuggest.enabled": true,
+  "editor.suggestSelection": "first",
+  "editor.quickSuggestions": {
+    "strings": true
+  },
+
+  // ============================================================================
+  // TYPESCRIPT SETTINGS
+  // ============================================================================
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "typescript.enablePromptUseWorkspaceTsdk": true,
+  "typescript.preferences.importModuleSpecifier": "relative",
+  "typescript.preferences.includePackageJsonAutoImports": "on",
+  "typescript.updateImportsOnFileMove.enabled": "always",
+  "typescript.inlayHints.enumMemberValues.enabled": true,
+  "typescript.inlayHints.functionLikeReturnTypes.enabled": true,
+  "typescript.inlayHints.parameterNames.enabled": "all",
+  "typescript.inlayHints.parameterTypes.enabled": true,
+  "typescript.inlayHints.propertyDeclarationTypes.enabled": true,
+  "typescript.inlayHints.variableTypes.enabled": true,
+  "typescript.suggest.autoImports": true,
+  "typescript.suggest.completeFunctionCalls": true,
+  "typescript.suggest.includeAutomaticOptionalChainCompletions": true,
+
+  // ============================================================================
+  // JAVASCRIPT SETTINGS
+  // ============================================================================
+  "javascript.preferences.importModuleSpecifier": "relative",
+  "javascript.updateImportsOnFileMove.enabled": "always",
+  "javascript.suggest.autoImports": true,
+  "javascript.inlayHints.enumMemberValues.enabled": true,
+  "javascript.inlayHints.functionLikeReturnTypes.enabled": true,
+  "javascript.inlayHints.parameterNames.enabled": "all",
+
+  // ============================================================================
+  // FILES & SEARCH
+  // ============================================================================
+  "files.autoSave": "onFocusChange",
+  "files.trimTrailingWhitespace": true,
+  "files.insertFinalNewline": true,
+  "files.eol": "\n",
+  "files.exclude": {
+    "**/.git": true,
+    "**/.DS_Store": true,
+    "**/node_modules": true,
+    "**/.next": true,
+    "**/dist": true,
+    "**/build": true,
+    "**/.turbo": true,
+    "**/coverage": true
+  },
+  "search.exclude": {
+    "**/node_modules": true,
+    "**/dist": true,
+    "**/.next": true,
+    "**/coverage": true,
+    "pnpm-lock.yaml": true
+  },
+
+  // ============================================================================
+  // ESLINT
+  // ============================================================================
+  "eslint.enable": true,
+  "eslint.validate": [
+    "javascript",
+    "javascriptreact",
+    "typescript",
+    "typescriptreact"
+  ],
+  "eslint.workingDirectories": [
+    { "mode": "auto" }
+  ],
+
+  // ============================================================================
+  // PRETTIER
+  // ============================================================================
+  "prettier.enable": true,
+  "prettier.requireConfig": true,
+  "prettier.useEditorConfig": false,
+
+  // ============================================================================
+  // TAILWIND CSS
+  // ============================================================================
+  "tailwindCSS.experimental.classRegex": [
+    ["cn\\(([^)]*)\\)", "[\"'`]([^\"'`]*).*?[\"'`]"],
+    ["cva\\(([^)]*)\\)", "[\"'`]([^\"'`]*).*?[\"'`]"]
+  ],
+  "tailwindCSS.includeLanguages": {
+    "typescript": "javascript",
+    "typescriptreact": "javascript"
+  },
+
+  // ============================================================================
+  // EMMET
+  // ============================================================================
+  "emmet.includeLanguages": {
+    "typescript": "typescriptreact",
+    "javascript": "javascriptreact"
+  },
+  "emmet.triggerExpansionOnTab": true,
+
+  // ============================================================================
+  // ERROR LENS
+  // ============================================================================
+  "errorLens.enabled": true,
+  "errorLens.enabledDiagnosticLevels": [
+    "error",
+    "warning"
+  ],
+
+  // ============================================================================
+  // IMPORT COST
+  // ============================================================================
+  "importCost.showCalculatingDecoration": true,
+  "importCost.bundleSizeDecoration": "both",
+  "importCost.largePackageSize": 100,
+
+  // ============================================================================
+  // GIT
+  // ============================================================================
+  "git.enableSmartCommit": true,
+  "git.autofetch": true,
+  "git.confirmSync": false,
+
+  // ============================================================================
+  // TESTING
+  // ============================================================================
+  "vitest.enable": true,
+  "vitest.commandLine": "pnpm test",
+
+  // ============================================================================
+  // PATH INTELLISENSE
+  // ============================================================================
+  "path-intellisense.mappings": {
+    "@": "${workspaceFolder}/apps/streamlined-docs",
+    "@clarity-chat/react": "${workspaceFolder}/packages/react/src",
+    "@clarity-chat/primitives": "${workspaceFolder}/packages/primitives/src",
+    "@clarity-chat/utils": "${workspaceFolder}/packages/utils/src",
+    "@clarity-chat/types": "${workspaceFolder}/packages/types/src",
+    "@clarity-chat/memory": "${workspaceFolder}/packages/memory/src",
+    "@clarity-chat/token-optimization": "${workspaceFolder}/packages/token-optimization/src"
+  }
+}
+```
+
+---
+
+## Code Snippets
+
+Create `.vscode/clarity-chat.code-snippets`:
+
+<Tabs defaultValue="components">
+  <TabsList>
+    <TabsTrigger value="components">Components</TabsTrigger>
+    <TabsTrigger value="hooks">Hooks</TabsTrigger>
+    <TabsTrigger value="tests">Tests</TabsTrigger>
+    <TabsTrigger value="utils">Utils</TabsTrigger>
+  </TabsList>
+
+  <TabsContent value="components">
+
+```json
+{
+  "Clarity Chat Component": {
+    "prefix": "cc-component",
+    "description": "Create a new Clarity Chat component",
+    "body": [
+      "/**",
+      " * ${1:ComponentName} Component",
+      " *",
+      " * ${2:Component description}",
+      " */",
+      "",
+      "'use client'",
+      "",
+      "import * as React from 'react'",
+      "import { cn } from '@clarity-chat/primitives'",
+      "",
+      "export interface ${1:ComponentName}Props {",
+      "  /** Additional CSS class */",
+      "  className?: string",
+      "  ${3:// Add props here}",
+      "}",
+      "",
+      "export function ${1:ComponentName}({",
+      "  className,",
+      "  ${4:...props}",
+      "}: ${1:ComponentName}Props) {",
+      "  return (",
+      "    <div className={cn('${5:base-classes}', className)}>",
+      "      ${6:// Component content}",
+      "    </div>",
+      "  )",
+      "}",
+      "",
+      "${1:ComponentName}.displayName = '${1:ComponentName}'"
+    ]
+  },
+
+  "Clarity Chat Message Component": {
+    "prefix": "cc-message",
+    "description": "Create a chat message component",
+    "body": [
+      "'use client'",
+      "",
+      "import * as React from 'react'",
+      "import { cn } from '@clarity-chat/primitives'",
+      "import type { Message } from '@clarity-chat/types'",
+      "",
+      "export interface ${1:MessageComponentName}Props {",
+      "  message: Message",
+      "  className?: string",
+      "  onEdit?: (id: string, content: string) => void",
+      "  onDelete?: (id: string) => void",
+      "}",
+      "",
+      "export function ${1:MessageComponentName}({",
+      "  message,",
+      "  className,",
+      "  onEdit,",
+      "  onDelete,",
+      "}: ${1:MessageComponentName}Props) {",
+      "  const isUser = message.role === 'user'",
+      "",
+      "  return (",
+      "    <div",
+      "      className={cn(",
+      "        'flex gap-3 p-4 rounded-lg',",
+      "        isUser ? 'bg-blue-50' : 'bg-gray-50',",
+      "        className",
+      "      )}",
+      "    >",
+      "      <div className=\"flex-1\">",
+      "        <p className=\"text-sm text-gray-900\">{message.content}</p>",
+      "      </div>",
+      "    </div>",
+      "  )",
+      "}"
+    ]
+  },
+
+  "Clarity Chat Input Component": {
+    "prefix": "cc-input",
+    "description": "Create a chat input component",
+    "body": [
+      "'use client'",
+      "",
+      "import * as React from 'react'",
+      "import { Button, cn } from '@clarity-chat/primitives'",
+      "import { Send } from 'lucide-react'",
+      "",
+      "export interface ${1:ChatInputName}Props {",
+      "  onSubmit: (message: string) => void",
+      "  disabled?: boolean",
+      "  placeholder?: string",
+      "  className?: string",
+      "}",
+      "",
+      "export function ${1:ChatInputName}({",
+      "  onSubmit,",
+      "  disabled = false,",
+      "  placeholder = 'Type a message...',",
+      "  className,",
+      "}: ${1:ChatInputName}Props) {",
+      "  const [value, setValue] = React.useState('')",
+      "",
+      "  const handleSubmit = (e: React.FormEvent) => {",
+      "    e.preventDefault()",
+      "    if (value.trim() && !disabled) {",
+      "      onSubmit(value)",
+      "      setValue('')",
+      "    }",
+      "  }",
+      "",
+      "  return (",
+      "    <form onSubmit={handleSubmit} className={cn('flex gap-2', className)}>",
+      "      <input",
+      "        type=\"text\"",
+      "        value={value}",
+      "        onChange={(e) => setValue(e.target.value)}",
+      "        placeholder={placeholder}",
+      "        disabled={disabled}",
+      "        className=\"flex-1 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2\"",
+      "      />",
+      "      <Button type=\"submit\" disabled={disabled || !value.trim()}>",
+      "        <Send className=\"w-4 h-4\" />",
+      "      </Button>",
+      "    </form>",
+      "  )",
+      "}"
+    ]
+  }
+}
+```
+
+  </TabsContent>
+
+  <TabsContent value="hooks">
+
+```json
+{
+  "Clarity Chat Hook": {
+    "prefix": "cc-hook",
+    "description": "Create a custom hook",
+    "body": [
+      "/**",
+      " * ${1:useHookName}",
+      " *",
+      " * ${2:Hook description}",
+      " *",
+      " * @example",
+      " * ```tsx",
+      " * const { ${3:value} } = ${1:useHookName}()",
+      " * ```",
+      " */",
+      "export function ${1:useHookName}(${4:params}) {",
+      "  const [${5:state}, set${5/(.*)/${1:/capitalize}/}] = React.useState(${6:initialValue})",
+      "",
+      "  React.useEffect(() => {",
+      "    ${7:// Effect logic}",
+      "  }, [${8:dependencies}])",
+      "",
+      "  return {",
+      "    ${9:returnValue}",
+      "  }",
+      "}"
+    ]
+  },
+
+  "Use Clarity Chat": {
+    "prefix": "cc-use-chat",
+    "description": "Use the main chat hook",
+    "body": [
+      "const {",
+      "  messages,",
+      "  append,",
+      "  isLoading,",
+      "  error,",
+      "  reload,",
+      "  stop,",
+      "} = useClarityChat({",
+      "  api: '${1:/api/chat}',",
+      "  initialMessages: ${2:[]},",
+      "  ${3:// Additional config}",
+      "})"
+    ]
+  },
+
+  "Use Token Budget": {
+    "prefix": "cc-use-token",
+    "description": "Use token budget monitoring",
+    "body": [
+      "const {",
+      "  currentUsage,",
+      "  budget,",
+      "  remaining,",
+      "  percentage,",
+      "  isNearLimit,",
+      "} = useTokenBudgetMonitor({",
+      "  budget: ${1:100000},",
+      "  warningThreshold: ${2:0.8},",
+      "})"
+    ]
+  }
+}
+```
+
+  </TabsContent>
+
+  <TabsContent value="tests">
+
+```json
+{
+  "Clarity Component Test": {
+    "prefix": "cc-test",
+    "description": "Create a component test",
+    "body": [
+      "import { describe, it, expect, vi } from 'vitest'",
+      "import { render, screen, fireEvent } from '@testing-library/react'",
+      "import { ${1:ComponentName} } from './${1:ComponentName}'",
+      "",
+      "describe('${1:ComponentName}', () => {",
+      "  it('renders correctly', () => {",
+      "    render(<${1:ComponentName} ${2:props} />)",
+      "    expect(screen.getByText('${3:expected text}')).toBeInTheDocument()",
+      "  })",
+      "",
+      "  it('${4:test description}', () => {",
+      "    const ${5:mockFn} = vi.fn()",
+      "    render(<${1:ComponentName} ${6:onAction={mockFn}} />)",
+      "    ",
+      "    fireEvent.click(screen.getByRole('button'))",
+      "    expect(${5:mockFn}).toHaveBeenCalled()",
+      "  })",
+      "})"
+    ]
+  },
+
+  "Clarity Hook Test": {
+    "prefix": "cc-hook-test",
+    "description": "Create a hook test",
+    "body": [
+      "import { describe, it, expect } from 'vitest'",
+      "import { renderHook, act } from '@testing-library/react'",
+      "import { ${1:useHookName} } from './${1:useHookName}'",
+      "",
+      "describe('${1:useHookName}', () => {",
+      "  it('${2:test description}', () => {",
+      "    const { result } = renderHook(() => ${1:useHookName}(${3:params}))",
+      "    ",
+      "    expect(result.current.${4:value}).toBe(${5:expected})",
+      "  })",
+      "",
+      "  it('${6:updates correctly}', async () => {",
+      "    const { result } = renderHook(() => ${1:useHookName}())",
+      "    ",
+      "    await act(async () => {",
+      "      result.current.${7:action}()",
+      "    })",
+      "    ",
+      "    expect(result.current.${8:value}).toBe(${9:expected})",
+      "  })",
+      "})"
+    ]
+  }
+}
+```
+
+  </TabsContent>
+
+  <TabsContent value="utils">
+
+```json
+{
+  "Clarity Async Function": {
+    "prefix": "cc-async",
+    "description": "Create an async function with error handling",
+    "body": [
+      "export async function ${1:functionName}(${2:params}): Promise<${3:ReturnType}> {",
+      "  try {",
+      "    ${4:// Implementation}",
+      "    return ${5:result}",
+      "  } catch (error) {",
+      "    console.error('Error in ${1:functionName}:', error)",
+      "    throw error",
+      "  }",
+      "}"
+    ]
+  },
+
+  "Clarity Type Guard": {
+    "prefix": "cc-guard",
+    "description": "Create a type guard",
+    "body": [
+      "export function is${1:TypeName}(value: unknown): value is ${1:TypeName} {",
+      "  return (",
+      "    typeof value === 'object' &&",
+      "    value !== null &&",
+      "    ${2:'property' in value}",
+      "  )",
+      "}"
+    ]
+  },
+
+  "Clarity Branded Type": {
+    "prefix": "cc-brand",
+    "description": "Create a branded type",
+    "body": [
+      "export type ${1:TypeName} = string & { readonly __brand: '${1:TypeName}' }",
+      "",
+      "export function create${1:TypeName}(value: string): ${1:TypeName} {",
+      "  ${2:// Add validation here}",
+      "  return value as ${1:TypeName}",
+      "}"
+    ]
+  }
+}
+```
+
+  </TabsContent>
+</Tabs>
+
+---
+
+## TypeScript Configuration
+
+### Recommended tsconfig.json
+
+Ensure your `tsconfig.json` includes these settings:
+
+```json
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "compilerOptions": {
+    // Type Checking
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "noImplicitOverride": true,
+    "noPropertyAccessFromIndexSignature": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+
+    // Module Resolution
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true,
+    "allowJs": true,
+    "isolatedModules": true,
+    "verbatimModuleSyntax": true,
+
+    // Emit
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true,
+
+    // Advanced
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+
+    // Path Aliases
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"],
+      "@clarity-chat/react": ["./packages/react/src"],
+      "@clarity-chat/primitives": ["./packages/primitives/src"],
+      "@clarity-chat/utils": ["./packages/utils/src"],
+      "@clarity-chat/types": ["./packages/types/src"]
+    }
+  }
+}
+```
+
+### IntelliSense Optimization
+
+Add to your workspace settings for faster IntelliSense:
+
+```json
+{
+  "typescript.preferences.autoImportFileExcludePatterns": [
+    "node_modules",
+    ".next",
+    "dist"
+  ],
+  "typescript.tsserver.maxTsServerMemory": 4096,
+  "typescript.tsserver.watchOptions": {
+    "excludeDirectories": [
+      "**/node_modules",
+      "**/.next",
+      "**/dist",
+      "**/build"
+    ]
+  }
+}
+```
+
+---
+
+## Debugging Configuration
+
+Create `.vscode/launch.json`:
+
+```json
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Next.js: Debug Server",
+      "type": "node",
+      "request": "launch",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": ["dev"],
+      "skipFiles": ["<node_internals>/**"],
+      "env": {
+        "NODE_OPTIONS": "--inspect"
+      }
+    },
+    {
+      "name": "Next.js: Debug Client",
+      "type": "chrome",
+      "request": "launch",
+      "url": "http://localhost:3000",
+      "webRoot": "${workspaceFolder}/apps/streamlined-docs"
+    },
+    {
+      "name": "Vitest: Debug Current File",
+      "type": "node",
+      "request": "launch",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": [
+        "test",
+        "--run",
+        "${relativeFile}"
+      ],
+      "skipFiles": ["<node_internals>/**"],
+      "console": "integratedTerminal"
+    },
+    {
+      "name": "Playwright: Debug Test",
+      "type": "node",
+      "request": "launch",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": [
+        "test:e2e",
+        "--debug"
+      ],
+      "console": "integratedTerminal"
+    },
+    {
+      "name": "Build Package",
+      "type": "node",
+      "request": "launch",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": ["build"],
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal"
+    }
+  ],
+  "compounds": [
+    {
+      "name": "Next.js: Full Stack Debug",
+      "configurations": [
+        "Next.js: Debug Server",
+        "Next.js: Debug Client"
+      ]
+    }
+  ]
+}
+```
+
+### Debugging Tips
+
+1. **Set Breakpoints**: Click in the gutter left of line numbers
+2. **Debug Console**: Use `Debug Console` tab for REPL
+3. **Watch Variables**: Add to `Watch` panel for continuous monitoring
+4. **Call Stack**: Navigate through call stack in `Call Stack` panel
+
+---
+
+## Tasks Configuration
+
+Create `.vscode/tasks.json`:
+
+```json
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Dev Server",
+      "type": "shell",
+      "command": "pnpm dev",
+      "isBackground": true,
+      "problemMatcher": {
+        "pattern": {
+          "regexp": "."
+        },
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": "ready started server on",
+          "endsPattern": "Compiled"
+        }
+      }
+    },
+    {
+      "label": "Build",
+      "type": "shell",
+      "command": "pnpm build",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "problemMatcher": ["$tsc"]
+    },
+    {
+      "label": "Test",
+      "type": "shell",
+      "command": "pnpm test",
+      "group": {
+        "kind": "test",
+        "isDefault": true
+      }
+    },
+    {
+      "label": "Test Watch",
+      "type": "shell",
+      "command": "pnpm test:watch",
+      "isBackground": true
+    },
+    {
+      "label": "Lint",
+      "type": "shell",
+      "command": "pnpm lint"
+    },
+    {
+      "label": "Type Check",
+      "type": "shell",
+      "command": "pnpm typecheck",
+      "problemMatcher": ["$tsc-watch"]
+    },
+    {
+      "label": "Format",
+      "type": "shell",
+      "command": "pnpm format"
+    },
+    {
+      "label": "Clean",
+      "type": "shell",
+      "command": "pnpm clean"
+    }
+  ]
+}
+```
+
+Run tasks with `Cmd+Shift+B` (Mac) or `Ctrl+Shift+B` (Windows/Linux).
+
+---
+
+## Keyboard Shortcuts
+
+Create `.vscode/keybindings.json`:
+
+```json
+[
+  {
+    "key": "cmd+k cmd+t",
+    "command": "workbench.action.tasks.test",
+    "when": "!inDebugMode"
+  },
+  {
+    "key": "cmd+k cmd+b",
+    "command": "workbench.action.tasks.build"
+  },
+  {
+    "key": "cmd+k cmd+l",
+    "command": "eslint.executeAutofix"
+  },
+  {
+    "key": "cmd+k cmd+f",
+    "command": "editor.action.formatDocument"
+  },
+  {
+    "key": "cmd+k cmd+o",
+    "command": "editor.action.organizeImports"
+  },
+  {
+    "key": "cmd+shift+r",
+    "command": "workbench.action.debug.restart",
+    "when": "inDebugMode"
+  }
+]
+```
+
+---
+
+## Auto-Import Configuration
+
+### Configure Import Sorting
+
+Install and configure import sorter:
+
+```json
+{
+  "importSorter.generalConfiguration.sortOnBeforeSave": true,
+  "importSorter.sortConfiguration.customOrderingRules": {
+    "rules": [
+      {
+        "type": "importMember",
+        "regex": "^react$",
+        "orderLevel": 10
+      },
+      {
+        "type": "importMember",
+        "regex": "^next",
+        "orderLevel": 20
+      },
+      {
+        "regex": "^@clarity-chat/",
+        "orderLevel": 30
+      },
+      {
+        "regex": "^@/",
+        "orderLevel": 40
+      },
+      {
+        "regex": "^\\.\\.?/",
+        "orderLevel": 50
+      },
+      {
+        "type": "importMember",
+        "regex": "^type ",
+        "orderLevel": 60
+      }
+    ]
+  }
+}
+```
+
+### Example Import Order
+
+```tsx
+// 1. React
+import * as React from 'react'
+import { useState, useEffect } from 'react'
+
+// 2. Next.js
+import Link from 'next/link'
+import { useRouter } from 'next/navigation'
+
+// 3. Clarity Chat packages
+import { Button, cn } from '@clarity-chat/primitives'
+import { useClarityChat } from '@clarity-chat/react'
+
+// 4. Local absolute imports
+import { formatDate } from '@/lib/utils'
+
+// 5. Relative imports
+import { Header } from './Header'
+import styles from './styles.module.css'
+
+// 6. Types
+import type { Message } from '@clarity-chat/types'
+```
+
+---
+
+## Performance Tips
+
+### Optimize for Large Codebase
+
+```json
+{
+  // Disable unused features
+  "git.decorations.enabled": true,
+  "git.enableStatusBarSync": false,
+  "explorer.sortOrder": "type",
+
+  // Reduce file watchers
+  "files.watcherExclude": {
+    "**/.git/objects/**": true,
+    "**/.git/subtree-cache/**": true,
+    "**/node_modules/**": true,
+    "**/.next/**": true,
+    "**/dist/**": true,
+    "**/build/**": true
+  },
+
+  // Optimize search
+  "search.quickOpen.includeHistory": false,
+  "search.maxResults": 5000,
+
+  // Disable telemetry
+  "telemetry.telemetryLevel": "off"
+}
+```
+
+---
+
+## Troubleshooting
+
+### TypeScript IntelliSense Not Working
+
+1. **Restart TS Server**:
+   - Press `Cmd+Shift+P` / `Ctrl+Shift+P`
+   - Type: "TypeScript: Restart TS Server"
+
+2. **Check Workspace TypeScript Version**:
+   - Click TypeScript version in status bar
+   - Select "Use Workspace Version"
+
+3. **Clear Cache**:
+   ```bash
+   rm -rf node_modules/.cache
+   pnpm install
+   ```
+
+### Auto-Import Not Suggesting Packages
+
+1. **Verify Path Mappings** in `tsconfig.json`
+2. **Check** `typescript.suggest.autoImports` is `true`
+3. **Restart VSCode** after package installation
+
+### ESLint Not Running
+
+1. **Check ESLint Output Panel**:
+   - View → Output → ESLint
+
+2. **Verify ESLint Config**:
+   ```bash
+   pnpm eslint --print-config src/index.ts
+   ```
+
+3. **Restart ESLint Server**:
+   - Press `Cmd+Shift+P` / `Ctrl+Shift+P`
+   - Type: "ESLint: Restart ESLint Server"
+
+---
+
+## Additional Resources
+
+- [VSCode TypeScript Documentation](https://code.visualstudio.com/docs/languages/typescript)
+- [VSCode Debugging Guide](https://code.visualstudio.com/docs/editor/debugging)
+- [Clarity Chat Documentation](https://clarity-chat.dev)
+- [TypeScript Handbook](https://www.typescriptlang.org/docs/)
+
+---
+
+## Next Steps
+
+1. Install all recommended extensions
+2. Apply workspace settings
+3. Add code snippets
+4. Configure debugging
+5. Test auto-imports and IntelliSense
+6. Explore keyboard shortcuts
+
+For more information, see the [Development Guide](/docs/development-guide).

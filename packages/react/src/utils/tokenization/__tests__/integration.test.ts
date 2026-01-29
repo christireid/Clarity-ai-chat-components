@@ -14,6 +14,9 @@ import { getTokenizerStats } from '../accurate-counter'
 
 // Mock the dependencies
 vi.mock('@clarity-chat/token-optimization', () => ({
+  AccurateTokenCounter: {
+    count: vi.fn((text: string) => text.length / 4),
+  },
   TokenCounter: {
     count: vi.fn((text: string) => text.length / 4),
   },

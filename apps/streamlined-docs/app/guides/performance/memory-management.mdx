@@ -1,0 +1,1176 @@
+---
+title: Memory Management Best Practices
+description: Learn how to prevent memory leaks, optimize cleanup patterns, and profile memory usage in React applications with comprehensive examples and testing strategies.
+---
+
+# Memory Management Best Practices
+
+Effective memory management is critical for long-running AI chat applications. This guide covers memory leak prevention, cleanup patterns, profiling techniques, and testing strategies.
+
+## Table of Contents
+
+- [Memory Leak Prevention](#memory-leak-prevention)
+- [Cleanup Patterns in useEffect](#cleanup-patterns-in-useeffect)
+- [Profiling Memory Usage](#profiling-memory-usage)
+- [WeakMap and WeakSet for Caching](#weakmap-and-weakset-for-caching)
+- [Avoiding Memory Bloat in Long Sessions](#avoiding-memory-bloat-in-long-sessions)
+- [Testing for Memory Leaks](#testing-for-memory-leaks)
+
+---
+
+## Memory Leak Prevention
+
+Memory leaks occur when objects remain in memory after they're no longer needed. In React applications, common sources include:
+
+### Common Memory Leak Sources
+
+```tsx
+// ❌ BAD: Event listener not cleaned up
+function ChatWindow() {
+  const [messages, setMessages] = React.useState([])
+
+  React.useEffect(() => {
+    window.addEventListener('resize', handleResize)
+    // Missing cleanup - listener persists after unmount
+  }, [])
+
+  return <div>{/* ... */}</div>
+}
+
+// ✅ GOOD: Proper cleanup
+function ChatWindow() {
+  const [messages, setMessages] = React.useState([])
+
+  React.useEffect(() => {
+    const handleResize = () => {
+      // Handle resize
+    }
+
+    window.addEventListener('resize', handleResize)
+
+    return () => {
+      window.removeEventListener('resize', handleResize)
+    }
+  }, [])
+
+  return <div>{/* ... */}</div>
+}
+```
+
+### Timer and Interval Cleanup
+
+```tsx
+// ❌ BAD: Timer continues after unmount
+function RecordingTimer() {
+  const [duration, setDuration] = React.useState(0)
+
+  React.useEffect(() => {
+    setInterval(() => {
+      setDuration(prev => prev + 1)
+    }, 1000)
+    // Missing cleanup - interval continues after unmount
+  }, [])
+
+  return <div>{duration}s</div>
+}
+
+// ✅ GOOD: Timer cleaned up properly
+function RecordingTimer() {
+  const [duration, setDuration] = React.useState(0)
+
+  React.useEffect(() => {
+    const intervalId = setInterval(() => {
+      setDuration(prev => prev + 1)
+    }, 1000)
+
+    return () => {
+      clearInterval(intervalId)
+    }
+  }, [])
+
+  return <div>{duration}s</div>
+}
+```
+
+### Animation Frame Cleanup
+
+```tsx
+// ❌ BAD: Animation frame not canceled
+function WaveformVisualizer({ analyser }) {
+  const canvasRef = React.useRef<HTMLCanvasElement>(null)
+
+  React.useEffect(() => {
+    const draw = () => {
+      // Draw waveform
+      requestAnimationFrame(draw)
+    }
+    draw()
+    // Missing cleanup - animation continues after unmount
+  }, [analyser])
+
+  return <canvas ref={canvasRef} />
+}
+
+// ✅ GOOD: Animation frame canceled on cleanup
+function WaveformVisualizer({ analyser }) {
+  const canvasRef = React.useRef<HTMLCanvasElement>(null)
+  const frameIdRef = React.useRef<number>()
+
+  React.useEffect(() => {
+    const draw = () => {
+      if (!canvasRef.current) return
+
+      // Draw waveform
+      const ctx = canvasRef.current.getContext('2d')
+      // ... drawing logic
+
+      frameIdRef.current = requestAnimationFrame(draw)
+    }
+
+    draw()
+
+    return () => {
+      if (frameIdRef.current) {
+        cancelAnimationFrame(frameIdRef.current)
+      }
+    }
+  }, [analyser])
+
+  return <canvas ref={canvasRef} />
+}
+```
+
+### Media Stream Cleanup
+
+```tsx
+// ✅ GOOD: Media stream and audio context cleanup
+function AudioRecorder() {
+  const streamRef = React.useRef<MediaStream | null>(null)
+  const audioContextRef = React.useRef<AudioContext | null>(null)
+  const analyserRef = React.useRef<AnalyserNode | null>(null)
+
+  const stopMediaStream = React.useCallback(() => {
+    // Stop all tracks
+    if (streamRef.current) {
+      streamRef.current.getTracks().forEach(track => track.stop())
+      streamRef.current = null
+    }
+
+    // Close audio context
+    if (audioContextRef.current) {
+      audioContextRef.current.close()
+      audioContextRef.current = null
+    }
+
+    // Clear analyser reference
+    analyserRef.current = null
+  }, [])
+
+  React.useEffect(() => {
+    return () => {
+      // Cleanup on unmount
+      stopMediaStream()
+    }
+  }, [stopMediaStream])
+
+  return <div>{/* ... */}</div>
+}
+```
+
+### Object URL Cleanup
+
+```tsx
+// ❌ BAD: Object URL not revoked
+function AudioPlayer({ audioBlob }) {
+  const [audioUrl, setAudioUrl] = React.useState('')
+
+  React.useEffect(() => {
+    const url = URL.createObjectURL(audioBlob)
+    setAudioUrl(url)
+    // Missing cleanup - URL not revoked
+  }, [audioBlob])
+
+  return <audio src={audioUrl} />
+}
+
+// ✅ GOOD: Object URL revoked on cleanup
+function AudioPlayer({ audioBlob }) {
+  const [audioUrl, setAudioUrl] = React.useState('')
+
+  React.useEffect(() => {
+    const url = URL.createObjectURL(audioBlob)
+    setAudioUrl(url)
+
+    return () => {
+      URL.revokeObjectURL(url)
+    }
+  }, [audioBlob])
+
+  return <audio src={audioUrl} />
+}
+```
+
+---
+
+## Cleanup Patterns in useEffect
+
+### Pattern 1: Single Cleanup Function
+
+```tsx
+function Component() {
+  React.useEffect(() => {
+    // Setup
+    const subscription = subscribeToUpdates()
+
+    // Cleanup
+    return () => {
+      subscription.unsubscribe()
+    }
+  }, [])
+}
+```
+
+### Pattern 2: Multiple Cleanups
+
+```tsx
+function StreamingChat() {
+  React.useEffect(() => {
+    const controller = new AbortController()
+    const timeoutId = setTimeout(() => {
+      // Handle timeout
+    }, 5000)
+
+    fetch('/api/stream', { signal: controller.signal })
+      .then(/* ... */)
+
+    // Single cleanup function handles all resources
+    return () => {
+      controller.abort()
+      clearTimeout(timeoutId)
+    }
+  }, [])
+}
+```
+
+### Pattern 3: Conditional Cleanup
+
+```tsx
+function DataFetcher({ enabled }) {
+  React.useEffect(() => {
+    if (!enabled) return
+
+    const subscription = subscribe()
+
+    return () => {
+      subscription.unsubscribe()
+    }
+  }, [enabled])
+}
+```
+
+### Pattern 4: Ref-Based Cleanup
+
+```tsx
+function Component() {
+  const cleanupRef = React.useRef<(() => void) | null>(null)
+
+  React.useEffect(() => {
+    const setup = async () => {
+      const resource = await initializeResource()
+
+      // Store cleanup function
+      cleanupRef.current = () => {
+        resource.cleanup()
+      }
+    }
+
+    setup()
+
+    return () => {
+      cleanupRef.current?.()
+    }
+  }, [])
+}
+```
+
+### Pattern 5: Async Cleanup with Flags
+
+```tsx
+function DataLoader({ id }) {
+  React.useEffect(() => {
+    let cancelled = false
+
+    const loadData = async () => {
+      try {
+        const data = await fetchData(id)
+
+        // Only update state if not cancelled
+        if (!cancelled) {
+          setData(data)
+        }
+      } catch (error) {
+        if (!cancelled) {
+          setError(error)
+        }
+      }
+    }
+
+    loadData()
+
+    return () => {
+      cancelled = true
+    }
+  }, [id])
+}
+```
+
+---
+
+## Profiling Memory Usage
+
+### Chrome DevTools Memory Profiler
+
+#### Taking Heap Snapshots
+
+1. **Open DevTools** → Memory tab
+2. **Select "Heap snapshot"**
+3. **Take snapshot before action**
+4. **Perform action** (e.g., open chat, send messages)
+5. **Take snapshot after action**
+6. **Compare snapshots** to identify retained objects
+
+```typescript
+// Example: Detecting memory leaks in chat component
+describe('Memory Leak Detection', () => {
+  it('should not leak memory after unmounting chat', async () => {
+    // 1. Take baseline snapshot
+    const baseline = await takeHeapSnapshot()
+
+    // 2. Mount and unmount component multiple times
+    for (let i = 0; i < 10; i++) {
+      const { unmount } = render(<ChatWindow />)
+      await waitFor(() => {
+        // Interact with component
+      })
+      unmount()
+    }
+
+    // 3. Force garbage collection (test environment only)
+    if (global.gc) {
+      global.gc()
+    }
+
+    // 4. Take final snapshot
+    const final = await takeHeapSnapshot()
+
+    // 5. Compare memory usage
+    const memoryGrowth = final.totalSize - baseline.totalSize
+    expect(memoryGrowth).toBeLessThan(ACCEPTABLE_GROWTH_THRESHOLD)
+  })
+})
+```
+
+#### Memory Timeline Recording
+
+```typescript
+// Example: Record memory during long session
+interface MemoryMeasurement {
+  timestamp: number
+  usedJSHeapSize: number
+  totalJSHeapSize: number
+  jsHeapSizeLimit: number
+}
+
+function useMemoryMonitoring(intervalMs = 1000) {
+  const [measurements, setMeasurements] = React.useState<MemoryMeasurement[]>([])
+
+  React.useEffect(() => {
+    const measure = () => {
+      if (performance.memory) {
+        setMeasurements(prev => [...prev, {
+          timestamp: Date.now(),
+          usedJSHeapSize: performance.memory.usedJSHeapSize,
+          totalJSHeapSize: performance.memory.totalJSHeapSize,
+          jsHeapSizeLimit: performance.memory.jsHeapSizeLimit,
+        }])
+      }
+    }
+
+    const intervalId = setInterval(measure, intervalMs)
+
+    return () => {
+      clearInterval(intervalId)
+    }
+  }, [intervalMs])
+
+  return measurements
+}
+
+// Usage in development
+function ChatWithMonitoring() {
+  const memoryMeasurements = useMemoryMonitoring()
+
+  React.useEffect(() => {
+    // Log warnings if memory grows too fast
+    if (memoryMeasurements.length > 10) {
+      const recent = memoryMeasurements.slice(-10)
+      const growth = recent[9].usedJSHeapSize - recent[0].usedJSHeapSize
+      const growthRate = growth / recent[0].usedJSHeapSize
+
+      if (growthRate > 0.5) { // 50% growth in last 10 measurements
+        console.warn('High memory growth detected:', growthRate)
+      }
+    }
+  }, [memoryMeasurements])
+
+  return <ChatWindow />
+}
+```
+
+#### Allocation Timeline
+
+```typescript
+// Use Chrome DevTools Allocation Timeline to track:
+// 1. When objects are allocated
+// 2. Which objects survive garbage collection
+// 3. Memory consumption patterns over time
+
+// Example: Log allocations in development
+if (process.env.NODE_ENV === 'development') {
+  const originalCreateElement = React.createElement
+
+  React.createElement = function(...args) {
+    // Track component creation
+    if (args[0]?.name) {
+      console.log('Component created:', args[0].name)
+    }
+    return originalCreateElement.apply(this, args)
+  }
+}
+```
+
+### Performance.memory API
+
+```typescript
+interface MemoryInfo {
+  usedJSHeapSize: number // Current memory usage in bytes
+  totalJSHeapSize: number // Total allocated heap size
+  jsHeapSizeLimit: number // Maximum available memory
+}
+
+function getMemoryUsage(): MemoryInfo | null {
+  if ('memory' in performance) {
+    return {
+      usedJSHeapSize: performance.memory.usedJSHeapSize,
+      totalJSHeapSize: performance.memory.totalJSHeapSize,
+      jsHeapSizeLimit: performance.memory.jsHeapSizeLimit,
+    }
+  }
+  return null
+}
+
+// Memory usage component for development
+function MemoryMonitor() {
+  const [memory, setMemory] = React.useState<MemoryInfo | null>(null)
+
+  React.useEffect(() => {
+    const update = () => {
+      setMemory(getMemoryUsage())
+    }
+
+    update()
+    const intervalId = setInterval(update, 1000)
+
+    return () => clearInterval(intervalId)
+  }, [])
+
+  if (!memory || process.env.NODE_ENV !== 'development') {
+    return null
+  }
+
+  const usedMB = (memory.usedJSHeapSize / 1024 / 1024).toFixed(2)
+  const totalMB = (memory.totalJSHeapSize / 1024 / 1024).toFixed(2)
+  const limitMB = (memory.jsHeapSizeLimit / 1024 / 1024).toFixed(2)
+  const percentage = ((memory.usedJSHeapSize / memory.jsHeapSizeLimit) * 100).toFixed(1)
+
+  return (
+    <div className="fixed bottom-4 right-4 p-4 bg-black/80 text-white text-xs rounded-lg font-mono">
+      <div>Used: {usedMB} MB</div>
+      <div>Total: {totalMB} MB</div>
+      <div>Limit: {limitMB} MB</div>
+      <div className={percentage > 80 ? 'text-red-400' : 'text-green-400'}>
+        Usage: {percentage}%
+      </div>
+    </div>
+  )
+}
+```
+
+---
+
+## WeakMap and WeakSet for Caching
+
+WeakMap and WeakSet allow garbage collection of keys, preventing memory leaks in cache implementations.
+
+### WeakMap for Object Metadata
+
+```typescript
+// ❌ BAD: Regular Map prevents garbage collection
+const messageMetadata = new Map<Message, Metadata>()
+
+function addMessage(message: Message) {
+  messageMetadata.set(message, {
+    timestamp: Date.now(),
+    processed: false,
+  })
+  // Message object can never be garbage collected
+}
+
+// ✅ GOOD: WeakMap allows garbage collection
+const messageMetadata = new WeakMap<Message, Metadata>()
+
+function addMessage(message: Message) {
+  messageMetadata.set(message, {
+    timestamp: Date.now(),
+    processed: false,
+  })
+  // When message is no longer referenced, metadata is automatically cleaned up
+}
+```
+
+### Component Instance Cache
+
+```typescript
+// Cache component-specific data without memory leaks
+class ComponentCache {
+  private cache = new WeakMap<React.Component, any>()
+
+  set(component: React.Component, data: any) {
+    this.cache.set(component, data)
+  }
+
+  get(component: React.Component) {
+    return this.cache.get(component)
+  }
+
+  has(component: React.Component) {
+    return this.cache.has(component)
+  }
+}
+
+const componentCache = new ComponentCache()
+
+// Usage
+class ChatMessage extends React.Component {
+  componentDidMount() {
+    componentCache.set(this, { renderCount: 0 })
+  }
+
+  render() {
+    const data = componentCache.get(this)
+    if (data) {
+      data.renderCount++
+    }
+    return <div>{/* ... */}</div>
+  }
+}
+```
+
+### WeakSet for Tracking Processed Items
+
+```typescript
+// Track which messages have been processed
+const processedMessages = new WeakSet<Message>()
+
+function processMessage(message: Message) {
+  if (processedMessages.has(message)) {
+    return // Already processed
+  }
+
+  // Process message
+  doExpensiveOperation(message)
+
+  // Mark as processed
+  processedMessages.add(message)
+}
+
+// Messages are automatically removed when garbage collected
+```
+
+### Token Counter Cache
+
+```typescript
+interface CacheEntry {
+  tokens: number
+  timestamp: number
+}
+
+class TokenCounterCache {
+  private cache = new WeakMap<string, CacheEntry>()
+  private stringCache = new Map<string, CacheEntry>()
+  private maxStringCacheSize = 1000
+
+  // Use WeakMap for object references
+  getObjectTokens(obj: object, counter: () => number): number {
+    const cached = this.cache.get(obj)
+    if (cached) {
+      return cached.tokens
+    }
+
+    const tokens = counter()
+    this.cache.set(obj, { tokens, timestamp: Date.now() })
+    return tokens
+  }
+
+  // Use LRU cache for strings (can't use WeakMap with primitives)
+  getStringTokens(str: string, counter: () => number): number {
+    const cached = this.stringCache.get(str)
+    if (cached) {
+      return cached.tokens
+    }
+
+    const tokens = counter()
+    this.stringCache.set(str, { tokens, timestamp: Date.now() })
+
+    // Evict oldest entries if cache grows too large
+    if (this.stringCache.size > this.maxStringCacheSize) {
+      const entries = Array.from(this.stringCache.entries())
+      entries.sort((a, b) => a[1].timestamp - b[1].timestamp)
+
+      // Remove oldest 20%
+      const toRemove = Math.floor(this.maxStringCacheSize * 0.2)
+      for (let i = 0; i < toRemove; i++) {
+        this.stringCache.delete(entries[i][0])
+      }
+    }
+
+    return tokens
+  }
+
+  clear() {
+    this.stringCache.clear()
+    // WeakMap doesn't need manual clearing
+  }
+}
+
+const tokenCache = new TokenCounterCache()
+```
+
+---
+
+## Avoiding Memory Bloat in Long Sessions
+
+### Message List Virtualization
+
+```tsx
+import { useVirtualizer } from '@tanstack/react-virtual'
+
+// ✅ GOOD: Only render visible messages
+function VirtualizedMessageList({ messages }: { messages: Message[] }) {
+  const parentRef = React.useRef<HTMLDivElement>(null)
+
+  const virtualizer = useVirtualizer({
+    count: messages.length,
+    getScrollElement: () => parentRef.current,
+    estimateSize: () => 100, // Estimated message height
+    overscan: 5, // Render 5 items above/below viewport
+  })
+
+  return (
+    <div
+      ref={parentRef}
+      className="h-full overflow-auto"
+    >
+      <div
+        style={{
+          height: `${virtualizer.getTotalSize()}px`,
+          width: '100%',
+          position: 'relative',
+        }}
+      >
+        {virtualizer.getVirtualItems().map((virtualItem) => (
+          <div
+            key={virtualItem.key}
+            style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              width: '100%',
+              height: `${virtualItem.size}px`,
+              transform: `translateY(${virtualItem.start}px)`,
+            }}
+          >
+            <Message message={messages[virtualItem.index]} />
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
+```
+
+### Message Pagination
+
+```tsx
+// ✅ GOOD: Load messages in chunks
+function PaginatedChat() {
+  const [visibleMessages, setVisibleMessages] = React.useState<Message[]>([])
+  const [page, setPage] = React.useState(0)
+  const messagesPerPage = 50
+
+  const loadMoreMessages = React.useCallback(() => {
+    const start = page * messagesPerPage
+    const end = start + messagesPerPage
+    const newMessages = allMessages.slice(start, end)
+
+    setVisibleMessages(prev => [...prev, ...newMessages])
+    setPage(prev => prev + 1)
+  }, [page])
+
+  // Cleanup old messages when total exceeds threshold
+  React.useEffect(() => {
+    if (visibleMessages.length > 200) {
+      setVisibleMessages(prev => prev.slice(-150)) // Keep last 150
+    }
+  }, [visibleMessages.length])
+
+  return (
+    <div>
+      <MessageList messages={visibleMessages} />
+      <button onClick={loadMoreMessages}>Load More</button>
+    </div>
+  )
+}
+```
+
+### Conversation Archiving
+
+```tsx
+interface ArchivedConversation {
+  id: string
+  summary: string
+  messageCount: number
+  lastMessageAt: Date
+}
+
+// ✅ GOOD: Archive old conversations to localStorage
+function useConversationArchiving() {
+  const archiveConversation = React.useCallback((conversation: Conversation) => {
+    const archived: ArchivedConversation = {
+      id: conversation.id,
+      summary: conversation.messages[0]?.content.slice(0, 100) || '',
+      messageCount: conversation.messages.length,
+      lastMessageAt: new Date(conversation.updatedAt),
+    }
+
+    // Store full conversation in IndexedDB
+    indexedDB.put('conversations', conversation)
+
+    // Store summary in memory
+    return archived
+  }, [])
+
+  const loadConversation = React.useCallback(async (id: string) => {
+    // Load full conversation from IndexedDB
+    return await indexedDB.get('conversations', id)
+  }, [])
+
+  return { archiveConversation, loadConversation }
+}
+```
+
+### Resource Pooling
+
+```tsx
+// ✅ GOOD: Reuse audio contexts instead of creating new ones
+class AudioContextPool {
+  private pool: AudioContext[] = []
+  private maxSize = 5
+
+  acquire(): AudioContext {
+    if (this.pool.length > 0) {
+      return this.pool.pop()!
+    }
+    return new AudioContext()
+  }
+
+  release(context: AudioContext) {
+    if (this.pool.length < this.maxSize) {
+      // Reset context state
+      context.suspend()
+      this.pool.push(context)
+    } else {
+      // Close if pool is full
+      context.close()
+    }
+  }
+
+  clear() {
+    this.pool.forEach(ctx => ctx.close())
+    this.pool = []
+  }
+}
+
+const audioContextPool = new AudioContextPool()
+
+function useAudioContext() {
+  const contextRef = React.useRef<AudioContext | null>(null)
+
+  React.useEffect(() => {
+    contextRef.current = audioContextPool.acquire()
+
+    return () => {
+      if (contextRef.current) {
+        audioContextPool.release(contextRef.current)
+      }
+    }
+  }, [])
+
+  return contextRef.current
+}
+```
+
+### Automatic Cleanup Scheduler
+
+```tsx
+// ✅ GOOD: Periodically clean up old data
+function useAutomaticCleanup(interval = 60000) { // 1 minute
+  React.useEffect(() => {
+    const cleanup = () => {
+      // Clear old cache entries
+      const now = Date.now()
+      const maxAge = 5 * 60 * 1000 // 5 minutes
+
+      // Clear token count cache
+      clearOldCacheEntries(now - maxAge)
+
+      // Revoke old object URLs
+      revokeOldObjectURLs()
+
+      // Clear old local storage items
+      clearOldLocalStorage(now - maxAge)
+    }
+
+    cleanup() // Run immediately
+    const intervalId = setInterval(cleanup, interval)
+
+    return () => {
+      clearInterval(intervalId)
+    }
+  }, [interval])
+}
+
+function ChatApp() {
+  useAutomaticCleanup()
+
+  return <ChatWindow />
+}
+```
+
+---
+
+## Testing for Memory Leaks
+
+### Manual Memory Leak Detection
+
+```typescript
+import { render, cleanup } from '@testing-library/react'
+
+describe('Memory Leak Tests', () => {
+  beforeEach(() => {
+    // Force garbage collection before each test
+    if (global.gc) {
+      global.gc()
+    }
+  })
+
+  afterEach(() => {
+    cleanup()
+
+    // Force garbage collection after cleanup
+    if (global.gc) {
+      global.gc()
+    }
+  })
+
+  it('should not leak memory when mounting/unmounting', async () => {
+    const initialMemory = process.memoryUsage().heapUsed
+
+    // Mount and unmount component 100 times
+    for (let i = 0; i < 100; i++) {
+      const { unmount } = render(<AudioRecorder />)
+      unmount()
+    }
+
+    // Force garbage collection
+    if (global.gc) {
+      global.gc()
+    }
+
+    const finalMemory = process.memoryUsage().heapUsed
+    const memoryGrowth = finalMemory - initialMemory
+    const memoryGrowthMB = memoryGrowth / 1024 / 1024
+
+    // Allow small growth (< 5MB)
+    expect(memoryGrowthMB).toBeLessThan(5)
+  })
+})
+```
+
+### Event Listener Leak Detection
+
+```typescript
+describe('Event Listener Leaks', () => {
+  it('should remove all event listeners on unmount', () => {
+    const addEventListenerSpy = jest.spyOn(window, 'addEventListener')
+    const removeEventListenerSpy = jest.spyOn(window, 'removeEventListener')
+
+    const { unmount } = render(<ChatWindow />)
+
+    const addedListeners = addEventListenerSpy.mock.calls.length
+
+    unmount()
+
+    const removedListeners = removeEventListenerSpy.mock.calls.length
+
+    expect(removedListeners).toBe(addedListeners)
+
+    addEventListenerSpy.mockRestore()
+    removeEventListenerSpy.mockRestore()
+  })
+
+  it('should clean up all timers', () => {
+    jest.useFakeTimers()
+
+    const { unmount } = render(<RecordingTimer />)
+
+    // Get number of pending timers
+    const pendingBefore = jest.getTimerCount()
+
+    unmount()
+
+    const pendingAfter = jest.getTimerCount()
+
+    expect(pendingAfter).toBeLessThan(pendingBefore)
+
+    jest.useRealTimers()
+  })
+})
+```
+
+### WeakRef Leak Detection
+
+```typescript
+describe('WeakRef Leak Detection', () => {
+  it('should allow garbage collection of cached objects', async () => {
+    const cache = new WeakMap()
+    let obj: any = { data: 'test' }
+    const weakRef = new WeakRef(obj)
+
+    cache.set(obj, { metadata: 'cached' })
+
+    // Remove strong reference
+    obj = null
+
+    // Force garbage collection
+    if (global.gc) {
+      global.gc()
+      await new Promise(resolve => setTimeout(resolve, 100))
+    }
+
+    // Object should be collected
+    expect(weakRef.deref()).toBeUndefined()
+  })
+})
+```
+
+### Media Resource Leak Detection
+
+```typescript
+describe('Media Resource Leaks', () => {
+  it('should stop all media tracks on unmount', async () => {
+    const mockGetUserMedia = jest.fn().mockResolvedValue({
+      getTracks: () => [
+        { stop: jest.fn(), kind: 'audio' }
+      ]
+    })
+
+    Object.defineProperty(navigator, 'mediaDevices', {
+      value: { getUserMedia: mockGetUserMedia },
+      writable: true,
+    })
+
+    const { unmount } = render(<AudioRecorder autoStart />)
+
+    await waitFor(() => {
+      expect(mockGetUserMedia).toHaveBeenCalled()
+    })
+
+    const stream = await mockGetUserMedia.mock.results[0].value
+    const track = stream.getTracks()[0]
+
+    unmount()
+
+    expect(track.stop).toHaveBeenCalled()
+  })
+
+  it('should close all audio contexts', async () => {
+    const mockAudioContext = {
+      createAnalyser: jest.fn().mockReturnValue({ fftSize: 2048 }),
+      createMediaStreamSource: jest.fn().mockReturnValue({
+        connect: jest.fn(),
+      }),
+      close: jest.fn(),
+    }
+
+    global.AudioContext = jest.fn().mockImplementation(() => mockAudioContext)
+
+    const { unmount } = render(<AudioRecorder showWaveform />)
+
+    unmount()
+
+    await waitFor(() => {
+      expect(mockAudioContext.close).toHaveBeenCalled()
+    })
+  })
+})
+```
+
+### Object URL Leak Detection
+
+```typescript
+describe('Object URL Leaks', () => {
+  it('should revoke all object URLs', () => {
+    const createObjectURLSpy = jest.spyOn(URL, 'createObjectURL')
+    const revokeObjectURLSpy = jest.spyOn(URL, 'revokeObjectURL')
+
+    createObjectURLSpy.mockReturnValue('blob:mock-url')
+
+    const { unmount } = render(
+      <AudioPlayer audioBlob={new Blob(['test'])} />
+    )
+
+    expect(createObjectURLSpy).toHaveBeenCalled()
+
+    unmount()
+
+    expect(revokeObjectURLSpy).toHaveBeenCalledWith('blob:mock-url')
+
+    createObjectURLSpy.mockRestore()
+    revokeObjectURLSpy.mockRestore()
+  })
+})
+```
+
+### Automated Leak Detection with Tests
+
+```typescript
+// Run with: node --expose-gc jest
+describe('Automated Memory Leak Detection', () => {
+  const measureMemory = () => {
+    if (global.gc) global.gc()
+    return process.memoryUsage().heapUsed
+  }
+
+  const runLeakTest = async (
+    ComponentToTest: React.ComponentType,
+    iterations = 50
+  ) => {
+    const baseline = measureMemory()
+
+    for (let i = 0; i < iterations; i++) {
+      const { unmount } = render(<ComponentToTest />)
+      await waitFor(() => {
+        // Simulate user interaction
+      })
+      unmount()
+    }
+
+    const final = measureMemory()
+    const growthMB = (final - baseline) / 1024 / 1024
+
+    return growthMB
+  }
+
+  it('AudioRecorder should not leak memory', async () => {
+    const growth = await runLeakTest(AudioRecorder)
+    expect(growth).toBeLessThan(5) // Less than 5MB growth
+  })
+
+  it('ChatWindow should not leak memory', async () => {
+    const growth = await runLeakTest(ChatWindow)
+    expect(growth).toBeLessThan(10) // Less than 10MB growth
+  })
+})
+```
+
+---
+
+## Memory Leak Detection Checklist
+
+Use this checklist to audit components for memory leaks:
+
+### Event Listeners
+- [ ] All `addEventListener` calls have matching `removeEventListener`
+- [ ] Window/document listeners cleaned up in useEffect return
+- [ ] Custom event emitters unsubscribed on unmount
+
+### Timers
+- [ ] All `setTimeout` calls are cleared with `clearTimeout`
+- [ ] All `setInterval` calls are cleared with `clearInterval`
+- [ ] All `requestAnimationFrame` calls are canceled with `cancelAnimationFrame`
+
+### Media Resources
+- [ ] MediaStream tracks are stopped on cleanup
+- [ ] AudioContext instances are closed on unmount
+- [ ] Video/audio elements are properly paused and reset
+
+### Object References
+- [ ] Object URLs are revoked with `URL.revokeObjectURL`
+- [ ] Large data structures are cleared (arrays, maps, sets)
+- [ ] Circular references are avoided or broken
+
+### React Patterns
+- [ ] useEffect cleanup functions return all cleanup logic
+- [ ] Refs are nullified when no longer needed
+- [ ] State updates check component is still mounted
+- [ ] Subscriptions/observers are unsubscribed
+
+### Caching
+- [ ] WeakMap/WeakSet used for object caching
+- [ ] Cache size limits enforced
+- [ ] Old cache entries are evicted
+- [ ] Cache is cleared on unmount
+
+---
+
+## Best Practices Summary
+
+1. **Always provide cleanup functions** in useEffect hooks
+2. **Use WeakMap/WeakSet** for caching object references
+3. **Implement virtualization** for long lists
+4. **Archive old data** to IndexedDB or localStorage
+5. **Monitor memory usage** in development with performance.memory
+6. **Test for leaks** using automated tests and Chrome DevTools
+7. **Revoke object URLs** when no longer needed
+8. **Stop media streams** and close audio contexts on cleanup
+9. **Cancel all timers and animation frames** on unmount
+10. **Set size limits** on in-memory caches
+
+---
+
+## Additional Resources
+
+- [Chrome DevTools Memory Profiler](https://developer.chrome.com/docs/devtools/memory-problems/)
+- [React useEffect Cleanup](https://react.dev/learn/synchronizing-with-effects#how-to-handle-the-effect-firing-twice-in-development)
+- [WeakMap MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/WeakMap)
+- [Performance.memory API](https://developer.mozilla.org/en-US/docs/Web/API/Performance/memory)
+- [Testing Library Cleanup](https://testing-library.com/docs/react-testing-library/api/#cleanup)
+
+---
+
+**Next Steps:**
+
+- Review the [Bundle Optimization Guide](/guides/performance/bundle-optimization)
+- Learn about [React Performance Patterns](/guides/performance/react-patterns)
+- Explore [Profiling and Monitoring](/guides/performance/profiling)

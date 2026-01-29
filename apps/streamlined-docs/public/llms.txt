@@ -1,405 +1,329 @@
-# Clarity Chat
+# Clarity Chat Components
 
-> Clarity Chat is a React component library for building AI chat interfaces with 200+ components, 95+ hooks, streaming support, RAG, and enterprise features. Built with TypeScript, React 19, and Tailwind CSS.
+> Clarity Chat is a production-ready React component library for building AI chat interfaces with 200+ components, 95+ hooks, streaming support, RAG, memory management, and enterprise features. Built with TypeScript, React 19, and Tailwind CSS.
 
-Clarity Chat provides everything you need to build production-ready AI chat applications in React. From simple chatbots to enterprise-grade conversational AI with memory, RAG, tool calling, and multi-tenancy support.
+Clarity Chat provides everything you need to build AI chat applications - from simple chatbots to enterprise-grade conversational AI with memory, RAG, tool calling, and multi-tenancy support.
 
-## Getting Started
+---
 
-- [Quick Start](/learn/quick-start): Get a working chat interface in 5 minutes with minimal configuration
-- [Installation](/learn/installation): Framework-specific installation guides for Next.js, Vite, and Remix
-- [Tutorial](/learn/tutorial): Build your first complete chatbot step-by-step
-- [Interactive Playground](/playground): Try components live in the browser without any setup
-- [Why Clarity?](/learn/why-clarity): Comparison with other solutions and key benefits
+## Quick Navigation
 
-## Core Concepts
+### Getting Started
+- /get-started/quick-start - Get a working chat interface in 5 minutes
+- /get-started/installation - Framework-specific installation (Next.js, Vite, Remix)
+- /get-started/tutorial - Build your first chatbot step-by-step (30 minutes)
+- /playground - Interactive playground - try components without setup
+- /get-started/why-clarity - Why choose Clarity over other solutions
 
-- [Components](/learn/concepts/components): Understanding Clarity's composable component architecture
-- [Hooks](/learn/concepts/hooks): 95+ hooks for chat functionality, streaming, and state management
-- [Theming](/learn/concepts/theming): 15 pre-built themes with full customization support
-- [Animations](/learn/concepts/animations): 150+ micro-interactions with Framer Motion
+### Core Concepts
+- /get-started/concepts - Understanding Clarity's architecture
+- /reference/components - 200+ production-ready components
+- /reference/hooks - 95+ hooks for chat functionality and state management
+- /get-started/concepts/theming - 15 pre-built themes with full customization
+- /get-started/concepts/animations - 150+ micro-interactions with Framer Motion
+
+---
 
 ## Core Components
 
-- [ClarityChatApp](/reference/components/clarity-chat-app): Unified App API - streaming chat in 3 minutes with one component
-- [ClarityChat](/reference/components/clarity-chat): All-in-one chat component with built-in streaming, memory, and theming
-- [ClarityChatPresets](/reference/components/clarity-chat-presets): Pre-configured chat variants (CustomerSupport, CodeAssistant, Enterprise)
-- [ChatRecipes](/reference/components/chat-recipes): Ready-to-use chat configurations for specific industries
-- [ChatLayout](/reference/components/chat-layout): Flexible layout component for chat interfaces
-- [ChatWindow](/reference/components/chat-window): Container for chat messages with scroll management
-- [Message](/reference/components/message): Individual message display with markdown and code support
-- [MessageList](/reference/components/message-list): Virtualized message list for performance
-- [ChatInput](/reference/components/chat-input): User input with suggestions, attachments, and voice support
-- [TypingIndicator](/reference/components/typing-indicator): AI typing/thinking state indicator
-- [FloatingChatWidget](/reference/components/floating-chat-widget): Floating chat bubble for websites
+### Foundation Components
+- /reference/components/clarity-chat - All-in-one chat component (recommended starting point)
+- /reference/components/clarity-chat-app - Unified App API - streaming chat in 3 lines
+- /reference/components/clarity-chat-presets - Pre-configured variants (CustomerSupport, CodeAssistant, Enterprise)
+- /reference/components/chat-window - Container for messages with scroll management
+- /reference/components/message - Individual message display with markdown and code support
+- /reference/components/message-list - Virtualized message list for performance
+- /reference/components/chat-input - User input with suggestions, attachments, voice support
 
-## Streaming Components
+### Streaming Components
+- /reference/components/streaming-message - Real-time streaming response display
+- /reference/components/virtualized-message-list - High-performance list for large conversations
+- /reference/components/streaming-text-renderer - Character-by-character text animation
+- /reference/components/stream-block - Block-level streaming content container
+- /reference/components/stream-cancellation - Cancel ongoing stream requests
+- /reference/components/streaming-progress - Comprehensive streaming progress visualization
 
-- [StreamingMessage](/reference/components/streaming-message): Real-time streaming response display
-- [VirtualizedMessageList](/reference/components/virtualized-message-list): High-performance list for large conversations
-- [TanStackMessageList](/reference/components/tanstack-message-list): TanStack Virtual integration for message lists
-- [StreamingTextRenderer](/reference/components/streaming-text-renderer): Character-by-character text animation
-- [StreamBlock](/reference/components/stream-block): Block-level streaming content container
-- [StreamCancellation](/reference/components/stream-cancellation): Cancel ongoing stream requests
-- [StreamStatusProgress](/reference/components/stream-status-progress): Comprehensive streaming progress visualization
+### AI-Specific Components
+- /reference/components/chain-of-thought - Step-by-step reasoning visualization
+- /reference/components/thinking-bar - Processing status with progress tracking
+- /reference/components/tool-execution-card - Display tool/function call execution
+- /reference/components/text-shimmer - Animated text loading placeholder
+- /reference/components/source-citation - Display AI response sources with confidence scores
+- /reference/components/prompt-container - Prompt input wrapper with suggestions
+- /reference/components/suggestion-cards - Interactive suggestion grid
+- /reference/components/model-selector - Model selection dropdown
 
-## AI Components
+### Interactive Components
+- /reference/components/command-palette - Keyboard-driven command menu (Cmd+K)
+- /reference/components/context-menu - Right-click context actions
+- /reference/components/draggable - Drag and drop functionality
+- /reference/components/voice-input - Speech-to-text integration
+- /reference/components/file-upload - Document and image uploads
+- /reference/components/retry-button - Retry failed message generation
 
-- [ChainOfThought](/reference/components/chain-of-thought): Step-by-step reasoning visualization
-- [ThinkingBar](/reference/components/thinking-bar): Processing status with progress tracking
-- [ToolExecutionCard](/reference/components/tool-execution-card): Display tool/function call execution
-- [TextShimmer](/reference/components/text-shimmer): Animated text loading placeholder
-- [SourceCitation](/reference/components/source-citation): Display AI response sources with confidence scores
-- [Citation](/reference/components/citation): Inline citation display
-- [PromptContainer](/reference/components/prompt-container): Prompt input wrapper with suggestions
-- [SuggestionCards](/reference/components/suggestion-cards): Interactive suggestion grid
-- [EnhancedMarkdownRenderer](/reference/components/enhanced-markdown-renderer): Markdown with LaTeX, Mermaid, syntax highlighting
-- [EnhancedCodeBlock](/reference/components/enhanced-code-block): Advanced code block with diff support
-- [ModelSelector](/reference/components/model-selector): Model selection dropdown
-- [AgentRunFeed](/reference/components/agent-run-feed): Agent execution feed display
+### Token Optimization Components
+- /reference/components/token-optimization - Complete token optimization system
+- /reference/components/token-optimization-dashboard - Full dashboard for token management
+- /reference/components/token-optimization-panel - Token optimization controls
+- /reference/components/token-optimization-badge - Inline token usage indicator
+- /reference/components/token-cost-preview - Real-time cost estimation
+- /reference/components/token-counter - Simple token count display
 
-## Interactive Components
+### Dashboard Components
+- /reference/components/usage-dashboard - API usage analytics
+- /reference/components/performance-dashboard - Response time and latency metrics
+- /reference/components/conversation-analytics-dashboard - Conversation metrics and insights
 
-- [CommandPalette](/reference/components/command-palette): Keyboard-driven command menu (Cmd+K)
-- [ContextMenu](/reference/components/context-menu): Right-click context actions
-- [Draggable](/reference/components/draggable): Drag and drop functionality
-- [KeyboardHint](/reference/components/keyboard-hint): Keyboard shortcut indicators
-- [AdvancedMessageSearch](/reference/components/advanced-message-search): Full-text search across conversations
-- [RetryButton](/reference/components/retry-button): Retry failed message generation
-- [VoiceInput](/reference/components/voice-input): Speech-to-text integration
-- [FileUpload](/reference/components/file-upload): Document and image uploads
-- [StructuredInputBuilder](/reference/components/structured-input-builder): Form-based structured input
+### Enterprise Components
+- /reference/components/auth-tenant-dashboard - Multi-tenant authentication management
+- /reference/components/api-token-manager - API key management interface
+- /reference/components/sso-config-wizard - SSO setup wizard
 
-## UI Elements
+### Memory & Context Components
+- /reference/components/memory-provider - Context provider for conversation memory
+- /reference/components/context-manager - Context window management
 
-- [Avatar](/reference/components/avatar): User and AI avatars with status indicators
-- [Button](/reference/components/button): Accessible button with variants and states
-- [Badge](/reference/components/badge): Status and info badges
-- [CodeBlock](/reference/components/code-block): Syntax-highlighted code with copy button
-- [Tooltip](/reference/components/tooltip): Contextual tooltips and popovers
-- [Modal](/reference/components/modal): Dialog and modal components
-- [NetworkStatus](/reference/components/network-status): Online/offline status indicator
-- [PromptLibrary](/reference/components/prompt-library): Saved prompts management
-- [PromptSuggestions](/reference/components/prompt-suggestions): Smart prompt suggestions
-- [ToolInvocationCard](/reference/components/tool-invocation-card): Display tool call details
-- [Tabs](/reference/components/tabs): Tab navigation component
-
-## Token Optimization Components
-
-- [TokenOptimizationBadge](/reference/components/token-optimization-badge): Inline token usage indicator
-- [TokenOptimizationPanel](/reference/components/token-optimization-panel): Token optimization controls
-- [TokenOptimizationDashboard](/reference/components/token-optimization-dashboard): Full dashboard for token management
-- [TokenCostPreview](/reference/components/token-cost-preview): Real-time cost estimation
-- [TokenUsageMeter](/reference/components/token-usage-meter): Visual token consumption meter
-- [TokenBudgetBar](/reference/components/token-budget-bar): Budget progress visualization
-- [TokenCounter](/reference/components/token-counter): Simple token count display
-
-## Dashboard Components
-
-- [UsageDashboard](/reference/components/usage-dashboard): API usage analytics
-- [PerformanceDashboard](/reference/components/performance-dashboard): Response time and latency metrics
-- [AnalyticsDashboard](/reference/components/analytics-dashboard): Comprehensive analytics view
-- [ConversationAnalyticsDashboard](/reference/components/conversation-analytics-dashboard): Conversation metrics and insights
-- [ResponseQualityMeter](/reference/components/response-quality-meter): Quality scoring display
-- [ProjectSidebar](/reference/components/project-sidebar): Project navigation sidebar
-
-## Enterprise Components
-
-- [AuthTenantDashboard](/reference/components/auth-tenant-dashboard): Multi-tenant authentication management
-- [ApiTokenManager](/reference/components/api-token-manager): API key management interface
-- [SeatInviteDialog](/reference/components/seat-invite-dialog): Team member invitation flow
-- [SSOConfigWizard](/reference/components/sso-config-wizard): SSO setup wizard
-- [AuditLogViewer](/reference/components/audit-log-viewer): Compliance audit trails
-- [SafetyStatusCard](/reference/components/safety-status-card): Content safety status
-
-## Context & Memory Components
-
-- [MemoryProvider](/reference/components/memory-provider): Context provider for conversation memory
-- [ContextManager](/reference/components/context-manager): Context window management
-- [ContextCard](/reference/components/context-card): Context item display
-- [ContextVisualizer](/reference/components/context-visualizer): Visual context representation
-- [MemoryInspector](/reference/components/memory-inspector): Memory debugging tool
+---
 
 ## Core Hooks
 
-- [Hook Selector](/reference/hooks/selector): Interactive guide to choose the right hook
-- [Compare Hooks](/reference/hooks/compare): Side-by-side hook comparison
-- [Hook Graph](/reference/hooks/graph): Visual hook dependency graph
-- [useClarityChatApp](/reference/hooks/use-clarity-chat-app): Unified App API hook
-- [useClarityChat](/reference/hooks/use-clarity-chat): Primary hook for chat state with memory integration
-- [useClarityChatWithTools](/reference/hooks/use-clarity-chat-with-tools): Chat with tool/function calling support
-- [useClarityObject](/reference/hooks/use-clarity-object): Structured output generation
-- [useHeadlessChat](/reference/hooks/use-headless-chat): 100% logic, 0% magic headless hook
-- [useChatHandlers](/reference/hooks/use-chat-handlers): Pre-configured event handlers
-- [useChatEnhanced](/reference/hooks/use-chat-enhanced): Enhanced chat with advanced features
-- [useChatSync](/reference/hooks/use-chat-sync): Cross-device chat synchronization
-- [useAssistant](/reference/hooks/use-assistant): OpenAI Assistants API integration
-- [useCompletion](/reference/hooks/use-completion): Text completion hook
-- [useMessages](/reference/hooks/use-messages): Message state management
-- [useRealisticTyping](/reference/hooks/use-realistic-typing): Natural typing simulation
-- [useKeyboardShortcuts](/reference/hooks/use-keyboard-shortcuts): Keyboard shortcut handling
-- [useCommandPalette](/reference/hooks/use-command-palette): Command palette state
-- [useUndoRedo](/reference/hooks/use-undo-redo): Undo/redo functionality
-- [useHaptic](/reference/hooks/use-haptic): Haptic feedback for mobile
-- [useTheme](/reference/hooks/use-theme): Theme switching and management
-- [useDesignTokens](/reference/hooks/use-design-tokens): Access design tokens
+### Primary Hooks
+- /reference/hooks/use-clarity-chat-app - Unified App API hook (recommended)
+- /reference/hooks/use-clarity-chat - Primary chat hook with memory integration
+- /reference/hooks/use-clarity-chat-with-tools - Chat with tool/function calling support
+- /reference/hooks/use-chat-handlers - Pre-configured event handlers
+- /reference/hooks/use-messages - Message state management
 
-## Performance Hooks
+### Performance Hooks
+- /reference/hooks/use-token-optimization - Unified token optimization hook
+- /reference/hooks/use-token-count - Real-time token counting
+- /reference/hooks/use-token-tracker - Real-time token consumption tracking
+- /reference/hooks/use-model-router - Dynamic model selection based on task
+- /reference/hooks/use-smart-cache - Intelligent response caching
 
-- [useTokenOptimization](/reference/hooks/use-token-optimization): Unified token optimization hook
-- [useTokenCount](/reference/hooks/use-token-count): Real-time token counting
-- [useTokenBudgetTracking](/reference/hooks/use-token-budget-tracking): Budget monitoring
-- [useModelRouter](/reference/hooks/use-model-router): Dynamic model selection based on task
-- [useTieredCache](/reference/hooks/use-tiered-cache): Multi-tier response caching
-- [useOptimizationPipeline](/reference/hooks/use-optimization-pipeline): Full optimization pipeline
-- [usePerformance](/reference/hooks/use-performance): Performance monitoring
-- [useTokenTracker](/reference/hooks/use-token-tracker): Real-time token consumption tracking
-- [useSmartCache](/reference/hooks/use-smart-cache): Intelligent response caching
+### Streaming Hooks
+- /reference/hooks/use-streaming-sse - Server-Sent Events streaming
+- /reference/hooks/use-streaming-websocket - WebSocket streaming with reconnection
+- /reference/hooks/use-streamable-ui - React Server Components streaming
 
-## Streaming Hooks
+### Memory & Context Hooks
+- /reference/hooks/use-memory-context - Access conversation memory context
+- /reference/hooks/use-indexed-db - Browser IndexedDB for offline storage
+- /reference/hooks/use-embeddings - Generate and manage text embeddings
 
-- [useStreamingSSE](/reference/hooks/use-streaming-sse): Server-Sent Events streaming
-- [useStreamingWebSocket](/reference/hooks/use-streaming-websocket): WebSocket streaming with reconnection
-- [useStreamableUI](/reference/hooks/use-streamable-ui): React Server Components streaming
-- [useStreaming](/reference/hooks/use-streaming): Generic streaming hook
-- [useStreamingChat](/reference/hooks/use-streaming-chat): Chat-specific streaming
-- [useSmoothedText](/reference/hooks/use-smoothed-text): Smooth text animation
-- [useStreamStatus](/reference/hooks/use-stream-status): Stream status tracking
+### Enterprise AI Hooks
+- /reference/hooks/use-rag-pipeline - Retrieval-augmented generation pipeline
+- /reference/hooks/use-agent - AI agent with tool execution
+- /reference/hooks/use-vector-store - Vector database operations
 
-## Operation Hooks
+### Utility Hooks
+- /reference/hooks/selector - Interactive guide to choose the right hook
+- /reference/hooks/compare - Side-by-side hook comparison
+- /reference/hooks/graph - Visual hook dependency graph
 
-- [useMessageOperations](/reference/hooks/use-message-operations): Message CRUD operations
-- [useDashboardData](/reference/hooks/use-dashboard-data): Dashboard data fetching
-- [useCircuitBreaker](/reference/hooks/use-circuit-breaker): Circuit breaker pattern for resilience
-- [useRetryWithBackoff](/reference/hooks/use-retry-with-backoff): Exponential backoff retry logic
-- [useRequestDeduplication](/reference/hooks/use-request-deduplication): Prevent duplicate requests
+---
 
-## Memory & Context Hooks
+## Guides
 
-- [useMemoryContext](/reference/hooks/use-memory-context): Access conversation memory context
-- [useIndexedDB](/reference/hooks/use-indexed-db): Browser IndexedDB for offline storage
-- [useEmbeddings](/reference/hooks/use-embeddings): Generate and manage text embeddings
-- [useLocalStorage](/reference/hooks/use-local-storage): Local storage persistence
-- [useContextMonitor](/reference/hooks/use-context-monitor): Context window monitoring
+### Basic Guides
+- /guides/components - Working with components
+- /guides/hooks - Using hooks effectively
+- /guides/theming - Customizing themes
+- /guides/customization - Advanced customization
+- /guides/messages - Message handling
 
-## Enterprise AI Hooks
+### Intermediate Guides
+- /guides/streaming - Implement real-time streaming responses
+- /guides/memory - Add conversation memory and context persistence
+- /guides/error-handling - Handle errors gracefully with fallbacks
+- /guides/file-upload - Support document and image uploads
+- /guides/state-management - Manage complex chat state
+- /guides/accessibility - Build WCAG-compliant interfaces
+- /guides/performance - Optimize for speed and efficiency
 
-- [useRAGPipeline](/reference/hooks/use-rag-pipeline): Retrieval-augmented generation pipeline
-- [useAgent](/reference/hooks/use-agent): AI agent with tool execution
-- [useVectorStore](/reference/hooks/use-vector-store): Vector database operations
+### Advanced Guides
+- /guides/rag - Retrieval-Augmented Generation implementation
+- /guides/agents - Build AI agents with tool execution
+- /guides/tools - Integrate custom tools and functions
+- /guides/token-optimization - Reduce API costs by up to 70%
+- /guides/prompt-caching - Cache prompts for faster responses
+- /guides/model-adapters - Support multiple LLM providers
+- /guides/observability - Monitoring and debugging
+- /guides/vector-stores - Vector database integration
 
-## UI Hooks
+### Enterprise Guides
+- /guides/rbac - Role-based access control setup
+- /guides/multi-tenancy - Multi-tenant architecture
+- /guides/sso-configuration - Single sign-on setup
+- /guides/audit-logging - Compliance audit trails
+- /guides/security - Security best practices
 
-- [useDebounce](/reference/hooks/use-debounce): Debounce values
-- [useThrottledCallback](/reference/hooks/use-throttled-callback): Throttle function calls
-- [useClipboard](/reference/hooks/use-clipboard): Clipboard operations
-- [useWindowSize](/reference/hooks/use-window-size): Window dimensions
-- [usePrevious](/reference/hooks/use-previous): Previous value tracking
-- [useAutoScroll](/reference/hooks/use-auto-scroll): Auto-scroll management
-- [useVoiceInput](/reference/hooks/use-voice-input): Voice input handling
+---
 
-## Accessibility Hooks
+## Token Optimization Documentation
 
-- [useFocusManagement](/reference/hooks/use-focus-management): Focus management
-- [useScreenReaderAnnounce](/reference/hooks/use-screen-reader-announce): Screen reader announcements
-- [useHighContrastMode](/reference/hooks/use-high-contrast-mode): High contrast detection
-- [useReducedMotion](/reference/hooks/use-reduced-motion): Reduced motion preference
-- [useFocusTrap](/reference/hooks/use-focus-trap): Focus trapping
-- [useFocusRestoration](/reference/hooks/use-focus-restoration): Focus restoration
+### Getting Started with Token Optimization
+- /guides/token-optimization - Complete guide to token optimization
+- /guides/token-optimization/algorithms - Compression algorithms explained
+- /guides/token-optimization/caching-strategies - Caching strategies for cost reduction
+- /guides/token-optimization/smart-routing - Smart model routing
+- /guides/token-optimization/best-practices - Best practices and patterns
+
+### Token Optimization Cookbooks
+- /cookbook/achieving-50-percent-reduction - Achieving 50-70% cost reduction
+- /cookbook/provider-caching-setup - Provider-native caching setup
+- /cookbook/smart-model-routing - Smart model routing examples
+- /cookbook/token-optimization/combined-optimization - Combined optimization strategies
+- /cookbook/token-optimization/compression-comparison - Compression algorithm comparison
+
+### Token Optimization Components & Hooks
+- /reference/components/token-optimization - Token optimization system overview
+- /reference/hooks/use-token-optimization - Unified optimization hook
+- /reference/hooks/use-token-count - Token counting
+- /reference/hooks/use-model-router - Model routing
+
+---
+
+## Cookbook Recipes
+
+### Quick Start Recipes
+- /cookbook/quick-start-3-lines - Minimal setup in 3 lines of code
+- /cookbook/react-integration - React integration patterns
+- /cookbook/nodejs-backend-integration - Node.js backend integration
+- /cookbook/streaming-setup - Configure streaming responses
+- /cookbook/memory-integration - Add conversation memory
+- /cookbook/error-handling - Implement error boundaries
+
+### Advanced Recipes
+- /cookbook/streaming-with-memory - Combine streaming and memory
+- /cookbook/rag-document-chat - Build document Q&A
+- /cookbook/voice-input-integration - Add speech-to-text
+- /cookbook/file-upload-handling - File handling patterns
+
+### Production Recipes
+- /cookbook/authentication - Add user authentication
+- /cookbook/production-monitoring - Monitor in production
+- /cookbook/enterprise-production-pipeline - Enterprise production pipeline
+
+---
+
+## Examples
+
+### Featured Examples
+- /examples/tool-calling-showcase - Advanced tool calling demo
+- /examples/enhanced-rag - Enhanced RAG system demonstration
+- /examples/rag-comparison - RAG implementation comparison
+
+### Basic Examples
+- /examples/simple-chat - Minimal chat implementation
+- /examples/themed-chat - Custom theme example
+- /examples/custom-styling - CSS customization
+
+### Advanced Examples
+- /examples/token-optimization - Token optimization demo
+- /examples/code-assistant - Code assistant example
+- /examples/customer-support-bot - Customer support chatbot
+
+---
+
+## Interactive Demos
+
+- /demos - Browse all interactive demos
+- /demos/zero-to-chat - Build chat from scratch
+- /demos/streaming-states - Visualize streaming states
+- /demos/token-visualizer - See token usage in real-time
+- /demos/memory-context - Memory system demo
+- /demos/savings-dashboard - Token savings dashboard
+
+---
 
 ## API Reference
 
-- [Quick Reference](/reference/quick-reference): One-page API overview
-- [Printable Cheat Sheet](/reference/cheat-sheet): PDF-friendly API reference
-- [Types](/reference/api/types): TypeScript type definitions
-- [Utilities](/reference/utilities): Helper functions and utilities
-- [createMemoryStore](/reference/utilities/create-memory-store): Create conversation memory store
-- [createRAGEngine](/reference/utilities/create-rag-engine): Create RAG engine
-- [createToolsEngine](/reference/utilities/create-tools-engine): Create tools engine
-- [Configuration](/reference/api/configuration): Global configuration options
+### Quick Reference
+- /reference/quick-reference - One-page API overview
+- /reference/cheat-sheet - Printable cheat sheet
+
+### Type Definitions
+- /reference/api/types - TypeScript type definitions
+- /reference/api/configuration - Global configuration options
+
+### Utilities
+- /reference/utilities - Helper functions and utilities
+- /reference/utilities/create-memory-store - Create conversation memory store
+- /reference/utilities/quick-start-helpers - Quick start helper functions
+- /reference/utilities/testing-helpers - Testing utilities
+- /reference/utilities/migration-helpers - Migration utilities
+
+---
 
 ## Packages
 
 ### @clarity-chat/react
-- [Components](/reference/packages/react/components): All React components
-- [Hooks](/reference/packages/react/hooks): All React hooks
-- [Utilities](/reference/packages/react/utilities): React utilities
+Main React component library with all components and hooks.
 
 ### @clarity-chat/memory
-- [clarityMemory](/reference/packages/memory/clarity-memory): Zero-config memory factory
-- [MemoryService](/reference/packages/memory/memory-service): Core memory service
-- [ConsentManager](/reference/packages/memory/consent-manager): GDPR/CCPA compliance
-- [AuditLogger](/reference/packages/memory/audit-logger): Audit logging
-- [LLMSummarizer](/reference/packages/memory/llm-summarizer): LLM-based summarization
-- [DecayManager](/reference/packages/memory/decay-manager): Memory decay/forgetting
-- [TokenBudgetManager](/reference/packages/memory/token-budget-manager): Token budget management
+- clarityMemory - Zero-config memory factory
+- MemoryService - Core memory service
+- ConsentManager - GDPR/CCPA compliance
+- AuditLogger - Audit logging
+- LLMSummarizer - LLM-based summarization
+- DecayManager - Memory decay/forgetting
 
 ### @clarity-chat/token-optimization
-- [useTokenCount](/reference/packages/token-optimization/use-token-count): Token counting hook
-- [useTokenOptimization](/reference/packages/token-optimization/use-token-optimization): Unified optimization hook
-- [ModelRouter](/reference/packages/token-optimization/model-router): Model routing
-- [TieredCache](/reference/packages/token-optimization/tiered-cache): Multi-tier caching
-- [AccurateTokenCounter](/reference/packages/token-optimization/accurate-token-counter): Accurate token counting
-- [LLMLinguaCompressor](/reference/packages/token-optimization/llmlingua-compressor): LLMLingua compression
-- [ProviderCachingFormatter](/reference/packages/token-optimization/provider-caching): Provider-native caching
-- [QualityGate](/reference/packages/token-optimization/quality-gate): Quality gates
-- [CostAwareOptimizer](/reference/packages/token-optimization/cost-aware-optimizer): Cost optimization
+- AccurateTokenCounter - Accurate token counting
+- ModelRouter - Model routing
+- TieredCache - Multi-tier caching
+- LLMLinguaCompressor - LLMLingua compression
+- ProviderCachingFormatter - Provider-native caching
+- QualityGate - Quality validation
+- CostAwareOptimizer - Cost optimization
 
-## Basic Guides
-
-- [Components Guide](/guides/components): Component usage patterns and best practices
-- [Hooks Guide](/guides/hooks): Hook composition and patterns
-- [Theming Guide](/guides/theming): Customize colors, fonts, and styles
-- [Customization](/guides/customization): Deep customization techniques
-- [Messages Guide](/guides/messages): Message formats and rendering
-- [Common Patterns](/learn/guides/common-patterns): Frequently used patterns
-
-## Intermediate Guides
-
-- [Streaming](/guides/streaming): Implement real-time streaming responses
-- [Memory](/guides/memory): Add conversation memory and context persistence
-- [Error Handling](/guides/error-handling): Handle errors gracefully with fallbacks
-- [File Upload](/guides/file-upload): Support document and image uploads
-- [State Management](/guides/state-management): Manage complex chat state
-- [Accessibility](/guides/accessibility): Build WCAG-compliant interfaces
-- [Performance](/guides/performance): Optimize for speed and efficiency
-- [Bundle Size](/learn/guides/bundle-size): Minimize bundle size with tree shaking
-- [Testing](/learn/guides/testing): Test chat components effectively
-
-## Advanced Guides
-
-- [RAG](/guides/rag): Retrieval-Augmented Generation implementation
-- [Agents](/guides/agents): Build AI agents with tool execution
-- [Tool Calling System](/guides/tools): Integrate custom tools and functions
-- [Token Optimization](/guides/token-optimization): Reduce API costs by up to 70%
-- [Prompt Caching](/guides/prompt-caching): Cache prompts for faster responses
-- [Prompts](/guides/prompts): Prompt engineering best practices
-- [Model Adapters](/guides/model-adapters): Support multiple LLM providers
-- [Plugins](/guides/plugins): Extend functionality with plugins
-- [Webhooks](/guides/webhooks): Event-driven integrations
-- [Observability](/guides/observability): Monitoring and debugging
-- [Vector Stores](/guides/vector-stores): Vector database integration
-- [Reranking](/guides/reranking): Improve RAG result relevance
-
-## Enterprise Guides
-
-- [RBAC](/guides/rbac): Role-based access control setup
-- [Multi-Tenancy](/guides/multi-tenancy): Multi-tenant architecture
-- [SSO Configuration](/guides/sso-configuration): Single sign-on setup
-- [Audit Logging](/guides/audit-logging): Compliance audit trails
-- [Usage Quotas](/guides/usage-quotas): Rate limiting and quotas
-- [Safety](/guides/safety): Content moderation and safety
-- [Security](/guides/security): Security best practices
-
-## Tutorials
-
-- [Building Your First Chatbot](/learn/tutorials/building-first-chatbot): Complete beginner tutorial
-- [Adding RAG](/learn/tutorials/adding-rag): Add document retrieval to your chatbot
+---
 
 ## Deployment
 
-- [Deploy to Vercel](/learn/deployment/vercel): Zero-config Vercel deployment
-- [Deploy to AWS](/learn/deployment/aws): AWS Lambda, ECS, or EC2 deployment
-- [Docker Deployment](/learn/deployment/docker): Docker and docker-compose setup
+- /get-started/deployment/vercel - Zero-config Vercel deployment
+- /get-started/deployment/aws - AWS Lambda, ECS, or EC2 deployment
+- /get-started/deployment/docker - Docker and docker-compose setup
 
-## Cookbook Recipes
-
-### Getting Started Recipes
-- [3-Line Quick Start](/cookbook/quick-start-3-lines): Minimal setup in 3 lines of code
-- [Memory Integration](/cookbook/memory-integration): Add conversation memory
-- [Streaming Setup](/cookbook/streaming-setup): Configure streaming responses
-- [Error Handling](/cookbook/error-handling): Implement error boundaries
-- [Multi-Modal Chat](/cookbook/multi-modal-chat): Support images and files
-- [Voice Input](/cookbook/voice-input): Add speech-to-text
-- [Custom Tool Integration](/cookbook/custom-tool-integration): Add custom tools
-- [OpenAI Streaming Chat](/cookbook/openai-streaming-chat): OpenAI integration
-- [Next.js Integration](/cookbook/nextjs-integration): Next.js App Router setup
-- [Backend Integration Patterns](/cookbook/backend-integration-patterns): API design patterns
-- [Custom Theming](/cookbook/custom-theming): Create custom themes
-
-### Advanced Recipes
-- [Streaming with Memory](/cookbook/streaming-with-memory): Combine streaming and memory
-- [RAG Document Chat](/cookbook/rag-document-chat): Build document Q&A
-- [Agent with Tools](/cookbook/agent-with-tools): Create tool-using agents
-- [Advanced Agent Workflow](/cookbook/advanced-agent-workflow): Complex agent patterns
-
-### Production Recipes
-- [Authentication](/cookbook/authentication): Add user authentication
-- [Analytics Tracking](/cookbook/analytics-tracking): Track usage analytics
-- [Production Monitoring](/cookbook/production-monitoring): Monitor in production
-
-### Enterprise Recipes
-- [Enterprise SSO Setup](/cookbook/enterprise-sso-setup): Configure enterprise SSO
-
-## Examples
-
-### Featured
-- [Tool Calling Showcase](/examples/tool-calling-showcase): Advanced tool calling demo
-
-### Basic Examples
-- [Simple Chat](/examples/simple-chat): Minimal chat implementation
-- [Themed Chat](/examples/themed-chat): Custom theme example
-- [Custom Styling](/examples/custom-styling): CSS customization
-
-### Advanced Examples
-- [Multi-user Chat](/examples/multi-user): Multi-participant chat
-- [File Sharing](/examples/file-sharing): File upload and sharing
-- [Real-time Updates](/examples/realtime): Real-time collaboration
-- [Custom Commands](/examples/custom-commands): Slash commands
-- [Token Optimization](/examples/token-optimization): Token optimization demo
-
-### Pattern Examples
-- [Command Palette](/examples/command-palette): Command palette integration
-- [Drag & Drop](/examples/drag-drop): Drag and drop messages
-- [Context Menus](/examples/context-menus): Right-click actions
-- [Keyboard Shortcuts](/examples/keyboard-shortcuts): Keyboard navigation
-
-## Interactive Demos
-
-- [All Demos](/demos): Browse all interactive demos
-- [Zero to Chat](/demos/zero-to-chat): Build chat from scratch
-- [Provider Hot-Swap](/demos/provider-hotswap): Switch LLM providers
-- [Streaming States](/demos/streaming-states): Visualize streaming states
-- [Token Visualizer](/demos/token-visualizer): See token usage
-- [Memory & Context](/demos/memory-context): Memory system demo
-- [Customization Playground](/demos/customization-playground): Live customization
-- [Tool Calling / Agents](/demos/tool-calling): Agent and tools demo
-- [Accessibility Audit](/demos/accessibility-audit): A11y testing
-- [Bundle Comparison](/demos/bundle-comparison): Bundle size analysis
-- [Enterprise Production](/demos/enterprise-production): Enterprise features
+---
 
 ## Migration
 
-- [From Vercel AI SDK](/learn/migration/from-vercel-ai-sdk): Step-by-step migration guide
+- /get-started/migration/from-vercel-ai-sdk - Step-by-step migration guide
+- /cookbook/toon-migration-guide - TOON migration guide
 
-## Architecture
+---
 
-- [Architecture Overview](/learn/architecture): System design and patterns
+## Help & Troubleshooting
 
-## Help
+- /get-started/faq - Frequently asked questions
+- /get-started/troubleshooting - Common issues and solutions
+- /help/microphone-setup - Microphone setup guide
 
-- [FAQ](/learn/faq): Frequently asked questions
-- [Troubleshooting](/learn/troubleshooting): Common issues and solutions
-
-## Optional
-
-- [Enterprise Features](/enterprise): SSO, RBAC, multi-tenancy, audit logs
-- [What's New](/learn/whats-new): Latest features and updates
+---
 
 ## AI-Optimized APIs
 
 Programmatic access to Clarity Chat documentation for AI systems and RAG applications:
 
-- [Components API](/api/ai/components): JSON endpoint with all component documentation
-- [Hooks API](/api/ai/hooks): JSON endpoint with all hook documentation
-- [Search API](/api/ai/search): Full-text search across all documentation
-- [Health API](/api/ai/health): API health and status monitoring
-- [OpenAPI Spec](/openapi.json): Full OpenAPI 3.0 specification
+- /api/ai/components - JSON endpoint with all component documentation
+- /api/ai/hooks - JSON endpoint with all hook documentation
+- /api/ai/search - Full-text search across all documentation
+- /api/ai/health - API health and status monitoring
+- /openapi.json - Full OpenAPI 3.0 specification
 
-### MCP Server
+### Model Context Protocol (MCP) Server
 
-Model Context Protocol server for Claude Code and other AI tools:
+Available MCP tools for Claude Code and other AI tools:
+- list_components - List all components with basic info
+- get_component - Get detailed component documentation
+- list_hooks - List all hooks with basic info
+- get_hook - Get detailed hook documentation
+- search_docs - Search all documentation
+- health_check - Check API health
 
+MCP Server Configuration:
 ```json
 {
   "mcpServers": {
@@ -411,4 +335,92 @@ Model Context Protocol server for Claude Code and other AI tools:
 }
 ```
 
-Available MCP tools: `list_components`, `get_component`, `list_hooks`, `get_hook`, `search_docs`, `health_check`
+---
+
+## Library Information
+
+- **Version**: 2.0.0
+- **License**: MIT
+- **Repository**: https://github.com/clarity-ai/clarity-chat-components
+- **Documentation**: https://clarity-chat.dev
+- **NPM Package**: @clarity-chat/react
+- **React Version**: 18+ / 19
+- **TypeScript Version**: 5.0+
+- **Node.js Version**: 18+
+
+---
+
+## Installation
+
+```bash
+# npm
+npm install @clarity-chat/react
+
+# pnpm
+pnpm add @clarity-chat/react
+
+# yarn
+yarn add @clarity-chat/react
+```
+
+**Peer Dependencies:**
+- React 18+ or React 19
+- Tailwind CSS 3.4+
+
+**Optional Packages:**
+```bash
+npm install @clarity-chat/memory @clarity-chat/token-optimization
+```
+
+---
+
+## Quick Start Example
+
+```tsx
+import { ClarityChatApp } from '@clarity-chat/react'
+
+function App() {
+  return <ClarityChatApp api="/api/chat" />
+}
+```
+
+With memory enabled:
+```tsx
+<ClarityChatApp
+  api="/api/chat"
+  features={{ memory: true }}
+/>
+```
+
+Enterprise preset:
+```tsx
+<ClarityChatApp
+  api="/api/chat"
+  preset="enterprise"
+/>
+```
+
+---
+
+## Contributing
+
+- /contributing - Contributing guidelines
+
+---
+
+## About
+
+- /about - About Clarity Chat
+- /about/performance - Performance benchmarks
+- /license - License information
+- /changelog - Version history and updates
+
+---
+
+This documentation is optimized for AI consumption with:
+- Explicit cross-references with full context
+- Independent, standalone sections
+- No relative references ("see above")
+- Clear section boundaries
+- Semantic HTML structure
+- JSON-LD schema metadata

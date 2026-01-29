@@ -1,0 +1,1087 @@
+/* ============================================================================
+   ChatComposer Component Styles
+   ============================================================================
+
+   A comprehensive CSS system for the ChatComposer component with support for:
+   - Multiple layout modes (standard, split-panel, minimal, fullscreen, embedded)
+   - Responsive design with mobile-first breakpoints
+   - Dark mode support with CSS custom properties
+   - Smooth transitions and animations
+   - Variant-specific sizing and spacing (default, compact, comfortable)
+
+   ========================================================================== */
+
+/* ============================================================================
+   1. CSS CUSTOM PROPERTIES (Root Theme Variables)
+   ============================================================================ */
+
+:root {
+  /* Colors - Core Theme */
+  --chat-composer-color-primary: #3b82f6;
+  --chat-composer-color-secondary: #6b7280;
+  --chat-composer-color-background: #ffffff;
+  --chat-composer-color-surface: #f9fafb;
+  --chat-composer-color-border: #e5e7eb;
+  --chat-composer-color-text: #111827;
+  --chat-composer-color-text-secondary: #6b7280;
+
+  /* Colors - Status */
+  --chat-composer-color-success: #10b981;
+  --chat-composer-color-warning: #f59e0b;
+  --chat-composer-color-error: #ef4444;
+  --chat-composer-color-info: #3b82f6;
+
+  /* Spacing System */
+  --chat-composer-spacing-xs: 0.25rem;
+  --chat-composer-spacing-sm: 0.5rem;
+  --chat-composer-spacing-md: 1rem;
+  --chat-composer-spacing-lg: 1.5rem;
+  --chat-composer-spacing-xl: 2rem;
+  --chat-composer-spacing-2xl: 3rem;
+
+  /* Typography */
+  --chat-composer-font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --chat-composer-font-size-xs: 0.75rem;
+  --chat-composer-font-size-sm: 0.875rem;
+  --chat-composer-font-size-base: 1rem;
+  --chat-composer-font-size-lg: 1.125rem;
+  --chat-composer-font-size-xl: 1.25rem;
+  --chat-composer-font-weight-normal: 400;
+  --chat-composer-font-weight-medium: 500;
+  --chat-composer-font-weight-semibold: 600;
+  --chat-composer-font-weight-bold: 700;
+
+  /* Border Radius */
+  --chat-composer-radius-sm: 0.375rem;
+  --chat-composer-radius-md: 0.5rem;
+  --chat-composer-radius-lg: 0.75rem;
+  --chat-composer-radius-xl: 1rem;
+
+  /* Shadows */
+  --chat-composer-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --chat-composer-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  --chat-composer-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  --chat-composer-shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+
+  /* Transitions */
+  --chat-composer-transition-fast: 150ms ease-in-out;
+  --chat-composer-transition-base: 200ms ease-in-out;
+  --chat-composer-transition-slow: 300ms ease-in-out;
+
+  /* Z-Index */
+  --chat-composer-z-base: 1;
+  --chat-composer-z-elevated: 10;
+  --chat-composer-z-modal: 100;
+  --chat-composer-z-overlay: 50;
+
+  /* Layout Dimensions */
+  --chat-composer-sidebar-width: 320px;
+  --chat-composer-header-height: 56px;
+  --chat-composer-input-height: 60px;
+}
+
+/* Dark Mode Theme Variables */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --chat-composer-color-background: #1f2937;
+    --chat-composer-color-surface: #111827;
+    --chat-composer-color-border: #374151;
+    --chat-composer-color-text: #f3f4f6;
+    --chat-composer-color-text-secondary: #9ca3af;
+  }
+}
+
+/* ============================================================================
+   2. BASE CONTAINER STYLES
+   ============================================================================ */
+
+.chat-composer {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  font-family: var(--chat-composer-font-family);
+  font-size: var(--chat-composer-font-size-base);
+  color: var(--chat-composer-color-text);
+  background-color: var(--chat-composer-color-background);
+  transition: background-color var(--chat-composer-transition-base),
+              color var(--chat-composer-transition-base);
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.chat-composer * {
+  box-sizing: border-box;
+}
+
+.chat-composer[data-layout] {
+  /* Allows specific layout styling via attribute selector */
+}
+
+.chat-composer[data-variant] {
+  /* Allows variant-specific styling via attribute selector */
+}
+
+/* ============================================================================
+   3. LAYOUT MODE STYLES
+   ============================================================================ */
+
+/* ─────────────────────────────────────────────────────────────────────────── */
+/* Standard Layout: Header, Messages, Input stacked vertically */
+/* ─────────────────────────────────────────────────────────────────────────── */
+
+.chat-composer-standard {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+  gap: 0;
+}
+
+.chat-composer-standard .chat-composer-header {
+  flex-shrink: 0;
+  border-bottom: 1px solid var(--chat-composer-color-border);
+  min-height: var(--chat-composer-header-height);
+}
+
+.chat-composer-standard .chat-composer-messages {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.chat-composer-standard .chat-composer-thinking {
+  flex-shrink: 0;
+  border-top: 1px solid var(--chat-composer-color-border);
+}
+
+.chat-composer-standard .chat-composer-tools {
+  flex-shrink: 0;
+  border-top: 1px solid var(--chat-composer-color-border);
+}
+
+.chat-composer-standard .chat-composer-suggestions {
+  flex-shrink: 0;
+  border-top: 1px solid var(--chat-composer-color-border);
+  padding: var(--chat-composer-spacing-md);
+}
+
+.chat-composer-standard .chat-composer-input {
+  flex-shrink: 0;
+  border-top: 1px solid var(--chat-composer-color-border);
+}
+
+.chat-composer-standard .chat-composer-footer {
+  flex-shrink: 0;
+  border-top: 1px solid var(--chat-composer-color-border);
+  background-color: var(--chat-composer-color-surface);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────── */
+/* Split Panel Layout: Messages left, sidebar right */
+/* ─────────────────────────────────────────────────────────────────────────── */
+
+.chat-composer-split {
+  display: flex;
+  flex-direction: row;
+  height: 100%;
+  width: 100%;
+  gap: 0;
+}
+
+.chat-composer-split .chat-composer-main {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+  gap: 0;
+}
+
+.chat-composer-split .chat-composer-header {
+  flex-shrink: 0;
+  border-bottom: 1px solid var(--chat-composer-color-border);
+  min-height: var(--chat-composer-header-height);
+}
+
+.chat-composer-split .chat-composer-messages {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.chat-composer-split .chat-composer-thinking {
+  flex-shrink: 0;
+  border-top: 1px solid var(--chat-composer-color-border);
+}
+
+.chat-composer-split .chat-composer-tools {
+  flex-shrink: 0;
+  border-top: 1px solid var(--chat-composer-color-border);
+}
+
+.chat-composer-split .chat-composer-suggestions {
+  flex-shrink: 0;
+  border-top: 1px solid var(--chat-composer-color-border);
+  padding: var(--chat-composer-spacing-md);
+}
+
+.chat-composer-split .chat-composer-input {
+  flex-shrink: 0;
+  border-top: 1px solid var(--chat-composer-color-border);
+}
+
+.chat-composer-split .chat-composer-footer {
+  flex-shrink: 0;
+  border-top: 1px solid var(--chat-composer-color-border);
+  background-color: var(--chat-composer-color-surface);
+}
+
+.chat-composer-split .chat-composer-sidebar {
+  flex-shrink: 0;
+  width: var(--chat-composer-sidebar-width);
+  height: 100%;
+  border-left: 1px solid var(--chat-composer-color-border);
+  background-color: var(--chat-composer-color-surface);
+  overflow-y: auto;
+  overflow-x: hidden;
+  z-index: var(--chat-composer-z-base);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────── */
+/* Minimal Layout: Just messages and input */
+/* ─────────────────────────────────────────────────────────────────────────── */
+
+.chat-composer-minimal {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+  gap: 0;
+  background-color: var(--chat-composer-color-background);
+}
+
+.chat-composer-minimal .chat-composer-messages {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.chat-composer-minimal .chat-composer-input {
+  flex-shrink: 0;
+  border-top: 1px solid var(--chat-composer-color-border);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────── */
+/* Fullscreen Layout: Full viewport with optional sidebar */
+/* ─────────────────────────────────────────────────────────────────────────── */
+
+.chat-composer-fullscreen {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+  gap: 0;
+}
+
+.chat-composer-fullscreen .chat-composer-header {
+  flex-shrink: 0;
+  border-bottom: 1px solid var(--chat-composer-color-border);
+  background-color: var(--chat-composer-color-background);
+  z-index: var(--chat-composer-z-elevated);
+  position: sticky;
+  top: 0;
+}
+
+.chat-composer-fullscreen .chat-composer-body {
+  display: flex;
+  flex-direction: row;
+  flex: 1;
+  min-height: 0;
+  width: 100%;
+  gap: 0;
+}
+
+.chat-composer-fullscreen .chat-composer-sidebar {
+  flex-shrink: 0;
+  width: var(--chat-composer-sidebar-width);
+  height: 100%;
+  border-right: 1px solid var(--chat-composer-color-border);
+  background-color: var(--chat-composer-color-surface);
+  overflow-y: auto;
+  overflow-x: hidden;
+  z-index: var(--chat-composer-z-elevated);
+}
+
+.chat-composer-fullscreen .chat-composer-content {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+  gap: 0;
+}
+
+.chat-composer-fullscreen .chat-composer-messages {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.chat-composer-fullscreen .chat-composer-thinking {
+  flex-shrink: 0;
+  border-top: 1px solid var(--chat-composer-color-border);
+}
+
+.chat-composer-fullscreen .chat-composer-tools {
+  flex-shrink: 0;
+  border-top: 1px solid var(--chat-composer-color-border);
+}
+
+.chat-composer-fullscreen .chat-composer-suggestions {
+  flex-shrink: 0;
+  border-top: 1px solid var(--chat-composer-color-border);
+  padding: var(--chat-composer-spacing-md);
+}
+
+.chat-composer-fullscreen .chat-composer-input {
+  flex-shrink: 0;
+  border-top: 1px solid var(--chat-composer-color-border);
+  background-color: var(--chat-composer-color-background);
+  position: sticky;
+  bottom: 0;
+  z-index: var(--chat-composer-z-base);
+}
+
+.chat-composer-fullscreen .chat-composer-footer {
+  flex-shrink: 0;
+  border-top: 1px solid var(--chat-composer-color-border);
+  background-color: var(--chat-composer-color-surface);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────── */
+/* Embedded Layout: Compact, for embedding in other UIs */
+/* ─────────────────────────────────────────────────────────────────────────── */
+
+.chat-composer-embedded {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+  gap: 0;
+  border: 1px solid var(--chat-composer-color-border);
+  border-radius: var(--chat-composer-radius-lg);
+  overflow: hidden;
+}
+
+.chat-composer-embedded .chat-composer-thinking {
+  flex-shrink: 0;
+  border-bottom: 1px solid var(--chat-composer-color-border);
+}
+
+.chat-composer-embedded .chat-composer-messages {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.chat-composer-embedded .chat-composer-input {
+  flex-shrink: 0;
+  border-top: 1px solid var(--chat-composer-color-border);
+}
+
+/* ============================================================================
+   4. VARIANT-SPECIFIC STYLES
+   ============================================================================ */
+
+/* ─────────────────────────────────────────────────────────────────────────── */
+/* Default Variant: Standard spacing and sizing */
+/* ─────────────────────────────────────────────────────────────────────────── */
+
+.chat-composer-default {
+  /* Uses default CSS custom properties */
+}
+
+/* ─────────────────────────────────────────────────────────────────────────── */
+/* Compact Variant: Reduced spacing and text size */
+/* ─────────────────────────────────────────────────────────────────────────── */
+
+.chat-composer-compact {
+  --chat-composer-spacing-md: 0.75rem;
+  --chat-composer-spacing-lg: 1rem;
+  --chat-composer-font-size-base: 0.9375rem;
+  --chat-composer-header-height: 48px;
+  --chat-composer-input-height: 52px;
+}
+
+.chat-composer-compact .chat-composer-header {
+  padding: var(--chat-composer-spacing-sm) var(--chat-composer-spacing-md);
+}
+
+.chat-composer-compact .chat-composer-messages {
+  padding: var(--chat-composer-spacing-sm) var(--chat-composer-spacing-md);
+}
+
+.chat-composer-compact .chat-composer-input {
+  padding: var(--chat-composer-spacing-sm) var(--chat-composer-spacing-md);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────── */
+/* Comfortable Variant: Increased spacing and text size */
+/* ─────────────────────────────────────────────────────────────────────────── */
+
+.chat-composer-comfortable {
+  --chat-composer-spacing-md: 1.25rem;
+  --chat-composer-spacing-lg: 2rem;
+  --chat-composer-font-size-base: 1.0625rem;
+  --chat-composer-header-height: 64px;
+  --chat-composer-input-height: 72px;
+}
+
+.chat-composer-comfortable .chat-composer-header {
+  padding: var(--chat-composer-spacing-md) var(--chat-composer-spacing-lg);
+}
+
+.chat-composer-comfortable .chat-composer-messages {
+  padding: var(--chat-composer-spacing-md) var(--chat-composer-spacing-lg);
+}
+
+.chat-composer-comfortable .chat-composer-input {
+  padding: var(--chat-composer-spacing-md) var(--chat-composer-spacing-lg);
+}
+
+/* ============================================================================
+   5. SLOT STYLES
+   ============================================================================ */
+
+/* ─────────────────────────────────────────────────────────────────────────── */
+/* Header Slot */
+/* ─────────────────────────────────────────────────────────────────────────── */
+
+.chat-composer-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--chat-composer-spacing-md) var(--chat-composer-spacing-lg);
+  background-color: var(--chat-composer-color-background);
+  transition: all var(--chat-composer-transition-base);
+}
+
+.chat-composer-slot-header {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.chat-composer-slot-header.sticky {
+  position: sticky;
+  top: 0;
+  z-index: var(--chat-composer-z-elevated);
+}
+
+.chat-composer-slot-header.bordered {
+  border-bottom: 1px solid var(--chat-composer-color-border);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────── */
+/* Messages Slot */
+/* ─────────────────────────────────────────────────────────────────────────── */
+
+.chat-composer-messages {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  background-color: var(--chat-composer-color-background);
+}
+
+.chat-composer-slot-messages {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  gap: var(--chat-composer-spacing-md);
+  flex: 1;
+}
+
+.chat-composer-slot-messages.padding-none {
+  padding: 0;
+}
+
+.chat-composer-slot-messages.padding-sm {
+  padding: var(--chat-composer-spacing-sm);
+}
+
+.chat-composer-slot-messages.padding-md {
+  padding: var(--chat-composer-spacing-md);
+}
+
+.chat-composer-slot-messages.padding-lg {
+  padding: var(--chat-composer-spacing-lg);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────── */
+/* Sidebar Slot */
+/* ─────────────────────────────────────────────────────────────────────────── */
+
+.chat-composer-sidebar {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background-color: var(--chat-composer-color-surface);
+  border-left: 1px solid var(--chat-composer-color-border);
+  position: relative;
+  z-index: var(--chat-composer-z-base);
+  transition: all var(--chat-composer-transition-base);
+}
+
+.chat-composer-slot-sidebar {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+  position: relative;
+}
+
+.chat-composer-slot-sidebar.position-left {
+  order: -1;
+  border-left: none;
+  border-right: 1px solid var(--chat-composer-color-border);
+}
+
+.chat-composer-slot-sidebar.position-right {
+  border-left: 1px solid var(--chat-composer-color-border);
+}
+
+.chat-composer-slot-sidebar.mobile-overlay {
+  /* On mobile, sidebar overlays content */
+}
+
+.chat-composer-slot-sidebar.mobile-push {
+  /* On mobile, sidebar pushes content */
+}
+
+.chat-composer-sidebar-toggle {
+  display: none;
+  position: absolute;
+  top: var(--chat-composer-spacing-md);
+  right: var(--chat-composer-spacing-md);
+  z-index: var(--chat-composer-z-elevated);
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  background-color: var(--chat-composer-color-primary);
+  color: white;
+  border: none;
+  border-radius: var(--chat-composer-radius-md);
+  cursor: pointer;
+  transition: all var(--chat-composer-transition-base);
+  font-size: var(--chat-composer-font-size-lg);
+}
+
+.chat-composer-sidebar-toggle:hover {
+  background-color: #2563eb;
+  transform: scale(1.05);
+}
+
+.chat-composer-sidebar-content {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: var(--chat-composer-spacing-md);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────── */
+/* Thinking Slot */
+/* ─────────────────────────────────────────────────────────────────────────── */
+
+.chat-composer-thinking {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  background-color: rgba(59, 130, 246, 0.05);
+  border-top: 1px solid var(--chat-composer-color-border);
+  border-bottom: 1px solid var(--chat-composer-color-border);
+  overflow: hidden;
+}
+
+.chat-composer-slot-thinking {
+  display: flex;
+  flex-direction: column;
+  gap: var(--chat-composer-spacing-sm);
+  padding: var(--chat-composer-spacing-md);
+  animation: slideDown var(--chat-composer-transition-base) ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────────────────── */
+/* Tools Slot */
+/* ─────────────────────────────────────────────────────────────────────────── */
+
+.chat-composer-tools {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  background-color: var(--chat-composer-color-background);
+  border-top: 1px solid var(--chat-composer-color-border);
+  border-bottom: 1px solid var(--chat-composer-color-border);
+  overflow: hidden;
+}
+
+.chat-composer-slot-tools {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: var(--chat-composer-spacing-md);
+  padding: var(--chat-composer-spacing-md);
+  animation: slideDown var(--chat-composer-transition-base) ease-out;
+}
+
+@media (max-width: 768px) {
+  .chat-composer-slot-tools {
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────────────────── */
+/* Input Slot */
+/* ─────────────────────────────────────────────────────────────────────────── */
+
+.chat-composer-input {
+  display: flex;
+  align-items: flex-end;
+  width: 100%;
+  background-color: var(--chat-composer-color-background);
+  border-top: 1px solid var(--chat-composer-color-border);
+  min-height: var(--chat-composer-input-height);
+}
+
+.chat-composer-slot-input {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  gap: var(--chat-composer-spacing-sm);
+  padding: var(--chat-composer-spacing-md) var(--chat-composer-spacing-lg);
+}
+
+.chat-composer-slot-input.sticky {
+  position: sticky;
+  bottom: 0;
+  z-index: var(--chat-composer-z-elevated);
+}
+
+.chat-composer-slot-input.bordered {
+  border-top: 1px solid var(--chat-composer-color-border);
+}
+
+.chat-composer-slot-input.padding-none {
+  padding: 0;
+}
+
+.chat-composer-slot-input.padding-sm {
+  padding: var(--chat-composer-spacing-sm);
+}
+
+.chat-composer-slot-input.padding-md {
+  padding: var(--chat-composer-spacing-md);
+}
+
+.chat-composer-slot-input.padding-lg {
+  padding: var(--chat-composer-spacing-lg);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────── */
+/* Suggestions Slot */
+/* ─────────────────────────────────────────────────────────────────────────── */
+
+.chat-composer-suggestions {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  background-color: var(--chat-composer-color-surface);
+  border-top: 1px solid var(--chat-composer-color-border);
+  border-bottom: 1px solid var(--chat-composer-color-border);
+  overflow: hidden;
+}
+
+.chat-composer-slot-suggestions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--chat-composer-spacing-md);
+  padding: var(--chat-composer-spacing-md);
+  animation: slideDown var(--chat-composer-transition-base) ease-out;
+}
+
+.chat-composer-slot-suggestions > * {
+  /* Suggestion chips will be styled by parent */
+}
+
+/* ─────────────────────────────────────────────────────────────────────────── */
+/* Footer Slot */
+/* ─────────────────────────────────────────────────────────────────────────── */
+
+.chat-composer-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--chat-composer-spacing-md) var(--chat-composer-spacing-lg);
+  background-color: var(--chat-composer-color-surface);
+  border-top: 1px solid var(--chat-composer-color-border);
+  flex-shrink: 0;
+  gap: var(--chat-composer-spacing-md);
+}
+
+.chat-composer-slot-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  gap: var(--chat-composer-spacing-md);
+}
+
+/* ============================================================================
+   6. EMPTY STATE
+   ============================================================================ */
+
+.chat-composer-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  background-color: var(--chat-composer-color-background);
+  color: var(--chat-composer-color-text-secondary);
+  font-size: var(--chat-composer-font-size-lg);
+  animation: fadeIn var(--chat-composer-transition-slow) ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* ============================================================================
+   7. SCROLLBAR CUSTOMIZATION
+   ============================================================================ */
+
+.chat-composer-messages::-webkit-scrollbar,
+.chat-composer-sidebar-content::-webkit-scrollbar,
+.chat-composer-slot-messages::-webkit-scrollbar {
+  width: 8px;
+}
+
+.chat-composer-messages::-webkit-scrollbar-track,
+.chat-composer-sidebar-content::-webkit-scrollbar-track,
+.chat-composer-slot-messages::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.chat-composer-messages::-webkit-scrollbar-thumb,
+.chat-composer-sidebar-content::-webkit-scrollbar-thumb,
+.chat-composer-slot-messages::-webkit-scrollbar-thumb {
+  background: var(--chat-composer-color-border);
+  border-radius: 4px;
+}
+
+.chat-composer-messages::-webkit-scrollbar-thumb:hover,
+.chat-composer-sidebar-content::-webkit-scrollbar-thumb:hover,
+.chat-composer-slot-messages::-webkit-scrollbar-thumb:hover {
+  background: var(--chat-composer-color-text-secondary);
+}
+
+/* ============================================================================
+   8. SMOOTH TRANSITIONS FOR LAYOUT CHANGES
+   ============================================================================ */
+
+.chat-composer {
+  transition: all var(--chat-composer-transition-base);
+}
+
+.chat-composer-split,
+.chat-composer-standard,
+.chat-composer-minimal,
+.chat-composer-fullscreen,
+.chat-composer-embedded {
+  animation: layoutFadeIn var(--chat-composer-transition-slow) ease-out;
+}
+
+@keyframes layoutFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.chat-composer-sidebar {
+  animation: sidebarSlideIn var(--chat-composer-transition-base) ease-out;
+}
+
+@keyframes sidebarSlideIn {
+  from {
+    opacity: 0;
+    width: 0;
+  }
+  to {
+    opacity: 1;
+    width: var(--chat-composer-sidebar-width);
+  }
+}
+
+/* ============================================================================
+   9. RESPONSIVE DESIGN
+   ============================================================================ */
+
+/* Large Screens (1200px and above) */
+@media (min-width: 1200px) {
+  .chat-composer-split .chat-composer-sidebar {
+    width: var(--chat-composer-sidebar-width);
+  }
+
+  .chat-composer-fullscreen .chat-composer-sidebar {
+    width: var(--chat-composer-sidebar-width);
+  }
+}
+
+/* Tablets (768px to 1199px) */
+@media (max-width: 1199px) {
+  .chat-composer-split .chat-composer-sidebar {
+    width: 280px;
+    --chat-composer-sidebar-width: 280px;
+  }
+
+  .chat-composer-fullscreen .chat-composer-sidebar {
+    width: 280px;
+    --chat-composer-sidebar-width: 280px;
+  }
+
+  .chat-composer-comfortable {
+    --chat-composer-spacing-lg: 1.5rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .chat-composer-header {
+    padding: var(--chat-composer-spacing-sm) var(--chat-composer-spacing-md);
+  }
+
+  .chat-composer-input {
+    min-height: auto;
+  }
+
+  .chat-composer-slot-input {
+    padding: var(--chat-composer-spacing-sm);
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .chat-composer-messages {
+    padding: var(--chat-composer-spacing-sm);
+  }
+
+  .chat-composer-slot-messages {
+    gap: var(--chat-composer-spacing-sm);
+  }
+
+  /* Split panel becomes stacked on mobile */
+  .chat-composer-split {
+    flex-direction: column;
+  }
+
+  .chat-composer-split .chat-composer-main {
+    flex: 1;
+  }
+
+  .chat-composer-split .chat-composer-sidebar {
+    width: 100%;
+    height: auto;
+    max-height: 50vh;
+    border-left: none;
+    border-top: 1px solid var(--chat-composer-color-border);
+    order: 1;
+  }
+
+  /* Fullscreen sidebar becomes overlay on mobile */
+  .chat-composer-fullscreen .chat-composer-body {
+    flex-direction: column;
+  }
+
+  .chat-composer-fullscreen .chat-composer-sidebar {
+    width: 100%;
+    height: auto;
+    max-height: 50vh;
+    border-right: none;
+    border-top: 1px solid var(--chat-composer-color-border);
+  }
+
+  .chat-composer-fullscreen .chat-composer-sidebar .chat-composer-sidebar-toggle {
+    display: block;
+  }
+
+  .chat-composer-slot-tools {
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  }
+
+  .chat-composer-footer {
+    padding: var(--chat-composer-spacing-sm) var(--chat-composer-spacing-md);
+  }
+
+  .chat-composer-slot-footer {
+    flex-direction: column;
+  }
+}
+
+/* Small Phones (480px and below) */
+@media (max-width: 480px) {
+  .chat-composer-header {
+    padding: var(--chat-composer-spacing-xs) var(--chat-composer-spacing-sm);
+  }
+
+  .chat-composer-messages {
+    padding: var(--chat-composer-spacing-xs);
+  }
+
+  .chat-composer-slot-messages {
+    gap: var(--chat-composer-spacing-xs);
+  }
+
+  .chat-composer-thinking {
+    border-top: none;
+    border-bottom: 1px solid var(--chat-composer-color-border);
+  }
+
+  .chat-composer-slot-thinking {
+    padding: var(--chat-composer-spacing-sm);
+  }
+
+  .chat-composer-tools {
+    border-top: none;
+  }
+
+  .chat-composer-slot-tools {
+    grid-template-columns: 1fr;
+    gap: var(--chat-composer-spacing-sm);
+  }
+
+  .chat-composer-suggestions {
+    border-top: none;
+  }
+
+  .chat-composer-slot-suggestions {
+    gap: var(--chat-composer-spacing-sm);
+    padding: var(--chat-composer-spacing-sm);
+    flex-direction: column;
+  }
+
+  .chat-composer-input {
+    min-height: auto;
+  }
+
+  .chat-composer-slot-input {
+    padding: var(--chat-composer-spacing-xs) var(--chat-composer-spacing-sm);
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .chat-composer-footer {
+    padding: var(--chat-composer-spacing-xs) var(--chat-composer-spacing-sm);
+    flex-direction: column;
+  }
+
+  .chat-composer-comfortable {
+    --chat-composer-spacing-md: 1rem;
+    --chat-composer-spacing-lg: 1.5rem;
+  }
+}
+
+/* ============================================================================
+   10. ACCESSIBILITY & MOTION PREFERENCES
+   ============================================================================ */
+
+/* Reduced Motion Support */
+@media (prefers-reduced-motion: reduce) {
+  .chat-composer,
+  .chat-composer-split,
+  .chat-composer-standard,
+  .chat-composer-minimal,
+  .chat-composer-fullscreen,
+  .chat-composer-embedded,
+  .chat-composer-sidebar,
+  .chat-composer-slot-thinking,
+  .chat-composer-slot-tools,
+  .chat-composer-slot-suggestions,
+  .chat-composer-empty {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+/* Focus Visible for Keyboard Navigation */
+.chat-composer-sidebar-toggle:focus-visible {
+  outline: 2px solid var(--chat-composer-color-primary);
+  outline-offset: 2px;
+}
+
+/* High Contrast Mode Support */
+@media (prefers-contrast: more) {
+  .chat-composer {
+    border: 2px solid var(--chat-composer-color-border);
+  }
+
+  .chat-composer-split .chat-composer-sidebar,
+  .chat-composer-fullscreen .chat-composer-sidebar {
+    border-width: 2px;
+  }
+
+  .chat-composer-header,
+  .chat-composer-input,
+  .chat-composer-footer {
+    border-width: 2px;
+  }
+}
+
+/* ============================================================================
+   11. PRINT STYLES
+   ============================================================================ */
+
+@media print {
+  .chat-composer-sidebar-toggle {
+    display: none;
+  }
+
+  .chat-composer-input {
+    display: none;
+  }
+
+  .chat-composer-footer {
+    display: none;
+  }
+
+  .chat-composer {
+    height: auto;
+    overflow: visible;
+  }
+
+  .chat-composer-messages {
+    overflow: visible;
+  }
+}

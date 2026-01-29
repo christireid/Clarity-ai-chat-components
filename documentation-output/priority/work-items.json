@@ -1,0 +1,768 @@
+{
+  "meta": {
+    "generated": "2026-01-28",
+    "phase": "Phase 3: Priority Classification",
+    "scope": "apps/streamlined-docs only",
+    "totalItems": 47,
+    "totalEffort": "274 hours",
+    "estimatedDuration": "34 working days"
+  },
+  "summary": {
+    "P0": {
+      "count": 15,
+      "effort": "154 hours",
+      "duration": "19 days",
+      "description": "Release blockers - must ship before launch"
+    },
+    "P1": {
+      "count": 21,
+      "effort": "87 hours",
+      "duration": "11 days",
+      "description": "Pre-release - should complete before launch"
+    },
+    "P2": {
+      "count": 11,
+      "effort": "46 hours",
+      "duration": "6 days",
+      "description": "Post-release - polish and enhancement"
+    }
+  },
+  "criticalPath": [
+    "1.1",
+    "2.1-2.7",
+    "6.2-6.19",
+    "Phase 5"
+  ],
+  "parallelizationOpportunities": {
+    "valuePropositionFixes": {
+      "developers": 1,
+      "items": ["1.1", "1.2", "1.3", "1.4"]
+    },
+    "cookbooks": {
+      "developers": 2,
+      "items": ["2.1", "2.2", "2.3", "2.4", "2.5", "2.6", "2.7"]
+    },
+    "apiReferencePagesHighest": {
+      "developers": 3,
+      "items": ["6.2", "6.3", "6.4", "6.5", "6.6", "6.7", "6.8", "6.9", "6.10", "6.11", "6.12", "6.13", "6.14", "6.15", "6.16", "6.17", "6.18", "6.19"]
+    },
+    "demoEnhancements": {
+      "developers": 1,
+      "items": ["4.1", "4.2", "4.3"]
+    },
+    "navigation": {
+      "developers": 1,
+      "items": ["5.1", "5.2", "5.3"]
+    }
+  },
+  "workItems": {
+    "P0": {
+      "milestone1_valueProposition": {
+        "name": "Value Proposition Corrections",
+        "totalEffort": "10 hours",
+        "dependencies": [],
+        "blocking": ["2.1-2.7", "3.1-3.18", "4.1-4.3"],
+        "items": [
+          {
+            "id": "1.1",
+            "title": "Update Hero Claims Across All Pages",
+            "priority": "P0-CRITICAL",
+            "effort": "2 hours",
+            "status": "pending",
+            "dependencies": [],
+            "blocking": ["1.2", "1.3", "2.1", "2.2", "2.3", "2.4", "2.5", "2.6", "2.7", "3.1-3.18"],
+            "files": [
+              "apps/streamlined-docs/app/guides/token-optimization/page.tsx",
+              "apps/streamlined-docs/app/examples/token-optimization/page.tsx",
+              "apps/streamlined-docs/app/tools/token-roi-calculator/page.tsx"
+            ],
+            "acceptanceCriteria": [
+              "All '80%+' references replaced with '50-70%'",
+              "All pages include 'up to 90% with provider caching' subtext",
+              "No mentions of '80%' remain except in real-world examples with breakdown"
+            ]
+          },
+          {
+            "id": "1.2",
+            "title": "Add Savings Breakdown to Real-World Examples",
+            "priority": "P0-CRITICAL",
+            "effort": "3 hours",
+            "status": "pending",
+            "dependencies": ["1.1"],
+            "blocking": ["2.1"],
+            "files": [
+              "apps/streamlined-docs/app/guides/token-optimization/page.tsx"
+            ],
+            "acceptanceCriteria": [
+              "Support chatbot example has savings breakdown",
+              "Document analysis example has savings breakdown",
+              "Code assistant example has savings breakdown",
+              "Each breakdown shows: baseline cost, final cost, strategy breakdown",
+              "Each includes note explaining how it exceeds 50-70% baseline"
+            ]
+          },
+          {
+            "id": "1.3",
+            "title": "Clarify Provider Caching '90%' Context",
+            "priority": "P0-CRITICAL",
+            "effort": "2 hours",
+            "status": "pending",
+            "dependencies": ["1.1"],
+            "blocking": ["2.2"],
+            "files": [
+              "apps/streamlined-docs/app/guides/token-optimization/page.tsx"
+            ],
+            "acceptanceCriteria": [
+              "Warning banner added before provider caching examples",
+              "Section heading clarifies '90% on Cached Content'",
+              "All provider caching examples include note about cached vs total cost"
+            ]
+          },
+          {
+            "id": "1.4",
+            "title": "Create Deprecation Notice Page",
+            "priority": "P0-CRITICAL",
+            "effort": "3 hours",
+            "status": "pending",
+            "dependencies": ["1.1"],
+            "blocking": ["3.5"],
+            "files": [
+              "apps/streamlined-docs/app/reference/deprecated/dynamic-compression-engine/page.tsx"
+            ],
+            "acceptanceCriteria": [
+              "Deprecation page created",
+              "Page clearly states deprecated in v1.0.0, removed in v2.0.0",
+              "Migration guide with old vs new API",
+              "Links to replacement APIs",
+              "Navigation updated"
+            ]
+          }
+        ]
+      },
+      "milestone2_criticalCookbooks": {
+        "name": "Critical Cookbooks",
+        "totalEffort": "40 hours",
+        "dependencies": ["1.1"],
+        "blocking": ["4.1-4.3"],
+        "items": [
+          {
+            "id": "2.1",
+            "title": "Cookbook: Achieving 50-70% Cost Reduction",
+            "priority": "P0-CRITICAL",
+            "effort": "6 hours",
+            "status": "pending",
+            "dependencies": ["1.1", "1.2", "1.3"],
+            "blocking": ["4.1", "4.2", "4.3"],
+            "files": [
+              "apps/streamlined-docs/app/cookbook/achieving-50-percent-reduction/page.tsx"
+            ],
+            "acceptanceCriteria": [
+              "Page created with ISR",
+              "All code examples use correct imports",
+              "Before/after cost comparison shows 50-70% reduction",
+              "Working code samples",
+              "Links to relevant API reference pages"
+            ]
+          },
+          {
+            "id": "2.2",
+            "title": "Cookbook: Provider Caching Setup",
+            "priority": "P0-CRITICAL",
+            "effort": "5 hours",
+            "status": "pending",
+            "dependencies": ["1.3"],
+            "blocking": [],
+            "files": [
+              "apps/streamlined-docs/app/cookbook/provider-caching-setup/page.tsx"
+            ],
+            "acceptanceCriteria": [
+              "Warning that 90% applies to cached tokens only",
+              "Examples for all 3 major providers",
+              "Cache hit rate monitoring examples",
+              "Cost calculator with different hit rates"
+            ]
+          },
+          {
+            "id": "2.3",
+            "title": "Cookbook: Smart Model Routing",
+            "priority": "P0",
+            "effort": "6 hours",
+            "status": "pending",
+            "dependencies": ["1.1"],
+            "blocking": [],
+            "files": [
+              "apps/streamlined-docs/app/cookbook/smart-routing/page.tsx"
+            ],
+            "acceptanceCriteria": [
+              "Complexity detection examples",
+              "Routing rules for common scenarios",
+              "Cost comparison: all-GPT-4 vs smart routing",
+              "Performance metrics"
+            ]
+          },
+          {
+            "id": "2.4",
+            "title": "Cookbook: React Integration",
+            "priority": "P0",
+            "effort": "6 hours",
+            "status": "pending",
+            "dependencies": ["1.1", "2.1"],
+            "blocking": [],
+            "files": [
+              "apps/streamlined-docs/app/cookbook/react-integration/page.tsx"
+            ],
+            "acceptanceCriteria": [
+              "All 4 major hooks documented",
+              "Complete working example",
+              "Debouncing patterns",
+              "Memoization strategies",
+              "Cost tracking integration"
+            ]
+          },
+          {
+            "id": "2.5",
+            "title": "Cookbook: Node.js Backend Integration",
+            "priority": "P0",
+            "effort": "6 hours",
+            "status": "pending",
+            "dependencies": ["1.1", "2.1"],
+            "blocking": [],
+            "files": [
+              "apps/streamlined-docs/app/cookbook/nodejs-integration/page.tsx"
+            ],
+            "acceptanceCriteria": [
+              "Express.js examples",
+              "Streaming implementation",
+              "Circuit breaker pattern",
+              "Resource limits",
+              "Error handling"
+            ]
+          },
+          {
+            "id": "2.6",
+            "title": "Cookbook: TOON Migration Guide",
+            "priority": "P0",
+            "effort": "6 hours",
+            "status": "pending",
+            "dependencies": ["1.1", "1.4"],
+            "blocking": [],
+            "files": [
+              "apps/streamlined-docs/app/cookbook/toon-migration/page.tsx"
+            ],
+            "acceptanceCriteria": [
+              "Side-by-side TOON vs new API comparison",
+              "Migration checklist",
+              "Breaking changes documented",
+              "Working migration examples",
+              "Links to deprecation notices"
+            ]
+          },
+          {
+            "id": "2.7",
+            "title": "Cookbook: Enterprise Production Pipeline",
+            "priority": "P0",
+            "effort": "5 hours",
+            "status": "pending",
+            "dependencies": ["1.1", "2.1", "2.2", "2.3"],
+            "blocking": [],
+            "files": [
+              "apps/streamlined-docs/app/cookbook/enterprise-pipeline/page.tsx"
+            ],
+            "acceptanceCriteria": [
+              "Complete working pipeline example",
+              "Security best practices",
+              "Monitoring integration",
+              "Load testing guidance",
+              "Cost tracking implementation"
+            ]
+          }
+        ]
+      },
+      "milestone3_demoEnhancements": {
+        "name": "Interactive Demo Enhancements",
+        "totalEffort": "28 hours",
+        "dependencies": ["1.1", "2.1-2.7"],
+        "blocking": [],
+        "items": [
+          {
+            "id": "4.1",
+            "title": "Enhance Existing Demos with Savings Focus",
+            "priority": "P0",
+            "effort": "8 hours",
+            "status": "pending",
+            "dependencies": ["1.1", "1.2", "2.1"],
+            "blocking": [],
+            "files": [
+              "apps/streamlined-docs/app/examples/token-optimization/page.tsx"
+            ],
+            "acceptanceCriteria": [
+              "All 4 existing demos have cost impact banners",
+              "All 4 demos show before/after cost comparison",
+              "Savings percentages accurate (50-70% range)",
+              "Demos still interactive and functional"
+            ]
+          },
+          {
+            "id": "4.2",
+            "title": "Create BeforeAfterComparison Component",
+            "priority": "P0",
+            "effort": "10 hours",
+            "status": "pending",
+            "dependencies": ["1.1", "2.1"],
+            "blocking": [],
+            "files": [
+              "apps/streamlined-docs/components/token-optimization/BeforeAfterComparison.tsx"
+            ],
+            "acceptanceCriteria": [
+              "Component created and exported",
+              "Interactive slider works",
+              "Live token counting accurate",
+              "Cost calculations show 50-70% savings",
+              "Multiple scenarios supported",
+              "Code example toggle"
+            ]
+          },
+          {
+            "id": "4.3",
+            "title": "Create SavingsDashboard Component",
+            "priority": "P0",
+            "effort": "10 hours",
+            "status": "pending",
+            "dependencies": ["1.1", "2.1", "4.2"],
+            "blocking": [],
+            "files": [
+              "apps/streamlined-docs/components/token-optimization/SavingsDashboard.tsx"
+            ],
+            "acceptanceCriteria": [
+              "Component created and exported",
+              "Charts render correctly",
+              "Data updates in real-time",
+              "Shows 50-70% baseline savings",
+              "Export functionality works",
+              "Responsive design"
+            ]
+          }
+        ]
+      },
+      "milestone4_navigationSearch": {
+        "name": "Critical Navigation & Search",
+        "totalEffort": "8 hours",
+        "dependencies": ["1.1", "2.1-2.7"],
+        "blocking": [],
+        "items": [
+          {
+            "id": "5.1",
+            "title": "Add Token Optimization to Top Navigation",
+            "priority": "P0",
+            "effort": "2 hours",
+            "status": "pending",
+            "dependencies": ["1.1", "2.1-2.7"],
+            "blocking": [],
+            "files": [
+              "apps/streamlined-docs/components/Navigation.tsx"
+            ],
+            "acceptanceCriteria": [
+              "'Token Optimization' appears in top nav",
+              "Badge shows 'Save 50-70%'",
+              "Link goes to main guide",
+              "Prominent placement (top 3 items)"
+            ]
+          },
+          {
+            "id": "5.2",
+            "title": "Update Search Metadata",
+            "priority": "P0",
+            "effort": "3 hours",
+            "status": "pending",
+            "dependencies": ["1.1", "2.1-2.7"],
+            "blocking": ["5.3"],
+            "files": [
+              "Multiple pages (all token optimization pages)"
+            ],
+            "acceptanceCriteria": [
+              "All token optimization pages have updated metadata",
+              "Keywords include '50-70% cost reduction'",
+              "Descriptions mention cost savings",
+              "OG images created"
+            ]
+          },
+          {
+            "id": "5.3",
+            "title": "Create Search Priority Configuration",
+            "priority": "P0",
+            "effort": "3 hours",
+            "status": "pending",
+            "dependencies": ["5.2"],
+            "blocking": [],
+            "files": [
+              "Search configuration"
+            ],
+            "acceptanceCriteria": [
+              "Token optimization pages rank first for 'optimization' query",
+              "Token optimization pages rank first for 'cost' query",
+              "Token optimization pages rank first for 'savings' query",
+              "Search results show cost savings in snippets"
+            ]
+          }
+        ]
+      },
+      "milestone5_criticalContent": {
+        "name": "Critical Content Fixes",
+        "totalEffort": "68 hours",
+        "dependencies": ["1.1"],
+        "blocking": [],
+        "items": [
+          {
+            "id": "6.1",
+            "title": "Create Stub Pages for Broken Links",
+            "priority": "P0",
+            "effort": "4 hours",
+            "status": "pending",
+            "dependencies": [],
+            "blocking": [],
+            "files": [
+              "apps/streamlined-docs/app/guides/compression-strategies/page.tsx",
+              "apps/streamlined-docs/app/guides/model-routing/page.tsx",
+              "apps/streamlined-docs/app/guides/advanced-optimization/page.tsx",
+              "apps/streamlined-docs/app/guides/best-practices/page.tsx"
+            ],
+            "acceptanceCriteria": [
+              "All 4 stub pages created",
+              "No 404 errors when clicking nav links",
+              "Stubs link to existing content",
+              "Metadata indicates 'Coming Soon'"
+            ]
+          },
+          {
+            "id": "6.2-6.19",
+            "title": "Create API Reference Pages (18 HIGHEST priority APIs)",
+            "priority": "P0",
+            "effort": "90 hours",
+            "status": "pending",
+            "dependencies": ["1.1", "1.4"],
+            "blocking": [],
+            "count": 18,
+            "effortPerPage": "5 hours",
+            "pages": [
+              "/reference/classes/accurate-token-counter/page.tsx",
+              "/reference/classes/tiered-cache/page.tsx",
+              "/reference/classes/llmlingua-compressor/page.tsx",
+              "/reference/classes/extractive-compressor/page.tsx",
+              "/reference/classes/adaptive-compressor/page.tsx",
+              "/reference/classes/model-router/page.tsx",
+              "/reference/classes/provider-caching-formatter/page.tsx",
+              "/reference/classes/cost-tracker/page.tsx",
+              "/reference/hooks/use-token-count/page.tsx",
+              "/reference/hooks/use-tiered-cache/page.tsx",
+              "/reference/hooks/use-model-router/page.tsx",
+              "/reference/components/token-optimization-badge/page.tsx",
+              "/reference/functions/compress-with-llmlingua/page.tsx",
+              "/reference/functions/compress-with-extractive/page.tsx",
+              "/reference/functions/compress-with-adaptive/page.tsx",
+              "/reference/functions/format-for-caching/page.tsx",
+              "/reference/functions/count-tokens/page.tsx",
+              "/reference/functions/estimate-cost/page.tsx"
+            ],
+            "acceptanceCriteria": [
+              "All 18 pages created with ISR",
+              "Cost savings badge at top of each",
+              "Version information included",
+              "Complete API reference per page",
+              "2-3 working code examples per page",
+              "Cost impact section per page",
+              "Related APIs section with links",
+              "All imports correct",
+              "TypeScript types documented"
+            ]
+          }
+        ]
+      }
+    },
+    "P1": {
+      "milestone6_advancedGuides": {
+        "name": "Advanced Guides",
+        "totalEffort": "24 hours",
+        "dependencies": ["P0"],
+        "items": [
+          {
+            "id": "7.1",
+            "title": "Guide: Compression Strategies",
+            "priority": "P1",
+            "effort": "8 hours",
+            "status": "pending",
+            "dependencies": ["1.4", "2.1", "6.4", "6.5", "6.6"],
+            "files": [
+              "apps/streamlined-docs/app/guides/compression-strategies/page.tsx"
+            ]
+          },
+          {
+            "id": "7.2",
+            "title": "Guide: Model Routing Strategies",
+            "priority": "P1",
+            "effort": "8 hours",
+            "status": "pending",
+            "dependencies": ["2.1", "2.3", "6.7"],
+            "files": [
+              "apps/streamlined-docs/app/guides/model-routing/page.tsx"
+            ]
+          },
+          {
+            "id": "7.3",
+            "title": "Guide: Advanced Optimization Strategies",
+            "priority": "P1",
+            "effort": "8 hours",
+            "status": "pending",
+            "dependencies": ["2.1", "7.1", "7.2"],
+            "files": [
+              "apps/streamlined-docs/app/guides/advanced-optimization/page.tsx"
+            ]
+          }
+        ]
+      },
+      "milestone7_additionalApiReference": {
+        "name": "Additional API Reference (MEDIUM Priority)",
+        "totalEffort": "30 hours",
+        "dependencies": ["6.2-6.19"],
+        "items": [
+          {
+            "id": "8.1-8.6",
+            "title": "Create MEDIUM Priority API Reference Pages (6 pages)",
+            "priority": "P1",
+            "effort": "30 hours",
+            "status": "pending",
+            "count": 6,
+            "effortPerPage": "5 hours",
+            "pages": [
+              "/reference/classes/compression-quality-monitor/page.tsx",
+              "/reference/classes/routing-decision-logger/page.tsx",
+              "/reference/hooks/use-compression-quality/page.tsx",
+              "/reference/hooks/use-routing-analytics/page.tsx",
+              "/reference/components/compression-quality-badge/page.tsx",
+              "/reference/components/routing-visualization/page.tsx"
+            ]
+          }
+        ]
+      },
+      "milestone8_contentQuality": {
+        "name": "Content Quality & Consistency",
+        "totalEffort": "33 hours",
+        "dependencies": ["P0"],
+        "items": [
+          {
+            "id": "9.1",
+            "title": "Audit and Fix Import Paths",
+            "priority": "P1",
+            "effort": "6 hours",
+            "status": "pending",
+            "dependencies": ["6.2-6.19"]
+          },
+          {
+            "id": "9.2",
+            "title": "Standardize Terminology",
+            "priority": "P1",
+            "effort": "4 hours",
+            "status": "pending",
+            "dependencies": ["P0"]
+          },
+          {
+            "id": "9.3",
+            "title": "Add Version Information to All API Pages",
+            "priority": "P1",
+            "effort": "8 hours",
+            "status": "pending",
+            "dependencies": ["6.2-6.19", "8.1-8.6"]
+          },
+          {
+            "id": "9.4",
+            "title": "Standardize Code Style in Examples",
+            "priority": "P1",
+            "effort": "6 hours",
+            "status": "pending",
+            "dependencies": ["P0"]
+          },
+          {
+            "id": "9.5",
+            "title": "Add TypeScript Import Examples",
+            "priority": "P1",
+            "effort": "4 hours",
+            "status": "pending",
+            "dependencies": ["6.2-6.19"]
+          },
+          {
+            "id": "9.6",
+            "title": "Fix Component Naming Inconsistencies",
+            "priority": "P1",
+            "effort": "2 hours",
+            "status": "pending",
+            "dependencies": ["P0"]
+          },
+          {
+            "id": "9.7",
+            "title": "Fix Markdown Formatting",
+            "priority": "P1",
+            "effort": "3 hours",
+            "status": "pending",
+            "dependencies": ["P0"]
+          }
+        ]
+      }
+    },
+    "P2": {
+      "milestone9_docMigration": {
+        "name": "Documentation Migration",
+        "totalEffort": "20 hours",
+        "dependencies": [],
+        "items": [
+          {
+            "id": "10.1",
+            "title": "Migrate ARCHITECTURE.md",
+            "priority": "P2",
+            "effort": "6 hours",
+            "status": "pending",
+            "files": [
+              "apps/streamlined-docs/app/guides/architecture/page.tsx"
+            ]
+          },
+          {
+            "id": "10.2",
+            "title": "Migrate BEST_PRACTICES.md",
+            "priority": "P2",
+            "effort": "6 hours",
+            "status": "pending",
+            "files": [
+              "apps/streamlined-docs/app/guides/best-practices/page.tsx"
+            ]
+          },
+          {
+            "id": "10.3",
+            "title": "Migrate SECURITY.md",
+            "priority": "P2",
+            "effort": "5 hours",
+            "status": "pending",
+            "files": [
+              "apps/streamlined-docs/app/guides/security/page.tsx"
+            ]
+          },
+          {
+            "id": "10.4",
+            "title": "Migrate TROUBLESHOOTING.md",
+            "priority": "P2",
+            "effort": "3 hours",
+            "status": "pending",
+            "files": [
+              "apps/streamlined-docs/app/guides/troubleshooting/page.tsx"
+            ]
+          }
+        ]
+      },
+      "milestone10_additionalTools": {
+        "name": "Additional Tools & Components",
+        "totalEffort": "18 hours",
+        "dependencies": ["P0"],
+        "items": [
+          {
+            "id": "11.1",
+            "title": "Enhance Token ROI Calculator",
+            "priority": "P2",
+            "effort": "10 hours",
+            "status": "pending",
+            "dependencies": ["2.1"],
+            "files": [
+              "apps/streamlined-docs/app/tools/token-roi-calculator/page.tsx"
+            ]
+          },
+          {
+            "id": "11.2",
+            "title": "Create Token Cost Comparison Tool",
+            "priority": "P2",
+            "effort": "8 hours",
+            "status": "pending",
+            "dependencies": ["2.1", "6.9"],
+            "files": [
+              "apps/streamlined-docs/app/tools/cost-comparison/page.tsx"
+            ]
+          }
+        ]
+      },
+      "milestone11_interactiveContent": {
+        "name": "Additional Interactive Content",
+        "totalEffort": "8 hours",
+        "dependencies": ["4.2", "4.3"],
+        "items": [
+          {
+            "id": "12.1",
+            "title": "Create Compression Quality Demo",
+            "priority": "P2",
+            "effort": "4 hours",
+            "status": "pending",
+            "dependencies": ["4.2", "6.4", "6.5", "6.6"],
+            "files": [
+              "apps/streamlined-docs/app/examples/token-optimization/page.tsx"
+            ]
+          },
+          {
+            "id": "12.2",
+            "title": "Create Routing Decision Visualizer",
+            "priority": "P2",
+            "effort": "4 hours",
+            "status": "pending",
+            "dependencies": ["4.3", "6.7"],
+            "files": [
+              "apps/streamlined-docs/app/examples/token-optimization/page.tsx"
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "qualityGates": {
+    "P0": [
+      "All '80%+' references replaced with '50-70%'",
+      "All 7 cookbooks created and tested",
+      "All 18 HIGHEST priority API docs created",
+      "All 4 demos show cost savings prominently",
+      "BeforeAfterComparison component working",
+      "SavingsDashboard component working",
+      "Navigation shows 'Save 50-70%' badge",
+      "Search prioritizes token optimization",
+      "No broken links remain",
+      "All code examples compile and run"
+    ],
+    "P1": [
+      "All 3 advanced guides created",
+      "All 6 MEDIUM priority API docs created",
+      "All imports verified",
+      "Terminology standardized",
+      "Version info on all API pages",
+      "Code style consistent",
+      "TypeScript examples included",
+      "Component names consistent",
+      "Markdown formatting consistent"
+    ],
+    "P2": [
+      "All package docs migrated",
+      "ROI calculator enhanced",
+      "Cost comparison tool created",
+      "Compression demo added",
+      "Routing visualizer added"
+    ]
+  },
+  "successMetrics": {
+    "tokenOptimizationProminenceScore": {
+      "current": 35,
+      "afterP0": 70,
+      "afterP1": 80,
+      "afterP2": 85,
+      "target": 80
+    },
+    "apiDocumentationCoverage": {
+      "current": "18% (4/22)",
+      "afterP0": "100% (22/22 HIGHEST)",
+      "afterP1": "100% (28/28 HIGHEST+MEDIUM)"
+    },
+    "cookbookCoverage": {
+      "current": "0% (0/7)",
+      "afterP0": "100% (7/7)"
+    }
+  }
+}

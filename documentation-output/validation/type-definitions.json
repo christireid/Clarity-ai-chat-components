@@ -1,0 +1,199 @@
+{
+  "version": "1.0.0",
+  "extractedAt": "2026-01-28T00:00:00Z",
+  "totalTypes": 180,
+  "interfaces": {
+    "TokenizerConfig": {
+      "file": "types.ts",
+      "properties": {
+        "model": { "type": "ModelId", "required": false, "description": "Model ID for tokenization" },
+        "cacheEnabled": { "type": "boolean", "required": false, "default": true, "description": "Enable token counting cache" },
+        "cacheTTL": { "type": "number", "required": false, "default": 3600000, "description": "Cache TTL in ms" }
+      },
+      "tokenOptimizationRelevant": true
+    },
+    "TokenInfo": {
+      "file": "types.ts",
+      "properties": {
+        "count": { "type": "number", "required": true, "description": "Token count" },
+        "model": { "type": "ModelId", "required": true, "description": "Model used" },
+        "cached": { "type": "boolean", "required": false, "description": "Whether result was cached" }
+      },
+      "tokenOptimizationRelevant": true
+    },
+    "TieredCacheConfig": {
+      "file": "cache/tiered-cache.ts",
+      "properties": {
+        "exact": { "type": "ExactCacheConfig", "required": false, "description": "Exact cache config" },
+        "smart": { "type": "SmartCacheConfig", "required": false, "description": "Smart cache config" },
+        "semantic": { "type": "SemanticCacheConfig", "required": false, "description": "Semantic cache config" },
+        "maxSize": { "type": "number", "required": false, "default": 1000, "description": "Max cache entries" },
+        "ttl": { "type": "number", "required": false, "default": 3600000, "description": "TTL in ms" }
+      },
+      "tokenOptimizationRelevant": true
+    },
+    "SemanticCacheConfig": {
+      "file": "caching/advanced-semantic-cache.ts",
+      "properties": {
+        "similarityThreshold": { "type": "number", "required": false, "default": 0.92, "description": "Similarity threshold (0-1)" },
+        "embeddingModel": { "type": "string", "required": false, "default": "text-embedding-3-small", "description": "Embedding model" },
+        "maxEntries": { "type": "number", "required": false, "default": 1000, "description": "Max cache size" }
+      },
+      "tokenOptimizationRelevant": true
+    },
+    "LLMLinguaOptions": {
+      "file": "compression/strategies/llmlingua.ts",
+      "properties": {
+        "targetRatio": { "type": "number", "required": false, "default": 0.5, "description": "Target compression ratio (0.5 = 50%)" },
+        "qualityThreshold": { "type": "number", "required": false, "default": 0.7, "description": "Minimum quality score" },
+        "preserveFormatting": { "type": "boolean", "required": false, "default": false, "description": "Keep formatting" }
+      },
+      "tokenOptimizationRelevant": true
+    },
+    "ExtractiveOptions": {
+      "file": "compression/strategies/extractive.ts",
+      "properties": {
+        "targetRatio": { "type": "number", "required": false, "default": 0.4, "description": "Target ratio" },
+        "minSentences": { "type": "number", "required": false, "default": 2, "description": "Min sentences to keep" },
+        "preserveFirstLast": { "type": "boolean", "required": false, "default": true, "description": "Always keep first/last" }
+      },
+      "tokenOptimizationRelevant": true
+    },
+    "ModelRouterConfig": {
+      "file": "routing/model-router.ts",
+      "properties": {
+        "models": { "type": "ModelRoutingConfig", "required": true, "description": "Model tier configuration" },
+        "strategy": { "type": "RoutingStrategy", "required": false, "default": "balanced", "description": "Routing strategy" },
+        "fallbackModel": { "type": "ModelId", "required": false, "default": "gpt-4o", "description": "Fallback model" }
+      },
+      "tokenOptimizationRelevant": true
+    },
+    "RoutingResult": {
+      "file": "routing/model-router.ts",
+      "properties": {
+        "model": { "type": "ModelId", "required": true, "description": "Selected model" },
+        "complexity": { "type": "ComplexityLevel", "required": true, "description": "Detected complexity" },
+        "reasoning": { "type": "string", "required": true, "description": "Why this model was chosen" },
+        "estimatedCost": { "type": "number", "required": false, "description": "Estimated cost in USD" }
+      },
+      "tokenOptimizationRelevant": true
+    },
+    "ProviderCachingConfig": {
+      "file": "providers/types.ts",
+      "properties": {
+        "provider": { "type": "CachingProvider", "required": true, "description": "Provider: 'anthropic' | 'openai' | 'google'" },
+        "systemCacheable": { "type": "boolean", "required": false, "default": true, "description": "Cache system message" },
+        "messageCacheBreakpoints": { "type": "number[]", "required": false, "description": "Message indices to cache" }
+      },
+      "tokenOptimizationRelevant": true
+    },
+    "CostCalculation": {
+      "file": "models/model-pricing.ts",
+      "properties": {
+        "inputCost": { "type": "number", "required": true, "description": "Input token cost in USD" },
+        "outputCost": { "type": "number", "required": true, "description": "Output token cost in USD" },
+        "totalCost": { "type": "number", "required": true, "description": "Total cost in USD" },
+        "model": { "type": "ModelId", "required": true, "description": "Model used" }
+      },
+      "tokenOptimizationRelevant": true
+    },
+    "UseTokenCountOptions": {
+      "file": "hooks/use-token-count.ts",
+      "properties": {
+        "model": { "type": "ModelId", "required": false, "default": "gpt-4o", "description": "Model for counting" },
+        "debounceMs": { "type": "number", "required": false, "default": 150, "description": "Debounce delay in ms" },
+        "enabled": { "type": "boolean", "required": false, "default": true, "description": "Enable counting" }
+      },
+      "tokenOptimizationRelevant": true
+    },
+    "UseTokenOptimizationReturn": {
+      "file": "hooks/use-token-optimization.ts",
+      "properties": {
+        "count": { "type": "number", "required": true, "description": "Current token count" },
+        "cost": { "type": "number", "required": true, "description": "Estimated cost in USD" },
+        "compress": { "type": "(text: string) => Promise<string>", "required": true, "description": "Compress text" },
+        "cache": { "type": "object", "required": true, "description": "Cache operations" },
+        "route": { "type": "(prompt: string) => RoutingResult", "required": true, "description": "Route to model" },
+        "savings": { "type": "SavingsReport", "required": true, "description": "Current savings" }
+      },
+      "tokenOptimizationRelevant": true
+    }
+  },
+  "types": {
+    "ModelId": {
+      "file": "models/model-registry.ts",
+      "definition": "type ModelId = KnownModelId | string",
+      "description": "Model identifier (known models + custom models)",
+      "tokenOptimizationRelevant": true
+    },
+    "CachingProvider": {
+      "file": "providers/types.ts",
+      "definition": "type CachingProvider = 'anthropic' | 'openai' | 'google'",
+      "description": "Provider that supports prompt caching",
+      "tokenOptimizationRelevant": true
+    },
+    "RoutingStrategy": {
+      "file": "routing/model-router.ts",
+      "definition": "type RoutingStrategy = 'cost-optimized' | 'quality-optimized' | 'balanced'",
+      "description": "Model routing strategy",
+      "tokenOptimizationRelevant": true
+    },
+    "ComplexityLevel": {
+      "file": "routing/complexity-analyzer.ts",
+      "definition": "type ComplexityLevel = 'simple' | 'moderate' | 'complex' | 'very-complex'",
+      "description": "Prompt complexity classification",
+      "tokenOptimizationRelevant": true
+    },
+    "CompressionStrategyType": {
+      "file": "compression/strategies/index.ts",
+      "definition": "type CompressionStrategyType = 'llmlingua' | 'extractive' | 'adaptive' | 'whitespace' | 'none'",
+      "description": "Available compression strategies",
+      "tokenOptimizationRelevant": true
+    }
+  },
+  "enums": {
+    "TokenErrorCode": {
+      "file": "errors/index.ts",
+      "values": [
+        "UNSUPPORTED_MODEL",
+        "BUDGET_EXCEEDED",
+        "VALIDATION_FAILED",
+        "CACHE_ERROR",
+        "COMPRESSION_FAILED",
+        "QUALITY_THRESHOLD_NOT_MET",
+        "SECURITY_VIOLATION",
+        "TIMEOUT",
+        "NETWORK_ERROR",
+        "INVALID_CONFIG",
+        "PROVIDER_ERROR",
+        "RATE_LIMIT",
+        "INITIALIZATION_ERROR",
+        "RESOURCE_EXHAUSTED",
+        "INTERNAL_ERROR",
+        "UNKNOWN_ERROR"
+      ],
+      "tokenOptimizationRelevant": false
+    },
+    "ChunkingStrategy": {
+      "file": "chunking/text-chunker.ts",
+      "values": [
+        "TOKEN_BASED",
+        "SENTENCE_BASED",
+        "PARAGRAPH_BASED",
+        "RECURSIVE"
+      ],
+      "tokenOptimizationRelevant": false
+    },
+    "CompressionLevel": {
+      "file": "compression/markdown-compressor.ts",
+      "values": [
+        "NONE",
+        "LOW",
+        "MEDIUM",
+        "HIGH",
+        "AGGRESSIVE"
+      ],
+      "tokenOptimizationRelevant": true
+    }
+  }
+}

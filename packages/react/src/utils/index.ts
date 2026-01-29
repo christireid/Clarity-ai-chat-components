@@ -4,6 +4,7 @@
  * This module provides organized access to all utility functions.
  * Utilities are grouped by domain for better discoverability:
  *
+ * - animations/     Animation presets and hooks (framer-motion)
  * - streaming/      Streaming response utilities
  * - message/        Message conversion and helpers
  * - api/            API, rate limiting, and model utilities
@@ -26,6 +27,9 @@ export * from './export-utils'
 
 // Color Utilities
 export * from './color'
+
+// Animation Utilities
+export * from './animations'
 
 // Streaming Utilities
 export * from './streaming'

@@ -172,7 +172,7 @@ function ActionButton({ action, size, variant }: ActionButtonProps) {
         <motion.span
           className="response-action-spinner"
           animate={{ rotate: 360 }}
-          transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+          transition={{ duration: durations.slower, repeat: Infinity, ease: 'linear' }}
         >
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <circle cx="12" cy="12" r="10" opacity="0.25" />

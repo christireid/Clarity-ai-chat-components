@@ -23,6 +23,15 @@ hooks, utilities, and type definitions.
 - [Hook API Reference](./hooks.md) - Complete hooks documentation
 - [Type Definitions](./types.md) - TypeScript type definitions
 
+#### Featured Component Documentation
+
+- **[CommandPalette](./CommandPalette.README.md)** - Complete API documentation
+  - [API Reference](./CommandPalette.md) - Detailed prop documentation
+  - [TypeScript Definitions](./CommandPalette.d.ts) - Type definitions
+  - [Code Examples](./CommandPalette.examples.tsx) - 12+ usage examples
+  - [Testing Guide](./CommandPalette.test-guide.md) - Comprehensive tests
+  - [Changelog](./CommandPalette.changelog.md) - Version history
+
 ### 🛠️ Guides
 
 - [Installation Guide](./installation.md) - Setup instructions

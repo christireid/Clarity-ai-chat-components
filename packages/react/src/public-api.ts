@@ -132,6 +132,8 @@ export type { ExportDialogProps } from './components/media/ExportDialog'
 // 8.11. Input Components
 export { VoiceInput } from './components/input/VoiceInput'
 export type { VoiceInputProps } from './components/input/VoiceInput'
+export { AudioRecorder } from './components/input/AudioRecorder'
+export type { AudioRecorderProps } from './components/input/AudioRecorder'
 
 // 8.12. Token Components
 export { TokenCounter } from './components/token/TokenCounter'
@@ -199,6 +201,133 @@ export type {
 export { cn } from '@clarity-chat/primitives'
 
 // ============================================================================
+// UNIFIED CONTEXT PROVIDERS
+// ============================================================================
+
+// ClarityChatProvider - Unified chat state management
+export {
+  ClarityChatProvider,
+  useClarityChat as useClarityChatContext,
+  useIsConnected,
+  useChatMessages,
+  useChatStreamStatus,
+  useChatTools,
+  useChatThinking,
+  type ClarityChatProviderProps,
+  type ClarityChatContextValue,
+  type ClarityChatConfig,
+  type ChatMessage as ClarityChatMessage,
+  type StreamStatus as ClarityStreamStatus,
+  type ThinkingStep as ClarityThinkingStep,
+  type ToolExecution as ClarityToolExecution,
+  type MessageAttachment as ClarityMessageAttachment,
+  type ClarityEventType,
+} from './providers/ClarityChatProvider'
+
+// AgentExecutionProvider - Agent execution state management
+export {
+  AgentExecutionProvider,
+  useAgentExecution,
+  useIsAgentExecutionConnected,
+  useAgentPlan,
+  useAgentTools,
+  useAgentThinking,
+  useAgentStatus,
+  type AgentExecutionProviderProps,
+  type AgentExecutionContextValue,
+  type AgentExecutionState,
+  type ExecutionStatus,
+  type PlanStep,
+  type PlanStepStatus,
+  type ToolCall as AgentToolCall,
+  type ToolCallStatus,
+  type ExecutionError,
+  type AgentExecutionEventType,
+  type ExecutionSummary,
+} from './providers/AgentExecutionProvider'
+
+// ============================================================================
+// COMPOSITION COMPONENTS
+// ============================================================================
+
+// ChatComposer - Declarative chat layout builder
+export {
+  ChatComposer,
+  useChatComposer,
+  useChatComposerBuilder,
+  MinimalChat,
+  StandardChat,
+  AgentChat,
+  FullscreenChat,
+  type ChatComposerProps,
+  type ChatComposerLayout,
+  type ChatComposerFeature,
+} from './components/ai/ChatComposer'
+
+// MessageRenderer - Plugin-based message rendering
+export {
+  MessageRenderer,
+  defaultPlugins,
+  createPlugin,
+  extendPlugins,
+  type MessageRendererProps,
+  type MessagePlugin,
+  type PluginMatch,
+} from './components/ai/MessageRenderer'
+
+// AgentPanel - Unified agent execution view
+export {
+  AgentPanel,
+  useAgentPanel,
+  useConnectedAgentPanel,
+  type AgentPanelProps,
+  type AgentPanelVariant,
+} from './components/ai/AgentPanel'
+
+// ============================================================================
+// CONNECTED COMPONENT HOOKS
+// ============================================================================
+
+export {
+  useConnectedThinkingBar,
+  useConnectedStreamProgress,
+  useConnectedConversations,
+  useConnectedSender,
+  useConnectedToolCard,
+  useConnectedResponseActions,
+  useConnectedWelcome,
+  withConnected,
+} from './hooks/connected'
+
+// ============================================================================
+// SDK BRIDGE HOOKS
+// ============================================================================
+
+export {
+  useVercelAIBridge,
+  useLangChainBridge,
+  useAnthropicBridge,
+  useGenericBridge,
+  type VercelAIBridgeResult,
+  type LangChainBridgeResult,
+  type AnthropicBridgeResult,
+  type BaseBridgeProps,
+} from './hooks/bridges'
+
+// ============================================================================
+// ADAPTERS
+// ============================================================================
+
+export {
+  createVercelAIAdapter,
+  createBaseClarityChatAdapter,
+  withClarityChatEvents,
+  type ClarityChatAdapter,
+  type ClarityChatAdapterCapabilities,
+  type VercelAIAdapterOptions,
+} from './adapters'
+
+// ============================================================================
 // CORE API COMPLETE
 // ============================================================================
 // Essential components and hooks for 90% of use cases:
@@ -210,6 +339,10 @@ export { cn } from '@clarity-chat/primitives'
 // - Search: SearchFiltersPanel
 // - Prompts: PromptLibrary, TemplateMarketplace
 // - Rendering: MarkdownRenderer
+// - Providers: ClarityChatProvider, AgentExecutionProvider
+// - Composition: ChatComposer, MessageRenderer, AgentPanel
+// - Adapters: Vercel AI, LangChain, Anthropic bridges
+// - Input: VoiceInput, AudioRecorder
 
 /**
  * For advanced features, use subpath imports:

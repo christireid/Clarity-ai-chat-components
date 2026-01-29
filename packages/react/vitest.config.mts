@@ -24,16 +24,16 @@ export default defineConfig({
       vmThreads: {
         // Single thread mode significantly reduces memory overhead
         singleThread: true,
-        // Memory limits per worker
-        memoryLimit: '512MB',
+        // Increased memory limit to handle 233 test files (was 512MB, caused OOM)
+        memoryLimit: '2048MB',
       },
     },
     // Reduce parallelism to avoid memory issues
     maxConcurrency: 1,
     // Increase test timeout for slower execution
     testTimeout: 20000,
-    // Enable isolation to avoid cumulative memory growth across the suite
-    isolate: true,
+    // Disable isolation to reduce memory overhead - tests must clean up properly
+    isolate: false,
     // Include all test directories
     include: [
       'src/**/__tests__/**/*.test.{ts,tsx}',

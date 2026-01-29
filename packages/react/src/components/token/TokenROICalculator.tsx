@@ -395,7 +395,7 @@ function ProgressBar({
           className={`absolute inset-y-0 left-0 ${colorClasses[color]}`}
           initial={{ width: 0 }}
           animate={{ width: `${percentage}%` }}
-          transition={{ duration: 0.5, ease: 'easeOut' }}
+          transition={{ duration: durations.slow, ease: 'easeOut' }}
           viewport={{ once: true }}
         />
       </div>

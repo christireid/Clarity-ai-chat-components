@@ -1,10 +1,13 @@
 'use client'
 
 /**
- * CommandPalette Component - API Reference Documentation
+ * CommandPalette Component - Comprehensive API Reference Documentation
  *
  * A keyboard-first command palette for quick actions, search, and navigation
  * with fuzzy matching, category grouping, and full keyboard support.
+ *
+ * Features AI-specific integrations including model context, token usage display,
+ * and conversation-aware commands.
  */
 
 import * as React from 'react'
@@ -23,6 +26,12 @@ import {
   HelpCircle,
   ExternalLink,
   Terminal,
+  MessageSquare,
+  Code2,
+  Sparkles,
+  Bot,
+  Layers,
+  Play,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { durations } from '@/lib/animations'
@@ -235,7 +244,7 @@ function LiveDemo() {
     setActionLog((prev) => [...prev.slice(-4), action])
   }
 
-  // Sample commands
+  // Sample commands with AI-specific examples
   const commands = [
     {
       id: 'new-chat',
@@ -243,6 +252,7 @@ function LiveDemo() {
       description: 'Start a new conversation',
       category: 'Actions',
       shortcut: ['⌘', 'N'],
+      icon: <MessageSquare className="w-4 h-4" />,
     },
     {
       id: 'search',
@@ -250,6 +260,29 @@ function LiveDemo() {
       description: 'Search through your message history',
       category: 'Actions',
       shortcut: ['⌘', 'F'],
+      icon: <Search className="w-4 h-4" />,
+    },
+    {
+      id: 'change-model',
+      label: 'Change AI Model',
+      description: 'Switch between Claude, GPT, and other models',
+      category: 'AI',
+      icon: <Bot className="w-4 h-4" />,
+    },
+    {
+      id: 'prompt-library',
+      label: 'Prompt Library',
+      description: 'Browse saved prompts and templates',
+      category: 'AI',
+      shortcut: ['⌘', 'P'],
+      icon: <Sparkles className="w-4 h-4" />,
+    },
+    {
+      id: 'code-interpreter',
+      label: 'Code Interpreter',
+      description: 'Run code in sandbox environment',
+      category: 'Tools',
+      icon: <Code2 className="w-4 h-4" />,
     },
     {
       id: 'settings',
@@ -257,12 +290,14 @@ function LiveDemo() {
       description: 'Configure your preferences',
       category: 'Navigation',
       shortcut: ['⌘', ','],
+      icon: <Settings className="w-4 h-4" />,
     },
     {
       id: 'export',
       label: 'Export Conversation',
       description: 'Download conversation as file',
       category: 'Actions',
+      icon: <ExternalLink className="w-4 h-4" />,
     },
     {
       id: 'theme',
@@ -270,6 +305,7 @@ function LiveDemo() {
       description: 'Switch between light and dark mode',
       category: 'Settings',
       shortcut: ['⌘', 'D'],
+      icon: <Layers className="w-4 h-4" />,
     },
   ]
 
@@ -452,6 +488,11 @@ function LiveDemo() {
                                       : 'hover:bg-accent'
                                   )}
                                 >
+                                  {cmd.icon && (
+                                    <div className="flex-shrink-0">
+                                      {cmd.icon}
+                                    </div>
+                                  )}
                                   <div className="flex-1 min-w-0">
                                     <div className="font-medium truncate">
                                       {cmd.label}
@@ -497,31 +538,48 @@ function LiveDemo() {
                 )}
               </div>
 
-              {/* Footer */}
-              <div className="px-4 py-3 border-t text-xs text-muted-foreground flex items-center justify-between bg-muted/50">
-                <div className="flex gap-4">
-                  <span className="flex items-center gap-1.5">
-                    <kbd className="px-1.5 py-0.5 bg-background rounded border">
-                      ↑↓
-                    </kbd>
-                    Navigate
-                  </span>
-                  <span className="flex items-center gap-1.5">
-                    <kbd className="px-1.5 py-0.5 bg-background rounded border">
-                      ↵
-                    </kbd>
-                    Select
-                  </span>
-                  <span className="flex items-center gap-1.5">
-                    <kbd className="px-1.5 py-0.5 bg-background rounded border">
-                      Esc
-                    </kbd>
-                    Close
-                  </span>
+              {/* Footer with AI Context */}
+              <div className="px-4 py-3 border-t text-xs text-muted-foreground bg-muted/50">
+                <div className="flex items-center justify-between mb-2">
+                  <div className="flex gap-4">
+                    <span className="flex items-center gap-1.5">
+                      <kbd className="px-1.5 py-0.5 bg-background rounded border">
+                        ↑↓
+                      </kbd>
+                      Navigate
+                    </span>
+                    <span className="flex items-center gap-1.5">
+                      <kbd className="px-1.5 py-0.5 bg-background rounded border">
+                        ↵
+                      </kbd>
+                      Select
+                    </span>
+                    <span className="flex items-center gap-1.5">
+                      <kbd className="px-1.5 py-0.5 bg-background rounded border">
+                        Esc
+                      </kbd>
+                      Close
+                    </span>
+                  </div>
+                  <div className="font-medium">
+                    {filteredCommands.length}{' '}
+                    {filteredCommands.length === 1 ? 'command' : 'commands'}
+                  </div>
                 </div>
-                <div className="font-medium">
-                  {filteredCommands.length}{' '}
-                  {filteredCommands.length === 1 ? 'command' : 'commands'}
+                {/* AI Context Display */}
+                <div className="flex items-center gap-4 pt-2 border-t border-border/40">
+                  <div className="flex items-center gap-1.5">
+                    <Bot className="w-3.5 h-3.5 text-muted-foreground/70" />
+                    <span className="font-medium">Claude 3.5 Sonnet</span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <MessageSquare className="w-3.5 h-3.5 text-muted-foreground/70" />
+                    <span className="truncate max-w-[120px]">conv-abc123</span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <Zap className="w-3.5 h-3.5 text-muted-foreground/70" />
+                    <span>4,582 tokens</span>
+                  </div>
                 </div>
               </div>
             </motion.div>
@@ -558,7 +616,7 @@ const commandPaletteProps: PropDefinition[] = [
   {
     name: 'placeholder',
     type: 'string',
-    default: 'Type a command...',
+    default: '"Type a command..."',
     description: 'Placeholder text for the search input',
   },
   {
@@ -575,8 +633,13 @@ const commandPaletteProps: PropDefinition[] = [
   {
     name: 'aria-label',
     type: 'string',
-    default: 'Command palette',
+    default: '"Command palette"',
     description: 'Accessible label for the command palette',
+  },
+  {
+    name: 'aiContext',
+    type: 'AIContext',
+    description: 'AI-specific context information to display in footer',
   },
 ]
 
@@ -621,6 +684,62 @@ const commandItemProps: PropDefinition[] = [
   },
 ]
 
+const aiContextProps: PropDefinition[] = [
+  {
+    name: 'modelName',
+    type: 'string',
+    description: 'Current AI model name (e.g., "Claude 3.5 Sonnet")',
+  },
+  {
+    name: 'conversationId',
+    type: 'string',
+    description: 'Active conversation ID',
+  },
+  {
+    name: 'tokenUsage',
+    type: '{ input?: number; output?: number; total?: number }',
+    description: 'Token usage statistics for the current conversation',
+  },
+  {
+    name: 'metadata',
+    type: 'Record<string, string | number>',
+    description: 'Additional metadata to display',
+  },
+]
+
+const hookReturnProps: PropDefinition[] = [
+  {
+    name: 'isOpen',
+    type: 'boolean',
+    description: 'Whether the command palette is currently open',
+  },
+  {
+    name: 'open',
+    type: '() => void',
+    description: 'Function to open the command palette',
+  },
+  {
+    name: 'close',
+    type: '() => void',
+    description: 'Function to close the command palette',
+  },
+  {
+    name: 'toggle',
+    type: '() => void',
+    description: 'Function to toggle the command palette open/closed',
+  },
+  {
+    name: 'setOpen',
+    type: '(open: boolean) => void',
+    description: 'Function to set the open state directly',
+  },
+  {
+    name: 'shortcutDisplay',
+    type: 'string',
+    description: 'Platform-aware keyboard shortcut string (e.g., "⌘K" on Mac, "Ctrl+K" on Windows)',
+  },
+]
+
 // ============================================================================
 // Main Component
 // ============================================================================
@@ -658,7 +777,7 @@ export default function CommandPalettePage() {
               </h1>
               <p className="text-lg text-muted-foreground">
                 A keyboard-first command palette for quick actions and
-                navigation
+                navigation with AI-specific integrations
               </p>
             </div>
             <div className="px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-sm font-medium border border-emerald-200 dark:border-emerald-800">
@@ -680,8 +799,8 @@ export default function CommandPalettePage() {
               <span>Category grouping</span>
             </div>
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              <Zap className="w-4 h-4" />
-              <span>Keyboard shortcuts</span>
+              <Bot className="w-4 h-4" />
+              <span>AI context aware</span>
             </div>
           </div>
         </motion.header>
@@ -699,7 +818,8 @@ export default function CommandPalettePage() {
               interface for quick actions and navigation. Inspired by modern
               command palettes like Spotlight (macOS) and Command Palette
               (VS Code), it enables users to quickly find and execute commands
-              without leaving the keyboard.
+              without leaving the keyboard. Built specifically for AI applications,
+              it includes context displays for active models, conversations, and token usage.
             </p>
           </div>
 
@@ -749,7 +869,7 @@ export default function CommandPalettePage() {
                   </h4>
                   <p className="text-sm text-muted-foreground">
                     Organize commands into logical categories like Actions,
-                    Navigation, and Settings for better discovery.
+                    Navigation, AI, and Tools for better discovery.
                   </p>
                 </div>
               </div>
@@ -758,15 +878,15 @@ export default function CommandPalettePage() {
             <div className="p-4 rounded-lg border border-border/50 bg-card">
               <div className="flex items-start gap-3">
                 <div className="p-2 rounded-lg bg-amber-500/10">
-                  <Zap className="w-5 h-5 text-amber-500" />
+                  <Bot className="w-5 h-5 text-amber-500" />
                 </div>
                 <div>
                   <h4 className="font-semibold text-foreground mb-1">
-                    Keyboard Shortcuts
+                    AI Context Display
                   </h4>
                   <p className="text-sm text-muted-foreground">
-                    Display keyboard shortcuts for each command. Users can see
-                    and learn shortcuts while browsing.
+                    Show current AI model, conversation ID, and token usage
+                    directly in the command palette footer.
                   </p>
                 </div>
               </div>
@@ -884,117 +1004,112 @@ function MyApp() {
           />
         </Section>
 
-        {/* Custom Commands */}
-        <Section id="custom-commands" title="Custom Commands" className="mb-12">
+        {/* AI Context Integration */}
+        <Section id="ai-context" title="AI Context Integration" className="mb-12">
           <p className="text-muted-foreground mb-4">
-            Add icons, keyboard shortcuts, and organize commands by category:
+            Display AI-specific context in the command palette footer:
           </p>
 
           <CodeBlock
-            code={`import { Plus, Search, Settings, Download } from 'lucide-react'
+            code={`import { CommandPalette } from '@clarity-chat/react'
+
+function MyApp() {
+  const [open, setOpen] = useState(false)
+
+  // Get current AI context
+  const aiContext = {
+    modelName: 'Claude 3.5 Sonnet',
+    conversationId: 'conv-abc123',
+    tokenUsage: {
+      input: 2450,
+      output: 2132,
+      total: 4582,
+    },
+  }
+
+  return (
+    <CommandPalette
+      items={commands}
+      open={open}
+      onClose={() => setOpen(false)}
+      aiContext={aiContext}
+    />
+  )
+}`}
+            language="typescript"
+          />
+
+          <div className="mt-6 p-4 rounded-lg bg-blue-500/10 border border-blue-200 dark:border-blue-800">
+            <div className="flex items-start gap-3">
+              <Bot className="w-5 h-5 text-blue-500 mt-0.5 shrink-0" />
+              <div>
+                <h4 className="font-semibold text-foreground mb-1">
+                  AI Context Benefits
+                </h4>
+                <p className="text-sm text-muted-foreground">
+                  The AI context footer helps users understand their current session state
+                  without leaving the command palette. This is especially useful when
+                  switching between models or managing token budgets.
+                </p>
+              </div>
+            </div>
+          </div>
+        </Section>
+
+        {/* Custom Commands */}
+        <Section id="custom-commands" title="AI-Specific Commands" className="mb-12">
+          <p className="text-muted-foreground mb-4">
+            Add AI-specific commands with icons and keyboard shortcuts:
+          </p>
+
+          <CodeBlock
+            code={`import { Bot, Sparkles, Code2, MessageSquare } from 'lucide-react'
 
 const commands: CommandItem[] = [
-  // Actions with icons
+  // Model management
   {
-    id: 'new',
-    label: 'New Chat',
-    description: 'Start a fresh conversation',
-    icon: <Plus className="w-4 h-4" />,
-    category: 'Actions',
-    shortcut: ['⌘', 'N'],
-    onSelect: () => createNewChat(),
-  },
-  {
-    id: 'search',
-    label: 'Search',
-    description: 'Find messages',
-    icon: <Search className="w-4 h-4" />,
-    category: 'Actions',
-    shortcut: ['⌘', 'F'],
-    onSelect: () => openSearch(),
+    id: 'change-model',
+    label: 'Change AI Model',
+    description: 'Switch between Claude, GPT, and other models',
+    icon: <Bot className="w-4 h-4" />,
+    category: 'AI',
+    onSelect: () => openModelSelector(),
   },
 
-  // Navigation commands
+  // Prompt library
   {
-    id: 'settings',
-    label: 'Settings',
-    description: 'Configure preferences',
-    icon: <Settings className="w-4 h-4" />,
-    category: 'Navigation',
-    shortcut: ['⌘', ','],
-    onSelect: () => navigate('/settings'),
+    id: 'prompt-library',
+    label: 'Prompt Library',
+    description: 'Browse saved prompts and templates',
+    icon: <Sparkles className="w-4 h-4" />,
+    category: 'AI',
+    shortcut: ['⌘', 'P'],
+    onSelect: () => openPromptLibrary(),
   },
 
-  // File operations
+  // Code interpreter
   {
-    id: 'export',
-    label: 'Export Chat',
-    description: 'Download as JSON or PDF',
-    icon: <Download className="w-4 h-4" />,
-    category: 'File',
-    onSelect: () => exportChat(),
+    id: 'code-interpreter',
+    label: 'Code Interpreter',
+    description: 'Run code in sandbox environment',
+    icon: <Code2 className="w-4 h-4" />,
+    category: 'Tools',
+    onSelect: () => openCodeInterpreter(),
+  },
+
+  // Conversation management
+  {
+    id: 'new-branch',
+    label: 'Branch Conversation',
+    description: 'Create a new branch from this point',
+    icon: <MessageSquare className="w-4 h-4" />,
+    category: 'Actions',
+    shortcut: ['⌘', 'B'],
+    onSelect: () => branchConversation(),
   },
 ]`}
             language="typescript"
           />
-        </Section>
-
-        {/* Search Functionality */}
-        <Section id="search" title="Search Functionality" className="mb-12">
-          <p className="text-muted-foreground mb-4">
-            The command palette includes built-in fuzzy search that matches
-            against command labels, descriptions, and categories:
-          </p>
-
-          <div className="grid md:grid-cols-2 gap-4 mt-6">
-            <div className="p-4 rounded-lg border border-border/50 bg-card">
-              <h4 className="font-semibold text-foreground mb-2">
-                Matches Labels
-              </h4>
-              <p className="text-sm text-muted-foreground mb-2">
-                Type "new" to find "New Chat", "New File", etc.
-              </p>
-              <code className="text-xs px-2 py-1 rounded bg-muted">
-                new → New Chat ✓
-              </code>
-            </div>
-
-            <div className="p-4 rounded-lg border border-border/50 bg-card">
-              <h4 className="font-semibold text-foreground mb-2">
-                Matches Descriptions
-              </h4>
-              <p className="text-sm text-muted-foreground mb-2">
-                Type "conversation" to find commands with that in description.
-              </p>
-              <code className="text-xs px-2 py-1 rounded bg-muted">
-                conversation → New Chat ✓
-              </code>
-            </div>
-
-            <div className="p-4 rounded-lg border border-border/50 bg-card">
-              <h4 className="font-semibold text-foreground mb-2">
-                Matches Categories
-              </h4>
-              <p className="text-sm text-muted-foreground mb-2">
-                Type "actions" to see all commands in that category.
-              </p>
-              <code className="text-xs px-2 py-1 rounded bg-muted">
-                actions → Multiple results ✓
-              </code>
-            </div>
-
-            <div className="p-4 rounded-lg border border-border/50 bg-card">
-              <h4 className="font-semibold text-foreground mb-2">
-                Partial Matching
-              </h4>
-              <p className="text-sm text-muted-foreground mb-2">
-                Fuzzy matching works with partial words.
-              </p>
-              <code className="text-xs px-2 py-1 rounded bg-muted">
-                msg → Search Messages ✓
-              </code>
-            </div>
-          </div>
         </Section>
 
         {/* Props API */}
@@ -1005,6 +1120,14 @@ const commands: CommandItem[] = [
 
           <SubSection id="command-item-props" title="CommandItem Interface">
             <PropsTable props={commandItemProps} />
+          </SubSection>
+
+          <SubSection id="ai-context-props" title="AIContext Interface">
+            <PropsTable props={aiContextProps} />
+          </SubSection>
+
+          <SubSection id="hook-return-props" title="useCommandPalette Hook Return">
+            <PropsTable props={hookReturnProps} />
           </SubSection>
         </Section>
 
@@ -1094,6 +1217,124 @@ const commands: CommandItem[] = [
               </tbody>
             </table>
           </div>
+        </Section>
+
+        {/* Integration Patterns */}
+        <Section id="integration" title="Integration Patterns" className="mb-12">
+          <SubSection id="chat-integration" title="Chat Window Integration">
+            <p className="text-muted-foreground mb-4">
+              Integrate the command palette into your chat application:
+            </p>
+
+            <CodeBlock
+              code={`import { CommandPalette, useCommandPalette } from '@clarity-chat/react'
+import { useClarityChat } from '@clarity-chat/react'
+
+function ChatApp() {
+  const { messages, append, model, conversationId, tokenUsage } = useClarityChat()
+  const { isOpen, close } = useCommandPalette()
+
+  const commands = [
+    {
+      id: 'new-chat',
+      label: 'New Chat',
+      onSelect: () => {
+        // Clear current conversation
+        router.push('/chat/new')
+      },
+    },
+    {
+      id: 'export',
+      label: 'Export Chat',
+      onSelect: () => {
+        // Export current conversation
+        exportConversation(messages)
+      },
+    },
+  ]
+
+  return (
+    <>
+      <ChatWindow messages={messages} />
+      <CommandPalette
+        items={commands}
+        open={isOpen}
+        onClose={close}
+        aiContext={{
+          modelName: model,
+          conversationId,
+          tokenUsage,
+        }}
+      />
+    </>
+  )
+}`}
+              language="typescript"
+            />
+          </SubSection>
+
+          <SubSection id="custom-shortcut" title="Custom Keyboard Shortcut">
+            <p className="text-muted-foreground mb-4">
+              Customize the keyboard shortcut:
+            </p>
+
+            <CodeBlock
+              code={`const { isOpen, close } = useCommandPalette({
+  // Use Cmd+P instead of Cmd+K
+  shortcut: 'mod+p',
+
+  // Enable in input fields
+  enableInInput: true,
+
+  // Callbacks
+  onOpen: () => console.log('Opened'),
+  onClose: () => console.log('Closed'),
+})`}
+              language="typescript"
+            />
+          </SubSection>
+
+          <SubSection id="dynamic-commands" title="Dynamic Commands">
+            <p className="text-muted-foreground mb-4">
+              Generate commands dynamically based on application state:
+            </p>
+
+            <CodeBlock
+              code={`function ChatApp() {
+  const { conversations } = useConversations()
+  const { isOpen, close } = useCommandPalette()
+
+  // Generate commands from recent conversations
+  const commands = React.useMemo(() => [
+    // Static commands
+    {
+      id: 'new-chat',
+      label: 'New Chat',
+      category: 'Actions',
+      onSelect: () => createNewChat(),
+    },
+
+    // Dynamic conversation commands
+    ...conversations.map((conv) => ({
+      id: \`conv-\${conv.id}\`,
+      label: conv.title,
+      description: \`\${conv.messageCount} messages\`,
+      category: 'Recent Conversations',
+      onSelect: () => router.push(\`/chat/\${conv.id}\`),
+    })),
+  ], [conversations])
+
+  return (
+    <CommandPalette
+      items={commands}
+      open={isOpen}
+      onClose={close}
+    />
+  )
+}`}
+              language="typescript"
+            />
+          </SubSection>
         </Section>
 
         {/* Accessibility */}
@@ -1188,17 +1429,17 @@ const commands: CommandItem[] = [
             </Link>
 
             <Link
-              href="/reference/components/advanced-message-search"
+              href="/reference/hooks/use-command-palette"
               className="group p-4 rounded-lg border border-border/50 bg-card hover:border-brand-500/30 transition-all"
             >
               <div className="flex items-start justify-between gap-3 mb-2">
                 <h4 className="font-semibold text-foreground group-hover:text-brand-600 dark:group-hover:text-brand-400 transition-colors">
-                  AdvancedMessageSearch
+                  useCommandPalette Hook
                 </h4>
                 <ExternalLink className="w-4 h-4 text-muted-foreground" />
               </div>
               <p className="text-sm text-muted-foreground">
-                Advanced search with filters and operators for message history
+                Hook for managing command palette state with keyboard shortcuts
               </p>
             </Link>
           </div>

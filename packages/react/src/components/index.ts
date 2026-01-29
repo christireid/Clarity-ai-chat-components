@@ -18,6 +18,7 @@
  * - ui/           Generic UI primitives
  * - ai/           AI-specific features
  * - prompt/       Prompt suggestions
+ * - prompt-composer/ Progressive prompt system with token optimization
  * - context/      Context and memory management
  * - code/         Code display components
  * - enterprise/   Enterprise features
@@ -60,6 +61,9 @@ export * from './ui'
 // AI Components
 export * from './ai'
 
+// PromptComposer Components
+export * from './prompt-composer'
+
 // Context Components
 export * from './context'
 
@@ -71,3 +75,6 @@ export * from './ai-ops'
 
 // Pro Components
 export * from './pro'
+
+// Comparison Components
+export { BeforeAfterComparison, type BeforeAfterComparisonProps, type BeforeMetrics, type AfterMetrics, type StrategyContribution, type ComparisonType } from './BeforeAfterComparison'

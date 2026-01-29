@@ -1,0 +1,804 @@
+openapi: 3.0.3
+info:
+  title: AudioRecorder API
+  description: |
+    REST API endpoints for audio recording functionality with the AudioRecorder component.
+
+    This API provides endpoints for:
+    - Uploading recorded audio files
+    - Processing audio chunks in real-time
+    - Transcribing audio to text
+    - Converting audio formats
+    - Managing audio storage
+
+    All endpoints support authentication via Bearer token or API key.
+  version: 1.0.0
+  contact:
+    name: Clarity AI Support
+    email: support@clarity-ai.com
+    url: https://docs.clarity-ai.com
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+
+servers:
+  - url: https://api.clarity-ai.com/v1
+    description: Production server
+  - url: https://api-staging.clarity-ai.com/v1
+    description: Staging server
+  - url: http://localhost:3000/api
+    description: Local development server
+
+tags:
+  - name: Audio Upload
+    description: Upload complete audio recordings
+  - name: Audio Streaming
+    description: Upload audio chunks in real-time
+  - name: Audio Transcription
+    description: Convert audio to text
+  - name: Audio Processing
+    description: Process and convert audio files
+
+paths:
+  /audio/upload:
+    post:
+      summary: Upload audio recording
+      description: |
+        Upload a complete audio recording from the AudioRecorder component.
+        Supports multiple audio formats (WebM, MP3, WAV, OGG, FLAC).
+
+        The endpoint validates the audio file, stores it securely, and returns
+        a URL for accessing the recording.
+      tags:
+        - Audio Upload
+      operationId: uploadAudio
+      security:
+        - bearerAuth: []
+        - apiKeyAuth: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+                - audio
+              properties:
+                audio:
+                  type: string
+                  format: binary
+                  description: Audio file blob from AudioRecorder
+                filename:
+                  type: string
+                  description: Original filename
+                  example: recording.webm
+                duration:
+                  type: number
+                  description: Recording duration in seconds
+                  example: 45.3
+                format:
+                  type: string
+                  enum: [webm, mp3, wav, ogg, flac]
+                  description: Audio format
+                  example: webm
+                metadata:
+                  type: object
+                  description: Optional metadata
+                  properties:
+                    bitrate:
+                      type: number
+                      example: 128000
+                    channels:
+                      type: integer
+                      enum: [1, 2]
+                      example: 1
+                    sampleRate:
+                      type: number
+                      example: 48000
+            encoding:
+              audio:
+                contentType: audio/webm, audio/mpeg, audio/wav, audio/ogg, audio/flac
+      responses:
+        '200':
+          description: Audio uploaded successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                        description: Unique audio file ID
+                        example: aud_1234567890abcdef
+                      url:
+                        type: string
+                        format: uri
+                        description: Public URL for accessing the audio
+                        example: https://cdn.clarity-ai.com/audio/aud_1234567890abcdef.webm
+                      duration:
+                        type: number
+                        description: Audio duration in seconds
+                        example: 45.3
+                      size:
+                        type: integer
+                        description: File size in bytes
+                        example: 543210
+                      format:
+                        type: string
+                        description: Audio format
+                        example: webm
+                      createdAt:
+                        type: string
+                        format: date-time
+                        example: '2026-01-28T10:30:00Z'
+              examples:
+                success:
+                  summary: Successful upload
+                  value:
+                    success: true
+                    data:
+                      id: aud_1234567890abcdef
+                      url: https://cdn.clarity-ai.com/audio/aud_1234567890abcdef.webm
+                      duration: 45.3
+                      size: 543210
+                      format: webm
+                      createdAt: '2026-01-28T10:30:00Z'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                invalidFormat:
+                  summary: Unsupported format
+                  value:
+                    success: false
+                    error:
+                      code: INVALID_FORMAT
+                      message: Unsupported audio format
+                      details: Format 'xyz' is not supported
+                fileTooLarge:
+                  summary: File too large
+                  value:
+                    success: false
+                    error:
+                      code: FILE_TOO_LARGE
+                      message: Audio file exceeds maximum size
+                      details: Maximum file size is 100MB
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '413':
+          description: Payload too large
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  /audio/upload-chunk:
+    post:
+      summary: Upload audio chunk
+      description: |
+        Upload individual audio chunks during recording for real-time processing.
+        Use with the `onDataAvailable` callback in AudioRecorder.
+
+        Chunks are buffered server-side and combined when recording is finalized.
+      tags:
+        - Audio Streaming
+      operationId: uploadAudioChunk
+      security:
+        - bearerAuth: []
+        - apiKeyAuth: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+                - chunk
+                - sessionId
+                - index
+              properties:
+                chunk:
+                  type: string
+                  format: binary
+                  description: Audio data chunk
+                sessionId:
+                  type: string
+                  description: Recording session ID
+                  example: ses_abcdef123456
+                index:
+                  type: integer
+                  description: Chunk sequence number (0-based)
+                  example: 0
+                timestamp:
+                  type: number
+                  description: Chunk timestamp in milliseconds
+                  example: 1000
+      responses:
+        '200':
+          description: Chunk uploaded successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      sessionId:
+                        type: string
+                        example: ses_abcdef123456
+                      chunkIndex:
+                        type: integer
+                        example: 0
+                      totalChunks:
+                        type: integer
+                        example: 5
+                      size:
+                        type: integer
+                        description: Chunk size in bytes
+                        example: 32768
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  /audio/finalize-recording:
+    post:
+      summary: Finalize recording session
+      description: |
+        Finalize a chunked recording session by combining all uploaded chunks
+        into a single audio file.
+      tags:
+        - Audio Streaming
+      operationId: finalizeRecording
+      security:
+        - bearerAuth: []
+        - apiKeyAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - sessionId
+              properties:
+                sessionId:
+                  type: string
+                  description: Recording session ID
+                  example: ses_abcdef123456
+                totalChunks:
+                  type: integer
+                  description: Expected number of chunks
+                  example: 5
+                metadata:
+                  type: object
+                  description: Optional recording metadata
+      responses:
+        '200':
+          description: Recording finalized successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                        example: aud_1234567890abcdef
+                      url:
+                        type: string
+                        format: uri
+                        example: https://cdn.clarity-ai.com/audio/aud_1234567890abcdef.webm
+                      duration:
+                        type: number
+                        example: 45.3
+                      size:
+                        type: integer
+                        example: 543210
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  /audio/transcribe:
+    post:
+      summary: Transcribe audio to text
+      description: |
+        Transcribe an audio recording to text using speech-to-text processing.
+        Supports multiple languages and returns timestamped transcription.
+      tags:
+        - Audio Transcription
+      operationId: transcribeAudio
+      security:
+        - bearerAuth: []
+        - apiKeyAuth: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+                - audio
+              properties:
+                audio:
+                  type: string
+                  format: binary
+                  description: Audio file to transcribe
+                language:
+                  type: string
+                  description: Language code (ISO 639-1)
+                  example: en
+                  default: auto
+                model:
+                  type: string
+                  enum: [base, enhanced, premium]
+                  description: Transcription model quality
+                  example: enhanced
+                  default: base
+                timestamps:
+                  type: boolean
+                  description: Include word-level timestamps
+                  default: false
+                punctuation:
+                  type: boolean
+                  description: Add automatic punctuation
+                  default: true
+                profanityFilter:
+                  type: boolean
+                  description: Filter profanity
+                  default: false
+      responses:
+        '200':
+          description: Transcription successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      transcript:
+                        type: string
+                        description: Full transcribed text
+                        example: Hello, this is a test recording.
+                      confidence:
+                        type: number
+                        description: Confidence score (0-1)
+                        example: 0.95
+                      language:
+                        type: string
+                        description: Detected language
+                        example: en
+                      duration:
+                        type: number
+                        description: Audio duration in seconds
+                        example: 5.3
+                      words:
+                        type: array
+                        description: Word-level details (if timestamps enabled)
+                        items:
+                          type: object
+                          properties:
+                            word:
+                              type: string
+                              example: Hello
+                            start:
+                              type: number
+                              description: Start time in seconds
+                              example: 0.0
+                            end:
+                              type: number
+                              description: End time in seconds
+                              example: 0.5
+                            confidence:
+                              type: number
+                              example: 0.98
+              examples:
+                basic:
+                  summary: Basic transcription
+                  value:
+                    success: true
+                    data:
+                      transcript: Hello, this is a test recording.
+                      confidence: 0.95
+                      language: en
+                      duration: 5.3
+                withTimestamps:
+                  summary: With word timestamps
+                  value:
+                    success: true
+                    data:
+                      transcript: Hello, this is a test recording.
+                      confidence: 0.95
+                      language: en
+                      duration: 5.3
+                      words:
+                        - word: Hello
+                          start: 0.0
+                          end: 0.5
+                          confidence: 0.98
+                        - word: this
+                          start: 0.6
+                          end: 0.9
+                          confidence: 0.96
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '422':
+          description: Audio processing failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                noSpeech:
+                  summary: No speech detected
+                  value:
+                    success: false
+                    error:
+                      code: NO_SPEECH_DETECTED
+                      message: No speech detected in audio
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  /audio/convert:
+    post:
+      summary: Convert audio format
+      description: |
+        Convert an audio file from one format to another.
+        Useful for ensuring browser compatibility or reducing file size.
+      tags:
+        - Audio Processing
+      operationId: convertAudio
+      security:
+        - bearerAuth: []
+        - apiKeyAuth: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+                - audio
+                - outputFormat
+              properties:
+                audio:
+                  type: string
+                  format: binary
+                  description: Audio file to convert
+                outputFormat:
+                  type: string
+                  enum: [webm, mp3, wav, ogg, flac]
+                  description: Target format
+                  example: mp3
+                bitrate:
+                  type: number
+                  description: Target bitrate in bps
+                  example: 128000
+                sampleRate:
+                  type: number
+                  description: Target sample rate in Hz
+                  example: 44100
+                channels:
+                  type: integer
+                  enum: [1, 2]
+                  description: Target channels (1=mono, 2=stereo)
+                  example: 1
+      responses:
+        '200':
+          description: Conversion successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                        example: aud_converted_123456
+                      url:
+                        type: string
+                        format: uri
+                        example: https://cdn.clarity-ai.com/audio/converted_123456.mp3
+                      format:
+                        type: string
+                        example: mp3
+                      size:
+                        type: integer
+                        example: 345678
+                      duration:
+                        type: number
+                        example: 45.3
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  /audio/{audioId}:
+    get:
+      summary: Get audio metadata
+      description: Retrieve metadata for a specific audio recording
+      tags:
+        - Audio Upload
+      operationId: getAudioMetadata
+      security:
+        - bearerAuth: []
+        - apiKeyAuth: []
+      parameters:
+        - name: audioId
+          in: path
+          required: true
+          description: Audio file ID
+          schema:
+            type: string
+            example: aud_1234567890abcdef
+      responses:
+        '200':
+          description: Audio metadata retrieved
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    $ref: '#/components/schemas/AudioMetadata'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+    delete:
+      summary: Delete audio recording
+      description: Permanently delete an audio recording
+      tags:
+        - Audio Upload
+      operationId: deleteAudio
+      security:
+        - bearerAuth: []
+        - apiKeyAuth: []
+      parameters:
+        - name: audioId
+          in: path
+          required: true
+          description: Audio file ID
+          schema:
+            type: string
+            example: aud_1234567890abcdef
+      responses:
+        '200':
+          description: Audio deleted successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: Audio deleted successfully
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT token from authentication endpoint
+    apiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-API-Key
+      description: API key from developer dashboard
+
+  schemas:
+    AudioMetadata:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique audio ID
+          example: aud_1234567890abcdef
+        url:
+          type: string
+          format: uri
+          description: Public URL
+          example: https://cdn.clarity-ai.com/audio/aud_1234567890abcdef.webm
+        format:
+          type: string
+          description: Audio format
+          example: webm
+        duration:
+          type: number
+          description: Duration in seconds
+          example: 45.3
+        size:
+          type: integer
+          description: File size in bytes
+          example: 543210
+        bitrate:
+          type: number
+          description: Bitrate in bps
+          example: 128000
+        sampleRate:
+          type: number
+          description: Sample rate in Hz
+          example: 48000
+        channels:
+          type: integer
+          description: Number of channels
+          example: 1
+        createdAt:
+          type: string
+          format: date-time
+          example: '2026-01-28T10:30:00Z'
+        updatedAt:
+          type: string
+          format: date-time
+          example: '2026-01-28T10:30:00Z'
+
+    Error:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: false
+        error:
+          type: object
+          properties:
+            code:
+              type: string
+              description: Error code
+              example: INVALID_FORMAT
+            message:
+              type: string
+              description: Human-readable error message
+              example: Unsupported audio format
+            details:
+              type: string
+              description: Additional error details
+              example: Format 'xyz' is not supported
+            field:
+              type: string
+              description: Field that caused the error (for validation errors)
+              example: audio
+
+  responses:
+    BadRequest:
+      description: Invalid request parameters
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          examples:
+            validation:
+              summary: Validation error
+              value:
+                success: false
+                error:
+                  code: VALIDATION_ERROR
+                  message: Request validation failed
+                  details: Missing required field 'audio'
+                  field: audio
+
+    Unauthorized:
+      description: Authentication required
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          examples:
+            noToken:
+              summary: No authentication token
+              value:
+                success: false
+                error:
+                  code: UNAUTHORIZED
+                  message: Authentication required
+            invalidToken:
+              summary: Invalid token
+              value:
+                success: false
+                error:
+                  code: INVALID_TOKEN
+                  message: Invalid or expired authentication token
+
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          examples:
+            notFound:
+              summary: Audio not found
+              value:
+                success: false
+                error:
+                  code: NOT_FOUND
+                  message: Audio recording not found
+
+    InternalError:
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          examples:
+            serverError:
+              summary: Server error
+              value:
+                success: false
+                error:
+                  code: INTERNAL_ERROR
+                  message: An internal error occurred
+                  details: Please try again later
+
+  examples:
+    BasicUpload:
+      summary: Basic audio upload
+      description: Upload a voice message recording
+      value:
+        audio: <binary>
+        filename: voice-message.webm
+        duration: 15.5
+        format: webm
+
+    HighQualityUpload:
+      summary: High-quality audio upload
+      description: Upload a podcast or music recording
+      value:
+        audio: <binary>
+        filename: podcast-episode.mp3
+        duration: 3600
+        format: mp3
+        metadata:
+          bitrate: 192000
+          channels: 2
+          sampleRate: 48000

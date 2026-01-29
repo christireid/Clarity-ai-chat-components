@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PromptComposer Keyboard Navigation Visual Test</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    /* Focus indicators for testing */
+    *:focus {
+      outline: 2px solid #3b82f6 !important;
+      outline-offset: 2px !important;
+    }
+
+    /* Highlight currently focused element */
+    .focus-indicator {
+      position: fixed;
+      top: 10px;
+      right: 10px;
+      background: #1f2937;
+      color: white;
+      padding: 12px;
+      border-radius: 8px;
+      font-family: monospace;
+      font-size: 14px;
+      z-index: 10000;
+    }
+
+    /* Test panel */
+    .test-panel {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: white;
+      border: 2px solid #e5e7eb;
+      border-radius: 8px;
+      padding: 16px;
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+      max-width: 300px;
+      z-index: 10000;
+    }
+
+    .test-item {
+      padding: 8px;
+      margin: 4px 0;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .test-item:hover {
+      background: #f3f4f6;
+    }
+
+    .test-item.active {
+      background: #dbeafe;
+      border-left: 3px solid #3b82f6;
+    }
+
+    /* Command palette styles */
+    .command-palette {
+      position: absolute;
+      bottom: 100%;
+      left: 0;
+      right: 0;
+      margin-bottom: 8px;
+      background: white;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+      max-height: 384px;
+      overflow-y: auto;
+    }
+
+    .command-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 16px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .command-item:hover,
+    .command-item.selected {
+      background: #f3f4f6;
+    }
+
+    /* Context mention styles */
+    .mention-suggestions {
+      position: absolute;
+      bottom: 100%;
+      left: 0;
+      right: 0;
+      margin-bottom: 8px;
+      background: white;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+      max-height: 256px;
+      overflow-y: auto;
+    }
+
+    .mention-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 16px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .mention-item:hover,
+    .mention-item.selected {
+      background: #f3f4f6;
+    }
+
+    /* Suggestion chips */
+    .suggestions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .suggestion-chip {
+      padding: 8px 16px;
+      background: #f3f4f6;
+      border-radius: 9999px;
+      cursor: pointer;
+      transition: background 0.2s;
+      font-size: 14px;
+    }
+
+    .suggestion-chip:hover {
+      background: #e5e7eb;
+    }
+
+    .suggestion-chip:focus {
+      background: #dbeafe;
+    }
+
+    /* Scrollbar hiding */
+    .scrollbar-hide::-webkit-scrollbar {
+      display: none;
+    }
+    .scrollbar-hide {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+  </style>
+</head>
+<body class="bg-gray-50 p-8">
+  <!-- Focus Indicator -->
+  <div class="focus-indicator" id="focusIndicator">
+    <div>Focused: <span id="focusedElement">None</span></div>
+    <div>Tab Index: <span id="tabIndex">N/A</span></div>
+    <div>Role: <span id="roleInfo">N/A</span></div>
+  </div>
+
+  <!-- Test Panel -->
+  <div class="test-panel">
+    <h3 class="font-bold mb-2">Keyboard Tests</h3>
+    <div class="text-sm text-gray-600 mb-3">Click or use keyboard to test:</div>
+    <div class="test-item" onclick="runTest('tab-order')" tabindex="0">
+      ⌨️ Tab Order
+    </div>
+    <div class="test-item" onclick="runTest('arrow-nav')" tabindex="0">
+      ⬆️ Arrow Navigation
+    </div>
+    <div class="test-item" onclick="runTest('escape')" tabindex="0">
+      ⎋ Escape Handling
+    </div>
+    <div class="test-item" onclick="runTest('shortcuts')" tabindex="0">
+      ⚡ Shortcuts
+    </div>
+    <div class="test-item" onclick="runTest('focus-trap')" tabindex="0">
+      🔒 Focus Trapping
+    </div>
+    <div class="test-item" onclick="runTest('indicators')" tabindex="0">
+      👁️ Focus Indicators
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="max-w-3xl mx-auto">
+    <h1 class="text-3xl font-bold mb-2">Keyboard Navigation Visual Test</h1>
+    <p class="text-gray-600 mb-8">
+      Use keyboard only (Tab, Arrow keys, Enter, Escape) to test all interactive paths.
+    </p>
+
+    <!-- Test Case 1: Basic Tab Order -->
+    <section class="mb-12">
+      <h2 class="text-xl font-semibold mb-4">1. Basic Tab Order (Collapsed)</h2>
+      <div class="bg-white p-4 rounded-lg border border-gray-200">
+        <div class="relative">
+          <div class="border border-gray-200 rounded-lg focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-500/20 transition-all">
+            <textarea
+              id="basic-textarea"
+              placeholder="Ask anything..."
+              rows="1"
+              class="w-full p-3 bg-transparent resize-none text-gray-900 placeholder:text-gray-400 focus:outline-none"
+            ></textarea>
+            <div class="flex items-center justify-between px-3 pb-2 border-t border-gray-100">
+              <div class="flex gap-2">
+                <button
+                  id="basic-attach"
+                  class="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded transition-colors"
+                  aria-label="Attach file"
+                >
+                  📎
+                </button>
+                <button
+                  id="basic-voice"
+                  class="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded transition-colors"
+                  aria-label="Voice input"
+                >
+                  🎤
+                </button>
+              </div>
+              <button
+                id="basic-send"
+                class="px-4 py-2 rounded-lg font-medium bg-blue-600 hover:bg-blue-700 text-white transition-colors"
+              >
+                Send
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="mt-2 text-sm text-gray-600">
+        Expected order: Textarea → Attach → Voice → Send → (wrap)
+      </div>
+    </section>
+
+    <!-- Test Case 2: Suggestion Chips Tab Order -->
+    <section class="mb-12">
+      <h2 class="text-xl font-semibold mb-4">2. Suggestion Chips Tab Order</h2>
+      <div class="bg-white p-4 rounded-lg border border-gray-200">
+        <div class="suggestions">
+          <button class="suggestion-chip" tabindex="0">📖 Explain this code</button>
+          <button class="suggestion-chip" tabindex="0">🧪 Write tests for...</button>
+          <button class="suggestion-chip" tabindex="0">🐛 Debug issue</button>
+          <button class="suggestion-chip" tabindex="0">🔧 Refactor code</button>
+        </div>
+        <div class="relative">
+          <textarea
+            placeholder="Type here after selecting a suggestion..."
+            rows="2"
+            class="w-full p-3 border border-gray-200 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 resize-none"
+          ></textarea>
+        </div>
+      </div>
+      <div class="mt-2 text-sm text-gray-600">
+        Expected: Chip1 → Chip2 → Chip3 → Chip4 → Textarea
+      </div>
+    </section>
+
+    <!-- Test Case 3: Command Palette Arrow Navigation -->
+    <section class="mb-12">
+      <h2 class="text-xl font-semibold mb-4">3. Command Palette (Type "/" to open)</h2>
+      <div class="bg-white p-4 rounded-lg border border-gray-200">
+        <div class="relative">
+          <div id="command-palette" class="command-palette scrollbar-hide" style="display: none;">
+            <div class="sticky top-0 bg-white border-b border-gray-100 px-4 py-2">
+              <div class="flex items-center justify-between text-xs">
+                <span class="font-medium text-gray-500">Commands</span>
+                <span class="text-gray-400">3 available</span>
+              </div>
+            </div>
+            <button class="command-item selected" data-command="0">
+              <span>🔍</span>
+              <div class="flex-1">
+                <div class="font-medium text-sm">Search Documentation</div>
+                <div class="text-xs text-gray-500">/search</div>
+              </div>
+            </button>
+            <button class="command-item" data-command="1">
+              <span>💻</span>
+              <div class="flex-1">
+                <div class="font-medium text-sm">Generate Code</div>
+                <div class="text-xs text-gray-500">/code</div>
+              </div>
+            </button>
+            <button class="command-item" data-command="2">
+              <span>🐛</span>
+              <div class="flex-1">
+                <div class="font-medium text-sm">Debug Issue</div>
+                <div class="text-xs text-gray-500">/debug</div>
+              </div>
+            </button>
+            <div class="sticky bottom-0 bg-white border-t border-gray-100 px-4 py-2 text-xs text-gray-400 flex gap-4">
+              <span>↑↓ Navigate</span>
+              <span>↵ Execute</span>
+              <span>Esc Close</span>
+            </div>
+          </div>
+          <textarea
+            id="command-input"
+            placeholder="Type / for commands..."
+            rows="2"
+            class="w-full p-3 border border-gray-200 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 resize-none"
+          ></textarea>
+        </div>
+      </div>
+      <div class="mt-2 text-sm text-gray-600">
+        Test: Type "/" → Use ↑↓ to navigate → Enter to select → Esc to close
+      </div>
+    </section>
+
+    <!-- Test Case 4: Context Mention Arrow Navigation -->
+    <section class="mb-12">
+      <h2 class="text-xl font-semibold mb-4">4. Context Mentions (Type "@file:")</h2>
+      <div class="bg-white p-4 rounded-lg border border-gray-200">
+        <div class="relative">
+          <div id="mention-suggestions" class="mention-suggestions scrollbar-hide" style="display: none;">
+            <button class="mention-item selected" data-mention="0">
+              <span>📄</span>
+              <div class="flex-1">
+                <div class="font-medium text-sm">Button.tsx</div>
+                <div class="text-xs text-gray-500">Button component</div>
+              </div>
+              <div class="text-xs text-gray-500 font-mono">50t</div>
+            </button>
+            <button class="mention-item" data-mention="1">
+              <span>📄</span>
+              <div class="flex-1">
+                <div class="font-medium text-sm">Input.tsx</div>
+                <div class="text-xs text-gray-500">Input component</div>
+              </div>
+              <div class="text-xs text-gray-500 font-mono">75t</div>
+            </button>
+            <button class="mention-item" data-mention="2">
+              <span>📄</span>
+              <div class="flex-1">
+                <div class="font-medium text-sm">hooks.ts</div>
+                <div class="text-xs text-gray-500">Custom hooks</div>
+              </div>
+              <div class="text-xs text-gray-500 font-mono">120t</div>
+            </button>
+          </div>
+          <textarea
+            id="mention-input"
+            placeholder="Type @file: to mention files..."
+            rows="2"
+            class="w-full p-3 border border-gray-200 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 resize-none"
+          ></textarea>
+        </div>
+      </div>
+      <div class="mt-2 text-sm text-gray-600">
+        Test: Type "@file:" → Use ↑↓ to navigate → Enter/Tab to select → Esc to close
+      </div>
+    </section>
+
+    <!-- Test Case 5: Focus Trapping -->
+    <section class="mb-12">
+      <h2 class="text-xl font-semibold mb-4">5. Focus Trapping in Modal</h2>
+      <div class="bg-white p-4 rounded-lg border border-gray-200">
+        <button
+          id="open-modal"
+          class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+        >
+          Open Settings Modal
+        </button>
+
+        <!-- Modal -->
+        <div id="modal-overlay" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50" style="display: none;">
+          <div id="modal" class="bg-white rounded-lg p-6 max-w-md w-full shadow-xl" role="dialog" aria-modal="true">
+            <h3 class="text-lg font-semibold mb-4">Settings</h3>
+            <div class="space-y-4">
+              <div>
+                <label class="block text-sm font-medium mb-1">
+                  Model
+                  <select class="w-full mt-1 p-2 border border-gray-200 rounded" id="modal-select">
+                    <option>GPT-4</option>
+                    <option>Claude 3.5</option>
+                    <option>Gemini Pro</option>
+                  </select>
+                </label>
+              </div>
+              <div>
+                <label class="flex items-center gap-2">
+                  <input type="checkbox" id="modal-checkbox" class="rounded">
+                  <span class="text-sm">Enable streaming</span>
+                </label>
+              </div>
+            </div>
+            <div class="mt-6 flex gap-2 justify-end">
+              <button
+                id="modal-cancel"
+                class="px-4 py-2 border border-gray-200 rounded-lg hover:bg-gray-50"
+              >
+                Cancel
+              </button>
+              <button
+                id="modal-save"
+                class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+              >
+                Save
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="mt-2 text-sm text-gray-600">
+        Test: Open modal → Tab should cycle only within modal → Esc to close
+      </div>
+    </section>
+
+    <!-- Test Case 6: Keyboard Shortcut Conflicts -->
+    <section class="mb-12">
+      <h2 class="text-xl font-semibold mb-4">6. Keyboard Shortcuts</h2>
+      <div class="bg-white p-4 rounded-lg border border-gray-200">
+        <div id="shortcut-log" class="mb-4 p-3 bg-gray-50 rounded font-mono text-xs h-32 overflow-y-auto"></div>
+        <textarea
+          id="shortcut-textarea"
+          placeholder="Test shortcuts: Enter (submit), Shift+Enter (newline), Ctrl+A (select all)..."
+          rows="3"
+          class="w-full p-3 border border-gray-200 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 resize-none"
+        ></textarea>
+      </div>
+      <div class="mt-2 text-sm text-gray-600">
+        Test: Enter submits, Shift+Enter adds newline, browser shortcuts still work
+      </div>
+    </section>
+  </div>
+
+  <script>
+    // Focus indicator tracking
+    function updateFocusIndicator() {
+      const focused = document.activeElement;
+      document.getElementById('focusedElement').textContent =
+        focused.id || focused.tagName.toLowerCase();
+      document.getElementById('tabIndex').textContent =
+        focused.tabIndex !== undefined ? focused.tabIndex : 'N/A';
+      document.getElementById('roleInfo').textContent =
+        focused.getAttribute('role') || focused.tagName.toLowerCase();
+    }
+
+    document.addEventListener('focusin', updateFocusIndicator);
+    setInterval(updateFocusIndicator, 100);
+
+    // Command palette
+    const commandInput = document.getElementById('command-input');
+    const commandPalette = document.getElementById('command-palette');
+    let selectedCommandIndex = 0;
+
+    commandInput.addEventListener('input', (e) => {
+      if (e.target.value.startsWith('/')) {
+        commandPalette.style.display = 'block';
+      } else {
+        commandPalette.style.display = 'none';
+      }
+    });
+
+    commandInput.addEventListener('keydown', (e) => {
+      if (commandPalette.style.display === 'none') {
+        if (e.key === 'Enter' && !e.shiftKey) {
+          e.preventDefault();
+          console.log('Submit:', commandInput.value);
+        }
+        return;
+      }
+
+      const items = commandPalette.querySelectorAll('.command-item');
+
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        selectedCommandIndex = Math.min(selectedCommandIndex + 1, items.length - 1);
+        updateCommandSelection(items);
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        selectedCommandIndex = Math.max(selectedCommandIndex - 1, 0);
+        updateCommandSelection(items);
+      } else if (e.key === 'Enter') {
+        e.preventDefault();
+        console.log('Execute command:', selectedCommandIndex);
+        commandPalette.style.display = 'none';
+        commandInput.value = '';
+      } else if (e.key === 'Escape') {
+        e.preventDefault();
+        commandPalette.style.display = 'none';
+        selectedCommandIndex = 0;
+      }
+    });
+
+    function updateCommandSelection(items) {
+      items.forEach((item, i) => {
+        if (i === selectedCommandIndex) {
+          item.classList.add('selected');
+          item.scrollIntoView({ block: 'nearest' });
+        } else {
+          item.classList.remove('selected');
+        }
+      });
+    }
+
+    // Mention suggestions
+    const mentionInput = document.getElementById('mention-input');
+    const mentionSuggestions = document.getElementById('mention-suggestions');
+    let selectedMentionIndex = 0;
+
+    mentionInput.addEventListener('input', (e) => {
+      if (e.target.value.includes('@file:')) {
+        mentionSuggestions.style.display = 'block';
+      } else {
+        mentionSuggestions.style.display = 'none';
+      }
+    });
+
+    mentionInput.addEventListener('keydown', (e) => {
+      if (mentionSuggestions.style.display === 'none') return;
+
+      const items = mentionSuggestions.querySelectorAll('.mention-item');
+
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        selectedMentionIndex = Math.min(selectedMentionIndex + 1, items.length - 1);
+        updateMentionSelection(items);
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        selectedMentionIndex = Math.max(selectedMentionIndex - 1, 0);
+        updateMentionSelection(items);
+      } else if (e.key === 'Enter' || e.key === 'Tab') {
+        e.preventDefault();
+        const selected = items[selectedMentionIndex];
+        const filename = selected.querySelector('.font-medium').textContent;
+        mentionInput.value = mentionInput.value.replace(/@file:.*/, `@file:${filename} `);
+        mentionSuggestions.style.display = 'none';
+        selectedMentionIndex = 0;
+      } else if (e.key === 'Escape') {
+        e.preventDefault();
+        mentionSuggestions.style.display = 'none';
+        selectedMentionIndex = 0;
+      }
+    });
+
+    function updateMentionSelection(items) {
+      items.forEach((item, i) => {
+        if (i === selectedMentionIndex) {
+          item.classList.add('selected');
+          item.scrollIntoView({ block: 'nearest' });
+        } else {
+          item.classList.remove('selected');
+        }
+      });
+    }
+
+    // Modal focus trapping
+    const openModalBtn = document.getElementById('open-modal');
+    const modalOverlay = document.getElementById('modal-overlay');
+    const modal = document.getElementById('modal');
+    const modalCancel = document.getElementById('modal-cancel');
+    const modalSave = document.getElementById('modal-save');
+
+    openModalBtn.addEventListener('click', () => {
+      modalOverlay.style.display = 'flex';
+      modalCancel.focus();
+    });
+
+    modalCancel.addEventListener('click', closeModal);
+    modalSave.addEventListener('click', closeModal);
+    modalOverlay.addEventListener('click', (e) => {
+      if (e.target === modalOverlay) closeModal();
+    });
+
+    function closeModal() {
+      modalOverlay.style.display = 'none';
+      openModalBtn.focus();
+    }
+
+    // Trap focus within modal
+    modal.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        closeModal();
+        return;
+      }
+
+      if (e.key !== 'Tab') return;
+
+      const focusableElements = modal.querySelectorAll(
+        'button, input, select, textarea, [tabindex]:not([tabindex="-1"])'
+      );
+      const firstElement = focusableElements[0];
+      const lastElement = focusableElements[focusableElements.length - 1];
+
+      if (e.shiftKey) {
+        if (document.activeElement === firstElement) {
+          e.preventDefault();
+          lastElement.focus();
+        }
+      } else {
+        if (document.activeElement === lastElement) {
+          e.preventDefault();
+          firstElement.focus();
+        }
+      }
+    });
+
+    // Shortcut logging
+    const shortcutTextarea = document.getElementById('shortcut-textarea');
+    const shortcutLog = document.getElementById('shortcut-log');
+
+    function logShortcut(text) {
+      const time = new Date().toLocaleTimeString();
+      shortcutLog.textContent += `[${time}] ${text}\n`;
+      shortcutLog.scrollTop = shortcutLog.scrollHeight;
+    }
+
+    shortcutTextarea.addEventListener('keydown', (e) => {
+      const key = e.key;
+      const ctrl = e.ctrlKey || e.metaKey;
+      const shift = e.shiftKey;
+      const alt = e.altKey;
+
+      const modifiers = [];
+      if (ctrl) modifiers.push('Ctrl');
+      if (shift) modifiers.push('Shift');
+      if (alt) modifiers.push('Alt');
+
+      const combo = modifiers.length ? `${modifiers.join('+')}+${key}` : key;
+      logShortcut(`Key: ${combo}`);
+
+      if (key === 'Enter' && !shift) {
+        e.preventDefault();
+        logShortcut('⚡ SUBMIT (Enter without Shift)');
+      } else if (key === 'Enter' && shift) {
+        logShortcut('↵ NEWLINE (Shift+Enter)');
+      }
+
+      // Don't prevent default for browser shortcuts
+      if (ctrl && ['a', 'c', 'v', 'x', 'z', 'y'].includes(key.toLowerCase())) {
+        logShortcut(`✓ Browser shortcut allowed: ${combo}`);
+      }
+    });
+
+    // Test runner
+    function runTest(testName) {
+      const testItems = document.querySelectorAll('.test-item');
+      testItems.forEach(item => item.classList.remove('active'));
+      event.target.classList.add('active');
+
+      switch(testName) {
+        case 'tab-order':
+          alert('Test: Tab through all elements in order.\nExpected: Textarea → Attach → Voice → Send');
+          document.getElementById('basic-textarea').focus();
+          break;
+        case 'arrow-nav':
+          alert('Test: Type "/" in command input, then use ↑↓ arrows to navigate.');
+          document.getElementById('command-input').focus();
+          break;
+        case 'escape':
+          alert('Test: Open command palette with "/", then press Esc to close.');
+          document.getElementById('command-input').focus();
+          break;
+        case 'shortcuts':
+          alert('Test: Enter (submit), Shift+Enter (newline), Ctrl+A (select all).');
+          document.getElementById('shortcut-textarea').focus();
+          break;
+        case 'focus-trap':
+          alert('Test: Open modal, Tab should cycle within modal only.');
+          document.getElementById('open-modal').click();
+          break;
+        case 'indicators':
+          alert('Test: Tab through all elements and verify focus indicators are visible.');
+          document.getElementById('basic-textarea').focus();
+          break;
+      }
+    }
+
+    // Initial focus
+    logShortcut('Test page loaded. Try keyboard shortcuts!');
+  </script>
+</body>
+</html>

@@ -88,7 +88,7 @@ export const learnNavigation: NavItem[] = [
       { title: 'RAG', href: '/guides/rag' },
       { title: 'Agents', href: '/guides/agents' },
       { title: '🔧 Tool Calling System', href: '/guides/tools' },
-      { title: 'Token Optimization', href: '/guides/token-optimization' },
+      { title: '💰 Token Optimization', href: '/guides/token-optimization' },
       { title: 'Prompt Caching', href: '/guides/prompt-caching' },
       { title: 'Prompts', href: '/guides/prompts' },
       { title: 'Model Adapters', href: '/guides/model-adapters' },
@@ -271,6 +271,18 @@ export const referenceNavigation: NavItem[] = [
   {
     title: 'Token Optimization',
     items: [
+      {
+        title: 'Token Optimization System',
+        href: '/reference/components/token-optimization',
+      },
+      {
+        title: 'TokenCostPreview',
+        href: '/reference/components/token-cost-preview',
+      },
+      {
+        title: 'TokenCounter',
+        href: '/reference/components/token-counter',
+      },
       {
         title: 'TokenOptimizationBadge',
         href: '/reference/components/token-optimization-badge',
@@ -481,6 +493,39 @@ export const referenceNavigation: NavItem[] = [
 ]
 
 export const cookbookNavigation: NavItem[] = [
+  {
+    title: '💰 Token Optimization',
+    items: [
+      {
+        title: '⭐ Achieving 50-70% Cost Reduction',
+        href: '/cookbook/achieving-50-percent-reduction',
+      },
+      {
+        title: '🔄 Provider Caching Setup',
+        href: '/cookbook/provider-caching-setup',
+      },
+      {
+        title: '🎯 Smart Model Routing',
+        href: '/cookbook/smart-model-routing',
+      },
+      {
+        title: '⚛️ React Integration',
+        href: '/cookbook/react-integration',
+      },
+      {
+        title: '🖥️ Node.js Backend Integration',
+        href: '/cookbook/nodejs-backend-integration',
+      },
+      {
+        title: '🔀 TOON Migration Guide',
+        href: '/cookbook/toon-migration-guide',
+      },
+      {
+        title: '🏢 Enterprise Production Pipeline',
+        href: '/cookbook/enterprise-production-pipeline',
+      },
+    ],
+  },
   {
     title: 'Getting Started',
     items: [

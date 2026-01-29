@@ -1,0 +1,646 @@
+# Custom Theming - Brand Your Chat Interface
+
+> Complete guide to customizing colors, typography, spacing, and animations
+
+## Problem
+
+The default chat interface doesn't match your brand. You need to customize colors, fonts, spacing, borders, and animations to create a cohesive design that fits your application.
+
+## Solution
+
+Use Clarity Chat's theming system with CSS variables, Tailwind configuration, and component-level customization to create a fully branded chat experience.
+
+## Complete Code
+
+### Theme Configuration
+
+```tsx
+// app/theme/chat-theme.ts
+import type { ClarityTheme } from '@clarity-chat/react'
+
+export const customTheme: ClarityTheme = {
+  colors: {
+    // Brand colors
+    primary: '#6366f1', // Indigo
+    primaryHover: '#4f46e5',
+    primaryActive: '#4338ca',
+
+    // Semantic colors
+    success: '#10b981',
+    warning: '#f59e0b',
+    error: '#ef4444',
+    info: '#3b82f6',
+
+    // Text colors
+    text: {
+      primary: '#111827',
+      secondary: '#6b7280',
+      tertiary: '#9ca3af',
+      inverse: '#ffffff',
+    },
+
+    // Background colors
+    background: {
+      primary: '#ffffff',
+      secondary: '#f9fafb',
+      tertiary: '#f3f4f6',
+      elevated: '#ffffff',
+    },
+
+    // Border colors
+    border: {
+      default: '#e5e7eb',
+      hover: '#d1d5db',
+      focus: '#6366f1',
+    },
+
+    // Message colors
+    message: {
+      user: {
+        background: '#6366f1',
+        text: '#ffffff',
+      },
+      assistant: {
+        background: '#f3f4f6',
+        text: '#111827',
+      },
+      system: {
+        background: '#fef3c7',
+        text: '#92400e',
+      },
+    },
+  },
+
+  typography: {
+    fontFamily: {
+      base: 'Inter, system-ui, sans-serif',
+      mono: 'JetBrains Mono, monospace',
+    },
+    fontSize: {
+      xs: '0.75rem',
+      sm: '0.875rem',
+      base: '1rem',
+      lg: '1.125rem',
+      xl: '1.25rem',
+    },
+    fontWeight: {
+      normal: '400',
+      medium: '500',
+      semibold: '600',
+      bold: '700',
+    },
+  },
+
+  spacing: {
+    xs: '0.25rem',
+    sm: '0.5rem',
+    md: '1rem',
+    lg: '1.5rem',
+    xl: '2rem',
+  },
+
+  borderRadius: {
+    sm: '0.375rem',
+    md: '0.5rem',
+    lg: '0.75rem',
+    xl: '1rem',
+    full: '9999px',
+  },
+
+  shadows: {
+    sm: '0 1px 2px 0 rgb(0 0 0 / 0.05)',
+    md: '0 4px 6px -1px rgb(0 0 0 / 0.1)',
+    lg: '0 10px 15px -3px rgb(0 0 0 / 0.1)',
+    xl: '0 20px 25px -5px rgb(0 0 0 / 0.1)',
+  },
+
+  animations: {
+    duration: {
+      fast: '150ms',
+      normal: '250ms',
+      slow: '350ms',
+    },
+    easing: {
+      default: 'cubic-bezier(0.4, 0, 0.2, 1)',
+      in: 'cubic-bezier(0.4, 0, 1, 1)',
+      out: 'cubic-bezier(0, 0, 0.2, 1)',
+      inOut: 'cubic-bezier(0.4, 0, 0.2, 1)',
+    },
+  },
+}
+```
+
+### Apply Theme
+
+```tsx
+// app/chat/page.tsx
+'use client'
+
+import { ClarityChatApp } from '@clarity-chat/react'
+import { customTheme } from '@/app/theme/chat-theme'
+
+export default function ThemedChatPage() {
+  return (
+    <div className="h-screen">
+      <ClarityChatApp
+        api="/api/chat"
+        theme={customTheme}
+      />
+    </div>
+  )
+}
+```
+
+### CSS Variables Approach
+
+```css
+/* app/globals.css */
+@layer base {
+  :root {
+    /* Brand Colors */
+    --clarity-primary: 99 102 241; /* RGB for indigo-500 */
+    --clarity-primary-hover: 79 70 229;
+    --clarity-primary-active: 67 56 202;
+
+    /* Text Colors */
+    --clarity-text-primary: 17 24 39;
+    --clarity-text-secondary: 107 114 128;
+    --clarity-text-tertiary: 156 163 175;
+
+    /* Background Colors */
+    --clarity-bg-primary: 255 255 255;
+    --clarity-bg-secondary: 249 250 251;
+    --clarity-bg-tertiary: 243 244 246;
+
+    /* Border Colors */
+    --clarity-border-default: 229 231 235;
+    --clarity-border-hover: 209 213 219;
+
+    /* Message Colors */
+    --clarity-message-user-bg: 99 102 241;
+    --clarity-message-user-text: 255 255 255;
+    --clarity-message-assistant-bg: 243 244 246;
+    --clarity-message-assistant-text: 17 24 39;
+
+    /* Spacing */
+    --clarity-spacing-xs: 0.25rem;
+    --clarity-spacing-sm: 0.5rem;
+    --clarity-spacing-md: 1rem;
+    --clarity-spacing-lg: 1.5rem;
+    --clarity-spacing-xl: 2rem;
+
+    /* Border Radius */
+    --clarity-radius-sm: 0.375rem;
+    --clarity-radius-md: 0.5rem;
+    --clarity-radius-lg: 0.75rem;
+    --clarity-radius-xl: 1rem;
+
+    /* Shadows */
+    --clarity-shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+    --clarity-shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+    --clarity-shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+
+    /* Animation */
+    --clarity-duration-fast: 150ms;
+    --clarity-duration-normal: 250ms;
+    --clarity-duration-slow: 350ms;
+  }
+
+  .dark {
+    --clarity-text-primary: 243 244 246;
+    --clarity-text-secondary: 156 163 175;
+    --clarity-bg-primary: 17 24 39;
+    --clarity-bg-secondary: 31 41 55;
+    --clarity-border-default: 55 65 81;
+  }
+}
+```
+
+## How It Works
+
+### 1. Theme Object Created
+
+```tsx
+const theme = {
+  colors: { primary: '#6366f1' },
+  typography: { fontFamily: 'Inter' },
+  // ...
+}
+```
+
+### 2. Theme Passed to Component
+
+```tsx
+<ClarityChatApp theme={theme} />
+```
+
+### 3. CSS Variables Generated
+
+```css
+:root {
+  --clarity-primary: 99 102 241;
+}
+```
+
+### 4. Components Use Variables
+
+```tsx
+<div style={{ color: 'rgb(var(--clarity-primary))' }}>
+  Message
+</div>
+```
+
+## Variations
+
+### With Tailwind Configuration
+
+```js
+// tailwind.config.js
+module.exports = {
+  theme: {
+    extend: {
+      colors: {
+        'clarity-primary': 'rgb(var(--clarity-primary) / <alpha-value>)',
+        'clarity-text': 'rgb(var(--clarity-text-primary) / <alpha-value>)',
+        'clarity-bg': 'rgb(var(--clarity-bg-primary) / <alpha-value>)',
+      },
+      fontFamily: {
+        clarity: ['Inter', 'system-ui', 'sans-serif'],
+      },
+      borderRadius: {
+        'clarity-sm': 'var(--clarity-radius-sm)',
+        'clarity-md': 'var(--clarity-radius-md)',
+        'clarity-lg': 'var(--clarity-radius-lg)',
+      },
+    },
+  },
+}
+```
+
+### With Component-Level Customization
+
+```tsx
+import {
+  useClarityChat,
+  MessageList,
+  ChatInput,
+} from '@clarity-chat/react'
+
+export default function CustomStyledChat() {
+  const { messages, append } = useClarityChat({ api: '/api/chat' })
+
+  return (
+    <div className="flex h-screen flex-col bg-gradient-to-br from-indigo-50 to-purple-50">
+      <MessageList
+        messages={messages}
+        className="flex-1"
+        messageClassName={(message) =>
+          message.role === 'user'
+            ? 'bg-indigo-600 text-white rounded-2xl px-4 py-3 shadow-lg'
+            : 'bg-white text-gray-900 rounded-2xl px-4 py-3 shadow-md border border-gray-200'
+        }
+      />
+
+      <ChatInput
+        onSubmit={(content) => append({ role: 'user', content })}
+        className="border-t border-gray-200 bg-white p-4"
+        inputClassName="rounded-full border-2 border-indigo-300 focus:border-indigo-600 px-6 py-3"
+        sendButtonClassName="rounded-full bg-gradient-to-r from-indigo-600 to-purple-600 px-6 text-white shadow-lg hover:shadow-xl"
+      />
+    </div>
+  )
+}
+```
+
+### With Dark Mode Support
+
+```tsx
+'use client'
+
+import { useTheme } from 'next-themes'
+import { ClarityChatApp } from '@clarity-chat/react'
+import { lightTheme, darkTheme } from '@/app/theme/chat-theme'
+
+export default function ThemedChat() {
+  const { theme } = useTheme()
+
+  return (
+    <ClarityChatApp
+      api="/api/chat"
+      theme={theme === 'dark' ? darkTheme : lightTheme}
+    />
+  )
+}
+```
+
+```tsx
+// app/theme/chat-theme.ts
+export const lightTheme = {
+  colors: {
+    background: { primary: '#ffffff' },
+    text: { primary: '#111827' },
+    // ...
+  },
+}
+
+export const darkTheme = {
+  colors: {
+    background: { primary: '#111827' },
+    text: { primary: '#f9fafb' },
+    // ...
+  },
+}
+```
+
+### With Animation Customization
+
+```tsx
+import { motion } from 'framer-motion'
+import { Message } from '@clarity-chat/react'
+
+export function AnimatedMessage({ message }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20, scale: 0.95 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      exit={{ opacity: 0, scale: 0.95 }}
+      transition={{
+        duration: 0.3,
+        ease: [0.4, 0, 0.2, 1], // Custom easing
+      }}
+    >
+      <Message message={message} />
+    </motion.div>
+  )
+}
+```
+
+### With Brand Gradients
+
+```tsx
+export default function GradientChat() {
+  return (
+    <div className="h-screen bg-gradient-to-br from-purple-600 via-pink-600 to-orange-600 p-4">
+      <div className="h-full overflow-hidden rounded-2xl bg-white/95 backdrop-blur-lg shadow-2xl">
+        <ClarityChatApp
+          api="/api/chat"
+          theme={{
+            colors: {
+              primary: {
+                default: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+              },
+            },
+          }}
+        />
+      </div>
+    </div>
+  )
+}
+```
+
+### With Custom Message Bubbles
+
+```tsx
+import { MessageList } from '@clarity-chat/react'
+
+const CustomMessageRenderer = ({ message }) => {
+  const isUser = message.role === 'user'
+
+  return (
+    <div className={`flex ${isUser ? 'justify-end' : 'justify-start'} mb-4`}>
+      <div
+        className={`
+          max-w-[70%] rounded-2xl px-4 py-3
+          ${
+            isUser
+              ? 'bg-gradient-to-br from-indigo-600 to-purple-600 text-white shadow-lg'
+              : 'bg-white text-gray-900 shadow-md border border-gray-200'
+          }
+        `}
+      >
+        {/* Avatar */}
+        {!isUser && (
+          <div className="mb-2 flex items-center gap-2">
+            <div className="h-6 w-6 rounded-full bg-gradient-to-br from-pink-500 to-orange-500" />
+            <span className="text-xs font-medium text-gray-500">AI Assistant</span>
+          </div>
+        )}
+
+        {/* Content */}
+        <div className="prose prose-sm">
+          {message.content}
+        </div>
+
+        {/* Timestamp */}
+        <div className={`mt-1 text-xs ${isUser ? 'text-indigo-100' : 'text-gray-400'}`}>
+          {new Date(message.createdAt).toLocaleTimeString()}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+export default function CustomMessagesChat() {
+  const { messages, append } = useClarityChat({ api: '/api/chat' })
+
+  return (
+    <div className="flex h-screen flex-col">
+      <MessageList
+        messages={messages}
+        renderMessage={CustomMessageRenderer}
+      />
+      <ChatInput onSubmit={(content) => append({ role: 'user', content })} />
+    </div>
+  )
+}
+```
+
+## Common Pitfalls
+
+### Pitfall 1: Inconsistent Color Format
+
+**Problem:** Mixing RGB, hex, and HSL causes issues.
+
+**Solution:** Use consistent RGB format for CSS variables.
+
+```css
+/* ✅ Good - RGB values */
+:root {
+  --clarity-primary: 99 102 241;
+}
+
+/* Usage */
+.element {
+  color: rgb(var(--clarity-primary));
+  background: rgb(var(--clarity-primary) / 0.1);
+}
+
+/* ❌ Bad - Mixed formats */
+:root {
+  --clarity-primary: #6366f1;
+  --clarity-secondary: rgb(99, 102, 241);
+}
+```
+
+### Pitfall 2: Not Handling Dark Mode
+
+**Problem:** Theme breaks in dark mode.
+
+**Solution:** Define dark mode variants.
+
+```css
+:root {
+  --clarity-bg: 255 255 255;
+  --clarity-text: 17 24 39;
+}
+
+.dark {
+  --clarity-bg: 17 24 39;
+  --clarity-text: 243 244 246;
+}
+```
+
+### Pitfall 3: Overriding Core Styles
+
+**Problem:** Custom styles conflict with component internals.
+
+**Solution:** Use className props for customization.
+
+```tsx
+// ✅ Good - Use provided props
+<ChatInput
+  className="custom-input"
+  inputClassName="custom-input-field"
+/>
+
+// ❌ Bad - Global style overrides
+<ChatInput />
+/* In CSS: */
+.chat-input { /* Conflicts with internal styles */ }
+```
+
+### Pitfall 4: Missing Accessibility Contrast
+
+**Problem:** Custom colors don't meet WCAG AA standards.
+
+**Solution:** Check contrast ratios.
+
+```tsx
+// Use a contrast checker
+const backgroundColor = '#6366f1'
+const textColor = '#ffffff'
+
+const contrastRatio = checkContrast(backgroundColor, textColor)
+// Must be >= 4.5:1 for normal text
+// Must be >= 3:1 for large text
+```
+
+### Pitfall 5: Inconsistent Spacing
+
+**Problem:** Different spacing values across components.
+
+**Solution:** Use theme spacing tokens.
+
+```tsx
+// ✅ Good - Consistent spacing
+<div className="space-y-[var(--clarity-spacing-md)]">
+
+// ❌ Bad - Random values
+<div className="space-y-3">
+<div className="space-y-4">
+<div className="space-y-5">
+```
+
+## Theme Presets
+
+### Minimal Theme
+
+```tsx
+export const minimalTheme = {
+  colors: {
+    primary: '#000000',
+    background: { primary: '#ffffff' },
+    text: { primary: '#000000' },
+    border: { default: '#e5e7eb' },
+  },
+  borderRadius: {
+    sm: '0',
+    md: '0',
+    lg: '0',
+  },
+}
+```
+
+### Vibrant Theme
+
+```tsx
+export const vibrantTheme = {
+  colors: {
+    primary: '#ec4899',
+    message: {
+      user: {
+        background: 'linear-gradient(135deg, #ec4899, #f97316)',
+        text: '#ffffff',
+      },
+      assistant: {
+        background: 'linear-gradient(135deg, #3b82f6, #8b5cf6)',
+        text: '#ffffff',
+      },
+    },
+  },
+  borderRadius: {
+    lg: '1.5rem',
+  },
+  shadows: {
+    md: '0 8px 16px rgb(0 0 0 / 0.15)',
+  },
+}
+```
+
+### Professional Theme
+
+```tsx
+export const professionalTheme = {
+  colors: {
+    primary: '#1e40af',
+    background: { primary: '#f8fafc' },
+    text: { primary: '#0f172a' },
+  },
+  typography: {
+    fontFamily: { base: 'Inter, sans-serif' },
+  },
+  borderRadius: {
+    md: '0.375rem',
+  },
+}
+```
+
+## Testing Themes
+
+```tsx
+import { render, screen } from '@testing-library/react'
+import { ClarityChatApp } from '@clarity-chat/react'
+import { customTheme } from '@/app/theme/chat-theme'
+
+test('applies custom theme', () => {
+  render(<ClarityChatApp api="/api/chat" theme={customTheme} />)
+
+  const element = screen.getByTestId('chat-container')
+  const styles = window.getComputedStyle(element)
+
+  expect(styles.getPropertyValue('--clarity-primary')).toBe('99 102 241')
+})
+```
+
+## Next Steps
+
+- [Quick Start](../quick-start-3-lines) - Basic setup
+- [OpenAI Integration](../openai-streaming-chat) - Advanced features
+- [Tool Calling](../tool-calling-showcase) - Add AI tools
+- [Next.js Integration](../nextjs-integration) - Full stack setup
+
+---
+
+**Time to implement:** 30 minutes
+**Difficulty:** Beginner
+**Dependencies:** `@clarity-chat/react`, `tailwindcss` (optional)

@@ -15,3 +15,14 @@ export {
   useInteractionTracking,
 } from './UserInteractionAnalytics'
 export { ResponseQualityMeter } from './ResponseQualityMeter'
+
+// Savings Dashboard
+export {
+  SavingsDashboard,
+  type SavingsDashboardProps,
+  type SavingsMetrics,
+  type TimePeriodMetrics,
+  type TrendDataPoint,
+  type ExportFormat,
+  type TimePeriod,
+} from './SavingsDashboard'

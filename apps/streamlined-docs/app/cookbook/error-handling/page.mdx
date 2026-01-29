@@ -1,0 +1,616 @@
+# Error Handling - Robust Error Recovery
+
+> Implement graceful error handling with automatic retries, user feedback, and recovery strategies
+
+## Problem
+
+API failures, network issues, and streaming errors crash your chat UI or leave users stuck. You need robust error handling that recovers gracefully, provides clear feedback, and maintains conversation state.
+
+## Solution
+
+Use built-in error boundaries, retry mechanisms, and recovery strategies to handle failures gracefully while maintaining a smooth user experience.
+
+## Complete Code
+
+### Basic Error Handling
+
+```tsx
+// app/chat/page.tsx
+'use client'
+
+import {
+  useClarityChat,
+  MessageList,
+  ChatInput,
+  ErrorBoundary,
+} from '@clarity-chat/react'
+
+export default function ChatWithErrorHandling() {
+  const {
+    messages,
+    append,
+    isLoading,
+    error,
+    retry,
+    clearError,
+  } = useClarityChat({
+    api: '/api/chat',
+    onError: (err) => {
+      console.error('Chat error:', err)
+      // Track in analytics
+      trackError('chat_error', { message: err.message })
+    },
+    retry: {
+      maxAttempts: 3,
+      delay: 1000, // 1 second
+      backoff: 'exponential', // 1s, 2s, 4s
+    },
+  })
+
+  return (
+    <ErrorBoundary
+      fallback={({ error, resetError }) => (
+        <div className="flex h-screen items-center justify-center">
+          <div className="max-w-md rounded-lg border border-red-200 bg-red-50 p-6">
+            <h2 className="mb-2 text-lg font-semibold text-red-900">
+              Something went wrong
+            </h2>
+            <p className="mb-4 text-sm text-red-700">{error.message}</p>
+            <button
+              onClick={resetError}
+              className="rounded-lg bg-red-600 px-4 py-2 text-white hover:bg-red-700"
+            >
+              Try Again
+            </button>
+          </div>
+        </div>
+      )}
+    >
+      <div className="flex h-screen flex-col">
+        <MessageList messages={messages} isLoading={isLoading} />
+
+        {error && (
+          <div className="border-t border-red-200 bg-red-50 p-4">
+            <div className="flex items-center justify-between">
+              <div className="flex-1">
+                <p className="text-sm font-medium text-red-900">
+                  {error.message}
+                </p>
+                <p className="text-xs text-red-700">
+                  {error.retryCount > 0 && `Retried ${error.retryCount} times`}
+                </p>
+              </div>
+              <div className="flex gap-2">
+                <button
+                  onClick={retry}
+                  className="rounded-lg bg-red-600 px-3 py-1.5 text-sm text-white hover:bg-red-700"
+                >
+                  Retry
+                </button>
+                <button
+                  onClick={clearError}
+                  className="rounded-lg border border-red-300 px-3 py-1.5 text-sm text-red-700 hover:bg-red-100"
+                >
+                  Dismiss
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        <ChatInput
+          onSubmit={(content) => append({ role: 'user', content })}
+          disabled={isLoading}
+        />
+      </div>
+    </ErrorBoundary>
+  )
+}
+```
+
+### Backend with Error Handling
+
+```tsx
+// app/api/chat/route.ts
+import { OpenAI } from 'openai'
+import { OpenAIStream, StreamingTextResponse } from 'ai'
+
+const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY! })
+
+export async function POST(req: Request) {
+  try {
+    const { messages } = await req.json()
+
+    // Validate input
+    if (!messages || !Array.isArray(messages)) {
+      return new Response(
+        JSON.stringify({ error: 'Invalid messages format' }),
+        { status: 400 }
+      )
+    }
+
+    // Check API key
+    if (!process.env.OPENAI_API_KEY) {
+      return new Response(
+        JSON.stringify({ error: 'API key not configured' }),
+        { status: 500 }
+      )
+    }
+
+    const response = await openai.chat.completions.create({
+      model: 'gpt-4-turbo-preview',
+      stream: true,
+      messages,
+    })
+
+    const stream = OpenAIStream(response, {
+      onError: (error) => {
+        console.error('OpenAI stream error:', error)
+        throw error
+      },
+    })
+
+    return new StreamingTextResponse(stream)
+  } catch (error) {
+    console.error('API route error:', error)
+
+    // Handle specific error types
+    if (error instanceof OpenAI.APIError) {
+      if (error.status === 429) {
+        return new Response(
+          JSON.stringify({
+            error: 'Rate limit exceeded. Please try again in a moment.',
+            code: 'RATE_LIMIT',
+            retryAfter: error.headers?.['retry-after'],
+          }),
+          { status: 429 }
+        )
+      }
+
+      if (error.status === 401) {
+        return new Response(
+          JSON.stringify({
+            error: 'Invalid API key',
+            code: 'AUTH_ERROR',
+          }),
+          { status: 401 }
+        )
+      }
+
+      if (error.status === 500) {
+        return new Response(
+          JSON.stringify({
+            error: 'OpenAI service error. Please try again.',
+            code: 'SERVICE_ERROR',
+          }),
+          { status: 500 }
+        )
+      }
+    }
+
+    // Generic error
+    return new Response(
+      JSON.stringify({
+        error: 'An unexpected error occurred',
+        code: 'UNKNOWN_ERROR',
+      }),
+      { status: 500 }
+    )
+  }
+}
+```
+
+## How It Works
+
+### 1. Error Detection
+
+```tsx
+// Network error
+fetch('/api/chat') // Network timeout
+
+// Streaming error
+OpenAIStream(response, {
+  onError: (error) => {
+    // Error during streaming
+  }
+})
+
+// Component error
+throw new Error('Component crashed')
+```
+
+### 2. Error Capture
+
+```tsx
+// Error boundary catches render errors
+<ErrorBoundary>
+  <ChatComponent />
+</ErrorBoundary>
+
+// Hook captures API errors
+const { error } = useClarityChat({
+  onError: (err) => {
+    // Handle error
+  }
+})
+```
+
+### 3. Retry Logic
+
+```tsx
+// Automatic retry with exponential backoff
+Attempt 1: 1 second delay
+Attempt 2: 2 seconds delay
+Attempt 3: 4 seconds delay
+// Give up after 3 attempts
+```
+
+### 4. User Feedback
+
+```tsx
+// Show error message
+{error && (
+  <div className="bg-red-50 p-4">
+    {error.message}
+    <button onClick={retry}>Retry</button>
+  </div>
+)}
+```
+
+## Variations
+
+### With Custom Error Messages
+
+```tsx
+import { useClarityChat } from '@clarity-chat/react'
+
+const errorMessages = {
+  RATE_LIMIT: 'Too many requests. Please wait a moment.',
+  AUTH_ERROR: 'Authentication failed. Check your API key.',
+  SERVICE_ERROR: 'Service temporarily unavailable.',
+  NETWORK_ERROR: 'Network connection lost. Check your internet.',
+  UNKNOWN_ERROR: 'Something went wrong. Please try again.',
+}
+
+export default function ChatWithCustomErrors() {
+  const { messages, append, error } = useClarityChat({
+    api: '/api/chat',
+    onError: (err) => {
+      const message = errorMessages[err.code] || errorMessages.UNKNOWN_ERROR
+      toast.error(message)
+    },
+  })
+
+  // ... rest of component
+}
+```
+
+### With Circuit Breaker Pattern
+
+```tsx
+import { useState, useEffect } from 'react'
+
+export default function ChatWithCircuitBreaker() {
+  const [circuitOpen, setCircuitOpen] = useState(false)
+  const [failureCount, setFailureCount] = useState(0)
+
+  const { messages, append, error } = useClarityChat({
+    api: '/api/chat',
+    onError: (err) => {
+      setFailureCount((prev) => prev + 1)
+
+      // Open circuit after 3 failures
+      if (failureCount >= 3) {
+        setCircuitOpen(true)
+        setTimeout(() => {
+          // Close circuit after 30 seconds
+          setCircuitOpen(false)
+          setFailureCount(0)
+        }, 30000)
+      }
+    },
+  })
+
+  if (circuitOpen) {
+    return (
+      <div className="flex h-screen items-center justify-center">
+        <div className="text-center">
+          <p className="mb-4">Service temporarily unavailable</p>
+          <p className="text-sm text-muted-foreground">
+            We'll retry automatically in a moment
+          </p>
+        </div>
+      </div>
+    )
+  }
+
+  // ... rest of component
+}
+```
+
+### With Offline Support
+
+```tsx
+import { useNetworkStatus } from '@clarity-chat/react'
+
+export default function ChatWithOfflineSupport() {
+  const { isOnline } = useNetworkStatus()
+
+  const { messages, append, isLoading } = useClarityChat({
+    api: '/api/chat',
+    onError: (err) => {
+      if (!isOnline) {
+        toast.error('You are offline. Message will send when reconnected.')
+        // Queue message for later
+        queueOfflineMessage(err.request)
+      }
+    },
+  })
+
+  return (
+    <div className="flex h-screen flex-col">
+      {!isOnline && (
+        <div className="bg-yellow-50 p-2 text-center text-sm text-yellow-800">
+          ⚠️ You are offline. Messages will be sent when reconnected.
+        </div>
+      )}
+
+      <MessageList messages={messages} isLoading={isLoading} />
+      <ChatInput
+        onSubmit={(content) => append({ role: 'user', content })}
+        disabled={!isOnline && isLoading}
+      />
+    </div>
+  )
+}
+```
+
+### With Error Recovery Strategies
+
+```tsx
+import { useClarityChat } from '@clarity-chat/react'
+
+export default function ChatWithRecovery() {
+  const {
+    messages,
+    append,
+    error,
+    retry,
+    rollback, // Undo last message
+  } = useClarityChat({
+    api: '/api/chat',
+    recovery: {
+      strategy: 'rollback', // 'rollback' | 'retry' | 'ignore'
+      onRecovery: (messages) => {
+        console.log('Recovered with messages:', messages)
+      },
+    },
+    onError: async (err) => {
+      if (err.code === 'RATE_LIMIT') {
+        // Wait and retry
+        await sleep(err.retryAfter * 1000)
+        retry()
+      } else if (err.code === 'SERVICE_ERROR') {
+        // Rollback failed message
+        rollback()
+      }
+    },
+  })
+
+  // ... rest of component
+}
+```
+
+### With Fallback Provider
+
+```tsx
+import { useClarityChat } from '@clarity-chat/react'
+
+export default function ChatWithFallback() {
+  const [currentProvider, setCurrentProvider] = useState('openai')
+
+  const { messages, append, error } = useClarityChat({
+    api: `/api/chat/${currentProvider}`,
+    onError: async (err) => {
+      if (err.code === 'SERVICE_ERROR') {
+        // Switch to fallback provider
+        if (currentProvider === 'openai') {
+          setCurrentProvider('anthropic')
+          toast.info('Switched to backup provider')
+          // Retry with new provider
+          retry()
+        }
+      }
+    },
+  })
+
+  // ... rest of component
+}
+```
+
+## Common Pitfalls
+
+### Pitfall 1: Not Handling Stream Interruptions
+
+**Problem:** Stream fails mid-response, leaving partial message.
+
+**Solution:** Detect and handle stream errors.
+
+```tsx
+const stream = OpenAIStream(response, {
+  onError: (error) => {
+    console.error('Stream interrupted:', error)
+    // Mark message as failed
+    markMessageFailed(messageId, error)
+  },
+  onCompletion: (completion) => {
+    // Mark message as complete
+    markMessageComplete(messageId)
+  },
+})
+```
+
+### Pitfall 2: Infinite Retry Loops
+
+**Problem:** Retry logic never gives up, causing performance issues.
+
+**Solution:** Set max retry attempts.
+
+```tsx
+// ✅ Good - Limited retries
+const { retry } = useClarityChat({
+  api: '/api/chat',
+  retry: {
+    maxAttempts: 3, // Give up after 3 attempts
+    delay: 1000,
+  },
+})
+```
+
+### Pitfall 3: Not Preserving Failed Messages
+
+**Problem:** Failed messages disappear from UI.
+
+**Solution:** Keep failed messages visible with retry option.
+
+```tsx
+const MessageItem = ({ message }) => {
+  if (message.status === 'failed') {
+    return (
+      <div className="border-l-4 border-red-500 bg-red-50 p-4">
+        <p className="text-red-900">{message.content}</p>
+        <button
+          onClick={() => retry(message.id)}
+          className="mt-2 text-sm text-red-600 hover:text-red-700"
+        >
+          Retry
+        </button>
+      </div>
+    )
+  }
+
+  return <div>{message.content}</div>
+}
+```
+
+### Pitfall 4: Not Logging Errors
+
+**Problem:** Production errors are invisible.
+
+**Solution:** Implement error logging.
+
+```tsx
+const { error } = useClarityChat({
+  api: '/api/chat',
+  onError: (err) => {
+    // Log to service (Sentry, LogRocket, etc.)
+    logger.error('Chat error', {
+      message: err.message,
+      code: err.code,
+      stack: err.stack,
+      userId: currentUser.id,
+      timestamp: Date.now(),
+    })
+  },
+})
+```
+
+### Pitfall 5: Exposing Sensitive Error Details
+
+**Problem:** Error messages leak API keys or internal details.
+
+**Solution:** Sanitize error messages.
+
+```tsx
+const sanitizeError = (error: Error) => {
+  // Remove sensitive information
+  const sanitized = error.message
+    .replace(/sk-[a-zA-Z0-9]+/g, 'sk-***') // API keys
+    .replace(/Bearer [a-zA-Z0-9]+/g, 'Bearer ***') // Tokens
+
+  return sanitized
+}
+
+export async function POST(req: Request) {
+  try {
+    // ... API logic
+  } catch (error) {
+    return new Response(
+      JSON.stringify({
+        error: sanitizeError(error),
+      }),
+      { status: 500 }
+    )
+  }
+}
+```
+
+## Testing Error Scenarios
+
+### Test Network Errors
+
+```tsx
+import { render, screen, fireEvent, waitFor } from '@testing-library/react'
+import { rest } from 'msw'
+import { setupServer } from 'msw/node'
+
+const server = setupServer(
+  rest.post('/api/chat', (req, res, ctx) => {
+    return res(ctx.status(500), ctx.json({ error: 'Service error' }))
+  })
+)
+
+beforeAll(() => server.listen())
+afterEach(() => server.resetHandlers())
+afterAll(() => server.close())
+
+test('shows error message on API failure', async () => {
+  render(<ChatWithErrorHandling />)
+
+  fireEvent.click(screen.getByText('Send'))
+
+  await waitFor(() => {
+    expect(screen.getByText(/Service error/i)).toBeInTheDocument()
+  })
+})
+```
+
+### Test Retry Logic
+
+```tsx
+test('retries failed requests', async () => {
+  let attempts = 0
+
+  server.use(
+    rest.post('/api/chat', (req, res, ctx) => {
+      attempts++
+      if (attempts < 3) {
+        return res(ctx.status(500))
+      }
+      return res(ctx.status(200), ctx.json({ message: 'Success' }))
+    })
+  )
+
+  render(<ChatWithErrorHandling />)
+
+  fireEvent.click(screen.getByText('Send'))
+
+  await waitFor(() => {
+    expect(attempts).toBe(3)
+    expect(screen.getByText('Success')).toBeInTheDocument()
+  })
+})
+```
+
+## Next Steps
+
+- [Streaming Setup](../streaming-setup) - Add real-time streaming
+- [Memory Integration](../memory-integration) - Conversation memory
+- [OpenAI Integration](../openai-streaming-chat) - Advanced features
+- [Custom Theming](../custom-theming) - Style your chat
+
+---
+
+**Time to implement:** 25 minutes
+**Difficulty:** Intermediate
+**Dependencies:** `@clarity-chat/react`, `@clarity-chat/error-handling`

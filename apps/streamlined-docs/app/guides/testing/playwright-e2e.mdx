@@ -1,0 +1,1687 @@
+---
+title: 'Playwright E2E Testing for Chat Components'
+description: 'Complete guide to end-to-end testing with Playwright - setup, user flows, accessibility, visual regression, and CI/CD integration'
+category: 'testing'
+subcategory: 'e2e'
+publishedAt: '2026-01-28'
+updatedAt: '2026-01-28'
+featured: true
+difficulty: 'intermediate'
+keywords:
+  - playwright
+  - e2e testing
+  - end-to-end
+  - test automation
+  - accessibility testing
+  - visual regression
+  - network mocking
+  - ci/cd
+---
+
+# Playwright E2E Testing for Chat Components
+
+This guide covers comprehensive end-to-end testing strategies using Playwright for Clarity AI chat components. Learn how to test complete user flows, ensure accessibility, catch visual regressions, and integrate tests into your CI/CD pipeline.
+
+<Callout type="info">
+  **Prerequisites**: Familiarity with TypeScript, React, and basic testing concepts.
+</Callout>
+
+## Table of Contents
+
+1. [Setup and Configuration](#setup-and-configuration)
+2. [Testing User Flows](#testing-user-flows)
+3. [Accessibility Testing](#accessibility-testing)
+4. [Visual Regression Testing](#visual-regression-testing)
+5. [Network Mocking](#network-mocking)
+6. [Test Isolation and Parallelization](#test-isolation-and-parallelization)
+7. [CI/CD Integration](#cicd-integration)
+8. [Best Practices](#best-practices)
+
+---
+
+## Setup and Configuration
+
+### Initial Installation
+
+```bash
+# Install Playwright
+pnpm add -D @playwright/test
+
+# Install browsers
+pnpm exec playwright install
+
+# Install accessibility testing tools
+pnpm add -D axe-playwright
+```
+
+### Project Structure
+
+```
+tests/
+├── e2e/
+│   ├── chat-flow.spec.ts          # Chat interaction tests
+│   ├── message-send.spec.ts       # Message sending tests
+│   ├── tool-use.spec.ts           # Tool execution tests
+│   └── accessibility.spec.ts      # Accessibility tests
+├── visual/
+│   ├── specs/
+│   │   └── components.spec.ts     # Visual regression tests
+│   ├── playwright.config.ts       # Visual test config
+│   └── snapshots/                 # Baseline screenshots
+├── fixtures/
+│   ├── mock-responses.ts          # API mock data
+│   └── test-helpers.ts            # Test utilities
+└── playwright.config.ts           # Main config
+```
+
+### Playwright Configuration
+
+```typescript
+// playwright.config.ts
+import { defineConfig, devices } from '@playwright/test'
+
+export default defineConfig({
+  testDir: './tests/e2e',
+  outputDir: './test-results',
+
+  // Run tests in parallel
+  fullyParallel: true,
+
+  // Fail fast on CI
+  forbidOnly: !!process.env.CI,
+
+  // Retry failed tests on CI
+  retries: process.env.CI ? 2 : 0,
+
+  // Limit parallel workers on CI
+  workers: process.env.CI ? 2 : undefined,
+
+  // Reporter configuration
+  reporter: [
+    ['html', { outputFolder: 'playwright-report' }],
+    ['json', { outputFile: 'test-results/results.json' }],
+    ['junit', { outputFile: 'test-results/junit.xml' }],
+    ['list'], // Console output
+  ],
+
+  // Shared test configuration
+  use: {
+    // Base URL for tests
+    baseURL: process.env.BASE_URL || 'http://localhost:3000',
+
+    // Browser viewport
+    viewport: { width: 1280, height: 720 },
+
+    // Collect trace on first retry
+    trace: 'on-first-retry',
+
+    // Screenshot on failure
+    screenshot: 'only-on-failure',
+
+    // Video on retry
+    video: 'retain-on-failure',
+
+    // Timeout for actions
+    actionTimeout: 10000,
+
+    // Navigation timeout
+    navigationTimeout: 30000,
+  },
+
+  // Browser projects
+  projects: [
+    {
+      name: 'chromium',
+      use: { ...devices['Desktop Chrome'] },
+    },
+    {
+      name: 'firefox',
+      use: { ...devices['Desktop Firefox'] },
+    },
+    {
+      name: 'webkit',
+      use: { ...devices['Desktop Safari'] },
+    },
+    // Mobile browsers
+    {
+      name: 'mobile-chrome',
+      use: { ...devices['Pixel 5'] },
+    },
+    {
+      name: 'mobile-safari',
+      use: { ...devices['iPhone 13'] },
+    },
+  ],
+
+  // Development server
+  webServer: {
+    command: 'pnpm dev',
+    port: 3000,
+    reuseExistingServer: !process.env.CI,
+    timeout: 120000,
+  },
+})
+```
+
+### Custom Test Fixtures
+
+```typescript
+// tests/fixtures/test-helpers.ts
+import { test as base, expect, type Page } from '@playwright/test'
+
+// Extend base test with custom fixtures
+export const test = base.extend<{
+  chatPage: ChatPage
+  mockAPI: MockAPI
+}>({
+  // Chat page fixture
+  chatPage: async ({ page }, use) => {
+    const chatPage = new ChatPage(page)
+    await chatPage.goto()
+    await use(chatPage)
+  },
+
+  // API mocking fixture
+  mockAPI: async ({ page }, use) => {
+    const mockAPI = new MockAPI(page)
+    await use(mockAPI)
+  },
+})
+
+export { expect }
+```
+
+---
+
+## Testing User Flows
+
+### Example 1: Send Message Flow
+
+```typescript
+// tests/e2e/message-send.spec.ts
+import { test, expect } from '@playwright/test'
+
+test.describe('Send Message Flow', () => {
+  test('user can send a text message', async ({ page }) => {
+    // Navigate to chat
+    await page.goto('/chat')
+
+    // Wait for chat to be ready
+    await expect(page.locator('[data-testid="chat-input"]')).toBeVisible()
+
+    // Type message
+    const input = page.locator('[data-testid="chat-input"]')
+    await input.fill('Hello, how can you help me today?')
+
+    // Send message
+    await page.click('[data-testid="send-button"]')
+
+    // Verify message appears in chat
+    await expect(
+      page.locator('[data-testid="message"]').last()
+    ).toContainText('Hello, how can you help me today?')
+
+    // Verify input is cleared
+    await expect(input).toHaveValue('')
+
+    // Verify send button is disabled (waiting for response)
+    await expect(page.locator('[data-testid="send-button"]')).toBeDisabled()
+  })
+
+  test('user can send message with Enter key', async ({ page }) => {
+    await page.goto('/chat')
+
+    const input = page.locator('[data-testid="chat-input"]')
+    await input.fill('Test message')
+
+    // Press Enter to send
+    await input.press('Enter')
+
+    // Verify message was sent
+    await expect(
+      page.locator('[data-testid="message"]').last()
+    ).toContainText('Test message')
+  })
+
+  test('Shift+Enter creates new line instead of sending', async ({ page }) => {
+    await page.goto('/chat')
+
+    const input = page.locator('[data-testid="chat-input"]')
+    await input.fill('Line 1')
+    await input.press('Shift+Enter')
+    await input.type('Line 2')
+
+    // Verify input contains both lines
+    const value = await input.inputValue()
+    expect(value).toContain('Line 1')
+    expect(value).toContain('Line 2')
+
+    // Verify message was not sent
+    await expect(page.locator('[data-testid="message"]')).toHaveCount(0)
+  })
+
+  test('cannot send empty message', async ({ page }) => {
+    await page.goto('/chat')
+
+    const sendButton = page.locator('[data-testid="send-button"]')
+
+    // Send button should be disabled when empty
+    await expect(sendButton).toBeDisabled()
+
+    // Type and clear
+    const input = page.locator('[data-testid="chat-input"]')
+    await input.fill('Test')
+    await input.clear()
+
+    // Still disabled
+    await expect(sendButton).toBeDisabled()
+  })
+})
+```
+
+### Example 2: Receive AI Response Flow
+
+```typescript
+// tests/e2e/receive-response.spec.ts
+import { test, expect } from '../fixtures/test-helpers'
+
+test.describe('Receive AI Response', () => {
+  test('displays streaming response', async ({ page, mockAPI }) => {
+    await page.goto('/chat')
+
+    // Mock streaming response
+    await mockAPI.mockStreamingChat([
+      { delta: 'Hello' },
+      { delta: ' there!' },
+      { delta: ' How' },
+      { delta: ' can' },
+      { delta: ' I' },
+      { delta: ' help?' },
+    ])
+
+    // Send message
+    await page.fill('[data-testid="chat-input"]', 'Hi')
+    await page.click('[data-testid="send-button"]')
+
+    // Wait for assistant message to appear
+    const assistantMessage = page.locator('[data-role="assistant"]').last()
+    await expect(assistantMessage).toBeVisible()
+
+    // Verify streaming indicator
+    await expect(page.locator('[data-testid="typing-indicator"]')).toBeVisible()
+
+    // Wait for complete message
+    await expect(assistantMessage).toContainText('Hello there! How can I help?')
+
+    // Verify streaming indicator is gone
+    await expect(page.locator('[data-testid="typing-indicator"]')).not.toBeVisible()
+  })
+
+  test('displays error when API fails', async ({ page, mockAPI }) => {
+    await page.goto('/chat')
+
+    // Mock API error
+    await mockAPI.mockChatError(500, 'Internal Server Error')
+
+    // Send message
+    await page.fill('[data-testid="chat-input"]', 'Test')
+    await page.click('[data-testid="send-button"]')
+
+    // Verify error message
+    await expect(
+      page.locator('[data-testid="error-message"]')
+    ).toContainText('Failed to send message')
+
+    // Verify retry button appears
+    await expect(page.locator('[data-testid="retry-button"]')).toBeVisible()
+  })
+
+  test('can retry failed message', async ({ page, mockAPI }) => {
+    await page.goto('/chat')
+
+    // First attempt fails
+    await mockAPI.mockChatError(500, 'Error')
+    await page.fill('[data-testid="chat-input"]', 'Test')
+    await page.click('[data-testid="send-button"]')
+
+    // Wait for error
+    await expect(page.locator('[data-testid="error-message"]')).toBeVisible()
+
+    // Mock successful retry
+    await mockAPI.mockChatResponse({
+      content: 'Success!'
+    })
+
+    // Click retry
+    await page.click('[data-testid="retry-button"]')
+
+    // Verify success
+    await expect(
+      page.locator('[data-role="assistant"]').last()
+    ).toContainText('Success!')
+  })
+})
+```
+
+### Example 3: Tool Use Flow
+
+```typescript
+// tests/e2e/tool-use.spec.ts
+import { test, expect } from '../fixtures/test-helpers'
+
+test.describe('Tool Execution Flow', () => {
+  test('displays tool execution card', async ({ page, mockAPI }) => {
+    await page.goto('/chat')
+
+    // Mock response with tool use
+    await mockAPI.mockToolUse({
+      toolName: 'web_search',
+      toolInput: { query: 'latest news' },
+      toolResult: { results: ['Result 1', 'Result 2'] },
+    })
+
+    // Send message that triggers tool
+    await page.fill('[data-testid="chat-input"]', 'Search for latest news')
+    await page.click('[data-testid="send-button"]')
+
+    // Wait for tool card to appear
+    const toolCard = page.locator('[data-testid="tool-card"]')
+    await expect(toolCard).toBeVisible()
+
+    // Verify tool name
+    await expect(toolCard.locator('[data-testid="tool-name"]')).toContainText('web_search')
+
+    // Verify tool input
+    await expect(toolCard.locator('[data-testid="tool-input"]')).toContainText('latest news')
+
+    // Verify loading state
+    await expect(toolCard.locator('[data-testid="tool-status"]')).toContainText('Running...')
+
+    // Wait for completion
+    await expect(toolCard.locator('[data-testid="tool-status"]')).toContainText('Complete')
+
+    // Verify results are displayed
+    await expect(toolCard.locator('[data-testid="tool-result"]')).toBeVisible()
+  })
+
+  test('can expand/collapse tool details', async ({ page, mockAPI }) => {
+    await page.goto('/chat')
+
+    await mockAPI.mockToolUse({
+      toolName: 'calculator',
+      toolInput: { expression: '2 + 2' },
+      toolResult: { answer: 4 },
+    })
+
+    await page.fill('[data-testid="chat-input"]', 'Calculate 2 + 2')
+    await page.click('[data-testid="send-button"]')
+
+    const toolCard = page.locator('[data-testid="tool-card"]')
+    await expect(toolCard).toBeVisible()
+
+    // Initially collapsed
+    await expect(toolCard.locator('[data-testid="tool-details"]')).not.toBeVisible()
+
+    // Click to expand
+    await toolCard.locator('[data-testid="expand-button"]').click()
+
+    // Details should be visible
+    await expect(toolCard.locator('[data-testid="tool-details"]')).toBeVisible()
+    await expect(toolCard.locator('[data-testid="tool-input"]')).toContainText('2 + 2')
+
+    // Click to collapse
+    await toolCard.locator('[data-testid="expand-button"]').click()
+
+    // Details should be hidden
+    await expect(toolCard.locator('[data-testid="tool-details"]')).not.toBeVisible()
+  })
+
+  test('handles multiple tool executions', async ({ page, mockAPI }) => {
+    await page.goto('/chat')
+
+    await mockAPI.mockMultipleTools([
+      { toolName: 'search', toolInput: { query: 'test' } },
+      { toolName: 'fetch', toolInput: { url: 'example.com' } },
+      { toolName: 'analyze', toolInput: { data: 'result' } },
+    ])
+
+    await page.fill('[data-testid="chat-input"]', 'Complex task')
+    await page.click('[data-testid="send-button"]')
+
+    // Wait for all tool cards
+    await expect(page.locator('[data-testid="tool-card"]')).toHaveCount(3)
+
+    // Verify they execute in order
+    const toolCards = page.locator('[data-testid="tool-card"]')
+    await expect(toolCards.nth(0).locator('[data-testid="tool-name"]')).toContainText('search')
+    await expect(toolCards.nth(1).locator('[data-testid="tool-name"]')).toContainText('fetch')
+    await expect(toolCards.nth(2).locator('[data-testid="tool-name"]')).toContainText('analyze')
+  })
+})
+```
+
+### Example 4: Page Object Model Pattern
+
+```typescript
+// tests/page-objects/ChatPage.ts
+import { type Page, type Locator, expect } from '@playwright/test'
+
+export class ChatPage {
+  readonly page: Page
+  readonly messageInput: Locator
+  readonly sendButton: Locator
+  readonly messages: Locator
+  readonly typingIndicator: Locator
+  readonly errorMessage: Locator
+  readonly retryButton: Locator
+
+  constructor(page: Page) {
+    this.page = page
+    this.messageInput = page.locator('[data-testid="chat-input"]')
+    this.sendButton = page.locator('[data-testid="send-button"]')
+    this.messages = page.locator('[data-testid="message"]')
+    this.typingIndicator = page.locator('[data-testid="typing-indicator"]')
+    this.errorMessage = page.locator('[data-testid="error-message"]')
+    this.retryButton = page.locator('[data-testid="retry-button"]')
+  }
+
+  async goto() {
+    await this.page.goto('/chat')
+    await this.waitForReady()
+  }
+
+  async waitForReady() {
+    await expect(this.messageInput).toBeVisible()
+    await expect(this.sendButton).toBeVisible()
+  }
+
+  async sendMessage(text: string) {
+    await this.messageInput.fill(text)
+    await this.sendButton.click()
+  }
+
+  async sendMessageWithEnter(text: string) {
+    await this.messageInput.fill(text)
+    await this.messageInput.press('Enter')
+  }
+
+  async waitForResponse() {
+    await expect(this.typingIndicator).toBeVisible()
+    await expect(this.typingIndicator).not.toBeVisible({ timeout: 30000 })
+  }
+
+  async getLastMessage() {
+    return this.messages.last()
+  }
+
+  async getMessageCount() {
+    return await this.messages.count()
+  }
+
+  async clearConversation() {
+    await this.page.click('[data-testid="clear-button"]')
+    await this.page.click('[data-testid="confirm-clear"]')
+  }
+
+  async verifyMessageAppears(text: string) {
+    await expect(this.getLastMessage()).toContainText(text)
+  }
+
+  async retryLastMessage() {
+    await this.retryButton.click()
+  }
+}
+
+// Usage in tests
+test('complex user flow with Page Object', async ({ page }) => {
+  const chatPage = new ChatPage(page)
+  await chatPage.goto()
+
+  await chatPage.sendMessage('Hello')
+  await chatPage.waitForResponse()
+  await chatPage.verifyMessageAppears('Hi there!')
+
+  await chatPage.sendMessage('Tell me a joke')
+  await chatPage.waitForResponse()
+
+  expect(await chatPage.getMessageCount()).toBe(4) // 2 user, 2 assistant
+})
+```
+
+### Example 5: Multi-Step Workflow Test
+
+```typescript
+// tests/e2e/complete-workflow.spec.ts
+import { test, expect } from '../fixtures/test-helpers'
+import { ChatPage } from '../page-objects/ChatPage'
+
+test.describe('Complete Chat Workflow', () => {
+  test('full conversation with multiple features', async ({ page, mockAPI }) => {
+    const chatPage = new ChatPage(page)
+    await chatPage.goto()
+
+    // Step 1: Initial greeting
+    await mockAPI.mockChatResponse({
+      content: 'Hello! How can I help you today?'
+    })
+    await chatPage.sendMessage('Hi')
+    await chatPage.waitForResponse()
+    await chatPage.verifyMessageAppears('Hello! How can I help you today?')
+
+    // Step 2: Ask question that triggers tool use
+    await mockAPI.mockToolUse({
+      toolName: 'web_search',
+      toolInput: { query: 'React hooks' },
+      toolResult: { results: ['useState', 'useEffect', 'useContext'] },
+      finalResponse: 'React hooks include useState, useEffect, and useContext.',
+    })
+    await chatPage.sendMessage('What are React hooks?')
+
+    // Verify tool execution
+    await expect(page.locator('[data-testid="tool-card"]')).toBeVisible()
+    await expect(
+      page.locator('[data-testid="tool-name"]')
+    ).toContainText('web_search')
+
+    // Wait for final response
+    await chatPage.waitForResponse()
+    await chatPage.verifyMessageAppears('React hooks include')
+
+    // Step 3: Follow-up question
+    await mockAPI.mockChatResponse({
+      content: 'useState is used for managing component state.',
+    })
+    await chatPage.sendMessage('Tell me more about useState')
+    await chatPage.waitForResponse()
+    await chatPage.verifyMessageAppears('managing component state')
+
+    // Step 4: Verify message history
+    const messageCount = await chatPage.getMessageCount()
+    expect(messageCount).toBe(6) // 3 user messages + 3 assistant responses
+
+    // Step 5: Clear conversation
+    await chatPage.clearConversation()
+    expect(await chatPage.getMessageCount()).toBe(0)
+  })
+})
+```
+
+---
+
+## Accessibility Testing
+
+### Setting Up axe-playwright
+
+```bash
+pnpm add -D axe-playwright
+```
+
+### Accessibility Test Examples
+
+```typescript
+// tests/e2e/accessibility.spec.ts
+import { test, expect } from '@playwright/test'
+import { injectAxe, checkA11y, getViolations } from 'axe-playwright'
+
+test.describe('Accessibility Tests', () => {
+  test('chat interface has no accessibility violations', async ({ page }) => {
+    await page.goto('/chat')
+
+    // Inject axe-core
+    await injectAxe(page)
+
+    // Run accessibility check
+    await checkA11y(page, undefined, {
+      detailedReport: true,
+      detailedReportOptions: {
+        html: true,
+      },
+    })
+  })
+
+  test('keyboard navigation works correctly', async ({ page }) => {
+    await page.goto('/chat')
+
+    // Tab through interactive elements
+    await page.keyboard.press('Tab')
+
+    // Verify focus is on input
+    await expect(page.locator('[data-testid="chat-input"]')).toBeFocused()
+
+    // Tab to send button
+    await page.keyboard.press('Tab')
+    await expect(page.locator('[data-testid="send-button"]')).toBeFocused()
+
+    // Tab to settings
+    await page.keyboard.press('Tab')
+    await expect(page.locator('[data-testid="settings-button"]')).toBeFocused()
+  })
+
+  test('screen reader announcements are present', async ({ page }) => {
+    await page.goto('/chat')
+
+    // Check for ARIA live regions
+    const liveRegion = page.locator('[aria-live="polite"]')
+    await expect(liveRegion).toBeAttached()
+
+    // Send message
+    await page.fill('[data-testid="chat-input"]', 'Test')
+    await page.click('[data-testid="send-button"]')
+
+    // Verify status announcement
+    await expect(liveRegion).toContainText(/sending|sent/i)
+  })
+
+  test('all interactive elements have accessible names', async ({ page }) => {
+    await page.goto('/chat')
+
+    // Check buttons
+    const sendButton = page.locator('[data-testid="send-button"]')
+    await expect(sendButton).toHaveAttribute('aria-label', /.+/)
+
+    const clearButton = page.locator('[data-testid="clear-button"]')
+    await expect(clearButton).toHaveAttribute('aria-label', /.+/)
+
+    // Check input
+    const input = page.locator('[data-testid="chat-input"]')
+    await expect(input).toHaveAttribute('aria-label', /.+/)
+  })
+
+  test('color contrast meets WCAG AA standards', async ({ page }) => {
+    await page.goto('/chat')
+    await injectAxe(page)
+
+    // Check specifically for color contrast violations
+    const violations = await getViolations(page, undefined, {
+      rules: {
+        'color-contrast': { enabled: true },
+      },
+    })
+
+    expect(violations).toHaveLength(0)
+  })
+
+  test('focus indicators are visible', async ({ page }) => {
+    await page.goto('/chat')
+
+    // Tab to input
+    await page.keyboard.press('Tab')
+
+    // Get computed styles
+    const input = page.locator('[data-testid="chat-input"]')
+    const outline = await input.evaluate((el) => {
+      const styles = window.getComputedStyle(el, ':focus-visible')
+      return styles.outline
+    })
+
+    // Verify outline exists
+    expect(outline).not.toBe('none')
+    expect(outline).not.toBe('')
+  })
+
+  test('error messages are announced', async ({ page, mockAPI }) => {
+    await page.goto('/chat')
+
+    // Mock error
+    await mockAPI.mockChatError(500, 'Server error')
+
+    // Send message
+    await page.fill('[data-testid="chat-input"]', 'Test')
+    await page.click('[data-testid="send-button"]')
+
+    // Check error is in live region
+    const errorRegion = page.locator('[role="alert"]')
+    await expect(errorRegion).toBeVisible()
+    await expect(errorRegion).toContainText('Failed to send message')
+  })
+})
+```
+
+---
+
+## Visual Regression Testing
+
+### Configuration for Visual Tests
+
+```typescript
+// tests/visual/playwright.config.ts
+import { defineConfig } from '@playwright/test'
+
+export default defineConfig({
+  testDir: './specs',
+  outputDir: './test-results',
+
+  // Disable animations for consistent screenshots
+  use: {
+    baseURL: 'http://localhost:6006', // Storybook
+    viewport: { width: 1440, height: 900 },
+    deviceScaleFactor: 1,
+    // Disable animations
+    reducedMotion: 'reduce',
+    // Wait for fonts and images
+    waitUntil: 'networkidle',
+  },
+
+  // Snapshot configuration
+  expect: {
+    toHaveScreenshot: {
+      // Pixel difference threshold
+      maxDiffPixels: 100,
+      // Percentage threshold
+      threshold: 0.01,
+      // Animation handling
+      animations: 'disabled',
+      // Font rendering
+      fontFamily: 'Arial',
+    },
+  },
+
+  // Run on specific browsers for consistency
+  projects: [
+    {
+      name: 'chromium',
+      use: {
+        browserName: 'chromium',
+        // Consistent browser settings
+        launchOptions: {
+          args: ['--font-render-hinting=none'],
+        },
+      },
+    },
+  ],
+})
+```
+
+### Visual Test Examples
+
+```typescript
+// tests/visual/specs/components.spec.ts
+import { test, expect } from '@playwright/test'
+
+test.describe('Visual Regression Tests', () => {
+  test('chat window initial state', async ({ page }) => {
+    await page.goto('/iframe.html?id=components-chat--default')
+
+    // Wait for component to be ready
+    await page.waitForSelector('[data-testid="chat-window"]')
+
+    // Wait for fonts to load
+    await page.evaluate(() => document.fonts.ready)
+
+    // Take screenshot
+    await expect(page).toHaveScreenshot('chat-window-initial.png')
+  })
+
+  test('message list with multiple messages', async ({ page }) => {
+    await page.goto('/iframe.html?id=components-messagelist--with-messages')
+
+    await page.waitForSelector('[data-testid="message"]')
+    await page.evaluate(() => document.fonts.ready)
+
+    await expect(page).toHaveScreenshot('message-list.png')
+  })
+
+  test('tool card expanded state', async ({ page }) => {
+    await page.goto('/iframe.html?id=components-toolcard--expanded')
+
+    await page.waitForSelector('[data-testid="tool-card"]')
+
+    // Expand the tool card
+    await page.click('[data-testid="expand-button"]')
+
+    // Wait for animation to complete
+    await page.waitForTimeout(300)
+
+    await expect(page).toHaveScreenshot('tool-card-expanded.png')
+  })
+
+  test('dark mode theme', async ({ page }) => {
+    await page.goto('/iframe.html?id=components-chat--dark-mode')
+
+    await page.waitForSelector('[data-testid="chat-window"]')
+    await page.evaluate(() => document.fonts.ready)
+
+    await expect(page).toHaveScreenshot('chat-window-dark.png')
+  })
+
+  test('responsive mobile view', async ({ page }) => {
+    // Set mobile viewport
+    await page.setViewportSize({ width: 375, height: 667 })
+
+    await page.goto('/iframe.html?id=components-chat--mobile')
+    await page.waitForSelector('[data-testid="chat-window"]')
+
+    await expect(page).toHaveScreenshot('chat-window-mobile.png')
+  })
+
+  test('error state appearance', async ({ page }) => {
+    await page.goto('/iframe.html?id=components-chat--error-state')
+
+    await page.waitForSelector('[data-testid="error-message"]')
+
+    await expect(page).toHaveScreenshot('chat-error-state.png')
+  })
+
+  test('loading state with skeleton', async ({ page }) => {
+    await page.goto('/iframe.html?id=components-chat--loading')
+
+    await page.waitForSelector('[data-testid="skeleton"]')
+
+    await expect(page).toHaveScreenshot('chat-loading.png')
+  })
+
+  test('typing indicator animation', async ({ page }) => {
+    await page.goto('/iframe.html?id=components-typingindicator--default')
+
+    await page.waitForSelector('[data-testid="typing-indicator"]')
+
+    // Capture at specific animation frame
+    await page.waitForTimeout(500)
+
+    await expect(page).toHaveScreenshot('typing-indicator.png')
+  })
+})
+```
+
+### Updating Snapshots
+
+```bash
+# Update all snapshots
+pnpm playwright test --config=tests/visual/playwright.config.ts --update-snapshots
+
+# Update specific test
+pnpm playwright test components.spec.ts --update-snapshots
+
+# Review changes with UI mode
+pnpm playwright test --config=tests/visual/playwright.config.ts --ui
+```
+
+---
+
+## Network Mocking
+
+### Mock API Utility
+
+```typescript
+// tests/fixtures/mock-api.ts
+import { type Page, type Route } from '@playwright/test'
+
+export class MockAPI {
+  constructor(private page: Page) {}
+
+  async mockChatResponse(response: { content: string; role?: string }) {
+    await this.page.route('**/api/chat', async (route: Route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          role: response.role || 'assistant',
+          content: response.content,
+        }),
+      })
+    })
+  }
+
+  async mockStreamingChat(chunks: Array<{ delta: string }>) {
+    await this.page.route('**/api/chat', async (route: Route) => {
+      // Simulate SSE streaming
+      const stream = chunks
+        .map((chunk) => `data: ${JSON.stringify(chunk)}\n\n`)
+        .join('')
+
+      await route.fulfill({
+        status: 200,
+        contentType: 'text/event-stream',
+        body: stream + 'data: [DONE]\n\n',
+      })
+    })
+  }
+
+  async mockChatError(status: number, message: string) {
+    await this.page.route('**/api/chat', async (route: Route) => {
+      await route.fulfill({
+        status,
+        contentType: 'application/json',
+        body: JSON.stringify({ error: message }),
+      })
+    })
+  }
+
+  async mockToolUse(params: {
+    toolName: string
+    toolInput: Record<string, unknown>
+    toolResult?: Record<string, unknown>
+    finalResponse?: string
+  }) {
+    await this.page.route('**/api/chat', async (route: Route) => {
+      const response = {
+        tool_calls: [
+          {
+            id: 'call_123',
+            type: 'function',
+            function: {
+              name: params.toolName,
+              arguments: JSON.stringify(params.toolInput),
+            },
+          },
+        ],
+        tool_results: params.toolResult
+          ? [
+              {
+                tool_call_id: 'call_123',
+                content: JSON.stringify(params.toolResult),
+              },
+            ]
+          : undefined,
+        content: params.finalResponse || '',
+      }
+
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify(response),
+      })
+    })
+  }
+
+  async mockMultipleTools(
+    tools: Array<{ toolName: string; toolInput: Record<string, unknown> }>
+  ) {
+    await this.page.route('**/api/chat', async (route: Route) => {
+      const response = {
+        tool_calls: tools.map((tool, i) => ({
+          id: `call_${i}`,
+          type: 'function',
+          function: {
+            name: tool.toolName,
+            arguments: JSON.stringify(tool.toolInput),
+          },
+        })),
+      }
+
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify(response),
+      })
+    })
+  }
+
+  async mockNetworkDelay(ms: number) {
+    await this.page.route('**/api/**', async (route: Route) => {
+      await new Promise((resolve) => setTimeout(resolve, ms))
+      await route.continue()
+    })
+  }
+
+  async mockRateLimitError() {
+    await this.page.route('**/api/chat', async (route: Route) => {
+      await route.fulfill({
+        status: 429,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          error: 'Rate limit exceeded',
+          retry_after: 60,
+        }),
+      })
+    })
+  }
+}
+```
+
+### Using Network Mocks in Tests
+
+```typescript
+// tests/e2e/network-scenarios.spec.ts
+import { test, expect } from '../fixtures/test-helpers'
+
+test.describe('Network Scenarios', () => {
+  test('handles slow network', async ({ page, mockAPI }) => {
+    await page.goto('/chat')
+
+    // Add 3 second delay
+    await mockAPI.mockNetworkDelay(3000)
+    await mockAPI.mockChatResponse({ content: 'Response' })
+
+    // Send message
+    await page.fill('[data-testid="chat-input"]', 'Test')
+    await page.click('[data-testid="send-button"]')
+
+    // Verify loading state
+    await expect(page.locator('[data-testid="typing-indicator"]')).toBeVisible()
+
+    // Wait for response
+    await expect(
+      page.locator('[data-role="assistant"]').last()
+    ).toContainText('Response', { timeout: 5000 })
+  })
+
+  test('handles rate limiting', async ({ page, mockAPI }) => {
+    await page.goto('/chat')
+
+    await mockAPI.mockRateLimitError()
+
+    await page.fill('[data-testid="chat-input"]', 'Test')
+    await page.click('[data-testid="send-button"]')
+
+    // Verify rate limit message
+    await expect(page.locator('[data-testid="error-message"]')).toContainText(
+      'Rate limit exceeded'
+    )
+  })
+
+  test('retries on network failure', async ({ page, mockAPI }) => {
+    await page.goto('/chat')
+
+    let attemptCount = 0
+    await page.route('**/api/chat', async (route) => {
+      attemptCount++
+      if (attemptCount === 1) {
+        // First attempt fails
+        await route.fulfill({ status: 500 })
+      } else {
+        // Second attempt succeeds
+        await route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify({ content: 'Success' }),
+        })
+      }
+    })
+
+    await page.fill('[data-testid="chat-input"]', 'Test')
+    await page.click('[data-testid="send-button"]')
+
+    // Should show error first
+    await expect(page.locator('[data-testid="error-message"]')).toBeVisible()
+
+    // Click retry
+    await page.click('[data-testid="retry-button"]')
+
+    // Should succeed
+    await expect(page.locator('[data-role="assistant"]').last()).toContainText(
+      'Success'
+    )
+
+    expect(attemptCount).toBe(2)
+  })
+})
+```
+
+---
+
+## Test Isolation and Parallelization
+
+### Test Isolation Strategies
+
+```typescript
+// tests/e2e/isolation.spec.ts
+import { test as base } from '@playwright/test'
+import { ChatPage } from '../page-objects/ChatPage'
+
+// Create isolated test with fresh context
+const test = base.extend<{ isolatedPage: ChatPage }>({
+  isolatedPage: async ({ browser }, use) => {
+    // Create fresh browser context
+    const context = await browser.newContext({
+      // Clear storage
+      storageState: undefined,
+    })
+
+    const page = await context.newPage()
+    const chatPage = new ChatPage(page)
+
+    await use(chatPage)
+
+    // Cleanup
+    await context.close()
+  },
+})
+
+test.describe('Isolated Tests', () => {
+  test('each test has clean state', async ({ isolatedPage }) => {
+    await isolatedPage.goto()
+
+    // This test starts with clean slate
+    const messageCount = await isolatedPage.getMessageCount()
+    expect(messageCount).toBe(0)
+  })
+
+  test('previous test does not affect this one', async ({ isolatedPage }) => {
+    await isolatedPage.goto()
+
+    // Still clean
+    const messageCount = await isolatedPage.getMessageCount()
+    expect(messageCount).toBe(0)
+  })
+})
+```
+
+### Parallel Execution
+
+```typescript
+// playwright.config.ts
+export default defineConfig({
+  // Run tests in parallel
+  fullyParallel: true,
+
+  // Number of workers
+  workers: process.env.CI ? 2 : undefined,
+
+  // Shard tests across multiple machines
+  shard: process.env.CI
+    ? { total: 4, current: parseInt(process.env.SHARD_INDEX || '1') }
+    : undefined,
+})
+```
+
+```typescript
+// tests/e2e/parallel-safe.spec.ts
+import { test, expect } from '@playwright/test'
+
+// Mark tests that can run in parallel
+test.describe.configure({ mode: 'parallel' })
+
+test.describe('Parallel Safe Tests', () => {
+  test('test 1', async ({ page }) => {
+    // Uses unique route
+    await page.goto('/chat?session=test1')
+    // Test logic
+  })
+
+  test('test 2', async ({ page }) => {
+    // Uses different unique route
+    await page.goto('/chat?session=test2')
+    // Test logic
+  })
+})
+
+// Mark tests that must run serially
+test.describe.configure({ mode: 'serial' })
+
+test.describe('Serial Tests', () => {
+  test('setup data', async ({ page }) => {
+    // Setup
+  })
+
+  test('use setup data', async ({ page }) => {
+    // Depends on previous test
+  })
+})
+```
+
+### Shared State Management
+
+```typescript
+// tests/fixtures/shared-state.ts
+import { test as base } from '@playwright/test'
+
+// Global setup for shared resources
+export async function globalSetup() {
+  // Setup database
+  await setupTestDatabase()
+
+  // Setup mock server
+  await startMockServer()
+
+  return async () => {
+    // Global teardown
+    await stopMockServer()
+    await cleanupTestDatabase()
+  }
+}
+
+// Per-worker setup
+export const test = base.extend<{}, { workerStorageState: string }>({
+  // Use worker-scoped fixture for authentication
+  workerStorageState: [
+    async ({}, use) => {
+      // Authenticate once per worker
+      const authState = await authenticate()
+      await use(authState)
+    },
+    { scope: 'worker' },
+  ],
+})
+```
+
+---
+
+## CI/CD Integration
+
+### GitHub Actions Workflow
+
+```yaml
+# .github/workflows/e2e-tests.yml
+name: E2E Tests
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    name: Playwright Tests
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        shardIndex: [1, 2, 3, 4]
+        shardTotal: [4]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 10
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Install Playwright browsers
+        run: pnpm exec playwright install --with-deps
+
+      - name: Build application
+        run: pnpm build
+
+      - name: Run E2E tests
+        env:
+          SHARD_INDEX: ${{ matrix.shardIndex }}
+          SHARD_TOTAL: ${{ matrix.shardTotal }}
+        run: pnpm test:e2e
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-results-${{ matrix.shardIndex }}
+          path: test-results/
+          retention-days: 30
+
+      - name: Upload HTML report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report-${{ matrix.shardIndex }}
+          path: playwright-report/
+          retention-days: 30
+
+      - name: Upload test videos
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-videos-${{ matrix.shardIndex }}
+          path: test-results/**/video.webm
+          retention-days: 7
+
+  # Merge reports from all shards
+  merge-reports:
+    name: Merge Reports
+    needs: test
+    runs-on: ubuntu-latest
+    if: always()
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download all reports
+        uses: actions/download-artifact@v4
+        with:
+          pattern: playwright-results-*
+          path: all-reports
+
+      - name: Merge reports
+        run: |
+          npx playwright merge-reports --reporter html ./all-reports
+
+      - name: Upload merged report
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report-merged
+          path: playwright-report/
+```
+
+### Visual Regression CI
+
+```yaml
+# .github/workflows/visual-tests.yml
+name: Visual Regression Tests
+
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  visual-tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # Fetch base branch for comparison
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Install Playwright
+        run: pnpm exec playwright install chromium
+
+      - name: Build Storybook
+        run: pnpm storybook:build
+
+      - name: Run visual tests
+        run: pnpm test:visual
+
+      - name: Upload visual diff artifacts
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: visual-diffs
+          path: test-results/**/diff-*.png
+
+      - name: Comment on PR with visual diffs
+        if: failure()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs')
+            const path = require('path')
+
+            // Find all diff images
+            const diffs = []
+            // ... collect diff paths
+
+            // Create comment with images
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `## Visual Regression Detected\n\n${diffs.join('\n')}`
+            })
+```
+
+### Performance Testing in CI
+
+```typescript
+// tests/performance/performance.spec.ts
+import { test, expect } from '@playwright/test'
+
+test.describe('Performance Tests', () => {
+  test('page load performance', async ({ page }) => {
+    const startTime = Date.now()
+
+    await page.goto('/chat')
+    await page.waitForSelector('[data-testid="chat-window"]')
+
+    const loadTime = Date.now() - startTime
+
+    // Assert load time is under 3 seconds
+    expect(loadTime).toBeLessThan(3000)
+  })
+
+  test('message rendering performance', async ({ page }) => {
+    await page.goto('/chat')
+
+    // Measure time to render 100 messages
+    await page.evaluate(() => {
+      performance.mark('render-start')
+    })
+
+    // Trigger render of 100 messages
+    await page.click('[data-testid="load-history"]')
+    await page.waitForSelector('[data-testid="message"]:nth-child(100)')
+
+    const duration = await page.evaluate(() => {
+      performance.mark('render-end')
+      performance.measure('render-messages', 'render-start', 'render-end')
+      const measure = performance.getEntriesByName('render-messages')[0]
+      return measure.duration
+    })
+
+    // Should render in under 1 second
+    expect(duration).toBeLessThan(1000)
+  })
+})
+```
+
+---
+
+## Best Practices
+
+### 1. Use Data Test IDs
+
+```tsx
+// ✅ Good: Stable selectors
+<button data-testid="send-button">Send</button>
+
+// ❌ Bad: Fragile selectors
+<button className="btn btn-primary">Send</button>
+```
+
+### 2. Wait for Conditions, Not Timeouts
+
+```typescript
+// ✅ Good: Wait for condition
+await expect(page.locator('[data-testid="message"]')).toBeVisible()
+
+// ❌ Bad: Arbitrary timeout
+await page.waitForTimeout(3000)
+```
+
+### 3. Use Page Object Model
+
+```typescript
+// ✅ Good: Reusable page objects
+const chatPage = new ChatPage(page)
+await chatPage.sendMessage('Hello')
+
+// ❌ Bad: Duplicate selectors
+await page.fill('[data-testid="chat-input"]', 'Hello')
+await page.click('[data-testid="send-button"]')
+```
+
+### 4. Test User Flows, Not Implementation
+
+```typescript
+// ✅ Good: User-centric test
+test('user can send and receive messages', async ({ page }) => {
+  await chatPage.goto()
+  await chatPage.sendMessage('Hello')
+  await chatPage.verifyMessageAppears('Hello')
+  await chatPage.waitForResponse()
+  await chatPage.verifyMessageAppears('Hi there!')
+})
+
+// ❌ Bad: Testing implementation details
+test('message state updates correctly', async ({ page }) => {
+  await page.evaluate(() => {
+    window.__store__.dispatch({ type: 'ADD_MESSAGE', payload: {} })
+  })
+})
+```
+
+### 5. Keep Tests Independent
+
+```typescript
+// ✅ Good: Independent tests
+test('test 1', async ({ page }) => {
+  const chatPage = new ChatPage(page)
+  await chatPage.goto()
+  // Test logic
+})
+
+test('test 2', async ({ page }) => {
+  const chatPage = new ChatPage(page)
+  await chatPage.goto()
+  // Test logic - doesn't depend on test 1
+})
+
+// ❌ Bad: Tests depend on order
+test('setup', async ({ page }) => {
+  // Creates data
+})
+
+test('use data', async ({ page }) => {
+  // Depends on previous test
+})
+```
+
+### 6. Use Fixtures for Common Setup
+
+```typescript
+// ✅ Good: Reusable fixtures
+const test = base.extend<{ authenticatedPage: Page }>({
+  authenticatedPage: async ({ page }, use) => {
+    await authenticate(page)
+    await use(page)
+  },
+})
+
+test('protected feature', async ({ authenticatedPage }) => {
+  // Already authenticated
+})
+
+// ❌ Bad: Duplicate setup
+test('test 1', async ({ page }) => {
+  await authenticate(page)
+  // Test
+})
+
+test('test 2', async ({ page }) => {
+  await authenticate(page)
+  // Test
+})
+```
+
+### 7. Handle Flaky Tests
+
+```typescript
+// ✅ Good: Robust waiting
+await expect(async () => {
+  const text = await page.locator('[data-testid="status"]').textContent()
+  expect(text).toBe('Complete')
+}).toPass({
+  intervals: [1000, 2000, 5000],
+  timeout: 10000,
+})
+
+// ❌ Bad: Fixed retry without understanding
+test.describe(() => {
+  test.beforeEach(async ({ page }) => {
+    // Just retry 3 times
+    test.setTimeout(90000)
+  })
+})
+```
+
+### 8. Clean Up Resources
+
+```typescript
+// ✅ Good: Proper cleanup
+test('file upload', async ({ page }) => {
+  const filePath = await createTempFile()
+
+  try {
+    await page.setInputFiles('[data-testid="file-input"]', filePath)
+    // Test logic
+  } finally {
+    await deleteTempFile(filePath)
+  }
+})
+
+// ❌ Bad: No cleanup
+test('file upload', async ({ page }) => {
+  const filePath = await createTempFile()
+  await page.setInputFiles('[data-testid="file-input"]', filePath)
+  // File never deleted
+})
+```
+
+---
+
+## Running Tests
+
+```bash
+# Run all E2E tests
+pnpm test:e2e
+
+# Run in headed mode (see browser)
+pnpm test:e2e --headed
+
+# Run specific test file
+pnpm test:e2e tests/e2e/chat-flow.spec.ts
+
+# Run with UI mode
+pnpm test:e2e --ui
+
+# Debug mode
+pnpm test:e2e --debug
+
+# Run on specific browser
+pnpm test:e2e --project=chromium
+
+# Run visual tests
+pnpm test:visual
+
+# Update visual snapshots
+pnpm test:visual:update
+```
+
+---
+
+## Troubleshooting
+
+### Common Issues
+
+1. **Flaky tests**: Add proper waits, use `toPass()` for retries
+2. **Timeout errors**: Increase timeout for slow operations
+3. **Element not found**: Check if element is in viewport, use better selectors
+4. **Visual diff failures**: Update snapshots or fix styling issues
+
+### Debug Tips
+
+```typescript
+// Add debug statements
+await page.pause() // Opens inspector
+
+// Take screenshot
+await page.screenshot({ path: 'debug.png' })
+
+// Console logs
+page.on('console', msg => console.log('PAGE LOG:', msg.text()))
+
+// Network logs
+page.on('request', request => console.log('REQUEST:', request.url()))
+page.on('response', response => console.log('RESPONSE:', response.url()))
+```
+
+---
+
+## Resources
+
+- [Playwright Documentation](https://playwright.dev)
+- [Testing Best Practices](https://playwright.dev/docs/best-practices)
+- [Page Object Model](https://playwright.dev/docs/pom)
+- [Accessibility Testing](https://github.com/abhinaba-ghosh/axe-playwright)
+
+---
+
+<Callout type="success">
+  **Next Steps**: Explore [Integration Testing](/guides/testing/integration) and [Unit Testing](/guides/testing/unit-testing) guides.
+</Callout>

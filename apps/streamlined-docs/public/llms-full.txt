@@ -1,8 +1,14 @@
 # Clarity Chat - Complete API Reference
 
-> Clarity Chat is a React component library for building AI chat interfaces with 200+ components, 95+ hooks, streaming support, RAG, and enterprise features. Built with TypeScript, React 19, and Tailwind CSS.
+> Clarity Chat is a production-ready React component library for building AI chat interfaces with 200+ components, 95+ hooks, streaming support, RAG, memory management, and enterprise features. Built with TypeScript, React 19, and Tailwind CSS.
 
-This document contains comprehensive API documentation for Clarity Chat optimized for AI consumption. It includes full type signatures, all props, return values, and code examples.
+This document contains comprehensive API documentation for Clarity Chat optimized for AI consumption. It includes full type signatures, all props, return values, code examples, and implementation guides.
+
+**Version**: 2.0.0
+**License**: MIT
+**NPM**: @clarity-chat/react
+**Repository**: https://github.com/clarity-ai/clarity-chat-components
+**Documentation**: https://clarity-chat.dev
 
 ---
 
@@ -11,34 +17,112 @@ This document contains comprehensive API documentation for Clarity Chat optimize
 1. [Installation](#installation)
 2. [Quick Start](#quick-start)
 3. [Core Components](#core-components)
-4. [Core Hooks](#core-hooks)
-5. [Memory Package](#memory-package)
-6. [Token Optimization Package](#token-optimization-package)
-7. [Utilities](#utilities)
-8. [Types](#types)
+4. [Streaming Components](#streaming-components)
+5. [AI Components](#ai-components)
+6. [Interactive Components](#interactive-components)
+7. [Token Optimization Components](#token-optimization-components)
+8. [Core Hooks](#core-hooks)
+9. [Performance Hooks](#performance-hooks)
+10. [Streaming Hooks](#streaming-hooks)
+11. [Memory & Context Hooks](#memory-context-hooks)
+12. [Enterprise AI Hooks](#enterprise-ai-hooks)
+13. [Memory Package](#memory-package)
+14. [Token Optimization Package](#token-optimization-package)
+15. [Utilities](#utilities)
+16. [Types](#types)
+17. [Guides](#guides)
+18. [Cookbook Recipes](#cookbook-recipes)
 
 ---
 
 ## Installation
 
+### Package Installation
+
 ```bash
 # npm
 npm install @clarity-chat/react
 
-# pnpm
+# pnpm (recommended)
 pnpm add @clarity-chat/react
 
 # yarn
 yarn add @clarity-chat/react
+
+# bun
+bun add @clarity-chat/react
 ```
 
 **Peer Dependencies:**
-- React 18+ or React 19
-- Tailwind CSS 3.4+
+- React 18.0.0+ or React 19.0.0+
+- Tailwind CSS 3.4.0+
 
 **Optional Packages:**
 ```bash
-npm install @clarity-chat/memory @clarity-chat/token-optimization
+# Memory management
+npm install @clarity-chat/memory
+
+# Token optimization and cost reduction
+npm install @clarity-chat/token-optimization
+
+# All packages
+npm install @clarity-chat/react @clarity-chat/memory @clarity-chat/token-optimization
+```
+
+### Framework-Specific Setup
+
+#### Next.js 13+ (App Router)
+
+```tsx
+// app/layout.tsx
+import '@clarity-chat/react/styles.css'
+
+export default function RootLayout({ children }) {
+  return (
+    <html lang="en">
+      <body>{children}</body>
+    </html>
+  )
+}
+```
+
+#### Next.js 12 (Pages Router)
+
+```tsx
+// pages/_app.tsx
+import '@clarity-chat/react/styles.css'
+import type { AppProps } from 'next/app'
+
+export default function App({ Component, pageProps }: AppProps) {
+  return <Component {...pageProps} />
+}
+```
+
+#### Vite
+
+```tsx
+// main.tsx
+import '@clarity-chat/react/styles.css'
+import React from 'react'
+import ReactDOM from 'react-dom/client'
+import App from './App'
+
+ReactDOM.createRoot(document.getElementById('root')!).render(
+  <React.StrictMode>
+    <App />
+  </React.StrictMode>
+)
+```
+
+#### Remix
+
+```tsx
+// app/root.tsx
+import clarityChatStyles from '@clarity-chat/react/styles.css'
+
+export const links = () => [
+  { rel: 'stylesheet', href: clarityChatStyles }
+]
 ```
 
 ---
@@ -46,6 +130,8 @@ npm install @clarity-chat/memory @clarity-chat/token-optimization
 ## Quick Start
 
 ### 3-Line Chat (Recommended)
+
+The fastest way to get started with Clarity Chat. This single component provides a complete chat interface with streaming support.
 
 ```tsx
 import { ClarityChatApp } from '@clarity-chat/react'
@@ -55,7 +141,17 @@ function App() {
 }
 ```
 
+**What you get:**
+- Full chat interface with message list and input
+- Streaming response support
+- Automatic error handling
+- Loading states
+- Responsive design
+- Accessibility features (WCAG 2.1 AA)
+
 ### With Memory Enabled
+
+Add conversation memory to retain context across messages:
 
 ```tsx
 <ClarityChatApp
@@ -64,7 +160,15 @@ function App() {
 />
 ```
 
+**Memory features:**
+- Automatic context retention
+- Semantic search across conversation history
+- Token budget management
+- GDPR-compliant data handling
+
 ### Enterprise Preset
+
+Pre-configured for enterprise use cases with security, compliance, and monitoring:
 
 ```tsx
 <ClarityChatApp
@@ -73,7 +177,36 @@ function App() {
 />
 ```
 
+**Enterprise features:**
+- Multi-tenant isolation
+- Audit logging
+- Role-based access control
+- SSO integration ready
+- Compliance monitoring
+
+### Token Optimization Enabled
+
+Reduce API costs by up to 70% with automatic optimization:
+
+```tsx
+<ClarityChatApp
+  api="/api/chat"
+  features={{
+    tokenOptimization: true,
+    memory: true
+  }}
+/>
+```
+
+**Optimization features:**
+- Automatic compression
+- Provider-native caching
+- Smart model routing
+- Cost tracking and budgeting
+
 ### Using the Hook
+
+For more control, use the `useClarityChat` hook directly:
 
 ```tsx
 import { useClarityChat } from '@clarity-chat/react'
@@ -85,10 +218,22 @@ function ChatComponent() {
   })
 
   return (
-    <div>
-      {messages.map(m => <div key={m.id}>{m.content}</div>)}
-      <button onClick={() => append({ role: 'user', content: 'Hello' })}>
-        Send
+    <div className="chat-container">
+      <div className="messages">
+        {messages.map(m => (
+          <div key={m.id} className={`message ${m.role}`}>
+            {m.content}
+          </div>
+        ))}
+      </div>
+
+      {error && <div className="error">{error.message}</div>}
+
+      <button
+        onClick={() => append({ role: 'user', content: 'Hello' })}
+        disabled={isLoading}
+      >
+        {isLoading ? 'Sending...' : 'Send'}
       </button>
     </div>
   )
@@ -101,17 +246,10 @@ function ChatComponent() {
 
 ### ClarityChatApp
 
-The unified App API component - the recommended entry point for most applications.
+**Path**: /reference/components/clarity-chat-app
+**Package**: @clarity-chat/react
 
-```tsx
-import { ClarityChatApp } from '@clarity-chat/react'
-
-<ClarityChatApp
-  api="/api/chat"
-  preset="default"
-  features={{ memory: true, tools: true }}
-/>
-```
+The unified App API component - the recommended entry point for most applications. Provides a complete chat interface in a single component.
 
 **Props:**
 
@@ -120,7 +258,7 @@ interface ClarityChatAppProps {
   /** API endpoint URL (required) */
   api: string
 
-  /** Preset configuration: 'default' | 'minimal' | 'enterprise' | 'developer' */
+  /** Preset configuration: 'default' | 'minimal' | 'enterprise' | 'developer' | 'creative' */
   preset?: ClarityAppPreset
 
   /** Feature flags */
@@ -168,23 +306,118 @@ interface ClarityFeatureFlags {
   safety?: boolean
   observability?: boolean
 }
+
+type ClarityAppPreset =
+  | 'default'      // Balanced features and performance
+  | 'minimal'      // Lightweight, minimal UI
+  | 'enterprise'   // Full features with security and compliance
+  | 'developer'    // Developer-friendly with debugging tools
+  | 'creative'     // Enhanced for creative writing
+```
+
+**Basic Usage:**
+
+```tsx
+import { ClarityChatApp } from '@clarity-chat/react'
+
+export default function Page() {
+  return (
+    <ClarityChatApp
+      api="/api/chat"
+      preset="default"
+    />
+  )
+}
+```
+
+**With Memory:**
+
+```tsx
+<ClarityChatApp
+  api="/api/chat"
+  features={{ memory: true }}
+  memory={{
+    strategy: 'vector-store',
+    maxTokens: 8000,
+    enabled: true
+  }}
+/>
+```
+
+**With Token Optimization:**
+
+```tsx
+<ClarityChatApp
+  api="/api/chat"
+  features={{ tokenOptimization: true }}
+  tokenOptimization={{
+    enabled: true,
+    targetReduction: 0.5, // 50% reduction
+    strategies: ['compression', 'caching', 'routing']
+  }}
+/>
+```
+
+**With Tools (Function Calling):**
+
+```tsx
+<ClarityChatApp
+  api="/api/chat"
+  features={{ tools: true }}
+  tools={{
+    definitions: [
+      {
+        name: 'search',
+        description: 'Search the web',
+        parameters: {
+          type: 'object',
+          properties: {
+            query: { type: 'string' }
+          }
+        }
+      }
+    ]
+  }}
+/>
+```
+
+**Enterprise Configuration:**
+
+```tsx
+<ClarityChatApp
+  api="/api/chat"
+  preset="enterprise"
+  features={{
+    memory: true,
+    tokenOptimization: true,
+    safety: true,
+    observability: true
+  }}
+  safety={{
+    contentModeration: true,
+    piiDetection: true,
+    toxicityFiltering: true
+  }}
+  observability={{
+    logging: true,
+    metrics: true,
+    tracing: true
+  }}
+  onEvent={(event) => {
+    // Send to analytics
+    console.log('Event:', event)
+  }}
+/>
 ```
 
 ---
 
 ### ClarityChat
 
-The legacy all-in-one chat component with built-in streaming, memory, and theming.
+**Path**: /reference/components/clarity-chat
+**Package**: @clarity-chat/react
 
-```tsx
-import { ClarityChat } from '@clarity-chat/react'
-
-<ClarityChat
-  api="/api/chat"
-  memory={{ enabled: true, strategy: 'vector-store' }}
-  theme="dark"
-/>
-```
+The all-in-one chat component with built-in streaming, memory, and theming. Legacy component, prefer `ClarityChatApp` for new projects.
 
 **Props:**
 
@@ -203,37 +436,40 @@ interface ClarityChatProps extends UseClarityChatOptions {
   emptyState?: React.ReactNode
 
   /** Header configuration */
-  header?: ClarityChatHeaderProps
+  header?: {
+    show?: boolean
+    title?: string
+    subtitle?: string
+    actions?: React.ReactNode
+    showMessageCount?: boolean
+  }
 
   /** Message action callbacks */
-  messageActions?: ClarityChatMessageActionsProps
+  messageActions?: {
+    onCopy?: (id: string, content: string) => void
+    onFeedback?: (messageId: string, type: 'up' | 'down', comment?: string) => void
+    onEdit?: (messageId: string) => void
+    onRegenerate?: (messageId: string) => void
+    onDelete?: (messageId: string) => void
+  }
 
   /** Prompt configuration */
-  prompts?: ClarityChatPromptsProps
+  prompts?: {
+    starterPrompts?: Array<{ text: string; category?: string }>
+    enableSuggestions?: boolean
+    maxSuggestions?: number
+  }
 
   /** Rate limiting configuration */
-  rateLimiting?: ClarityChatRateLimitingProps
-
-  /** Show header with session info */
-  showHeader?: boolean
-
-  /** Session title */
-  sessionTitle?: string
-
-  /** Session subtitle */
-  sessionSubtitle?: string
-
-  /** Header actions */
-  headerActions?: React.ReactNode
-
-  /** Show message count badge */
-  showMessageCount?: boolean
-
-  /** Enable export functionality */
-  onExport?: () => void
-
-  /** Enable clear chat functionality */
-  onClear?: () => void
+  rateLimiting?: {
+    enable?: boolean
+    maxConcurrentRequests?: number
+    maxQueueSize?: number
+    showQueueStatus?: boolean
+    onRequestQueued?: (position: number, estimatedWaitMs: number) => void
+    onRateLimited?: (resetAt: number) => void
+    onQueueFull?: () => void
+  }
 
   /** Auto-scroll to bottom on new messages */
   autoScroll?: boolean
@@ -256,91 +492,49 @@ interface ClarityChatProps extends UseClarityChatOptions {
   /** Error handler */
   onError?: (error: Error, errorInfo?: React.ErrorInfo) => void
 }
-
-interface ClarityChatHeaderProps {
-  show?: boolean
-  title?: string
-  subtitle?: string
-  actions?: React.ReactNode
-  showMessageCount?: boolean
-}
-
-interface ClarityChatMessageActionsProps {
-  onCopy?: (id: string, content: string) => void
-  onFeedback?: (messageId: string, type: 'up' | 'down', comment?: string) => void
-  onEdit?: (messageId: string) => void
-  onRegenerate?: (messageId: string) => void
-  onDelete?: (messageId: string) => void
-}
-
-interface ClarityChatPromptsProps {
-  starterPrompts?: Array<{ text: string; category?: string }>
-  enableSuggestions?: boolean
-  maxSuggestions?: number
-}
-
-interface ClarityChatRateLimitingProps {
-  enable?: boolean
-  maxConcurrentRequests?: number
-  maxQueueSize?: number
-  showQueueStatus?: boolean
-  compactQueueStatus?: boolean
-  onRequestQueued?: (position: number, estimatedWaitMs: number) => void
-  onRateLimited?: (resetAt: number) => void
-  onQueueFull?: () => void
-}
 ```
 
----
-
-### ClarityChatPresets
-
-Pre-configured chat variants for common use cases.
+**Usage Example:**
 
 ```tsx
-import { ClarityChatPresets } from '@clarity-chat/react'
+import { ClarityChat } from '@clarity-chat/react'
 
-// Customer Support preset
-<ClarityChatPresets.CustomerSupport api="/api/chat" />
-
-// Code Assistant preset
-<ClarityChatPresets.CodeAssistant api="/api/chat" />
-
-// Enterprise preset
-<ClarityChatPresets.Enterprise api="/api/chat" />
-
-// Minimal preset
-<ClarityChatPresets.Minimal api="/api/chat" />
-
-// Creative preset
-<ClarityChatPresets.Creative api="/api/chat" />
+export default function ChatPage() {
+  return (
+    <ClarityChat
+      api="/api/chat"
+      header={{
+        show: true,
+        title: "AI Assistant",
+        subtitle: "Powered by GPT-4",
+        showMessageCount: true
+      }}
+      messageActions={{
+        onFeedback: (id, type) => console.log('Feedback:', id, type),
+        onRegenerate: (id) => console.log('Regenerate:', id)
+      }}
+      prompts={{
+        starterPrompts: [
+          { text: "What can you help me with?", category: "general" },
+          { text: "Explain quantum computing", category: "technical" }
+        ]
+      }}
+      autoScroll={true}
+      theme="dark"
+      showTokenCounter={true}
+    />
+  )
+}
 ```
-
-**Available Presets:**
-- `CustomerSupport` - Optimized for customer service interactions
-- `CodeAssistant` - Optimized for coding assistance with syntax highlighting
-- `Enterprise` - Full features with audit logging and compliance
-- `Minimal` - Lightweight, minimal UI
-- `Creative` - Enhanced creative writing features
-- `Documentation` - Optimized for documentation Q&A
-- `Sales` - Optimized for sales conversations
 
 ---
 
 ### ChatWindow
 
-Container component for chat messages with automatic scroll management.
+**Path**: /reference/components/chat-window
+**Package**: @clarity-chat/react
 
-```tsx
-import { ChatWindow } from '@clarity-chat/react'
-
-<ChatWindow
-  messages={messages}
-  autoScroll={true}
-  showScrollButton={true}
-  virtualized={true}
-/>
-```
+Container component for chat messages with automatic scroll management and virtualization support.
 
 **Props:**
 
@@ -358,10 +552,10 @@ interface ChatWindowProps {
   /** Show scroll-to-bottom button */
   showScrollButton?: boolean
 
-  /** Enable virtualization for large lists */
+  /** Enable virtualization for large lists (recommended for >50 messages) */
   virtualized?: boolean
 
-  /** Group messages by sender */
+  /** Group consecutive messages by sender */
   groupMessages?: boolean
 
   /** Custom className */
@@ -372,27 +566,62 @@ interface ChatWindowProps {
 
   /** Empty state content */
   emptyState?: React.ReactNode
+
+  /** Loading state */
+  isLoading?: boolean
+
+  /** Error state */
+  error?: Error | null
 }
+```
+
+**Usage Example:**
+
+```tsx
+import { ChatWindow } from '@clarity-chat/react'
+
+function MessageDisplay({ messages }) {
+  return (
+    <ChatWindow
+      messages={messages}
+      autoScroll={true}
+      showScrollButton={true}
+      virtualized={messages.length > 50}
+      groupMessages={true}
+      emptyState={
+        <div className="empty-state">
+          <h3>No messages yet</h3>
+          <p>Start a conversation!</p>
+        </div>
+      }
+    />
+  )
+}
+```
+
+**With Custom Renderer:**
+
+```tsx
+<ChatWindow
+  messages={messages}
+  renderMessage={(message) => (
+    <div className="custom-message">
+      <strong>{message.role}:</strong>
+      <span>{message.content}</span>
+      <small>{new Date(message.createdAt).toLocaleString()}</small>
+    </div>
+  )}
+/>
 ```
 
 ---
 
 ### ChatInput
 
-User input component with multi-line support, attachments, and voice input.
+**Path**: /reference/components/chat-input
+**Package**: @clarity-chat/react
 
-```tsx
-import { ChatInput } from '@clarity-chat/react'
-
-<ChatInput
-  value={input}
-  onChange={setInput}
-  onSubmit={handleSubmit}
-  placeholder="Type a message..."
-  attachments={true}
-  voiceInput={true}
-/>
-```
+User input component with multi-line support, attachments, voice input, and suggestions.
 
 **Props:**
 
@@ -413,7 +642,7 @@ interface ChatInputProps {
   /** Enable file attachments */
   attachments?: boolean
 
-  /** Enable voice input */
+  /** Enable voice input (requires browser support) */
   voiceInput?: boolean
 
   /** Prompt suggestions */
@@ -428,27 +657,82 @@ interface ChatInputProps {
   /** Loading state */
   loading?: boolean
 
+  /** Show token counter */
+  showTokenCounter?: boolean
+
+  /** Token count */
+  tokenCount?: number
+
+  /** Max tokens allowed */
+  maxTokens?: number
+
   /** Custom className */
   className?: string
+
+  /** Key press handler */
+  onKeyPress?: (event: React.KeyboardEvent) => void
+
+  /** File upload handler */
+  onFileUpload?: (files: File[]) => void
 }
+```
+
+**Basic Usage:**
+
+```tsx
+import { ChatInput } from '@clarity-chat/react'
+import { useState } from 'react'
+
+function ChatForm() {
+  const [input, setInput] = useState('')
+
+  return (
+    <ChatInput
+      value={input}
+      onChange={setInput}
+      onSubmit={() => {
+        console.log('Submit:', input)
+        setInput('')
+      }}
+      placeholder="Type a message..."
+    />
+  )
+}
+```
+
+**With All Features:**
+
+```tsx
+<ChatInput
+  value={input}
+  onChange={setInput}
+  onSubmit={handleSubmit}
+  placeholder="Ask me anything..."
+  attachments={true}
+  voiceInput={true}
+  suggestions={[
+    "What is React?",
+    "Explain hooks",
+    "Show me an example"
+  ]}
+  maxLength={4000}
+  showTokenCounter={true}
+  tokenCount={tokenCount}
+  maxTokens={4096}
+  onFileUpload={(files) => {
+    console.log('Files:', files)
+  }}
+/>
 ```
 
 ---
 
 ### Message
 
-Individual message display component.
+**Path**: /reference/components/message
+**Package**: @clarity-chat/react
 
-```tsx
-import { Message } from '@clarity-chat/react'
-
-<Message
-  message={message}
-  showAvatar={true}
-  showTimestamp={true}
-  actions={['copy', 'edit', 'delete']}
-/>
-```
+Individual message display component with markdown rendering, code highlighting, and action buttons.
 
 **Props:**
 
@@ -467,7 +751,7 @@ interface MessageProps {
   showTimestamp?: boolean
 
   /** Available actions */
-  actions?: Array<'copy' | 'edit' | 'delete' | 'regenerate'>
+  actions?: Array<'copy' | 'edit' | 'delete' | 'regenerate' | 'branch'>
 
   /** Edit handler */
   onEdit?: (messageId: string) => void
@@ -478,26 +762,60 @@ interface MessageProps {
   /** Regenerate handler */
   onRegenerate?: (messageId: string) => void
 
+  /** Branch handler (create conversation branch) */
+  onBranch?: (messageId: string) => void
+
+  /** Copy handler */
+  onCopy?: (messageId: string, content: string) => void
+
   /** Custom className */
   className?: string
+
+  /** Highlight search terms */
+  searchHighlight?: string
+
+  /** Show edit mode */
+  isEditing?: boolean
+
+  /** Show loading state */
+  isLoading?: boolean
+}
+```
+
+**Usage:**
+
+```tsx
+import { Message } from '@clarity-chat/react'
+
+function MessageDisplay({ message }) {
+  return (
+    <Message
+      message={message}
+      variant="default"
+      showAvatar={true}
+      showTimestamp={true}
+      actions={['copy', 'edit', 'delete', 'regenerate']}
+      onEdit={(id) => console.log('Edit:', id)}
+      onDelete={(id) => console.log('Delete:', id)}
+      onRegenerate={(id) => console.log('Regenerate:', id)}
+      onCopy={(id, content) => {
+        navigator.clipboard.writeText(content)
+      }}
+    />
+  )
 }
 ```
 
 ---
 
+## Streaming Components
+
 ### StreamingMessage
 
-Real-time streaming response display.
+**Path**: /reference/components/streaming-message
+**Package**: @clarity-chat/react
 
-```tsx
-import { StreamingMessage } from '@clarity-chat/react'
-
-<StreamingMessage
-  content={streamingContent}
-  isStreaming={true}
-  showCursor={true}
-/>
-```
+Real-time streaming response display with character-by-character animation.
 
 **Props:**
 
@@ -509,7 +827,7 @@ interface StreamingMessageProps {
   /** Whether currently streaming */
   isStreaming: boolean
 
-  /** Streaming speed (chars per second) */
+  /** Streaming speed (characters per second) */
   streamingSpeed?: number
 
   /** Render mode: 'character' | 'word' | 'line' */
@@ -518,31 +836,160 @@ interface StreamingMessageProps {
   /** Show cursor animation */
   showCursor?: boolean
 
+  /** Cursor style */
+  cursorStyle?: 'block' | 'underline' | 'pipe'
+
   /** Completion callback */
   onComplete?: () => void
 
+  /** Chunk callback (fired for each chunk) */
+  onChunk?: (chunk: string) => void
+
   /** Custom className */
   className?: string
+
+  /** Enable markdown rendering */
+  markdown?: boolean
+
+  /** Enable code highlighting */
+  codeHighlighting?: boolean
+}
+```
+
+**Usage:**
+
+```tsx
+import { StreamingMessage } from '@clarity-chat/react'
+import { useState, useEffect } from 'react'
+
+function StreamingDemo() {
+  const [content, setContent] = useState('')
+  const [isStreaming, setIsStreaming] = useState(true)
+
+  useEffect(() => {
+    const text = "This is a streaming message demonstration..."
+    let index = 0
+
+    const interval = setInterval(() => {
+      if (index < text.length) {
+        setContent(text.slice(0, index + 1))
+        index++
+      } else {
+        setIsStreaming(false)
+        clearInterval(interval)
+      }
+    }, 50)
+
+    return () => clearInterval(interval)
+  }, [])
+
+  return (
+    <StreamingMessage
+      content={content}
+      isStreaming={isStreaming}
+      streamingSpeed={20}
+      renderMode="character"
+      showCursor={true}
+      cursorStyle="pipe"
+      markdown={true}
+      codeHighlighting={true}
+      onComplete={() => console.log('Streaming complete!')}
+      onChunk={(chunk) => console.log('Chunk:', chunk)}
+    />
+  )
 }
 ```
 
 ---
 
-### ChainOfThought
+### VirtualizedMessageList
 
-Step-by-step AI reasoning visualization.
+**Path**: /reference/components/virtualized-message-list
+**Package**: @clarity-chat/react
+
+High-performance virtualized message list for handling thousands of messages efficiently.
+
+**Props:**
+
+```typescript
+interface VirtualizedMessageListProps {
+  /** Messages to display */
+  messages: CoreMessage[]
+
+  /** Item height (for fixed height items) */
+  itemHeight?: number
+
+  /** Enable dynamic height calculation */
+  dynamicHeight?: boolean
+
+  /** Overscan count (number of items to render outside viewport) */
+  overscan?: number
+
+  /** Scroll to bottom on mount */
+  scrollToBottom?: boolean
+
+  /** Auto-scroll on new messages */
+  autoScroll?: boolean
+
+  /** Custom message renderer */
+  renderMessage?: (message: CoreMessage, index: number) => React.ReactNode
+
+  /** Custom className */
+  className?: string
+
+  /** Loading state */
+  isLoading?: boolean
+
+  /** On scroll callback */
+  onScroll?: (scrollTop: number, scrollHeight: number) => void
+}
+```
+
+**Usage:**
 
 ```tsx
-import { ChainOfThought, useChainOfThought } from '@clarity-chat/react'
+import { VirtualizedMessageList } from '@clarity-chat/react'
 
-const { steps, addStep, updateStep } = useChainOfThought()
+function LargeConversation({ messages }) {
+  return (
+    <VirtualizedMessageList
+      messages={messages}
+      itemHeight={80} // Fixed height for better performance
+      overscan={5}
+      scrollToBottom={true}
+      autoScroll={true}
+      renderMessage={(message, index) => (
+        <div className="message-item">
+          <strong>{message.role}:</strong>
+          <p>{message.content}</p>
+        </div>
+      )}
+    />
+  )
+}
+```
 
-<ChainOfThought
-  steps={steps}
-  collapsed={false}
-  showConfidence={true}
+**With Dynamic Heights:**
+
+```tsx
+<VirtualizedMessageList
+  messages={messages}
+  dynamicHeight={true} // Calculate heights dynamically
+  overscan={3}
+  scrollToBottom={true}
 />
 ```
+
+---
+
+## AI Components
+
+### ChainOfThought
+
+**Path**: /reference/components/chain-of-thought
+**Package**: @clarity-chat/react
+
+Step-by-step AI reasoning visualization component.
 
 **Props:**
 
@@ -557,6 +1004,9 @@ interface ChainOfThoughtProps {
   /** Show confidence scores */
   showConfidence?: boolean
 
+  /** Show execution time */
+  showDuration?: boolean
+
   /** Step click handler */
   onStepClick?: (step: ChainOfThoughtStep) => void
 
@@ -565,35 +1015,76 @@ interface ChainOfThoughtProps {
 
   /** Custom className */
   className?: string
+
+  /** Enable expand/collapse animation */
+  animated?: boolean
 }
 
 interface ChainOfThoughtStep {
   id: string
   title: string
   content: string
-  status: ChainOfThoughtStepStatus
-  confidence?: number
-  duration?: number
-  children?: ChainOfThoughtStep[]
+  status: 'pending' | 'running' | 'completed' | 'error'
+  confidence?: number // 0-1
+  duration?: number // milliseconds
+  children?: ChainOfThoughtStep[] // Nested steps
+  metadata?: Record<string, unknown>
 }
+```
 
-type ChainOfThoughtStepStatus = 'pending' | 'running' | 'completed' | 'error'
+**Usage:**
+
+```tsx
+import { ChainOfThought } from '@clarity-chat/react'
+
+function ReasoningDisplay() {
+  const steps = [
+    {
+      id: '1',
+      title: 'Analyze Question',
+      content: 'Breaking down the user query into components...',
+      status: 'completed',
+      confidence: 0.95,
+      duration: 245
+    },
+    {
+      id: '2',
+      title: 'Search Knowledge Base',
+      content: 'Searching vector store for relevant information...',
+      status: 'completed',
+      confidence: 0.87,
+      duration: 892
+    },
+    {
+      id: '3',
+      title: 'Generate Response',
+      content: 'Formulating answer based on retrieved context...',
+      status: 'running',
+      confidence: 0.92
+    }
+  ]
+
+  return (
+    <ChainOfThought
+      steps={steps}
+      collapsed={false}
+      showConfidence={true}
+      showDuration={true}
+      variant="detailed"
+      onStepClick={(step) => console.log('Clicked:', step)}
+    />
+  )
+}
 ```
 
 ---
 
 ### ToolExecutionCard
 
-Display tool/function call execution.
+**Path**: /reference/components/tool-execution-card
+**Package**: @clarity-chat/react
 
-```tsx
-import { ToolExecutionCard, useToolExecution } from '@clarity-chat/react'
-
-<ToolExecutionCard
-  tool={toolExecution}
-  expanded={true}
-/>
-```
+Display tool/function call execution with input, output, and status.
 
 **Props:**
 
@@ -602,26 +1093,32 @@ interface ToolExecutionCardProps {
   /** Tool execution data */
   tool: ToolExecution
 
-  /** Execution status */
-  status?: ToolExecutionStatus
-
-  /** Input parameters */
-  input?: Record<string, unknown>
-
-  /** Output result */
-  output?: unknown
-
-  /** Execution duration (ms) */
-  duration?: number
-
   /** Expanded state */
   expanded?: boolean
 
   /** Toggle handler */
   onToggle?: () => void
 
+  /** Show input parameters */
+  showInput?: boolean
+
+  /** Show output result */
+  showOutput?: boolean
+
+  /** Show execution time */
+  showDuration?: boolean
+
+  /** Retry handler */
+  onRetry?: (toolId: string) => void
+
+  /** Cancel handler (for pending/running) */
+  onCancel?: (toolId: string) => void
+
   /** Custom className */
   className?: string
+
+  /** Variant */
+  variant?: 'default' | 'compact' | 'detailed'
 }
 
 interface ToolExecution {
@@ -630,84 +1127,55 @@ interface ToolExecution {
   description?: string
   parameters?: Record<string, unknown>
   result?: unknown
-  status: ToolExecutionStatus
+  status: 'pending' | 'running' | 'completed' | 'error' | 'cancelled'
   startedAt?: Date
   completedAt?: Date
   error?: Error
-}
-
-type ToolExecutionStatus = 'pending' | 'running' | 'completed' | 'error' | 'cancelled'
-```
-
----
-
-### SourceCitation
-
-Display AI response sources with confidence scores.
-
-```tsx
-import { SourceCitation, useSourceCitation } from '@clarity-chat/react'
-
-<SourceCitation
-  sources={sources}
-  showConfidence={true}
-  showPreview={true}
-/>
-```
-
-**Props:**
-
-```typescript
-interface SourceCitationProps {
-  /** Source data */
-  sources: SourceCitationSource[]
-
-  /** Show confidence scores */
-  showConfidence?: boolean
-
-  /** Show preview on hover */
-  showPreview?: boolean
-
-  /** Source click handler */
-  onSourceClick?: (source: SourceCitationSource) => void
-
-  /** Variant: 'inline' | 'card' | 'list' */
-  variant?: SourceCitationVariant
-
-  /** Size: 'sm' | 'md' | 'lg' */
-  size?: SourceCitationSize
-
-  /** Custom className */
-  className?: string
-}
-
-interface SourceCitationSource {
-  id: string
-  title: string
-  url?: string
-  favicon?: string
-  snippet?: string
-  confidence?: number
   metadata?: Record<string, unknown>
 }
 ```
 
+**Usage:**
+
+```tsx
+import { ToolExecutionCard } from '@clarity-chat/react'
+
+function ToolDisplay() {
+  const tool = {
+    id: 'tool-1',
+    name: 'search',
+    description: 'Search the web',
+    parameters: { query: 'React hooks tutorial' },
+    result: { results: [...] },
+    status: 'completed',
+    startedAt: new Date('2024-01-20T10:00:00Z'),
+    completedAt: new Date('2024-01-20T10:00:02Z')
+  }
+
+  return (
+    <ToolExecutionCard
+      tool={tool}
+      expanded={true}
+      showInput={true}
+      showOutput={true}
+      showDuration={true}
+      variant="detailed"
+      onRetry={(id) => console.log('Retry:', id)}
+    />
+  )
+}
+```
+
 ---
+
+## Token Optimization Components
 
 ### TokenOptimizationDashboard
 
-Full dashboard for token management and analytics.
+**Path**: /reference/components/token-optimization-dashboard
+**Package**: @clarity-chat/react
 
-```tsx
-import { TokenOptimizationDashboard } from '@clarity-chat/react'
-
-<TokenOptimizationDashboard
-  data={tokenData}
-  timeRange="7d"
-  showCosts={true}
-  showRecommendations={true}
-/>
-```
+Complete dashboard for token usage analytics, cost tracking, and optimization insights.
 
 **Props:**
 
@@ -716,7 +1184,7 @@ interface TokenOptimizationDashboardProps {
   /** Token usage data */
   data: TokenUsageData
 
-  /** Time range: '24h' | '7d' | '30d' | '90d' */
+  /** Time range: '24h' | '7d' | '30d' | '90d' | 'all' */
   timeRange?: string
 
   /** Show cost projections */
@@ -725,66 +1193,74 @@ interface TokenOptimizationDashboardProps {
   /** Show optimization recommendations */
   showRecommendations?: boolean
 
+  /** Show comparison with baseline */
+  showComparison?: boolean
+
+  /** Currency for cost display */
+  currency?: string
+
   /** Custom className */
   className?: string
+
+  /** Refresh interval (ms) */
+  refreshInterval?: number
+
+  /** On time range change */
+  onTimeRangeChange?: (range: string) => void
+}
+
+interface TokenUsageData {
+  totalTokens: number
+  inputTokens: number
+  outputTokens: number
+  cachedTokens: number
+  cost: {
+    total: number
+    input: number
+    output: number
+    cached: number
+  }
+  savings: {
+    amount: number
+    percentage: number
+  }
+  breakdown: {
+    byModel: Record<string, number>
+    byEndpoint: Record<string, number>
+    byUser?: Record<string, number>
+  }
+  timeline: Array<{
+    timestamp: Date
+    tokens: number
+    cost: number
+  }>
+  recommendations?: OptimizationRecommendation[]
 }
 ```
 
----
-
-### MemoryProvider
-
-Context provider for conversation memory management.
+**Usage:**
 
 ```tsx
-import { MemoryProvider, useMemoryContext } from '@clarity-chat/react'
+import { TokenOptimizationDashboard } from '@clarity-chat/react'
+import { useTokenData } from './hooks/useTokenData'
 
-<MemoryProvider config={{ maxTokens: 10000, strategy: 'vector-store' }}>
-  <ChatApp />
-</MemoryProvider>
+function TokenAnalytics() {
+  const { data, loading } = useTokenData()
 
-// In child component
-const { memory, addMemory, searchMemory, clearMemory } = useMemoryContext()
-```
+  if (loading) return <div>Loading...</div>
 
-**Props:**
-
-```typescript
-interface MemoryProviderProps {
-  /** Memory configuration */
-  config?: MemoryConfig
-
-  /** Memory strategy */
-  strategy?: 'sliding-window' | 'semantic-chunks' | 'vector-store'
-
-  /** Maximum tokens for context */
-  maxTokens?: number
-
-  /** Storage backend */
-  storage?: 'memory' | 'indexeddb' | 'custom'
-
-  /** Children */
-  children: React.ReactNode
-}
-
-interface UseMemoryContextReturn {
-  /** Current memory items */
-  memory: MemoryItem[]
-
-  /** Add item to memory */
-  addMemory: (content: string, metadata?: MemoryMetadata) => Promise<void>
-
-  /** Search memory */
-  searchMemory: (query: string, options?: SearchOptions) => Promise<MemorySearchResult[]>
-
-  /** Clear all memory */
-  clearMemory: () => Promise<void>
-
-  /** Context window information */
-  contextWindow: ContextWindowInfo
-
-  /** Memory statistics */
-  stats: MemoryStats
+  return (
+    <TokenOptimizationDashboard
+      data={data}
+      timeRange="7d"
+      showCosts={true}
+      showRecommendations={true}
+      showComparison={true}
+      currency="USD"
+      refreshInterval={30000} // 30 seconds
+      onTimeRangeChange={(range) => console.log('Range:', range)}
+    />
+  )
 }
 ```
 
@@ -794,32 +1270,10 @@ interface UseMemoryContextReturn {
 
 ### useClarityChatApp
 
-Unified App API hook - the recommended hook for most applications.
+**Path**: /reference/hooks/use-clarity-chat-app
+**Package**: @clarity-chat/react
 
-```tsx
-import { useClarityChatApp } from '@clarity-chat/react'
-
-const {
-  messages,
-  append,
-  reload,
-  stop,
-  isLoading,
-  error,
-  // Memory
-  memory,
-  // Tools
-  tools,
-  pendingToolCalls,
-  // Token optimization
-  tokenStats,
-  // Meta information
-  meta
-} = useClarityChatApp({
-  api: '/api/chat',
-  features: { memory: true, tools: true }
-})
-```
+Unified App API hook - the recommended hook for most applications. Provides complete chat functionality with memory, tools, and optimization.
 
 **Options:**
 
@@ -900,7 +1354,66 @@ interface UseClarityChatAppReturn {
   safetyStats: SafetyStats | null
 
   // Meta information
-  meta: ClarityMeta
+  meta: {
+    version: string
+    preset: ClarityAppPreset
+    features: ClarityFeatureFlags
+  }
+}
+```
+
+**Usage:**
+
+```tsx
+import { useClarityChatApp } from '@clarity-chat/react'
+
+function ChatComponent() {
+  const {
+    messages,
+    input,
+    setInput,
+    handleSubmit,
+    isLoading,
+    error,
+    memory,
+    tokenStats
+  } = useClarityChatApp({
+    api: '/api/chat',
+    features: {
+      memory: true,
+      tokenOptimization: true,
+      tools: true
+    }
+  })
+
+  return (
+    <div>
+      <div className="messages">
+        {messages.map(m => (
+          <div key={m.id}>{m.content}</div>
+        ))}
+      </div>
+
+      {error && <div className="error">{error.message}</div>}
+
+      <form onSubmit={handleSubmit}>
+        <input
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          disabled={isLoading}
+        />
+        <button type="submit" disabled={isLoading}>
+          Send
+        </button>
+      </form>
+
+      {tokenStats && (
+        <div className="stats">
+          Tokens: {tokenStats.totalTokens} | Cost: ${tokenStats.cost.total.toFixed(4)}
+        </div>
+      )}
+    </div>
+  )
 }
 ```
 
@@ -908,36 +1421,10 @@ interface UseClarityChatAppReturn {
 
 ### useClarityChat
 
-Primary hook for chat state management with built-in memory integration.
+**Path**: /reference/hooks/use-clarity-chat
+**Package**: @clarity-chat/react
 
-```tsx
-import { useClarityChat } from '@clarity-chat/react'
-
-const {
-  messages,
-  append,
-  reload,
-  stop,
-  isLoading,
-  error,
-  setMessages,
-  input,
-  setInput,
-  memoryInfo,
-  tokenStats
-} = useClarityChat({
-  api: '/api/chat',
-  memory: {
-    enabled: true,
-    strategy: 'vector-store',
-    maxTokens: 8000
-  },
-  promptOptimization: {
-    enabled: true,
-    targetTokens: 4000
-  }
-})
-```
+Primary hook for chat state management with memory integration and streaming support.
 
 **Options:**
 
@@ -950,85 +1437,56 @@ interface UseClarityChatOptions {
   initialMessages?: CoreMessage[]
 
   /** Memory configuration */
-  memory?: ClarityMemoryOptions
+  memory?: {
+    enabled?: boolean
+    autoCapture?: boolean
+    requireConsent?: boolean
+    onConsentRequired?: () => Promise<boolean> | boolean
+    strategy?: 'sliding-window' | 'semantic-chunks' | 'vector-store'
+    maxTokens?: number
+    retryOnError?: boolean
+    maxRetryAttempts?: number
+    onMemoryError?: (error: Error, operation: 'query' | 'store') => void
+  }
 
   /** Transport protocol */
   transport?: 'sse' | 'websocket'
 
   /** WebSocket options */
-  websocket?: ClarityWebSocketOptions
+  websocket?: {
+    url?: string
+    reconnect?: boolean
+    maxReconnectAttempts?: number
+    reconnectDelay?: number
+  }
 
   /** Prompt optimization */
-  promptOptimization?: ClarityPromptOptimizationOptions
+  promptOptimization?: {
+    enabled?: boolean
+    targetTokens?: number
+    strategy?: 'sliding-window' | 'summarize-old' | 'drop-low-priority' | 'hybrid'
+    model?: string
+    priorities?: Array<{ messageId: string; priority: number }>
+    summarizeFn?: (messages: CoreMessage[]) => Promise<string> | string
+    keepRecent?: number
+  }
 
   /** Custom headers */
   headers?: Record<string, string>
 
-  /** Request body */
+  /** Request body extras */
   body?: Record<string, unknown>
 
   /** Credentials mode */
   credentials?: RequestCredentials
 
-  /** Streaming enabled */
+  /** Streaming protocol */
   streamProtocol?: 'data' | 'text'
 
   /** Callbacks */
   onResponse?: (response: Response) => void
   onFinish?: (message: CoreMessage) => void
   onError?: (error: Error) => void
-}
-
-interface ClarityMemoryOptions {
-  /** Enable memory */
-  enabled?: boolean
-
-  /** Auto-capture messages */
-  autoCapture?: boolean
-
-  /** Require consent */
-  requireConsent?: boolean
-
-  /** Consent callback */
-  onConsentRequired?: () => Promise<boolean> | boolean
-
-  /** Memory strategy */
-  strategy?: 'sliding-window' | 'semantic-chunks' | 'vector-store'
-
-  /** Maximum tokens */
-  maxTokens?: number
-
-  /** Retry on error */
-  retryOnError?: boolean
-
-  /** Max retry attempts */
-  maxRetryAttempts?: number
-
-  /** Error callback */
-  onMemoryError?: (error: Error, operation: 'query' | 'store') => void
-}
-
-interface ClarityPromptOptimizationOptions {
-  /** Enable optimization */
-  enabled?: boolean
-
-  /** Target token budget */
-  targetTokens?: number
-
-  /** Optimization strategy */
-  strategy?: 'sliding-window' | 'summarize-old' | 'drop-low-priority' | 'hybrid'
-
-  /** Model for token counting */
-  model?: string
-
-  /** Message priorities */
-  priorities?: Array<{ messageId: string; priority: number }>
-
-  /** Summarization function */
-  summarizeFn?: (messages: CoreMessage[]) => Promise<string> | string
-
-  /** Number of recent messages to keep */
-  keepRecent?: number
 }
 ```
 
@@ -1054,553 +1512,103 @@ interface UseClarityChatReturn {
   error: Error | undefined
 
   // Memory info
-  memoryInfo: ClarityChatMemoryInfo
-  memoryErrorInfo: ClarityChatErrorInfo
+  memoryInfo: {
+    memoryCount: number
+    enabled: boolean
+    strategy?: 'sliding-window' | 'semantic-chunks' | 'vector-store'
+    lastContextSummary?: string
+  }
+  memoryErrorInfo: {
+    hasError: boolean
+    lastError?: Error
+    failedOperation?: 'query' | 'store'
+  }
 
   // Token stats (if prompt optimization enabled)
-  tokenStats?: ClarityChatTokenStats
-}
-
-interface ClarityChatMemoryInfo {
-  memoryCount: number
-  enabled: boolean
-  strategy?: 'sliding-window' | 'semantic-chunks' | 'vector-store'
-  lastContextSummary?: string
-}
-
-interface ClarityChatTokenStats {
-  inputTokens: number
-  remainingBudget: number
-  utilization: number
-  lastOptimizationReason?: string
-  wasOptimized: boolean
-}
-```
-
----
-
-### useClarityChatWithTools
-
-Chat with tool/function calling support.
-
-```tsx
-import { useClarityChatWithTools } from '@clarity-chat/react'
-
-const {
-  messages,
-  append,
-  tools,
-  pendingToolCalls,
-  executeTool,
-  toolResults
-} = useClarityChatWithTools({
-  api: '/api/chat',
-  tools: [
-    {
-      name: 'search',
-      description: 'Search the web',
-      parameters: {
-        type: 'object',
-        properties: {
-          query: { type: 'string' }
-        }
-      },
-      execute: async ({ query }) => {
-        // Implementation
-        return { results: [] }
-      }
-    }
-  ]
-})
-```
-
-**Options:**
-
-```typescript
-interface UseClarityChatWithToolsOptions extends UseClarityChatOptions {
-  /** Tool definitions */
-  tools: ToolDefinition[]
-
-  /** Auto-execute tools */
-  autoExecute?: boolean
-
-  /** Tool execution confirmation */
-  requireConfirmation?: boolean
-
-  /** Tool timeout (ms) */
-  toolTimeout?: number
-
-  /** Tool error handler */
-  onToolError?: (tool: string, error: Error) => void
-}
-
-interface ToolDefinition {
-  /** Tool name */
-  name: string
-
-  /** Tool description */
-  description: string
-
-  /** JSON Schema for parameters */
-  parameters: Record<string, unknown>
-
-  /** Execution function */
-  execute: (params: Record<string, unknown>) => Promise<unknown>
-
-  /** Requires confirmation */
-  requiresConfirmation?: boolean
-
-  /** Category for grouping */
-  category?: string
-}
-```
-
-**Return Type:**
-
-```typescript
-interface UseClarityChatWithToolsReturn extends UseClarityChatReturn {
-  /** Available tools */
-  tools: ToolDefinition[]
-
-  /** Execute a tool */
-  executeTool: (toolCallId: string, params?: Record<string, unknown>) => Promise<unknown>
-
-  /** Pending tool calls awaiting execution */
-  pendingToolCalls: ToolCall[]
-
-  /** Results from executed tools */
-  toolResults: Map<string, unknown>
-
-  /** Approve a pending tool call */
-  approveTool: (toolCallId: string) => Promise<void>
-
-  /** Reject a pending tool call */
-  rejectTool: (toolCallId: string) => void
-}
-```
-
----
-
-### useStreamingSSE
-
-Server-Sent Events streaming hook.
-
-```tsx
-import { useStreamingSSE } from '@clarity-chat/react'
-
-const {
-  connect,
-  disconnect,
-  isConnected,
-  lastEvent,
-  error
-} = useStreamingSSE({
-  url: '/api/stream',
-  onMessage: (event) => console.log(event)
-})
-```
-
-**Options:**
-
-```typescript
-interface UseStreamingSSEOptions {
-  /** SSE endpoint URL */
-  url: string
-
-  /** Message handler */
-  onMessage?: (event: MessageEvent) => void
-
-  /** Open handler */
-  onOpen?: () => void
-
-  /** Error handler */
-  onError?: (error: Event) => void
-
-  /** Close handler */
-  onClose?: () => void
-
-  /** Auto-reconnect */
-  autoReconnect?: boolean
-
-  /** Reconnect delay (ms) */
-  reconnectDelay?: number
-
-  /** Max reconnect attempts */
-  maxReconnectAttempts?: number
-
-  /** Custom headers */
-  headers?: Record<string, string>
-
-  /** With credentials */
-  withCredentials?: boolean
-}
-```
-
-**Return Type:**
-
-```typescript
-interface UseStreamingSSEReturn {
-  /** Connect to SSE endpoint */
-  connect: () => void
-
-  /** Disconnect from SSE */
-  disconnect: () => void
-
-  /** Connection status */
-  isConnected: boolean
-
-  /** Last received event */
-  lastEvent: MessageEvent | null
-
-  /** Connection error */
-  error: Event | null
-
-  /** Reconnect count */
-  reconnectCount: number
-}
-```
-
----
-
-### useStreamingWebSocket
-
-WebSocket streaming with automatic reconnection.
-
-```tsx
-import { useStreamingWebSocket } from '@clarity-chat/react'
-
-const {
-  connect,
-  disconnect,
-  send,
-  isConnected,
-  lastMessage
-} = useStreamingWebSocket({
-  url: 'wss://api.example.com/ws',
-  onMessage: (data) => console.log(data)
-})
-```
-
-**Options:**
-
-```typescript
-interface UseStreamingWebSocketOptions {
-  /** WebSocket URL */
-  url: string
-
-  /** Message handler */
-  onMessage?: (data: unknown) => void
-
-  /** Open handler */
-  onOpen?: () => void
-
-  /** Close handler */
-  onClose?: (event: CloseEvent) => void
-
-  /** Error handler */
-  onError?: (error: Event) => void
-
-  /** Auto-reconnect */
-  autoReconnect?: boolean
-
-  /** Reconnect delay (ms) */
-  reconnectDelay?: number
-
-  /** Max reconnect attempts */
-  maxReconnectAttempts?: number
-
-  /** Heartbeat interval (ms) */
-  heartbeatInterval?: number
-
-  /** Protocols */
-  protocols?: string | string[]
-}
-```
-
-**Return Type:**
-
-```typescript
-interface UseStreamingWebSocketReturn {
-  /** Connect to WebSocket */
-  connect: () => void
-
-  /** Disconnect from WebSocket */
-  disconnect: () => void
-
-  /** Send message */
-  send: (data: unknown) => void
-
-  /** Connection status */
-  isConnected: boolean
-
-  /** Last received message */
-  lastMessage: unknown | null
-
-  /** Ready state */
-  readyState: number
-
-  /** Reconnect count */
-  reconnectCount: number
-}
-```
-
----
-
-### useTokenOptimization
-
-Unified token optimization hook.
-
-```tsx
-import { useTokenOptimization } from '@clarity-chat/token-optimization'
-
-const {
-  count,
-  estimate,
-  optimize,
-  cache,
-  stats
-} = useTokenOptimization({
-  model: 'gpt-4o',
-  preset: 'balanced'
-})
-```
-
-**Options:**
-
-```typescript
-interface UseTokenOptimizationConfig {
-  /** Model ID for token counting */
-  model?: ModelId
-
-  /** Optimization preset */
-  preset?: TokenOptimizationPreset
-
-  /** Enable caching */
-  caching?: boolean
-
-  /** Cache configuration */
-  cacheConfig?: TieredCacheConfig
-
-  /** Compression enabled */
-  compression?: boolean
-
-  /** Compression strategy */
-  compressionStrategy?: 'llmlingua' | 'extractive' | 'adaptive'
-
-  /** Quality gate */
-  qualityGate?: QualityGateConfig
-
-  /** Cost awareness */
-  costAware?: CostAwareConfig
-}
-
-type TokenOptimizationPreset = 'minimal' | 'balanced' | 'aggressive' | 'quality-first'
-```
-
-**Return Type:**
-
-```typescript
-interface UseTokenOptimizationReturn {
-  /** Count tokens in text */
-  count: (text: string) => number
-
-  /** Estimate tokens with cost */
-  estimate: (text: string) => TokenEstimate
-
-  /** Optimize text for token budget */
-  optimize: (text: string, targetTokens: number) => OptimizationResult
-
-  /** Cache operations */
-  cache: {
-    get: (key: string) => CachedEntry | null
-    set: (key: string, value: unknown) => void
-    invalidate: (key: string) => void
-    stats: CacheStats
+  tokenStats?: {
+    inputTokens: number
+    remainingBudget: number
+    utilization: number
+    lastOptimizationReason?: string
+    wasOptimized: boolean
   }
-
-  /** Optimization statistics */
-  stats: OptimizationStats
 }
 ```
 
----
-
-### useTokenCount
-
-Simple token counting hook.
+**Usage:**
 
 ```tsx
-import { useTokenCount } from '@clarity-chat/token-optimization'
+import { useClarityChat } from '@clarity-chat/react'
 
-function TokenDisplay({ text }: { text: string }) {
-  const { count, isLoading, error } = useTokenCount(text, {
-    model: 'gpt-4o',
-    debounceMs: 100
+function ChatInterface() {
+  const {
+    messages,
+    input,
+    setInput,
+    handleSubmit,
+    isLoading,
+    error,
+    memoryInfo,
+    tokenStats
+  } = useClarityChat({
+    api: '/api/chat',
+    memory: {
+      enabled: true,
+      strategy: 'vector-store',
+      maxTokens: 8000
+    },
+    promptOptimization: {
+      enabled: true,
+      targetTokens: 4000,
+      strategy: 'hybrid'
+    }
   })
 
-  return <span>{count} tokens</span>
-}
-```
+  return (
+    <div className="chat-interface">
+      {/* Messages */}
+      <div className="messages">
+        {messages.map(message => (
+          <div key={message.id} className={`message ${message.role}`}>
+            {message.content}
+          </div>
+        ))}
+      </div>
 
-**Options:**
+      {/* Error */}
+      {error && (
+        <div className="error">
+          Error: {error.message}
+        </div>
+      )}
 
-```typescript
-interface UseTokenCountOptions {
-  /** Model for token counting */
-  model?: ModelId
+      {/* Input */}
+      <form onSubmit={handleSubmit}>
+        <textarea
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          placeholder="Type a message..."
+          disabled={isLoading}
+        />
+        <button type="submit" disabled={isLoading || !input.trim()}>
+          {isLoading ? 'Sending...' : 'Send'}
+        </button>
+      </form>
 
-  /** Debounce delay (ms) */
-  debounceMs?: number
-
-  /** Enable caching */
-  cache?: boolean
-
-  /** Skip counting when empty */
-  skipEmpty?: boolean
-}
-```
-
-**Return Type:**
-
-```typescript
-interface UseTokenCountReturn {
-  /** Token count */
-  count: number
-
-  /** Loading state */
-  isLoading: boolean
-
-  /** Error state */
-  error: Error | null
-
-  /** Manually recount */
-  recount: () => void
-}
-```
-
----
-
-### useModelRouter
-
-Dynamic model selection based on task complexity.
-
-```tsx
-import { useModelRouter } from '@clarity-chat/token-optimization'
-
-const {
-  selectModel,
-  currentModel,
-  routingStats
-} = useModelRouter({
-  strategy: 'cost-optimized',
-  models: {
-    simple: 'gpt-4o-mini',
-    moderate: 'gpt-4o',
-    complex: 'claude-3-opus'
-  }
-})
-
-// In your chat logic
-const model = selectModel(userMessage)
-```
-
-**Options:**
-
-```typescript
-interface UseModelRouterConfig {
-  /** Routing strategy */
-  strategy?: RoutingStrategy
-
-  /** Model mapping by complexity */
-  models?: {
-    simple?: ModelId
-    moderate?: ModelId
-    complex?: ModelId
-  }
-
-  /** Custom routing rules */
-  rules?: RoutingRule[]
-
-  /** Fallback model */
-  fallbackModel?: ModelId
-
-  /** Cost budget */
-  costBudget?: number
-
-  /** Latency budget (ms) */
-  latencyBudget?: number
-}
-
-type RoutingStrategy = 'cost-optimized' | 'quality-optimized' | 'balanced' | 'latency-optimized'
-```
-
-**Return Type:**
-
-```typescript
-interface UseModelRouterReturn {
-  /** Select model for a task */
-  selectModel: (input: string | RoutingOptions) => ModelId
-
-  /** Currently selected model */
-  currentModel: ModelId
-
-  /** Add custom routing rule */
-  addRule: (rule: RoutingRule) => void
-
-  /** Routing statistics */
-  routingStats: RouterStats
-}
-```
-
----
-
-### useMemoryContext
-
-Access conversation memory from MemoryProvider.
-
-```tsx
-import { useMemoryContext } from '@clarity-chat/react'
-
-const {
-  memory,
-  addMemory,
-  searchMemory,
-  clearMemory,
-  contextWindow
-} = useMemoryContext()
-```
-
-**Return Type:**
-
-```typescript
-interface UseMemoryContextReturn {
-  /** Current memory items */
-  memory: MemoryItem[]
-
-  /** Add item to memory */
-  addMemory: (content: string, metadata?: MemoryMetadata) => Promise<void>
-
-  /** Search memory */
-  searchMemory: (query: string, options?: SearchOptions) => Promise<MemorySearchResult[]>
-
-  /** Clear all memory */
-  clearMemory: () => Promise<void>
-
-  /** Context window info */
-  contextWindow: {
-    usedTokens: number
-    maxTokens: number
-    utilization: number
-  }
-
-  /** Memory statistics */
-  stats: MemoryStats
-
-  /** Memory status */
-  status: 'idle' | 'loading' | 'error'
-
-  /** Error state */
-  error: Error | null
+      {/* Stats */}
+      <div className="stats">
+        {memoryInfo.enabled && (
+          <span>Memory: {memoryInfo.memoryCount} items</span>
+        )}
+        {tokenStats && (
+          <span>
+            Tokens: {tokenStats.inputTokens} / {tokenStats.remainingBudget}
+            ({Math.round(tokenStats.utilization * 100)}%)
+          </span>
+        )}
+      </div>
+    </div>
+  )
 }
 ```
 
@@ -1610,59 +1618,66 @@ interface UseMemoryContextReturn {
 
 ### clarityMemory
 
-Zero-config memory factory function.
+**Path**: /reference/packages/memory/clarity-memory
+**Package**: @clarity-chat/memory
+
+Zero-config memory factory function for quick setup.
+
+**Usage:**
 
 ```typescript
 import { clarityMemory } from '@clarity-chat/memory'
 
-// Zero-config usage
+// Zero-config usage (uses in-memory storage)
 const mem = clarityMemory()
 await mem.add("User prefers TypeScript", { type: 'semantic', importance: 0.9 })
 const results = await mem.recall("user preferences")
 
-// With configuration
+// With IndexedDB storage
+const mem = clarityMemory({
+  storage: { type: 'indexeddb', dbName: 'chat-memory' }
+})
+
+// With OpenAI embeddings
 const mem = clarityMemory({
   storage: { type: 'indexeddb' },
-  embeddingProvider: { provider: 'openai', apiKey: '...' }
+  embeddingProvider: {
+    provider: 'openai',
+    apiKey: process.env.OPENAI_API_KEY,
+    model: 'text-embedding-3-small'
+  }
+})
+
+// Full configuration
+const mem = clarityMemory({
+  storage: { type: 'indexeddb', dbName: 'chat-memory' },
+  embeddingProvider: {
+    provider: 'openai',
+    apiKey: process.env.OPENAI_API_KEY
+  },
+  decay: {
+    policy: 'exponential',
+    halfLife: 7 * 24 * 60 * 60 * 1000 // 7 days
+  },
+  tokenBudget: {
+    maxTokens: 10000,
+    warningThreshold: 0.8
+  },
+  consent: {
+    required: true,
+    purposes: ['memory', 'analytics']
+  }
 })
 ```
 
-**Configuration:**
-
-```typescript
-interface ClarityMemoryConfig {
-  /** Storage configuration */
-  storage?: {
-    type: 'memory' | 'indexeddb' | 'custom'
-    config?: StorageConfig
-  }
-
-  /** Embedding provider */
-  embeddingProvider?: {
-    provider: 'openai' | 'cohere' | 'custom'
-    apiKey?: string
-    model?: string
-  }
-
-  /** Memory decay */
-  decay?: DecayManagerConfig
-
-  /** Token budget */
-  tokenBudget?: TokenBudgetConfig
-
-  /** Consent management */
-  consent?: ConsentConfig
-}
-```
-
-**Return Type:**
+**API:**
 
 ```typescript
 interface ClarityMemoryInstance {
   /** Add memory item */
   add: (content: string, metadata?: MemoryMetadata) => Promise<MemoryItem>
 
-  /** Recall memories */
+  /** Recall memories (semantic search) */
   recall: (query: string, options?: RecallOptions) => Promise<MemorySearchResult[]>
 
   /** Update memory item */
@@ -1677,7 +1692,7 @@ interface ClarityMemoryInstance {
   /** Get statistics */
   stats: () => Promise<MemoryStats>
 
-  /** Export memories */
+  /** Export memories (GDPR compliance) */
   export: (options?: ExportOptions) => Promise<DataExportResult>
 
   /** Consent operations */
@@ -1690,485 +1705,211 @@ interface ClarityMemoryInstance {
 
 ---
 
-### MemoryService
-
-Core memory service class.
-
-```typescript
-import { MemoryService } from '@clarity-chat/memory'
-
-const memoryService = new MemoryService({
-  storage: { type: 'indexeddb' },
-  tokenBudget: { maxTokens: 10000 }
-})
-
-await memoryService.initialize()
-await memoryService.add('Important fact', { importance: 0.9 })
-const results = await memoryService.search('important')
-```
-
-**Configuration:**
-
-```typescript
-interface MemoryServiceConfig {
-  /** Storage backend */
-  storage: StorageConfig
-
-  /** Token budget configuration */
-  tokenBudget?: TokenBudgetConfig
-
-  /** Embedding configuration */
-  embedding?: EmbeddingConfig
-
-  /** Decay configuration */
-  decay?: DecayManagerConfig
-
-  /** Consent configuration */
-  consent?: ConsentConfig
-
-  /** Audit configuration */
-  audit?: AuditLoggerConfig
-}
-```
-
----
-
-### LLMSummarizer
-
-LLM-based summarization for 80-90% token reduction.
-
-```typescript
-import { LLMSummarizer, createSummarizerWithFallback } from '@clarity-chat/memory'
-
-const summarizer = new LLMSummarizer({
-  provider: 'openai',
-  model: 'gpt-4o-mini',
-  apiKey: process.env.OPENAI_API_KEY
-})
-
-const summary = await summarizer.summarize(longText)
-```
-
-**Configuration:**
-
-```typescript
-interface LLMSummarizationConfig {
-  /** LLM provider */
-  provider: 'openai' | 'anthropic' | 'custom'
-
-  /** Model to use */
-  model: string
-
-  /** API key */
-  apiKey: string
-
-  /** Target compression ratio (0-1) */
-  targetRatio?: number
-
-  /** Summarization style */
-  style?: SummaryStyle
-
-  /** Include timestamps */
-  includeTimestamps?: boolean
-
-  /** Max output tokens */
-  maxOutputTokens?: number
-}
-
-type SummaryStyle = 'concise' | 'detailed' | 'bullet-points' | 'narrative'
-```
-
----
-
-### DecayManager
-
-Memory decay and forgetting management.
-
-```typescript
-import { DecayManager, createDecayManager } from '@clarity-chat/memory'
-
-const decayManager = createDecayManager({
-  policy: 'exponential',
-  halfLife: 7 * 24 * 60 * 60 * 1000, // 7 days
-  minImportance: 0.1
-})
-
-const decayedMemories = decayManager.applyDecay(memories)
-```
-
-**Configuration:**
-
-```typescript
-interface DecayManagerConfig {
-  /** Decay policy */
-  policy: DecayPolicy
-
-  /** Half-life for exponential decay (ms) */
-  halfLife?: number
-
-  /** Minimum importance before removal */
-  minImportance?: number
-
-  /** Custom decay curve */
-  decayCurve?: DecayCurve
-
-  /** Access boost factor */
-  accessBoost?: number
-}
-
-type DecayPolicy = 'none' | 'linear' | 'exponential' | 'step' | 'custom'
-```
-
----
-
-### ConsentManager
-
-GDPR/CCPA compliance consent management.
-
-```typescript
-import { ConsentManager } from '@clarity-chat/memory'
-
-const consentManager = new ConsentManager({
-  storageKey: 'clarity-consent',
-  purposes: ['memory', 'analytics']
-})
-
-const hasConsent = await consentManager.checkConsent('memory')
-await consentManager.grantConsent('memory')
-```
-
-**Types:**
-
-```typescript
-interface ConsentManager {
-  /** Check if consent granted */
-  checkConsent: (purpose: ConsentPurpose) => Promise<boolean>
-
-  /** Grant consent */
-  grantConsent: (purpose: ConsentPurpose) => Promise<void>
-
-  /** Revoke consent */
-  revokeConsent: (purpose: ConsentPurpose) => Promise<void>
-
-  /** Get consent record */
-  getRecord: () => Promise<ConsentRecord>
-
-  /** Verify consent */
-  verify: () => Promise<ConsentVerification>
-}
-
-type ConsentPurpose = 'memory' | 'analytics' | 'personalization' | 'marketing'
-```
-
----
-
-### AuditLogger
-
-GDPR Article 30 compliance audit logging.
-
-```typescript
-import { AuditLogger } from '@clarity-chat/memory'
-
-const auditLogger = new AuditLogger({
-  storage: 'indexeddb',
-  retention: 90 * 24 * 60 * 60 * 1000 // 90 days
-})
-
-await auditLogger.log({
-  type: 'DATA_ACCESS',
-  userId: 'user-123',
-  action: 'read',
-  resource: 'memory'
-})
-
-const logs = await auditLogger.query({
-  userId: 'user-123',
-  startDate: new Date('2024-01-01')
-})
-```
-
----
-
 ## Token Optimization Package
 
-### AccurateTokenCounter
+### useTokenOptimization
 
-Accurate token counting using gpt-tokenizer.
+**Path**: /reference/hooks/use-token-optimization
+**Package**: @clarity-chat/token-optimization
 
-```typescript
-import { AccurateTokenCounter } from '@clarity-chat/token-optimization'
+Unified token optimization hook with compression, caching, and routing.
 
-const counter = new AccurateTokenCounter({
-  model: 'gpt-4o',
-  cache: true
-})
-
-const count = counter.count('Hello, world!')
-const messageCount = counter.countMessages([
-  { role: 'user', content: 'Hello' },
-  { role: 'assistant', content: 'Hi there!' }
-])
-```
-
----
-
-### ModelRouter
-
-Model routing based on complexity analysis.
+**Usage:**
 
 ```typescript
-import { ModelRouter, RoutingStrategy } from '@clarity-chat/token-optimization'
+import { useTokenOptimization } from '@clarity-chat/token-optimization'
 
-// Using defaults
-const router = ModelRouter.default()
+function OptimizedChat() {
+  const {
+    count,
+    estimate,
+    optimize,
+    cache,
+    stats
+  } = useTokenOptimization({
+    model: 'gpt-4o',
+    preset: 'balanced',
+    caching: true,
+    compression: true,
+    compressionStrategy: 'llmlingua'
+  })
 
-// Using builder
-const router = ModelRouter.builder()
-  .useOpenAIModels()
-  .withStrategy(RoutingStrategy.CostOptimized)
-  .withFallback('gpt-4o-mini')
-  .build()
+  // Count tokens
+  const tokens = count("Hello, world!")
 
-const model = router.selectModel('complex technical question')
-```
+  // Estimate with cost
+  const est = estimate("Long text here...")
+  console.log(`${est.tokens} tokens = $${est.cost.total}`)
 
----
+  // Optimize text
+  const result = optimize(longText, 1000)
+  console.log(`Reduced from ${result.originalTokens} to ${result.optimizedTokens}`)
 
-### TieredCache
+  // Use cache
+  const cached = cache.get('prompt-key')
+  if (!cached) {
+    cache.set('prompt-key', response)
+  }
 
-Multi-tier caching system.
-
-```typescript
-import { TieredCache } from '@clarity-chat/token-optimization'
-
-const cache = new TieredCache({
-  tiers: [
-    { name: 'exact', maxSize: 1000, ttl: 60000 },
-    { name: 'semantic', maxSize: 500, ttl: 300000, similarity: 0.85 }
-  ]
-})
-
-// Set with semantic indexing
-await cache.set('greeting', 'Hello! How can I help?', {
-  semanticKey: 'greeting'
-})
-
-// Get (checks all tiers)
-const result = await cache.get('Hello there!')
-```
-
----
-
-### LLMLinguaCompressor
-
-Advanced compression using LLMLingua algorithm.
-
-```typescript
-import { LLMLinguaCompressor, compressWithLLMLingua } from '@clarity-chat/token-optimization'
-
-const compressor = new LLMLinguaCompressor({
-  targetRatio: 0.5,
-  preserveKeywords: true
-})
-
-const result = await compressor.compress(longText)
-console.log(`Compressed from ${result.originalTokens} to ${result.compressedTokens} tokens`)
-```
-
----
-
-### ProviderCachingFormatter
-
-Format messages for provider-native caching (Anthropic, OpenAI, Google).
-
-```typescript
-import {
-  ProviderCachingFormatter,
-  anthropicCache,
-  openaiCache
-} from '@clarity-chat/token-optimization'
-
-// Simple API
-const anthropicMessages = anthropicCache(messages, { systemPrompt })
-const openaiMessages = openaiCache(messages, { staticPrefix: systemPrompt })
-
-// Advanced API
-const formatter = new ProviderCachingFormatter({
-  provider: 'anthropic',
-  minCacheTokens: 1024
-})
-
-const formatted = formatter.format(messages)
-```
-
----
-
-### QualityGate
-
-Quality validation before sending to LLM.
-
-```typescript
-import { QualityGate } from '@clarity-chat/token-optimization'
-
-const gate = new QualityGate({
-  minTokens: 10,
-  maxTokens: 4000,
-  minSemanticDensity: 0.3,
-  blockPatterns: [/spam/i]
-})
-
-const result = gate.check(text)
-if (result.passed) {
-  // Safe to send to LLM
+  return (
+    <div>
+      <p>Total tokens: {stats.totalTokens}</p>
+      <p>Savings: ${stats.savings.amount.toFixed(2)} ({Math.round(stats.savings.percentage)}%)</p>
+    </div>
+  )
 }
 ```
 
 ---
 
-### CostAwareOptimizer
+## Guides
 
-Cost-aware optimization with budget tracking.
+### Quick Start Guide
 
-```typescript
-import { CostAwareOptimizer } from '@clarity-chat/token-optimization'
+**Path**: /get-started/quick-start
 
-const optimizer = new CostAwareOptimizer({
-  budget: 10.00, // $10 daily budget
-  model: 'gpt-4o',
-  strategy: 'balanced'
-})
+Get a working chat interface in 5 minutes:
 
-const result = await optimizer.optimize(messages)
-const status = optimizer.getBudgetStatus()
+1. **Install the package:**
+```bash
+pnpm add @clarity-chat/react
 ```
 
----
-
-## Utilities
-
-### Quick Start Helpers
-
+2. **Create your API endpoint:**
 ```typescript
-import { chat, chatWithMemory, enterpriseChat, ChatBuilder } from '@clarity-chat/react'
+// app/api/chat/route.ts
+import { streamText } from 'ai'
+import { openai } from '@ai-sdk/openai'
 
-// One-line chat
-const ChatComponent = chat('/api/chat')
+export async function POST(req: Request) {
+  const { messages } = await req.json()
 
-// With memory
-const MemoryChat = chatWithMemory('/api/chat')
+  const result = streamText({
+    model: openai('gpt-4o'),
+    messages
+  })
 
-// Enterprise
-const EnterpriseChat = enterpriseChat('/api/chat')
-
-// Builder pattern
-const CustomChat = new ChatBuilder()
-  .api('/api/chat')
-  .theme('dark')
-  .memory({ enabled: true })
-  .build()
-```
-
----
-
-### Message Helpers
-
-```typescript
-import {
-  createUserMessage,
-  createAssistantMessage,
-  createSystemMessage,
-  isUserMessage,
-  isAssistantMessage,
-  extractTextContent
-} from '@clarity-chat/react'
-
-const userMsg = createUserMessage('Hello')
-const assistantMsg = createAssistantMessage('Hi there!')
-const systemMsg = createSystemMessage('You are a helpful assistant')
-
-if (isUserMessage(message)) {
-  const text = extractTextContent(message)
+  return result.toDataStreamResponse()
 }
 ```
 
+3. **Add the chat component:**
+```tsx
+import { ClarityChatApp } from '@clarity-chat/react'
+
+export default function Page() {
+  return <ClarityChatApp api="/api/chat" />
+}
+```
+
+That's it! You now have a fully functional chat interface.
+
 ---
 
-### Animation Utilities
+### Token Optimization Guide
 
-```typescript
-import {
-  createFadeVariant,
-  createSlideVariant,
-  createStaggerContainerVariant,
-  createPulseAnimation,
-  createShimmerAnimation
-} from '@clarity-chat/react'
+**Path**: /guides/token-optimization
 
-// Framer Motion variants
-const fadeIn = createFadeVariant({ duration: 0.3 })
-const slideUp = createSlideVariant({ direction: 'up', distance: 20 })
-const stagger = createStaggerContainerVariant({ staggerChildren: 0.1 })
+Reduce API costs by 50-70% with built-in optimization.
+
+**Basic Setup:**
+
+```tsx
+import { ClarityChatApp } from '@clarity-chat/react'
+
+<ClarityChatApp
+  api="/api/chat"
+  features={{ tokenOptimization: true }}
+  tokenOptimization={{
+    enabled: true,
+    strategies: ['compression', 'caching', 'routing']
+  }}
+/>
+```
+
+**Strategies:**
+
+1. **Compression** - Reduce token count while preserving meaning
+2. **Caching** - Reuse responses for similar queries
+3. **Routing** - Use smaller models for simple tasks
+
+**Advanced Configuration:**
+
+```tsx
+tokenOptimization={{
+  compression: {
+    strategy: 'llmlingua',
+    targetRatio: 0.5 // 50% reduction
+  },
+  caching: {
+    tiers: [
+      { name: 'exact', ttl: 60000 },
+      { name: 'semantic', similarity: 0.85 }
+    ]
+  },
+  routing: {
+    strategy: 'cost-optimized',
+    models: {
+      simple: 'gpt-4o-mini',
+      complex: 'gpt-4o'
+    }
+  }
+}}
 ```
 
 ---
 
-### Testing Helpers
+## Cookbook Recipes
 
-```typescript
-import {
-  mockChatAPI,
-  createTestMessages,
-  renderChatWithDefaults,
-  TestWrapper,
-  chatAssertions
-} from '@clarity-chat/react'
+### Achieving 50-70% Cost Reduction
 
-// Mock API
-const api = mockChatAPI({
-  delay: 100,
-  responses: ['Hello!', 'How can I help?']
-})
+**Path**: /cookbook/achieving-50-percent-reduction
 
-// Create test messages
-const messages = createTestMessages(5)
+Complete guide to reducing API costs with combined strategies.
 
-// Render with defaults
-const { result } = renderChatWithDefaults(<MyChat />)
+```tsx
+import { ClarityChatApp } from '@clarity-chat/react'
 
-// Assertions
-chatAssertions.hasMessages(result, 3)
-chatAssertions.isLoading(result, false)
+export default function OptimizedChat() {
+  return (
+    <ClarityChatApp
+      api="/api/chat"
+      features={{
+        memory: true,
+        tokenOptimization: true
+      }}
+      memory={{
+        strategy: 'vector-store',
+        maxTokens: 8000
+      }}
+      tokenOptimization={{
+        compression: {
+          enabled: true,
+          strategy: 'llmlingua',
+          targetRatio: 0.5
+        },
+        caching: {
+          enabled: true,
+          tiers: [
+            { name: 'exact', maxSize: 1000, ttl: 60000 },
+            { name: 'semantic', maxSize: 500, similarity: 0.85 }
+          ]
+        },
+        routing: {
+          enabled: true,
+          strategy: 'cost-optimized'
+        }
+      }}
+    />
+  )
+}
 ```
 
----
-
-### Security Utilities
-
-```typescript
-import {
-  sanitizeHTML,
-  sanitizeMarkdown,
-  sanitizeUserInput,
-  detectXSSPatterns,
-  generateCSPHeader,
-  auditComponentSecurity
-} from '@clarity-chat/react'
-
-// Sanitize user input
-const safe = sanitizeUserInput(userInput)
-
-// Detect XSS
-const threats = detectXSSPatterns(content)
-
-// Generate CSP header
-const csp = generateCSPHeader({
-  defaultSrc: ["'self'"],
-  scriptSrc: ["'self'", 'https://cdn.example.com']
-})
-
-// Audit component
-const report = auditComponentSecurity(MyComponent)
-```
+**Results:**
+- 50-60% reduction from compression
+- 20-30% reduction from caching
+- 10-20% reduction from routing
+- **Total: 50-70% cost reduction**
 
 ---
 
@@ -2221,138 +1962,6 @@ interface MemoryItem {
 type MemoryType = 'semantic' | 'episodic' | 'procedural' | 'working'
 type MemoryScope = 'session' | 'conversation' | 'user' | 'global'
 type MemoryPriority = 'critical' | 'high' | 'medium' | 'low'
-
-interface MemorySearchResult {
-  item: MemoryItem
-  score: number
-  relevance: number
-}
-
-interface MemoryStats {
-  totalItems: number
-  totalTokens: number
-  byType: Record<MemoryType, number>
-  byScope: Record<MemoryScope, number>
-  averageImportance: number
-}
-```
-
-### Token Types
-
-```typescript
-interface TokenEstimate {
-  tokens: number
-  cost: CostEstimate
-  model: ModelId
-}
-
-interface CostEstimate {
-  inputCost: number
-  outputCost: number
-  totalCost: number
-  currency: string
-}
-
-interface TokenBudget {
-  maxTokens: number
-  usedTokens: number
-  remaining: number
-  utilization: number
-}
-
-type ModelId =
-  | 'gpt-4o'
-  | 'gpt-4o-mini'
-  | 'gpt-4-turbo'
-  | 'claude-3-opus'
-  | 'claude-3-sonnet'
-  | 'claude-3-haiku'
-  | string
-```
-
-### Tool Types
-
-```typescript
-interface ToolDefinition {
-  name: string
-  description: string
-  parameters: JSONSchema
-  execute: (params: Record<string, unknown>) => Promise<unknown>
-  requiresConfirmation?: boolean
-  category?: string
-  timeout?: number
-}
-
-interface ToolCall {
-  id: string
-  toolName: string
-  arguments: Record<string, unknown>
-  status: 'pending' | 'approved' | 'rejected' | 'executing' | 'completed' | 'error'
-  result?: unknown
-  error?: Error
-}
-
-interface ToolExecutionResult {
-  success: boolean
-  result?: unknown
-  error?: Error
-  duration: number
-}
-```
-
-### RAG Types
-
-```typescript
-interface RAGConfig {
-  enabled: boolean
-  sources: RAGSource[]
-  chunkSize?: number
-  chunkOverlap?: number
-  topK?: number
-  similarityThreshold?: number
-  reranking?: boolean
-}
-
-interface RAGSource {
-  id: string
-  type: 'file' | 'url' | 'text' | 'database'
-  content?: string
-  url?: string
-  metadata?: Record<string, unknown>
-}
-
-interface RAGQueryResult {
-  chunks: RAGChunk[]
-  sources: RAGSource[]
-  relevanceScores: number[]
-}
-
-interface RAGChunk {
-  id: string
-  content: string
-  sourceId: string
-  metadata: ChunkMetadata
-  embedding?: number[]
-  score?: number
-}
-```
-
-### Event Types
-
-```typescript
-type ClarityEvent =
-  | { type: 'message:start'; message: CoreMessage }
-  | { type: 'message:chunk'; chunk: string; messageId: string }
-  | { type: 'message:complete'; message: CoreMessage }
-  | { type: 'message:error'; error: Error; messageId?: string }
-  | { type: 'tool:start'; toolCall: ToolCall }
-  | { type: 'tool:complete'; toolCall: ToolCall; result: unknown }
-  | { type: 'tool:error'; toolCall: ToolCall; error: Error }
-  | { type: 'memory:add'; item: MemoryItem }
-  | { type: 'memory:search'; query: string; results: MemorySearchResult[] }
-  | { type: 'rag:retrieve'; query: string; results: RAGQueryResult }
-  | { type: 'safety:block'; reason: string; content: string }
-  | { type: 'token:budget_warning'; usage: TokenBudget }
 ```
 
 ---
@@ -2369,6 +1978,9 @@ type ClarityEvent =
 
 ### MCP Server
 
+Model Context Protocol server for Claude Code and other AI tools.
+
+**Configuration:**
 ```json
 {
   "mcpServers": {
@@ -2381,19 +1993,38 @@ type ClarityEvent =
 ```
 
 **Available Tools:**
-- `list_components` - List all components with basic info
-- `get_component(name)` - Get detailed component documentation
-- `list_hooks` - List all hooks with basic info
-- `get_hook(name)` - Get detailed hook documentation
-- `search_docs(query)` - Search all documentation
+- `list_components` - List all components
+- `get_component(name)` - Get component documentation
+- `list_hooks` - List all hooks
+- `get_hook(name)` - Get hook documentation
+- `search_docs(query)` - Search documentation
 - `health_check` - Check API health
 
 ---
 
-## Version Information
+## Additional Resources
 
-- **Package Version:** 2.0.0
-- **React:** 18+ / 19
-- **TypeScript:** 5.0+
-- **Node.js:** 18+
-- **Last Updated:** 2026-01-26
+### Links
+- Documentation: https://clarity-chat.dev
+- GitHub: https://github.com/clarity-ai/clarity-chat-components
+- NPM: https://www.npmjs.com/package/@clarity-chat/react
+- Discord: https://discord.gg/clarity-chat
+
+### Support
+- GitHub Issues: https://github.com/clarity-ai/clarity-chat-components/issues
+- Documentation: /get-started/troubleshooting
+- FAQ: /get-started/faq
+
+---
+
+This documentation is optimized for AI consumption following best practices:
+- **Chunk Independence**: Each section is self-contained and can be understood in isolation
+- **Explicit Cross-References**: All links include full context about their destination
+- **No Relative References**: Avoids phrases like "see above" or "as mentioned earlier"
+- **Clear Section Boundaries**: Well-defined sections with headers
+- **Semantic Structure**: Logical organization with consistent formatting
+- **Code Examples**: Complete, runnable examples with full imports
+- **Type Information**: Comprehensive TypeScript types and interfaces
+
+**Last Updated**: 2026-01-28
+**Version**: 2.0.0

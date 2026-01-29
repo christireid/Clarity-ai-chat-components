@@ -145,7 +145,7 @@ function getStatusIcon(status: TestStatus): React.ReactNode {
           strokeWidth="2"
           className="test-icon-running"
           animate={{ rotate: 360 }}
-          transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+          transition={{ duration: durations.slower, repeat: Infinity, ease: 'linear' }}
         >
           <circle cx="12" cy="12" r="10" opacity="0.25" />
           <path d="M12 2a10 10 0 0 1 10 10" />

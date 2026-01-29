@@ -1,0 +1,1526 @@
+---
+title: Vitest Testing Guide
+description: Comprehensive guide for testing React components with Vitest, React Testing Library, and best practices for achieving high coverage
+---
+
+# Vitest Testing Guide
+
+Complete guide for writing and maintaining tests in the Clarity AI Chat Components project.
+
+## Table of Contents
+
+- [Setup & Configuration](#setup--configuration)
+- [Component Testing with React Testing Library](#component-testing-with-react-testing-library)
+- [Mocking Strategies](#mocking-strategies)
+- [Coverage Reporting & Thresholds](#coverage-reporting--thresholds)
+- [Snapshot Testing](#snapshot-testing)
+- [Testing Async Components & Suspense](#testing-async-components--suspense)
+- [CI/CD Integration](#cicd-integration)
+- [Test Examples](#test-examples)
+
+---
+
+## Setup & Configuration
+
+### Basic Vitest Configuration
+
+The project uses Vitest v4 with optimized configurations for different packages.
+
+**Main Package Configuration** (`packages/react/vitest.config.mts`):
+
+```typescript
+import { defineConfig } from 'vitest/config'
+import react from '@vitejs/plugin-react'
+import path from 'node:path'
+import { fileURLToPath } from 'node:url'
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
+
+export default defineConfig({
+  plugins: [react()],
+  test: {
+    globals: true,
+    environment: 'happy-dom',
+    setupFiles: ['./vitest.setup.ts'],
+
+    // Memory-optimized configuration
+    pool: 'vmThreads',
+    poolOptions: {
+      vmThreads: {
+        singleThread: true,
+        memoryLimit: '2048MB',
+      },
+    },
+
+    maxConcurrency: 1,
+    testTimeout: 20000,
+    isolate: false,
+
+    include: [
+      'src/**/__tests__/**/*.test.{ts,tsx}',
+      'src/**/__benchmarks__/**/*.bench.{ts,tsx}',
+    ],
+
+    exclude: [
+      'node_modules',
+      'dist',
+      '**/*.stories.tsx',
+    ],
+
+    coverage: {
+      provider: 'v8',
+      reporter: ['text', 'json', 'html'],
+      exclude: [
+        'node_modules/',
+        'dist/',
+        '**/*.stories.tsx',
+        '**/*.config.*',
+        '**/index.ts',
+      ],
+      thresholds: {
+        lines: 85,
+        functions: 85,
+        branches: 80,
+        statements: 85,
+      },
+    },
+  },
+
+  resolve: {
+    alias: {
+      '@clarity-chat/types': path.resolve(__dirname, '../types/src/index.ts'),
+      '@clarity-chat/primitives': path.resolve(__dirname, '../primitives/src/index.ts'),
+      '@': path.resolve(__dirname, './src'),
+    },
+  },
+})
+```
+
+### Test Setup File
+
+**Global Test Setup** (`packages/react/vitest.setup.ts`):
+
+```typescript
+import { expect, afterEach, vi } from 'vitest'
+import { cleanup } from '@testing-library/react'
+import * as matchers from '@testing-library/jest-dom/matchers'
+import React from 'react'
+
+// Extend Vitest's expect with jest-dom matchers
+expect.extend(matchers)
+
+// Cleanup after each test
+afterEach(() => {
+  cleanup()
+})
+
+// Mock window.scrollTo
+if (typeof window !== 'undefined') {
+  Object.defineProperty(window, 'scrollTo', {
+    writable: true,
+    value: vi.fn(),
+  })
+}
+
+// Mock framer-motion to avoid animation issues
+vi.mock('framer-motion', async () => {
+  const actual = await vi.importActual<typeof import('framer-motion')>('framer-motion')
+  return {
+    ...actual,
+    motion: new Proxy(actual.motion, {
+      get(target, prop) {
+        if (typeof prop === 'string') {
+          return ({ children, ...props }: any) => {
+            const { animate, initial, exit, transition, whileHover, whileTap, ...restProps } = props
+            return React.createElement(prop, restProps, children)
+          }
+        }
+        return target[prop as keyof typeof target]
+      },
+    }),
+  }
+})
+
+// Mock window.matchMedia
+if (typeof window !== 'undefined') {
+  Object.defineProperty(window, 'matchMedia', {
+    writable: true,
+    value: vi.fn().mockImplementation((query: string) => ({
+      matches: false,
+      media: query,
+      onchange: null,
+      addListener: vi.fn(),
+      removeListener: vi.fn(),
+      addEventListener: vi.fn(),
+      removeEventListener: vi.fn(),
+      dispatchEvent: vi.fn(),
+    })),
+  })
+}
+
+// Mock IntersectionObserver
+global.IntersectionObserver = class IntersectionObserver {
+  constructor() {}
+  disconnect() {}
+  observe() {}
+  takeRecords() { return [] }
+  unobserve() {}
+} as any
+
+// Mock ResizeObserver
+global.ResizeObserver = class ResizeObserver {
+  constructor() {}
+  disconnect() {}
+  observe() {}
+  unobserve() {}
+} as any
+
+// Mock Web APIs
+if (typeof window !== 'undefined') {
+  (window as any).SpeechRecognition = class SpeechRecognition {
+    continuous = false
+    interimResults = false
+    lang = 'en-US'
+    start() {}
+    stop() {}
+    abort() {}
+    addEventListener() {}
+    removeEventListener() {}
+  }
+  ;(window as any).webkitSpeechRecognition = (window as any).SpeechRecognition
+}
+
+// Mock localStorage and sessionStorage
+const storageMock = {
+  getItem: vi.fn(),
+  setItem: vi.fn(),
+  removeItem: vi.fn(),
+  clear: vi.fn(),
+  length: 0,
+  key: vi.fn(),
+}
+
+global.localStorage = storageMock as any
+global.sessionStorage = storageMock as any
+```
+
+---
+
+## Component Testing with React Testing Library
+
+### Basic Component Test Structure
+
+```typescript
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
+import { render, screen, waitFor } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
+import { MyComponent } from '../MyComponent'
+
+describe('MyComponent', () => {
+  // Setup user event with no delay for faster tests
+  const user = userEvent.setup({ delay: null })
+
+  beforeEach(() => {
+    vi.clearAllMocks()
+  })
+
+  afterEach(() => {
+    vi.clearAllMocks()
+  })
+
+  it('renders with required props', () => {
+    render(<MyComponent title="Test" />)
+    expect(screen.getByText('Test')).toBeInTheDocument()
+  })
+
+  it('handles user interactions', async () => {
+    const onSubmit = vi.fn()
+    render(<MyComponent onSubmit={onSubmit} />)
+
+    await user.click(screen.getByRole('button', { name: /submit/i }))
+
+    expect(onSubmit).toHaveBeenCalledTimes(1)
+  })
+})
+```
+
+### Testing Accessibility
+
+```typescript
+import { axe } from 'jest-axe'
+
+describe('Button Accessibility', () => {
+  it('has no accessibility violations', async () => {
+    const { container } = render(
+      <Button onClick={vi.fn()}>Click me</Button>
+    )
+
+    const results = await axe(container)
+    expect(results).toHaveNoViolations()
+  })
+
+  it('supports keyboard navigation', async () => {
+    const onClick = vi.fn()
+    render(<Button onClick={onClick}>Click me</Button>)
+
+    const button = screen.getByRole('button')
+    button.focus()
+
+    await user.keyboard('{Enter}')
+    expect(onClick).toHaveBeenCalled()
+  })
+
+  it('has proper ARIA attributes', () => {
+    render(
+      <Button aria-label="Delete item" disabled>
+        Delete
+      </Button>
+    )
+
+    const button = screen.getByRole('button', { name: 'Delete item' })
+    expect(button).toHaveAttribute('aria-disabled', 'true')
+  })
+})
+```
+
+### Testing Complex UI Interactions
+
+```typescript
+describe('CommandPalette - User Flows', () => {
+  it('completes search -> navigate -> select flow', async () => {
+    const onSelect = vi.fn()
+    const onClose = vi.fn()
+    const items: CommandItem[] = [
+      { id: '1', label: 'First', category: 'A', onSelect },
+      { id: '2', label: 'Second', category: 'A', onSelect },
+      { id: '3', label: 'Third', category: 'B', onSelect },
+    ]
+
+    render(
+      <CommandPalette items={items} open={true} onClose={onClose} />
+    )
+
+    // Type to filter
+    const input = screen.getByPlaceholderText('Type a command...')
+    await user.type(input, 'First')
+
+    // Wait for filter to apply
+    await waitFor(() => {
+      expect(screen.queryByText('Second')).not.toBeInTheDocument()
+    })
+
+    // Navigate with keyboard
+    fireEvent.keyDown(document, { key: 'ArrowDown' })
+    fireEvent.keyDown(document, { key: 'ArrowUp' })
+
+    // Select with Enter
+    fireEvent.keyDown(document, { key: 'Enter' })
+
+    await waitFor(() => {
+      expect(onSelect).toHaveBeenCalledTimes(1)
+      expect(onClose).toHaveBeenCalledTimes(1)
+    })
+  })
+})
+```
+
+---
+
+## Mocking Strategies
+
+### Mocking React Hooks
+
+```typescript
+// Mock custom hooks
+vi.mock('@/hooks/use-clarity-chat', () => ({
+  useClarityChat: () => ({
+    messages: [],
+    append: vi.fn(),
+    isLoading: false,
+    error: null,
+  }),
+}))
+
+// Mock with dynamic implementation
+const mockAppend = vi.fn()
+vi.mock('@/hooks/use-clarity-chat', () => ({
+  useClarityChat: () => ({
+    messages: [],
+    append: mockAppend,
+    isLoading: false,
+  }),
+}))
+
+describe('ChatWindow', () => {
+  it('sends message on submit', async () => {
+    render(<ChatWindow />)
+
+    const input = screen.getByRole('textbox')
+    await user.type(input, 'Hello')
+    await user.click(screen.getByRole('button', { name: /send/i }))
+
+    expect(mockAppend).toHaveBeenCalledWith({
+      role: 'user',
+      content: 'Hello',
+    })
+  })
+})
+```
+
+### Mocking Context Providers
+
+```typescript
+import { render } from '@testing-library/react'
+import { ThemeProvider } from '@/contexts/ThemeContext'
+
+function renderWithTheme(
+  ui: React.ReactElement,
+  { theme = 'light', ...options } = {}
+) {
+  return render(
+    <ThemeProvider value={{ theme, setTheme: vi.fn() }}>
+      {ui}
+    </ThemeProvider>,
+    options
+  )
+}
+
+describe('ThemedButton', () => {
+  it('applies light theme styles', () => {
+    renderWithTheme(<ThemedButton />, { theme: 'light' })
+    const button = screen.getByRole('button')
+    expect(button).toHaveClass('bg-white')
+  })
+
+  it('applies dark theme styles', () => {
+    renderWithTheme(<ThemedButton />, { theme: 'dark' })
+    const button = screen.getByRole('button')
+    expect(button).toHaveClass('bg-gray-900')
+  })
+})
+```
+
+### Mocking Browser APIs
+
+```typescript
+describe('AudioRecorder - Browser API Mocking', () => {
+  // Mock MediaRecorder
+  class MockMediaRecorder {
+    state: 'inactive' | 'recording' | 'paused' = 'inactive'
+    ondataavailable: ((event: any) => void) | null = null
+    onstop: ((event: any) => void) | null = null
+
+    constructor(public stream: MediaStream, public options?: any) {}
+
+    start() {
+      this.state = 'recording'
+      queueMicrotask(() => {
+        if (this.onstart) this.onstart(new Event('start'))
+      })
+    }
+
+    stop() {
+      this.state = 'inactive'
+      if (this.ondataavailable) {
+        const blob = new Blob(['audio data'], { type: 'audio/webm' })
+        this.ondataavailable({ data: blob })
+      }
+      queueMicrotask(() => {
+        if (this.onstop) this.onstop(new Event('stop'))
+      })
+    }
+
+    static isTypeSupported(mimeType: string) {
+      return ['audio/webm', 'audio/wav'].includes(mimeType)
+    }
+  }
+
+  beforeEach(() => {
+    global.MediaRecorder = MockMediaRecorder as any
+    global.navigator.mediaDevices = {
+      getUserMedia: vi.fn().mockResolvedValue(new MockMediaStream()),
+    } as any
+  })
+
+  it('starts recording when button clicked', async () => {
+    const onStart = vi.fn()
+    render(<AudioRecorder onStart={onStart} onStop={vi.fn()} />)
+
+    await user.click(screen.getByRole('button', { name: /start recording/i }))
+
+    await waitFor(() => {
+      expect(onStart).toHaveBeenCalled()
+    })
+  })
+})
+```
+
+### Mocking Network Requests
+
+```typescript
+import { rest } from 'msw'
+import { setupServer } from 'msw/node'
+
+const server = setupServer(
+  rest.post('/api/chat', (req, res, ctx) => {
+    return res(
+      ctx.json({
+        message: { role: 'assistant', content: 'Hello!' },
+      })
+    )
+  })
+)
+
+beforeAll(() => server.listen())
+afterEach(() => server.resetHandlers())
+afterAll(() => server.close())
+
+describe('ChatAPI', () => {
+  it('fetches response from API', async () => {
+    const { result } = renderHook(() => useChatAPI())
+
+    await act(async () => {
+      await result.current.sendMessage('Hi')
+    })
+
+    expect(result.current.response).toBe('Hello!')
+  })
+
+  it('handles API errors', async () => {
+    server.use(
+      rest.post('/api/chat', (req, res, ctx) => {
+        return res(ctx.status(500))
+      })
+    )
+
+    const { result } = renderHook(() => useChatAPI())
+
+    await act(async () => {
+      await result.current.sendMessage('Hi')
+    })
+
+    expect(result.current.error).toBeTruthy()
+  })
+})
+```
+
+---
+
+## Coverage Reporting & Thresholds
+
+### Running Coverage Reports
+
+```bash
+# Generate coverage report
+pnpm test --coverage
+
+# Watch mode with coverage
+pnpm test:watch --coverage
+
+# Coverage for specific file
+pnpm test src/components/Button.test.tsx --coverage
+```
+
+### Coverage Configuration
+
+```typescript
+// vitest.config.ts
+export default defineConfig({
+  test: {
+    coverage: {
+      provider: 'v8',
+      reporter: ['text', 'json', 'html', 'lcov'],
+
+      // Coverage thresholds
+      thresholds: {
+        lines: 85,
+        functions: 85,
+        branches: 80,
+        statements: 85,
+      },
+
+      // Exclude patterns
+      exclude: [
+        'node_modules/',
+        'dist/',
+        '**/*.stories.tsx',
+        '**/*.config.*',
+        '**/index.ts',
+        '**/__tests__/**',
+      ],
+
+      // Include only source files
+      include: ['src/**/*.{ts,tsx}'],
+
+      // Report uncovered lines
+      all: true,
+    },
+  },
+})
+```
+
+### Coverage Best Practices
+
+```typescript
+describe('CoverageExample', () => {
+  // Cover all branches
+  it.each([
+    ['success', 200, 'OK'],
+    ['client error', 400, 'Bad Request'],
+    ['server error', 500, 'Internal Server Error'],
+  ])('handles %s response', async (scenario, status, message) => {
+    server.use(
+      rest.get('/api/status', (req, res, ctx) => {
+        return res(ctx.status(status), ctx.json({ message }))
+      })
+    )
+
+    const result = await fetchStatus()
+    expect(result.message).toBe(message)
+  })
+
+  // Cover edge cases
+  it('handles empty response', async () => {
+    server.use(
+      rest.get('/api/status', (req, res, ctx) => {
+        return res(ctx.json({}))
+      })
+    )
+
+    const result = await fetchStatus()
+    expect(result).toEqual({})
+  })
+
+  // Cover error paths
+  it('handles network failure', async () => {
+    server.use(
+      rest.get('/api/status', (req, res, ctx) => {
+        return res.networkError('Failed to connect')
+      })
+    )
+
+    await expect(fetchStatus()).rejects.toThrow('Failed to connect')
+  })
+})
+```
+
+---
+
+## Snapshot Testing
+
+### Component Snapshot Testing
+
+```typescript
+import { render } from '@testing-library/react'
+
+describe('Button Snapshots', () => {
+  it('matches snapshot - default variant', () => {
+    const { container } = render(<Button>Click me</Button>)
+    expect(container.firstChild).toMatchSnapshot()
+  })
+
+  it('matches snapshot - all variants', () => {
+    const variants = ['primary', 'secondary', 'outline', 'ghost'] as const
+
+    variants.forEach((variant) => {
+      const { container } = render(<Button variant={variant}>Test</Button>)
+      expect(container.firstChild).toMatchSnapshot(`button-${variant}`)
+    })
+  })
+
+  it('matches snapshot - with icon', () => {
+    const { container } = render(
+      <Button icon={<Icon name="check" />}>Submit</Button>
+    )
+    expect(container.firstChild).toMatchSnapshot()
+  })
+})
+```
+
+### Inline Snapshots
+
+```typescript
+it('renders correct structure', () => {
+  const { container } = render(
+    <Card title="Test Card">
+      <p>Content</p>
+    </Card>
+  )
+
+  expect(container.innerHTML).toMatchInlineSnapshot(`
+    "<div class=\\"card\\">
+      <h2>Test Card</h2>
+      <div class=\\"card-content\\">
+        <p>Content</p>
+      </div>
+    </div>"
+  `)
+})
+```
+
+### When to Use Snapshots
+
+**Good Use Cases:**
+- Testing complex rendered output structures
+- Detecting unintended UI changes
+- Regression testing for styled components
+- API response structures
+
+**Avoid Snapshots For:**
+- Dynamic content (timestamps, IDs)
+- Frequently changing components
+- Simple boolean logic
+- Testing behavior (use assertions instead)
+
+### Snapshot Best Practices
+
+```typescript
+// Use serializers for consistent snapshots
+expect.addSnapshotSerializer({
+  test: (val) => val instanceof Date,
+  serialize: (val) => `Date(${val.toISOString()})`,
+})
+
+// Exclude dynamic values
+it('renders user profile', () => {
+  const { container } = render(
+    <UserProfile
+      id="123"
+      createdAt={new Date()}
+      name="John"
+    />
+  )
+
+  // Remove dynamic attributes before snapshot
+  const element = container.firstChild as HTMLElement
+  element.removeAttribute('data-testid')
+  element.querySelector('[data-timestamp]')?.removeAttribute('data-timestamp')
+
+  expect(element).toMatchSnapshot()
+})
+```
+
+---
+
+## Testing Async Components & Suspense
+
+### Testing Async Data Loading
+
+```typescript
+import { Suspense } from 'react'
+
+function AsyncUserProfile({ userId }: { userId: string }) {
+  const user = use(fetchUser(userId)) // React 19 'use' hook
+  return <div>{user.name}</div>
+}
+
+describe('AsyncUserProfile', () => {
+  it('shows loading state then data', async () => {
+    render(
+      <Suspense fallback={<div>Loading...</div>}>
+        <AsyncUserProfile userId="123" />
+      </Suspense>
+    )
+
+    // Initially shows fallback
+    expect(screen.getByText('Loading...')).toBeInTheDocument()
+
+    // Wait for data to load
+    await waitFor(() => {
+      expect(screen.getByText('John Doe')).toBeInTheDocument()
+    })
+
+    // Loading state should be gone
+    expect(screen.queryByText('Loading...')).not.toBeInTheDocument()
+  })
+
+  it('handles errors with error boundary', async () => {
+    server.use(
+      rest.get('/api/users/:id', (req, res, ctx) => {
+        return res(ctx.status(500))
+      })
+    )
+
+    render(
+      <ErrorBoundary fallback={<div>Error loading user</div>}>
+        <Suspense fallback={<div>Loading...</div>}>
+          <AsyncUserProfile userId="123" />
+        </Suspense>
+      </ErrorBoundary>
+    )
+
+    await waitFor(() => {
+      expect(screen.getByText('Error loading user')).toBeInTheDocument()
+    })
+  })
+})
+```
+
+### Testing Streaming Responses
+
+```typescript
+describe('StreamingChat', () => {
+  it('displays chunks as they arrive', async () => {
+    // Create a mock streaming response
+    const chunks = ['Hello', ' ', 'World', '!']
+    let chunkIndex = 0
+
+    const mockStream = new ReadableStream({
+      start(controller) {
+        const interval = setInterval(() => {
+          if (chunkIndex < chunks.length) {
+            controller.enqueue(
+              new TextEncoder().encode(chunks[chunkIndex++])
+            )
+          } else {
+            clearInterval(interval)
+            controller.close()
+          }
+        }, 100)
+      },
+    })
+
+    server.use(
+      rest.post('/api/chat', (req, res, ctx) => {
+        return res(ctx.body(mockStream))
+      })
+    )
+
+    render(<StreamingChat />)
+
+    await user.click(screen.getByRole('button', { name: /send/i }))
+
+    // Check each chunk appears
+    await waitFor(() => {
+      expect(screen.getByText(/Hello/)).toBeInTheDocument()
+    })
+
+    await waitFor(() => {
+      expect(screen.getByText(/Hello World/)).toBeInTheDocument()
+    })
+
+    await waitFor(() => {
+      expect(screen.getByText(/Hello World!/)).toBeInTheDocument()
+    })
+  })
+})
+```
+
+### Testing with React Query
+
+```typescript
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+
+function createTestQueryClient() {
+  return new QueryClient({
+    defaultOptions: {
+      queries: {
+        retry: false,
+        cacheTime: 0,
+      },
+    },
+  })
+}
+
+function renderWithQuery(ui: React.ReactElement) {
+  const queryClient = createTestQueryClient()
+  return render(
+    <QueryClientProvider client={queryClient}>
+      {ui}
+    </QueryClientProvider>
+  )
+}
+
+describe('UserList with React Query', () => {
+  it('fetches and displays users', async () => {
+    renderWithQuery(<UserList />)
+
+    expect(screen.getByText(/loading/i)).toBeInTheDocument()
+
+    await waitFor(() => {
+      expect(screen.getByText('John Doe')).toBeInTheDocument()
+    })
+  })
+
+  it('refetches on invalidation', async () => {
+    const queryClient = createTestQueryClient()
+
+    render(
+      <QueryClientProvider client={queryClient}>
+        <UserList />
+      </QueryClientProvider>
+    )
+
+    await waitFor(() => {
+      expect(screen.getByText('John Doe')).toBeInTheDocument()
+    })
+
+    // Trigger refetch
+    await act(async () => {
+      await queryClient.invalidateQueries(['users'])
+    })
+
+    // Should show loading again
+    expect(screen.getByText(/loading/i)).toBeInTheDocument()
+  })
+})
+```
+
+---
+
+## CI/CD Integration
+
+### GitHub Actions Configuration
+
+```yaml
+# .github/workflows/test.yml
+name: Test
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [20.x, 22.x]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Run tests
+        run: pnpm test --coverage
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v3
+        with:
+          files: ./coverage/coverage-final.json
+          flags: unittests
+          name: codecov-umbrella
+
+      - name: Check coverage thresholds
+        run: |
+          if [ -f coverage/coverage-summary.json ]; then
+            node scripts/check-coverage.js
+          fi
+```
+
+### Coverage Threshold Script
+
+```javascript
+// scripts/check-coverage.js
+const fs = require('fs')
+const path = require('path')
+
+const coveragePath = path.join(__dirname, '../coverage/coverage-summary.json')
+const coverage = JSON.parse(fs.readFileSync(coveragePath, 'utf-8'))
+
+const thresholds = {
+  lines: 85,
+  functions: 85,
+  branches: 80,
+  statements: 85,
+}
+
+const total = coverage.total
+
+let failed = false
+
+for (const [metric, threshold] of Object.entries(thresholds)) {
+  const actual = total[metric].pct
+
+  if (actual < threshold) {
+    console.error(`❌ ${metric} coverage ${actual}% is below threshold ${threshold}%`)
+    failed = true
+  } else {
+    console.log(`✅ ${metric} coverage ${actual}% meets threshold ${threshold}%`)
+  }
+}
+
+if (failed) {
+  process.exit(1)
+}
+
+console.log('✅ All coverage thresholds met!')
+```
+
+### Pre-commit Hook
+
+```bash
+# .husky/pre-commit
+#!/bin/sh
+. "$(dirname "$0")/_/husky.sh"
+
+# Run tests on staged files
+pnpm test:changed --passWithNoTests
+
+# Optionally run type checking
+pnpm typecheck
+```
+
+---
+
+## Test Examples
+
+### Example 1: Basic Component Test
+
+```typescript
+import { describe, it, expect, vi } from 'vitest'
+import { render, screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
+import { Button } from '../Button'
+
+describe('Button', () => {
+  const user = userEvent.setup({ delay: null })
+
+  it('renders with text', () => {
+    render(<Button>Click me</Button>)
+    expect(screen.getByRole('button', { name: 'Click me' })).toBeInTheDocument()
+  })
+
+  it('calls onClick when clicked', async () => {
+    const onClick = vi.fn()
+    render(<Button onClick={onClick}>Click me</Button>)
+
+    await user.click(screen.getByRole('button'))
+
+    expect(onClick).toHaveBeenCalledTimes(1)
+  })
+
+  it('is disabled when disabled prop is true', () => {
+    render(<Button disabled>Click me</Button>)
+    expect(screen.getByRole('button')).toBeDisabled()
+  })
+
+  it('applies variant classes correctly', () => {
+    const { rerender } = render(<Button variant="primary">Test</Button>)
+    expect(screen.getByRole('button')).toHaveClass('bg-primary')
+
+    rerender(<Button variant="secondary">Test</Button>)
+    expect(screen.getByRole('button')).toHaveClass('bg-secondary')
+  })
+})
+```
+
+### Example 2: Testing Custom Hooks
+
+```typescript
+import { renderHook, act, waitFor } from '@testing-library/react'
+import { describe, it, expect, vi } from 'vitest'
+import { useCommandPalette } from '../use-command-palette'
+
+describe('useCommandPalette', () => {
+  it('starts closed by default', () => {
+    const { result } = renderHook(() => useCommandPalette())
+    expect(result.current.isOpen).toBe(false)
+  })
+
+  it('opens when open() is called', () => {
+    const { result } = renderHook(() => useCommandPalette())
+
+    act(() => {
+      result.current.open()
+    })
+
+    expect(result.current.isOpen).toBe(true)
+  })
+
+  it('calls onOpen callback when opening', async () => {
+    const onOpen = vi.fn()
+    const { result } = renderHook(() => useCommandPalette({ onOpen }))
+
+    act(() => {
+      result.current.open()
+    })
+
+    await waitFor(() => {
+      expect(onOpen).toHaveBeenCalledTimes(1)
+    })
+  })
+
+  it('toggles on keyboard shortcut', () => {
+    const { result } = renderHook(() => useCommandPalette())
+
+    expect(result.current.isOpen).toBe(false)
+
+    act(() => {
+      const event = new KeyboardEvent('keydown', {
+        key: 'k',
+        ctrlKey: true,
+        bubbles: true,
+      })
+      window.dispatchEvent(event)
+    })
+
+    expect(result.current.isOpen).toBe(true)
+  })
+})
+```
+
+### Example 3: Testing with Context
+
+```typescript
+import { render, screen } from '@testing-library/react'
+import { ThemeProvider } from '../contexts/ThemeContext'
+import { ThemedCard } from '../ThemedCard'
+
+function renderWithTheme(
+  ui: React.ReactElement,
+  theme: 'light' | 'dark' = 'light'
+) {
+  return render(
+    <ThemeProvider value={{ theme, setTheme: vi.fn() }}>
+      {ui}
+    </ThemeProvider>
+  )
+}
+
+describe('ThemedCard', () => {
+  it('applies light theme styles', () => {
+    renderWithTheme(<ThemedCard title="Test" />, 'light')
+    const card = screen.getByText('Test').closest('div')
+    expect(card).toHaveClass('bg-white', 'text-gray-900')
+  })
+
+  it('applies dark theme styles', () => {
+    renderWithTheme(<ThemedCard title="Test" />, 'dark')
+    const card = screen.getByText('Test').closest('div')
+    expect(card).toHaveClass('bg-gray-900', 'text-white')
+  })
+})
+```
+
+### Example 4: Testing Async Operations
+
+```typescript
+import { render, screen, waitFor } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
+import { UserProfile } from '../UserProfile'
+
+describe('UserProfile - Async Loading', () => {
+  const user = userEvent.setup({ delay: null })
+
+  it('loads and displays user data', async () => {
+    render(<UserProfile userId="123" />)
+
+    // Initially shows loading state
+    expect(screen.getByText(/loading/i)).toBeInTheDocument()
+
+    // Wait for data to load
+    await waitFor(() => {
+      expect(screen.getByText('John Doe')).toBeInTheDocument()
+    })
+
+    // Loading indicator should be gone
+    expect(screen.queryByText(/loading/i)).not.toBeInTheDocument()
+  })
+
+  it('handles error states', async () => {
+    server.use(
+      rest.get('/api/users/:id', (req, res, ctx) => {
+        return res(ctx.status(500), ctx.json({ error: 'Server error' }))
+      })
+    )
+
+    render(<UserProfile userId="123" />)
+
+    await waitFor(() => {
+      expect(screen.getByText(/error loading user/i)).toBeInTheDocument()
+    })
+  })
+
+  it('retries failed requests', async () => {
+    let attempts = 0
+
+    server.use(
+      rest.get('/api/users/:id', (req, res, ctx) => {
+        attempts++
+        if (attempts < 2) {
+          return res(ctx.status(500))
+        }
+        return res(ctx.json({ id: '123', name: 'John Doe' }))
+      })
+    )
+
+    render(<UserProfile userId="123" />)
+
+    await user.click(screen.getByRole('button', { name: /retry/i }))
+
+    await waitFor(() => {
+      expect(screen.getByText('John Doe')).toBeInTheDocument()
+    })
+
+    expect(attempts).toBe(2)
+  })
+})
+```
+
+### Example 5: Testing Forms
+
+```typescript
+import { render, screen, waitFor } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
+import { LoginForm } from '../LoginForm'
+
+describe('LoginForm', () => {
+  const user = userEvent.setup({ delay: null })
+
+  it('validates required fields', async () => {
+    render(<LoginForm onSubmit={vi.fn()} />)
+
+    await user.click(screen.getByRole('button', { name: /login/i }))
+
+    expect(screen.getByText(/email is required/i)).toBeInTheDocument()
+    expect(screen.getByText(/password is required/i)).toBeInTheDocument()
+  })
+
+  it('validates email format', async () => {
+    render(<LoginForm onSubmit={vi.fn()} />)
+
+    await user.type(screen.getByLabelText(/email/i), 'invalid-email')
+    await user.click(screen.getByRole('button', { name: /login/i }))
+
+    expect(screen.getByText(/invalid email format/i)).toBeInTheDocument()
+  })
+
+  it('submits form with valid data', async () => {
+    const onSubmit = vi.fn()
+    render(<LoginForm onSubmit={onSubmit} />)
+
+    await user.type(screen.getByLabelText(/email/i), 'test@example.com')
+    await user.type(screen.getByLabelText(/password/i), 'password123')
+    await user.click(screen.getByRole('button', { name: /login/i }))
+
+    await waitFor(() => {
+      expect(onSubmit).toHaveBeenCalledWith({
+        email: 'test@example.com',
+        password: 'password123',
+      })
+    })
+  })
+
+  it('shows loading state during submission', async () => {
+    const onSubmit = vi.fn(() => new Promise(resolve => setTimeout(resolve, 100)))
+    render(<LoginForm onSubmit={onSubmit} />)
+
+    await user.type(screen.getByLabelText(/email/i), 'test@example.com')
+    await user.type(screen.getByLabelText(/password/i), 'password123')
+    await user.click(screen.getByRole('button', { name: /login/i }))
+
+    expect(screen.getByRole('button', { name: /logging in/i })).toBeDisabled()
+
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: /login/i })).toBeEnabled()
+    })
+  })
+})
+```
+
+### Example 6: Testing Browser APIs
+
+```typescript
+describe('AudioRecorder - MediaRecorder API', () => {
+  class MockMediaStream {
+    active = true
+    id = 'mock-stream'
+    private tracks = [{
+      stop: vi.fn(),
+      kind: 'audio',
+      enabled: true,
+    }]
+
+    getTracks() { return this.tracks }
+    getAudioTracks() { return this.tracks }
+  }
+
+  class MockMediaRecorder {
+    state: 'inactive' | 'recording' = 'inactive'
+    ondataavailable: ((event: any) => void) | null = null
+    onstop: ((event: any) => void) | null = null
+
+    start() {
+      this.state = 'recording'
+      queueMicrotask(() => {
+        if (this.onstart) this.onstart(new Event('start'))
+      })
+    }
+
+    stop() {
+      this.state = 'inactive'
+      if (this.ondataavailable) {
+        const blob = new Blob(['audio'], { type: 'audio/webm' })
+        this.ondataavailable({ data: blob })
+      }
+      queueMicrotask(() => {
+        if (this.onstop) this.onstop(new Event('stop'))
+      })
+    }
+  }
+
+  beforeEach(() => {
+    global.MediaRecorder = MockMediaRecorder as any
+    global.navigator.mediaDevices = {
+      getUserMedia: vi.fn().mockResolvedValue(new MockMediaStream()),
+    } as any
+  })
+
+  it('starts recording on button click', async () => {
+    const onStart = vi.fn()
+    render(<AudioRecorder onStart={onStart} onStop={vi.fn()} />)
+
+    await user.click(screen.getByRole('button', { name: /start/i }))
+
+    await waitFor(() => {
+      expect(onStart).toHaveBeenCalled()
+      expect(screen.getByRole('button', { name: /stop/i })).toBeInTheDocument()
+    })
+  })
+
+  it('stops recording and provides audio blob', async () => {
+    const onStop = vi.fn()
+    render(<AudioRecorder onStart={vi.fn()} onStop={onStop} />)
+
+    await user.click(screen.getByRole('button', { name: /start/i }))
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: /stop/i })).toBeInTheDocument()
+    })
+
+    await user.click(screen.getByRole('button', { name: /stop/i }))
+
+    await waitFor(() => {
+      expect(onStop).toHaveBeenCalledWith(expect.any(Blob))
+    })
+  })
+})
+```
+
+### Example 7: Testing Event Handlers
+
+```typescript
+describe('MessageList - Event Handling', () => {
+  it('handles message selection', async () => {
+    const onSelect = vi.fn()
+    const messages = [
+      { id: '1', content: 'First message' },
+      { id: '2', content: 'Second message' },
+    ]
+
+    render(<MessageList messages={messages} onSelect={onSelect} />)
+
+    await user.click(screen.getByText('First message'))
+
+    expect(onSelect).toHaveBeenCalledWith('1')
+  })
+
+  it('handles keyboard navigation', () => {
+    const onSelect = vi.fn()
+    const messages = [
+      { id: '1', content: 'First message' },
+      { id: '2', content: 'Second message' },
+    ]
+
+    render(<MessageList messages={messages} onSelect={onSelect} />)
+
+    const firstMessage = screen.getByText('First message')
+    firstMessage.focus()
+
+    fireEvent.keyDown(firstMessage, { key: 'ArrowDown' })
+    fireEvent.keyDown(document.activeElement!, { key: 'Enter' })
+
+    expect(onSelect).toHaveBeenCalledWith('2')
+  })
+
+  it('handles rapid clicks', async () => {
+    const onSelect = vi.fn()
+    const messages = [{ id: '1', content: 'Message' }]
+
+    render(<MessageList messages={messages} onSelect={onSelect} />)
+
+    const message = screen.getByText('Message')
+
+    // Rapid clicks
+    await user.click(message)
+    await user.click(message)
+    await user.click(message)
+
+    // Should debounce or handle appropriately
+    expect(onSelect).toHaveBeenCalled()
+  })
+})
+```
+
+### Example 8: Integration Test
+
+```typescript
+describe('ChatWindow Integration', () => {
+  it('completes full chat flow', async () => {
+    const user = userEvent.setup({ delay: null })
+
+    render(
+      <ChatProvider>
+        <ChatWindow />
+      </ChatProvider>
+    )
+
+    // Type a message
+    const input = screen.getByRole('textbox', { name: /message/i })
+    await user.type(input, 'Hello AI')
+
+    // Send message
+    await user.click(screen.getByRole('button', { name: /send/i }))
+
+    // User message appears
+    await waitFor(() => {
+      expect(screen.getByText('Hello AI')).toBeInTheDocument()
+    })
+
+    // AI response appears
+    await waitFor(() => {
+      expect(screen.getByText(/hi/i)).toBeInTheDocument()
+    }, { timeout: 3000 })
+
+    // Input is cleared
+    expect(input).toHaveValue('')
+
+    // Can send another message
+    await user.type(input, 'How are you?')
+    await user.click(screen.getByRole('button', { name: /send/i }))
+
+    await waitFor(() => {
+      expect(screen.getByText('How are you?')).toBeInTheDocument()
+    })
+  })
+
+  it('handles network errors gracefully', async () => {
+    server.use(
+      rest.post('/api/chat', (req, res, ctx) => {
+        return res(ctx.status(500))
+      })
+    )
+
+    render(
+      <ChatProvider>
+        <ChatWindow />
+      </ChatProvider>
+    )
+
+    await user.type(screen.getByRole('textbox'), 'Test')
+    await user.click(screen.getByRole('button', { name: /send/i }))
+
+    await waitFor(() => {
+      expect(screen.getByText(/error sending message/i)).toBeInTheDocument()
+    })
+
+    // Retry button appears
+    expect(screen.getByRole('button', { name: /retry/i })).toBeInTheDocument()
+  })
+})
+```
+
+---
+
+## Best Practices
+
+### General Testing Principles
+
+1. **Test behavior, not implementation** - Focus on what the component does, not how it does it
+2. **Write deterministic tests** - Tests should always produce the same result
+3. **Keep tests focused** - One test should verify one thing
+4. **Use meaningful test descriptions** - Test names should clearly state what is being tested
+5. **Avoid testing internal state** - Test public API and rendered output
+6. **Mock external dependencies** - Keep tests fast and isolated
+
+### Performance Tips
+
+```typescript
+// Use userEvent.setup({ delay: null }) for faster tests
+const user = userEvent.setup({ delay: null })
+
+// Use queueMicrotask instead of setTimeout in mocks
+queueMicrotask(() => callback())
+
+// Disable animations in tests
+vi.mock('framer-motion', ...)
+
+// Use happy-dom instead of jsdom for faster tests
+environment: 'happy-dom'
+```
+
+### Common Pitfalls
+
+```typescript
+// ❌ Bad: Testing implementation details
+expect(component.state.count).toBe(1)
+
+// ✅ Good: Testing rendered output
+expect(screen.getByText('Count: 1')).toBeInTheDocument()
+
+// ❌ Bad: Not waiting for async updates
+user.click(button)
+expect(onSubmit).toHaveBeenCalled() // May fail
+
+// ✅ Good: Wait for async operations
+await user.click(button)
+await waitFor(() => {
+  expect(onSubmit).toHaveBeenCalled()
+})
+
+// ❌ Bad: Not cleaning up side effects
+it('test', () => {
+  const spy = vi.spyOn(console, 'log')
+  // ... test code
+  // Spy is never restored
+})
+
+// ✅ Good: Restore mocks after test
+it('test', () => {
+  const spy = vi.spyOn(console, 'log')
+  // ... test code
+  spy.mockRestore()
+})
+```
+
+---
+
+## Resources
+
+- [Vitest Documentation](https://vitest.dev/)
+- [React Testing Library](https://testing-library.com/react)
+- [Testing Library Best Practices](https://kentcdodds.com/blog/common-mistakes-with-react-testing-library)
+- [MSW (Mock Service Worker)](https://mswjs.io/)
+- [jest-axe Accessibility Testing](https://github.com/nickcolley/jest-axe)
+
+---
+
+## Summary
+
+This guide covers comprehensive testing strategies for React components using Vitest:
+
+- **Setup**: Global configuration, test utilities, and mocking infrastructure
+- **Component Testing**: Best practices for testing UI components with React Testing Library
+- **Mocking**: Strategies for mocking hooks, contexts, APIs, and browser features
+- **Coverage**: Configuration and best practices for achieving 85%+ coverage
+- **Snapshots**: When and how to use snapshot testing effectively
+- **Async Testing**: Patterns for testing async operations, Suspense, and streaming
+- **CI/CD**: Integration with GitHub Actions and automated testing pipelines
+- **Examples**: 8+ comprehensive test examples covering all scenarios
+
+By following these patterns and practices, you can build a robust, maintainable test suite that gives confidence in your code quality and prevents regressions.

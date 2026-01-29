@@ -444,7 +444,7 @@ export function AudioRecorder({
     }
     // stopRecording and stopMediaStream intentionally omitted to avoid circular dependencies
     // They are managed via refs and called directly where needed
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+     
   }, [onResume, onDurationChange, maxDuration, showWaveform, showAmplitudeMeter, updateAmplitude])
 
   // Stop media stream
@@ -490,7 +490,7 @@ export function AudioRecorder({
       }
     }
     // Only cleanup on unmount - no dependencies needed
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+     
   }, [])
 
   // Auto-start if enabled

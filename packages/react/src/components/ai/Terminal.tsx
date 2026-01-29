@@ -221,7 +221,7 @@ function StreamingCursor() {
       className="terminal-cursor"
       animate={{ opacity: [1, 0] }}
       transition={{
-        duration: 0.8,
+        duration: durations.slower,
         repeat: Infinity,
         repeatType: 'reverse',
       }}

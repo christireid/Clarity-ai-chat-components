@@ -279,7 +279,7 @@ function StatItem({
   const [displayValue, setDisplayValue] = React.useState(stat.value)
 
   // Animate numeric value changes
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+   
   React.useEffect(() => {
     if (!animateValues || prefersReducedMotion || typeof stat.value !== 'number') {
       setDisplayValue(stat.value)
