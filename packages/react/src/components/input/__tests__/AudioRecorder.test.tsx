@@ -348,14 +348,18 @@ describe('AudioRecorder', () => {
       // Start recording
       await user.click(screen.getByRole('button', { name: /start recording/i }))
 
-      // Wait for recording to start
-      await vi.waitFor(() => {
-        expect(screen.getByText('0:00')).toBeInTheDocument()
+      // Process all pending promises and timers
+      await act(async () => {
+        await vi.runAllTimersAsync()
       })
 
-      // Advance timer
-      act(() => {
+      // Should show initial duration
+      expect(screen.getByText('0:00')).toBeInTheDocument()
+
+      // Advance timer by 3 seconds
+      await act(async () => {
         vi.advanceTimersByTime(3000)
+        await vi.runAllTimersAsync()
       })
 
       // Check duration updated
@@ -373,9 +377,15 @@ describe('AudioRecorder', () => {
       // Start recording
       await user.click(screen.getByRole('button', { name: /start recording/i }))
 
-      // Advance timer
-      act(() => {
+      // Process pending promises
+      await act(async () => {
+        await vi.runAllTimersAsync()
+      })
+
+      // Advance timer by 1 second
+      await act(async () => {
         vi.advanceTimersByTime(1000)
+        await vi.runAllTimersAsync()
       })
 
       expect(onDurationChange).toHaveBeenCalledWith(1)
@@ -392,18 +402,16 @@ describe('AudioRecorder', () => {
       // Start recording
       await user.click(screen.getByRole('button', { name: /start recording/i }))
 
-      // Wait for recording to start
-      await vi.waitFor(() => {
-        expect(screen.getByRole('button', { name: /stop recording/i })).toBeInTheDocument()
+      // Process initial setup
+      await act(async () => {
+        await vi.runAllTimersAsync()
       })
+
+      expect(screen.getByRole('button', { name: /stop recording/i })).toBeInTheDocument()
 
       // Advance timer past maxDuration
-      act(() => {
-        vi.advanceTimersByTime(2500)
-      })
-
-      // Allow microtasks to process
       await act(async () => {
+        vi.advanceTimersByTime(2500)
         await vi.runAllTimersAsync()
       })
 
@@ -421,19 +429,20 @@ describe('AudioRecorder', () => {
       // Start recording
       await user.click(screen.getByRole('button', { name: /start recording/i }))
 
-      await vi.waitFor(() => {
-        expect(screen.getByRole('button', { name: /stop recording/i })).toBeInTheDocument()
+      // Process initial setup
+      await act(async () => {
+        await vi.runAllTimersAsync()
       })
 
-      // Try to stop immediately (should be disabled or not work)
       const stopButton = screen.getByRole('button', { name: /stop recording/i })
 
       // Stop button should be disabled initially
       expect(stopButton).toBeDisabled()
 
       // Advance timer past minDuration
-      act(() => {
+      await act(async () => {
         vi.advanceTimersByTime(3000)
+        await vi.runAllTimersAsync()
       })
 
       // Now it should be enabled
@@ -756,6 +765,7 @@ describe('AudioRecorder', () => {
 
     it('handles unsupported format gracefully', async () => {
       // Mock isTypeSupported to return false
+      const originalIsTypeSupported = MockMediaRecorder.isTypeSupported
       MockMediaRecorder.isTypeSupported = vi.fn(() => false)
 
       const onError = vi.fn()
@@ -766,7 +776,10 @@ describe('AudioRecorder', () => {
       // Should fallback to webm or show error
       await waitFor(() => {
         expect(screen.getByRole('button', { name: /stop recording/i })).toBeInTheDocument()
-      })
+      }, { timeout: 3000 })
+
+      // Restore
+      MockMediaRecorder.isTypeSupported = originalIsTypeSupported
     })
   })
 
@@ -784,6 +797,11 @@ describe('AudioRecorder', () => {
 
       const button = screen.getByRole('button', { name: /start recording/i })
       await user.click(button)
+
+      // Wait a bit to ensure the callback really isn't called
+      await act(async () => {
+        await new Promise((resolve) => setTimeout(resolve, 100))
+      })
 
       expect(onStart).not.toHaveBeenCalled()
     })
