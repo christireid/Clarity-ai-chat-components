@@ -1,0 +1,1302 @@
+---
+title: 'Tool Execution Lifecycle Guide'
+description: 'Complete guide to tool execution lifecycle from registration through invocation to completion, with validation, state management, error handling, and async patterns'
+category: 'Tool Calling'
+---
+
+# Tool Execution Lifecycle Guide
+
+Master the complete tool execution lifecycle in Clarity Chat. Learn how tools progress from registration through discovery, validation, execution, and completion with comprehensive state management, error handling, and async execution patterns.
+
+## Overview
+
+The tool execution lifecycle provides a predictable, debuggable flow for tool operations with explicit states, events, and transitions. Understanding this lifecycle is essential for building reliable, production-ready tool-calling features.
+
+This guide covers:
+
+- **Registration & Discovery**: Register tools and make them discoverable
+- **Pre-Execution Validation**: Validate tool definitions and arguments
+- **Execution Context**: Manage state throughout execution
+- **Post-Execution Hooks**: React to execution events
+- **Error Handling**: Handle errors at each lifecycle stage
+- **Async Patterns**: Execute tools concurrently with rate limiting
+- **Complete Examples**: End-to-end lifecycle implementations
+
+## Lifecycle Flow
+
+The tool execution lifecycle consists of distinct phases with well-defined transitions:
+
+```
+Registration → Discovery → Validation → Execution → Completion
+                              ↓             ↓           ↓
+                           [Error]      [Error]    [Error]
+```
+
+### Detailed State Machine
+
+```
+requested → pending_approval → approved → executing → completed
+               ↓                              ↓           ↓
+            rejected                      timeout     failed
+                                             ↓           ↓
+                                         cancelled    cached
+```
+
+**Valid State Transitions**:
+
+- `idle` → `requested`: Tool call initiated
+- `requested` → `pending_approval`: Approval required
+- `pending_approval` → `approved`: User approved
+- `pending_approval` → `rejected`: User rejected
+- `approved` → `executing`: Execution started
+- `executing` → `completed`: Successful completion
+- `executing` → `failed`: Execution error
+- `executing` → `timeout`: Execution timeout
+- `executing` → `cancelled`: User cancelled
+- `executing` → `cached`: Result from cache
+
+## Phase 1: Registration & Discovery
+
+Tools must be registered before they can be discovered and executed.
+
+### Tool Definition
+
+The canonical tool definition format from `@clarity-chat/react`:
+
+```typescript
+import type { ToolDefinition } from '@clarity-chat/react'
+
+interface WeatherArgs {
+  location: string
+  units?: 'celsius' | 'fahrenheit'
+}
+
+interface WeatherResult {
+  temperature: number
+  conditions: string
+  humidity: number
+}
+
+const weatherTool: ToolDefinition<WeatherArgs, WeatherResult> = {
+  // Identification
+  name: 'get_weather',
+  description: 'Get current weather conditions for a location',
+  displayName: 'Weather Lookup',
+
+  // Parameter schema (JSON Schema)
+  parameters: {
+    type: 'object',
+    properties: {
+      location: {
+        type: 'string',
+        description: 'City and state, e.g. San Francisco, CA'
+      },
+      units: {
+        type: 'string',
+        enum: ['celsius', 'fahrenheit'],
+        default: 'fahrenheit',
+        description: 'Temperature units'
+      }
+    },
+    required: ['location']
+  },
+
+  // Execution function
+  execute: async (args, context) => {
+    console.log(`Fetching weather for ${args.location}...`)
+
+    // Simulate API call
+    const response = await fetch(
+      `https://api.weather.com/conditions?location=${args.location}&units=${args.units}`
+    )
+
+    if (!response.ok) {
+      throw new Error(`Weather API error: ${response.status}`)
+    }
+
+    const data = await response.json()
+
+    return {
+      temperature: data.temp,
+      conditions: data.conditions,
+      humidity: data.humidity
+    }
+  },
+
+  // Security & Behavior
+  requiresApproval: true,  // Safe default for external APIs
+  cacheable: true,          // Results can be cached
+  cacheTtl: 300000,        // 5 minutes
+  timeout: 10000,          // 10 second timeout
+  parallelizable: true,    // Can run in parallel
+
+  // Discovery & UX
+  category: 'information',
+  tags: ['weather', 'api', 'data'],
+  icon: '🌤️',
+  color: 'blue',
+
+  // Lifecycle hooks (optional)
+  hooks: {
+    onBefore: async (args, context) => {
+      console.log(`[${context.callId}] Validating location...`)
+      // Pre-execution logic
+    },
+    onAfter: async (result, args, context) => {
+      console.log(`[${context.callId}] Weather fetched successfully`)
+      // Post-execution analytics
+    },
+    onError: async (error, args, context) => {
+      console.error(`[${context.callId}] Weather fetch failed:`, error)
+      // Error logging
+    }
+  }
+}
+```
+
+### Registration
+
+Register tools using the `ToolRegistry`:
+
+```typescript
+import { ToolRegistry } from '@clarity-chat/react'
+
+// Create registry instance
+const registry = new ToolRegistry()
+
+// Register single tool
+registry.register(weatherTool)
+
+// Register multiple tools
+const calculatorTool: ToolDefinition = { /* ... */ }
+const searchTool: ToolDefinition = { /* ... */ }
+
+registry.registerMany([
+  calculatorTool,
+  searchTool
+])
+
+// Check registration
+console.log(registry.has('get_weather')) // true
+console.log(registry.getAll().length)    // 3
+```
+
+### Discovery
+
+Query registered tools by name, category, or tags:
+
+```typescript
+// Get by name
+const tool = registry.get('get_weather')
+
+// Get by category
+const infoTools = registry.getByCategory('information')
+console.log(infoTools.map(t => t.name))
+// ['get_weather', 'search_web', 'lookup_data']
+
+// Get by tag
+const apiTools = registry.getByTag('api')
+console.log(apiTools.map(t => t.name))
+// ['get_weather', 'search_web']
+
+// Search
+const weatherTools = registry.search('weather')
+console.log(weatherTools.map(t => t.name))
+// ['get_weather'] (sorted by relevance)
+
+// Get statistics
+const stats = registry.getStats()
+console.log(stats)
+// {
+//   totalTools: 3,
+//   byCategory: { information: 3 },
+//   byTag: { weather: 1, api: 2, data: 1 }
+// }
+```
+
+### Registry Events
+
+Subscribe to registry changes:
+
+```typescript
+// Subscribe to events
+const unsubscribe = registry.on((event) => {
+  console.log(`Tool ${event.type}:`, event.toolName)
+
+  if (event.type === 'registered') {
+    console.log('New tool available!')
+  }
+})
+
+// Trigger event
+registry.register(newTool)
+// Logs: "Tool registered: new_tool"
+// Logs: "New tool available!"
+
+// Cleanup
+unsubscribe()
+```
+
+## Phase 2: Pre-Execution Validation
+
+Before execution, tools undergo strict validation to ensure safety and correctness.
+
+### Tool Definition Validation
+
+All tools are validated on registration:
+
+```typescript
+import { validateToolDefinition } from '@clarity-chat/react'
+
+const invalidTool = {
+  name: '123-invalid', // Invalid: must start with letter
+  description: '',     // Invalid: empty description
+  parameters: {
+    type: 'object',
+    properties: {}     // Valid but no parameters
+  },
+  execute: async () => ({ result: 'ok' })
+}
+
+try {
+  validateToolDefinition(invalidTool)
+} catch (error) {
+  console.error(error.message)
+  // "Invalid tool name: "123-invalid". Must be alphanumeric with underscores."
+}
+```
+
+**Validation Rules**:
+
+1. **Name**: Must match `/^[a-zA-Z_][a-zA-Z0-9_.]*$/`
+2. **Description**: Non-empty string
+3. **Parameters**: Valid JSON Schema object
+4. **Execute**: Async function
+5. **Properties**: Required fields present
+
+### Argument Validation
+
+Arguments are validated against the parameter schema:
+
+```typescript
+import { validateToolArguments } from '@clarity-chat/react'
+
+// Valid arguments
+const validArgs = {
+  location: 'San Francisco, CA',
+  units: 'celsius'
+}
+
+validateToolArguments(weatherTool, validArgs)
+// No error - validation passed
+
+// Invalid arguments
+const invalidArgs = {
+  location: 123,           // Wrong type
+  units: 'kelvin',        // Not in enum
+  extra: 'not allowed'    // Extra property
+}
+
+try {
+  validateToolArguments(weatherTool, invalidArgs)
+} catch (error) {
+  console.error(error.message)
+  // "Tool argument validation failed for get_weather"
+
+  console.error(error.details)
+  // [
+  //   { path: ['location'], message: 'Expected string, received number' },
+  //   { path: ['units'], message: 'Invalid enum value. Expected celsius | fahrenheit' }
+  // ]
+}
+```
+
+### Implementation Validation
+
+Security checks for tool implementations:
+
+```typescript
+import { validateToolImplementationStrict } from '@clarity-chat/react'
+
+const unsafeTool: ToolDefinition = {
+  name: 'dangerous_tool',
+  description: 'Potentially unsafe tool',
+  parameters: {
+    type: 'object',
+    properties: {
+      command: { type: 'string' }
+    }
+  },
+  execute: async (args) => {
+    // Dangerous: executes arbitrary commands
+    return await exec(args.command)
+  },
+  requiresApproval: false  // RED FLAG: unsafe without approval
+}
+
+try {
+  validateToolImplementationStrict(unsafeTool)
+} catch (error) {
+  console.error(error.message)
+  // Warning: Tool performs dangerous operations but requiresApproval is false
+}
+```
+
+## Phase 3: Execution Context & State Management
+
+The execution context provides state and metadata throughout the lifecycle.
+
+### Lifecycle Manager
+
+Manage tool execution state with `ToolLifecycleManager`:
+
+```typescript
+import { ToolLifecycleManager } from '@clarity-chat/react'
+
+// Create lifecycle manager
+const lifecycle = new ToolLifecycleManager({
+  auditLog: {
+    enabled: true,
+    maxEntries: 1000,
+    includeSensitiveData: false
+  }
+})
+
+// Subscribe to lifecycle events
+lifecycle.on('tool_requested', (event) => {
+  console.log(`Tool requested: ${event.call.toolName}`)
+  console.log(`Call ID: ${event.call.id}`)
+})
+
+lifecycle.on('tool_executing', (event) => {
+  console.log(`Tool executing: ${event.call.toolName}`)
+  updateUI({ status: 'executing', callId: event.call.id })
+})
+
+lifecycle.on('tool_completed', (event) => {
+  console.log(`Tool completed in ${event.duration}ms`)
+  console.log('Result:', event.result)
+  updateUI({ status: 'completed', result: event.result })
+})
+
+lifecycle.on('tool_failed', (event) => {
+  console.error(`Tool failed: ${event.error.message}`)
+  updateUI({ status: 'failed', error: event.error })
+})
+
+// Create tool call
+const call = lifecycle.createToolCall(
+  'get_weather',
+  { location: 'San Francisco, CA' },
+  {
+    userId: 'user-123',
+    sessionId: 'session-abc',
+    metadata: { requestedAt: Date.now() }
+  }
+)
+
+console.log(call)
+// {
+//   id: 'call_xyz789',
+//   toolName: 'get_weather',
+//   args: { location: 'San Francisco, CA' },
+//   status: 'requested',
+//   context: {
+//     callId: 'call_xyz789',
+//     startedAt: 1706543210000,
+//     userId: 'user-123',
+//     sessionId: 'session-abc',
+//     metadata: { requestedAt: 1706543210000 }
+//   },
+//   timestamps: {
+//     requested: 1706543210000
+//   }
+// }
+```
+
+### State Transitions
+
+Progress through lifecycle states:
+
+```typescript
+// Transition to pending approval
+lifecycle.markPendingApproval(call.id, weatherTool)
+// Emits: tool_pending_approval event
+
+// User approves
+lifecycle.approve(call.id, 'user-123')
+// Emits: tool_approved event
+// call.status = 'approved'
+// call.timestamps.approved = 1706543215000
+
+// Start execution
+lifecycle.markExecuting(call.id)
+// Emits: tool_executing event
+// call.status = 'executing'
+// call.timestamps.executionStarted = 1706543216000
+
+// Update progress (for long-running tools)
+lifecycle.updateProgress(call.id, 50, 'Processing data...')
+// Emits: tool_progress event
+// call.progress = 50
+// call.statusMessage = 'Processing data...'
+
+// Complete execution
+const result = { temperature: 72, conditions: 'Sunny', humidity: 45 }
+lifecycle.complete(call.id, result)
+// Emits: tool_completed event
+// call.status = 'completed'
+// call.result = { ... }
+// call.timestamps.executionEnded = 1706543220000
+// call.duration = 4000 (ms)
+```
+
+### Error States
+
+Handle execution failures:
+
+```typescript
+// Execution failed
+const error = new Error('Weather API unavailable')
+lifecycle.fail(call.id, error, 'API_UNAVAILABLE')
+// Emits: tool_failed event
+// call.status = 'failed'
+// call.error = { message: '...', code: 'API_UNAVAILABLE' }
+
+// Execution timeout
+lifecycle.timeout(call.id, 10000)
+// Emits: tool_timeout event
+// call.status = 'timeout'
+
+// User cancelled
+lifecycle.cancel(call.id, 'User requested cancellation')
+// Emits: tool_cancelled event
+// call.status = 'cancelled'
+```
+
+### Querying State
+
+Retrieve call state at any time:
+
+```typescript
+// Get specific call
+const call = lifecycle.getCall('call_xyz789')
+console.log(call.status)        // 'completed'
+console.log(call.duration)      // 4000
+console.log(call.result)        // { temperature: 72, ... }
+
+// Get all calls
+const allCalls = lifecycle.getAllCalls()
+console.log(allCalls.length)    // 10
+
+// Get by status
+const executing = lifecycle.getCallsByStatus('executing')
+const completed = lifecycle.getCallsByStatus('completed')
+const failed = lifecycle.getCallsByStatus('failed')
+
+console.log({
+  executing: executing.length,  // 2
+  completed: completed.length,  // 7
+  failed: failed.length         // 1
+})
+```
+
+## Phase 4: Tool Execution
+
+Execute tools with timeout protection, caching, and rate limiting.
+
+### Basic Execution
+
+Execute tools using the `ToolExecutor`:
+
+```typescript
+import { ToolExecutor } from '@clarity-chat/react'
+
+// Create executor
+const executor = new ToolExecutor(lifecycle, {
+  enableRateLimit: true,
+  maxRequestsPerWindow: 100,
+  rateLimitWindowMs: 60000,
+  enableConcurrencyLimit: true,
+  maxConcurrentExecutions: 10,
+  cache: {
+    enabled: true,
+    maxSize: 1000
+  }
+})
+
+// Execute tool
+const result = await executor.execute(
+  weatherTool,
+  { location: 'San Francisco, CA' },
+  {
+    timeout: 5000,           // 5 second timeout
+    signal: abortController.signal,
+    context: {
+      userId: 'user-123',
+      sessionId: 'session-abc'
+    }
+  }
+)
+
+console.log(result)
+// {
+//   result: { temperature: 72, conditions: 'Sunny', humidity: 45 },
+//   duration: 850,          // Execution time in ms
+//   cached: false           // Result from cache?
+// }
+```
+
+### Execution with Timeout
+
+Automatic timeout protection:
+
+```typescript
+const longRunningTool: ToolDefinition = {
+  name: 'process_data',
+  description: 'Process large dataset',
+  parameters: {
+    type: 'object',
+    properties: {
+      datasetId: { type: 'string' }
+    },
+    required: ['datasetId']
+  },
+  execute: async (args, context) => {
+    // Simulate long processing
+    await new Promise(resolve => setTimeout(resolve, 15000))
+    return { processed: true }
+  },
+  timeout: 10000  // 10 second timeout
+}
+
+try {
+  const result = await executor.execute(
+    longRunningTool,
+    { datasetId: 'dataset-123' }
+  )
+} catch (error) {
+  console.error(error.message)
+  // "Tool execution timeout after 10000ms: process_data"
+}
+```
+
+### Execution with Cancellation
+
+Support for AbortSignal:
+
+```typescript
+const abortController = new AbortController()
+
+// Start execution
+const executionPromise = executor.execute(
+  weatherTool,
+  { location: 'New York, NY' },
+  { signal: abortController.signal }
+)
+
+// Cancel after 2 seconds
+setTimeout(() => {
+  abortController.abort()
+}, 2000)
+
+try {
+  await executionPromise
+} catch (error) {
+  console.error(error.message)
+  // "Tool execution cancelled: get_weather"
+}
+```
+
+### Cached Execution
+
+Automatic result caching for cacheable tools:
+
+```typescript
+// First execution (cache miss)
+const result1 = await executor.execute(
+  weatherTool,
+  { location: 'Boston, MA' }
+)
+console.log(result1.cached)    // false
+console.log(result1.duration)  // 850ms
+
+// Second execution (cache hit)
+const result2 = await executor.execute(
+  weatherTool,
+  { location: 'Boston, MA' }
+)
+console.log(result2.cached)    // true
+console.log(result2.duration)  // 2ms
+
+// Skip cache
+const result3 = await executor.execute(
+  weatherTool,
+  { location: 'Boston, MA' },
+  { skipCache: true }
+)
+console.log(result3.cached)    // false
+console.log(result3.duration)  // 820ms
+
+// Clear cache
+executor.clearCache('get_weather')  // Clear specific tool
+executor.clearCache()                // Clear all
+```
+
+## Phase 5: Post-Execution Hooks
+
+React to execution events with lifecycle hooks.
+
+### Built-in Hooks
+
+Tool definitions support lifecycle hooks:
+
+```typescript
+const toolWithHooks: ToolDefinition = {
+  name: 'database_query',
+  description: 'Query database',
+  parameters: {
+    type: 'object',
+    properties: {
+      query: { type: 'string' }
+    },
+    required: ['query']
+  },
+  execute: async (args, context) => {
+    const results = await db.query(args.query)
+    return results
+  },
+  hooks: {
+    // Pre-execution validation
+    onBefore: async (args, context) => {
+      console.log(`[${context.callId}] Validating query...`)
+
+      if (args.query.toLowerCase().includes('drop')) {
+        throw new Error('Destructive queries not allowed')
+      }
+
+      // Log query for audit
+      await auditLog.write({
+        userId: context.userId,
+        query: args.query,
+        timestamp: Date.now()
+      })
+    },
+
+    // Post-execution processing
+    onAfter: async (result, args, context) => {
+      console.log(`[${context.callId}] Query returned ${result.length} rows`)
+
+      // Track usage metrics
+      await analytics.track('database_query', {
+        userId: context.userId,
+        rowCount: result.length,
+        duration: Date.now() - context.startedAt
+      })
+    },
+
+    // Error handling
+    onError: async (error, args, context) => {
+      console.error(`[${context.callId}] Query failed:`, error)
+
+      // Log error
+      await errorLog.write({
+        userId: context.userId,
+        query: args.query,
+        error: error.message,
+        timestamp: Date.now()
+      })
+
+      // Notify admin for critical errors
+      if (error.message.includes('connection')) {
+        await notifyAdmin({
+          severity: 'critical',
+          message: 'Database connection failure',
+          context
+        })
+      }
+    },
+
+    // Timeout handling
+    onTimeout: async (args, context) => {
+      console.warn(`[${context.callId}] Query timed out`)
+
+      // Cancel slow query
+      await db.cancel(context.callId)
+
+      // Track slow queries
+      await slowQueryLog.write({
+        userId: context.userId,
+        query: args.query,
+        timestamp: Date.now()
+      })
+    },
+
+    // Cancellation cleanup
+    onCancel: async (args, context) => {
+      console.log(`[${context.callId}] Query cancelled`)
+
+      // Cleanup resources
+      await db.cancel(context.callId)
+    }
+  }
+}
+```
+
+### Event Listeners
+
+Subscribe to global lifecycle events:
+
+```typescript
+// Listen to all events
+const unsubscribe = lifecycle.on('all', (event) => {
+  console.log(`[${event.type}]`, event.call.toolName)
+
+  // Send to analytics
+  analytics.track('tool_lifecycle_event', {
+    type: event.type,
+    toolName: event.call.toolName,
+    callId: event.call.id,
+    timestamp: event.timestamp
+  })
+})
+
+// Listen to specific events
+lifecycle.on('tool_completed', (event) => {
+  // Update UI
+  updateToolStatus(event.call.id, {
+    status: 'completed',
+    result: event.result,
+    duration: event.duration
+  })
+
+  // Notify user
+  if (event.duration > 5000) {
+    showNotification(`${event.call.toolName} completed after ${event.duration}ms`)
+  }
+})
+
+lifecycle.on('tool_failed', (event) => {
+  // Show error to user
+  showError({
+    title: `${event.call.toolName} failed`,
+    message: event.error.message,
+    code: event.errorCode
+  })
+
+  // Log for debugging
+  console.error('Tool execution failed:', {
+    toolName: event.call.toolName,
+    args: event.call.args,
+    error: event.error,
+    context: event.call.context
+  })
+})
+
+// Cleanup
+unsubscribe()
+```
+
+## Phase 6: Error Handling at Each Stage
+
+Comprehensive error handling throughout the lifecycle.
+
+### Registration Errors
+
+```typescript
+try {
+  registry.register(invalidTool)
+} catch (error) {
+  if (error.message.includes('already registered')) {
+    // Tool name conflict
+    console.error('Tool already exists:', error.message)
+
+    // Options:
+    // 1. Use different name
+    // 2. Unregister first
+    registry.unregister(invalidTool.name)
+    registry.register(invalidTool)
+
+    // 3. Or use registerOrUpdate (with warning)
+    registry.registerOrUpdate(invalidTool, { silent: true })
+  } else {
+    // Validation error
+    console.error('Invalid tool definition:', error.message)
+  }
+}
+```
+
+### Validation Errors
+
+```typescript
+try {
+  await executor.execute(weatherTool, invalidArgs)
+} catch (error) {
+  if (error instanceof ToolValidationError) {
+    console.error('Validation failed:', error.message)
+    console.error('Details:', error.details)
+
+    // Show user-friendly error
+    showValidationError({
+      tool: weatherTool.displayName,
+      errors: error.details.map(d => ({
+        field: d.path.join('.'),
+        message: d.message
+      }))
+    })
+  }
+}
+```
+
+### Execution Errors
+
+```typescript
+try {
+  const result = await executor.execute(
+    weatherTool,
+    { location: 'San Francisco, CA' }
+  )
+} catch (error) {
+  // Check error type
+  if (error.message.includes('timeout')) {
+    console.error('Tool timed out')
+    showError({
+      title: 'Request Timed Out',
+      message: 'The weather service took too long to respond. Please try again.',
+      retry: true
+    })
+  } else if (error.message.includes('cancelled')) {
+    console.log('User cancelled execution')
+    // No error to show
+  } else if (error.message.includes('Rate limit')) {
+    console.error('Rate limit exceeded')
+    showError({
+      title: 'Too Many Requests',
+      message: 'Please wait a moment before trying again.',
+      retry: false
+    })
+  } else {
+    // Generic execution error
+    console.error('Execution failed:', error)
+    showError({
+      title: 'Execution Failed',
+      message: error.message,
+      retry: true
+    })
+  }
+}
+```
+
+### Lifecycle State Errors
+
+```typescript
+try {
+  lifecycle.approve(call.id)
+} catch (error) {
+  if (error.message.includes('Invalid state transition')) {
+    console.error('Cannot approve:', error.message)
+
+    // Check current state
+    const call = lifecycle.getCall(call.id)
+    console.log('Current state:', call.status)
+
+    // Valid transitions from current state
+    console.log('Valid transitions:', VALID_TRANSITIONS[call.status])
+  } else if (error.message.includes('not found')) {
+    console.error('Call not found:', call.id)
+    // Call may have been cleaned up
+  }
+}
+```
+
+## Phase 7: Async Execution Patterns
+
+Execute tools concurrently with rate limiting and concurrency control.
+
+### Sequential Execution
+
+Execute tools one at a time:
+
+```typescript
+async function executeSequential(tools: ToolDefinition[], args: any[]) {
+  const results = []
+
+  for (let i = 0; i < tools.length; i++) {
+    const tool = tools[i]
+    const toolArgs = args[i]
+
+    console.log(`Executing ${tool.name}...`)
+    const result = await executor.execute(tool, toolArgs)
+    results.push(result)
+  }
+
+  return results
+}
+
+// Execute
+const results = await executeSequential(
+  [weatherTool, calculatorTool, searchTool],
+  [
+    { location: 'SF' },
+    { operation: 'add', a: 5, b: 3 },
+    { query: 'climate change' }
+  ]
+)
+```
+
+### Parallel Execution
+
+Execute multiple tools concurrently:
+
+```typescript
+async function executeParallel(tools: ToolDefinition[], args: any[]) {
+  const promises = tools.map((tool, i) =>
+    executor.execute(tool, args[i])
+  )
+
+  const results = await Promise.all(promises)
+  return results
+}
+
+// Execute
+const results = await executeParallel(
+  [weatherTool, weatherTool, weatherTool],
+  [
+    { location: 'San Francisco' },
+    { location: 'New York' },
+    { location: 'Chicago' }
+  ]
+)
+```
+
+### Parallel with Error Handling
+
+Handle individual tool failures:
+
+```typescript
+async function executeParallelSafe(tools: ToolDefinition[], args: any[]) {
+  const promises = tools.map(async (tool, i) => {
+    try {
+      const result = await executor.execute(tool, args[i])
+      return { status: 'fulfilled', value: result, tool: tool.name }
+    } catch (error) {
+      return { status: 'rejected', reason: error, tool: tool.name }
+    }
+  })
+
+  const results = await Promise.all(promises)
+
+  // Separate successes and failures
+  const succeeded = results.filter(r => r.status === 'fulfilled')
+  const failed = results.filter(r => r.status === 'rejected')
+
+  console.log(`Succeeded: ${succeeded.length}, Failed: ${failed.length}`)
+
+  return { succeeded, failed }
+}
+
+// Execute
+const { succeeded, failed } = await executeParallelSafe(
+  [weatherTool, invalidTool, searchTool],
+  [{ location: 'SF' }, { bad: 'args' }, { query: 'test' }]
+)
+
+console.log('Successes:', succeeded.map(s => s.tool))
+console.log('Failures:', failed.map(f => `${f.tool}: ${f.reason.message}`))
+```
+
+### Rate-Limited Parallel Execution
+
+Respect rate limits with automatic batching:
+
+```typescript
+import pLimit from 'p-limit'
+
+async function executeWithRateLimit(
+  tools: ToolDefinition[],
+  args: any[],
+  concurrency: number = 5
+) {
+  const limit = pLimit(concurrency)
+
+  const promises = tools.map((tool, i) =>
+    limit(() => executor.execute(tool, args[i]))
+  )
+
+  const results = await Promise.all(promises)
+  return results
+}
+
+// Execute up to 5 tools concurrently
+const results = await executeWithRateLimit(
+  Array(20).fill(weatherTool),
+  Array(20).fill({ location: 'San Francisco' }),
+  5  // Max 5 concurrent executions
+)
+```
+
+### Progressive Execution
+
+Execute and process results as they complete:
+
+```typescript
+async function executeProgressive(tools: ToolDefinition[], args: any[]) {
+  const promises = tools.map((tool, i) =>
+    executor.execute(tool, args[i]).then(result => ({
+      tool: tool.name,
+      result,
+      index: i
+    }))
+  )
+
+  // Process results as they complete
+  for await (const result of promises) {
+    console.log(`${result.tool} completed:`, result.result)
+    updateUI(result.index, result.result)
+  }
+}
+
+// Execute
+await executeProgressive(
+  [weatherTool, searchTool, calculatorTool],
+  [
+    { location: 'SF' },
+    { query: 'weather' },
+    { operation: 'add', a: 5, b: 3 }
+  ]
+)
+```
+
+## Complete Lifecycle Example
+
+End-to-end implementation with all phases:
+
+```typescript
+import {
+  ToolRegistry,
+  ToolLifecycleManager,
+  ToolExecutor,
+  type ToolDefinition
+} from '@clarity-chat/react'
+
+// 1. Define tool
+const weatherTool: ToolDefinition = {
+  name: 'get_weather',
+  description: 'Get current weather for a location',
+  parameters: {
+    type: 'object',
+    properties: {
+      location: { type: 'string', description: 'City and state' }
+    },
+    required: ['location']
+  },
+  execute: async (args, context) => {
+    console.log(`Fetching weather for ${args.location}...`)
+    const response = await fetch(`/api/weather?location=${args.location}`)
+    return await response.json()
+  },
+  requiresApproval: true,
+  cacheable: true,
+  cacheTtl: 300000,
+  timeout: 10000,
+  category: 'information',
+  tags: ['weather', 'api'],
+  hooks: {
+    onBefore: async (args, context) => {
+      console.log(`[${context.callId}] Starting weather lookup...`)
+    },
+    onAfter: async (result, args, context) => {
+      console.log(`[${context.callId}] Weather lookup completed`)
+    },
+    onError: async (error, args, context) => {
+      console.error(`[${context.callId}] Weather lookup failed:`, error)
+    }
+  }
+}
+
+// 2. Create infrastructure
+const registry = new ToolRegistry()
+const lifecycle = new ToolLifecycleManager({
+  auditLog: { enabled: true, maxEntries: 1000 }
+})
+const executor = new ToolExecutor(lifecycle, {
+  enableRateLimit: true,
+  maxRequestsPerWindow: 100,
+  cache: { enabled: true }
+})
+
+// 3. Register tool
+registry.register(weatherTool)
+
+// 4. Subscribe to lifecycle events
+lifecycle.on('all', (event) => {
+  console.log(`[${event.type}] ${event.call.toolName} (${event.call.id})`)
+})
+
+lifecycle.on('tool_pending_approval', (event) => {
+  showApprovalDialog({
+    tool: event.toolDefinition,
+    call: event.call,
+    onApprove: () => lifecycle.approve(event.call.id),
+    onReject: (reason) => lifecycle.reject(event.call.id, reason)
+  })
+})
+
+lifecycle.on('tool_completed', (event) => {
+  showNotification({
+    title: `${event.call.toolName} completed`,
+    message: `Execution took ${event.duration}ms`,
+    result: event.result
+  })
+})
+
+lifecycle.on('tool_failed', (event) => {
+  showError({
+    title: `${event.call.toolName} failed`,
+    message: event.error.message
+  })
+})
+
+// 5. Execute tool
+async function executeTool(toolName: string, args: any) {
+  // Get tool from registry
+  const tool = registry.get(toolName)
+  if (!tool) {
+    throw new Error(`Tool not found: ${toolName}`)
+  }
+
+  // Create call record
+  const call = lifecycle.createToolCall(toolName, args, {
+    userId: 'user-123',
+    sessionId: 'session-abc'
+  })
+
+  try {
+    // Check if approval required
+    if (tool.requiresApproval) {
+      lifecycle.markPendingApproval(call.id, tool)
+
+      // Wait for approval (would be user action in real app)
+      await waitForApproval(call.id)
+    } else {
+      lifecycle.approve(call.id, 'auto')
+    }
+
+    // Mark as executing
+    lifecycle.markExecuting(call.id)
+
+    // Execute
+    const result = await executor.execute(tool, args, {
+      timeout: tool.timeout,
+      context: {
+        callId: call.id,
+        userId: 'user-123',
+        sessionId: 'session-abc'
+      }
+    })
+
+    // Mark as completed
+    lifecycle.complete(call.id, result.result, result.cached)
+
+    return result
+  } catch (error) {
+    // Mark as failed
+    lifecycle.fail(call.id, error, 'EXECUTION_ERROR')
+    throw error
+  }
+}
+
+// 6. Use it
+const result = await executeTool('get_weather', {
+  location: 'San Francisco, CA'
+})
+
+console.log('Result:', result.result)
+console.log('Duration:', result.duration, 'ms')
+console.log('Cached:', result.cached)
+
+// 7. View audit logs
+const logs = lifecycle.getAuditLogs({
+  toolName: 'get_weather',
+  startTime: Date.now() - 3600000  // Last hour
+})
+
+console.log(`${logs.length} executions in the last hour`)
+
+// 8. View statistics
+const stats = lifecycle.getAuditStats()
+console.log('Audit statistics:', stats)
+
+const executorStats = executor.getStats()
+console.log('Executor statistics:', executorStats)
+```
+
+## Best Practices
+
+### Registration
+
+1. **Validate Early**: Use `validateToolDefinition` before registration
+2. **Use Namespaces**: Organize tools with namespaced registry
+3. **Provide Metadata**: Add category, tags, icon for better discovery
+4. **Document Well**: Clear descriptions help LLMs choose correct tools
+
+### Validation
+
+1. **Strict Schemas**: Define comprehensive JSON Schema for parameters
+2. **Security Checks**: Use `validateToolImplementationStrict` for safety
+3. **Type Safety**: Use TypeScript generics for type-safe tools
+4. **Test Validation**: Write tests for edge cases
+
+### Execution
+
+1. **Set Timeouts**: Always configure reasonable timeout values
+2. **Enable Caching**: Cache deterministic, expensive operations
+3. **Rate Limiting**: Protect external APIs with rate limits
+4. **Concurrency Control**: Limit parallel executions to prevent overload
+
+### Error Handling
+
+1. **Specific Errors**: Catch and handle specific error types
+2. **User Feedback**: Provide clear, actionable error messages
+3. **Retry Logic**: Implement exponential backoff for transient failures
+4. **Logging**: Log errors with full context for debugging
+
+### State Management
+
+1. **Event Listeners**: Subscribe to lifecycle events for UI updates
+2. **Audit Logging**: Enable audit logs for production monitoring
+3. **Cleanup**: Remove event listeners when no longer needed
+4. **State Queries**: Use `getCallsByStatus` for batch operations
+
+## Production Checklist
+
+- [ ] All tools validated with `validateToolDefinition`
+- [ ] Security checks enabled with `validateToolImplementationStrict`
+- [ ] Timeouts configured for all tools (5-30 seconds)
+- [ ] Rate limiting enabled for external APIs
+- [ ] Concurrency limits set (5-10 concurrent executions)
+- [ ] Caching enabled for deterministic tools
+- [ ] Lifecycle events subscribed for UI updates
+- [ ] Audit logging enabled for monitoring
+- [ ] Error handling implemented at all stages
+- [ ] User approval flows for sensitive tools
+- [ ] Retry logic for transient failures
+- [ ] Memory cleanup with periodic cache cleanup
+- [ ] Performance monitoring with lifecycle stats
+
+## Related Resources
+
+- [Tool Registry API](/reference/core/tool-registry) - Registry implementation
+- [Tool Lifecycle API](/reference/core/tool-lifecycle) - Lifecycle manager
+- [Tool Executor API](/reference/core/tool-executor) - Executor implementation
+- [Tool Definition Types](/reference/types/tool-definition) - Type definitions
+- [Tool Validation](/reference/core/tool-validation) - Validation utilities
+
+## Next Steps
+
+- Implement tool registration in your application
+- Add lifecycle event listeners for UI updates
+- Configure executor with rate limiting and caching
+- Create custom tools with lifecycle hooks
+- Monitor execution with audit logs
+- Optimize performance with caching strategies

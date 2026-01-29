@@ -1,0 +1,1235 @@
+---
+title: 'Streaming Error Handling Patterns'
+description: 'Production-ready error handling patterns for streaming AI responses with retry strategies, reconnection logic, and graceful degradation'
+category: 'Streaming & Virtualization'
+---
+
+# Streaming Error Handling Patterns
+
+Master production-ready error handling patterns for streaming AI responses. Learn retry strategies, reconnection logic, error boundaries, and graceful degradation techniques to build resilient streaming applications.
+
+## Overview
+
+Streaming introduces unique error handling challenges beyond traditional request-response patterns. Connections can drop mid-stream, servers can timeout, rate limits can trigger during long conversations, and network conditions can degrade unpredictably.
+
+This guide covers:
+
+- **Error Classification**: Identify and categorize streaming errors
+- **Retry Strategies**: Implement intelligent retry logic with exponential backoff
+- **Reconnection Patterns**: Handle disconnections with automatic reconnection
+- **Error Boundaries**: Integrate React error boundaries for streaming components
+- **User Feedback**: Provide clear, actionable error messages
+- **Graceful Degradation**: Fallback strategies when streaming fails
+- **Production Hooks**: Use built-in error handling hooks
+
+## Error Classification
+
+Understanding error types helps determine appropriate recovery strategies.
+
+### Common Streaming Errors
+
+The `@clarity-chat/react` package provides error classification utilities:
+
+```typescript
+import { normalizeError, classifyError } from '@clarity-chat/react'
+
+// Error types
+type ErrorType =
+  | 'network'      // Connection failures, timeouts
+  | 'ratelimit'    // API rate limits (429)
+  | 'server'       // Server errors (500-504)
+  | 'auth'         // Authentication failures (401, 403)
+  | 'validation'   // Invalid request (400)
+  | 'memory'       // Memory/storage errors
+  | 'agent'        // Tool execution errors
+  | 'unknown'      // Unclassified errors
+
+// Classify any error
+const error = new Error('Network request failed')
+const type = classifyError(error) // 'network'
+
+// Normalize to standard format
+const normalized = normalizeError(error)
+console.log(normalized)
+// {
+//   message: 'Network request failed',
+//   type: 'network',
+//   original: Error,
+//   retryable: true,
+//   retryDelay: 2000
+// }
+```
+
+### Error Properties
+
+```typescript
+interface ClarityError {
+  /** User-friendly error message */
+  message: string
+
+  /** Error type classification */
+  type: ErrorType
+
+  /** Original error object */
+  original?: Error
+
+  /** HTTP status code (if applicable) */
+  statusCode?: number
+
+  /** Whether error is retryable */
+  retryable: boolean
+
+  /** Suggested retry delay in milliseconds */
+  retryDelay?: number
+}
+```
+
+### Retryable vs Non-Retryable
+
+```typescript
+import { isRetryableError, getRetryDelay } from '@clarity-chat/react'
+
+// Check if error should be retried
+if (isRetryableError(error)) {
+  const delay = getRetryDelay(error)
+  setTimeout(() => retry(), delay)
+}
+
+// Retryable errors (can recover):
+// - network: Connection failures, timeouts
+// - server: 500, 502, 503, 504
+// - ratelimit: 429 (with appropriate delay)
+
+// Non-retryable errors (require user action):
+// - auth: Invalid credentials
+// - validation: Invalid request format
+// - unknown: Unexpected errors
+```
+
+## Pattern 1: Basic Error Handling
+
+Minimal error handling with user feedback and retry option.
+
+### Implementation
+
+```tsx
+'use client'
+
+import { useStreaming, normalizeError, formatErrorForUser } from '@clarity-chat/react'
+import { useState } from 'react'
+
+export function BasicStreamingWithErrors() {
+  const [error, setError] = useState<string | null>(null)
+  const [canRetry, setCanRetry] = useState(false)
+  const [lastRequest, setLastRequest] = useState<string | null>(null)
+
+  const { content, isStreaming, startStreaming, stopStreaming, reset } = useStreaming({
+    onChunk: (chunk) => {
+      console.log('Received:', chunk)
+    },
+    onComplete: (fullText) => {
+      console.log('Complete:', fullText.length, 'chars')
+      setError(null)
+      setCanRetry(false)
+    },
+    onError: (err) => {
+      const normalized = normalizeError(err)
+      const userMessage = formatErrorForUser(normalized)
+
+      setError(userMessage)
+      setCanRetry(normalized.retryable)
+
+      console.error('Stream error:', {
+        type: normalized.type,
+        message: normalized.message,
+        retryable: normalized.retryable,
+        retryDelay: normalized.retryDelay
+      })
+    },
+    timeout: 30000, // 30 second timeout
+    onTimeout: () => {
+      setError('Request timed out. Please try again.')
+      setCanRetry(true)
+    },
+    maxContentLength: 1024 * 1024, // 1MB limit
+    onContentLimitExceeded: (current, limit) => {
+      setError(`Response too large (${current} > ${limit} bytes)`)
+      setCanRetry(false)
+    }
+  })
+
+  const handleSend = async (message: string) => {
+    setError(null)
+    setCanRetry(false)
+    setLastRequest(message)
+    reset()
+
+    try {
+      const response = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message })
+      })
+
+      if (!response.ok) {
+        throw new Error(`API error: ${response.status} ${response.statusText}`)
+      }
+
+      if (!response.body) {
+        throw new Error('No response body')
+      }
+
+      await startStreaming(response.body)
+    } catch (err) {
+      const normalized = normalizeError(err)
+      setError(formatErrorForUser(normalized))
+      setCanRetry(normalized.retryable)
+    }
+  }
+
+  const handleRetry = () => {
+    if (lastRequest) {
+      handleSend(lastRequest)
+    }
+  }
+
+  return (
+    <div className="flex flex-col gap-4">
+      {/* Error Display */}
+      {error && (
+        <div className="rounded-lg border border-red-200 bg-red-50 p-4">
+          <div className="flex items-start gap-3">
+            <svg className="h-5 w-5 text-red-600 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+            </svg>
+            <div className="flex-1">
+              <p className="font-semibold text-red-800">Error</p>
+              <p className="text-sm text-red-700 mt-1">{error}</p>
+              <div className="mt-3 flex gap-2">
+                {canRetry && (
+                  <button
+                    onClick={handleRetry}
+                    className="text-sm font-medium text-red-600 hover:text-red-800 underline"
+                  >
+                    Retry
+                  </button>
+                )}
+                <button
+                  onClick={() => setError(null)}
+                  className="text-sm font-medium text-red-600 hover:text-red-800"
+                >
+                  Dismiss
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Content Display */}
+      <div className="min-h-[200px] rounded-lg border p-4">
+        {content || (
+          <p className="text-muted-foreground">
+            {isStreaming ? 'Streaming...' : 'Send a message to start'}
+          </p>
+        )}
+      </div>
+
+      {/* Controls */}
+      <div className="flex gap-2">
+        <button
+          onClick={() => handleSend('Tell me a story')}
+          disabled={isStreaming}
+          className="rounded bg-primary px-4 py-2 text-white disabled:opacity-50"
+        >
+          Send Message
+        </button>
+
+        {isStreaming && (
+          <button
+            onClick={stopStreaming}
+            className="rounded bg-red-500 px-4 py-2 text-white"
+          >
+            Stop
+          </button>
+        )}
+      </div>
+    </div>
+  )
+}
+```
+
+### Key Features
+
+- **Error Classification**: Automatically determines error type
+- **User-Friendly Messages**: Converts technical errors to readable text
+- **Retry Logic**: Only shows retry for retryable errors
+- **Timeout Protection**: Prevents indefinite waiting
+- **Content Limits**: Protects against memory exhaustion
+
+## Pattern 2: Automatic Retry with Exponential Backoff
+
+Intelligent retry logic that automatically recovers from transient failures.
+
+### Implementation
+
+```tsx
+'use client'
+
+import { useStreaming, normalizeError } from '@clarity-chat/react'
+import { useState, useCallback, useRef } from 'react'
+
+interface RetryConfig {
+  maxAttempts: number
+  initialDelay: number
+  maxDelay: number
+  backoffFactor: number
+}
+
+export function AutoRetryStreaming() {
+  const [error, setError] = useState<string | null>(null)
+  const [retryAttempt, setRetryAttempt] = useState(0)
+  const [isRetrying, setIsRetrying] = useState(false)
+
+  const retryTimeoutRef = useRef<NodeJS.Timeout | null>(null)
+  const lastRequestRef = useRef<string | null>(null)
+
+  const retryConfig: RetryConfig = {
+    maxAttempts: 3,
+    initialDelay: 1000,
+    maxDelay: 10000,
+    backoffFactor: 2
+  }
+
+  const { content, isStreaming, startStreaming, stopStreaming, reset } = useStreaming({
+    onComplete: (fullText) => {
+      setRetryAttempt(0)
+      setIsRetrying(false)
+      setError(null)
+    },
+    onError: (err) => {
+      const normalized = normalizeError(err)
+
+      if (normalized.retryable && retryAttempt < retryConfig.maxAttempts) {
+        // Calculate delay with exponential backoff and jitter
+        const baseDelay = retryConfig.initialDelay *
+          Math.pow(retryConfig.backoffFactor, retryAttempt)
+        const jitter = Math.random() * baseDelay * 0.3 // ±30% jitter
+        const delay = Math.min(
+          baseDelay + jitter,
+          retryConfig.maxDelay
+        )
+
+        setIsRetrying(true)
+        setRetryAttempt(prev => prev + 1)
+
+        console.log(`Retrying in ${Math.round(delay)}ms (attempt ${retryAttempt + 1}/${retryConfig.maxAttempts})`)
+
+        retryTimeoutRef.current = setTimeout(() => {
+          if (lastRequestRef.current) {
+            executeRequest(lastRequestRef.current)
+          }
+        }, delay)
+      } else {
+        // Max retries reached or non-retryable error
+        setError(
+          normalized.retryable
+            ? 'Failed after multiple retry attempts. Please try again later.'
+            : formatErrorForUser(normalized)
+        )
+        setIsRetrying(false)
+      }
+    }
+  })
+
+  const executeRequest = useCallback(async (message: string) => {
+    try {
+      const response = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message })
+      })
+
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`)
+      }
+
+      if (!response.body) {
+        throw new Error('No response body')
+      }
+
+      await startStreaming(response.body)
+    } catch (err) {
+      // Error will be handled by onError callback
+      throw err
+    }
+  }, [startStreaming])
+
+  const handleSend = async (message: string) => {
+    // Clear any pending retries
+    if (retryTimeoutRef.current) {
+      clearTimeout(retryTimeoutRef.current)
+      retryTimeoutRef.current = null
+    }
+
+    setError(null)
+    setRetryAttempt(0)
+    setIsRetrying(false)
+    lastRequestRef.current = message
+    reset()
+
+    await executeRequest(message)
+  }
+
+  // Cleanup on unmount
+  React.useEffect(() => {
+    return () => {
+      if (retryTimeoutRef.current) {
+        clearTimeout(retryTimeoutRef.current)
+      }
+    }
+  }, [])
+
+  return (
+    <div className="flex flex-col gap-4">
+      {/* Retry Status */}
+      {isRetrying && (
+        <div className="rounded-lg border border-yellow-200 bg-yellow-50 p-4">
+          <div className="flex items-center gap-3">
+            <div className="h-4 w-4 animate-spin rounded-full border-2 border-yellow-600 border-t-transparent" />
+            <div>
+              <p className="font-semibold text-yellow-800">Retrying...</p>
+              <p className="text-sm text-yellow-700">
+                Attempt {retryAttempt} of {retryConfig.maxAttempts}
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Error Display */}
+      {error && (
+        <div className="rounded-lg border border-red-200 bg-red-50 p-4">
+          <p className="font-semibold text-red-800">Error</p>
+          <p className="text-sm text-red-700 mt-1">{error}</p>
+          <button
+            onClick={() => {
+              setError(null)
+              if (lastRequestRef.current) {
+                handleSend(lastRequestRef.current)
+              }
+            }}
+            className="mt-3 text-sm font-medium text-red-600 hover:text-red-800 underline"
+          >
+            Try Again
+          </button>
+        </div>
+      )}
+
+      {/* Content Display */}
+      <div className="min-h-[200px] rounded-lg border p-4">
+        {content || 'Send a message to start'}
+      </div>
+
+      {/* Controls */}
+      <div className="flex gap-2">
+        <button
+          onClick={() => handleSend('Tell me a joke')}
+          disabled={isStreaming || isRetrying}
+          className="rounded bg-primary px-4 py-2 text-white disabled:opacity-50"
+        >
+          Send Message
+        </button>
+      </div>
+    </div>
+  )
+}
+
+function formatErrorForUser(error: any): string {
+  // Import from @clarity-chat/react in production
+  switch (error.type) {
+    case 'network':
+      return 'Connection error. Please check your internet connection.'
+    case 'ratelimit':
+      return 'Too many requests. Please wait a moment.'
+    case 'server':
+      return 'Server error. Please try again in a moment.'
+    default:
+      return error.message || 'An unexpected error occurred.'
+  }
+}
+```
+
+### Retry Strategy
+
+The exponential backoff algorithm:
+
+```typescript
+// Retry delays: 1s, 2s, 4s (with jitter)
+delay = min(
+  initialDelay * (backoffFactor ^ attemptNumber) + jitter,
+  maxDelay
+)
+
+// Example delays for 3 attempts:
+// Attempt 1: 1000ms + random(-300, +300) = 700-1300ms
+// Attempt 2: 2000ms + random(-600, +600) = 1400-2600ms
+// Attempt 3: 4000ms + random(-1200, +1200) = 2800-5200ms
+```
+
+**Why Jitter?** Prevents "thundering herd" when many clients retry simultaneously after a server failure.
+
+## Pattern 3: SSE with Reconnection Logic
+
+Server-Sent Events with automatic reconnection and event resumption.
+
+### Implementation
+
+```tsx
+'use client'
+
+import { useStreamingSSE, normalizeError } from '@clarity-chat/react'
+import { useState } from 'react'
+
+export function SSEWithReconnection() {
+  const [messages, setMessages] = useState<Array<{ role: string; content: string }>>([])
+  const [connectionStatus, setConnectionStatus] = useState<'good' | 'reconnecting' | 'failed'>('good')
+
+  const {
+    status,
+    data,
+    error,
+    connect,
+    disconnect,
+    reconnectAttempt,
+    isReconnecting
+  } = useStreamingSSE({
+    url: '/api/chat/stream',
+    method: 'POST',
+    body: {
+      message: 'Hello',
+      conversationId: 'conv-123'
+    },
+    authToken: 'your-auth-token',
+
+    // Automatic reconnection with exponential backoff
+    autoReconnect: true,
+    maxReconnectAttempts: 5,
+    reconnectDelay: 1000, // Start at 1s
+    maxReconnectDelay: 30000, // Max 30s
+    reconnectSuccessThreshold: 3, // Reset backoff after 3 successes
+
+    // Connection monitoring
+    heartbeatInterval: 30000, // 30s heartbeat
+    connectionTimeout: 15000, // 15s connection timeout
+
+    // Memory protection
+    maxEventBufferSize: 1000,
+    onEventBufferOverflow: (droppedCount, bufferSize) => {
+      console.warn(`Dropped ${droppedCount} events (buffer: ${bufferSize})`)
+    },
+
+    // Resume from last event ID after reconnection
+    resumeFromLastEventId: true,
+
+    // Event handlers
+    onOpen: () => {
+      console.log('SSE connected')
+      setConnectionStatus('good')
+    },
+    onMessage: (event) => {
+      console.log('Event:', event.type, event.data)
+
+      if (event.type === 'token') {
+        // Token streaming
+      } else if (event.type === 'done') {
+        // Stream complete
+        disconnect()
+        setMessages(prev => [
+          ...prev,
+          { role: 'assistant', content: data }
+        ])
+      } else if (event.type === 'error') {
+        console.error('Server error:', event.data)
+      }
+    },
+    onError: (err) => {
+      const normalized = normalizeError(err)
+      console.error('SSE error:', normalized)
+      setConnectionStatus('failed')
+    },
+    onReconnecting: (attempt, delay) => {
+      console.log(`Reconnecting (attempt ${attempt}) in ${delay}ms`)
+      setConnectionStatus('reconnecting')
+    },
+    onMaxReconnectAttemptsReached: () => {
+      console.error('Max reconnection attempts reached')
+      setConnectionStatus('failed')
+    }
+  })
+
+  return (
+    <div className="flex flex-col gap-4">
+      {/* Connection Status Indicator */}
+      <div className="flex items-center gap-2 rounded-lg border p-3">
+        <div
+          className={`h-2 w-2 rounded-full ${
+            connectionStatus === 'good'
+              ? 'bg-green-500'
+              : connectionStatus === 'reconnecting'
+                ? 'bg-yellow-500 animate-pulse'
+                : 'bg-red-500'
+          }`}
+        />
+        <span className="text-sm text-muted-foreground">
+          {status === 'streaming'
+            ? 'Streaming'
+            : isReconnecting
+              ? `Reconnecting (${reconnectAttempt}/5)...`
+              : status}
+        </span>
+      </div>
+
+      {/* Error Display */}
+      {error && (
+        <div className="rounded-lg bg-red-50 p-4 text-red-800">
+          <p className="font-semibold">Connection Error</p>
+          <p className="text-sm">{error.message}</p>
+          {!isReconnecting && (
+            <button
+              onClick={connect}
+              className="mt-2 text-sm underline"
+            >
+              Reconnect
+            </button>
+          )}
+        </div>
+      )}
+
+      {/* Messages */}
+      <div className="space-y-4">
+        {messages.map((msg, i) => (
+          <div key={i} className="rounded-lg border p-4">
+            <p className="text-sm font-semibold">{msg.role}</p>
+            <p>{msg.content}</p>
+          </div>
+        ))}
+
+        {/* Current streaming message */}
+        {data && (
+          <div className="rounded-lg border border-blue-500 p-4">
+            <p className="text-sm font-semibold">assistant (streaming)</p>
+            <p>{data}</p>
+          </div>
+        )}
+      </div>
+
+      {/* Controls */}
+      <div className="flex gap-2">
+        <button
+          onClick={connect}
+          disabled={status !== 'idle' && status !== 'closed' && status !== 'error'}
+          className="rounded bg-primary px-4 py-2 text-white disabled:opacity-50"
+        >
+          Send Message
+        </button>
+
+        {status === 'streaming' && (
+          <button
+            onClick={disconnect}
+            className="rounded bg-red-500 px-4 py-2 text-white"
+          >
+            Stop
+          </button>
+        )}
+      </div>
+    </div>
+  )
+}
+```
+
+### Reconnection Features
+
+**Exponential Backoff with Jitter**
+
+```typescript
+// Prevents thundering herd when many clients reconnect simultaneously
+const baseDelay = initialDelay * Math.pow(2, attemptNumber)
+const jitter = (Math.random() - 0.5) * 2 * (baseDelay * 0.3) // ±30%
+const finalDelay = Math.min(baseDelay + jitter, maxDelay)
+```
+
+**Sustained Success Threshold**
+
+```typescript
+// Reset backoff only after 3 consecutive successful connections
+if (consecutiveSuccesses >= 3) {
+  reconnectDelay = initialDelay // Reset to 1s
+}
+```
+
+**Event Resumption**
+
+```typescript
+// Resume from last received event ID (SSE spec)
+headers['Last-Event-ID'] = lastEventIdRef.current
+```
+
+## Pattern 4: Error Boundary Integration
+
+Catch and handle errors in streaming components using React error boundaries.
+
+### Implementation
+
+```tsx
+'use client'
+
+import React, { Component, ReactNode } from 'react'
+import { normalizeError } from '@clarity-chat/react'
+
+interface ErrorBoundaryProps {
+  children: ReactNode
+  fallback?: (error: Error, reset: () => void) => ReactNode
+  onError?: (error: Error, errorInfo: React.ErrorInfo) => void
+}
+
+interface ErrorBoundaryState {
+  hasError: boolean
+  error: Error | null
+}
+
+export class StreamingErrorBoundary extends Component<
+  ErrorBoundaryProps,
+  ErrorBoundaryState
+> {
+  constructor(props: ErrorBoundaryProps) {
+    super(props)
+    this.state = { hasError: false, error: null }
+  }
+
+  static getDerivedStateFromError(error: Error): ErrorBoundaryState {
+    return { hasError: true, error }
+  }
+
+  componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
+    console.error('Streaming error caught by boundary:', error, errorInfo)
+    this.props.onError?.(error, errorInfo)
+  }
+
+  resetError = () => {
+    this.setState({ hasError: false, error: null })
+  }
+
+  render() {
+    if (this.state.hasError && this.state.error) {
+      if (this.props.fallback) {
+        return this.props.fallback(this.state.error, this.resetError)
+      }
+
+      const normalized = normalizeError(this.state.error)
+
+      return (
+        <div className="flex min-h-[400px] items-center justify-center rounded-lg border border-red-200 bg-red-50 p-8">
+          <div className="text-center">
+            <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-red-100">
+              <svg className="h-6 w-6 text-red-600" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+              </svg>
+            </div>
+            <h3 className="mb-2 text-lg font-semibold text-red-900">
+              Streaming Error
+            </h3>
+            <p className="mb-4 text-sm text-red-700">
+              {normalized.message}
+            </p>
+            <button
+              onClick={this.resetError}
+              className="rounded bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700"
+            >
+              Try Again
+            </button>
+          </div>
+        </div>
+      )
+    }
+
+    return this.props.children
+  }
+}
+
+// Usage
+export function StreamingChatWithBoundary() {
+  return (
+    <StreamingErrorBoundary
+      onError={(error, errorInfo) => {
+        // Log to error tracking service
+        console.error('Error:', error)
+        console.error('Error info:', errorInfo)
+      }}
+    >
+      <YourStreamingComponent />
+    </StreamingErrorBoundary>
+  )
+}
+```
+
+### Custom Fallback
+
+```tsx
+<StreamingErrorBoundary
+  fallback={(error, reset) => (
+    <div className="flex flex-col items-center gap-4 p-8">
+      <h3>Oops! Something went wrong</h3>
+      <p className="text-muted-foreground">{error.message}</p>
+      <div className="flex gap-2">
+        <button onClick={reset} className="rounded bg-primary px-4 py-2 text-white">
+          Retry
+        </button>
+        <button onClick={() => window.location.reload()} className="rounded border px-4 py-2">
+          Reload Page
+        </button>
+      </div>
+    </div>
+  )}
+>
+  <StreamingChat />
+</StreamingErrorBoundary>
+```
+
+## Pattern 5: User Feedback During Errors
+
+Provide clear, actionable feedback to users during streaming errors.
+
+### Implementation
+
+```tsx
+'use client'
+
+import { useStreaming, normalizeError, formatErrorForUser } from '@clarity-chat/react'
+import { useState } from 'react'
+
+type FeedbackType = 'error' | 'warning' | 'info' | 'success'
+
+interface Feedback {
+  type: FeedbackType
+  title: string
+  message: string
+  action?: {
+    label: string
+    onClick: () => void
+  }
+}
+
+export function StreamingWithFeedback() {
+  const [feedback, setFeedback] = useState<Feedback | null>(null)
+
+  const { content, isStreaming, startStreaming, reset } = useStreaming({
+    onError: (err) => {
+      const normalized = normalizeError(err)
+
+      setFeedback({
+        type: 'error',
+        title: getErrorTitle(normalized.type),
+        message: formatErrorForUser(normalized),
+        action: normalized.retryable ? {
+          label: 'Try Again',
+          onClick: () => {
+            setFeedback(null)
+            // Retry logic here
+          }
+        } : undefined
+      })
+    },
+    timeout: 30000,
+    onTimeout: () => {
+      setFeedback({
+        type: 'warning',
+        title: 'Request Timeout',
+        message: 'The request took too long. This might be due to a slow connection or server overload.',
+        action: {
+          label: 'Retry',
+          onClick: () => {
+            setFeedback(null)
+            // Retry logic
+          }
+        }
+      })
+    },
+    maxContentLength: 500000,
+    onContentLimitExceeded: (current, limit) => {
+      setFeedback({
+        type: 'warning',
+        title: 'Response Too Large',
+        message: `The response exceeded ${formatBytes(limit)}. Try asking for a shorter response.`,
+        action: undefined
+      })
+    }
+  })
+
+  return (
+    <div className="flex flex-col gap-4">
+      {/* Feedback Display */}
+      {feedback && (
+        <FeedbackBanner
+          type={feedback.type}
+          title={feedback.title}
+          message={feedback.message}
+          action={feedback.action}
+          onDismiss={() => setFeedback(null)}
+        />
+      )}
+
+      {/* Content */}
+      <div className="min-h-[200px] rounded-lg border p-4">
+        {content || 'No content yet'}
+      </div>
+    </div>
+  )
+}
+
+function FeedbackBanner({
+  type,
+  title,
+  message,
+  action,
+  onDismiss
+}: Feedback & { onDismiss: () => void }) {
+  const colors = {
+    error: 'border-red-200 bg-red-50 text-red-800',
+    warning: 'border-yellow-200 bg-yellow-50 text-yellow-800',
+    info: 'border-blue-200 bg-blue-50 text-blue-800',
+    success: 'border-green-200 bg-green-50 text-green-800'
+  }
+
+  const icons = {
+    error: (
+      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+    ),
+    warning: (
+      <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+    ),
+    info: (
+      <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+    ),
+    success: (
+      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+    )
+  }
+
+  return (
+    <div className={`rounded-lg border p-4 ${colors[type]}`}>
+      <div className="flex items-start gap-3">
+        <svg className="h-5 w-5 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+          {icons[type]}
+        </svg>
+        <div className="flex-1 min-w-0">
+          <p className="font-semibold">{title}</p>
+          <p className="text-sm mt-1">{message}</p>
+          {action && (
+            <button
+              onClick={action.onClick}
+              className="mt-3 text-sm font-medium underline hover:no-underline"
+            >
+              {action.label}
+            </button>
+          )}
+        </div>
+        <button
+          onClick={onDismiss}
+          className="flex-shrink-0 hover:opacity-70"
+          aria-label="Dismiss"
+        >
+          <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+            <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+          </svg>
+        </button>
+      </div>
+    </div>
+  )
+}
+
+function getErrorTitle(type: string): string {
+  const titles: Record<string, string> = {
+    network: 'Connection Error',
+    ratelimit: 'Rate Limit Exceeded',
+    server: 'Server Error',
+    auth: 'Authentication Error',
+    validation: 'Invalid Request',
+    memory: 'Memory Error',
+    agent: 'Agent Error',
+    unknown: 'Unexpected Error'
+  }
+  return titles[type] || 'Error'
+}
+
+function formatBytes(bytes: number): string {
+  if (bytes < 1024) return `${bytes} B`
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`
+  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`
+}
+```
+
+## Pattern 6: Graceful Degradation
+
+Provide fallback options when streaming fails.
+
+### Implementation
+
+```tsx
+'use client'
+
+import { useStreaming, normalizeError } from '@clarity-chat/react'
+import { useState } from 'react'
+
+type FallbackMode = 'streaming' | 'polling' | 'static'
+
+export function StreamingWithFallback() {
+  const [mode, setMode] = useState<FallbackMode>('streaming')
+  const [error, setError] = useState<string | null>(null)
+  const [failureCount, setFailureCount] = useState(0)
+
+  // Auto-degrade after 2 failures
+  const MAX_FAILURES = 2
+
+  const { content, isStreaming, startStreaming, reset } = useStreaming({
+    onError: (err) => {
+      const normalized = normalizeError(err)
+      setError(normalized.message)
+
+      const newCount = failureCount + 1
+      setFailureCount(newCount)
+
+      // Auto-degrade to polling after failures
+      if (newCount >= MAX_FAILURES) {
+        console.log('Degrading to polling mode after failures')
+        setMode('polling')
+      }
+    }
+  })
+
+  const handleSend = async (message: string) => {
+    setError(null)
+    reset()
+
+    if (mode === 'streaming') {
+      await sendStreamingRequest(message)
+    } else if (mode === 'polling') {
+      await sendPollingRequest(message)
+    } else {
+      await sendStaticRequest(message)
+    }
+  }
+
+  const sendStreamingRequest = async (message: string) => {
+    try {
+      const response = await fetch('/api/chat/stream', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message })
+      })
+
+      if (!response.ok) throw new Error(`HTTP ${response.status}`)
+      if (!response.body) throw new Error('No response body')
+
+      await startStreaming(response.body)
+
+      // Reset failure count on success
+      setFailureCount(0)
+    } catch (err) {
+      throw err
+    }
+  }
+
+  const sendPollingRequest = async (message: string) => {
+    // Fallback: Poll for completion
+    try {
+      const response = await fetch('/api/chat/poll', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message })
+      })
+
+      const { requestId } = await response.json()
+
+      // Poll for result
+      const result = await pollForCompletion(requestId)
+      reset()
+      // Update content manually since we're not streaming
+
+      setFailureCount(0) // Reset on success
+    } catch (err) {
+      const normalized = normalizeError(err)
+      setError(normalized.message)
+
+      // Degrade to static after polling failures
+      if (failureCount + 1 >= MAX_FAILURES) {
+        setMode('static')
+      }
+    }
+  }
+
+  const sendStaticRequest = async (message: string) => {
+    // Final fallback: Simple request/response
+    try {
+      const response = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message })
+      })
+
+      const data = await response.json()
+      reset()
+      // Update content manually
+
+    } catch (err) {
+      const normalized = normalizeError(err)
+      setError(normalized.message)
+    }
+  }
+
+  const pollForCompletion = async (requestId: string): Promise<any> => {
+    const maxAttempts = 30
+    const pollInterval = 1000 // 1s
+
+    for (let i = 0; i < maxAttempts; i++) {
+      const response = await fetch(`/api/chat/status/${requestId}`)
+      const data = await response.json()
+
+      if (data.status === 'complete') {
+        return data.result
+      } else if (data.status === 'error') {
+        throw new Error(data.error)
+      }
+
+      await new Promise(resolve => setTimeout(resolve, pollInterval))
+    }
+
+    throw new Error('Polling timeout')
+  }
+
+  return (
+    <div className="flex flex-col gap-4">
+      {/* Mode Indicator */}
+      <div className="flex items-center gap-2 rounded-lg border p-3">
+        <div className={`h-2 w-2 rounded-full ${
+          mode === 'streaming' ? 'bg-green-500' :
+          mode === 'polling' ? 'bg-yellow-500' :
+          'bg-red-500'
+        }`} />
+        <span className="text-sm">
+          Mode: <strong>{mode}</strong>
+          {failureCount > 0 && ` (${failureCount} failures)`}
+        </span>
+      </div>
+
+      {/* Error Display */}
+      {error && (
+        <div className="rounded-lg bg-red-50 p-4 text-red-800">
+          <p className="font-semibold">Error</p>
+          <p className="text-sm">{error}</p>
+          {mode !== 'static' && (
+            <button
+              onClick={() => {
+                setMode(mode === 'streaming' ? 'polling' : 'static')
+                setError(null)
+              }}
+              className="mt-2 text-sm underline"
+            >
+              Use fallback mode
+            </button>
+          )}
+        </div>
+      )}
+
+      {/* Content */}
+      <div className="min-h-[200px] rounded-lg border p-4">
+        {content || 'Send a message'}
+      </div>
+
+      {/* Controls */}
+      <button
+        onClick={() => handleSend('Hello')}
+        disabled={isStreaming}
+        className="rounded bg-primary px-4 py-2 text-white disabled:opacity-50"
+      >
+        Send Message
+      </button>
+    </div>
+  )
+}
+```
+
+### Degradation Strategy
+
+1. **Streaming** (optimal): Real-time token streaming
+2. **Polling** (fallback): Request completion status periodically
+3. **Static** (final fallback): Traditional request/response
+
+Auto-degrade after consecutive failures:
+```
+streaming → (2 failures) → polling → (2 failures) → static
+```
+
+## Best Practices Summary
+
+### Error Classification
+
+1. **Identify error types**: Use `classifyError()` to determine recovery strategy
+2. **Normalize errors**: Convert to standard `ClarityError` format
+3. **Check retryability**: Only retry `network`, `server`, and `ratelimit` errors
+
+### Retry Logic
+
+1. **Exponential backoff**: Increase delay between retries (2^n)
+2. **Add jitter**: Prevent thundering herd (±30% randomization)
+3. **Set max attempts**: Limit retries to avoid infinite loops (3-5 attempts)
+4. **Cap max delay**: Prevent excessive wait times (10-30 seconds)
+
+### Reconnection
+
+1. **Resume from last event**: Use `Last-Event-ID` header (SSE)
+2. **Heartbeat monitoring**: Detect stale connections (30s interval)
+3. **Success threshold**: Reset backoff after sustained success (3 consecutive)
+4. **Connection timeout**: Abort connections that don't establish (15s)
+
+### User Experience
+
+1. **Clear feedback**: Show connection status, retry attempts, errors
+2. **Actionable messages**: Provide retry/dismiss buttons
+3. **Progress indicators**: Show loading states during retries
+4. **Graceful degradation**: Fall back to polling or static requests
+
+### Error Boundaries
+
+1. **Wrap streaming components**: Catch rendering errors
+2. **Custom fallbacks**: Show error UI with retry option
+3. **Log errors**: Track failures for debugging
+4. **Reset state**: Allow users to recover from errors
+
+### Production Checklist
+
+- [ ] Classify all errors with `normalizeError()`
+- [ ] Implement exponential backoff with jitter
+- [ ] Set reasonable timeout limits (30s)
+- [ ] Add content size limits to prevent memory issues
+- [ ] Show connection status to users
+- [ ] Provide retry options for retryable errors
+- [ ] Log errors for monitoring
+- [ ] Test with network throttling
+- [ ] Wrap components in error boundaries
+- [ ] Implement graceful degradation
+
+## Related Resources
+
+- [Streaming Response Handling](/guides/advanced/streaming-responses) - Advanced streaming patterns
+- [useStreaming Hook](/reference/hooks/use-streaming) - Low-level streaming API
+- [useStreamingSSE Hook](/reference/hooks/use-streaming-sse) - SSE streaming API
+- [useStreamingWebSocket Hook](/reference/hooks/use-streaming-websocket) - WebSocket streaming API
+
+## Next Steps
+
+- Implement error classification in your streaming components
+- Add exponential backoff to retry logic
+- Integrate error boundaries for production resilience
+- Test error handling with simulated failures
+- Monitor error rates in production

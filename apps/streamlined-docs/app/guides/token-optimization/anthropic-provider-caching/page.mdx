@@ -1,0 +1,1224 @@
+---
+title: Anthropic Provider-Side Caching Setup Guide
+description: Complete guide to implementing Anthropic's native prompt caching for 90% cost savings on cached content with formatMessagesForProviderCaching API
+---
+
+# Anthropic Provider-Side Caching Setup Guide
+
+Anthropic's native prompt caching can reduce costs by up to 90% on cached content. This guide covers implementation, configuration, best practices, and integration with existing strategies.
+
+## Overview
+
+### What is Anthropic Provider-Side Caching?
+
+Anthropic's prompt caching is a **server-side feature** that caches static portions of your prompts at the API level. Unlike client-side caching, this happens inside Anthropic's infrastructure and requires explicit cache control markers in your API requests.
+
+**Key Benefits:**
+
+- **90% cost reduction** on cached input tokens
+- **No quality degradation** - exact same model outputs
+- **5-minute or 1-hour TTL** options
+- **Up to 4 cache breakpoints** per request
+- **Automatic cache management** by Anthropic
+
+**How It Works:**
+
+```typescript
+// Without caching: Pay full price every request
+const cost = 5000 tokens × $0.003/1K = $0.015 per request
+
+// With caching (after first request):
+const cost = (5000 cached × $0.0003/1K) + (500 new × $0.003/1K) = $0.003 per request
+// 80% cost reduction
+```
+
+### Requirements
+
+- **Minimum tokens**: 1024 tokens for Sonnet/Opus, 2048-4096 for Haiku
+- **Supported models**: Claude 3.5 Sonnet, Claude 3 Opus, Claude 3 Haiku, Claude 3.5 Haiku
+- **Static content**: System prompts, few-shot examples, large documents
+- **API integration**: You must implement Anthropic API calls yourself
+
+---
+
+## Installation
+
+```bash
+npm install @clarity-chat/token-optimization
+# or
+pnpm add @clarity-chat/token-optimization
+# or
+yarn add @clarity-chat/token-optimization
+```
+
+---
+
+## Quick Start
+
+### Basic Usage
+
+```typescript
+import { formatMessagesForProviderCaching } from '@clarity-chat/token-optimization'
+import Anthropic from '@anthropic-ai/sdk'
+
+// Step 1: Define your messages
+const messages = [
+  {
+    role: 'system',
+    content: 'You are an expert coding assistant with deep knowledge of TypeScript, React, and Node.js. You provide clear, well-documented code examples and explain complex concepts in simple terms.',
+    cacheable: true // Mark as cacheable
+  },
+  {
+    role: 'user',
+    content: 'How do I implement authentication in Next.js 15?'
+  }
+]
+
+// Step 2: Format messages for Anthropic caching
+const result = await formatMessagesForProviderCaching(messages, {
+  provider: 'anthropic',
+  enabled: true
+})
+
+console.log('Cached:', result.cached)
+console.log('Estimated savings:', result.estimatedSavings)
+console.log('Recommendations:', result.recommendations)
+
+// Step 3: Make API call with formatted messages
+const anthropic = new Anthropic({
+  apiKey: process.env.ANTHROPIC_API_KEY
+})
+
+const response = await anthropic.messages.create({
+  model: 'claude-3-5-sonnet-20241022',
+  max_tokens: 4096,
+  messages: result.messages, // Use formatted messages
+  system: 'System prompt if needed' // Optional separate system message
+})
+
+console.log('Response:', response.content[0].text)
+
+// Check actual cache performance from API response
+if (response.usage) {
+  console.log('Cache stats:', {
+    inputTokens: response.usage.input_tokens,
+    cacheCreationTokens: response.usage.cache_creation_input_tokens || 0,
+    cacheReadTokens: response.usage.cache_read_input_tokens || 0,
+    outputTokens: response.usage.output_tokens
+  })
+}
+```
+
+---
+
+## Core API Reference
+
+### formatMessagesForProviderCaching
+
+Main function for formatting messages with cache control markers.
+
+```typescript
+function formatMessagesForProviderCaching(
+  messages: CacheableMessage[],
+  config?: Partial<ProviderCachingConfig>,
+  tokenCounter?: TokenCounter
+): Promise<ProviderCachingResult>
+```
+
+**Parameters:**
+
+- `messages`: Array of messages to format
+- `config`: Configuration options (see [Configuration](#configuration))
+- `tokenCounter`: Optional token counter for accurate estimates
+
+**Returns:** `ProviderCachingResult`
+
+```typescript
+interface ProviderCachingResult {
+  cached: boolean                    // Whether caching was applied
+  messages: AnthropicMessage[]       // Formatted messages with cache_control
+  metadata: ProviderCacheMetadata    // Cache metadata
+  estimatedSavings: {
+    tokens: number                   // Estimated tokens saved
+    percentage: number               // Savings percentage (0-1)
+    costReduction: number            // Cost reduction (0-1)
+  }
+  recommendations: string[]          // Optimization recommendations
+}
+```
+
+**Message Format:**
+
+```typescript
+interface CacheableMessage {
+  role: 'system' | 'user' | 'assistant'
+  content: string | any[]
+  cacheable?: boolean        // Mark as cacheable (default: auto-detect)
+  cacheWeight?: number       // Priority for caching (0-1)
+}
+```
+
+### Simple API Functions
+
+For quick implementation without configuration:
+
+```typescript
+import { anthropicCache, estimateCacheSavings } from '@clarity-chat/token-optimization'
+
+// Quick cache formatting
+const result = await anthropicCache([
+  { role: 'system', content: largeSystemPrompt },
+  { role: 'user', content: userQuery }
+])
+
+// Check if caching will be beneficial
+const estimate = await estimateCacheSavings(messages, 'anthropic')
+console.log(estimate.recommendation)
+// "Anthropic caching enabled. Expected to cache ~5000 tokens with 90% cost reduction."
+```
+
+---
+
+## Configuration Options
+
+### Full Configuration
+
+```typescript
+import { ProviderCachingFormatter } from '@clarity-chat/token-optimization'
+
+const formatter = new ProviderCachingFormatter({
+  enabled: true,
+  provider: 'anthropic',
+  anthropic: {
+    defaultTTL: '5m',              // '5m' or '1h'
+    minCachedTokens: 1024,         // Minimum tokens to cache
+    maxBreakpoints: 4,             // Max cache breakpoints (1-4)
+    autoDetectBreakpoints: true    // Auto-detect optimal locations
+  }
+})
+
+const result = await formatter.formatMessagesForCaching(messages)
+```
+
+### Configuration Fields
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `enabled` | `boolean` | `true` | Enable/disable caching |
+| `provider` | `'anthropic'` | `'anthropic'` | Target provider |
+| `anthropic.defaultTTL` | `'5m' \| '1h'` | `'5m'` | Cache time-to-live |
+| `anthropic.minCachedTokens` | `number` | `1024` | Minimum tokens before caching |
+| `anthropic.maxBreakpoints` | `number` | `4` | Maximum cache breakpoints |
+| `anthropic.autoDetectBreakpoints` | `boolean` | `true` | Auto-detect cache locations |
+
+### TTL Selection Guide
+
+```typescript
+// 5-minute TTL (default): For frequently changing content
+{
+  defaultTTL: '5m'  // Good for: Real-time conversations, dynamic context
+}
+
+// 1-hour TTL: For stable content
+{
+  defaultTTL: '1h'  // Good for: System prompts, few-shot examples, documentation
+}
+```
+
+---
+
+## Cache Breakpoint Strategies
+
+### Pattern 1: Single Large System Prompt
+
+Best for: Applications with one comprehensive system prompt.
+
+```typescript
+const messages = [
+  {
+    role: 'system',
+    content: `You are an expert AI assistant specialized in software development...
+
+    [3000+ token system prompt]
+
+    When responding:
+    1. Provide clear, well-documented code
+    2. Explain your reasoning
+    3. Include error handling
+    ...`,
+    cacheable: true  // Will add cache_control to this message
+  },
+  {
+    role: 'user',
+    content: 'Help me debug this TypeScript error...'
+  }
+]
+
+const result = await formatMessagesForProviderCaching(messages, {
+  provider: 'anthropic',
+  anthropic: {
+    defaultTTL: '1h',  // System prompt rarely changes
+    minCachedTokens: 1024
+  }
+})
+
+// Result adds cache_control to system message:
+// {
+//   role: 'user',  // Anthropic converts 'system' to 'user'
+//   content: [{
+//     type: 'text',
+//     text: 'You are an expert AI assistant...',
+//     cache_control: { type: 'ephemeral', ttl: '1h' }
+//   }]
+// }
+```
+
+**Savings Example:**
+
+```
+Request 1 (cache write):
+- Input: 3000 tokens @ $0.003/1K = $0.009
+- Output: 500 tokens @ $0.015/1K = $0.0075
+- Total: $0.0165
+
+Request 2+ (cache read):
+- Cached: 3000 tokens @ $0.0003/1K = $0.0009 (90% savings)
+- Input: 100 tokens @ $0.003/1K = $0.0003
+- Output: 500 tokens @ $0.015/1K = $0.0075
+- Total: $0.0087 (47% total cost reduction)
+```
+
+### Pattern 2: System Prompt + Few-Shot Examples
+
+Best for: Few-shot learning with consistent examples.
+
+```typescript
+const messages = [
+  {
+    role: 'system',
+    content: 'You are a SQL query generator.',
+    cacheable: true
+  },
+  {
+    role: 'user',
+    content: 'Natural language: Get all users who signed up last month',
+    cacheable: true
+  },
+  {
+    role: 'assistant',
+    content: 'SELECT * FROM users WHERE created_at >= DATE_TRUNC(\'month\', CURRENT_DATE - INTERVAL \'1 month\')',
+    cacheable: true
+  },
+  {
+    role: 'user',
+    content: 'Natural language: Find top 10 products by revenue',
+    cacheable: true
+  },
+  {
+    role: 'assistant',
+    content: 'SELECT product_id, SUM(price * quantity) as revenue FROM orders GROUP BY product_id ORDER BY revenue DESC LIMIT 10',
+    cacheable: true
+  },
+  // ... more examples (mark all as cacheable)
+  {
+    role: 'user',
+    content: 'Natural language: Show me users who haven\'t logged in for 30 days'
+    // Current query - NOT cached
+  }
+]
+
+const result = await formatMessagesForProviderCaching(messages, {
+  provider: 'anthropic',
+  anthropic: {
+    defaultTTL: '1h',
+    minCachedTokens: 1024,
+    maxBreakpoints: 1  // Single breakpoint after all examples
+  }
+})
+```
+
+### Pattern 3: Multiple Cache Points
+
+Best for: Complex workflows with distinct cacheable sections.
+
+```typescript
+const messages = [
+  // Section 1: System instructions (always cached)
+  {
+    role: 'system',
+    content: 'Core system prompt...',
+    cacheable: true,
+    cacheWeight: 1.0  // High priority
+  },
+
+  // Section 2: API documentation (cached)
+  {
+    role: 'user',
+    content: 'API Reference:\n\n[Large API documentation - 5000 tokens]',
+    cacheable: true,
+    cacheWeight: 0.9
+  },
+
+  // Section 3: Code examples (cached)
+  {
+    role: 'user',
+    content: 'Example implementations:\n\n[Multiple code examples - 3000 tokens]',
+    cacheable: true,
+    cacheWeight: 0.8
+  },
+
+  // Section 4: Current conversation history (partially cached)
+  {
+    role: 'user',
+    content: 'Previous conversation context...',
+    cacheable: true,
+    cacheWeight: 0.6
+  },
+
+  // Section 5: Current query (NOT cached)
+  {
+    role: 'user',
+    content: 'Current user question...',
+    cacheable: false
+  }
+]
+
+const result = await formatMessagesForProviderCaching(messages, {
+  provider: 'anthropic',
+  anthropic: {
+    defaultTTL: '1h',
+    minCachedTokens: 1024,
+    maxBreakpoints: 4  // Use all 4 available breakpoints
+  }
+})
+
+// Result distributes cache_control across top 4 messages
+```
+
+### Pattern 4: RAG with Document Context
+
+Best for: Retrieval-Augmented Generation with large document chunks.
+
+```typescript
+// Retrieve relevant documents
+const relevantDocs = await vectorStore.similaritySearch(userQuery, 5)
+
+const documentContext = relevantDocs
+  .map((doc, i) => `[Document ${i + 1}]\n${doc.content}`)
+  .join('\n\n')
+
+const messages = [
+  {
+    role: 'system',
+    content: 'You are a helpful assistant. Answer questions based on the provided context.',
+    cacheable: true
+  },
+  {
+    role: 'user',
+    content: `Context:\n${documentContext}\n\n[Total: ~20,000 tokens]`,
+    cacheable: true  // Cache the retrieved documents
+  },
+  {
+    role: 'user',
+    content: userQuery  // Current query - NOT cached
+  }
+]
+
+const result = await formatMessagesForProviderCaching(messages, {
+  provider: 'anthropic',
+  anthropic: {
+    defaultTTL: '5m',  // Shorter TTL - context may change
+    minCachedTokens: 1024
+  }
+})
+```
+
+**Cost Analysis:**
+
+```
+Without caching:
+- 20,000 tokens × $0.003/1K = $0.060 per query
+- 100 queries/day = $6.00/day
+
+With caching (90% of documents cached):
+- First query: $0.060 (cache write)
+- Subsequent: (18,000 cached × $0.0003/1K) + (2,000 new × $0.003/1K) = $0.0114
+- 100 queries/day = $1.194/day
+- Savings: $4.80/day (80% reduction)
+```
+
+---
+
+## Best Practices
+
+### 1. Content Organization
+
+**Structure prompts for optimal caching:**
+
+```typescript
+// ✅ Good: Static content first, dynamic last
+const messages = [
+  { role: 'system', content: staticSystemPrompt, cacheable: true },
+  { role: 'user', content: staticExamples, cacheable: true },
+  { role: 'user', content: dynamicUserQuery }  // Not cached
+]
+
+// ❌ Bad: Dynamic content in the middle
+const messages = [
+  { role: 'system', content: staticSystemPrompt, cacheable: true },
+  { role: 'user', content: dynamicUserQuery },  // Breaks cache chain
+  { role: 'user', content: staticExamples, cacheable: true }
+]
+```
+
+**Why?** Anthropic caching works best when static content is contiguous at the beginning of the conversation.
+
+### 2. Token Threshold Awareness
+
+```typescript
+import { AccurateTokenCounter } from '@clarity-chat/token-optimization'
+
+const counter = new AccurateTokenCounter({ model: 'claude-3-5-sonnet-20241022' })
+
+// Check token count before caching
+const systemPromptTokens = counter.count(systemPrompt)
+
+if (systemPromptTokens < 1024) {
+  console.warn(
+    `System prompt has ${systemPromptTokens} tokens, below 1024 minimum for caching. ` +
+    `Consider expanding or consolidating prompts.`
+  )
+}
+
+// For Haiku, check higher threshold
+if (model === 'claude-3-5-haiku-20241022' && systemPromptTokens < 2048) {
+  console.warn('Haiku requires 2048+ tokens for efficient caching')
+}
+```
+
+### 3. TTL Selection Strategy
+
+```typescript
+const selectTTL = (contentType: string): '5m' | '1h' => {
+  switch (contentType) {
+    case 'system-prompt':
+    case 'api-docs':
+    case 'few-shot-examples':
+      return '1h'  // Stable content
+
+    case 'conversation-history':
+    case 'retrieved-documents':
+    case 'user-context':
+      return '5m'  // Dynamic content
+
+    default:
+      return '5m'  // Conservative default
+  }
+}
+
+const result = await formatMessagesForProviderCaching(messages, {
+  provider: 'anthropic',
+  anthropic: {
+    defaultTTL: selectTTL('system-prompt')
+  }
+})
+```
+
+### 4. Monitoring Cache Performance
+
+```typescript
+interface CacheMetrics {
+  requests: number
+  cacheWrites: number
+  cacheReads: number
+  totalCost: number
+  savedCost: number
+}
+
+const metrics: CacheMetrics = {
+  requests: 0,
+  cacheWrites: 0,
+  cacheReads: 0,
+  totalCost: 0,
+  savedCost: 0
+}
+
+async function trackCachedRequest(messages: CacheableMessage[]) {
+  metrics.requests++
+
+  const response = await anthropic.messages.create({
+    model: 'claude-3-5-sonnet-20241022',
+    max_tokens: 4096,
+    messages: formattedMessages
+  })
+
+  const usage = response.usage
+
+  // Track cache performance
+  if (usage.cache_creation_input_tokens > 0) {
+    metrics.cacheWrites++
+    console.log('Cache write:', usage.cache_creation_input_tokens, 'tokens')
+  }
+
+  if (usage.cache_read_input_tokens > 0) {
+    metrics.cacheReads++
+    const savings = usage.cache_read_input_tokens * 0.003 * 0.9 / 1000
+    metrics.savedCost += savings
+    console.log('Cache hit! Saved:', savings.toFixed(4), 'USD')
+  }
+
+  // Calculate total cost
+  const cost =
+    (usage.input_tokens / 1000) * 0.003 +
+    (usage.cache_creation_input_tokens / 1000) * 0.003 +
+    (usage.cache_read_input_tokens / 1000) * 0.0003 +
+    (usage.output_tokens / 1000) * 0.015
+
+  metrics.totalCost += cost
+
+  return response
+}
+
+// Generate daily report
+function generateCacheReport() {
+  const hitRate = metrics.requests > 0 ? metrics.cacheReads / metrics.requests : 0
+
+  console.log('Cache Performance Report')
+  console.log('========================')
+  console.log(`Total Requests: ${metrics.requests}`)
+  console.log(`Cache Writes: ${metrics.cacheWrites}`)
+  console.log(`Cache Reads: ${metrics.cacheReads}`)
+  console.log(`Hit Rate: ${(hitRate * 100).toFixed(1)}%`)
+  console.log(`Total Cost: $${metrics.totalCost.toFixed(2)}`)
+  console.log(`Cost Saved: $${metrics.savedCost.toFixed(2)}`)
+  console.log(`Savings Rate: ${((metrics.savedCost / (metrics.totalCost + metrics.savedCost)) * 100).toFixed(1)}%`)
+}
+```
+
+### 5. Error Handling
+
+```typescript
+import { formatMessagesForProviderCaching } from '@clarity-chat/token-optimization'
+import Anthropic from '@anthropic-ai/sdk'
+
+async function safeCachedRequest(messages: CacheableMessage[]) {
+  try {
+    // Format messages for caching
+    const result = await formatMessagesForProviderCaching(messages, {
+      provider: 'anthropic'
+    })
+
+    // Check recommendations
+    if (result.recommendations.length > 0) {
+      console.warn('Caching recommendations:', result.recommendations)
+    }
+
+    if (!result.cached) {
+      console.warn('Caching not applied. Using standard request.')
+    }
+
+    // Make API call
+    const response = await anthropic.messages.create({
+      model: 'claude-3-5-sonnet-20241022',
+      max_tokens: 4096,
+      messages: result.messages
+    })
+
+    return response
+
+  } catch (error) {
+    if (error.message?.includes('cache_control')) {
+      // Cache-specific error
+      console.error('Cache control error:', error)
+
+      // Fallback to non-cached request
+      return await anthropic.messages.create({
+        model: 'claude-3-5-sonnet-20241022',
+        max_tokens: 4096,
+        messages: messages.map(m => ({
+          role: m.role === 'system' ? 'user' : m.role,
+          content: m.content
+        }))
+      })
+    }
+
+    throw error  // Re-throw non-cache errors
+  }
+}
+```
+
+---
+
+## Cost Savings Calculations
+
+### Example Scenarios
+
+#### Scenario 1: Customer Support Bot
+
+```typescript
+// Configuration
+const systemPrompt = '...'  // 2500 tokens
+const averageQuery = '...'  // 150 tokens
+const averageResponse = '...'  // 400 tokens
+const requestsPerDay = 500
+
+// Without caching
+const costWithoutCache =
+  ((2500 + 150) / 1000 * 0.003 +  // Input
+   400 / 1000 * 0.015) *            // Output
+  500                               // Requests
+// = $0.00795 * 500 = $3.975/day
+
+// With caching (after first request)
+const firstRequestCost = 0.00795
+const cachedRequestCost =
+  (2500 / 1000 * 0.0003 +          // Cached input (90% off)
+   150 / 1000 * 0.003 +             // New input
+   400 / 1000 * 0.015)              // Output
+// = $0.00135 per request
+
+const costWithCache = firstRequestCost + (cachedRequestCost * 499)
+// = $0.00795 + $0.67365 = $0.6816/day
+
+// Savings
+const dailySavings = 3.975 - 0.6816 // = $3.29/day
+const monthlySavings = dailySavings * 30 // = $98.70/month
+const savingsPercentage = (dailySavings / 3.975) * 100 // = 82.8%
+```
+
+#### Scenario 2: RAG-Based Documentation Assistant
+
+```typescript
+// Configuration
+const systemPrompt = 1500 tokens
+const documentContext = 15000 tokens  // Retrieved docs
+const userQuery = 100 tokens
+const response = 600 tokens
+const requestsPerDay = 200
+const cacheHitRate = 0.7  // 70% of docs are cached
+
+// Without caching
+const costWithoutCache =
+  ((1500 + 15000 + 100) / 1000 * 0.003 +
+   600 / 1000 * 0.015) * 200
+// = $0.0588 * 200 = $11.76/day
+
+// With caching
+const cacheHitCost =
+  ((1500 + 15000) / 1000 * 0.0003 +  // 90% cached
+   100 / 1000 * 0.003 +
+   600 / 1000 * 0.015)
+// = $0.0144 per cache hit
+
+const cacheMissCost = 0.0588  // Same as without cache
+
+const avgCostWithCache =
+  (cacheHitCost * cacheHitRate) +
+  (cacheMissCost * (1 - cacheHitRate))
+// = $0.0144 * 0.7 + $0.0588 * 0.3 = $0.02772
+
+const costWithCache = avgCostWithCache * 200 // = $5.544/day
+
+// Savings
+const dailySavings = 11.76 - 5.544 // = $6.22/day
+const monthlySavings = dailySavings * 30 // = $186.60/month
+const savingsPercentage = (dailySavings / 11.76) * 100 // = 52.9%
+```
+
+### ROI Calculator
+
+```typescript
+interface CacheROIInput {
+  systemPromptTokens: number
+  staticContextTokens: number
+  avgQueryTokens: number
+  avgResponseTokens: number
+  requestsPerDay: number
+  cacheHitRate: number  // 0-1
+  model: 'claude-3-5-sonnet-20241022' | 'claude-3-opus' | 'claude-3-haiku'
+}
+
+function calculateCacheROI(input: CacheROIInput) {
+  const pricing = {
+    'claude-3-5-sonnet-20241022': { input: 0.003, output: 0.015, cached: 0.0003 },
+    'claude-3-opus': { input: 0.015, output: 0.075, cached: 0.0015 },
+    'claude-3-haiku': { input: 0.0008, output: 0.004, cached: 0.00008 }
+  }
+
+  const prices = pricing[input.model]
+  const cacheableTokens = input.systemPromptTokens + input.staticContextTokens
+  const newTokens = input.avgQueryTokens
+
+  // Cost without caching
+  const costWithoutCache =
+    ((cacheableTokens + newTokens) / 1000) * prices.input +
+    (input.avgResponseTokens / 1000) * prices.output
+
+  // Cost with caching (weighted by hit rate)
+  const cacheHitCost =
+    (cacheableTokens / 1000) * prices.cached +
+    (newTokens / 1000) * prices.input +
+    (input.avgResponseTokens / 1000) * prices.output
+
+  const cacheMissCost = costWithoutCache
+
+  const avgCostWithCache =
+    (cacheHitCost * input.cacheHitRate) +
+    (cacheMissCost * (1 - input.cacheHitRate))
+
+  // Calculate totals
+  const dailyCostWithout = costWithoutCache * input.requestsPerDay
+  const dailyCostWith = avgCostWithCache * input.requestsPerDay
+  const dailySavings = dailyCostWithout - dailyCostWith
+
+  return {
+    withoutCache: {
+      perRequest: costWithoutCache,
+      daily: dailyCostWithout,
+      monthly: dailyCostWithout * 30,
+      annual: dailyCostWithout * 365
+    },
+    withCache: {
+      perRequest: avgCostWithCache,
+      daily: dailyCostWith,
+      monthly: dailyCostWith * 30,
+      annual: dailyCostWith * 365
+    },
+    savings: {
+      perRequest: costWithoutCache - avgCostWithCache,
+      daily: dailySavings,
+      monthly: dailySavings * 30,
+      annual: dailySavings * 365,
+      percentage: (dailySavings / dailyCostWithout) * 100
+    },
+    breakeven: {
+      requests: 1,  // Breaks even after first cache hit
+      days: input.cacheHitRate > 0 ? 1 / input.cacheHitRate : Infinity
+    }
+  }
+}
+
+// Usage
+const roi = calculateCacheROI({
+  systemPromptTokens: 2500,
+  staticContextTokens: 5000,
+  avgQueryTokens: 150,
+  avgResponseTokens: 400,
+  requestsPerDay: 500,
+  cacheHitRate: 0.85,
+  model: 'claude-3-5-sonnet-20241022'
+})
+
+console.log('Annual savings:', `$${roi.savings.annual.toFixed(2)}`)
+console.log('Savings rate:', `${roi.savings.percentage.toFixed(1)}%`)
+```
+
+---
+
+## Troubleshooting
+
+### Issue 1: Cache Not Applied
+
+**Symptoms:**
+
+```typescript
+const result = await formatMessagesForProviderCaching(messages)
+console.log(result.cached) // false
+console.log(result.recommendations)
+// ["No cache breakpoints added. Ensure messages exceed 1024 tokens."]
+```
+
+**Solutions:**
+
+```typescript
+// Check 1: Verify token count
+import { AccurateTokenCounter } from '@clarity-chat/token-optimization'
+
+const counter = new AccurateTokenCounter({ model: 'claude-3-5-sonnet-20241022' })
+const tokens = counter.count(messages[0].content)
+
+if (tokens < 1024) {
+  // Solution: Consolidate or expand content
+  const expandedSystemPrompt = `${originalPrompt}
+
+Additional context and examples to reach 1024+ tokens...`
+}
+
+// Check 2: Ensure cacheable flag is set
+messages[0].cacheable = true
+
+// Check 3: Verify configuration
+const result = await formatMessagesForProviderCaching(messages, {
+  provider: 'anthropic',
+  enabled: true,
+  anthropic: {
+    minCachedTokens: 1024,
+    autoDetectBreakpoints: true
+  }
+})
+```
+
+### Issue 2: Low Cache Hit Rate
+
+**Symptoms:**
+
+```typescript
+// Expected 80%+ hit rate, getting <50%
+const hitRate = cacheReads / totalRequests // 0.45
+```
+
+**Solutions:**
+
+```typescript
+// Solution 1: Increase TTL
+const result = await formatMessagesForProviderCaching(messages, {
+  provider: 'anthropic',
+  anthropic: {
+    defaultTTL: '1h'  // Instead of '5m'
+  }
+})
+
+// Solution 2: Ensure content consistency
+// ❌ Bad: Varying whitespace/formatting
+const systemPrompt1 = 'You are an assistant.\nHelp users...'
+const systemPrompt2 = 'You are an assistant. Help users...'
+
+// ✅ Good: Normalize formatting
+const normalizePrompt = (text: string) => text.trim().replace(/\s+/g, ' ')
+const systemPrompt = normalizePrompt(basePrompt)
+
+// Solution 3: Move dynamic content to end
+// ❌ Bad: Timestamp in system prompt
+const badPrompt = `Current time: ${new Date().toISOString()}\n\nYou are...`
+
+// ✅ Good: Static system prompt, dynamic context separate
+const goodPrompt = 'You are...'  // Cached
+const dynamicContext = `Current time: ${new Date().toISOString()}`  // Not cached
+```
+
+### Issue 3: Unexpected Costs
+
+**Symptoms:**
+
+```typescript
+// Cache should save money but costs increased
+response.usage.cache_creation_input_tokens // High on every request
+```
+
+**Solutions:**
+
+```typescript
+// Solution 1: Check for cache invalidation
+// Possible causes:
+// - Content changes between requests
+// - TTL expired (check timestamps)
+// - Cache eviction (too many unique caches)
+
+// Add logging to track cache behavior
+console.log('Cache metrics:', {
+  cacheWrites: response.usage.cache_creation_input_tokens || 0,
+  cacheReads: response.usage.cache_read_input_tokens || 0,
+  timestamp: new Date().toISOString()
+})
+
+// Solution 2: Reduce cache churn
+// ❌ Bad: Creating new caches per user
+const userSpecificPrompt = `System prompt for user ${userId}...`
+
+// ✅ Good: Shared cache across users
+const sharedPrompt = 'System prompt...'
+const userContext = { userId, preferences } // Passed separately
+
+// Solution 3: Use appropriate caching granularity
+// Cache stable, high-token content only
+const shouldCache = (content: string, tokens: number) => {
+  return (
+    tokens >= 1024 &&
+    !content.includes('${') &&  // No template variables
+    !content.includes(new Date().toISOString()) &&  // No timestamps
+    isStableContent(content)
+  )
+}
+```
+
+### Issue 4: API Errors with cache_control
+
+**Symptoms:**
+
+```typescript
+// Error: "Invalid cache_control"
+// Error: "cache_control not supported for this model"
+```
+
+**Solutions:**
+
+```typescript
+// Solution 1: Verify model support
+const supportedModels = [
+  'claude-3-5-sonnet-20241022',
+  'claude-3-5-haiku-20241022',
+  'claude-3-opus-20241022',
+  'claude-3-haiku-20240307'
+]
+
+if (!supportedModels.includes(model)) {
+  console.warn(`Model ${model} does not support caching`)
+  // Fallback to non-cached request
+}
+
+// Solution 2: Check breakpoint limits
+const result = await formatMessagesForProviderCaching(messages, {
+  provider: 'anthropic',
+  anthropic: {
+    maxBreakpoints: 4  // Don't exceed 4
+  }
+})
+
+// Solution 3: Validate message structure
+// Ensure cache_control is in correct location
+const validFormat = {
+  role: 'user',
+  content: [{
+    type: 'text',
+    text: 'Content...',
+    cache_control: { type: 'ephemeral', ttl: '5m' }
+  }]
+}
+
+// Solution 4: Handle API version compatibility
+try {
+  const response = await anthropic.messages.create({
+    model: 'claude-3-5-sonnet-20241022',
+    messages: formattedMessages
+  })
+} catch (error) {
+  if (error.message?.includes('cache_control')) {
+    // Fallback: Remove cache_control and retry
+    const fallbackMessages = messages.map(m => ({
+      role: m.role,
+      content: typeof m.content === 'string' ? m.content : m.content.map(c => c.text).join('')
+    }))
+
+    const response = await anthropic.messages.create({
+      model: 'claude-3-5-sonnet-20241022',
+      messages: fallbackMessages
+    })
+  }
+}
+```
+
+---
+
+## Integration with Existing Strategies
+
+### Combining with Client-Side Caching
+
+```typescript
+import { TieredCache } from '@clarity-chat/token-optimization'
+import { formatMessagesForProviderCaching } from '@clarity-chat/token-optimization'
+
+// Layer 1: Client-side cache for complete responses
+const responseCache = new TieredCache({
+  l1: { maxSize: 100, ttl: 300000 },  // 5 min in-memory
+  l2: { maxSize: 1000, ttl: 3600000 }  // 1 hour Redis
+})
+
+// Layer 2: Provider caching for partial prompts
+async function getCachedResponse(query: string, context: string) {
+  // Check L1: Complete response cache
+  const cacheKey = `${context}:${query}`
+  const cached = await responseCache.get(cacheKey)
+
+  if (cached) {
+    console.log('L1 Cache hit - complete response')
+    return cached
+  }
+
+  // L2: Provider caching for static context
+  const messages = [
+    { role: 'system', content: staticSystemPrompt, cacheable: true },
+    { role: 'user', content: context, cacheable: true },
+    { role: 'user', content: query }
+  ]
+
+  const formatted = await formatMessagesForProviderCaching(messages, {
+    provider: 'anthropic'
+  })
+
+  const response = await anthropic.messages.create({
+    model: 'claude-3-5-sonnet-20241022',
+    max_tokens: 4096,
+    messages: formatted.messages
+  })
+
+  // Store in L1 cache for next time
+  await responseCache.set(cacheKey, response, 300000)
+
+  return response
+}
+```
+
+### Combining with Token Budget Monitoring
+
+```typescript
+import {
+  useTokenBudgetTracking,
+  formatMessagesForProviderCaching
+} from '@clarity-chat/token-optimization'
+
+function CachedChatComponent() {
+  const [messages, setMessages] = useState<Message[]>([])
+
+  // Monitor token budget
+  const { usage, isWarning, updateMessages } = useTokenBudgetTracking({
+    maxInputTokens: 200000,  // Claude 3.5 Sonnet limit
+    warningThreshold: 0.8,
+    onWarning: (usage) => {
+      console.warn('Token budget warning:', usage)
+    }
+  })
+
+  const sendMessage = async (userMessage: string) => {
+    // Format for provider caching
+    const cacheableMessages = [
+      { role: 'system', content: systemPrompt, cacheable: true },
+      ...messages,
+      { role: 'user', content: userMessage }
+    ]
+
+    // Update budget monitor
+    updateMessages(cacheableMessages)
+
+    if (usage.isExceeded) {
+      throw new Error('Token budget exceeded')
+    }
+
+    // Apply caching
+    const formatted = await formatMessagesForProviderCaching(cacheableMessages, {
+      provider: 'anthropic'
+    })
+
+    // Send to API
+    const response = await anthropic.messages.create({
+      model: 'claude-3-5-sonnet-20241022',
+      max_tokens: 4096,
+      messages: formatted.messages
+    })
+
+    setMessages([...messages,
+      { role: 'user', content: userMessage },
+      { role: 'assistant', content: response.content[0].text }
+    ])
+  }
+
+  return (
+    <div>
+      <TokenBudgetBar usage={usage} isWarning={isWarning} />
+      <ChatMessages messages={messages} />
+      <ChatInput onSend={sendMessage} />
+    </div>
+  )
+}
+```
+
+### Combining with Compression
+
+```typescript
+import {
+  formatMessagesForProviderCaching,
+  compressAdaptively
+} from '@clarity-chat/token-optimization'
+
+async function optimizedRequest(
+  systemPrompt: string,
+  userQuery: string,
+  conversationHistory: Message[]
+) {
+  // Step 1: Compress old conversation history
+  const compressedHistory = conversationHistory.length > 5
+    ? await compressAdaptively(
+        JSON.stringify(conversationHistory.slice(0, -5)),
+        0.3  // 70% compression on old messages
+      )
+    : ''
+
+  // Step 2: Build messages with compression + caching
+  const messages = [
+    {
+      role: 'system',
+      content: systemPrompt,
+      cacheable: true  // Cache full system prompt
+    },
+    ...(compressedHistory ? [{
+      role: 'user',
+      content: `Previous conversation summary: ${compressedHistory}`,
+      cacheable: true  // Cache compressed history
+    }] : []),
+    ...conversationHistory.slice(-5),  // Keep recent messages uncompressed
+    {
+      role: 'user',
+      content: userQuery
+    }
+  ]
+
+  // Step 3: Apply provider caching
+  const formatted = await formatMessagesForProviderCaching(messages, {
+    provider: 'anthropic',
+    anthropic: {
+      defaultTTL: '5m',
+      minCachedTokens: 1024
+    }
+  })
+
+  // Step 4: Send to API
+  const response = await anthropic.messages.create({
+    model: 'claude-3-5-sonnet-20241022',
+    max_tokens: 4096,
+    messages: formatted.messages
+  })
+
+  console.log('Optimization stats:', {
+    originalHistoryTokens: conversationHistory.length * 200,  // Estimate
+    compressedTokens: countTokens(compressedHistory),
+    cachedTokens: formatted.metadata.cachedTokens,
+    totalSavings: formatted.estimatedSavings.percentage
+  })
+
+  return response
+}
+```
+
+---
+
+## Production Checklist
+
+Before deploying provider caching to production:
+
+- [ ] **Verify token counts** - System prompts have 1024+ tokens (2048+ for Haiku)
+- [ ] **Test cache behavior** - Monitor first request (cache write) vs subsequent (cache read)
+- [ ] **Set appropriate TTL** - Use 1h for stable content, 5m for dynamic
+- [ ] **Implement monitoring** - Track cache hit rate, cost savings, API errors
+- [ ] **Add error handling** - Fallback to non-cached requests on cache errors
+- [ ] **Normalize content** - Ensure consistent formatting for cache hits
+- [ ] **Document cache strategy** - Clear guidelines for team on what to cache
+- [ ] **Set cost alerts** - Monitor actual costs match expected savings
+- [ ] **Test edge cases** - Empty caches, TTL expiry, concurrent requests
+- [ ] **Review cache metrics** - Weekly analysis of hit rates and savings
+
+---
+
+## Next Steps
+
+- [Caching Strategies](/guides/token-optimization/caching-strategies) - Multi-tier caching patterns
+- [Token Optimization Algorithms](/guides/token-optimization/algorithms) - Compression techniques
+- [Smart Model Routing](/guides/token-optimization/smart-routing) - Cost-aware model selection
+- [Rate Limiting](/guides/token-optimization/rate-limiting) - Request throttling and quotas
+
+---
+
+## Additional Resources
+
+- [Anthropic Prompt Caching Documentation](https://docs.anthropic.com/en/docs/build-with-claude/prompt-caching)
+- [Anthropic API Reference](https://docs.anthropic.com/en/api/messages)
+- [Claude Model Pricing](https://www.anthropic.com/pricing#anthropic-api)
+- [Token Optimization Package API](/reference/packages/token-optimization)

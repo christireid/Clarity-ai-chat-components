@@ -1,0 +1,1834 @@
+---
+title: 'Document Loaders API Reference'
+description: 'Complete API reference for document loaders supporting PDF, DOCX, TXT, MD, HTML, CSV, and JSON formats with configuration options, performance characteristics, and custom loader creation.'
+date: '2026-01-29'
+category: 'RAG & Document Processing'
+tags: ['document-loaders', 'rag', 'pdf', 'docx', 'api-reference']
+---
+
+# Document Loaders API Reference
+
+Complete API reference for all document loaders in Clarity AI Chat Components. Learn how to load, parse, and process documents from multiple formats for RAG applications.
+
+<div className="grid sm:grid-cols-2 gap-4 my-8">
+  <div className="p-4 rounded-xl bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800/50">
+    <h4 className="font-semibold mb-2 text-blue-900 dark:text-blue-100">7 Built-in Loaders</h4>
+    <p className="text-sm text-blue-700 dark:text-blue-300">
+      PDF, DOCX, TXT, MD, HTML, CSV, JSON with automatic format detection
+    </p>
+  </div>
+  <div className="p-4 rounded-xl bg-emerald-50 dark:bg-emerald-950/20 border border-emerald-200 dark:border-emerald-800/50">
+    <h4 className="font-semibold mb-2 text-emerald-900 dark:text-emerald-100">Flexible Architecture</h4>
+    <p className="text-sm text-emerald-700 dark:text-emerald-300">
+      Minimal dependencies, bring your own parsing library, custom loaders supported
+    </p>
+  </div>
+</div>
+
+---
+
+## Table of Contents
+
+1. [Overview](#overview)
+2. [Core Types](#core-types)
+3. [Text Loader](#text-loader)
+4. [JSON Loader](#json-loader)
+5. [CSV Loader](#csv-loader)
+6. [HTML Loader](#html-loader)
+7. [Markdown Loader](#markdown-loader)
+8. [PDF Loader](#pdf-loader)
+9. [DOCX Loader](#docx-loader)
+10. [Loader Registry](#loader-registry)
+11. [Text Splitters](#text-splitters)
+12. [Custom Loaders](#custom-loaders)
+13. [Performance Characteristics](#performance-characteristics)
+14. [Error Handling](#error-handling)
+15. [Best Practices](#best-practices)
+
+---
+
+## Overview
+
+Document loaders extract text content from various file formats for use in RAG (Retrieval-Augmented Generation) systems. All loaders implement a common interface and support both browser and Node.js environments.
+
+### Design Philosophy
+
+- **Minimal Dependencies**: Core loaders have zero dependencies
+- **Bring Your Own Libraries**: Optional peer dependencies for advanced features
+- **Graceful Degradation**: Fallback implementations when libraries are unavailable
+- **Type Safety**: Full TypeScript support with strict typing
+- **Flexible**: Easy to extend with custom loaders
+
+### Installation
+
+```bash
+# Core loaders (no dependencies)
+npm install @clarity-chat/react
+
+# Optional: PDF support
+npm install pdfjs-dist
+
+# Optional: DOCX support (required)
+npm install jszip
+
+# Optional: Enhanced DOCX parsing
+npm install mammoth
+```
+
+---
+
+## Core Types
+
+All document loaders share common type definitions for consistency and type safety.
+
+### Document
+
+```typescript
+interface Document {
+  /** Document content as text */
+  content: string
+  /** Document metadata */
+  metadata: DocumentMetadata
+}
+```
+
+### DocumentMetadata
+
+```typescript
+interface DocumentMetadata {
+  /** Document source/file name */
+  source?: string
+  /** File type (MIME type or extension) */
+  type?: string
+  /** Page number (for PDFs) */
+  page?: number
+  /** Line numbers */
+  lines?: { start: number; end: number }
+  /** Custom metadata fields */
+  [key: string]: DocumentMetadataValue | { start: number; end: number }
+}
+
+type DocumentMetadataValue =
+  | string
+  | number
+  | boolean
+  | string[]
+  | number[]
+  | null
+  | undefined
+```
+
+### DocumentChunk
+
+```typescript
+interface DocumentChunk extends Document {
+  /** Unique chunk identifier */
+  id: string
+  /** Parent document ID */
+  documentId?: string
+  /** Chunk index in sequence */
+  index: number
+  /** Start position in original document */
+  start: number
+  /** End position in original document */
+  end: number
+}
+```
+
+### DocumentLoader
+
+```typescript
+interface DocumentLoader {
+  /** Loader name */
+  name: string
+  /** Supported file types (MIME types or extensions) */
+  supportedTypes: string[]
+
+  /**
+   * Load a document from various sources
+   * @param source - URL string, File object, or Blob
+   * @param options - Loader-specific options
+   */
+  load(
+    source: string | File | Blob,
+    options?: DocumentLoadOptions
+  ): Promise<Document[]>
+
+  /**
+   * Check if loader supports a file type
+   * @param type - MIME type or file extension
+   */
+  supports(type: string): boolean
+}
+```
+
+### DocumentLoadOptions
+
+```typescript
+interface DocumentLoadOptions {
+  /** Text encoding (default: 'utf-8') */
+  encoding?: string
+  /** Custom metadata to attach to all documents */
+  metadata?: DocumentMetadata
+  /** Maximum document size in bytes */
+  maxSize?: number
+  /** Skip validation checks */
+  skipValidation?: boolean
+  /** Loader-specific options */
+  [key: string]: any
+}
+```
+
+---
+
+## Text Loader
+
+Simple loader for plain text files. Handles `.txt` files and raw text strings.
+
+### Usage
+
+```typescript
+import { TextLoader } from '@clarity-chat/react'
+
+const loader = new TextLoader()
+
+// Load from file
+const docs = await loader.load(file)
+
+// Load from URL
+const docs = await loader.load('https://example.com/document.txt')
+
+// Load from string
+const docs = await loader.load('This is raw text content')
+```
+
+### Configuration
+
+```typescript
+class TextLoader implements DocumentLoader {
+  name = 'text'
+  supportedTypes = ['text/plain', 'txt']
+}
+```
+
+### Supported Sources
+
+| Source Type | Description | Example |
+|------------|-------------|---------|
+| `string` (URL) | HTTP/HTTPS URL | `'https://example.com/file.txt'` |
+| `string` (raw) | Raw text content | `'Hello, world!'` |
+| `File` | Browser File object | `<input type="file">` result |
+| `Blob` | Browser Blob object | `new Blob(['text'], { type: 'text/plain' })` |
+
+### Output
+
+Returns a single `Document` with:
+- `content`: Full text content
+- `metadata.type`: `'text/plain'`
+- `metadata.source`: Filename or `'unknown'`
+
+### Performance
+
+- **Speed**: Instant (no parsing required)
+- **Memory**: Low (single document)
+- **Encoding**: Auto-detected or UTF-8
+
+---
+
+## JSON Loader
+
+Load JSON files and convert to text representation. Supports JSON path extraction and custom formatting.
+
+### Usage
+
+```typescript
+import { JSONLoader } from '@clarity-chat/react'
+
+const loader = new JSONLoader()
+
+// Basic loading
+const docs = await loader.load(jsonFile)
+
+// Extract specific path
+const docs = await loader.load(jsonFile, {
+  jsonPath: 'data.items',
+  stringify: true
+})
+
+// Custom formatting
+const docs = await loader.load(jsonFile, {
+  stringify: false  // Return toString() instead
+})
+```
+
+### Options
+
+```typescript
+interface JSONLoadOptions extends DocumentLoadOptions {
+  /** JSON path to extract (e.g., "data.items") */
+  jsonPath?: string
+  /** Whether to stringify the JSON (default: true) */
+  stringify?: boolean
+}
+```
+
+### Examples
+
+#### Basic JSON Loading
+
+```typescript
+const loader = new JSONLoader()
+const docs = await loader.load({
+  title: 'Example',
+  content: 'JSON data'
+})
+
+// Output:
+// {
+//   "title": "Example",
+//   "content": "JSON data"
+// }
+```
+
+#### Path Extraction
+
+```typescript
+const data = {
+  response: {
+    data: {
+      items: [
+        { id: 1, name: 'Item 1' },
+        { id: 2, name: 'Item 2' }
+      ]
+    }
+  }
+}
+
+const docs = await loader.load(data, {
+  jsonPath: 'response.data.items'
+})
+
+// Output:
+// [
+//   { "id": 1, "name": "Item 1" },
+//   { "id": 2, "name": "Item 2" }
+// ]
+```
+
+### Supported Sources
+
+Same as TextLoader, but expects valid JSON content.
+
+### Error Handling
+
+Invalid JSON throws `SyntaxError`:
+
+```typescript
+try {
+  const docs = await loader.load('invalid json')
+} catch (error) {
+  console.error('JSON parse error:', error)
+}
+```
+
+---
+
+## CSV Loader
+
+Parse CSV files and convert to readable text format with header support.
+
+### Usage
+
+```typescript
+import { CSVLoader } from '@clarity-chat/react'
+
+const loader = new CSVLoader()
+
+// Basic loading (assumes headers)
+const docs = await loader.load(csvFile)
+
+// Custom separator
+const docs = await loader.load(csvFile, {
+  separator: '\t',
+  hasHeader: true
+})
+
+// No headers
+const docs = await loader.load(csvFile, {
+  hasHeader: false
+})
+```
+
+### Options
+
+```typescript
+interface CSVLoadOptions extends DocumentLoadOptions {
+  /** Column separator (default: ',') */
+  separator?: string
+  /** Whether first row is header (default: true) */
+  hasHeader?: boolean
+}
+```
+
+### Examples
+
+#### With Headers
+
+```csv
+name,age,city
+Alice,30,NYC
+Bob,25,LA
+```
+
+```typescript
+const loader = new CSVLoader()
+const docs = await loader.load(csvFile)
+
+// Output:
+// name: Alice, age: 30, city: NYC
+// name: Bob, age: 25, city: LA
+```
+
+#### Without Headers
+
+```csv
+Alice,30,NYC
+Bob,25,LA
+```
+
+```typescript
+const docs = await loader.load(csvFile, { hasHeader: false })
+
+// Output:
+// Row 1: Alice, 30, NYC
+// Row 2: Bob, 25, LA
+```
+
+#### Tab-Separated Values
+
+```typescript
+const docs = await loader.load(tsvFile, {
+  separator: '\t',
+  hasHeader: true
+})
+```
+
+### Metadata
+
+Output includes:
+- `metadata.type`: `'text/csv'`
+- `metadata.rows`: Number of data rows
+- `metadata.source`: Filename
+
+### Limitations
+
+- No support for quoted fields with embedded separators
+- No escape character handling
+- Simple line-based parsing
+- For complex CSV, use a dedicated library
+
+---
+
+## HTML Loader
+
+Extract text content from HTML documents with selector-based exclusions.
+
+### Usage
+
+```typescript
+import { HTMLLoader } from '@clarity-chat/react'
+
+const loader = new HTMLLoader()
+
+// Basic loading
+const docs = await loader.load(htmlFile)
+
+// Exclude elements
+const docs = await loader.load(htmlFile, {
+  exclude: ['script', 'style', 'nav', 'footer']
+})
+
+// Load from URL
+const docs = await loader.load('https://example.com')
+```
+
+### Options
+
+```typescript
+interface HTMLLoadOptions extends DocumentLoadOptions {
+  /** CSS selectors to exclude (e.g., ['script', 'nav']) */
+  exclude?: string[]
+}
+```
+
+### Browser vs Node.js
+
+#### Browser (Uses DOMParser)
+
+```typescript
+// Preferred: native browser parsing
+const loader = new HTMLLoader()
+const docs = await loader.load(html, {
+  exclude: ['script', 'style']
+})
+```
+
+Benefits:
+- Accurate HTML parsing
+- Handles malformed HTML
+- Preserves text structure
+- Extracts document title
+
+#### Node.js (Fallback)
+
+When `DOMParser` is unavailable, uses regex-based extraction:
+
+```typescript
+// Fallback: simple regex
+const text = html
+  .replace(/<script[^>]*>[\s\S]*?<\/script>/gi, '')
+  .replace(/<style[^>]*>[\s\S]*?<\/style>/gi, '')
+  .replace(/<[^>]+>/g, ' ')
+  .replace(/\s+/g, ' ')
+  .trim()
+```
+
+⚠️ **Warning**: Fallback mode is less accurate. Consider using a proper HTML parser like `jsdom` or `cheerio` in Node.js.
+
+### Examples
+
+#### Basic Extraction
+
+```typescript
+const loader = new HTMLLoader()
+const html = `
+<html>
+  <head><title>Example</title></head>
+  <body>
+    <h1>Hello World</h1>
+    <p>This is content.</p>
+  </body>
+</html>
+`
+
+const docs = await loader.load(html)
+// Output: "Hello World This is content."
+```
+
+#### Exclude Navigation
+
+```typescript
+const docs = await loader.load(html, {
+  exclude: ['nav', 'footer', 'aside']
+})
+```
+
+### Metadata
+
+- `metadata.type`: `'text/html'`
+- `metadata.title`: Document title (browser only)
+- `metadata.source`: Filename or URL
+
+---
+
+## Markdown Loader
+
+Load Markdown files preserving the raw markdown syntax.
+
+### Usage
+
+```typescript
+import { MarkdownLoader } from '@clarity-chat/react'
+
+const loader = new MarkdownLoader()
+
+// Load markdown file
+const docs = await loader.load(mdFile)
+
+// Load from URL
+const docs = await loader.load('https://raw.githubusercontent.com/...')
+```
+
+### Configuration
+
+```typescript
+class MarkdownLoader implements DocumentLoader {
+  name = 'markdown'
+  supportedTypes = ['text/markdown', 'md', 'markdown']
+}
+```
+
+### Output
+
+Returns raw markdown content without parsing:
+
+```markdown
+# Heading
+
+This is **bold** and this is *italic*.
+
+- List item 1
+- List item 2
+```
+
+### Rendering Markdown
+
+To render markdown, use the `MarkdownRenderer` component:
+
+```typescript
+import { MarkdownRenderer } from '@clarity-chat/react'
+
+function DocumentView({ doc }) {
+  return <MarkdownRenderer content={doc.content} />
+}
+```
+
+### Metadata
+
+- `metadata.type`: `'text/markdown'`
+- `metadata.source`: Filename or URL
+
+---
+
+## PDF Loader
+
+Extract text from PDF files with page-level granularity and formatting preservation.
+
+### Dependencies
+
+**Required**: `pdfjs-dist` (peer dependency)
+
+```bash
+npm install pdfjs-dist
+```
+
+### Setup
+
+#### Browser Setup
+
+```typescript
+import * as pdfjsLib from 'pdfjs-dist'
+
+// Configure worker
+pdfjsLib.GlobalWorkerOptions.workerSrc =
+  `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`
+
+// Make available globally
+(window as any).pdfjsLib = pdfjsLib
+```
+
+#### Node.js Setup
+
+```typescript
+// Use legacy build for Node.js
+import * as pdfjsLib from 'pdfjs-dist/legacy/build/pdf.js'
+global.pdfjsLib = pdfjsLib
+```
+
+### Usage
+
+```typescript
+import { PDFLoader } from '@clarity-chat/react'
+
+const loader = new PDFLoader()
+
+// Basic loading
+const docs = await loader.load(pdfFile)
+
+// With options
+const docs = await loader.load(pdfFile, {
+  maxPages: 10,
+  preserveFormatting: true,
+  pageRange: '1-5,10-15'
+})
+
+// Password-protected PDF
+const docs = await loader.load(pdfFile, {
+  password: 'secret'
+})
+```
+
+### Options
+
+```typescript
+interface PDFLoadOptions extends DocumentLoadOptions {
+  /** Maximum number of pages to extract */
+  maxPages?: number
+  /** Preserve text formatting and structure (default: true) */
+  preserveFormatting?: boolean
+  /** Extract text from images using OCR (requires setup) */
+  extractImages?: boolean
+  /** Password for encrypted PDFs */
+  password?: string
+  /** Page range to extract (e.g., "1-10", "1,3,5") */
+  pageRange?: string
+}
+```
+
+### Examples
+
+#### Basic Extraction
+
+```typescript
+const loader = new PDFLoader()
+const docs = await loader.load(pdfFile)
+
+docs.forEach((doc, i) => {
+  console.log(`Page ${i + 1}:`)
+  console.log(doc.content)
+  console.log('---')
+})
+```
+
+#### Page Range Selection
+
+```typescript
+// Extract pages 1-10
+const docs = await loader.load(pdfFile, {
+  pageRange: '1-10'
+})
+
+// Extract specific pages
+const docs = await loader.load(pdfFile, {
+  pageRange: '1,5,10,15'
+})
+
+// Mixed ranges
+const docs = await loader.load(pdfFile, {
+  pageRange: '1-5,10-15,20'
+})
+```
+
+#### Formatting Preservation
+
+```typescript
+// Preserve structure (default)
+const structured = await loader.load(pdfFile, {
+  preserveFormatting: true
+})
+
+// Simple text extraction
+const simple = await loader.load(pdfFile, {
+  preserveFormatting: false
+})
+```
+
+### Output Structure
+
+Each page returns a separate `Document`:
+
+```typescript
+{
+  content: "Page content with preserved line breaks...",
+  metadata: {
+    type: 'application/pdf',
+    source: 'document.pdf',
+    page: 1,
+    totalPages: 25
+  }
+}
+```
+
+### Error Handling
+
+```typescript
+try {
+  const docs = await loader.load(pdfFile)
+} catch (error) {
+  console.error('PDF loading failed:', error.message)
+
+  // Common errors:
+  // - "PDF parsing library not available" (pdfjs-dist not installed)
+  // - "Failed to fetch PDF: ..." (network error)
+  // - "Invalid PDF structure" (corrupted file)
+  // - "Incorrect password" (encrypted PDF)
+}
+```
+
+### Performance Characteristics
+
+| Metric | Value | Notes |
+|--------|-------|-------|
+| Bundle Impact | ~600 KB | Includes worker bundle |
+| Processing Speed | ~50 pages/sec | Varies by complexity |
+| Memory Usage | Moderate | Streams pages individually |
+| Browser Support | Modern browsers | Requires Web Workers |
+
+### Limitations
+
+- No image extraction (OCR requires additional setup)
+- Limited support for complex layouts
+- No form field extraction
+- No annotation extraction
+
+---
+
+## DOCX Loader
+
+Extract text from Microsoft Word (.docx) files with formatting preservation and section support.
+
+### Dependencies
+
+**Required**: `jszip` (peer dependency)
+
+```bash
+npm install jszip
+```
+
+**Optional**: `mammoth` (enhanced parsing)
+
+```bash
+npm install mammoth
+```
+
+### Setup
+
+#### Browser Setup
+
+```typescript
+import JSZip from 'jszip'
+import mammoth from 'mammoth'  // Optional
+
+// Expose globally for loader
+window.JSZip = JSZip
+window.mammoth = mammoth  // Optional
+```
+
+#### Node.js Setup
+
+```typescript
+// Dependencies auto-loaded via dynamic import
+// No setup required
+```
+
+### Usage
+
+```typescript
+import { DOCXLoader } from '@clarity-chat/react'
+
+const loader = new DOCXLoader()
+
+// Basic loading
+const docs = await loader.load(docxFile)
+
+// With options
+const docs = await loader.load(docxFile, {
+  preserveFormatting: true,
+  includeTables: true,
+  outputMarkdown: true,
+  splitBySections: true
+})
+```
+
+### Options
+
+```typescript
+interface DOCXLoadOptions extends DocumentLoadOptions {
+  /** Preserve text formatting (bold, italic, etc.) */
+  preserveFormatting?: boolean
+  /** Include table content */
+  includeTables?: boolean
+  /** Include headers and footers */
+  includeHeaders?: boolean
+  /** Include footnotes and endnotes */
+  includeNotes?: boolean
+  /** Convert to Markdown format */
+  outputMarkdown?: boolean
+  /** Split by sections (headings) */
+  splitBySections?: boolean
+}
+```
+
+### Examples
+
+#### Basic Extraction
+
+```typescript
+const loader = new DOCXLoader()
+const docs = await loader.load(docxFile)
+
+console.log(docs[0].content)
+```
+
+#### Markdown Output
+
+```typescript
+const docs = await loader.load(docxFile, {
+  outputMarkdown: true,
+  preserveFormatting: true
+})
+
+// Output includes markdown formatting:
+// # Heading 1
+// **Bold text** and *italic text*
+```
+
+#### Section Splitting
+
+```typescript
+const docs = await loader.load(docxFile, {
+  splitBySections: true
+})
+
+docs.forEach((doc, i) => {
+  console.log(`Section: ${doc.metadata.section}`)
+  console.log(doc.content)
+  console.log('---')
+})
+```
+
+### Parsing Modes
+
+#### With Mammoth (Enhanced)
+
+Benefits:
+- Preserves formatting
+- Extracts tables correctly
+- Handles complex layouts
+- Supports markdown conversion
+
+```typescript
+const docs = await loader.load(docxFile, {
+  preserveFormatting: true,
+  includeTables: true,
+  outputMarkdown: true
+})
+```
+
+#### Without Mammoth (Fallback)
+
+Uses basic XML parsing with JSZip:
+
+```typescript
+// Automatic fallback when mammoth unavailable
+const docs = await loader.load(docxFile)
+
+// Limited to basic text extraction
+// No formatting or table support
+```
+
+### Output Structure
+
+Single document by default:
+
+```typescript
+{
+  content: "Document content...",
+  metadata: {
+    type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    source: 'document.docx'
+  }
+}
+```
+
+With section splitting:
+
+```typescript
+[
+  {
+    content: "Introduction content...",
+    metadata: {
+      source: 'document.docx',
+      section: 'Introduction',
+      sectionIndex: 0
+    }
+  },
+  {
+    content: "Chapter 1 content...",
+    metadata: {
+      source: 'document.docx',
+      section: 'Chapter 1',
+      sectionIndex: 1
+    }
+  }
+]
+```
+
+### Error Handling
+
+```typescript
+try {
+  const docs = await loader.load(docxFile)
+} catch (error) {
+  // Common errors:
+  // - "JSZip is required..." (jszip not installed)
+  // - "Could not find document.xml" (corrupted file)
+  // - "No text content found" (empty document)
+}
+```
+
+### Performance
+
+| Metric | Value | Notes |
+|--------|-------|-------|
+| Bundle Impact | ~100 KB | JSZip library |
+| Processing Speed | Fast | ~100 pages/sec |
+| Memory Usage | Low | Streams ZIP content |
+| Browser Support | All modern browsers | Uses Web APIs |
+
+---
+
+## Loader Registry
+
+Automatically route documents to the correct loader based on file type.
+
+### Usage
+
+```typescript
+import { LoaderRegistry } from '@clarity-chat/react'
+
+const registry = new LoaderRegistry()
+
+// Automatic loader selection
+const docs = await registry.load(file)
+
+// Works with any file type
+const pdfDocs = await registry.load(pdfFile)
+const docxDocs = await registry.load(docxFile)
+const csvDocs = await registry.load(csvFile)
+```
+
+### Built-in Loaders
+
+The registry includes all core loaders by default:
+
+```typescript
+class LoaderRegistry {
+  private loaders: DocumentLoader[] = [
+    new TextLoader(),
+    new JSONLoader(),
+    new CSVLoader(),
+    new HTMLLoader(),
+    new MarkdownLoader(),
+    new PDFLoader(),
+    new DOCXLoader(),
+  ]
+}
+```
+
+### Custom Loaders
+
+Add your own loaders:
+
+```typescript
+import { LoaderRegistry, PDFLoader } from '@clarity-chat/react'
+import { CustomXMLLoader } from './loaders/xml'
+
+const registry = new LoaderRegistry()
+
+// Register custom loader
+registry.register(new CustomXMLLoader())
+
+// Now works with XML files
+const docs = await registry.load(xmlFile)
+```
+
+### Type Detection
+
+The registry detects file types from:
+
+1. **File.type** (File objects)
+2. **Blob.type** (Blob objects)
+3. **URL extension** (URL strings)
+4. **Fallback to text/plain**
+
+```typescript
+// Detection examples
+await registry.load(new File([''], 'doc.pdf', { type: 'application/pdf' }))
+// → Uses PDFLoader
+
+await registry.load('https://example.com/data.csv')
+// → Uses CSVLoader (from .csv extension)
+
+await registry.load(new Blob(['text']))
+// → Uses TextLoader (fallback)
+```
+
+### API Methods
+
+#### `register(loader: DocumentLoader): void`
+
+Add a custom loader to the registry:
+
+```typescript
+const myLoader = {
+  name: 'custom',
+  supportedTypes: ['application/custom'],
+  load: async (source) => [{ content: '...', metadata: {} }],
+  supports: (type) => type === 'application/custom'
+}
+
+registry.register(myLoader)
+```
+
+#### `getLoader(type: string): DocumentLoader | undefined`
+
+Get loader for a specific type:
+
+```typescript
+const pdfLoader = registry.getLoader('application/pdf')
+if (pdfLoader) {
+  const docs = await pdfLoader.load(pdfFile)
+}
+```
+
+#### `load(source: string | File | Blob, options?: any): Promise<Document[]>`
+
+Auto-select loader and process document:
+
+```typescript
+try {
+  const docs = await registry.load(unknownFile)
+  console.log(`Loaded ${docs.length} documents`)
+} catch (error) {
+  console.error('No loader found for file type')
+}
+```
+
+---
+
+## Text Splitters
+
+Split large documents into smaller chunks for embedding and retrieval.
+
+### RecursiveTextSplitter
+
+Hierarchical splitting that tries separators in order for natural boundaries.
+
+#### Usage
+
+```typescript
+import { RecursiveTextSplitter } from '@clarity-chat/react'
+
+const splitter = new RecursiveTextSplitter()
+
+// Split text
+const chunks = splitter.split(largeText, {
+  chunkSize: 1000,
+  chunkOverlap: 200,
+  splitBySentence: true
+})
+
+// Split documents
+const chunks = splitter.splitDocuments(documents, {
+  chunkSize: 1000,
+  chunkOverlap: 200
+})
+```
+
+#### Options
+
+```typescript
+interface ChunkingOptions {
+  /** Chunk size in characters (or tokens if tokenizer provided) */
+  chunkSize: number
+  /** Overlap between chunks for context continuity */
+  chunkOverlap?: number
+  /** Preserve sentence boundaries (default: true) */
+  splitBySentence?: boolean
+  /** Separators to try in order */
+  separators?: string[]
+  /** Keep separator in chunks */
+  keepSeparator?: boolean
+  /** Custom tokenizer function */
+  tokenizer?: (text: string) => string[]
+}
+```
+
+#### Default Configuration
+
+```typescript
+{
+  chunkSize: 1000,
+  chunkOverlap: 200,
+  splitBySentence: true,
+  separators: ['\n\n', '\n', '. ', '! ', '? ', '; ', ', ', ' '],
+  keepSeparator: false
+}
+```
+
+#### Examples
+
+```typescript
+// Basic chunking
+const splitter = new RecursiveTextSplitter()
+const chunks = splitter.split(text, {
+  chunkSize: 500,
+  chunkOverlap: 50
+})
+
+// Token-based chunking
+import { encode } from 'gpt-tokenizer'
+
+const chunks = splitter.split(text, {
+  chunkSize: 512,
+  chunkOverlap: 50,
+  tokenizer: (text) => encode(text).map(String)
+})
+
+// Custom separators
+const chunks = splitter.split(code, {
+  chunkSize: 1000,
+  separators: ['\n\nfunction', '\n\nclass', '\n\n', '\n']
+})
+```
+
+### CharacterTextSplitter
+
+Simple fixed-size character splitting.
+
+#### Usage
+
+```typescript
+import { CharacterTextSplitter } from '@clarity-chat/react'
+
+const splitter = new CharacterTextSplitter()
+
+const chunks = splitter.split(text, {
+  chunkSize: 1000,
+  chunkOverlap: 100
+})
+```
+
+Faster than recursive splitting but may break mid-sentence.
+
+### TokenTextSplitter
+
+Token-based splitting for accurate token budgets.
+
+#### Usage
+
+```typescript
+import { TokenTextSplitter } from '@clarity-chat/react'
+import { encode } from 'gpt-tokenizer'
+
+const splitter = new TokenTextSplitter((text) =>
+  encode(text).map(String)
+)
+
+const chunks = splitter.split(text, {
+  chunkSize: 512,
+  chunkOverlap: 50
+})
+```
+
+Each chunk has `metadata.tokens` for accurate counting.
+
+### Output Structure
+
+All splitters return `DocumentChunk[]`:
+
+```typescript
+[
+  {
+    id: 'chunk-0',
+    content: 'First chunk content...',
+    index: 0,
+    start: 0,
+    end: 1000,
+    metadata: {
+      chunkIndex: 0,
+      totalChunks: 5
+    }
+  },
+  {
+    id: 'chunk-1',
+    content: 'Second chunk with overlap...',
+    index: 1,
+    start: 800,
+    end: 1800,
+    metadata: {
+      chunkIndex: 1,
+      totalChunks: 5
+    }
+  }
+]
+```
+
+---
+
+## Custom Loaders
+
+Create custom loaders for specialized file formats.
+
+### Basic Structure
+
+```typescript
+import type { DocumentLoader, Document } from '@clarity-chat/react'
+
+export class CustomLoader implements DocumentLoader {
+  name = 'custom'
+  supportedTypes = ['application/custom', 'custom']
+
+  async load(
+    source: string | File | Blob,
+    options?: any
+  ): Promise<Document[]> {
+    // 1. Load content
+    const content = await this.loadContent(source)
+
+    // 2. Parse content
+    const parsed = this.parse(content)
+
+    // 3. Return documents
+    return [{
+      content: parsed,
+      metadata: {
+        type: 'application/custom',
+        source: this.getSource(source)
+      }
+    }]
+  }
+
+  supports(type: string): boolean {
+    return this.supportedTypes.includes(type.toLowerCase())
+  }
+
+  private async loadContent(source: string | File | Blob): Promise<string> {
+    if (typeof source === 'string') {
+      if (source.startsWith('http')) {
+        const res = await fetch(source)
+        return res.text()
+      }
+      return source
+    }
+    return source.text()
+  }
+
+  private parse(content: string): string {
+    // Custom parsing logic
+    return content
+  }
+
+  private getSource(source: string | File | Blob): string {
+    return source instanceof File ? source.name : 'unknown'
+  }
+}
+```
+
+### Example: XML Loader
+
+```typescript
+export class XMLLoader implements DocumentLoader {
+  name = 'xml'
+  supportedTypes = ['application/xml', 'text/xml', 'xml']
+
+  async load(source: string | File | Blob): Promise<Document[]> {
+    const xml = await this.loadContent(source)
+    const text = this.extractText(xml)
+
+    return [{
+      content: text,
+      metadata: {
+        type: 'application/xml',
+        source: source instanceof File ? source.name : 'xml'
+      }
+    }]
+  }
+
+  supports(type: string): boolean {
+    return this.supportedTypes.some(t =>
+      type.toLowerCase().includes(t)
+    )
+  }
+
+  private extractText(xml: string): string {
+    // Remove XML tags
+    return xml
+      .replace(/<\?xml[^>]*\?>/g, '')
+      .replace(/<[^>]+>/g, ' ')
+      .replace(/\s+/g, ' ')
+      .trim()
+  }
+
+  private async loadContent(source: string | File | Blob): Promise<string> {
+    if (typeof source === 'string') {
+      if (source.startsWith('http')) {
+        const res = await fetch(source)
+        return res.text()
+      }
+      return source
+    }
+    return source.text()
+  }
+}
+```
+
+### Example: Excel Loader
+
+```typescript
+import * as XLSX from 'xlsx'
+
+export class ExcelLoader implements DocumentLoader {
+  name = 'excel'
+  supportedTypes = [
+    'application/vnd.ms-excel',
+    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    'xls',
+    'xlsx'
+  ]
+
+  async load(source: File | Blob): Promise<Document[]> {
+    const arrayBuffer = await source.arrayBuffer()
+    const workbook = XLSX.read(arrayBuffer, { type: 'array' })
+
+    const documents: Document[] = []
+
+    workbook.SheetNames.forEach((sheetName) => {
+      const worksheet = workbook.Sheets[sheetName]
+      const csv = XLSX.utils.sheet_to_csv(worksheet)
+
+      documents.push({
+        content: csv,
+        metadata: {
+          type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+          source: source instanceof File ? source.name : 'excel',
+          sheet: sheetName
+        }
+      })
+    })
+
+    return documents
+  }
+
+  supports(type: string): boolean {
+    return this.supportedTypes.some(t =>
+      type.toLowerCase().includes(t.toLowerCase())
+    )
+  }
+}
+```
+
+### Registration
+
+```typescript
+import { LoaderRegistry } from '@clarity-chat/react'
+import { XMLLoader } from './loaders/xml'
+import { ExcelLoader } from './loaders/excel'
+
+const registry = new LoaderRegistry()
+
+registry.register(new XMLLoader())
+registry.register(new ExcelLoader())
+
+// Now supports XML and Excel files
+const docs = await registry.load(xmlFile)
+const sheets = await registry.load(excelFile)
+```
+
+---
+
+## Performance Characteristics
+
+### Loader Comparison
+
+| Loader | Speed | Memory | Bundle Impact | Dependencies |
+|--------|-------|--------|---------------|--------------|
+| Text | Instant | Low | 0 KB | None |
+| JSON | Fast | Low | 0 KB | None |
+| CSV | Fast | Low | 0 KB | None |
+| HTML | Fast | Low-Med | 0 KB | None |
+| Markdown | Instant | Low | 0 KB | None |
+| PDF | Medium | Medium | ~600 KB | pdfjs-dist |
+| DOCX | Fast | Low-Med | ~100 KB | jszip (required), mammoth (optional) |
+
+### Processing Speed
+
+Approximate processing speeds on modern hardware:
+
+| Format | Pages/Second | Notes |
+|--------|--------------|-------|
+| Text | Instant | No parsing |
+| JSON | Instant | Native parsing |
+| CSV | 1000+ rows/sec | Simple format |
+| HTML | 100+ pages/sec | DOM or regex |
+| Markdown | Instant | No parsing |
+| PDF | 20-50 pages/sec | Varies by complexity |
+| DOCX | 50-100 pages/sec | Varies by size |
+
+### Memory Usage
+
+| Loader | Memory Pattern | Streaming Support |
+|--------|---------------|-------------------|
+| Text | Single allocation | No |
+| JSON | Single allocation | No |
+| CSV | Line-by-line | Possible |
+| HTML | DOM tree | No |
+| Markdown | Single allocation | No |
+| PDF | Page-by-page | Yes |
+| DOCX | ZIP streaming | Yes |
+
+### Optimization Tips
+
+1. **Use Page Ranges for PDF**
+   ```typescript
+   // Only load needed pages
+   const docs = await pdfLoader.load(file, {
+     pageRange: '1-10'
+   })
+   ```
+
+2. **Stream Large Files**
+   ```typescript
+   // Process pages as they load
+   for (let i = 1; i <= totalPages; i++) {
+     const page = await pdfLoader.load(file, {
+       pageRange: String(i)
+     })
+     await processChunk(page)
+   }
+   ```
+
+3. **Chunk After Loading**
+   ```typescript
+   // Split large documents
+   const docs = await loader.load(file)
+   const chunks = splitter.splitDocuments(docs, {
+     chunkSize: 1000,
+     chunkOverlap: 200
+   })
+   ```
+
+4. **Use Appropriate Loaders**
+   ```typescript
+   // Text loader for simple formats
+   const textDocs = await textLoader.load(file)
+
+   // Fallback HTML for complex parsing
+   const htmlDocs = await htmlLoader.load(file)
+   ```
+
+---
+
+## Error Handling
+
+### Common Errors
+
+#### Missing Dependencies
+
+```typescript
+try {
+  const docs = await pdfLoader.load(file)
+} catch (error) {
+  if (error.message.includes('PDF parsing library not available')) {
+    console.error('Install pdfjs-dist: npm install pdfjs-dist')
+  }
+}
+```
+
+#### Invalid File Format
+
+```typescript
+try {
+  const docs = await jsonLoader.load(file)
+} catch (error) {
+  if (error instanceof SyntaxError) {
+    console.error('Invalid JSON:', error.message)
+  }
+}
+```
+
+#### Network Errors
+
+```typescript
+try {
+  const docs = await loader.load('https://example.com/doc.pdf')
+} catch (error) {
+  if (error.message.includes('Failed to fetch')) {
+    console.error('Network error:', error)
+  }
+}
+```
+
+### Error Recovery
+
+```typescript
+async function loadWithFallback(file: File) {
+  const registry = new LoaderRegistry()
+
+  try {
+    // Try automatic detection
+    return await registry.load(file)
+  } catch (error) {
+    console.warn('Primary loader failed, trying text fallback')
+
+    // Fallback to text loader
+    const textLoader = new TextLoader()
+    return await textLoader.load(file)
+  }
+}
+```
+
+### Validation
+
+```typescript
+function validateDocument(doc: Document): boolean {
+  if (!doc.content || doc.content.trim().length === 0) {
+    console.error('Empty document content')
+    return false
+  }
+
+  if (doc.content.length > 1_000_000) {
+    console.warn('Document exceeds 1MB')
+    return false
+  }
+
+  return true
+}
+
+const docs = await loader.load(file)
+const validDocs = docs.filter(validateDocument)
+```
+
+---
+
+## Best Practices
+
+### 1. Choose the Right Loader
+
+```typescript
+// ✅ Use specific loader when format is known
+const pdfLoader = new PDFLoader()
+const docs = await pdfLoader.load(pdfFile)
+
+// ⚠️ Use registry for unknown formats
+const registry = new LoaderRegistry()
+const docs = await registry.load(unknownFile)
+```
+
+### 2. Handle Large Documents
+
+```typescript
+// ✅ Chunk after loading
+const docs = await loader.load(file)
+const chunks = splitter.splitDocuments(docs, {
+  chunkSize: 1000,
+  chunkOverlap: 200
+})
+
+// ✅ Process pages incrementally
+for (let page = 1; page <= totalPages; page++) {
+  const pageDoc = await pdfLoader.load(file, {
+    pageRange: String(page)
+  })
+  await processPage(pageDoc[0])
+}
+```
+
+### 3. Preserve Metadata
+
+```typescript
+// ✅ Add custom metadata
+const docs = await loader.load(file, {
+  metadata: {
+    uploadedBy: 'user123',
+    uploadedAt: new Date().toISOString(),
+    category: 'documentation'
+  }
+})
+
+// ✅ Preserve during chunking
+const chunks = splitter.splitDocuments(docs)
+// Chunks inherit document metadata
+```
+
+### 4. Error Handling
+
+```typescript
+// ✅ Graceful degradation
+async function loadDocument(file: File) {
+  try {
+    return await registry.load(file)
+  } catch (error) {
+    console.error('Load failed:', error)
+
+    // Return error document for tracking
+    return [{
+      content: '[Failed to load document]',
+      metadata: {
+        source: file.name,
+        error: error.message,
+        failed: true
+      }
+    }]
+  }
+}
+```
+
+### 5. Performance Optimization
+
+```typescript
+// ✅ Lazy load dependencies
+const PDFLoader = React.lazy(() => import('./loaders/pdf'))
+
+function DocumentUploader() {
+  const [loader, setLoader] = useState(null)
+
+  const handleFile = async (file: File) => {
+    if (file.type === 'application/pdf') {
+      const PDFLoader = (await import('./loaders/pdf')).PDFLoader
+      const loader = new PDFLoader()
+      return loader.load(file)
+    }
+    // ... other loaders
+  }
+}
+```
+
+### 6. Type Safety
+
+```typescript
+// ✅ Type document metadata
+interface CustomMetadata extends DocumentMetadata {
+  author: string
+  createdAt: string
+  tags: string[]
+}
+
+interface CustomDocument extends Document {
+  metadata: CustomMetadata
+}
+
+const docs: CustomDocument[] = await loader.load(file)
+```
+
+### 7. Testing
+
+```typescript
+// ✅ Test with various formats
+describe('DocumentLoader', () => {
+  it('loads PDF files', async () => {
+    const loader = new PDFLoader()
+    const docs = await loader.load(mockPdfFile)
+    expect(docs).toHaveLength(1)
+    expect(docs[0].metadata.type).toBe('application/pdf')
+  })
+
+  it('handles errors gracefully', async () => {
+    const loader = new PDFLoader()
+    await expect(loader.load(invalidFile)).rejects.toThrow()
+  })
+})
+```
+
+---
+
+## Related APIs
+
+### RAG Pipeline
+
+Combine loaders with RAG for document Q&A:
+
+```typescript
+import { LoaderRegistry, RecursiveTextSplitter } from '@clarity-chat/react'
+import { createRAGPipeline } from '@clarity-chat/token-optimization'
+
+// Load documents
+const registry = new LoaderRegistry()
+const docs = await registry.load(file)
+
+// Split into chunks
+const splitter = new RecursiveTextSplitter()
+const chunks = splitter.splitDocuments(docs, {
+  chunkSize: 1000,
+  chunkOverlap: 200
+})
+
+// Create RAG pipeline
+const rag = createRAGPipeline({
+  vectorStore: { provider: 'pinecone', index: 'docs' },
+  embeddings: { model: 'text-embedding-3-small' }
+})
+
+// Index chunks
+await rag.addDocuments(chunks)
+
+// Query
+const result = await rag.query({
+  query: 'What is the main topic?',
+  model: 'claude-3-5-sonnet'
+})
+```
+
+See [Advanced RAG Guide](/guides/advanced-rag) for complete examples.
+
+### Document Upload Component
+
+```typescript
+import { FileUpload } from '@clarity-chat/react'
+
+function DocumentManager() {
+  const handleUpload = async (file: File) => {
+    const registry = new LoaderRegistry()
+    const docs = await registry.load(file)
+
+    // Process documents
+    console.log(`Loaded ${docs.length} documents`)
+  }
+
+  return (
+    <FileUpload
+      onUpload={handleUpload}
+      accept=".pdf,.docx,.txt,.md,.html,.csv,.json"
+      maxSize={10 * 1024 * 1024}  // 10 MB
+    />
+  )
+}
+```
+
+### Knowledge Base Panel
+
+```typescript
+import { KnowledgeBasePanel } from '@clarity-chat/react'
+
+function RAGInterface() {
+  return (
+    <KnowledgeBasePanel
+      onDocumentUpload={async (file) => {
+        const registry = new LoaderRegistry()
+        const docs = await registry.load(file)
+        await indexDocuments(docs)
+      }}
+      onDocumentDelete={(id) => {
+        // Delete from vector store
+      }}
+    />
+  )
+}
+```
+
+---
+
+## Next Steps
+
+<div className="grid md:grid-cols-3 gap-6 my-8">
+  <a
+    href="/guides/advanced-rag"
+    className="block p-6 rounded-xl bg-white/60 dark:bg-white/[0.02] backdrop-blur-sm border border-neutral-200/60 dark:border-white/[0.06] hover:border-brand-300 dark:hover:border-brand-700 transition-all hover:-translate-y-1 hover:shadow-lg"
+  >
+    <h3 className="font-semibold mb-2">Advanced RAG Guide</h3>
+    <p className="text-sm text-neutral-600 dark:text-neutral-400">
+      Build production RAG systems with document loaders
+    </p>
+  </a>
+
+  <a
+    href="/reference/components/knowledge-base-panel"
+    className="block p-6 rounded-xl bg-white/60 dark:bg-white/[0.02] backdrop-blur-sm border border-neutral-200/60 dark:border-white/[0.06] hover:border-brand-300 dark:hover:border-brand-700 transition-all hover:-translate-y-1 hover:shadow-lg"
+  >
+    <h3 className="font-semibold mb-2">KnowledgeBasePanel</h3>
+    <p className="text-sm text-neutral-600 dark:text-neutral-400">
+      UI component for document management
+    </p>
+  </a>
+
+  <a
+    href="/cookbook/rag-document-chat"
+    className="block p-6 rounded-xl bg-white/60 dark:bg-white/[0.02] backdrop-blur-sm border border-neutral-200/60 dark:border-white/[0.06] hover:border-brand-300 dark:hover:border-brand-700 transition-all hover:-translate-y-1 hover:shadow-lg"
+  >
+    <h3 className="font-semibold mb-2">RAG Cookbook</h3>
+    <p className="text-sm text-neutral-600 dark:text-neutral-400">
+      Production patterns and best practices
+    </p>
+  </a>
+</div>

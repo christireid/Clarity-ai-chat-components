@@ -1,0 +1,1540 @@
+---
+title: 'Streaming Memory Management'
+description: 'Comprehensive guide to memory leak prevention, buffer optimization, and production monitoring for streaming contexts in Clarity AI Chat Components'
+category: 'Streaming & Virtualization'
+---
+
+# Streaming Memory Management
+
+Effective memory management is critical for long-running streaming applications. This guide covers memory leak prevention, buffer optimization, garbage collection strategies, and production monitoring specifically for streaming contexts.
+
+## Table of Contents
+
+- [Memory Leak Prevention](#memory-leak-prevention)
+- [Buffer Size Optimization](#buffer-size-optimization)
+- [Garbage Collection Considerations](#garbage-collection-considerations)
+- [Message Queue Management](#message-queue-management)
+- [Memory Profiling Tools](#memory-profiling-tools)
+- [Production Memory Monitoring](#production-memory-monitoring)
+- [Cleanup Patterns](#cleanup-patterns)
+
+---
+
+## Memory Leak Prevention
+
+Memory leaks in streaming contexts typically occur when resources are not properly cleaned up after streams are cancelled or completed.
+
+### Common Leak Sources in Streaming
+
+#### 1. ReadableStream Reader Leaks
+
+```tsx
+// ❌ BAD: Reader not cleaned up
+function useStreamingChat() {
+  const [content, setContent] = React.useState('')
+
+  React.useEffect(() => {
+    const startStream = async () => {
+      const response = await fetch('/api/chat')
+      const reader = response.body?.getReader()
+      // Reader never released - memory leak!
+
+      while (true) {
+        const { done, value } = await reader.read()
+        if (done) break
+        // Process value...
+      }
+    }
+
+    startStream()
+  }, [])
+
+  return content
+}
+
+// ✅ GOOD: Proper reader cleanup
+function useStreamingChat() {
+  const [content, setContent] = React.useState('')
+  const readerRef = React.useRef<ReadableStreamDefaultReader<Uint8Array> | null>(null)
+
+  React.useEffect(() => {
+    const startStream = async () => {
+      const response = await fetch('/api/chat')
+      const reader = response.body?.getReader()
+      readerRef.current = reader
+
+      try {
+        while (true) {
+          const { done, value } = await reader.read()
+          if (done) break
+          // Process value...
+        }
+      } finally {
+        reader?.releaseLock()
+        readerRef.current = null
+      }
+    }
+
+    startStream()
+
+    return () => {
+      // Cleanup on unmount
+      if (readerRef.current) {
+        readerRef.current.cancel().catch(() => {})
+        readerRef.current = null
+      }
+    }
+  }, [])
+
+  return content
+}
+```
+
+#### 2. AbortController Leaks
+
+```tsx
+// ❌ BAD: AbortController not cleaned up
+function StreamingComponent() {
+  React.useEffect(() => {
+    const controller = new AbortController()
+
+    fetch('/api/stream', { signal: controller.signal })
+      .then(/* ... */)
+
+    // Missing cleanup - controller persists
+  }, [])
+}
+
+// ✅ GOOD: AbortController cleanup
+function StreamingComponent() {
+  React.useEffect(() => {
+    const controller = new AbortController()
+
+    fetch('/api/stream', { signal: controller.signal })
+      .then(/* ... */)
+
+    return () => {
+      controller.abort()
+    }
+  }, [])
+}
+```
+
+#### 3. Event Buffer Leaks
+
+```tsx
+// ❌ BAD: Unbounded event buffer
+function useStreamingSSE() {
+  const [events, setEvents] = React.useState<SSEEvent[]>([])
+
+  const processEvent = (event: SSEEvent) => {
+    setEvents(prev => [...prev, event]) // Array grows indefinitely!
+  }
+}
+
+// ✅ GOOD: Bounded event buffer with overflow handling
+function useStreamingSSE({ maxEventBufferSize = 1000 }) {
+  const [events, setEvents] = React.useState<SSEEvent[]>([])
+
+  const processEvent = React.useCallback((event: SSEEvent) => {
+    setEvents(prev => {
+      const newEvents = [...prev, event]
+
+      // Keep only the last N events
+      if (newEvents.length > maxEventBufferSize) {
+        const droppedCount = newEvents.length - maxEventBufferSize
+        console.warn(`Dropped ${droppedCount} events (buffer full)`)
+        return newEvents.slice(-maxEventBufferSize)
+      }
+
+      return newEvents
+    })
+  }, [maxEventBufferSize])
+}
+```
+
+#### 4. RequestAnimationFrame Leaks
+
+```tsx
+// ❌ BAD: RAF not cancelled
+function StreamingDisplay({ stream }) {
+  const [displayContent, setDisplayContent] = React.useState('')
+
+  React.useEffect(() => {
+    const updateDisplay = () => {
+      // Update content
+      setDisplayContent(/* ... */)
+      requestAnimationFrame(updateDisplay) // Infinite loop never cleaned!
+    }
+
+    updateDisplay()
+  }, [stream])
+}
+
+// ✅ GOOD: RAF cleanup
+function StreamingDisplay({ stream }) {
+  const [displayContent, setDisplayContent] = React.useState('')
+  const rafRef = React.useRef<number | null>(null)
+
+  React.useEffect(() => {
+    let active = true
+
+    const updateDisplay = () => {
+      if (!active) return
+
+      setDisplayContent(/* ... */)
+      rafRef.current = requestAnimationFrame(updateDisplay)
+    }
+
+    updateDisplay()
+
+    return () => {
+      active = false
+      if (rafRef.current) {
+        cancelAnimationFrame(rafRef.current)
+        rafRef.current = null
+      }
+    }
+  }, [stream])
+}
+```
+
+### Complete Cleanup Checklist
+
+```tsx
+/**
+ * Comprehensive cleanup for streaming contexts
+ */
+function useStreamingWithCleanup(url: string) {
+  // Refs for cleanup
+  const abortControllerRef = React.useRef<AbortController | null>(null)
+  const readerRef = React.useRef<ReadableStreamDefaultReader<Uint8Array> | null>(null)
+  const timeoutRef = React.useRef<NodeJS.Timeout | null>(null)
+  const heartbeatRef = React.useRef<NodeJS.Timeout | null>(null)
+  const rafRef = React.useRef<number | null>(null)
+  const pendingChunksRef = React.useRef<string[]>([])
+
+  const cleanup = React.useCallback(() => {
+    // 1. Cancel ReadableStream reader
+    if (readerRef.current) {
+      readerRef.current.cancel().catch(() => {})
+      readerRef.current = null
+    }
+
+    // 2. Abort fetch request
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort()
+      abortControllerRef.current = null
+    }
+
+    // 3. Clear timeouts
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current)
+      timeoutRef.current = null
+    }
+
+    // 4. Clear intervals
+    if (heartbeatRef.current) {
+      clearInterval(heartbeatRef.current)
+      heartbeatRef.current = null
+    }
+
+    // 5. Cancel RAF
+    if (rafRef.current) {
+      cancelAnimationFrame(rafRef.current)
+      rafRef.current = null
+    }
+
+    // 6. Clear buffers
+    pendingChunksRef.current = []
+  }, [])
+
+  React.useEffect(() => {
+    // Cleanup on unmount
+    return cleanup
+  }, [cleanup])
+
+  return { cleanup }
+}
+```
+
+---
+
+## Buffer Size Optimization
+
+Optimal buffer sizes prevent memory exhaustion while maintaining streaming performance.
+
+### Buffer Size Strategies
+
+#### 1. Event Buffer Sizing
+
+```tsx
+/**
+ * Calculate optimal event buffer size based on memory constraints
+ */
+function calculateOptimalBufferSize(config: {
+  availableMemoryMB: number
+  averageEventSizeKB: number
+  safetyMarginPercent?: number
+}): number {
+  const {
+    availableMemoryMB,
+    averageEventSizeKB,
+    safetyMarginPercent = 20, // 20% safety margin
+  } = config
+
+  const availableMemoryKB = availableMemoryMB * 1024
+  const usableMemoryKB = availableMemoryKB * ((100 - safetyMarginPercent) / 100)
+  const maxEvents = Math.floor(usableMemoryKB / averageEventSizeKB)
+
+  // Cap at reasonable limits
+  return Math.min(Math.max(maxEvents, 100), 10000)
+}
+
+// Usage
+const bufferSize = calculateOptimalBufferSize({
+  availableMemoryMB: 50, // 50MB available for streaming
+  averageEventSizeKB: 2, // 2KB average event size
+  safetyMarginPercent: 20,
+})
+// Result: ~20,000 events max
+```
+
+#### 2. Streaming Data Buffer with Size Limits
+
+```tsx
+interface StreamBufferConfig {
+  maxBufferSizeBytes: number
+  maxChunkSize: number
+  onBufferOverflow?: (droppedBytes: number) => void
+}
+
+class StreamBuffer {
+  private buffer: string = ''
+  private config: StreamBufferConfig
+
+  constructor(config: StreamBufferConfig) {
+    this.config = {
+      maxBufferSizeBytes: config.maxBufferSizeBytes ?? 10 * 1024 * 1024, // 10MB
+      maxChunkSize: config.maxChunkSize ?? 64 * 1024, // 64KB
+      onBufferOverflow: config.onBufferOverflow,
+    }
+  }
+
+  /**
+   * Append data with size limit enforcement
+   */
+  append(chunk: string): boolean {
+    const newSize = this.getByteSize(this.buffer) + this.getByteSize(chunk)
+
+    if (newSize > this.config.maxBufferSizeBytes) {
+      // Truncate buffer to make room
+      const overflow = newSize - this.config.maxBufferSizeBytes
+      const keepSize = this.config.maxBufferSizeBytes - this.getByteSize(chunk)
+
+      this.buffer = this.truncateToByteSize(this.buffer, keepSize)
+      this.config.onBufferOverflow?.(overflow)
+    }
+
+    this.buffer += chunk
+    return true
+  }
+
+  /**
+   * Get buffer contents
+   */
+  getBuffer(): string {
+    return this.buffer
+  }
+
+  /**
+   * Clear buffer
+   */
+  clear(): void {
+    this.buffer = ''
+  }
+
+  /**
+   * Get byte size of string (UTF-8)
+   */
+  private getByteSize(str: string): number {
+    return new Blob([str]).size
+  }
+
+  /**
+   * Truncate string to specified byte size
+   */
+  private truncateToByteSize(str: string, maxBytes: number): string {
+    const encoder = new TextEncoder()
+    const decoder = new TextDecoder()
+    const encoded = encoder.encode(str)
+
+    if (encoded.length <= maxBytes) {
+      return str
+    }
+
+    // Binary search for valid truncation point
+    let low = 0
+    let high = str.length
+
+    while (low < high) {
+      const mid = Math.floor((low + high + 1) / 2)
+      const testStr = str.slice(0, mid)
+      const testSize = encoder.encode(testStr).length
+
+      if (testSize <= maxBytes) {
+        low = mid
+      } else {
+        high = mid - 1
+      }
+    }
+
+    return str.slice(0, low)
+  }
+}
+
+// Usage
+const buffer = new StreamBuffer({
+  maxBufferSizeBytes: 10 * 1024 * 1024, // 10MB limit
+  maxChunkSize: 64 * 1024, // 64KB chunks
+  onBufferOverflow: (droppedBytes) => {
+    console.warn(`Buffer overflow: dropped ${droppedBytes} bytes`)
+  },
+})
+```
+
+#### 3. Adaptive Buffer Sizing
+
+```tsx
+/**
+ * Adaptive buffer that adjusts size based on streaming rate
+ */
+class AdaptiveStreamBuffer {
+  private buffer: string[] = []
+  private maxSize: number
+  private minSize: number
+  private currentSize: number
+  private lastAdjustment: number = Date.now()
+  private adjustmentIntervalMs: number = 5000
+
+  constructor(options: {
+    minSize?: number
+    maxSize?: number
+    adjustmentIntervalMs?: number
+  } = {}) {
+    this.minSize = options.minSize ?? 100
+    this.maxSize = options.maxSize ?? 10000
+    this.currentSize = Math.floor((this.minSize + this.maxSize) / 2)
+    this.adjustmentIntervalMs = options.adjustmentIntervalMs ?? 5000
+  }
+
+  /**
+   * Add chunk and auto-adjust buffer size
+   */
+  add(chunk: string): void {
+    this.buffer.push(chunk)
+
+    // Trim if over current size
+    if (this.buffer.length > this.currentSize) {
+      const overflow = this.buffer.length - this.currentSize
+      this.buffer.splice(0, overflow)
+    }
+
+    // Periodic size adjustment
+    const now = Date.now()
+    if (now - this.lastAdjustment > this.adjustmentIntervalMs) {
+      this.adjustSize()
+      this.lastAdjustment = now
+    }
+  }
+
+  /**
+   * Adjust buffer size based on usage patterns
+   */
+  private adjustSize(): void {
+    const usage = this.buffer.length / this.currentSize
+
+    // Increase size if buffer is consistently full
+    if (usage > 0.9 && this.currentSize < this.maxSize) {
+      this.currentSize = Math.min(
+        Math.floor(this.currentSize * 1.5),
+        this.maxSize
+      )
+      console.debug(`Increased buffer size to ${this.currentSize}`)
+    }
+
+    // Decrease size if buffer is consistently empty
+    else if (usage < 0.3 && this.currentSize > this.minSize) {
+      this.currentSize = Math.max(
+        Math.floor(this.currentSize * 0.75),
+        this.minSize
+      )
+      console.debug(`Decreased buffer size to ${this.currentSize}`)
+    }
+  }
+
+  /**
+   * Get buffer contents
+   */
+  getAll(): string[] {
+    return [...this.buffer]
+  }
+
+  /**
+   * Clear buffer
+   */
+  clear(): void {
+    this.buffer = []
+  }
+
+  /**
+   * Get current buffer metrics
+   */
+  getMetrics(): {
+    currentSize: number
+    itemCount: number
+    utilization: number
+  } {
+    return {
+      currentSize: this.currentSize,
+      itemCount: this.buffer.length,
+      utilization: this.buffer.length / this.currentSize,
+    }
+  }
+}
+```
+
+---
+
+## Garbage Collection Considerations
+
+Understanding garbage collection behavior helps optimize memory usage in streaming contexts.
+
+### GC-Friendly Streaming Patterns
+
+#### 1. Object Pooling for High-Frequency Allocations
+
+```tsx
+/**
+ * Object pool to reduce GC pressure from frequent allocations
+ */
+class StreamChunkPool {
+  private pool: Array<{ data: string; timestamp: number }> = []
+  private maxPoolSize: number
+
+  constructor(maxPoolSize: number = 100) {
+    this.maxPoolSize = maxPoolSize
+  }
+
+  /**
+   * Acquire a chunk object (reuse or create)
+   */
+  acquire(data: string): { data: string; timestamp: number } {
+    const obj = this.pool.pop()
+
+    if (obj) {
+      obj.data = data
+      obj.timestamp = Date.now()
+      return obj
+    }
+
+    return { data, timestamp: Date.now() }
+  }
+
+  /**
+   * Release chunk object back to pool
+   */
+  release(obj: { data: string; timestamp: number }): void {
+    if (this.pool.length < this.maxPoolSize) {
+      obj.data = '' // Clear data to reduce memory
+      this.pool.push(obj)
+    }
+  }
+
+  /**
+   * Clear pool
+   */
+  clear(): void {
+    this.pool = []
+  }
+}
+
+// Usage
+const chunkPool = new StreamChunkPool(100)
+
+function processStreamChunk(data: string) {
+  const chunk = chunkPool.acquire(data)
+
+  try {
+    // Process chunk...
+  } finally {
+    chunkPool.release(chunk)
+  }
+}
+```
+
+#### 2. WeakMap for Streaming Metadata
+
+```tsx
+/**
+ * Use WeakMap for stream-associated metadata that should be GC'd
+ */
+class StreamMetadataCache {
+  private cache = new WeakMap<
+    ReadableStream,
+    {
+      startTime: number
+      bytesProcessed: number
+      chunkCount: number
+    }
+  >()
+
+  /**
+   * Set metadata for a stream (will be GC'd when stream is released)
+   */
+  setMetadata(
+    stream: ReadableStream,
+    metadata: { startTime: number; bytesProcessed: number; chunkCount: number }
+  ): void {
+    this.cache.set(stream, metadata)
+  }
+
+  /**
+   * Get metadata for a stream
+   */
+  getMetadata(stream: ReadableStream) {
+    return this.cache.get(stream)
+  }
+
+  /**
+   * Check if stream has metadata
+   */
+  hasMetadata(stream: ReadableStream): boolean {
+    return this.cache.has(stream)
+  }
+}
+
+// Usage
+const metadataCache = new StreamMetadataCache()
+
+async function processStream(stream: ReadableStream) {
+  metadataCache.setMetadata(stream, {
+    startTime: Date.now(),
+    bytesProcessed: 0,
+    chunkCount: 0,
+  })
+
+  // Process stream...
+
+  // Metadata is automatically GC'd when stream is no longer referenced
+}
+```
+
+#### 3. Deferred Cleanup with FinalizationRegistry
+
+```tsx
+/**
+ * Automatic cleanup using FinalizationRegistry
+ */
+class StreamResourceTracker {
+  private registry: FinalizationRegistry<() => void>
+
+  constructor() {
+    this.registry = new FinalizationRegistry((cleanup) => {
+      cleanup()
+    })
+  }
+
+  /**
+   * Track resource with automatic cleanup
+   */
+  track(stream: ReadableStream, cleanup: () => void): void {
+    this.registry.register(stream, cleanup)
+  }
+}
+
+// Usage
+const tracker = new StreamResourceTracker()
+
+function createMonitoredStream(url: string): ReadableStream {
+  const controller = new AbortController()
+
+  fetch(url, { signal: controller.signal })
+    .then(response => {
+      const stream = response.body!
+
+      // Register cleanup that runs when stream is GC'd
+      tracker.track(stream, () => {
+        console.debug('Stream GC\'d, aborting request')
+        controller.abort()
+      })
+
+      return stream
+    })
+}
+```
+
+---
+
+## Message Queue Management
+
+Proper queue management prevents memory leaks in long-running streaming sessions.
+
+### Queue Size Limits
+
+```tsx
+/**
+ * Bounded message queue with overflow strategies
+ */
+type OverflowStrategy = 'drop-oldest' | 'drop-newest' | 'block'
+
+class BoundedMessageQueue<T> {
+  private queue: T[] = []
+  private maxSize: number
+  private strategy: OverflowStrategy
+  private droppedCount: number = 0
+
+  constructor(maxSize: number, strategy: OverflowStrategy = 'drop-oldest') {
+    this.maxSize = maxSize
+    this.strategy = strategy
+  }
+
+  /**
+   * Enqueue a message
+   */
+  enqueue(message: T): boolean {
+    if (this.queue.length >= this.maxSize) {
+      switch (this.strategy) {
+        case 'drop-oldest':
+          this.queue.shift()
+          this.droppedCount++
+          break
+
+        case 'drop-newest':
+          this.droppedCount++
+          return false // Don't add new message
+
+        case 'block':
+          return false // Queue full, reject message
+      }
+    }
+
+    this.queue.push(message)
+    return true
+  }
+
+  /**
+   * Dequeue a message
+   */
+  dequeue(): T | undefined {
+    return this.queue.shift()
+  }
+
+  /**
+   * Peek at next message without removing
+   */
+  peek(): T | undefined {
+    return this.queue[0]
+  }
+
+  /**
+   * Get queue size
+   */
+  size(): number {
+    return this.queue.length
+  }
+
+  /**
+   * Check if queue is full
+   */
+  isFull(): boolean {
+    return this.queue.length >= this.maxSize
+  }
+
+  /**
+   * Get dropped message count
+   */
+  getDroppedCount(): number {
+    return this.droppedCount
+  }
+
+  /**
+   * Clear queue
+   */
+  clear(): void {
+    this.queue = []
+    this.droppedCount = 0
+  }
+}
+
+// Usage
+const messageQueue = new BoundedMessageQueue<string>(1000, 'drop-oldest')
+
+function handleStreamChunk(chunk: string) {
+  if (!messageQueue.enqueue(chunk)) {
+    console.warn('Queue full, message dropped')
+  }
+}
+```
+
+### Priority Queue for Critical Messages
+
+```tsx
+/**
+ * Priority queue for streaming messages
+ */
+interface PriorityMessage<T> {
+  data: T
+  priority: number
+  timestamp: number
+}
+
+class PriorityMessageQueue<T> {
+  private queue: PriorityMessage<T>[] = []
+  private maxSize: number
+
+  constructor(maxSize: number = 1000) {
+    this.maxSize = maxSize
+  }
+
+  /**
+   * Enqueue message with priority
+   */
+  enqueue(data: T, priority: number = 0): boolean {
+    if (this.queue.length >= this.maxSize) {
+      // Drop lowest priority message
+      const lowestPriorityIndex = this.findLowestPriority()
+      if (priority <= this.queue[lowestPriorityIndex].priority) {
+        return false // New message has lower priority, drop it
+      }
+      this.queue.splice(lowestPriorityIndex, 1)
+    }
+
+    const message: PriorityMessage<T> = {
+      data,
+      priority,
+      timestamp: Date.now(),
+    }
+
+    this.queue.push(message)
+    this.queue.sort((a, b) => b.priority - a.priority) // Sort by priority
+
+    return true
+  }
+
+  /**
+   * Dequeue highest priority message
+   */
+  dequeue(): T | undefined {
+    return this.queue.shift()?.data
+  }
+
+  /**
+   * Find index of lowest priority message
+   */
+  private findLowestPriority(): number {
+    let lowestIndex = 0
+    let lowestPriority = this.queue[0].priority
+
+    for (let i = 1; i < this.queue.length; i++) {
+      if (this.queue[i].priority < lowestPriority) {
+        lowestPriority = this.queue[i].priority
+        lowestIndex = i
+      }
+    }
+
+    return lowestIndex
+  }
+
+  /**
+   * Clear queue
+   */
+  clear(): void {
+    this.queue = []
+  }
+}
+
+// Usage
+const priorityQueue = new PriorityMessageQueue<string>(1000)
+
+// High priority system messages
+priorityQueue.enqueue('[SYSTEM] Connection established', 10)
+
+// Normal priority user messages
+priorityQueue.enqueue('User message', 5)
+
+// Low priority analytics
+priorityQueue.enqueue('[ANALYTICS] Event tracked', 1)
+```
+
+---
+
+## Memory Profiling Tools
+
+Use browser DevTools and custom hooks to profile memory usage in streaming contexts.
+
+### Chrome DevTools Memory Profiling
+
+```tsx
+/**
+ * Development-only memory profiler for streaming
+ */
+class StreamingMemoryProfiler {
+  private snapshots: Array<{
+    timestamp: number
+    heapUsed: number
+    totalHeap: number
+    label: string
+  }> = []
+
+  /**
+   * Take a memory snapshot
+   */
+  snapshot(label: string): void {
+    if (!performance.memory) {
+      console.warn('performance.memory not available')
+      return
+    }
+
+    this.snapshots.push({
+      timestamp: Date.now(),
+      heapUsed: performance.memory.usedJSHeapSize,
+      totalHeap: performance.memory.totalJSHeapSize,
+      label,
+    })
+  }
+
+  /**
+   * Compare two snapshots
+   */
+  compare(label1: string, label2: string): {
+    heapDelta: number
+    percentChange: number
+    duration: number
+  } | null {
+    const snap1 = this.snapshots.find(s => s.label === label1)
+    const snap2 = this.snapshots.find(s => s.label === label2)
+
+    if (!snap1 || !snap2) return null
+
+    const heapDelta = snap2.heapUsed - snap1.heapUsed
+    const percentChange = (heapDelta / snap1.heapUsed) * 100
+    const duration = snap2.timestamp - snap1.timestamp
+
+    return { heapDelta, percentChange, duration }
+  }
+
+  /**
+   * Get memory growth rate
+   */
+  getGrowthRate(): number {
+    if (this.snapshots.length < 2) return 0
+
+    const first = this.snapshots[0]
+    const last = this.snapshots[this.snapshots.length - 1]
+
+    const heapDelta = last.heapUsed - first.heapUsed
+    const timeDelta = last.timestamp - first.timestamp
+
+    // Bytes per second
+    return (heapDelta / timeDelta) * 1000
+  }
+
+  /**
+   * Export snapshots for analysis
+   */
+  export(): string {
+    return JSON.stringify(this.snapshots, null, 2)
+  }
+
+  /**
+   * Clear snapshots
+   */
+  clear(): void {
+    this.snapshots = []
+  }
+}
+
+// Usage
+const profiler = new StreamingMemoryProfiler()
+
+function monitoredStream() {
+  profiler.snapshot('stream-start')
+
+  // Start streaming...
+
+  setInterval(() => {
+    profiler.snapshot('stream-checkpoint')
+  }, 5000)
+
+  // After stream completes
+  const comparison = profiler.compare('stream-start', 'stream-checkpoint')
+  if (comparison) {
+    console.log(`Memory delta: ${(comparison.heapDelta / 1024 / 1024).toFixed(2)} MB`)
+    console.log(`Change: ${comparison.percentChange.toFixed(2)}%`)
+  }
+}
+```
+
+### React Hook for Memory Monitoring
+
+```tsx
+/**
+ * Hook to monitor memory usage during streaming
+ */
+interface MemoryMetrics {
+  usedHeapMB: number
+  totalHeapMB: number
+  heapLimitMB: number
+  usagePercent: number
+}
+
+function useStreamingMemoryMonitor(options: {
+  intervalMs?: number
+  warningThreshold?: number
+  onWarning?: (metrics: MemoryMetrics) => void
+} = {}): MemoryMetrics | null {
+  const {
+    intervalMs = 2000,
+    warningThreshold = 80, // 80% usage warning
+    onWarning,
+  } = options
+
+  const [metrics, setMetrics] = React.useState<MemoryMetrics | null>(null)
+
+  React.useEffect(() => {
+    if (!performance.memory) {
+      return
+    }
+
+    const measure = () => {
+      const memory = performance.memory
+      const usedHeapMB = memory.usedJSHeapSize / 1024 / 1024
+      const totalHeapMB = memory.totalJSHeapSize / 1024 / 1024
+      const heapLimitMB = memory.jsHeapSizeLimit / 1024 / 1024
+      const usagePercent = (memory.usedJSHeapSize / memory.jsHeapSizeLimit) * 100
+
+      const currentMetrics: MemoryMetrics = {
+        usedHeapMB,
+        totalHeapMB,
+        heapLimitMB,
+        usagePercent,
+      }
+
+      setMetrics(currentMetrics)
+
+      // Check warning threshold
+      if (usagePercent > warningThreshold) {
+        onWarning?.(currentMetrics)
+      }
+    }
+
+    measure()
+    const intervalId = setInterval(measure, intervalMs)
+
+    return () => clearInterval(intervalId)
+  }, [intervalMs, warningThreshold, onWarning])
+
+  return metrics
+}
+
+// Usage
+function StreamingChat() {
+  const memoryMetrics = useStreamingMemoryMonitor({
+    intervalMs: 2000,
+    warningThreshold: 80,
+    onWarning: (metrics) => {
+      console.warn('High memory usage:', metrics.usagePercent.toFixed(1) + '%')
+    },
+  })
+
+  return (
+    <div>
+      {/* Chat UI */}
+
+      {process.env.NODE_ENV === 'development' && memoryMetrics && (
+        <div className="fixed bottom-4 right-4 p-2 bg-black/80 text-white text-xs font-mono rounded">
+          <div>Heap: {memoryMetrics.usedHeapMB.toFixed(1)} MB</div>
+          <div>Usage: {memoryMetrics.usagePercent.toFixed(1)}%</div>
+        </div>
+      )}
+    </div>
+  )
+}
+```
+
+---
+
+## Production Memory Monitoring
+
+Monitor memory usage in production to detect leaks and optimize performance.
+
+### Memory Metrics Collection
+
+```tsx
+/**
+ * Production-safe memory metrics collector
+ */
+class ProductionMemoryMonitor {
+  private metrics: Array<{
+    timestamp: number
+    sessionDuration: number
+    estimatedMemoryMB: number
+    eventCount: number
+  }> = []
+  private startTime: number = Date.now()
+  private eventCount: number = 0
+
+  /**
+   * Record memory metric
+   */
+  recordMetric(): void {
+    const sessionDuration = Date.now() - this.startTime
+
+    // Use estimation if performance.memory unavailable
+    const estimatedMemoryMB = this.estimateMemoryUsage()
+
+    this.metrics.push({
+      timestamp: Date.now(),
+      sessionDuration,
+      estimatedMemoryMB,
+      eventCount: this.eventCount,
+    })
+
+    // Keep only last 100 metrics
+    if (this.metrics.length > 100) {
+      this.metrics.shift()
+    }
+  }
+
+  /**
+   * Increment event counter
+   */
+  incrementEventCount(): void {
+    this.eventCount++
+  }
+
+  /**
+   * Estimate memory usage based on event count and session duration
+   */
+  private estimateMemoryUsage(): number {
+    // Fallback estimation when performance.memory is unavailable
+    const baselineMB = 5 // Baseline app memory
+    const eventOverheadKB = 2 // Estimated 2KB per event
+    const sessionOverheadMB = (Date.now() - this.startTime) / 1000 / 60 * 0.5 // 0.5MB per minute
+
+    if (performance.memory) {
+      return performance.memory.usedJSHeapSize / 1024 / 1024
+    }
+
+    return baselineMB + (this.eventCount * eventOverheadKB / 1024) + sessionOverheadMB
+  }
+
+  /**
+   * Detect memory leak patterns
+   */
+  detectLeak(): {
+    isLeaking: boolean
+    growthRateMBPerMin: number
+    recommendation: string
+  } {
+    if (this.metrics.length < 10) {
+      return {
+        isLeaking: false,
+        growthRateMBPerMin: 0,
+        recommendation: 'Insufficient data',
+      }
+    }
+
+    const recent = this.metrics.slice(-10)
+    const first = recent[0]
+    const last = recent[recent.length - 1]
+
+    const memoryDelta = last.estimatedMemoryMB - first.estimatedMemoryMB
+    const timeDeltaMin = (last.sessionDuration - first.sessionDuration) / 1000 / 60
+    const growthRateMBPerMin = memoryDelta / timeDeltaMin
+
+    // Flag as leak if growing >1MB per minute consistently
+    const isLeaking = growthRateMBPerMin > 1
+
+    const recommendation = isLeaking
+      ? 'Potential memory leak detected. Consider clearing old events and limiting buffer sizes.'
+      : 'Memory usage appears stable.'
+
+    return {
+      isLeaking,
+      growthRateMBPerMin,
+      recommendation,
+    }
+  }
+
+  /**
+   * Get summary for logging
+   */
+  getSummary(): {
+    sessionDurationMin: number
+    totalEvents: number
+    currentMemoryMB: number
+    averageMemoryMB: number
+    peakMemoryMB: number
+  } {
+    const sessionDurationMin = (Date.now() - this.startTime) / 1000 / 60
+    const currentMemoryMB = this.estimateMemoryUsage()
+    const averageMemoryMB =
+      this.metrics.reduce((sum, m) => sum + m.estimatedMemoryMB, 0) /
+      Math.max(this.metrics.length, 1)
+    const peakMemoryMB = Math.max(...this.metrics.map(m => m.estimatedMemoryMB), 0)
+
+    return {
+      sessionDurationMin,
+      totalEvents: this.eventCount,
+      currentMemoryMB,
+      averageMemoryMB,
+      peakMemoryMB,
+    }
+  }
+}
+
+// Usage
+const memoryMonitor = new ProductionMemoryMonitor()
+
+// Record metrics periodically
+setInterval(() => {
+  memoryMonitor.recordMetric()
+
+  const leak = memoryMonitor.detectLeak()
+  if (leak.isLeaking) {
+    console.warn('Memory leak detected:', leak)
+    // Send to analytics/monitoring service
+  }
+}, 60000) // Every minute
+```
+
+### Integration with Error Tracking
+
+```tsx
+/**
+ * Send memory metrics to error tracking service
+ */
+function reportMemoryMetrics(
+  service: 'sentry' | 'datadog' | 'newrelic',
+  metrics: ReturnType<ProductionMemoryMonitor['getSummary']>
+): void {
+  const payload = {
+    timestamp: new Date().toISOString(),
+    sessionDuration: metrics.sessionDurationMin,
+    totalEvents: metrics.totalEvents,
+    memoryUsage: {
+      current: metrics.currentMemoryMB,
+      average: metrics.averageMemoryMB,
+      peak: metrics.peakMemoryMB,
+    },
+  }
+
+  switch (service) {
+    case 'sentry':
+      // Sentry breadcrumb
+      if (typeof window !== 'undefined' && (window as any).Sentry) {
+        (window as any).Sentry.addBreadcrumb({
+          category: 'memory',
+          message: 'Streaming memory metrics',
+          level: 'info',
+          data: payload,
+        })
+      }
+      break
+
+    case 'datadog':
+      // Datadog logs
+      if (typeof window !== 'undefined' && (window as any).DD_LOGS) {
+        (window as any).DD_LOGS.logger.info('Streaming memory metrics', payload)
+      }
+      break
+
+    case 'newrelic':
+      // New Relic custom event
+      if (typeof window !== 'undefined' && (window as any).newrelic) {
+        (window as any).newrelic.addPageAction('StreamingMemoryMetrics', payload)
+      }
+      break
+  }
+}
+```
+
+---
+
+## Cleanup Patterns
+
+Production-ready cleanup patterns for streaming contexts.
+
+### Pattern 1: Centralized Cleanup Manager
+
+```tsx
+/**
+ * Centralized cleanup manager for complex streaming setups
+ */
+class StreamCleanupManager {
+  private cleanupFunctions: Array<() => void> = []
+
+  /**
+   * Register a cleanup function
+   */
+  register(cleanup: () => void): void {
+    this.cleanupFunctions.push(cleanup)
+  }
+
+  /**
+   * Execute all cleanup functions
+   */
+  cleanup(): void {
+    for (const fn of this.cleanupFunctions) {
+      try {
+        fn()
+      } catch (error) {
+        console.error('Cleanup error:', error)
+      }
+    }
+
+    this.cleanupFunctions = []
+  }
+
+  /**
+   * Get cleanup function count
+   */
+  getCleanupCount(): number {
+    return this.cleanupFunctions.length
+  }
+}
+
+// Usage
+function useStreamingWithCleanupManager() {
+  const cleanupManager = React.useRef(new StreamCleanupManager())
+
+  React.useEffect(() => {
+    const manager = cleanupManager.current
+
+    // Register reader cleanup
+    const reader = stream.getReader()
+    manager.register(() => {
+      reader.cancel().catch(() => {})
+    })
+
+    // Register controller cleanup
+    const controller = new AbortController()
+    manager.register(() => {
+      controller.abort()
+    })
+
+    // Register timeout cleanup
+    const timeout = setTimeout(() => {}, 5000)
+    manager.register(() => {
+      clearTimeout(timeout)
+    })
+
+    // Cleanup all on unmount
+    return () => {
+      manager.cleanup()
+    }
+  }, [])
+}
+```
+
+### Pattern 2: Async Cleanup with Error Recovery
+
+```tsx
+/**
+ * Safe async cleanup with error recovery
+ */
+async function cleanupStreamingResources(resources: {
+  reader?: ReadableStreamDefaultReader<Uint8Array>
+  controller?: AbortController
+  timeouts?: NodeJS.Timeout[]
+  intervals?: NodeJS.Timeout[]
+}): Promise<void> {
+  const errors: Error[] = []
+
+  // Cancel reader
+  if (resources.reader) {
+    try {
+      await resources.reader.cancel()
+    } catch (error) {
+      errors.push(error as Error)
+    }
+  }
+
+  // Abort controller
+  if (resources.controller) {
+    try {
+      resources.controller.abort()
+    } catch (error) {
+      errors.push(error as Error)
+    }
+  }
+
+  // Clear timeouts
+  if (resources.timeouts) {
+    for (const timeout of resources.timeouts) {
+      try {
+        clearTimeout(timeout)
+      } catch (error) {
+        errors.push(error as Error)
+      }
+    }
+  }
+
+  // Clear intervals
+  if (resources.intervals) {
+    for (const interval of resources.intervals) {
+      try {
+        clearInterval(interval)
+      } catch (error) {
+        errors.push(error as Error)
+      }
+    }
+  }
+
+  // Log errors if any
+  if (errors.length > 0) {
+    console.error('Cleanup errors:', errors)
+  }
+}
+
+// Usage
+async function handleStreamCleanup() {
+  await cleanupStreamingResources({
+    reader: readerRef.current,
+    controller: controllerRef.current,
+    timeouts: [timeoutRef.current],
+    intervals: [heartbeatRef.current],
+  })
+}
+```
+
+### Pattern 3: React Hook with Comprehensive Cleanup
+
+```tsx
+/**
+ * Complete example: Streaming hook with memory-safe cleanup
+ */
+function useStreamingSSEWithCleanup(url: string) {
+  const [status, setStatus] = React.useState<'idle' | 'streaming' | 'closed'>('idle')
+  const [data, setData] = React.useState('')
+
+  // Refs for cleanup
+  const abortControllerRef = React.useRef<AbortController | null>(null)
+  const readerRef = React.useRef<ReadableStreamDefaultReader<Uint8Array> | null>(null)
+  const heartbeatRef = React.useRef<NodeJS.Timeout | null>(null)
+  const rafRef = React.useRef<number | null>(null)
+  const bufferRef = React.useRef<string[]>([])
+
+  const cleanup = React.useCallback(() => {
+    // 1. Cancel reader
+    if (readerRef.current) {
+      readerRef.current.cancel().catch(() => {})
+      readerRef.current = null
+    }
+
+    // 2. Abort controller
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort()
+      abortControllerRef.current = null
+    }
+
+    // 3. Clear heartbeat
+    if (heartbeatRef.current) {
+      clearInterval(heartbeatRef.current)
+      heartbeatRef.current = null
+    }
+
+    // 4. Cancel RAF
+    if (rafRef.current) {
+      cancelAnimationFrame(rafRef.current)
+      rafRef.current = null
+    }
+
+    // 5. Clear buffer
+    bufferRef.current = []
+
+    setStatus('closed')
+  }, [])
+
+  const connect = React.useCallback(async () => {
+    cleanup() // Clean up any existing connection
+
+    setStatus('streaming')
+
+    const controller = new AbortController()
+    abortControllerRef.current = controller
+
+    try {
+      const response = await fetch(url, { signal: controller.signal })
+      const reader = response.body?.getReader()
+      readerRef.current = reader
+
+      // Process stream...
+
+    } catch (error) {
+      console.error('Stream error:', error)
+      cleanup()
+    }
+  }, [url, cleanup])
+
+  // Cleanup on unmount
+  React.useEffect(() => {
+    return cleanup
+  }, [cleanup])
+
+  return { status, data, connect, cleanup }
+}
+```
+
+---
+
+## Best Practices Summary
+
+### Memory Leak Prevention
+
+1. **Always cleanup ReadableStream readers** - Call `cancel()` and release locks
+2. **Abort fetch requests** - Use AbortController and clean up on unmount
+3. **Limit buffer sizes** - Implement bounded buffers with overflow handling
+4. **Cancel animation frames** - Track and cancel RAF on component unmount
+5. **Clear all timers** - Clean up timeouts and intervals
+
+### Buffer Optimization
+
+1. **Set maximum buffer sizes** - Prevent unbounded memory growth
+2. **Implement overflow strategies** - Drop oldest, newest, or block on full
+3. **Use adaptive sizing** - Adjust buffer size based on usage patterns
+4. **Monitor buffer utilization** - Track and log buffer usage metrics
+
+### Garbage Collection
+
+1. **Use object pooling** - Reduce GC pressure for high-frequency allocations
+2. **Leverage WeakMap** - Allow GC of stream-associated metadata
+3. **Implement deferred cleanup** - Use FinalizationRegistry for automatic cleanup
+4. **Avoid memory retention** - Clear references in cleanup functions
+
+### Production Monitoring
+
+1. **Track memory metrics** - Monitor heap usage and growth rate
+2. **Detect leak patterns** - Identify consistent memory growth
+3. **Set up alerts** - Warn on high memory usage or leak detection
+4. **Integrate with monitoring** - Send metrics to Sentry, Datadog, etc.
+
+---
+
+## Related Resources
+
+- [Streaming Response Handling](/guides/advanced/streaming-responses)
+- [Performance Memory Management](/guides/performance/memory-management)
+- [useStreamingSSE API](/reference/hooks/use-streaming-sse)
+- [useStreamingWebSocket API](/reference/hooks/use-streaming-websocket)
+
+---
+
+## Next Steps
+
+- Implement bounded buffers in your streaming setup
+- Add memory monitoring to detect leaks in development
+- Set up production memory metrics tracking
+- Test cleanup patterns with memory profiling tools

@@ -1,0 +1,1533 @@
+---
+title: "Tool Chaining Examples"
+description: "Comprehensive guide to tool chaining patterns including sequential execution, parallel processing, conditional chains, error handling, and state management with real-world examples"
+---
+
+# Tool Chaining Examples
+
+Master the art of combining multiple tool calls to build sophisticated AI workflows. This guide covers everything from basic sequential chains to advanced parallel execution patterns with error handling and state management.
+
+## Overview
+
+Tool chaining is the practice of combining multiple tool executions into cohesive workflows. By orchestrating tool calls effectively, you can build complex AI-powered features while maintaining reliability, performance, and user control.
+
+### What is Tool Chaining?
+
+Tool chaining involves executing multiple tools in a coordinated manner where:
+- **Sequential chains**: Tools execute one after another, with each tool using the previous tool's output
+- **Parallel chains**: Multiple tools execute simultaneously for performance
+- **Conditional chains**: Tool execution depends on runtime conditions or previous results
+- **Hybrid chains**: Combination of sequential, parallel, and conditional patterns
+
+### When to Use Tool Chaining
+
+**Use tool chaining when**:
+- Breaking complex operations into simpler, testable steps
+- Coordinating multiple API calls or data sources
+- Building multi-step workflows with user approval gates
+- Optimizing performance through parallel execution
+- Implementing fallback strategies for reliability
+
+**Avoid tool chaining when**:
+- A single tool can accomplish the task
+- Overhead outweighs benefits (simple operations)
+- Real-time performance is critical (minimize latency)
+- Dependencies between tools are unclear
+
+---
+
+## Sequential Tool Execution
+
+Sequential chains execute tools one at a time, passing output from one tool as input to the next. This pattern ensures predictable ordering and simplifies debugging.
+
+### Basic Sequential Chain
+
+```typescript
+import { ToolOrchestrator } from '@clarity-chat/react/core/tool-orchestrator'
+
+const orchestrator = new ToolOrchestrator({
+  autoApprove: false, // Require user approval
+  enableCaching: true
+})
+
+// Register tools
+orchestrator.registerTools([weatherTool, translationTool, formatTool])
+
+async function sequentialChain(location: string, language: string) {
+  // Step 1: Get weather data
+  const weatherResult = await orchestrator.executeTool('get_weather', {
+    location
+  })
+
+  if (weatherResult.status !== 'completed') {
+    throw new Error('Failed to get weather data')
+  }
+
+  // Step 2: Translate weather data
+  const translationResult = await orchestrator.executeTool('translate_text', {
+    text: weatherResult.result.description,
+    targetLanguage: language
+  })
+
+  if (translationResult.status !== 'completed') {
+    throw new Error('Failed to translate weather data')
+  }
+
+  // Step 3: Format the final output
+  const formatResult = await orchestrator.executeTool('format_weather', {
+    weather: weatherResult.result,
+    translatedDescription: translationResult.result
+  })
+
+  return formatResult.result
+}
+
+// Usage
+const result = await sequentialChain('London', 'es')
+// Returns formatted weather in Spanish
+```
+
+### Sequential Chain with State Passing
+
+Track state across multiple tool executions for complex workflows:
+
+```typescript
+interface ChainState {
+  userId: string
+  conversationId: string
+  previousResults: Array<{ toolName: string; result: any }>
+  metadata: Record<string, unknown>
+}
+
+async function statefulSequentialChain(
+  initialState: ChainState,
+  steps: Array<{ toolName: string; getArgs: (state: ChainState) => any }>
+) {
+  let state = { ...initialState }
+
+  for (const step of steps) {
+    const args = step.getArgs(state)
+
+    const result = await orchestrator.executeTool(step.toolName, args, {
+      context: {
+        userId: state.userId,
+        sessionId: state.conversationId,
+        metadata: state.metadata
+      }
+    })
+
+    if (result.status !== 'completed') {
+      throw new Error(`Step ${step.toolName} failed: ${result.error?.message}`)
+    }
+
+    // Update state with result
+    state.previousResults.push({
+      toolName: step.toolName,
+      result: result.result
+    })
+
+    // Allow each step to modify metadata
+    if (result.result?.metadata) {
+      state.metadata = {
+        ...state.metadata,
+        ...result.result.metadata
+      }
+    }
+  }
+
+  return state
+}
+
+// Usage: Multi-step customer support workflow
+const workflow = await statefulSequentialChain(
+  {
+    userId: 'user-123',
+    conversationId: 'conv-456',
+    previousResults: [],
+    metadata: { language: 'en' }
+  },
+  [
+    {
+      toolName: 'fetch_user_profile',
+      getArgs: (state) => ({ userId: state.userId })
+    },
+    {
+      toolName: 'analyze_past_issues',
+      getArgs: (state) => ({
+        userId: state.userId,
+        profile: state.previousResults[0]?.result
+      })
+    },
+    {
+      toolName: 'generate_recommendations',
+      getArgs: (state) => ({
+        profile: state.previousResults[0]?.result,
+        issues: state.previousResults[1]?.result
+      })
+    }
+  ]
+)
+```
+
+### Pipeline Pattern
+
+Build reusable pipelines with validation and transformation:
+
+```typescript
+type PipelineStep<TInput, TOutput> = (input: TInput) => Promise<TOutput>
+
+class ToolPipeline<TInput, TOutput> {
+  private steps: Array<(input: any) => Promise<any>> = []
+
+  addStep<TStepOutput>(
+    step: PipelineStep<any, TStepOutput>
+  ): ToolPipeline<TInput, TStepOutput> {
+    this.steps.push(step)
+    return this as any
+  }
+
+  async execute(input: TInput): Promise<TOutput> {
+    let current: any = input
+
+    for (const [index, step] of this.steps.entries()) {
+      try {
+        current = await step(current)
+      } catch (error) {
+        throw new Error(
+          `Pipeline failed at step ${index + 1}: ${error instanceof Error ? error.message : String(error)}`
+        )
+      }
+    }
+
+    return current
+  }
+}
+
+// Usage: Data processing pipeline
+const dataPipeline = new ToolPipeline<{ rawData: string }, { processed: any }>()
+  .addStep(async (input) => {
+    const result = await orchestrator.executeTool('validate_data', {
+      data: input.rawData
+    })
+    return { validatedData: result.result }
+  })
+  .addStep(async (input) => {
+    const result = await orchestrator.executeTool('transform_data', {
+      data: input.validatedData
+    })
+    return { transformedData: result.result }
+  })
+  .addStep(async (input) => {
+    const result = await orchestrator.executeTool('enrich_data', {
+      data: input.transformedData
+    })
+    return { processed: result.result }
+  })
+
+const output = await dataPipeline.execute({ rawData: '...' })
+```
+
+---
+
+## Parallel Tool Execution
+
+Execute multiple independent tools simultaneously to improve performance and reduce total execution time.
+
+### Basic Parallel Execution
+
+```typescript
+import { executeBatch } from '@clarity-chat/react/utils/tool-execution'
+
+async function parallelWeatherFetch(cities: string[]) {
+  // Execute all weather fetches in parallel
+  const results = await executeBatch(
+    orchestrator,
+    cities.map((city) => ({
+      toolName: 'get_weather',
+      args: { location: city }
+    })),
+    {
+      maxConcurrent: 5, // Limit concurrent requests
+      deduplicate: true, // Avoid duplicate calls
+      onProgress: (completed, total) => {
+        console.log(`Progress: ${completed}/${total}`)
+      }
+    }
+  )
+
+  // Filter successful results
+  const weatherData = results
+    .filter((r) => r.success)
+    .map((r) => r.result)
+
+  return weatherData
+}
+
+// Usage
+const weather = await parallelWeatherFetch([
+  'London',
+  'Paris',
+  'Tokyo',
+  'New York',
+  'Sydney'
+])
+// All 5 cities fetched in parallel
+```
+
+### Parallel with Promise.all
+
+For simple cases without batch optimizations:
+
+```typescript
+async function parallelDataAggregation(userId: string) {
+  // Execute multiple tools in parallel
+  const [profileResult, settingsResult, activityResult] = await Promise.all([
+    orchestrator.executeTool('get_user_profile', { userId }),
+    orchestrator.executeTool('get_user_settings', { userId }),
+    orchestrator.executeTool('get_user_activity', { userId })
+  ])
+
+  // Check all succeeded
+  if (
+    profileResult.status !== 'completed' ||
+    settingsResult.status !== 'completed' ||
+    activityResult.status !== 'completed'
+  ) {
+    throw new Error('One or more data fetches failed')
+  }
+
+  // Combine results
+  return {
+    profile: profileResult.result,
+    settings: settingsResult.result,
+    activity: activityResult.result
+  }
+}
+```
+
+### Parallel with Concurrency Limit
+
+Control concurrency to avoid overwhelming APIs or resources:
+
+```typescript
+async function parallelWithLimit<T, R>(
+  items: T[],
+  limit: number,
+  fn: (item: T) => Promise<R>
+): Promise<R[]> {
+  const results: R[] = []
+  const executing: Promise<void>[] = []
+
+  for (const item of items) {
+    const promise = fn(item).then((result) => {
+      results.push(result)
+      executing.splice(executing.indexOf(promise), 1)
+    })
+
+    executing.push(promise)
+
+    // Wait if we've reached the limit
+    if (executing.length >= limit) {
+      await Promise.race(executing)
+    }
+  }
+
+  // Wait for remaining executions
+  await Promise.all(executing)
+  return results
+}
+
+// Usage: Process large dataset with concurrency limit
+async function processBulkData(dataItems: any[]) {
+  return parallelWithLimit(dataItems, 10, async (item) => {
+    const result = await orchestrator.executeTool('process_item', {
+      data: item
+    })
+
+    if (result.status !== 'completed') {
+      throw new Error(`Failed to process item: ${result.error?.message}`)
+    }
+
+    return result.result
+  })
+}
+```
+
+### Fan-Out/Fan-In Pattern
+
+Execute multiple tools in parallel, then aggregate results:
+
+```typescript
+interface AggregatedResult {
+  sources: string[]
+  data: any[]
+  metadata: {
+    totalSources: number
+    successfulSources: number
+    failedSources: number
+    duration: number
+  }
+}
+
+async function fanOutFanIn(
+  query: string,
+  sources: string[]
+): Promise<AggregatedResult> {
+  const startTime = Date.now()
+
+  // Fan-out: Query all sources in parallel
+  const results = await executeBatch(
+    orchestrator,
+    sources.map((source) => ({
+      toolName: `query_${source}`,
+      args: { query }
+    })),
+    {
+      maxConcurrent: 10,
+      stopOnError: false // Continue even if some fail
+    }
+  )
+
+  // Fan-in: Aggregate successful results
+  const successful = results.filter((r) => r.success)
+  const failed = results.filter((r) => !r.success)
+
+  return {
+    sources: successful.map((_, idx) => sources[idx]),
+    data: successful.map((r) => r.result),
+    metadata: {
+      totalSources: sources.length,
+      successfulSources: successful.length,
+      failedSources: failed.length,
+      duration: Date.now() - startTime
+    }
+  }
+}
+```
+
+---
+
+## Conditional Tool Chains
+
+Execute tools based on runtime conditions, previous results, or user input.
+
+### Conditional Branching
+
+```typescript
+async function conditionalChain(
+  action: 'analyze' | 'translate' | 'summarize',
+  content: string
+) {
+  // Common pre-processing
+  const validationResult = await orchestrator.executeTool('validate_content', {
+    content
+  })
+
+  if (validationResult.status !== 'completed') {
+    throw new Error('Content validation failed')
+  }
+
+  // Conditional execution based on action
+  switch (action) {
+    case 'analyze':
+      return orchestrator.executeTool('analyze_sentiment', {
+        text: validationResult.result.cleaned
+      })
+
+    case 'translate':
+      return orchestrator.executeTool('translate_text', {
+        text: validationResult.result.cleaned,
+        targetLanguage: 'es'
+      })
+
+    case 'summarize':
+      return orchestrator.executeTool('summarize_text', {
+        text: validationResult.result.cleaned,
+        maxLength: 200
+      })
+
+    default:
+      throw new Error(`Unknown action: ${action}`)
+  }
+}
+```
+
+### Result-Based Branching
+
+```typescript
+async function adaptiveChain(documentUrl: string) {
+  // Step 1: Detect document type
+  const detectionResult = await orchestrator.executeTool('detect_document_type', {
+    url: documentUrl
+  })
+
+  if (detectionResult.status !== 'completed') {
+    throw new Error('Document detection failed')
+  }
+
+  const { type, metadata } = detectionResult.result
+
+  // Step 2: Process based on detected type
+  if (type === 'pdf') {
+    // PDF-specific processing
+    const extractResult = await orchestrator.executeTool('extract_pdf_text', {
+      url: documentUrl,
+      pages: metadata.pageCount
+    })
+
+    return orchestrator.executeTool('analyze_document', {
+      text: extractResult.result,
+      format: 'pdf'
+    })
+  } else if (type === 'image') {
+    // Image-specific processing with OCR
+    const ocrResult = await orchestrator.executeTool('perform_ocr', {
+      url: documentUrl,
+      language: metadata.detectedLanguage
+    })
+
+    return orchestrator.executeTool('analyze_document', {
+      text: ocrResult.result,
+      format: 'image'
+    })
+  } else if (type === 'text') {
+    // Direct text processing
+    return orchestrator.executeTool('analyze_document', {
+      url: documentUrl,
+      format: 'text'
+    })
+  } else {
+    throw new Error(`Unsupported document type: ${type}`)
+  }
+}
+```
+
+### Quality-Based Retry with Fallback
+
+```typescript
+async function qualityAwareChain(prompt: string, minQuality: number = 0.8) {
+  // Try primary model
+  const primaryResult = await orchestrator.executeTool('generate_primary', {
+    prompt
+  })
+
+  if (primaryResult.status === 'completed') {
+    const quality = primaryResult.result.qualityScore
+
+    if (quality >= minQuality) {
+      return primaryResult.result // Quality sufficient
+    }
+
+    console.warn(
+      `Primary model quality ${quality} below threshold ${minQuality}`
+    )
+  }
+
+  // Fallback to secondary model
+  const secondaryResult = await orchestrator.executeTool('generate_secondary', {
+    prompt,
+    enhancedMode: true
+  })
+
+  if (secondaryResult.status === 'completed') {
+    return secondaryResult.result
+  }
+
+  // Final fallback to basic model
+  const basicResult = await orchestrator.executeTool('generate_basic', {
+    prompt
+  })
+
+  if (basicResult.status !== 'completed') {
+    throw new Error('All generation attempts failed')
+  }
+
+  return basicResult.result
+}
+```
+
+---
+
+## Error Handling in Tool Chains
+
+Robust error handling ensures chains fail gracefully and provide useful debugging information.
+
+### Try-Catch with Logging
+
+```typescript
+import { executeWithLogging } from '@clarity-chat/react/utils/tool-execution'
+
+async function chainWithErrorHandling(data: any) {
+  try {
+    // Step 1: Validate
+    const validationResult = await executeWithLogging(
+      orchestrator,
+      'validate_data',
+      { data },
+      {
+        level: 'info',
+        logArgs: true,
+        logResults: false
+      }
+    )
+
+    // Step 2: Transform
+    const transformResult = await executeWithLogging(
+      orchestrator,
+      'transform_data',
+      { validatedData: validationResult },
+      {
+        level: 'info',
+        logArgs: false,
+        logResults: true
+      }
+    )
+
+    return transformResult
+  } catch (error) {
+    console.error('Chain failed:', error)
+
+    // Log to monitoring service
+    await logError({
+      type: 'tool_chain_failure',
+      chain: 'data_processing',
+      error: error instanceof Error ? error.message : String(error)
+    })
+
+    // Return safe fallback
+    return { success: false, error: 'Data processing failed' }
+  }
+}
+```
+
+### Retry with Exponential Backoff
+
+```typescript
+import { executeWithRetry } from '@clarity-chat/react/utils/tool-execution'
+
+async function resilientChain(url: string) {
+  // Step 1: Fetch with retry
+  const fetchResult = await executeWithRetry(
+    orchestrator,
+    'fetch_url',
+    { url },
+    {
+      maxRetries: 3,
+      initialDelay: 1000,
+      backoffMultiplier: 2,
+      onRetry: (attempt, delay, error) => {
+        console.log(`Retry attempt ${attempt} after ${delay}ms`, error?.message)
+      }
+    }
+  )
+
+  // Step 2: Parse with retry
+  const parseResult = await executeWithRetry(
+    orchestrator,
+    'parse_content',
+    { content: fetchResult },
+    {
+      maxRetries: 2,
+      initialDelay: 500
+    }
+  )
+
+  return parseResult
+}
+```
+
+### Graceful Degradation
+
+```typescript
+async function degradableChain(userId: string) {
+  const results: any = {
+    core: null,
+    enhanced: null,
+    optional: null
+  }
+
+  // Core data (required)
+  try {
+    const coreResult = await orchestrator.executeTool('get_core_data', {
+      userId
+    })
+
+    if (coreResult.status !== 'completed') {
+      throw new Error('Core data fetch failed')
+    }
+
+    results.core = coreResult.result
+  } catch (error) {
+    // Core failure is critical
+    throw new Error(`Critical failure: ${error instanceof Error ? error.message : String(error)}`)
+  }
+
+  // Enhanced data (important but not critical)
+  try {
+    const enhancedResult = await orchestrator.executeTool('get_enhanced_data', {
+      userId,
+      coreData: results.core
+    })
+
+    if (enhancedResult.status === 'completed') {
+      results.enhanced = enhancedResult.result
+    }
+  } catch (error) {
+    console.warn('Enhanced data unavailable:', error)
+    // Continue without enhanced data
+  }
+
+  // Optional data (nice to have)
+  try {
+    const optionalResult = await orchestrator.executeTool('get_optional_data', {
+      userId
+    })
+
+    if (optionalResult.status === 'completed') {
+      results.optional = optionalResult.result
+    }
+  } catch (error) {
+    // Silently fail for optional data
+  }
+
+  return results
+}
+```
+
+### Circuit Breaker Pattern
+
+```typescript
+class CircuitBreaker {
+  private failures = 0
+  private lastFailureTime?: number
+  private state: 'closed' | 'open' | 'half-open' = 'closed'
+
+  constructor(
+    private threshold: number = 5,
+    private timeout: number = 60000
+  ) {}
+
+  async execute<T>(fn: () => Promise<T>): Promise<T> {
+    if (this.state === 'open') {
+      if (Date.now() - (this.lastFailureTime || 0) > this.timeout) {
+        this.state = 'half-open'
+      } else {
+        throw new Error('Circuit breaker is OPEN')
+      }
+    }
+
+    try {
+      const result = await fn()
+      this.onSuccess()
+      return result
+    } catch (error) {
+      this.onFailure()
+      throw error
+    }
+  }
+
+  private onSuccess() {
+    this.failures = 0
+    this.state = 'closed'
+  }
+
+  private onFailure() {
+    this.failures++
+    this.lastFailureTime = Date.now()
+
+    if (this.failures >= this.threshold) {
+      this.state = 'open'
+    }
+  }
+
+  getState() {
+    return {
+      state: this.state,
+      failures: this.failures,
+      lastFailureTime: this.lastFailureTime
+    }
+  }
+}
+
+// Usage
+const breaker = new CircuitBreaker(5, 60000)
+
+async function protectedChain(data: any) {
+  return breaker.execute(async () => {
+    const result = await orchestrator.executeTool('flaky_service', { data })
+
+    if (result.status !== 'completed') {
+      throw new Error('Service failed')
+    }
+
+    return result.result
+  })
+}
+```
+
+---
+
+## State Passing Between Tools
+
+Maintain context and pass state across tool executions for complex workflows.
+
+### Context Object Pattern
+
+```typescript
+interface WorkflowContext {
+  // Immutable identifiers
+  readonly workflowId: string
+  readonly userId: string
+  readonly startedAt: number
+
+  // Mutable state
+  currentStep: number
+  totalSteps: number
+  results: Map<string, any>
+  errors: Array<{ step: number; error: string }>
+
+  // User data
+  userData?: any
+  preferences?: any
+
+  // Metrics
+  metrics: {
+    toolExecutions: number
+    cacheHits: number
+    totalDuration: number
+  }
+}
+
+function createWorkflowContext(
+  workflowId: string,
+  userId: string
+): WorkflowContext {
+  return {
+    workflowId,
+    userId,
+    startedAt: Date.now(),
+    currentStep: 0,
+    totalSteps: 0,
+    results: new Map(),
+    errors: [],
+    metrics: {
+      toolExecutions: 0,
+      cacheHits: 0,
+      totalDuration: 0
+    }
+  }
+}
+
+async function executeWorkflowStep(
+  context: WorkflowContext,
+  toolName: string,
+  args: any
+): Promise<WorkflowContext> {
+  const stepStart = Date.now()
+
+  context.currentStep++
+
+  const result = await orchestrator.executeTool(toolName, args, {
+    context: {
+      callId: `${context.workflowId}-step-${context.currentStep}`,
+      userId: context.userId,
+      metadata: {
+        step: context.currentStep,
+        totalSteps: context.totalSteps
+      }
+    }
+  })
+
+  // Update metrics
+  context.metrics.toolExecutions++
+  context.metrics.totalDuration += Date.now() - stepStart
+
+  if (result.cached) {
+    context.metrics.cacheHits++
+  }
+
+  // Store result or error
+  if (result.status === 'completed') {
+    context.results.set(toolName, result.result)
+  } else {
+    context.errors.push({
+      step: context.currentStep,
+      error: result.error?.message || 'Unknown error'
+    })
+  }
+
+  return context
+}
+
+// Usage
+async function multiStepWorkflow(userId: string, data: any) {
+  let context = createWorkflowContext('wf-123', userId)
+  context.totalSteps = 4
+
+  // Step 1: Validate
+  context = await executeWorkflowStep(context, 'validate', { data })
+
+  // Step 2: Transform
+  const validatedData = context.results.get('validate')
+  context = await executeWorkflowStep(context, 'transform', {
+    data: validatedData
+  })
+
+  // Step 3: Enrich
+  const transformedData = context.results.get('transform')
+  context = await executeWorkflowStep(context, 'enrich', {
+    data: transformedData
+  })
+
+  // Step 4: Finalize
+  const enrichedData = context.results.get('enrich')
+  context = await executeWorkflowStep(context, 'finalize', {
+    data: enrichedData
+  })
+
+  return {
+    result: context.results.get('finalize'),
+    metrics: context.metrics,
+    errors: context.errors
+  }
+}
+```
+
+### State Machine Pattern
+
+```typescript
+type WorkflowState =
+  | 'idle'
+  | 'validating'
+  | 'processing'
+  | 'enriching'
+  | 'completed'
+  | 'failed'
+
+interface StateMachineContext {
+  state: WorkflowState
+  data: any
+  metadata: Record<string, any>
+  transitions: Array<{ from: WorkflowState; to: WorkflowState; at: number }>
+}
+
+class WorkflowStateMachine {
+  private context: StateMachineContext
+
+  constructor(initialData: any) {
+    this.context = {
+      state: 'idle',
+      data: initialData,
+      metadata: {},
+      transitions: []
+    }
+  }
+
+  private transition(to: WorkflowState) {
+    this.context.transitions.push({
+      from: this.context.state,
+      to,
+      at: Date.now()
+    })
+    this.context.state = to
+  }
+
+  async execute() {
+    this.transition('validating')
+
+    // Validation
+    const validationResult = await orchestrator.executeTool('validate', {
+      data: this.context.data
+    })
+
+    if (validationResult.status !== 'completed') {
+      this.transition('failed')
+      throw new Error('Validation failed')
+    }
+
+    this.context.data = validationResult.result
+    this.transition('processing')
+
+    // Processing
+    const processingResult = await orchestrator.executeTool('process', {
+      data: this.context.data
+    })
+
+    if (processingResult.status !== 'completed') {
+      this.transition('failed')
+      throw new Error('Processing failed')
+    }
+
+    this.context.data = processingResult.result
+    this.transition('enriching')
+
+    // Enrichment
+    const enrichmentResult = await orchestrator.executeTool('enrich', {
+      data: this.context.data
+    })
+
+    if (enrichmentResult.status !== 'completed') {
+      this.transition('failed')
+      throw new Error('Enrichment failed')
+    }
+
+    this.context.data = enrichmentResult.result
+    this.transition('completed')
+
+    return this.context
+  }
+
+  getState() {
+    return this.context.state
+  }
+
+  getHistory() {
+    return this.context.transitions
+  }
+}
+```
+
+---
+
+## Real-World Tool Chaining Examples
+
+### Example 1: Document Processing Pipeline
+
+```typescript
+async function processDocument(documentUrl: string) {
+  console.log('Starting document processing pipeline...')
+
+  // Step 1: Download document (with retry)
+  const downloadResult = await executeWithRetry(
+    orchestrator,
+    'download_document',
+    { url: documentUrl },
+    {
+      maxRetries: 3,
+      initialDelay: 1000,
+      onRetry: (attempt) => console.log(`Download retry ${attempt}`)
+    }
+  )
+
+  // Step 2: Extract text (parallel for multi-page)
+  const pageCount = downloadResult.metadata.pageCount
+  const pages = Array.from({ length: pageCount }, (_, i) => i + 1)
+
+  const pageTexts = await executeBatch(
+    orchestrator,
+    pages.map((page) => ({
+      toolName: 'extract_page_text',
+      args: { documentId: downloadResult.id, page }
+    })),
+    {
+      maxConcurrent: 5,
+      onProgress: (completed, total) => {
+        console.log(`Extracted ${completed}/${total} pages`)
+      }
+    }
+  )
+
+  const fullText = pageTexts
+    .filter((r) => r.success)
+    .map((r) => r.result.text)
+    .join('\n\n')
+
+  // Step 3: Parallel analysis
+  const [summaryResult, entitiesResult, sentimentResult] = await Promise.all([
+    orchestrator.executeTool('summarize_text', { text: fullText }),
+    orchestrator.executeTool('extract_entities', { text: fullText }),
+    orchestrator.executeTool('analyze_sentiment', { text: fullText })
+  ])
+
+  // Step 4: Generate insights (conditional based on sentiment)
+  let insights
+  if (
+    sentimentResult.status === 'completed' &&
+    sentimentResult.result.score < 0.3
+  ) {
+    // Negative sentiment detected, generate recommendations
+    const recommendationsResult = await orchestrator.executeTool(
+      'generate_recommendations',
+      {
+        summary: summaryResult.result,
+        sentiment: sentimentResult.result,
+        entities: entitiesResult.result
+      }
+    )
+    insights = recommendationsResult.result
+  }
+
+  return {
+    summary: summaryResult.result,
+    entities: entitiesResult.result,
+    sentiment: sentimentResult.result,
+    insights,
+    metadata: {
+      pageCount,
+      processingTime: Date.now() - downloadResult.startTime
+    }
+  }
+}
+```
+
+### Example 2: E-commerce Order Processing
+
+```typescript
+async function processOrder(orderId: string) {
+  const context = createWorkflowContext('order-' + orderId, orderId)
+
+  try {
+    // Step 1: Validate order
+    const orderResult = await orchestrator.executeTool('validate_order', {
+      orderId
+    })
+
+    if (orderResult.status !== 'completed') {
+      throw new Error('Invalid order')
+    }
+
+    const order = orderResult.result
+
+    // Step 2: Parallel inventory and payment checks
+    const [inventoryResult, paymentResult] = await Promise.all([
+      orchestrator.executeTool('check_inventory', {
+        items: order.items
+      }),
+      orchestrator.executeTool('process_payment', {
+        orderId,
+        amount: order.total
+      })
+    ])
+
+    if (inventoryResult.status !== 'completed') {
+      // Insufficient inventory - cancel payment
+      await orchestrator.executeTool('cancel_payment', {
+        paymentId: paymentResult.result?.paymentId
+      })
+      throw new Error('Insufficient inventory')
+    }
+
+    if (paymentResult.status !== 'completed') {
+      throw new Error('Payment failed')
+    }
+
+    // Step 3: Create shipment
+    const shipmentResult = await orchestrator.executeTool('create_shipment', {
+      orderId,
+      items: order.items,
+      address: order.shippingAddress
+    })
+
+    // Step 4: Parallel notifications
+    await Promise.all([
+      orchestrator.executeTool('send_confirmation_email', {
+        orderId,
+        customerEmail: order.customerEmail
+      }),
+      orchestrator.executeTool('update_inventory', {
+        items: order.items
+      }),
+      orchestrator.executeTool('log_order_event', {
+        orderId,
+        event: 'completed',
+        timestamp: Date.now()
+      })
+    ])
+
+    return {
+      success: true,
+      orderId,
+      shipmentId: shipmentResult.result.shipmentId,
+      estimatedDelivery: shipmentResult.result.estimatedDelivery
+    }
+  } catch (error) {
+    // Rollback on error
+    await orchestrator.executeTool('cancel_order', { orderId })
+
+    return {
+      success: false,
+      orderId,
+      error: error instanceof Error ? error.message : String(error)
+    }
+  }
+}
+```
+
+### Example 3: Multi-Source Data Aggregation
+
+```typescript
+async function aggregateCustomerData(customerId: string) {
+  const sources = [
+    'crm_system',
+    'support_tickets',
+    'purchase_history',
+    'web_analytics',
+    'social_media'
+  ]
+
+  // Fan-out: Query all sources in parallel
+  const results = await executeBatch(
+    orchestrator,
+    sources.map((source) => ({
+      toolName: `fetch_${source}`,
+      args: { customerId }
+    })),
+    {
+      maxConcurrent: 5,
+      stopOnError: false, // Continue even if some sources fail
+      deduplicate: true
+    }
+  )
+
+  // Collect successful results
+  const data: Record<string, any> = {}
+  const failedSources: string[] = []
+
+  results.forEach((result, index) => {
+    if (result.success) {
+      data[sources[index]] = result.result
+    } else {
+      failedSources.push(sources[index])
+    }
+  })
+
+  // Conditional enrichment based on available data
+  if (data.purchase_history && data.web_analytics) {
+    // Both available - generate advanced insights
+    const insightsResult = await orchestrator.executeTool(
+      'generate_advanced_insights',
+      {
+        purchaseHistory: data.purchase_history,
+        webAnalytics: data.web_analytics
+      }
+    )
+
+    if (insightsResult.status === 'completed') {
+      data.insights = insightsResult.result
+    }
+  } else if (data.purchase_history) {
+    // Only purchase history - basic recommendations
+    const recommendationsResult = await orchestrator.executeTool(
+      'generate_basic_recommendations',
+      {
+        purchaseHistory: data.purchase_history
+      }
+    )
+
+    if (recommendationsResult.status === 'completed') {
+      data.recommendations = recommendationsResult.result
+    }
+  }
+
+  return {
+    customerId,
+    data,
+    metadata: {
+      totalSources: sources.length,
+      successfulSources: sources.length - failedSources.length,
+      failedSources
+    }
+  }
+}
+```
+
+---
+
+## Performance Optimization for Chains
+
+### Caching Strategy
+
+```typescript
+// Configure orchestrator with caching
+const orchestrator = new ToolOrchestrator({
+  enableCaching: true,
+  defaultCacheTtl: 300000 // 5 minutes
+})
+
+// Mark tools as cacheable
+const cacheableTool = {
+  name: 'get_weather',
+  description: 'Get weather data',
+  cacheable: true, // Enable caching
+  cacheTtl: 600000, // 10 minute cache
+  parameters: {
+    type: 'object',
+    properties: {
+      location: { type: 'string' }
+    },
+    required: ['location']
+  },
+  execute: async (args) => {
+    // Expensive operation
+    return fetchWeatherData(args.location)
+  }
+}
+
+// First call - executes and caches
+const result1 = await orchestrator.executeTool('get_weather', {
+  location: 'London'
+})
+// cached: false, duration: 1200ms
+
+// Second call - returns from cache
+const result2 = await orchestrator.executeTool('get_weather', {
+  location: 'London'
+})
+// cached: true, duration: 2ms
+```
+
+### Batch Deduplication
+
+```typescript
+// Automatically deduplicate identical calls
+const cities = ['London', 'Paris', 'London', 'Tokyo', 'Paris']
+
+const results = await executeBatch(
+  orchestrator,
+  cities.map((city) => ({
+    toolName: 'get_weather',
+    args: { location: city }
+  })),
+  {
+    deduplicate: true // Only execute unique calls
+  }
+)
+
+// Only 3 unique calls executed (London, Paris, Tokyo)
+// Duplicate calls return the same result
+```
+
+### Timeout Optimization
+
+```typescript
+// Set appropriate timeouts for each tool
+const quickTool = {
+  name: 'fast_operation',
+  timeout: 1000, // 1 second
+  // ...
+}
+
+const slowTool = {
+  name: 'slow_operation',
+  timeout: 60000, // 1 minute
+  // ...
+}
+
+// Override timeout per execution
+const result = await orchestrator.executeTool('slow_operation', args, {
+  timeout: 120000 // 2 minutes for this specific call
+})
+```
+
+### Parallelization Benchmarks
+
+```typescript
+// Sequential execution (baseline)
+async function sequentialExecution() {
+  const start = Date.now()
+
+  const r1 = await orchestrator.executeTool('tool1', {})
+  const r2 = await orchestrator.executeTool('tool2', {})
+  const r3 = await orchestrator.executeTool('tool3', {})
+
+  console.log(`Sequential: ${Date.now() - start}ms`) // ~3000ms
+}
+
+// Parallel execution (optimized)
+async function parallelExecution() {
+  const start = Date.now()
+
+  const [r1, r2, r3] = await Promise.all([
+    orchestrator.executeTool('tool1', {}),
+    orchestrator.executeTool('tool2', {}),
+    orchestrator.executeTool('tool3', {})
+  ])
+
+  console.log(`Parallel: ${Date.now() - start}ms`) // ~1000ms (3x faster)
+}
+
+// Batch execution (most optimized)
+async function batchExecution() {
+  const start = Date.now()
+
+  const results = await executeBatch(
+    orchestrator,
+    [
+      { toolName: 'tool1', args: {} },
+      { toolName: 'tool2', args: {} },
+      { toolName: 'tool3', args: {} }
+    ],
+    {
+      maxConcurrent: 10,
+      deduplicate: true
+    }
+  )
+
+  console.log(`Batch: ${Date.now() - start}ms`) // ~1000ms + optimizations
+}
+```
+
+---
+
+## Best Practices
+
+### 1. Design for Failure
+
+```typescript
+// ✅ Good: Expect failures, handle gracefully
+async function robustChain(data: any) {
+  const results = {
+    core: null as any,
+    optional: null as any
+  }
+
+  // Critical path with error handling
+  try {
+    results.core = await executeWithRetry(
+      orchestrator,
+      'core_operation',
+      { data },
+      { maxRetries: 3 }
+    )
+  } catch (error) {
+    throw new Error(`Critical failure: ${error}`)
+  }
+
+  // Optional path with silent failure
+  try {
+    results.optional = await orchestrator.executeTool('optional_operation', {
+      data
+    })
+  } catch (error) {
+    console.warn('Optional operation failed:', error)
+  }
+
+  return results
+}
+
+// ❌ Bad: Assume success, no error handling
+async function fragileChain(data: any) {
+  const core = await orchestrator.executeTool('core_operation', { data })
+  const optional = await orchestrator.executeTool('optional_operation', { data })
+  return { core, optional }
+}
+```
+
+### 2. Minimize Sequential Dependencies
+
+```typescript
+// ✅ Good: Parallel when possible
+async function optimizedChain(userId: string) {
+  // Parallel independent operations
+  const [profile, settings, activity] = await Promise.all([
+    orchestrator.executeTool('get_profile', { userId }),
+    orchestrator.executeTool('get_settings', { userId }),
+    orchestrator.executeTool('get_activity', { userId })
+  ])
+
+  // Sequential only when dependent
+  const recommendations = await orchestrator.executeTool(
+    'generate_recommendations',
+    {
+      profile: profile.result,
+      activity: activity.result
+    }
+  )
+
+  return { profile, settings, activity, recommendations }
+}
+
+// ❌ Bad: Unnecessary sequential execution
+async function slowChain(userId: string) {
+  const profile = await orchestrator.executeTool('get_profile', { userId })
+  const settings = await orchestrator.executeTool('get_settings', { userId })
+  const activity = await orchestrator.executeTool('get_activity', { userId })
+  // Could have been parallel
+}
+```
+
+### 3. Use Appropriate Timeouts
+
+```typescript
+// ✅ Good: Realistic timeouts per operation
+const tools = {
+  quick: { timeout: 5000 }, // 5s for fast APIs
+  medium: { timeout: 30000 }, // 30s for normal operations
+  slow: { timeout: 120000 } // 2min for heavy processing
+}
+
+// ❌ Bad: One-size-fits-all timeout
+const tools = {
+  quick: { timeout: 60000 },
+  medium: { timeout: 60000 },
+  slow: { timeout: 60000 } // Too short for slow operations
+}
+```
+
+### 4. Log and Monitor
+
+```typescript
+// ✅ Good: Comprehensive logging
+async function monitoredChain(data: any) {
+  const chainId = generateId()
+  const startTime = Date.now()
+
+  console.log(`[${chainId}] Starting chain`)
+
+  try {
+    const result = await executeWithLogging(
+      orchestrator,
+      'process_data',
+      { data },
+      {
+        level: 'info',
+        logArgs: true,
+        logger: (level, message, data) => {
+          console.log(`[${chainId}] [${level}] ${message}`, data)
+        }
+      }
+    )
+
+    console.log(`[${chainId}] Completed in ${Date.now() - startTime}ms`)
+    return result
+  } catch (error) {
+    console.error(`[${chainId}] Failed after ${Date.now() - startTime}ms`, error)
+    throw error
+  }
+}
+```
+
+### 5. Cache Wisely
+
+```typescript
+// ✅ Good: Cache deterministic, expensive operations
+const weatherTool = {
+  name: 'get_weather',
+  cacheable: true,
+  cacheTtl: 600000, // 10 minutes (weather changes slowly)
+  execute: async (args) => fetchWeather(args.location)
+}
+
+// ❌ Bad: Cache non-deterministic operations
+const randomTool = {
+  name: 'generate_random',
+  cacheable: true, // Wrong! Results should vary
+  execute: async () => Math.random()
+}
+```
+
+---
+
+## Related Resources
+
+- [Tool Registry API](/reference/core/tool-registry) - Tool management and discovery
+- [Tool Orchestrator API](/reference/core/tool-orchestrator) - High-level orchestration
+- [Tool Executor API](/reference/core/tool-executor) - Low-level execution
+- [Tool Calling Guide](/guides/tool-calling) - Basic tool calling patterns
+- [Error Handling Guide](/guides/error-handling) - Advanced error strategies
+
+---
+
+**Last Updated**: January 29, 2026
+**Version**: 1.0
+**Status**: Production Ready

@@ -1,0 +1,1817 @@
+---
+title: 'Tool Definition Guide'
+description: 'Comprehensive guide to defining, validating, and implementing type-safe tools for AI function calling with best practices and real-world examples'
+category: 'Tool Calling'
+---
+
+# Tool Definition Guide
+
+Master the art of defining tools for AI function calling with type safety, validation, and proper error handling for production-ready applications.
+
+## Overview
+
+Tool definitions are the foundation of AI function calling in Clarity Chat. A well-defined tool enables AI models to understand **when**, **how**, and **why** to invoke specific functions with proper parameter validation and error handling.
+
+This guide covers the complete tool definition lifecycle from schema design to production deployment.
+
+**Key Topics:**
+
+- **Tool Definition Schema** - Structure and required fields
+- **Parameter Definitions** - Type-safe schemas with JSON Schema
+- **Return Type Specifications** - Structuring tool outputs
+- **Error Handling** - Validation and runtime error management
+- **Tool Metadata** - Names, descriptions, categories, and discovery
+- **Validation Rules** - Built-in and custom validation
+- **Best Practices** - Production-ready patterns
+- **Common Mistakes** - Pitfalls to avoid
+
+---
+
+## 1. Tool Definition Schema
+
+### Core Structure
+
+Every tool definition follows this canonical structure:
+
+```typescript
+import type { ToolDefinition } from '@clarity-chat/react'
+
+const myTool: ToolDefinition = {
+  // ===== IDENTIFICATION (Required) =====
+  name: 'tool_name',              // Unique identifier
+  description: 'What it does',    // For AI decision-making
+
+  // ===== PARAMETERS (Required) =====
+  parameters: {                   // JSON Schema
+    type: 'object',
+    properties: { /* ... */ },
+    required: ['field1']
+  },
+
+  // ===== EXECUTION (Required) =====
+  execute: async (args, context) => {
+    return { result: 'data' }
+  },
+
+  // ===== SECURITY & BEHAVIOR (Optional) =====
+  requiresApproval: true,         // Default: true
+  cacheable: false,               // Default: false
+  timeout: 30000,                 // Default: 30s
+
+  // ===== METADATA (Optional) =====
+  category: 'utility',
+  tags: ['helper', 'tool'],
+  icon: '🔧',
+  color: '#3B82F6'
+}
+```
+
+### Type-Safe Definition
+
+Use TypeScript generics for type safety:
+
+```typescript
+// Define argument and result types
+interface WeatherArgs {
+  location: string
+  units?: 'celsius' | 'fahrenheit'
+}
+
+interface WeatherResult {
+  temperature: number
+  conditions: string
+  humidity: number
+  windSpeed: number
+  forecast: string[]
+}
+
+// Type-safe tool definition
+export const weatherTool: ToolDefinition<WeatherArgs, WeatherResult> = {
+  name: 'get_weather',
+  description: 'Get current weather conditions for a specific location',
+
+  parameters: {
+    type: 'object',
+    properties: {
+      location: {
+        type: 'string',
+        description: 'City and state, e.g., "San Francisco, CA"',
+        minLength: 2,
+        maxLength: 100
+      },
+      units: {
+        type: 'string',
+        enum: ['celsius', 'fahrenheit'],
+        description: 'Temperature units',
+        default: 'celsius'
+      }
+    },
+    required: ['location']
+  },
+
+  execute: async (args, context) => {
+    // args is typed as WeatherArgs
+    // return value is typed as WeatherResult
+    const data = await fetchWeather(args.location, args.units)
+    return data
+  },
+
+  requiresApproval: true,
+  category: 'information',
+  tags: ['weather', 'api', 'external']
+}
+```
+
+### Validation
+
+Tools are validated on registration:
+
+```typescript
+import { ToolRegistry, validateToolDefinition } from '@clarity-chat/react'
+
+const registry = new ToolRegistry()
+
+try {
+  // Automatic validation on register
+  registry.register(weatherTool)
+} catch (error) {
+  console.error('Tool validation failed:', error)
+}
+
+// Manual validation
+validateToolDefinition(weatherTool) // Throws if invalid
+```
+
+**Validation Checks:**
+
+- `name` must match `/^[a-zA-Z_][a-zA-Z0-9_.]*$/` (alphanumeric, underscore, dots for namespacing)
+- `description` must be non-empty
+- `parameters` must have a `properties` object
+- `execute` must be a function
+- All required fields must be present
+
+---
+
+## 2. Parameter Definition Best Practices
+
+Parameters use JSON Schema (Draft 7 subset) for validation.
+
+### Basic Types
+
+```typescript
+const basicTypesTool: ToolDefinition = {
+  name: 'demo_types',
+  description: 'Demonstrates all basic parameter types',
+
+  parameters: {
+    type: 'object',
+    properties: {
+      // String
+      name: {
+        type: 'string',
+        description: 'User name',
+        minLength: 1,
+        maxLength: 50
+      },
+
+      // Number
+      age: {
+        type: 'number',
+        description: 'Age in years',
+        minimum: 0,
+        maximum: 150
+      },
+
+      // Integer
+      count: {
+        type: 'integer',
+        description: 'Item count',
+        minimum: 1,
+        maximum: 100,
+        multipleOf: 5  // Must be divisible by 5
+      },
+
+      // Boolean
+      enabled: {
+        type: 'boolean',
+        description: 'Feature enabled',
+        default: false
+      },
+
+      // Enum
+      priority: {
+        type: 'string',
+        enum: ['low', 'medium', 'high', 'urgent'],
+        description: 'Priority level',
+        default: 'medium'
+      },
+
+      // Array
+      tags: {
+        type: 'array',
+        description: 'Tag list',
+        items: { type: 'string' },
+        minItems: 1,
+        maxItems: 10,
+        uniqueItems: true
+      },
+
+      // Object
+      metadata: {
+        type: 'object',
+        description: 'Additional metadata',
+        properties: {
+          key: { type: 'string' },
+          value: { type: 'string' }
+        },
+        required: ['key']
+      }
+    },
+    required: ['name', 'count']
+  },
+
+  execute: async (args) => {
+    return { success: true, data: args }
+  }
+}
+```
+
+### String Constraints
+
+```typescript
+const stringValidationTool: ToolDefinition = {
+  name: 'string_validation',
+  description: 'Advanced string validation examples',
+
+  parameters: {
+    type: 'object',
+    properties: {
+      // Length constraints
+      username: {
+        type: 'string',
+        description: 'Username (3-20 characters)',
+        minLength: 3,
+        maxLength: 20
+      },
+
+      // Pattern matching (regex)
+      email: {
+        type: 'string',
+        description: 'Email address',
+        pattern: '^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$',
+        format: 'email'  // Hint for validation
+      },
+
+      // URL validation
+      website: {
+        type: 'string',
+        description: 'Website URL',
+        pattern: '^https?://',
+        format: 'uri'
+      },
+
+      // Fixed format
+      zipCode: {
+        type: 'string',
+        description: 'US ZIP code',
+        pattern: '^\\d{5}(-\\d{4})?$'
+      }
+    },
+    required: ['email']
+  },
+
+  execute: async (args) => {
+    return { validated: true }
+  }
+}
+```
+
+### Numeric Constraints
+
+```typescript
+const numericValidationTool: ToolDefinition = {
+  name: 'numeric_validation',
+  description: 'Numeric validation examples',
+
+  parameters: {
+    type: 'object',
+    properties: {
+      // Range constraints
+      temperature: {
+        type: 'number',
+        description: 'Temperature in Celsius',
+        minimum: -273.15,  // Absolute zero
+        maximum: 1000
+      },
+
+      // Exclusive range
+      probability: {
+        type: 'number',
+        description: 'Probability (0 < p < 1)',
+        exclusiveMinimum: 0,
+        exclusiveMaximum: 1
+      },
+
+      // Integer only
+      participants: {
+        type: 'integer',
+        description: 'Number of participants',
+        minimum: 1,
+        maximum: 1000
+      },
+
+      // Multiple of constraint
+      batchSize: {
+        type: 'integer',
+        description: 'Batch size (multiple of 10)',
+        minimum: 10,
+        maximum: 1000,
+        multipleOf: 10
+      }
+    },
+    required: []
+  },
+
+  execute: async (args) => {
+    return { validated: true }
+  }
+}
+```
+
+### Array Constraints
+
+```typescript
+const arrayValidationTool: ToolDefinition = {
+  name: 'array_validation',
+  description: 'Array validation examples',
+
+  parameters: {
+    type: 'object',
+    properties: {
+      // Simple array
+      colors: {
+        type: 'array',
+        description: 'List of colors',
+        items: {
+          type: 'string',
+          enum: ['red', 'green', 'blue', 'yellow']
+        },
+        minItems: 1,
+        maxItems: 5,
+        uniqueItems: true
+      },
+
+      // Array of objects
+      users: {
+        type: 'array',
+        description: 'User list',
+        items: {
+          type: 'object',
+          properties: {
+            id: { type: 'string' },
+            name: { type: 'string' }
+          },
+          required: ['id', 'name']
+        },
+        minItems: 1
+      },
+
+      // Nested array
+      matrix: {
+        type: 'array',
+        description: '2D matrix',
+        items: {
+          type: 'array',
+          items: { type: 'number' }
+        }
+      }
+    },
+    required: []
+  },
+
+  execute: async (args) => {
+    return { validated: true }
+  }
+}
+```
+
+### Object Constraints
+
+```typescript
+const objectValidationTool: ToolDefinition = {
+  name: 'object_validation',
+  description: 'Object validation examples',
+
+  parameters: {
+    type: 'object',
+    properties: {
+      // Nested object
+      address: {
+        type: 'object',
+        description: 'Mailing address',
+        properties: {
+          street: { type: 'string', minLength: 1 },
+          city: { type: 'string', minLength: 1 },
+          state: { type: 'string', minLength: 2, maxLength: 2 },
+          zip: { type: 'string', pattern: '^\\d{5}$' }
+        },
+        required: ['street', 'city', 'state', 'zip'],
+        additionalProperties: false  // Strict validation
+      },
+
+      // Flexible metadata object
+      metadata: {
+        type: 'object',
+        description: 'Additional metadata',
+        additionalProperties: true  // Allow any extra properties
+      }
+    },
+    required: []
+  },
+
+  execute: async (args) => {
+    return { validated: true }
+  }
+}
+```
+
+### Optional vs Required Parameters
+
+```typescript
+const optionalParametersTool: ToolDefinition = {
+  name: 'optional_params',
+  description: 'Demonstrates optional and required parameters',
+
+  parameters: {
+    type: 'object',
+    properties: {
+      // Required (listed in `required` array)
+      query: {
+        type: 'string',
+        description: 'Search query (required)'
+      },
+
+      // Optional with default
+      limit: {
+        type: 'integer',
+        description: 'Result limit',
+        minimum: 1,
+        maximum: 100,
+        default: 10  // Used if not provided
+      },
+
+      // Optional without default
+      offset: {
+        type: 'integer',
+        description: 'Result offset (optional)',
+        minimum: 0
+      },
+
+      // Optional complex type
+      filters: {
+        type: 'object',
+        description: 'Search filters (optional)',
+        properties: {
+          category: { type: 'string' },
+          dateRange: {
+            type: 'object',
+            properties: {
+              start: { type: 'string', format: 'date' },
+              end: { type: 'string', format: 'date' }
+            }
+          }
+        }
+      }
+    },
+    required: ['query']  // Only query is required
+  },
+
+  execute: async (args) => {
+    // Handle optional parameters with defaults
+    const limit = args.limit ?? 10
+    const offset = args.offset ?? 0
+
+    return {
+      query: args.query,
+      limit,
+      offset,
+      filters: args.filters
+    }
+  }
+}
+```
+
+---
+
+## 3. Return Type Specifications
+
+Tool results must be JSON-serializable. Structure results for consistency.
+
+### Simple Return Types
+
+```typescript
+// Primitive return
+const calculatorTool: ToolDefinition<{ expression: string }, number> = {
+  name: 'calculator',
+  description: 'Evaluate math expression',
+  parameters: {
+    type: 'object',
+    properties: {
+      expression: { type: 'string' }
+    },
+    required: ['expression']
+  },
+  execute: async ({ expression }) => {
+    return eval(expression) // Returns number directly
+  }
+}
+
+// String return
+const translateTool: ToolDefinition<{ text: string }, string> = {
+  name: 'translate',
+  description: 'Translate text to English',
+  parameters: {
+    type: 'object',
+    properties: {
+      text: { type: 'string' }
+    },
+    required: ['text']
+  },
+  execute: async ({ text }) => {
+    return await translate(text, 'en') // Returns string
+  }
+}
+```
+
+### Structured Return Types
+
+```typescript
+// Result with metadata
+interface SearchResult {
+  success: boolean
+  results: Array<{
+    id: string
+    title: string
+    snippet: string
+    url: string
+  }>
+  metadata: {
+    query: string
+    totalResults: number
+    page: number
+    executionTime: number
+  }
+}
+
+const searchTool: ToolDefinition<{ query: string }, SearchResult> = {
+  name: 'web_search',
+  description: 'Search the web',
+  parameters: {
+    type: 'object',
+    properties: {
+      query: { type: 'string', minLength: 1 }
+    },
+    required: ['query']
+  },
+  execute: async ({ query }) => {
+    const startTime = Date.now()
+    const results = await performSearch(query)
+
+    return {
+      success: true,
+      results: results.items,
+      metadata: {
+        query,
+        totalResults: results.total,
+        page: 1,
+        executionTime: Date.now() - startTime
+      }
+    }
+  }
+}
+```
+
+### Error Results
+
+```typescript
+// Result type with error handling
+type ToolResult<T> =
+  | { success: true; data: T }
+  | { success: false; error: { code: string; message: string } }
+
+const robustTool: ToolDefinition<
+  { input: string },
+  ToolResult<{ output: string }>
+> = {
+  name: 'robust_tool',
+  description: 'Tool with structured error handling',
+  parameters: {
+    type: 'object',
+    properties: {
+      input: { type: 'string' }
+    },
+    required: ['input']
+  },
+  execute: async ({ input }) => {
+    try {
+      const output = await processInput(input)
+      return {
+        success: true,
+        data: { output }
+      }
+    } catch (error) {
+      return {
+        success: false,
+        error: {
+          code: 'PROCESSING_ERROR',
+          message: error instanceof Error ? error.message : 'Unknown error'
+        }
+      }
+    }
+  }
+}
+```
+
+### Paginated Results
+
+```typescript
+interface PaginatedResult<T> {
+  items: T[]
+  pagination: {
+    page: number
+    pageSize: number
+    totalItems: number
+    totalPages: number
+    hasNext: boolean
+    hasPrevious: boolean
+  }
+}
+
+const paginatedSearchTool: ToolDefinition<
+  { query: string; page: number },
+  PaginatedResult<{ id: string; title: string }>
+> = {
+  name: 'paginated_search',
+  description: 'Search with pagination',
+  parameters: {
+    type: 'object',
+    properties: {
+      query: { type: 'string' },
+      page: { type: 'integer', minimum: 1, default: 1 }
+    },
+    required: ['query']
+  },
+  execute: async ({ query, page = 1 }) => {
+    const pageSize = 10
+    const results = await search(query, page, pageSize)
+    const totalItems = results.total
+    const totalPages = Math.ceil(totalItems / pageSize)
+
+    return {
+      items: results.items,
+      pagination: {
+        page,
+        pageSize,
+        totalItems,
+        totalPages,
+        hasNext: page < totalPages,
+        hasPrevious: page > 1
+      }
+    }
+  }
+}
+```
+
+---
+
+## 4. Error Handling in Tool Definitions
+
+### Parameter Validation Errors
+
+Built-in validation throws `ToolValidationError` automatically:
+
+```typescript
+import { ToolValidationError } from '@clarity-chat/react'
+
+// Example: What happens during validation
+const tool = {
+  name: 'example',
+  parameters: {
+    type: 'object',
+    properties: {
+      email: {
+        type: 'string',
+        pattern: '^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,}$'
+      }
+    },
+    required: ['email']
+  },
+  execute: async (args) => args
+}
+
+// This throws ToolValidationError:
+// "[example] Parameter validation failed for 'email': String does not match pattern
+//   Expected: ^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$
+//   Received: "invalid-email"
+//   Hint: The string format is invalid according to the regex pattern."
+await executeTool(tool, { email: 'invalid-email' })
+```
+
+### Runtime Execution Errors
+
+Handle errors in the `execute` function:
+
+```typescript
+const apiTool: ToolDefinition = {
+  name: 'api_call',
+  description: 'Make external API call',
+  parameters: {
+    type: 'object',
+    properties: {
+      endpoint: { type: 'string' }
+    },
+    required: ['endpoint']
+  },
+
+  execute: async ({ endpoint }) => {
+    try {
+      const response = await fetch(endpoint)
+
+      // Check HTTP status
+      if (!response.ok) {
+        throw new Error(
+          `API request failed: ${response.status} ${response.statusText}`
+        )
+      }
+
+      return await response.json()
+
+    } catch (error) {
+      // Re-throw with context
+      if (error instanceof Error) {
+        throw new Error(
+          `Failed to fetch ${endpoint}: ${error.message}`
+        )
+      }
+      throw new Error(`Failed to fetch ${endpoint}: Unknown error`)
+    }
+  }
+}
+```
+
+### Lifecycle Hook Error Handling
+
+Use hooks for centralized error handling:
+
+```typescript
+const monitoredTool: ToolDefinition = {
+  name: 'monitored_tool',
+  description: 'Tool with comprehensive error monitoring',
+  parameters: {
+    type: 'object',
+    properties: {
+      input: { type: 'string' }
+    },
+    required: ['input']
+  },
+
+  execute: async ({ input }) => {
+    return await processInput(input)
+  },
+
+  hooks: {
+    // Pre-execution validation
+    onBefore: async (args, context) => {
+      if (args.input.includes('forbidden')) {
+        throw new Error('Input contains forbidden content')
+      }
+    },
+
+    // Error logging and reporting
+    onError: async (error, args, context) => {
+      console.error(`[${context.callId}] Tool execution failed:`, {
+        error: error.message,
+        args,
+        timestamp: new Date().toISOString()
+      })
+
+      // Report to error tracking service
+      await reportError({
+        toolName: 'monitored_tool',
+        error,
+        context
+      })
+    },
+
+    // Timeout handling
+    onTimeout: async (args, context) => {
+      console.warn(`[${context.callId}] Tool execution timed out after ${context.timeout}ms`)
+
+      // Cleanup resources
+      await cleanupResources(context.callId)
+    }
+  },
+
+  timeout: 10000 // 10 seconds
+}
+```
+
+### Custom Error Types
+
+```typescript
+// Define custom error types
+class ToolRateLimitError extends Error {
+  constructor(
+    public toolName: string,
+    public retryAfter: number
+  ) {
+    super(`Rate limit exceeded for ${toolName}. Retry after ${retryAfter}ms`)
+    this.name = 'ToolRateLimitError'
+  }
+}
+
+class ToolAuthorizationError extends Error {
+  constructor(
+    public toolName: string,
+    public requiredPermission: string
+  ) {
+    super(`Missing permission '${requiredPermission}' for ${toolName}`)
+    this.name = 'ToolAuthorizationError'
+  }
+}
+
+// Use in tool
+const secureApiTool: ToolDefinition = {
+  name: 'secure_api',
+  description: 'API with rate limiting and auth',
+  parameters: {
+    type: 'object',
+    properties: {
+      action: { type: 'string' }
+    },
+    required: ['action']
+  },
+
+  execute: async ({ action }, context) => {
+    // Check rate limit
+    const rateLimitOk = await checkRateLimit(context.userId)
+    if (!rateLimitOk) {
+      throw new ToolRateLimitError('secure_api', 60000)
+    }
+
+    // Check authorization
+    const hasPermission = await checkPermission(context.userId, action)
+    if (!hasPermission) {
+      throw new ToolAuthorizationError('secure_api', `execute_${action}`)
+    }
+
+    return await executeAction(action)
+  }
+}
+```
+
+---
+
+## 5. Tool Metadata (Name, Description, Category)
+
+### Naming Conventions
+
+```typescript
+// ✅ GOOD: Clear, descriptive names
+const goodNames = [
+  'get_weather',           // Action-oriented
+  'search_documents',      // Verb + noun
+  'calculate_distance',    // Descriptive
+  'user.create',           // Namespaced
+  'db.query_users',        // Namespaced with clarity
+]
+
+// ❌ BAD: Unclear or inconsistent names
+const badNames = [
+  'weather',               // Ambiguous - get, set, update?
+  'search',                // Too generic
+  'calc',                  // Abbreviation unclear
+  'tool1',                 // Non-descriptive
+  'getUserData',           // camelCase (use snake_case)
+]
+```
+
+### Description Best Practices
+
+The description is critical for AI decision-making. Write for the AI, not humans.
+
+```typescript
+// ❌ BAD: Vague description
+const badDescription: ToolDefinition = {
+  name: 'get_weather',
+  description: 'Gets weather data',
+  // AI doesn't know WHEN to use this or WHAT data it provides
+  // ...
+}
+
+// ✅ GOOD: Detailed, actionable description
+const goodDescription: ToolDefinition = {
+  name: 'get_weather',
+  description:
+    'Get current weather conditions for a specific location. ' +
+    'Use this when the user asks about weather, temperature, conditions, ' +
+    'or forecasts for a city. Returns temperature, humidity, wind speed, ' +
+    'and current conditions (sunny, cloudy, rainy, etc.).',
+  // AI knows WHEN (weather questions), WHAT (conditions data), and HOW (city input)
+  // ...
+}
+
+// ✅ EXCELLENT: Context-aware description
+const excellentDescription: ToolDefinition = {
+  name: 'search_documents',
+  description:
+    'Search through uploaded documents using semantic search. ' +
+    'Use this when the user asks questions about their documents, ' +
+    'wants to find specific information, or needs to reference ' +
+    'previous uploads. Returns relevant document excerpts with ' +
+    'citations. Do NOT use for web search - use web_search instead.',
+  // AI knows WHEN (document questions), WHAT (excerpts + citations),
+  // and WHEN NOT (web search)
+  // ...
+}
+```
+
+### Categories and Tags
+
+Organize tools for discovery:
+
+```typescript
+const organizedTool: ToolDefinition = {
+  name: 'send_email',
+  description: 'Send email to specified recipients',
+
+  // Category for high-level grouping
+  category: 'communication',  // Common: utility, information, data, integration
+
+  // Tags for detailed filtering
+  tags: [
+    'email',           // Function
+    'external',        // Behavior
+    'notification',    // Purpose
+    'async'            // Execution model
+  ],
+
+  // UI metadata
+  displayName: 'Send Email',  // Human-readable name
+  icon: '📧',                  // Emoji or icon identifier
+  color: '#3B82F6',            // Brand color
+
+  // ... rest of tool
+}
+```
+
+### Metadata for Tool Discovery
+
+```typescript
+// Searchable and categorizable tools
+const toolsWithMetadata: ToolDefinition[] = [
+  {
+    name: 'calculate',
+    description: 'Perform mathematical calculations',
+    category: 'utility',
+    tags: ['math', 'calculator', 'computation'],
+    displayName: 'Calculator',
+    icon: '🔢'
+  },
+  {
+    name: 'web_search',
+    description: 'Search the web for current information',
+    category: 'information',
+    tags: ['search', 'web', 'external', 'api'],
+    displayName: 'Web Search',
+    icon: '🔍'
+  },
+  {
+    name: 'db_query',
+    description: 'Query the database',
+    category: 'data',
+    tags: ['database', 'query', 'sql', 'internal'],
+    displayName: 'Database Query',
+    icon: '🗄️'
+  }
+]
+
+// Use registry for discovery
+const registry = new ToolRegistry()
+toolsWithMetadata.forEach(tool => registry.register(tool))
+
+// Search by category
+const utilityTools = registry.getByCategory('utility')
+
+// Search by tag
+const externalTools = registry.getByTag('external')
+
+// Full-text search
+const searchTools = registry.search('search')
+```
+
+---
+
+## 6. Validation Rules
+
+### Built-in JSON Schema Validation
+
+Clarity Chat validates parameters automatically:
+
+```typescript
+// Validation happens before execute() is called
+const validatedTool: ToolDefinition = {
+  name: 'validated_tool',
+  description: 'Tool with comprehensive validation',
+
+  parameters: {
+    type: 'object',
+    properties: {
+      email: {
+        type: 'string',
+        pattern: '^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,}$',
+        description: 'Email address'
+      },
+      age: {
+        type: 'integer',
+        minimum: 0,
+        maximum: 150,
+        description: 'Age in years'
+      },
+      tags: {
+        type: 'array',
+        items: { type: 'string' },
+        minItems: 1,
+        maxItems: 10,
+        uniqueItems: true,
+        description: 'Tags (1-10 unique)'
+      }
+    },
+    required: ['email', 'age']
+  },
+
+  execute: async (args) => {
+    // args are guaranteed to be valid here
+    // No need for manual validation
+    return { validated: true }
+  }
+}
+```
+
+### Custom Validation in Hooks
+
+Add business logic validation:
+
+```typescript
+const customValidationTool: ToolDefinition = {
+  name: 'create_user',
+  description: 'Create new user account',
+
+  parameters: {
+    type: 'object',
+    properties: {
+      username: {
+        type: 'string',
+        minLength: 3,
+        maxLength: 20,
+        pattern: '^[a-zA-Z0-9_]+$'
+      },
+      email: {
+        type: 'string',
+        pattern: '^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,}$'
+      }
+    },
+    required: ['username', 'email']
+  },
+
+  hooks: {
+    // Custom validation before execution
+    onBefore: async (args, context) => {
+      // Check username availability
+      const userExists = await checkUsernameExists(args.username)
+      if (userExists) {
+        throw new Error(
+          `Username '${args.username}' is already taken. Please choose another.`
+        )
+      }
+
+      // Check email domain
+      const emailDomain = args.email.split('@')[1]
+      const allowedDomains = ['company.com', 'trusted.com']
+      if (!allowedDomains.includes(emailDomain)) {
+        throw new Error(
+          `Email domain '@${emailDomain}' is not allowed. Use @company.com`
+        )
+      }
+
+      // Rate limiting
+      const requestCount = await getRateLimitCount(context.userId)
+      if (requestCount > 10) {
+        throw new Error('Rate limit exceeded. Please try again later.')
+      }
+    }
+  },
+
+  execute: async ({ username, email }) => {
+    return await createUser(username, email)
+  }
+}
+```
+
+### Input Sanitization
+
+```typescript
+import { sanitizeInput } from '@clarity-chat/utils'
+
+const sanitizedInputTool: ToolDefinition = {
+  name: 'process_text',
+  description: 'Process user-provided text',
+
+  parameters: {
+    type: 'object',
+    properties: {
+      text: {
+        type: 'string',
+        maxLength: 10000
+      }
+    },
+    required: ['text']
+  },
+
+  hooks: {
+    onBefore: async (args, context) => {
+      // Sanitize HTML/script injection
+      args.text = sanitizeInput(args.text, {
+        allowedTags: [],        // No HTML tags
+        allowedAttributes: {},
+        stripScripts: true,
+        stripStyles: true
+      })
+
+      // Remove control characters
+      args.text = args.text.replace(/[\x00-\x1F\x7F-\x9F]/g, '')
+
+      // Trim whitespace
+      args.text = args.text.trim()
+
+      // Check for empty after sanitization
+      if (args.text.length === 0) {
+        throw new Error('Text is empty after sanitization')
+      }
+    }
+  },
+
+  execute: async ({ text }) => {
+    return await processText(text)
+  }
+}
+```
+
+---
+
+## 7. Examples of Well-Defined Tools
+
+### Example 1: Weather API Tool (Production-Ready)
+
+```typescript
+interface WeatherArgs {
+  location: string
+  units?: 'celsius' | 'fahrenheit'
+}
+
+interface WeatherResult {
+  location: string
+  temperature: number
+  conditions: string
+  humidity: number
+  windSpeed: number
+  forecast: Array<{
+    date: string
+    high: number
+    low: number
+    conditions: string
+  }>
+  retrievedAt: string
+}
+
+export const weatherTool: ToolDefinition<WeatherArgs, WeatherResult> = {
+  // ===== IDENTIFICATION =====
+  name: 'get_weather',
+  displayName: 'Weather Lookup',
+  description:
+    'Get current weather conditions and 5-day forecast for a specific location. ' +
+    'Use this when the user asks about weather, temperature, conditions, or forecasts. ' +
+    'Supports cities worldwide. Returns current conditions plus 5-day forecast.',
+
+  // ===== PARAMETERS =====
+  parameters: {
+    type: 'object',
+    properties: {
+      location: {
+        type: 'string',
+        description:
+          'City and state/country (e.g., "San Francisco, CA" or "London, UK")',
+        minLength: 2,
+        maxLength: 100
+      },
+      units: {
+        type: 'string',
+        enum: ['celsius', 'fahrenheit'],
+        description: 'Temperature units (default: celsius)',
+        default: 'celsius'
+      }
+    },
+    required: ['location']
+  },
+
+  // ===== EXECUTION =====
+  execute: async ({ location, units = 'celsius' }, context) => {
+    const apiKey = process.env.WEATHER_API_KEY
+
+    const response = await fetch(
+      `https://api.weather.com/v1/forecast?` +
+      `location=${encodeURIComponent(location)}&` +
+      `units=${units}&` +
+      `apiKey=${apiKey}`
+    )
+
+    if (!response.ok) {
+      if (response.status === 404) {
+        throw new Error(`Location '${location}' not found. Please check the spelling.`)
+      }
+      throw new Error(`Weather API error: ${response.status}`)
+    }
+
+    const data = await response.json()
+
+    return {
+      location: data.location,
+      temperature: data.current.temp,
+      conditions: data.current.conditions,
+      humidity: data.current.humidity,
+      windSpeed: data.current.windSpeed,
+      forecast: data.forecast.slice(0, 5),
+      retrievedAt: new Date().toISOString()
+    }
+  },
+
+  // ===== SECURITY & BEHAVIOR =====
+  requiresApproval: true,  // External API call
+  cacheable: true,
+  cacheTtl: 300000,        // 5 minutes
+  timeout: 10000,          // 10 seconds
+
+  // ===== METADATA =====
+  category: 'information',
+  tags: ['weather', 'api', 'external', 'forecast'],
+  icon: '🌤️',
+  color: '#3B82F6',
+
+  // ===== LIFECYCLE HOOKS =====
+  hooks: {
+    onBefore: async (args, context) => {
+      console.log(`[Weather] Fetching weather for ${args.location}`)
+    },
+
+    onAfter: async (result, args, context) => {
+      console.log(
+        `[Weather] Retrieved: ${result.temperature}°${args.units === 'celsius' ? 'C' : 'F'}, ` +
+        `${result.conditions}`
+      )
+    },
+
+    onError: async (error, args, context) => {
+      console.error(`[Weather] Failed for ${args.location}:`, error.message)
+    }
+  }
+}
+```
+
+### Example 2: Database Query Tool (Internal)
+
+```typescript
+interface QueryArgs {
+  table: string
+  filters?: Record<string, unknown>
+  limit?: number
+  offset?: number
+}
+
+interface QueryResult {
+  rows: Record<string, unknown>[]
+  count: number
+  executionTime: number
+}
+
+export const databaseQueryTool: ToolDefinition<QueryArgs, QueryResult> = {
+  name: 'db_query',
+  displayName: 'Database Query',
+  description:
+    'Query the application database for user data. ' +
+    'Use this when the user asks about their account, settings, or stored data. ' +
+    'Supports filtering and pagination. ' +
+    'SECURITY: Only queries user-specific data based on session context.',
+
+  parameters: {
+    type: 'object',
+    properties: {
+      table: {
+        type: 'string',
+        enum: ['users', 'settings', 'preferences', 'history'],
+        description: 'Table to query'
+      },
+      filters: {
+        type: 'object',
+        description: 'Filter conditions (optional)',
+        additionalProperties: true
+      },
+      limit: {
+        type: 'integer',
+        minimum: 1,
+        maximum: 100,
+        default: 10,
+        description: 'Maximum rows to return'
+      },
+      offset: {
+        type: 'integer',
+        minimum: 0,
+        default: 0,
+        description: 'Number of rows to skip'
+      }
+    },
+    required: ['table']
+  },
+
+  execute: async ({ table, filters = {}, limit = 10, offset = 0 }, context) => {
+    const startTime = Date.now()
+
+    // SECURITY: Add user filter automatically
+    const userFilter = {
+      ...filters,
+      userId: context.userId  // Enforce row-level security
+    }
+
+    const db = await getDatabase()
+
+    // Parameterized query (prevents SQL injection)
+    const rows = await db.query(
+      `SELECT * FROM ${db.escapeId(table)}
+       WHERE ${buildWhereClause(userFilter)}
+       LIMIT ? OFFSET ?`,
+      [limit, offset]
+    )
+
+    const count = await db.count(table, userFilter)
+
+    return {
+      rows,
+      count,
+      executionTime: Date.now() - startTime
+    }
+  },
+
+  requiresApproval: false,  // Internal, user-scoped query
+  cacheable: true,
+  cacheTtl: 60000,         // 1 minute
+  timeout: 5000,           // 5 seconds
+
+  category: 'data',
+  tags: ['database', 'query', 'internal', 'user-data'],
+  icon: '🗄️',
+  color: '#10B981',
+
+  hooks: {
+    onBefore: async (args, context) => {
+      // Validate table name (prevent injection)
+      const allowedTables = ['users', 'settings', 'preferences', 'history']
+      if (!allowedTables.includes(args.table)) {
+        throw new Error(`Invalid table: ${args.table}`)
+      }
+
+      // Ensure user is authenticated
+      if (!context.userId) {
+        throw new Error('Authentication required for database queries')
+      }
+    },
+
+    onError: async (error, args, context) => {
+      console.error('[DB Query] Error:', error.message, {
+        table: args.table,
+        userId: context.userId
+      })
+    }
+  }
+}
+```
+
+### Example 3: File Upload Tool (Complex Validation)
+
+```typescript
+interface FileUploadArgs {
+  fileName: string
+  fileContent: string  // Base64 encoded
+  fileType: string
+  folder?: string
+}
+
+interface FileUploadResult {
+  fileId: string
+  fileName: string
+  fileSize: number
+  uploadedAt: string
+  url: string
+}
+
+export const fileUploadTool: ToolDefinition<FileUploadArgs, FileUploadResult> = {
+  name: 'upload_file',
+  displayName: 'File Upload',
+  description:
+    'Upload a file to user storage. ' +
+    'Use this when the user wants to save a file, document, or image. ' +
+    'Supports PDF, DOCX, TXT, PNG, JPG up to 10MB.',
+
+  parameters: {
+    type: 'object',
+    properties: {
+      fileName: {
+        type: 'string',
+        minLength: 1,
+        maxLength: 255,
+        pattern: '^[a-zA-Z0-9._-]+$',
+        description: 'File name (alphanumeric, dots, dashes, underscores only)'
+      },
+      fileContent: {
+        type: 'string',
+        description: 'File content (Base64 encoded)'
+      },
+      fileType: {
+        type: 'string',
+        enum: ['application/pdf', 'text/plain', 'image/png', 'image/jpeg'],
+        description: 'MIME type'
+      },
+      folder: {
+        type: 'string',
+        pattern: '^[a-zA-Z0-9_-]+$',
+        description: 'Optional folder (default: root)'
+      }
+    },
+    required: ['fileName', 'fileContent', 'fileType']
+  },
+
+  execute: async ({ fileName, fileContent, fileType, folder }, context) => {
+    // Decode Base64
+    const buffer = Buffer.from(fileContent, 'base64')
+
+    // Upload to storage
+    const fileId = generateFileId()
+    const storagePath = folder ? `${folder}/${fileName}` : fileName
+
+    await uploadToStorage(storagePath, buffer, {
+      contentType: fileType,
+      userId: context.userId
+    })
+
+    return {
+      fileId,
+      fileName,
+      fileSize: buffer.length,
+      uploadedAt: new Date().toISOString(),
+      url: getFileUrl(fileId)
+    }
+  },
+
+  requiresApproval: true,  // File operations require approval
+  cacheable: false,
+  timeout: 60000,          // 60 seconds for large files
+
+  category: 'utility',
+  tags: ['file', 'upload', 'storage', 'document'],
+  icon: '📁',
+  color: '#8B5CF6',
+
+  hooks: {
+    onBefore: async (args, context) => {
+      // Validate file size
+      const buffer = Buffer.from(args.fileContent, 'base64')
+      const maxSize = 10 * 1024 * 1024 // 10 MB
+
+      if (buffer.length > maxSize) {
+        throw new Error(
+          `File size ${formatBytes(buffer.length)} exceeds maximum ${formatBytes(maxSize)}`
+        )
+      }
+
+      // Validate file extension matches MIME type
+      const extension = args.fileName.split('.').pop()?.toLowerCase()
+      const validExtensions: Record<string, string[]> = {
+        'application/pdf': ['pdf'],
+        'text/plain': ['txt'],
+        'image/png': ['png'],
+        'image/jpeg': ['jpg', 'jpeg']
+      }
+
+      const allowed = validExtensions[args.fileType] || []
+      if (!extension || !allowed.includes(extension)) {
+        throw new Error(
+          `File extension '.${extension}' does not match MIME type '${args.fileType}'`
+        )
+      }
+
+      // Check user storage quota
+      const usage = await getStorageUsage(context.userId)
+      const quota = getUserStorageQuota(context.userId)
+
+      if (usage + buffer.length > quota) {
+        throw new Error(
+          `Storage quota exceeded. Using ${formatBytes(usage)} of ${formatBytes(quota)}`
+        )
+      }
+    }
+  }
+}
+```
+
+---
+
+## 8. Common Definition Mistakes to Avoid
+
+### Mistake 1: Vague Descriptions
+
+```typescript
+// ❌ BAD: AI doesn't know when to use this
+const badTool = {
+  name: 'process_data',
+  description: 'Processes data',
+  // What data? When to use? What's the output?
+}
+
+// ✅ GOOD: Clear, specific description
+const goodTool = {
+  name: 'process_customer_order',
+  description:
+    'Process a customer order by validating payment, updating inventory, ' +
+    'and creating shipping labels. Use this when a customer completes checkout. ' +
+    'Returns order confirmation with tracking number.',
+}
+```
+
+### Mistake 2: Missing Parameter Descriptions
+
+```typescript
+// ❌ BAD: No descriptions
+const badParams = {
+  type: 'object',
+  properties: {
+    q: { type: 'string' },          // What is 'q'?
+    n: { type: 'integer' },         // What is 'n'?
+    f: { type: 'boolean' }          // What is 'f'?
+  }
+}
+
+// ✅ GOOD: Descriptive parameters
+const goodParams = {
+  type: 'object',
+  properties: {
+    query: {
+      type: 'string',
+      description: 'Search query text (keywords or phrases)'
+    },
+    maxResults: {
+      type: 'integer',
+      description: 'Maximum number of results to return (1-100)',
+      minimum: 1,
+      maximum: 100,
+      default: 10
+    },
+    fuzzyMatch: {
+      type: 'boolean',
+      description: 'Enable fuzzy matching for typos (default: false)',
+      default: false
+    }
+  }
+}
+```
+
+### Mistake 3: Overly Permissive Validation
+
+```typescript
+// ❌ BAD: No constraints
+const badValidation = {
+  type: 'object',
+  properties: {
+    email: { type: 'string' },        // Any string accepted
+    age: { type: 'number' },          // Negative ages allowed
+    tags: { type: 'array' }           // Unlimited array size
+  }
+}
+
+// ✅ GOOD: Proper constraints
+const goodValidation = {
+  type: 'object',
+  properties: {
+    email: {
+      type: 'string',
+      pattern: '^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,}$',
+      maxLength: 254  // RFC 5321 limit
+    },
+    age: {
+      type: 'integer',
+      minimum: 0,
+      maximum: 150
+    },
+    tags: {
+      type: 'array',
+      items: { type: 'string', maxLength: 50 },
+      minItems: 1,
+      maxItems: 10,
+      uniqueItems: true
+    }
+  }
+}
+```
+
+### Mistake 4: Throwing Errors Instead of Returning Them
+
+```typescript
+// ❌ BAD: Throws error (AI can't see structured error)
+const badErrorHandling: ToolDefinition = {
+  name: 'bad_tool',
+  description: 'Tool with poor error handling',
+  parameters: { type: 'object', properties: {} },
+  execute: async () => {
+    const success = Math.random() > 0.5
+    if (!success) {
+      throw new Error('Operation failed')  // AI sees generic error
+    }
+    return { data: 'success' }
+  }
+}
+
+// ✅ GOOD: Structured error responses
+const goodErrorHandling: ToolDefinition = {
+  name: 'good_tool',
+  description: 'Tool with structured error handling',
+  parameters: { type: 'object', properties: {} },
+  execute: async () => {
+    const success = Math.random() > 0.5
+
+    if (!success) {
+      return {
+        success: false,
+        error: {
+          code: 'OPERATION_FAILED',
+          message: 'The operation failed due to insufficient resources',
+          recoverable: true,
+          retryAfter: 5000
+        }
+      }
+    }
+
+    return {
+      success: true,
+      data: { result: 'completed' }
+    }
+  }
+}
+```
+
+### Mistake 5: Missing Security Settings
+
+```typescript
+// ❌ BAD: Dangerous defaults
+const dangerousTool = {
+  name: 'delete_all_data',
+  description: 'Delete all user data',
+  requiresApproval: false,  // ❌ DANGEROUS!
+  cacheable: true,           // ❌ Side effects shouldn't cache
+}
+
+// ✅ GOOD: Safe defaults
+const safeTool = {
+  name: 'delete_user_data',
+  description: 'Delete specific user data by ID',
+  requiresApproval: true,   // ✅ Requires explicit approval
+  cacheable: false,          // ✅ Non-deterministic operation
+  timeout: 30000,
+}
+```
+
+### Mistake 6: Not Using Lifecycle Hooks
+
+```typescript
+// ❌ BAD: No logging or monitoring
+const unmonitoredTool: ToolDefinition = {
+  name: 'critical_operation',
+  description: 'Perform critical operation',
+  parameters: { type: 'object', properties: {} },
+  execute: async () => {
+    await performCriticalOperation()
+    return { success: true }
+  }
+}
+
+// ✅ GOOD: Comprehensive monitoring
+const monitoredTool: ToolDefinition = {
+  name: 'critical_operation',
+  description: 'Perform critical operation',
+  parameters: { type: 'object', properties: {} },
+
+  execute: async () => {
+    await performCriticalOperation()
+    return { success: true }
+  },
+
+  hooks: {
+    onBefore: async (args, context) => {
+      console.log('[AUDIT] Starting critical operation', { context })
+    },
+
+    onAfter: async (result, args, context) => {
+      console.log('[AUDIT] Critical operation completed', { result, context })
+    },
+
+    onError: async (error, args, context) => {
+      console.error('[AUDIT] Critical operation failed', { error, context })
+      await sendAlert('Critical operation failed', error)
+    },
+
+    onTimeout: async (args, context) => {
+      console.error('[AUDIT] Critical operation timed out', { context })
+      await sendAlert('Critical operation timeout', context)
+    }
+  },
+
+  timeout: 60000
+}
+```
+
+### Mistake 7: Inconsistent Return Types
+
+```typescript
+// ❌ BAD: Inconsistent structure
+const inconsistentTool: ToolDefinition = {
+  name: 'inconsistent',
+  description: 'Tool with inconsistent returns',
+  parameters: { type: 'object', properties: {} },
+
+  execute: async () => {
+    if (Math.random() > 0.5) {
+      return { data: { value: 1 } }    // Sometimes wrapped
+    } else {
+      return { value: 2 }              // Sometimes not
+    }
+  }
+}
+
+// ✅ GOOD: Consistent structure
+const consistentTool: ToolDefinition = {
+  name: 'consistent',
+  description: 'Tool with consistent returns',
+  parameters: { type: 'object', properties: {} },
+
+  execute: async () => {
+    const value = Math.random() > 0.5 ? 1 : 2
+
+    return {
+      success: true,
+      data: { value },
+      metadata: {
+        timestamp: new Date().toISOString()
+      }
+    }
+  }
+}
+```
+
+---
+
+## Best Practices Summary
+
+1. **Write for the AI** - Descriptions should explain WHEN, WHAT, and HOW
+2. **Validate strictly** - Use all available JSON Schema constraints
+3. **Handle errors gracefully** - Use structured error responses
+4. **Require approval by default** - Only disable for safe, pure functions
+5. **Use lifecycle hooks** - Log, monitor, and audit tool execution
+6. **Structure returns consistently** - Always return the same shape
+7. **Add rich metadata** - Categories, tags, icons for discovery
+8. **Document parameters thoroughly** - Every field needs a description
+9. **Set appropriate timeouts** - Match tool execution characteristics
+10. **Test exhaustively** - Validate edge cases and error paths
+
+---
+
+## Additional Resources
+
+- [Tool Registry API Reference](/reference/api/tool-registry)
+- [Tool Orchestrator Guide](/guides/tool-calling/orchestration)
+- [Tool Execution Guide](/guides/tool-calling/execution)
+- [Security Best Practices](/guides/security/tool-security)
+- [Testing Tools](/guides/testing/tool-testing)
+
+---
+
+**Next Steps:**
+
+- Learn about [Tool Orchestration](/guides/tool-calling/orchestration) for advanced execution patterns
+- Explore [Tool Approval Workflows](/guides/tool-calling/approval-workflows) for human-in-the-loop
+- Review [Tool Security](/guides/security/tool-security) for production deployment
