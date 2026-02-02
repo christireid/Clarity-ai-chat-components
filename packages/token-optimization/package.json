@@ -71,7 +71,7 @@
     "@types/react": "^19.0.8",
     "@types/validator": "^13.12.0",
     "@vitest/coverage-v8": "^4.0.0",
-    "autoprefixer": "^10.4.23",
+    "autoprefixer": "^10.4.24",
     "framer-motion": "^12.27.5",
     "jsdom": "^26.0.0",
     "postcss": "^8.5.6",

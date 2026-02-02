@@ -21,7 +21,7 @@
     "@storybook/react": "^8.6.15",
     "@storybook/react-vite": "^8.6.15",
     "@storybook/test": "^8.6.15",
-    "@vueless/storybook-dark-mode": "^10.0.6",
+    "@vueless/storybook-dark-mode": "^10.0.7",
     "chromatic": "^11.25.2",
     "serve": "^14.2.4"
   },
