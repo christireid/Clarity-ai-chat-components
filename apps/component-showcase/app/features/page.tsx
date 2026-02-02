@@ -72,6 +72,84 @@ import {
   Settings,
   Download,
   Share,
+  MessageSquare,
+  Hash,
+  Mic,
+  Volume2,
+  Pause,
+  SkipBack,
+  SkipForward,
+  List,
+  Grid,
+  Filter,
+  SortAsc,
+  Tag,
+  Star,
+  Heart,
+  ThumbsUp,
+  ThumbsDown,
+  Flag,
+  Bell,
+  BellOff,
+  Mail,
+  Send,
+  Paperclip,
+  Image,
+  Video,
+  Zap,
+  Activity,
+  PieChart,
+  TrendingUp,
+  Calendar,
+  MapPin,
+  Navigation,
+  Compass,
+  Target,
+  Award,
+  Gift,
+  ShoppingCart,
+  CreditCard,
+  Wallet,
+  Building,
+  Home,
+  Users,
+  UserPlus,
+  Shield,
+  ShieldCheck,
+  AlertCircle,
+  HelpCircle,
+  MessageCircle,
+  LayoutGrid,
+  Columns,
+  Rows,
+  Maximize,
+  Minimize,
+  Move,
+  Grip,
+  Menu,
+  MoreVertical,
+  ArrowUp,
+  ArrowDown,
+  ArrowLeft,
+  ArrowRight,
+  RotateCw,
+  RotateCcw,
+  Undo,
+  Redo,
+  Save,
+  Upload,
+  CloudUpload,
+  Database,
+  Server,
+  Wifi,
+  WifiOff,
+  Bluetooth,
+  Power,
+  Battery,
+  Sun,
+  Moon,
+  Cloud,
+  CloudRain,
 } from 'lucide-react'
 
 // ============================================================================
@@ -1307,6 +1385,1776 @@ function EmptyStateDemo() {
 }
 
 // ============================================================================
+// SNIPPET MANAGER
+// ============================================================================
+function SnippetManagerDemo() {
+  const snippets = [
+    { name: 'React useEffect', language: 'typescript', category: 'Hooks' },
+    { name: 'API Fetch Pattern', language: 'typescript', category: 'Async' },
+    { name: 'Error Boundary', language: 'tsx', category: 'Components' },
+  ]
+
+  return (
+    <Card>
+      <CardHeader>
+        <div className="flex items-center justify-between">
+          <CardTitle className="text-lg">Snippet Manager</CardTitle>
+          <Button size="sm" className="gap-2">
+            <Plus className="h-4 w-4" />
+            Add Snippet
+          </Button>
+        </div>
+      </CardHeader>
+      <CardContent>
+        <div className="space-y-2">
+          {snippets.map((snippet, i) => (
+            <div
+              key={i}
+              className="flex items-center gap-3 p-3 border rounded-lg hover:bg-muted/50"
+            >
+              <Code className="h-4 w-4 text-muted-foreground" />
+              <div className="flex-1">
+                <p className="text-sm font-medium">{snippet.name}</p>
+                <div className="flex gap-2 mt-1">
+                  <Badge variant="outline" className="text-xs">
+                    {snippet.language}
+                  </Badge>
+                  <Badge variant="secondary" className="text-xs">
+                    {snippet.category}
+                  </Badge>
+                </div>
+              </div>
+              <Button variant="ghost" size="sm">
+                Use
+              </Button>
+            </div>
+          ))}
+        </div>
+      </CardContent>
+    </Card>
+  )
+}
+
+// ============================================================================
+// SCHEMA DISPLAY
+// ============================================================================
+function SchemaDisplayDemo() {
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="text-lg">Schema Display</CardTitle>
+        <CardDescription>API or data schema visualization</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <div className="font-mono text-sm bg-muted/50 rounded-lg p-4 space-y-2">
+          <div className="flex items-center gap-2">
+            <span className="text-purple-500">interface</span>
+            <span className="text-blue-500">Message</span>
+            <span>{'{'}</span>
+          </div>
+          <div className="pl-4 space-y-1">
+            <div>
+              <span className="text-muted-foreground">id:</span>{' '}
+              <span className="text-green-500">string</span>
+            </div>
+            <div>
+              <span className="text-muted-foreground">role:</span>{' '}
+              <span className="text-orange-500">"user" | "assistant"</span>
+            </div>
+            <div>
+              <span className="text-muted-foreground">content:</span>{' '}
+              <span className="text-green-500">string</span>
+            </div>
+            <div>
+              <span className="text-muted-foreground">timestamp:</span>{' '}
+              <span className="text-green-500">Date</span>
+            </div>
+            <div>
+              <span className="text-muted-foreground">metadata?:</span>{' '}
+              <span className="text-blue-500">
+                Record{'<'}string, any{'>'}
+              </span>
+            </div>
+          </div>
+          <div>{'}'}</div>
+        </div>
+      </CardContent>
+    </Card>
+  )
+}
+
+// ============================================================================
+// STATS DISPLAY
+// ============================================================================
+function StatsDisplayDemo() {
+  return (
+    <div className="grid grid-cols-4 gap-4">
+      {[
+        {
+          label: 'Total Messages',
+          value: '12,847',
+          change: '+12%',
+          positive: true,
+        },
+        {
+          label: 'Avg Response Time',
+          value: '1.2s',
+          change: '-8%',
+          positive: true,
+        },
+        {
+          label: 'Active Users',
+          value: '3,421',
+          change: '+24%',
+          positive: true,
+        },
+        {
+          label: 'Error Rate',
+          value: '0.3%',
+          change: '+0.1%',
+          positive: false,
+        },
+      ].map((stat, i) => (
+        <Card key={i}>
+          <CardContent className="p-4">
+            <p className="text-sm text-muted-foreground">{stat.label}</p>
+            <p className="text-2xl font-bold mt-1">{stat.value}</p>
+            <p
+              className={cn(
+                'text-xs mt-1',
+                stat.positive ? 'text-green-500' : 'text-red-500'
+              )}
+            >
+              {stat.change} from last month
+            </p>
+          </CardContent>
+        </Card>
+      ))}
+    </div>
+  )
+}
+
+// ============================================================================
+// SUGGESTION CHIPS
+// ============================================================================
+function SuggestionChipsDemo() {
+  const suggestions = [
+    'How does this work?',
+    'Show me an example',
+    'What are the alternatives?',
+    'Explain in simple terms',
+  ]
+
+  return (
+    <Card>
+      <CardHeader className="pb-3">
+        <CardTitle className="text-lg">Suggestion Chips</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="flex flex-wrap gap-2">
+          {suggestions.map((s, i) => (
+            <Button
+              key={i}
+              variant="outline"
+              size="sm"
+              className="rounded-full"
+            >
+              {s}
+            </Button>
+          ))}
+        </div>
+      </CardContent>
+    </Card>
+  )
+}
+
+// ============================================================================
+// STEPS INDICATOR
+// ============================================================================
+function StepsIndicatorDemo() {
+  return (
+    <Card>
+      <CardHeader className="pb-3">
+        <CardTitle className="text-lg">Steps Indicator</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="flex items-center justify-between">
+          {[
+            { step: 1, label: 'Setup', status: 'completed' },
+            { step: 2, label: 'Configure', status: 'completed' },
+            { step: 3, label: 'Deploy', status: 'current' },
+            { step: 4, label: 'Verify', status: 'upcoming' },
+          ].map((item, i) => (
+            <div key={i} className="flex items-center">
+              <div className="flex flex-col items-center">
+                <div
+                  className={cn(
+                    'w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium',
+                    item.status === 'completed' && 'bg-green-500 text-white',
+                    item.status === 'current' &&
+                      'bg-primary text-primary-foreground',
+                    item.status === 'upcoming' &&
+                      'bg-muted text-muted-foreground'
+                  )}
+                >
+                  {item.status === 'completed' ? (
+                    <Check className="h-4 w-4" />
+                  ) : (
+                    item.step
+                  )}
+                </div>
+                <span
+                  className={cn(
+                    'text-xs mt-1',
+                    item.status === 'current'
+                      ? 'font-medium'
+                      : 'text-muted-foreground'
+                  )}
+                >
+                  {item.label}
+                </span>
+              </div>
+              {i < 3 && (
+                <div
+                  className={cn(
+                    'w-16 h-0.5 mx-2',
+                    item.status === 'completed' ? 'bg-green-500' : 'bg-muted'
+                  )}
+                />
+              )}
+            </div>
+          ))}
+        </div>
+      </CardContent>
+    </Card>
+  )
+}
+
+// ============================================================================
+// THREADS VIEW
+// ============================================================================
+function ThreadsViewDemo() {
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="text-lg">Conversation Threads</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="space-y-3">
+          {[
+            {
+              title: 'React Performance Discussion',
+              replies: 5,
+              unread: 2,
+              time: '2m ago',
+            },
+            {
+              title: 'API Design Question',
+              replies: 12,
+              unread: 0,
+              time: '1h ago',
+            },
+            {
+              title: 'Bug Report #1234',
+              replies: 8,
+              unread: 3,
+              time: '3h ago',
+            },
+          ].map((thread, i) => (
+            <div
+              key={i}
+              className="flex items-center gap-3 p-3 border rounded-lg hover:bg-muted/50 cursor-pointer"
+            >
+              <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center">
+                <Bot className="h-5 w-5 text-muted-foreground" />
+              </div>
+              <div className="flex-1">
+                <div className="flex items-center gap-2">
+                  <p className="text-sm font-medium">{thread.title}</p>
+                  {thread.unread > 0 && (
+                    <Badge className="bg-primary text-primary-foreground text-xs">
+                      {thread.unread}
+                    </Badge>
+                  )}
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  {thread.replies} replies · {thread.time}
+                </p>
+              </div>
+              <ChevronRight className="h-4 w-4 text-muted-foreground" />
+            </div>
+          ))}
+        </div>
+      </CardContent>
+    </Card>
+  )
+}
+
+// ============================================================================
+// PROGRESS INDICATORS
+// ============================================================================
+function ProgressIndicatorsDemo() {
+  return (
+    <div className="space-y-6">
+      <Card>
+        <CardHeader className="pb-3">
+          <CardTitle className="text-lg">Linear Progress</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div>
+            <div className="flex justify-between text-sm mb-1">
+              <span>Uploading files...</span>
+              <span>67%</span>
+            </div>
+            <div className="h-2 bg-muted rounded-full overflow-hidden">
+              <div
+                className="h-full bg-primary rounded-full transition-all"
+                style={{ width: '67%' }}
+              />
+            </div>
+          </div>
+          <div>
+            <div className="flex justify-between text-sm mb-1">
+              <span>Processing...</span>
+              <span>Indeterminate</span>
+            </div>
+            <div className="h-2 bg-muted rounded-full overflow-hidden">
+              <div className="h-full bg-primary rounded-full animate-pulse w-full" />
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      <div className="grid grid-cols-3 gap-4">
+        {[
+          { label: 'CPU', value: 45, color: 'bg-green-500' },
+          { label: 'Memory', value: 72, color: 'bg-yellow-500' },
+          { label: 'Disk', value: 89, color: 'bg-red-500' },
+        ].map((item, i) => (
+          <Card key={i}>
+            <CardContent className="p-4 text-center">
+              <div className="relative w-20 h-20 mx-auto mb-2">
+                <svg className="w-20 h-20 -rotate-90">
+                  <circle
+                    cx="40"
+                    cy="40"
+                    r="36"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="8"
+                    className="text-muted"
+                  />
+                  <circle
+                    cx="40"
+                    cy="40"
+                    r="36"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="8"
+                    className={item.color.replace('bg-', 'text-')}
+                    strokeDasharray={`${item.value * 2.26} 226`}
+                  />
+                </svg>
+                <span className="absolute inset-0 flex items-center justify-center text-lg font-bold">
+                  {item.value}%
+                </span>
+              </div>
+              <p className="text-sm text-muted-foreground">{item.label}</p>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+// ============================================================================
+// REALTIME INDICATOR
+// ============================================================================
+function RealtimeIndicatorDemo() {
+  return (
+    <Card>
+      <CardHeader>
+        <div className="flex items-center justify-between">
+          <CardTitle className="text-lg">Realtime Status</CardTitle>
+          <div className="flex items-center gap-2">
+            <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+            <span className="text-xs text-green-500">Live</span>
+          </div>
+        </div>
+      </CardHeader>
+      <CardContent>
+        <div className="space-y-3">
+          {[
+            { event: 'User joined conversation', time: 'Just now', icon: User },
+            { event: 'Message received', time: '2s ago', icon: Bot },
+            { event: 'File uploaded', time: '5s ago', icon: FileText },
+          ].map((item, i) => (
+            <div
+              key={i}
+              className="flex items-center gap-3 p-2 rounded-lg bg-muted/50"
+            >
+              <item.icon className="h-4 w-4 text-muted-foreground" />
+              <span className="text-sm flex-1">{item.event}</span>
+              <span className="text-xs text-muted-foreground">{item.time}</span>
+            </div>
+          ))}
+        </div>
+      </CardContent>
+    </Card>
+  )
+}
+
+// ============================================================================
+// SAFETY BANNER
+// ============================================================================
+function SafetyComponentsDemo() {
+  return (
+    <div className="space-y-4">
+      <Card className="border-red-500/50 bg-red-500/5">
+        <CardContent className="p-4 flex items-start gap-3">
+          <AlertTriangle className="h-5 w-5 text-red-500 mt-0.5" />
+          <div>
+            <h4 className="font-medium text-red-600">Content Warning</h4>
+            <p className="text-sm text-muted-foreground mt-1">
+              This response may contain sensitive content. User discretion is
+              advised.
+            </p>
+            <div className="flex gap-2 mt-3">
+              <Button variant="destructive" size="sm">
+                Show Anyway
+              </Button>
+              <Button variant="outline" size="sm">
+                Hide
+              </Button>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card className="border-yellow-500/50 bg-yellow-500/5">
+        <CardContent className="p-4 flex items-start gap-3">
+          <Info className="h-5 w-5 text-yellow-500 mt-0.5" />
+          <div>
+            <h4 className="font-medium text-yellow-600">Rate Limit Warning</h4>
+            <p className="text-sm text-muted-foreground mt-1">
+              You are approaching your API rate limit. 85% of quota used.
+            </p>
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card className="border-green-500/50 bg-green-500/5">
+        <CardContent className="p-4 flex items-start gap-3">
+          <CheckCircle className="h-5 w-5 text-green-500 mt-0.5" />
+          <div>
+            <h4 className="font-medium text-green-600">Content Verified</h4>
+            <p className="text-sm text-muted-foreground mt-1">
+              This response has been verified for accuracy and safety.
+            </p>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  )
+}
+
+// ============================================================================
+// CALENDAR COMPONENT
+// ============================================================================
+function CalendarDemo() {
+  const days = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa']
+  const dates = Array.from({ length: 35 }, (_, i) => i - 3)
+
+  return (
+    <Card>
+      <CardHeader className="pb-3">
+        <div className="flex items-center justify-between">
+          <CardTitle className="text-lg">January 2024</CardTitle>
+          <div className="flex gap-1">
+            <Button variant="ghost" size="icon" className="h-8 w-8">
+              <ChevronRight className="h-4 w-4 rotate-180" />
+            </Button>
+            <Button variant="ghost" size="icon" className="h-8 w-8">
+              <ChevronRight className="h-4 w-4" />
+            </Button>
+          </div>
+        </div>
+      </CardHeader>
+      <CardContent>
+        <div className="grid grid-cols-7 gap-1 text-center">
+          {days.map((day) => (
+            <div key={day} className="text-xs text-muted-foreground py-2">
+              {day}
+            </div>
+          ))}
+          {dates.map((date, i) => (
+            <button
+              key={i}
+              className={cn(
+                'h-8 w-8 rounded-full text-sm',
+                date <= 0 || date > 31
+                  ? 'text-muted-foreground/50'
+                  : 'hover:bg-muted',
+                date === 15 && 'bg-primary text-primary-foreground'
+              )}
+            >
+              {date <= 0 ? 31 + date : date > 31 ? date - 31 : date}
+            </button>
+          ))}
+        </div>
+      </CardContent>
+    </Card>
+  )
+}
+
+// ============================================================================
+// MESSAGE ACTIONS
+// ============================================================================
+function MessageActionsDemo() {
+  return (
+    <Card>
+      <CardHeader className="pb-3">
+        <CardTitle className="text-lg">Message Actions</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="p-4 bg-muted/50 rounded-lg">
+          <p className="text-sm mb-3">
+            This is an AI response that can have various actions.
+          </p>
+          <div className="flex items-center gap-1">
+            <Button variant="ghost" size="sm" className="h-8 gap-1">
+              <Copy className="h-3.5 w-3.5" />
+              Copy
+            </Button>
+            <Button variant="ghost" size="sm" className="h-8 gap-1">
+              <RefreshCw className="h-3.5 w-3.5" />
+              Regenerate
+            </Button>
+            <Button variant="ghost" size="sm" className="h-8 gap-1">
+              <Share className="h-3.5 w-3.5" />
+              Share
+            </Button>
+            <Button variant="ghost" size="sm" className="h-8 gap-1">
+              <Bookmark className="h-3.5 w-3.5" />
+              Save
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-8 gap-1 text-destructive"
+            >
+              <Trash2 className="h-3.5 w-3.5" />
+              Delete
+            </Button>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  )
+}
+
+// ============================================================================
+// VOICE COMPONENTS
+// ============================================================================
+function VoiceComponentsDemo() {
+  return (
+    <div className="grid grid-cols-2 gap-4">
+      <Card>
+        <CardHeader className="pb-3">
+          <CardTitle className="text-lg">Voice Input</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="flex flex-col items-center p-6">
+            <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mb-4 animate-pulse">
+              <div className="w-12 h-12 rounded-full bg-primary flex items-center justify-center">
+                <span className="text-primary-foreground text-2xl">🎤</span>
+              </div>
+            </div>
+            <p className="text-sm text-muted-foreground">Listening...</p>
+            <div className="flex gap-1 mt-4">
+              {Array.from({ length: 12 }).map((_, i) => (
+                <div
+                  key={i}
+                  className="w-1 bg-primary rounded-full animate-pulse"
+                  style={{
+                    height: `${8 + Math.random() * 24}px`,
+                    animationDelay: `${i * 0.1}s`,
+                  }}
+                />
+              ))}
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader className="pb-3">
+          <CardTitle className="text-lg">Audio Player</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="flex items-center gap-4 p-4 bg-muted/50 rounded-lg">
+            <Button size="icon" className="h-10 w-10 rounded-full">
+              <Play className="h-4 w-4" />
+            </Button>
+            <div className="flex-1">
+              <div className="h-1.5 bg-muted rounded-full overflow-hidden">
+                <div
+                  className="h-full bg-primary rounded-full"
+                  style={{ width: '35%' }}
+                />
+              </div>
+              <div className="flex justify-between text-xs text-muted-foreground mt-1">
+                <span>1:24</span>
+                <span>4:02</span>
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  )
+}
+
+// ============================================================================
+// QUEUE DISPLAY
+// ============================================================================
+function QueueDisplayDemo() {
+  const queueItems = [
+    { position: 1, task: 'Generate report', status: 'processing' },
+    { position: 2, task: 'Analyze data', status: 'waiting' },
+    { position: 3, task: 'Send notifications', status: 'waiting' },
+  ]
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="text-lg">Task Queue</CardTitle>
+        <CardDescription>3 tasks in queue</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <div className="space-y-2">
+          {queueItems.map((item) => (
+            <div
+              key={item.position}
+              className="flex items-center gap-3 p-3 border rounded-lg"
+            >
+              <div className="w-6 h-6 rounded-full bg-muted flex items-center justify-center text-xs font-medium">
+                {item.position}
+              </div>
+              <span className="flex-1 text-sm">{item.task}</span>
+              {item.status === 'processing' ? (
+                <Badge className="bg-blue-500/20 text-blue-600 gap-1">
+                  <Loader2 className="h-3 w-3 animate-spin" />
+                  Processing
+                </Badge>
+              ) : (
+                <Badge variant="secondary">Waiting</Badge>
+              )}
+            </div>
+          ))}
+        </div>
+      </CardContent>
+    </Card>
+  )
+}
+
+// ============================================================================
+// PRESETS SELECTOR
+// ============================================================================
+function PresetsSelectorDemo() {
+  const presets = [
+    { name: 'Creative Writing', temperature: 0.9, maxTokens: 2000 },
+    { name: 'Code Generation', temperature: 0.2, maxTokens: 4000 },
+    { name: 'Balanced', temperature: 0.7, maxTokens: 1000 },
+  ]
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="text-lg">Model Presets</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="space-y-2">
+          {presets.map((preset, i) => (
+            <div
+              key={i}
+              className={cn(
+                'flex items-center gap-3 p-3 border rounded-lg cursor-pointer transition-colors',
+                i === 2 && 'border-primary bg-primary/5'
+              )}
+            >
+              <div
+                className={cn(
+                  'w-4 h-4 rounded-full border-2',
+                  i === 2
+                    ? 'border-primary bg-primary'
+                    : 'border-muted-foreground'
+                )}
+              />
+              <div className="flex-1">
+                <p className="text-sm font-medium">{preset.name}</p>
+                <p className="text-xs text-muted-foreground">
+                  Temp: {preset.temperature} · Max: {preset.maxTokens}
+                </p>
+              </div>
+              <Button variant="ghost" size="sm">
+                <Settings className="h-4 w-4" />
+              </Button>
+            </div>
+          ))}
+        </div>
+      </CardContent>
+    </Card>
+  )
+}
+
+// ============================================================================
+// RAG SOURCES
+// ============================================================================
+function RAGSourcesDemo() {
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="text-lg">Retrieved Sources (RAG)</CardTitle>
+        <CardDescription>
+          Documents used to generate this response
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <div className="space-y-3">
+          {[
+            { title: 'Company Policy Document', relevance: 0.95, chunks: 3 },
+            { title: 'Product Documentation', relevance: 0.87, chunks: 2 },
+            { title: 'FAQ Database', relevance: 0.72, chunks: 1 },
+          ].map((source, i) => (
+            <div
+              key={i}
+              className="flex items-center gap-3 p-3 border rounded-lg"
+            >
+              <FileText className="h-4 w-4 text-muted-foreground" />
+              <div className="flex-1">
+                <p className="text-sm font-medium">{source.title}</p>
+                <p className="text-xs text-muted-foreground">
+                  {source.chunks} chunks retrieved
+                </p>
+              </div>
+              <Badge variant="outline">
+                {Math.round(source.relevance * 100)}% match
+              </Badge>
+            </div>
+          ))}
+        </div>
+      </CardContent>
+    </Card>
+  )
+}
+
+// ============================================================================
+// RICH EMBED
+// ============================================================================
+function RichEmbedDemo() {
+  return (
+    <Card className="overflow-hidden">
+      <div className="aspect-video bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
+        <Play className="h-16 w-16 text-white opacity-80" />
+      </div>
+      <CardContent className="p-4">
+        <div className="flex items-start gap-3">
+          <div className="w-10 h-10 rounded bg-muted flex items-center justify-center shrink-0">
+            <Globe className="h-5 w-5 text-muted-foreground" />
+          </div>
+          <div>
+            <p className="text-xs text-muted-foreground">youtube.com</p>
+            <h3 className="font-medium">Introduction to AI Chat Components</h3>
+            <p className="text-sm text-muted-foreground mt-1">
+              Learn how to build powerful AI chat interfaces with Clarity
+              Chat...
+            </p>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  )
+}
+
+// ============================================================================
+// READ RECEIPT
+// ============================================================================
+function ReadReceiptDemo() {
+  return (
+    <Card>
+      <CardHeader className="pb-3">
+        <CardTitle className="text-lg">Read Receipts</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="space-y-4">
+          <div className="flex justify-end">
+            <div className="bg-primary text-primary-foreground rounded-2xl px-4 py-2 max-w-[70%]">
+              <p className="text-sm">Here is the report you requested.</p>
+              <div className="flex items-center justify-end gap-1 mt-1">
+                <span className="text-xs opacity-70">10:24 AM</span>
+                <CheckCircle className="h-3 w-3 text-blue-300" />
+              </div>
+            </div>
+          </div>
+          <div className="flex justify-end">
+            <div className="bg-primary text-primary-foreground rounded-2xl px-4 py-2 max-w-[70%]">
+              <p className="text-sm">Let me know if you have questions.</p>
+              <div className="flex items-center justify-end gap-1 mt-1">
+                <span className="text-xs opacity-70">10:25 AM</span>
+                <Check className="h-3 w-3 opacity-70" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  )
+}
+
+// ============================================================================
+// RETRY LOGIC
+// ============================================================================
+function RetryLogicDemo() {
+  return (
+    <Card className="border-red-500/50">
+      <CardContent className="p-4">
+        <div className="flex items-start gap-3">
+          <div className="w-10 h-10 rounded-full bg-red-500/10 flex items-center justify-center shrink-0">
+            <RefreshCw className="h-5 w-5 text-red-500" />
+          </div>
+          <div className="flex-1">
+            <h4 className="font-medium">Request Failed</h4>
+            <p className="text-sm text-muted-foreground mt-1">
+              Connection timed out. Retrying automatically...
+            </p>
+            <div className="flex items-center gap-3 mt-3">
+              <div className="flex-1">
+                <div className="flex justify-between text-xs mb-1">
+                  <span>Attempt 2 of 3</span>
+                  <span>Retrying in 3s</span>
+                </div>
+                <div className="h-1.5 bg-muted rounded-full overflow-hidden">
+                  <div
+                    className="h-full bg-red-500 rounded-full animate-pulse"
+                    style={{ width: '66%' }}
+                  />
+                </div>
+              </div>
+              <Button variant="outline" size="sm">
+                Cancel
+              </Button>
+            </div>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  )
+}
+
+// ============================================================================
+// SETTINGS PANEL
+// ============================================================================
+function SettingsPanelDemo() {
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="text-lg">Settings</CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        {[
+          { label: 'Dark Mode', description: 'Use dark theme', enabled: true },
+          {
+            label: 'Notifications',
+            description: 'Receive push notifications',
+            enabled: true,
+          },
+          {
+            label: 'Sound Effects',
+            description: 'Play sounds for events',
+            enabled: false,
+          },
+          {
+            label: 'Auto-save',
+            description: 'Save conversations automatically',
+            enabled: true,
+          },
+        ].map((setting, i) => (
+          <div key={i} className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium">{setting.label}</p>
+              <p className="text-xs text-muted-foreground">
+                {setting.description}
+              </p>
+            </div>
+            <div
+              className={cn(
+                'w-11 h-6 rounded-full relative cursor-pointer transition-colors',
+                setting.enabled ? 'bg-primary' : 'bg-muted'
+              )}
+            >
+              <div
+                className={cn(
+                  'absolute top-0.5 w-5 h-5 rounded-full bg-white shadow transition-transform',
+                  setting.enabled ? 'translate-x-5' : 'translate-x-0.5'
+                )}
+              />
+            </div>
+          </div>
+        ))}
+      </CardContent>
+    </Card>
+  )
+}
+
+// ============================================================================
+// MCP MANAGER
+// ============================================================================
+function MCPManagerDemo() {
+  const mcpServers = [
+    { name: 'filesystem', status: 'connected', tools: 12, version: '1.2.0' },
+    { name: 'database', status: 'connected', tools: 8, version: '2.0.1' },
+    { name: 'web-search', status: 'disconnected', tools: 5, version: '1.0.0' },
+    {
+      name: 'code-interpreter',
+      status: 'connected',
+      tools: 15,
+      version: '3.1.0',
+    },
+  ]
+
+  return (
+    <Card>
+      <CardHeader>
+        <div className="flex items-center justify-between">
+          <div>
+            <CardTitle className="text-lg">MCP Servers</CardTitle>
+            <CardDescription>
+              Model Context Protocol connections
+            </CardDescription>
+          </div>
+          <Button size="sm" className="gap-2">
+            <Plus className="h-4 w-4" />
+            Add Server
+          </Button>
+        </div>
+      </CardHeader>
+      <CardContent>
+        <div className="space-y-3">
+          {mcpServers.map((server, i) => (
+            <div
+              key={i}
+              className="flex items-center gap-3 p-3 border rounded-lg"
+            >
+              <div
+                className={cn(
+                  'w-2 h-2 rounded-full',
+                  server.status === 'connected' ? 'bg-green-500' : 'bg-red-500'
+                )}
+              />
+              <div className="flex-1">
+                <div className="flex items-center gap-2">
+                  <p className="text-sm font-medium font-mono">{server.name}</p>
+                  <Badge variant="outline" className="text-xs">
+                    v{server.version}
+                  </Badge>
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  {server.tools} tools available
+                </p>
+              </div>
+              <Badge
+                variant={
+                  server.status === 'connected' ? 'default' : 'secondary'
+                }
+              >
+                {server.status}
+              </Badge>
+              <Button variant="ghost" size="icon" className="h-8 w-8">
+                <Settings className="h-4 w-4" />
+              </Button>
+            </div>
+          ))}
+        </div>
+        <Separator className="my-4" />
+        <div className="flex items-center justify-between text-sm">
+          <span className="text-muted-foreground">Total tools available</span>
+          <span className="font-medium">40 tools from 4 servers</span>
+        </div>
+      </CardContent>
+    </Card>
+  )
+}
+
+// ============================================================================
+// LOGIN FORM
+// ============================================================================
+function LoginFormDemo() {
+  return (
+    <Card className="max-w-sm mx-auto">
+      <CardHeader className="text-center">
+        <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center mx-auto mb-2">
+          <Lock className="h-6 w-6 text-primary" />
+        </div>
+        <CardTitle>Welcome Back</CardTitle>
+        <CardDescription>Sign in to your account</CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <div>
+          <label className="text-sm font-medium">Email</label>
+          <Input type="email" placeholder="you@example.com" className="mt-1" />
+        </div>
+        <div>
+          <label className="text-sm font-medium">Password</label>
+          <Input type="password" placeholder="••••••••" className="mt-1" />
+        </div>
+        <Button className="w-full">Sign In</Button>
+        <div className="relative">
+          <Separator />
+          <span className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-card px-2 text-xs text-muted-foreground">
+            or continue with
+          </span>
+        </div>
+        <div className="grid grid-cols-2 gap-2">
+          <Button variant="outline">Google</Button>
+          <Button variant="outline">GitHub</Button>
+        </div>
+      </CardContent>
+    </Card>
+  )
+}
+
+// ============================================================================
+// PASSWORD INPUT
+// ============================================================================
+function PasswordInputDemo() {
+  const [show, setShow] = useState(false)
+  const [strength, setStrength] = useState(2)
+
+  return (
+    <Card>
+      <CardHeader className="pb-3">
+        <CardTitle className="text-lg">Password Input</CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <div className="relative">
+          <Input
+            type={show ? 'text' : 'password'}
+            placeholder="Enter password"
+            className="pr-10"
+          />
+          <Button
+            variant="ghost"
+            size="icon"
+            className="absolute right-0 top-0 h-full w-10"
+            onClick={() => setShow(!show)}
+          >
+            {show ? (
+              <EyeOff className="h-4 w-4" />
+            ) : (
+              <Eye className="h-4 w-4" />
+            )}
+          </Button>
+        </div>
+        <div className="space-y-2">
+          <div className="flex gap-1">
+            {[1, 2, 3, 4].map((i) => (
+              <div
+                key={i}
+                className={cn(
+                  'h-1.5 flex-1 rounded-full',
+                  i <= strength
+                    ? strength === 1
+                      ? 'bg-red-500'
+                      : strength === 2
+                        ? 'bg-yellow-500'
+                        : strength >= 3
+                          ? 'bg-green-500'
+                          : 'bg-muted'
+                    : 'bg-muted'
+                )}
+              />
+            ))}
+          </div>
+          <p className="text-xs text-muted-foreground">
+            Password strength:{' '}
+            {strength === 1
+              ? 'Weak'
+              : strength === 2
+                ? 'Fair'
+                : strength === 3
+                  ? 'Good'
+                  : 'Strong'}
+          </p>
+        </div>
+      </CardContent>
+    </Card>
+  )
+}
+
+// ============================================================================
+// PINNED MESSAGES
+// ============================================================================
+function PinnedMessagesDemo() {
+  return (
+    <Card>
+      <CardHeader>
+        <div className="flex items-center gap-2">
+          <Bookmark className="h-5 w-5 text-primary" />
+          <CardTitle className="text-lg">Pinned Messages</CardTitle>
+        </div>
+      </CardHeader>
+      <CardContent>
+        <div className="space-y-3">
+          {[
+            {
+              content: 'API documentation for the new endpoints',
+              author: 'AI',
+              time: '2h ago',
+            },
+            {
+              content: 'Important: Security update required by Friday',
+              author: 'You',
+              time: '1d ago',
+            },
+          ].map((msg, i) => (
+            <div
+              key={i}
+              className="flex items-start gap-3 p-3 bg-yellow-500/5 border border-yellow-500/20 rounded-lg"
+            >
+              <Bookmark className="h-4 w-4 text-yellow-500 mt-0.5" />
+              <div className="flex-1">
+                <p className="text-sm">{msg.content}</p>
+                <p className="text-xs text-muted-foreground mt-1">
+                  {msg.author} · {msg.time}
+                </p>
+              </div>
+              <Button variant="ghost" size="icon" className="h-8 w-8">
+                <X className="h-4 w-4" />
+              </Button>
+            </div>
+          ))}
+        </div>
+      </CardContent>
+    </Card>
+  )
+}
+
+// ============================================================================
+// REACTIONS
+// ============================================================================
+function ReactionsDemo() {
+  return (
+    <Card>
+      <CardHeader className="pb-3">
+        <CardTitle className="text-lg">Message Reactions</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="p-4 bg-muted/50 rounded-lg">
+          <p className="text-sm mb-3">
+            This is a message that users can react to.
+          </p>
+          <div className="flex items-center gap-2">
+            {[
+              { emoji: '👍', count: 5 },
+              { emoji: '❤️', count: 3 },
+              { emoji: '🎉', count: 2 },
+              { emoji: '😄', count: 1 },
+            ].map((reaction, i) => (
+              <button
+                key={i}
+                className="flex items-center gap-1 px-2 py-1 rounded-full bg-muted hover:bg-muted/80 text-sm"
+              >
+                <span>{reaction.emoji}</span>
+                <span className="text-xs text-muted-foreground">
+                  {reaction.count}
+                </span>
+              </button>
+            ))}
+            <button className="flex items-center justify-center w-8 h-8 rounded-full hover:bg-muted text-muted-foreground">
+              <Plus className="h-4 w-4" />
+            </button>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  )
+}
+
+// ============================================================================
+// QUICK REPLY
+// ============================================================================
+function QuickReplyDemo() {
+  const replies = [
+    'Got it, thanks!',
+    'Can you explain more?',
+    'Let me check and get back to you',
+    'Perfect!',
+  ]
+
+  return (
+    <Card>
+      <CardHeader className="pb-3">
+        <CardTitle className="text-lg">Quick Replies</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="flex flex-wrap gap-2">
+          {replies.map((reply, i) => (
+            <Button
+              key={i}
+              variant="outline"
+              size="sm"
+              className="rounded-full"
+            >
+              {reply}
+            </Button>
+          ))}
+        </div>
+      </CardContent>
+    </Card>
+  )
+}
+
+// ============================================================================
+// SOCIAL POSTS
+// ============================================================================
+function SocialPostsDemo() {
+  return (
+    <Card>
+      <CardContent className="p-4">
+        <div className="flex items-start gap-3">
+          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-500 to-pink-500" />
+          <div className="flex-1">
+            <div className="flex items-center gap-2">
+              <span className="font-medium text-sm">AI Assistant</span>
+              <span className="text-xs text-muted-foreground">
+                @ai_assistant · 2h
+              </span>
+            </div>
+            <p className="text-sm mt-1">
+              Just launched our new chat components library! 🚀 Check out the
+              150+ components for building AI interfaces.
+            </p>
+            <div className="flex items-center gap-6 mt-3 text-muted-foreground">
+              <button className="flex items-center gap-1 text-xs hover:text-primary">
+                <MessageSquare className="h-4 w-4" />
+                24
+              </button>
+              <button className="flex items-center gap-1 text-xs hover:text-green-500">
+                <RefreshCw className="h-4 w-4" />
+                12
+              </button>
+              <button className="flex items-center gap-1 text-xs hover:text-red-500">
+                ❤️ 128
+              </button>
+              <button className="flex items-center gap-1 text-xs hover:text-primary">
+                <Share className="h-4 w-4" />
+              </button>
+            </div>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  )
+}
+
+// ============================================================================
+// SORTABLE LIST
+// ============================================================================
+function SortableListDemo() {
+  const items = ['First item', 'Second item', 'Third item', 'Fourth item']
+
+  return (
+    <Card>
+      <CardHeader className="pb-3">
+        <CardTitle className="text-lg">Sortable List</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="space-y-2">
+          {items.map((item, i) => (
+            <div
+              key={i}
+              className="flex items-center gap-3 p-3 border rounded-lg bg-card cursor-move hover:border-primary/50"
+            >
+              <MoreHorizontal className="h-4 w-4 text-muted-foreground rotate-90" />
+              <span className="text-sm flex-1">{item}</span>
+              <Badge variant="outline">{i + 1}</Badge>
+            </div>
+          ))}
+        </div>
+      </CardContent>
+    </Card>
+  )
+}
+
+// ============================================================================
+// TABLE OF CONTENTS
+// ============================================================================
+function TableOfContentsDemo() {
+  const sections = [
+    { title: 'Getting Started', level: 1, active: false },
+    { title: 'Installation', level: 2, active: false },
+    { title: 'Quick Start', level: 2, active: true },
+    { title: 'Components', level: 1, active: false },
+    { title: 'Chat Input', level: 2, active: false },
+    { title: 'Message List', level: 2, active: false },
+    { title: 'API Reference', level: 1, active: false },
+  ]
+
+  return (
+    <Card>
+      <CardHeader className="pb-3">
+        <CardTitle className="text-lg">Table of Contents</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <nav className="space-y-1">
+          {sections.map((section, i) => (
+            <a
+              key={i}
+              href="#"
+              className={cn(
+                'block text-sm py-1 transition-colors',
+                section.level === 1 ? 'font-medium' : 'ml-4',
+                section.active
+                  ? 'text-primary'
+                  : 'text-muted-foreground hover:text-foreground'
+              )}
+            >
+              {section.title}
+            </a>
+          ))}
+        </nav>
+      </CardContent>
+    </Card>
+  )
+}
+
+// ============================================================================
+// TRACE VIEW
+// ============================================================================
+function TraceViewDemo() {
+  const traces = [
+    {
+      name: 'HTTP Request',
+      duration: '245ms',
+      status: 'success',
+      children: [
+        { name: 'Parse Body', duration: '12ms', status: 'success' },
+        { name: 'Validate Token', duration: '34ms', status: 'success' },
+        { name: 'Process Request', duration: '189ms', status: 'success' },
+      ],
+    },
+  ]
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="text-lg">Trace View</CardTitle>
+        <CardDescription>Request execution timeline</CardDescription>
+      </CardHeader>
+      <CardContent>
+        {traces.map((trace, i) => (
+          <div key={i} className="space-y-2">
+            <div className="flex items-center gap-3 p-2 bg-muted/50 rounded-lg">
+              <CheckCircle className="h-4 w-4 text-green-500" />
+              <span className="text-sm font-medium flex-1">{trace.name}</span>
+              <span className="text-xs text-muted-foreground">
+                {trace.duration}
+              </span>
+            </div>
+            <div className="ml-4 space-y-1">
+              {trace.children?.map((child, j) => (
+                <div key={j} className="flex items-center gap-3 p-2 rounded-lg">
+                  <Check className="h-3 w-3 text-green-500" />
+                  <span className="text-sm flex-1">{child.name}</span>
+                  <div className="w-24 h-2 bg-muted rounded-full overflow-hidden">
+                    <div
+                      className="h-full bg-green-500 rounded-full"
+                      style={{
+                        width: `${parseInt(child.duration, 10) / 2.5}%`,
+                      }}
+                    />
+                  </div>
+                  <span className="text-xs text-muted-foreground w-12 text-right">
+                    {child.duration}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+        ))}
+      </CardContent>
+    </Card>
+  )
+}
+
+// ============================================================================
+// WEB SEARCH COMPONENT
+// ============================================================================
+function WebSearchDemo() {
+  const results = [
+    {
+      title: 'React Documentation',
+      url: 'react.dev',
+      snippet: 'The library for web and native user interfaces...',
+    },
+    {
+      title: 'React Hooks Guide',
+      url: 'react.dev/hooks',
+      snippet: 'Hooks let you use state and other React features...',
+    },
+    {
+      title: 'Next.js Documentation',
+      url: 'nextjs.org',
+      snippet: 'The React Framework for the Web...',
+    },
+  ]
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="text-lg">Web Search</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="flex gap-2 mb-4">
+          <Input placeholder="Search the web..." className="flex-1" />
+          <Button className="gap-2">
+            <Search className="h-4 w-4" />
+            Search
+          </Button>
+        </div>
+        <div className="space-y-4">
+          {results.map((result, i) => (
+            <div key={i} className="group cursor-pointer">
+              <p className="text-xs text-muted-foreground">{result.url}</p>
+              <p className="text-sm font-medium text-primary group-hover:underline">
+                {result.title}
+              </p>
+              <p className="text-sm text-muted-foreground">{result.snippet}</p>
+            </div>
+          ))}
+        </div>
+      </CardContent>
+    </Card>
+  )
+}
+
+// ============================================================================
+// WORKFLOW NODES
+// ============================================================================
+function WorkflowNodesDemo() {
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="text-lg">Workflow Nodes</CardTitle>
+        <CardDescription>Visual node-based workflow builder</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <div className="relative h-64 bg-muted/30 rounded-lg p-4 overflow-hidden">
+          {/* Start Node */}
+          <div className="absolute left-4 top-1/2 -translate-y-1/2 w-24 p-2 bg-green-500/20 border border-green-500/50 rounded-lg text-center">
+            <Play className="h-4 w-4 text-green-500 mx-auto mb-1" />
+            <span className="text-xs font-medium">Start</span>
+          </div>
+          {/* Line */}
+          <div className="absolute left-28 top-1/2 w-12 h-0.5 bg-muted-foreground/30" />
+          {/* Process Node */}
+          <div className="absolute left-40 top-1/2 -translate-y-1/2 w-28 p-2 bg-blue-500/20 border border-blue-500/50 rounded-lg text-center">
+            <Brain className="h-4 w-4 text-blue-500 mx-auto mb-1" />
+            <span className="text-xs font-medium">AI Process</span>
+          </div>
+          {/* Line */}
+          <div className="absolute left-[17rem] top-1/2 w-12 h-0.5 bg-muted-foreground/30" />
+          {/* Branch */}
+          <div className="absolute left-[19.5rem] top-1/2 -translate-y-1/2 w-24 p-2 bg-yellow-500/20 border border-yellow-500/50 rounded-lg text-center">
+            <GitBranch className="h-4 w-4 text-yellow-500 mx-auto mb-1" />
+            <span className="text-xs font-medium">Branch</span>
+          </div>
+          {/* End nodes */}
+          <div className="absolute right-4 top-8 w-24 p-2 bg-purple-500/20 border border-purple-500/50 rounded-lg text-center">
+            <CheckCircle className="h-4 w-4 text-purple-500 mx-auto mb-1" />
+            <span className="text-xs font-medium">Success</span>
+          </div>
+          <div className="absolute right-4 bottom-8 w-24 p-2 bg-red-500/20 border border-red-500/50 rounded-lg text-center">
+            <XCircle className="h-4 w-4 text-red-500 mx-auto mb-1" />
+            <span className="text-xs font-medium">Error</span>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  )
+}
+
+// ============================================================================
+// BRANCH PICKER
+// ============================================================================
+function BranchPickerDemo() {
+  const branches = [
+    { name: 'main', current: true, commits: 234 },
+    { name: 'develop', current: false, commits: 156 },
+    { name: 'feature/chat-ui', current: false, commits: 12 },
+    { name: 'fix/token-count', current: false, commits: 3 },
+  ]
+
+  return (
+    <Card>
+      <CardHeader className="pb-3">
+        <CardTitle className="text-lg">Branch Picker</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="space-y-2">
+          {branches.map((branch, i) => (
+            <div
+              key={i}
+              className={cn(
+                'flex items-center gap-3 p-3 rounded-lg cursor-pointer transition-colors',
+                branch.current
+                  ? 'bg-primary/10 border border-primary/50'
+                  : 'hover:bg-muted'
+              )}
+            >
+              <GitBranch
+                className={cn(
+                  'h-4 w-4',
+                  branch.current ? 'text-primary' : 'text-muted-foreground'
+                )}
+              />
+              <span
+                className={cn(
+                  'text-sm flex-1 font-mono',
+                  branch.current && 'font-medium'
+                )}
+              >
+                {branch.name}
+              </span>
+              {branch.current && <Badge className="bg-primary">Current</Badge>}
+              <span className="text-xs text-muted-foreground">
+                {branch.commits} commits
+              </span>
+            </div>
+          ))}
+        </div>
+      </CardContent>
+    </Card>
+  )
+}
+
+// ============================================================================
+// CHAT SIDEBAR
+// ============================================================================
+function ChatSidebarDemo() {
+  const conversations = [
+    {
+      title: 'React Hooks Help',
+      preview: 'Can you explain useEffect...',
+      time: '2m',
+      unread: 2,
+    },
+    {
+      title: 'API Design',
+      preview: 'The endpoints should be...',
+      time: '1h',
+      unread: 0,
+    },
+    {
+      title: 'Code Review',
+      preview: 'Looks good overall, but...',
+      time: '3h',
+      unread: 0,
+    },
+    {
+      title: 'Bug Investigation',
+      preview: 'Found the issue in...',
+      time: '1d',
+      unread: 0,
+    },
+  ]
+
+  return (
+    <Card>
+      <CardHeader className="pb-3">
+        <div className="flex items-center justify-between">
+          <CardTitle className="text-lg">Conversations</CardTitle>
+          <Button size="sm" className="gap-2">
+            <Plus className="h-4 w-4" />
+            New
+          </Button>
+        </div>
+      </CardHeader>
+      <CardContent className="p-0">
+        <div className="divide-y">
+          {conversations.map((conv, i) => (
+            <div
+              key={i}
+              className={cn(
+                'flex items-start gap-3 p-3 cursor-pointer hover:bg-muted/50',
+                i === 0 && 'bg-muted/50'
+              )}
+            >
+              <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center shrink-0">
+                <Bot className="h-4 w-4 text-muted-foreground" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center justify-between">
+                  <p className="text-sm font-medium truncate">{conv.title}</p>
+                  <span className="text-xs text-muted-foreground">
+                    {conv.time}
+                  </span>
+                </div>
+                <p className="text-xs text-muted-foreground truncate">
+                  {conv.preview}
+                </p>
+              </div>
+              {conv.unread > 0 && (
+                <Badge className="bg-primary shrink-0">{conv.unread}</Badge>
+              )}
+            </div>
+          ))}
+        </div>
+      </CardContent>
+    </Card>
+  )
+}
+
+// ============================================================================
+// COPY BUTTON
+// ============================================================================
+function CopyButtonDemo() {
+  const [copied, setCopied] = useState(false)
+
+  const handleCopy = () => {
+    setCopied(true)
+    setTimeout(() => setCopied(false), 2000)
+  }
+
+  return (
+    <Card>
+      <CardHeader className="pb-3">
+        <CardTitle className="text-lg">Copy Button</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="space-y-4">
+          <div className="flex items-center gap-2 p-3 bg-muted rounded-lg">
+            <code className="text-sm flex-1 font-mono">
+              npm install @clarity-chat/react
+            </code>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8"
+              onClick={handleCopy}
+            >
+              {copied ? (
+                <Check className="h-4 w-4 text-green-500" />
+              ) : (
+                <Copy className="h-4 w-4" />
+              )}
+            </Button>
+          </div>
+          <div className="flex gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              className="gap-2"
+              onClick={handleCopy}
+            >
+              <Copy className="h-4 w-4" />
+              {copied ? 'Copied!' : 'Copy Code'}
+            </Button>
+            <Button variant="outline" size="sm" className="gap-2">
+              <Copy className="h-4 w-4" />
+              Copy Link
+            </Button>
+            <Button variant="outline" size="sm" className="gap-2">
+              <Copy className="h-4 w-4" />
+              Copy as Markdown
+            </Button>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  )
+}
+
+// ============================================================================
+// CONVERSATION MANAGER
+// ============================================================================
+function ConversationManagerDemo() {
+  return (
+    <Card>
+      <CardHeader>
+        <div className="flex items-center justify-between">
+          <CardTitle className="text-lg">Conversation Manager</CardTitle>
+          <div className="flex gap-2">
+            <Button variant="outline" size="sm" className="gap-2">
+              <Download className="h-4 w-4" />
+              Export All
+            </Button>
+            <Button variant="outline" size="sm" className="gap-2">
+              <Trash2 className="h-4 w-4" />
+              Clear All
+            </Button>
+          </div>
+        </div>
+      </CardHeader>
+      <CardContent>
+        <div className="space-y-3">
+          {[
+            {
+              title: 'Project Planning',
+              messages: 24,
+              tokens: '12.4k',
+              date: 'Today',
+            },
+            {
+              title: 'Code Review Session',
+              messages: 56,
+              tokens: '28.1k',
+              date: 'Yesterday',
+            },
+            {
+              title: 'Debug Session',
+              messages: 18,
+              tokens: '8.2k',
+              date: '3 days ago',
+            },
+          ].map((conv, i) => (
+            <div
+              key={i}
+              className="flex items-center gap-3 p-3 border rounded-lg"
+            >
+              <Checkbox />
+              <div className="flex-1">
+                <p className="text-sm font-medium">{conv.title}</p>
+                <p className="text-xs text-muted-foreground">
+                  {conv.messages} messages · {conv.tokens} tokens · {conv.date}
+                </p>
+              </div>
+              <div className="flex gap-1">
+                <Button variant="ghost" size="icon" className="h-8 w-8">
+                  <Download className="h-4 w-4" />
+                </Button>
+                <Button variant="ghost" size="icon" className="h-8 w-8">
+                  <Share className="h-4 w-4" />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-8 w-8 text-destructive"
+                >
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
+          ))}
+        </div>
+      </CardContent>
+    </Card>
+  )
+}
+
+// ============================================================================
 // MAIN PAGE
 // ============================================================================
 export default function FeaturesPage() {
@@ -1330,6 +3178,21 @@ export default function FeaturesPage() {
           </TabsTrigger>
           <TabsTrigger value="ui" className="rounded-lg">
             UI Patterns
+          </TabsTrigger>
+          <TabsTrigger value="realtime" className="rounded-lg">
+            Realtime & Status
+          </TabsTrigger>
+          <TabsTrigger value="voice" className="rounded-lg">
+            Voice & Media
+          </TabsTrigger>
+          <TabsTrigger value="auth" className="rounded-lg">
+            Auth & Settings
+          </TabsTrigger>
+          <TabsTrigger value="social" className="rounded-lg">
+            Social & Chat
+          </TabsTrigger>
+          <TabsTrigger value="tools" className="rounded-lg">
+            Tools & Search
           </TabsTrigger>
         </TabsList>
 
@@ -1477,6 +3340,277 @@ export default function FeaturesPage() {
             description="Handle empty content gracefully"
           >
             <EmptyStateDemo />
+          </ComponentSection>
+
+          <ComponentSection
+            title="Suggestion Chips"
+            description="Quick action buttons"
+          >
+            <SuggestionChipsDemo />
+          </ComponentSection>
+
+          <div className="grid grid-cols-2 gap-8">
+            <ComponentSection
+              title="Snippet Manager"
+              description="Save and reuse code snippets"
+            >
+              <SnippetManagerDemo />
+            </ComponentSection>
+
+            <ComponentSection
+              title="Schema Display"
+              description="Visualize data structures"
+            >
+              <SchemaDisplayDemo />
+            </ComponentSection>
+          </div>
+
+          <ComponentSection
+            title="Stats Display"
+            description="Key metrics at a glance"
+          >
+            <StatsDisplayDemo />
+          </ComponentSection>
+        </TabsContent>
+
+        <TabsContent value="realtime" className="space-y-8">
+          <ComponentSection
+            title="Progress Indicators"
+            description="Show loading and completion states"
+          >
+            <ProgressIndicatorsDemo />
+          </ComponentSection>
+
+          <ComponentSection
+            title="Steps Indicator"
+            description="Multi-step workflow progress"
+          >
+            <StepsIndicatorDemo />
+          </ComponentSection>
+
+          <div className="grid grid-cols-2 gap-8">
+            <ComponentSection
+              title="Realtime Status"
+              description="Live event streaming"
+            >
+              <RealtimeIndicatorDemo />
+            </ComponentSection>
+
+            <ComponentSection
+              title="Task Queue"
+              description="Queued job management"
+            >
+              <QueueDisplayDemo />
+            </ComponentSection>
+          </div>
+
+          <ComponentSection
+            title="Conversation Threads"
+            description="Threaded discussions"
+          >
+            <ThreadsViewDemo />
+          </ComponentSection>
+
+          <ComponentSection
+            title="Safety Components"
+            description="Warnings and content moderation"
+          >
+            <SafetyComponentsDemo />
+          </ComponentSection>
+
+          <ComponentSection
+            title="Retry Logic"
+            description="Handle failures gracefully"
+          >
+            <RetryLogicDemo />
+          </ComponentSection>
+        </TabsContent>
+
+        <TabsContent value="voice" className="space-y-8">
+          <ComponentSection
+            title="Voice Components"
+            description="Audio input and playback"
+          >
+            <VoiceComponentsDemo />
+          </ComponentSection>
+
+          <ComponentSection
+            title="Rich Embed"
+            description="Media preview cards"
+          >
+            <RichEmbedDemo />
+          </ComponentSection>
+
+          <ComponentSection
+            title="Message Actions"
+            description="Quick action buttons for messages"
+          >
+            <MessageActionsDemo />
+          </ComponentSection>
+
+          <ComponentSection
+            title="Read Receipts"
+            description="Message delivery status"
+          >
+            <ReadReceiptDemo />
+          </ComponentSection>
+
+          <div className="grid grid-cols-2 gap-8">
+            <ComponentSection
+              title="RAG Sources"
+              description="Retrieved document references"
+            >
+              <RAGSourcesDemo />
+            </ComponentSection>
+
+            <ComponentSection
+              title="Calendar"
+              description="Date picker component"
+            >
+              <CalendarDemo />
+            </ComponentSection>
+          </div>
+        </TabsContent>
+
+        <TabsContent value="auth" className="space-y-8">
+          <ComponentSection title="Login Form" description="Authentication UI">
+            <LoginFormDemo />
+          </ComponentSection>
+
+          <ComponentSection
+            title="Settings Panel"
+            description="Configuration toggles"
+          >
+            <SettingsPanelDemo />
+          </ComponentSection>
+
+          <ComponentSection
+            title="Model Presets"
+            description="Quick configuration selection"
+          >
+            <PresetsSelectorDemo />
+          </ComponentSection>
+
+          <ComponentSection
+            title="MCP Manager"
+            description="Model Context Protocol server management"
+          >
+            <MCPManagerDemo />
+          </ComponentSection>
+
+          <ComponentSection
+            title="Environment Variables"
+            description="Secure configuration management"
+          >
+            <EnvironmentVariablesDemo />
+          </ComponentSection>
+
+          <ComponentSection
+            title="Password Input"
+            description="Secure password entry with strength indicator"
+          >
+            <PasswordInputDemo />
+          </ComponentSection>
+        </TabsContent>
+
+        <TabsContent value="social" className="space-y-8">
+          <ComponentSection
+            title="Reactions"
+            description="Emoji reactions for messages"
+          >
+            <ReactionsDemo />
+          </ComponentSection>
+
+          <div className="grid grid-cols-2 gap-8">
+            <ComponentSection
+              title="Quick Replies"
+              description="Pre-defined response options"
+            >
+              <QuickReplyDemo />
+            </ComponentSection>
+
+            <ComponentSection
+              title="Pinned Messages"
+              description="Highlight important content"
+            >
+              <PinnedMessagesDemo />
+            </ComponentSection>
+          </div>
+
+          <ComponentSection
+            title="Social Posts"
+            description="Social media style content"
+          >
+            <SocialPostsDemo />
+          </ComponentSection>
+
+          <div className="grid grid-cols-2 gap-8">
+            <ComponentSection
+              title="Chat Sidebar"
+              description="Conversation list navigation"
+            >
+              <ChatSidebarDemo />
+            </ComponentSection>
+
+            <ComponentSection
+              title="Copy Button"
+              description="One-click content copying"
+            >
+              <CopyButtonDemo />
+            </ComponentSection>
+          </div>
+
+          <ComponentSection
+            title="Conversation Manager"
+            description="Manage and export conversations"
+          >
+            <ConversationManagerDemo />
+          </ComponentSection>
+        </TabsContent>
+
+        <TabsContent value="tools" className="space-y-8">
+          <ComponentSection
+            title="Web Search"
+            description="Search the web interface"
+          >
+            <WebSearchDemo />
+          </ComponentSection>
+
+          <ComponentSection
+            title="Trace View"
+            description="Request execution timeline"
+          >
+            <TraceViewDemo />
+          </ComponentSection>
+
+          <ComponentSection
+            title="Workflow Nodes"
+            description="Visual workflow builder"
+          >
+            <WorkflowNodesDemo />
+          </ComponentSection>
+
+          <div className="grid grid-cols-2 gap-8">
+            <ComponentSection
+              title="Branch Picker"
+              description="Git branch selection"
+            >
+              <BranchPickerDemo />
+            </ComponentSection>
+
+            <ComponentSection
+              title="Table of Contents"
+              description="Document navigation"
+            >
+              <TableOfContentsDemo />
+            </ComponentSection>
+          </div>
+
+          <ComponentSection
+            title="Sortable List"
+            description="Drag and drop reordering"
+          >
+            <SortableListDemo />
           </ComponentSection>
         </TabsContent>
       </Tabs>

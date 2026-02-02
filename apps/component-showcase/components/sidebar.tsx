@@ -80,7 +80,7 @@ const categories: NavCategory[] = [
     href: '/features',
     icon: <Sparkles className="h-4 w-4" />,
     description: 'Advanced code & workflow components',
-    componentCount: 30,
+    componentCount: 60,
   },
 ]
 
