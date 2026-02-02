@@ -25,6 +25,9 @@ import {
   ChevronDown,
   Sun,
   Moon,
+  Copy,
+  LayoutDashboard,
+  Sparkles,
 } from 'lucide-react'
 import { useState, useEffect } from 'react'
 
@@ -57,6 +60,27 @@ const categories: NavCategory[] = [
     icon: <Layers className="h-4 w-4" />,
     description: 'Base UI components',
     componentCount: 25,
+  },
+  {
+    name: 'AI Clones',
+    href: '/clones',
+    icon: <Copy className="h-4 w-4" />,
+    description: 'Full AI interface recreations',
+    componentCount: 7,
+  },
+  {
+    name: 'Dashboards',
+    href: '/dashboards',
+    icon: <LayoutDashboard className="h-4 w-4" />,
+    description: 'Analytics & management UIs',
+    componentCount: 5,
+  },
+  {
+    name: 'Features',
+    href: '/features',
+    icon: <Sparkles className="h-4 w-4" />,
+    description: 'Advanced code & workflow components',
+    componentCount: 30,
   },
 ]
 
