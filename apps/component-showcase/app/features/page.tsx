@@ -18,6 +18,7 @@ import {
   ScrollArea,
   Separator,
   Checkbox,
+  Kbd,
   cn,
 } from '@clarity-chat/primitives'
 import {
@@ -150,6 +151,7 @@ import {
   Moon,
   Cloud,
   CloudRain,
+  Keyboard,
 } from 'lucide-react'
 
 // ============================================================================
@@ -1531,6 +1533,272 @@ function StatsDisplayDemo() {
         </Card>
       ))}
     </div>
+  )
+}
+
+// ============================================================================
+// BEFORE/AFTER COMPARISON
+// ============================================================================
+function BeforeAfterDemo() {
+  const [position, setPosition] = useState(50)
+
+  return (
+    <Card>
+      <CardHeader className="pb-3">
+        <CardTitle className="text-sm">Before/After Slider</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="relative h-48 bg-muted rounded-lg overflow-hidden">
+          <div className="absolute inset-0 flex items-center justify-center bg-red-500/20">
+            <span className="text-sm font-medium">Before (Original)</span>
+          </div>
+          <div
+            className="absolute inset-0 flex items-center justify-center bg-green-500/20 overflow-hidden"
+            style={{ clipPath: `inset(0 ${100 - position}% 0 0)` }}
+          >
+            <span className="text-sm font-medium">After (Optimized)</span>
+          </div>
+          <div
+            className="absolute top-0 bottom-0 w-1 bg-primary cursor-ew-resize"
+            style={{ left: `${position}%` }}
+          >
+            <div className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-8 h-8 bg-primary rounded-full flex items-center justify-center shadow-lg">
+              <ArrowLeft className="h-3 w-3 text-primary-foreground" />
+              <ArrowRight className="h-3 w-3 text-primary-foreground" />
+            </div>
+          </div>
+        </div>
+        <div className="mt-3">
+          <input
+            type="range"
+            min="0"
+            max="100"
+            value={position}
+            onChange={(e) => setPosition(Number(e.target.value))}
+            className="w-full"
+          />
+          <p className="text-xs text-muted-foreground text-center mt-1">
+            {position}%
+          </p>
+        </div>
+      </CardContent>
+    </Card>
+  )
+}
+
+// ============================================================================
+// LINK PREVIEW
+// ============================================================================
+function LinkPreviewDemo() {
+  const links = [
+    {
+      url: 'https://github.com/clarity-chat/react',
+      title: 'Clarity Chat React Components',
+      description:
+        'Production-ready AI chat components for React with streaming, memory, and more.',
+      image: null,
+      favicon: '🔗',
+    },
+    {
+      url: 'https://docs.anthropic.com',
+      title: 'Anthropic Documentation',
+      description: 'Official documentation for Claude API and best practices.',
+      image: null,
+      favicon: '📚',
+    },
+  ]
+
+  return (
+    <Card>
+      <CardHeader className="pb-3">
+        <CardTitle className="text-sm">Link Previews</CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-3">
+        {links.map((link, i) => (
+          <div
+            key={i}
+            className="flex gap-3 p-3 rounded-lg border hover:bg-muted/50 cursor-pointer transition-colors"
+          >
+            <div className="w-12 h-12 rounded-lg bg-muted flex items-center justify-center text-2xl shrink-0">
+              {link.favicon}
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="font-medium text-sm truncate">{link.title}</p>
+              <p className="text-xs text-muted-foreground line-clamp-2">
+                {link.description}
+              </p>
+              <div className="flex items-center gap-1 mt-1">
+                <ExternalLink className="h-3 w-3 text-muted-foreground" />
+                <span className="text-xs text-primary truncate">
+                  {link.url}
+                </span>
+              </div>
+            </div>
+          </div>
+        ))}
+      </CardContent>
+    </Card>
+  )
+}
+
+// ============================================================================
+// CONTEXT MENU
+// ============================================================================
+function ContextMenuDemo() {
+  const [showMenu, setShowMenu] = useState(false)
+  const [menuPosition, setMenuPosition] = useState({ x: 0, y: 0 })
+
+  const handleContextMenu = (e: React.MouseEvent) => {
+    e.preventDefault()
+    setMenuPosition({ x: e.nativeEvent.offsetX, y: e.nativeEvent.offsetY })
+    setShowMenu(true)
+  }
+
+  return (
+    <Card>
+      <CardHeader className="pb-3">
+        <CardTitle className="text-sm">Context Menu</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div
+          className="relative h-40 bg-muted rounded-lg flex items-center justify-center cursor-context-menu"
+          onContextMenu={handleContextMenu}
+          onClick={() => setShowMenu(false)}
+        >
+          <p className="text-sm text-muted-foreground">Right-click anywhere</p>
+          {showMenu && (
+            <div
+              className="absolute z-10 bg-popover border rounded-lg shadow-lg py-1 min-w-[160px]"
+              style={{ left: menuPosition.x, top: menuPosition.y }}
+            >
+              <button className="w-full flex items-center gap-2 px-3 py-2 text-sm hover:bg-muted">
+                <Copy className="h-4 w-4" /> Copy
+              </button>
+              <button className="w-full flex items-center gap-2 px-3 py-2 text-sm hover:bg-muted">
+                <Edit className="h-4 w-4" /> Edit
+              </button>
+              <Separator className="my-1" />
+              <button className="w-full flex items-center gap-2 px-3 py-2 text-sm hover:bg-muted text-destructive">
+                <Trash2 className="h-4 w-4" /> Delete
+              </button>
+            </div>
+          )}
+        </div>
+      </CardContent>
+    </Card>
+  )
+}
+
+// ============================================================================
+// MODEL SELECTOR
+// ============================================================================
+function ModelSelectorDemo() {
+  const [selectedModel, setSelectedModel] = useState('claude-3-5-sonnet')
+  const models = [
+    {
+      id: 'claude-3-5-sonnet',
+      name: 'Claude 3.5 Sonnet',
+      provider: 'Anthropic',
+      speed: 'Fast',
+      quality: '95%',
+    },
+    {
+      id: 'claude-3-opus',
+      name: 'Claude 3 Opus',
+      provider: 'Anthropic',
+      speed: 'Medium',
+      quality: '99%',
+    },
+    {
+      id: 'gpt-4o',
+      name: 'GPT-4o',
+      provider: 'OpenAI',
+      speed: 'Fast',
+      quality: '94%',
+    },
+    {
+      id: 'gpt-4o-mini',
+      name: 'GPT-4o Mini',
+      provider: 'OpenAI',
+      speed: 'Very Fast',
+      quality: '85%',
+    },
+  ]
+
+  return (
+    <Card>
+      <CardHeader className="pb-3">
+        <CardTitle className="text-sm">Model Selector</CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-2">
+        {models.map((model) => (
+          <button
+            key={model.id}
+            onClick={() => setSelectedModel(model.id)}
+            className={cn(
+              'w-full flex items-center justify-between p-3 rounded-lg border transition-colors text-left',
+              selectedModel === model.id
+                ? 'border-primary bg-primary/5'
+                : 'hover:bg-muted'
+            )}
+          >
+            <div>
+              <p className="font-medium text-sm">{model.name}</p>
+              <p className="text-xs text-muted-foreground">{model.provider}</p>
+            </div>
+            <div className="text-right">
+              <Badge variant="outline" className="text-xs">
+                {model.speed}
+              </Badge>
+              <p className="text-xs text-muted-foreground mt-1">
+                {model.quality} quality
+              </p>
+            </div>
+            {selectedModel === model.id && (
+              <Check className="h-4 w-4 text-primary ml-2" />
+            )}
+          </button>
+        ))}
+      </CardContent>
+    </Card>
+  )
+}
+
+// ============================================================================
+// KEYBOARD SHORTCUTS
+// ============================================================================
+function KeyboardShortcutsDemo() {
+  const shortcuts = [
+    { shortcut: 'mod+k', action: 'Open Command Palette' },
+    { shortcut: 'mod+enter', action: 'Send Message' },
+    { shortcut: 'mod+shift+c', action: 'Copy Code' },
+    { shortcut: 'escape', action: 'Close Dialog' },
+    { shortcut: 'mod+/', action: 'Toggle Sidebar' },
+    { shortcut: 'mod+b', action: 'Bold Text' },
+  ]
+
+  return (
+    <Card>
+      <CardHeader className="pb-3">
+        <CardTitle className="text-lg flex items-center gap-2">
+          <Keyboard className="h-5 w-5" />
+          Keyboard Shortcuts
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="grid grid-cols-2 gap-3">
+          {shortcuts.map((item, i) => (
+            <div
+              key={i}
+              className="flex items-center justify-between p-2 rounded-lg bg-muted"
+            >
+              <span className="text-sm">{item.action}</span>
+              <Kbd shortcut={item.shortcut} size="sm" />
+            </div>
+          ))}
+        </div>
+      </CardContent>
+    </Card>
   )
 }
 
@@ -4023,6 +4291,45 @@ export default function FeaturesPage() {
             description="Key metrics at a glance"
           >
             <StatsDisplayDemo />
+          </ComponentSection>
+
+          <div className="grid grid-cols-2 gap-8">
+            <ComponentSection
+              title="Before/After Comparison"
+              description="Image or content comparison slider"
+            >
+              <BeforeAfterDemo />
+            </ComponentSection>
+
+            <ComponentSection
+              title="Link Preview"
+              description="URL preview cards"
+            >
+              <LinkPreviewDemo />
+            </ComponentSection>
+          </div>
+
+          <div className="grid grid-cols-2 gap-8">
+            <ComponentSection
+              title="Context Menu"
+              description="Right-click context menus"
+            >
+              <ContextMenuDemo />
+            </ComponentSection>
+
+            <ComponentSection
+              title="Model Selector"
+              description="AI model selection interface"
+            >
+              <ModelSelectorDemo />
+            </ComponentSection>
+          </div>
+
+          <ComponentSection
+            title="Keyboard Shortcuts"
+            description="Accessible keyboard navigation"
+          >
+            <KeyboardShortcutsDemo />
           </ComponentSection>
         </TabsContent>
 
