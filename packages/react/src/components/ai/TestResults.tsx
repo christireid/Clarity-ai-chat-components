@@ -33,6 +33,7 @@
 
 import * as React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { durations } from '../../animations/zero-dependency'
 import { cn, useReducedMotion } from '@clarity-chat/primitives'
 import { DURATION_SECONDS, EASING_FRAMER } from '../../animations/constants'
 
@@ -108,27 +109,62 @@ function getStatusIcon(status: TestStatus): React.ReactNode {
   switch (status) {
     case 'pass':
       return (
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" className="test-icon-pass">
+        <svg
+          width="14"
+          height="14"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="3"
+          strokeLinecap="round"
+          className="test-icon-pass"
+        >
           <polyline points="20 6 9 17 4 12" />
         </svg>
       )
     case 'fail':
       return (
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" className="test-icon-fail">
+        <svg
+          width="14"
+          height="14"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          className="test-icon-fail"
+        >
           <line x1="18" y1="6" x2="6" y2="18" />
           <line x1="6" y1="6" x2="18" y2="18" />
         </svg>
       )
     case 'skip':
       return (
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" className="test-icon-skip">
+        <svg
+          width="14"
+          height="14"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          className="test-icon-skip"
+        >
           <circle cx="12" cy="12" r="10" />
           <line x1="4.93" y1="4.93" x2="19.07" y2="19.07" />
         </svg>
       )
     case 'pending':
       return (
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="test-icon-pending">
+        <svg
+          width="14"
+          height="14"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          className="test-icon-pending"
+        >
           <circle cx="12" cy="12" r="10" />
           <line x1="12" y1="8" x2="12" y2="12" />
           <line x1="12" y1="16" x2="12.01" y2="16" />
@@ -145,7 +181,11 @@ function getStatusIcon(status: TestStatus): React.ReactNode {
           strokeWidth="2"
           className="test-icon-running"
           animate={{ rotate: 360 }}
-          transition={{ duration: durations.slower, repeat: Infinity, ease: 'linear' }}
+          transition={{
+            duration: durations.slower,
+            repeat: Infinity,
+            ease: 'linear',
+          }}
         >
           <circle cx="12" cy="12" r="10" opacity="0.25" />
           <path d="M12 2a10 10 0 0 1 10 10" />
@@ -175,10 +215,18 @@ function calculateStats(suites: TestSuite[]): {
         total++
         duration += test.duration || 0
         switch (test.status) {
-          case 'pass': passed++; break
-          case 'fail': failed++; break
-          case 'skip': skipped++; break
-          case 'pending': pending++; break
+          case 'pass':
+            passed++
+            break
+          case 'fail':
+            failed++
+            break
+          case 'skip':
+            skipped++
+            break
+          case 'pending':
+            pending++
+            break
         }
       })
       if (suite.suites) {
@@ -195,7 +243,9 @@ function getSuiteStatus(suite: TestSuite): TestStatus {
   if (suite.isRunning) return 'running'
   const hasFailure = suite.tests.some((t) => t.status === 'fail')
   if (hasFailure) return 'fail'
-  const allPassed = suite.tests.every((t) => t.status === 'pass' || t.status === 'skip')
+  const allPassed = suite.tests.every(
+    (t) => t.status === 'pass' || t.status === 'skip'
+  )
   if (allPassed) return 'pass'
   return 'pending'
 }
@@ -211,7 +261,12 @@ interface TestCaseItemProps {
   onTestClick?: (test: TestCase, suite: TestSuite) => void
 }
 
-function TestCaseItem({ test, suite, showDurations, onTestClick }: TestCaseItemProps) {
+function TestCaseItem({
+  test,
+  suite,
+  showDurations,
+  onTestClick,
+}: TestCaseItemProps) {
   const prefersReducedMotion = useReducedMotion()
   const [showError, setShowError] = React.useState(test.status === 'fail')
 
@@ -231,9 +286,7 @@ function TestCaseItem({ test, suite, showDurations, onTestClick }: TestCaseItemP
         role={onTestClick || test.error ? 'button' : undefined}
         tabIndex={onTestClick || test.error ? 0 : undefined}
       >
-        <span className="test-case-status">
-          {getStatusIcon(test.status)}
-        </span>
+        <span className="test-case-status">{getStatusIcon(test.status)}</span>
         <span className="test-case-name">{test.name}</span>
         {showDurations && test.duration !== undefined && (
           <span className="test-case-duration">
@@ -258,9 +311,7 @@ function TestCaseItem({ test, suite, showDurations, onTestClick }: TestCaseItemP
             transition={{ duration: DURATION_SECONDS.fast }}
           >
             <pre className="test-case-error-message">{test.error}</pre>
-            {test.stack && (
-              <pre className="test-case-stack">{test.stack}</pre>
-            )}
+            {test.stack && <pre className="test-case-stack">{test.stack}</pre>}
           </motion.div>
         )}
       </AnimatePresence>
@@ -322,14 +373,19 @@ function TestSuiteItem({
           animate={{ rotate: isExpanded ? 90 : 0 }}
           transition={{ duration: DURATION_SECONDS.fast }}
         >
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <svg
+            width="12"
+            height="12"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+          >
             <polyline points="9 18 15 12 9 6" />
           </svg>
         </motion.span>
 
-        <span className="test-suite-status">
-          {getStatusIcon(suiteStatus)}
-        </span>
+        <span className="test-suite-status">{getStatusIcon(suiteStatus)}</span>
 
         <span className="test-suite-name">{suite.name}</span>
 
@@ -433,10 +489,20 @@ export function TestResults({
         {/* Summary */}
         {showSummary && (
           <div className="test-results-summary">
-            <span className={cn('test-results-stat', stats.passed > 0 && 'test-results-stat-pass')}>
+            <span
+              className={cn(
+                'test-results-stat',
+                stats.passed > 0 && 'test-results-stat-pass'
+              )}
+            >
               {stats.passed} passed
             </span>
-            <span className={cn('test-results-stat', stats.failed > 0 && 'test-results-stat-fail')}>
+            <span
+              className={cn(
+                'test-results-stat',
+                stats.failed > 0 && 'test-results-stat-fail'
+              )}
+            >
               {stats.failed} failed
             </span>
             {stats.skipped > 0 && (

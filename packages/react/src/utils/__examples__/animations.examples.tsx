@@ -242,7 +242,7 @@ export function ThinkingIndicatorExample() {
             animate="animate"
             exit="exit"
             transition={{
-              duration: durations.slower,
+              duration: DURATION.SLOW,
               repeat: Infinity,
             }}
             className="flex items-center gap-2 p-4 bg-purple-100 rounded"
@@ -433,7 +433,7 @@ export function ChatInterfaceExample() {
               initial="initial"
               animate="animate"
               exit="exit"
-              transition={{ duration: durations.slower, repeat: Infinity }}
+              transition={{ duration: DURATION.SLOW, repeat: Infinity }}
               className="flex gap-1 p-3"
             >
               <div className="w-2 h-2 bg-gray-400 rounded-full" />

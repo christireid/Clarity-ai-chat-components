@@ -13,6 +13,7 @@
 
 import * as React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { durations } from '../animations/zero-dependency'
 import {
   TrendingDown,
   TrendingUp,

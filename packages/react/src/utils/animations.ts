@@ -473,14 +473,15 @@ export function useStreamingAnimation(
     : {
         opacity: [0.7, 1, 0.7],
         transition: {
-          duration: durations.slower,
+          duration: DURATION.SLOW,
           repeat: Infinity,
           ease: 'easeInOut',
         },
       }
 
   return {
-    cursorAnimation: showCursor && isStreaming ? cursorAnimation : { opacity: 0 },
+    cursorAnimation:
+      showCursor && isStreaming ? cursorAnimation : { opacity: 0 },
     containerVariant: 'animate',
     textVariant: 'animate',
     isActive: isStreaming,
@@ -684,8 +685,6 @@ export function getAnimationPreset(key: AnimationPresetKey): Variants {
  * @param key - The preset key
  * @returns The transition configuration
  */
-export function getTransitionPreset(
-  key: TransitionPresetKey
-): Transition {
+export function getTransitionPreset(key: TransitionPresetKey): Transition {
   return TRANSITION_PRESETS[key]
 }

@@ -41,6 +41,7 @@
 
 import * as React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { durations } from '../../animations/zero-dependency'
 import { cn, useReducedMotion } from '@clarity-chat/primitives'
 import { DURATION_SECONDS, EASING_FRAMER } from '../../animations/constants'
 
@@ -48,8 +49,21 @@ import { DURATION_SECONDS, EASING_FRAMER } from '../../animations/constants'
 // Types
 // ============================================================================
 
-export type TerminalTheme = 'night-owl' | 'dracula' | 'monokai' | 'github-dark' | 'one-dark' | 'nord'
-export type TerminalLineType = 'command' | 'output' | 'error' | 'success' | 'warning' | 'info' | 'system'
+export type TerminalTheme =
+  | 'night-owl'
+  | 'dracula'
+  | 'monokai'
+  | 'github-dark'
+  | 'one-dark'
+  | 'nord'
+export type TerminalLineType =
+  | 'command'
+  | 'output'
+  | 'error'
+  | 'success'
+  | 'warning'
+  | 'info'
+  | 'system'
 
 export interface TerminalLine {
   /** Unique identifier */
@@ -101,20 +115,23 @@ export interface TerminalProps {
 // Theme Configurations
 // ============================================================================
 
-const themes: Record<TerminalTheme, {
-  background: string
-  foreground: string
-  command: string
-  output: string
-  error: string
-  success: string
-  warning: string
-  info: string
-  system: string
-  prompt: string
-  selection: string
-  border: string
-}> = {
+const themes: Record<
+  TerminalTheme,
+  {
+    background: string
+    foreground: string
+    command: string
+    output: string
+    error: string
+    success: string
+    warning: string
+    info: string
+    system: string
+    prompt: string
+    selection: string
+    border: string
+  }
+> = {
   'night-owl': {
     background: '#011627',
     foreground: '#d6deeb',
@@ -129,7 +146,7 @@ const themes: Record<TerminalTheme, {
     selection: '#1d3b53',
     border: '#1d3b53',
   },
-  'dracula': {
+  dracula: {
     background: '#282a36',
     foreground: '#f8f8f2',
     command: '#8be9fd',
@@ -143,7 +160,7 @@ const themes: Record<TerminalTheme, {
     selection: '#44475a',
     border: '#44475a',
   },
-  'monokai': {
+  monokai: {
     background: '#272822',
     foreground: '#f8f8f2',
     command: '#66d9ef',
@@ -185,7 +202,7 @@ const themes: Record<TerminalTheme, {
     selection: '#3e4451',
     border: '#3e4451',
   },
-  'nord': {
+  nord: {
     background: '#2e3440',
     foreground: '#eceff4',
     command: '#88c0d0',
@@ -325,20 +342,22 @@ export function Terminal({
   return (
     <motion.div
       className={cn('terminal', `terminal-${theme}`, className)}
-      style={{
-        '--terminal-bg': themeConfig.background,
-        '--terminal-fg': themeConfig.foreground,
-        '--terminal-border': themeConfig.border,
-        '--terminal-selection': themeConfig.selection,
-        '--terminal-prompt': themeConfig.prompt,
-        '--terminal-command': themeConfig.command,
-        '--terminal-output': themeConfig.output,
-        '--terminal-error': themeConfig.error,
-        '--terminal-success': themeConfig.success,
-        '--terminal-warning': themeConfig.warning,
-        '--terminal-info': themeConfig.info,
-        '--terminal-system': themeConfig.system,
-      } as React.CSSProperties}
+      style={
+        {
+          '--terminal-bg': themeConfig.background,
+          '--terminal-fg': themeConfig.foreground,
+          '--terminal-border': themeConfig.border,
+          '--terminal-selection': themeConfig.selection,
+          '--terminal-prompt': themeConfig.prompt,
+          '--terminal-command': themeConfig.command,
+          '--terminal-output': themeConfig.output,
+          '--terminal-error': themeConfig.error,
+          '--terminal-success': themeConfig.success,
+          '--terminal-warning': themeConfig.warning,
+          '--terminal-info': themeConfig.info,
+          '--terminal-system': themeConfig.system,
+        } as React.CSSProperties
+      }
       initial={prefersReducedMotion ? {} : { opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{
@@ -360,7 +379,14 @@ export function Terminal({
           onClick={handleCopy}
           aria-label="Copy terminal output"
         >
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <svg
+            width="14"
+            height="14"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+          >
             <rect x="9" y="9" width="13" height="13" rx="2" />
             <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
           </svg>
@@ -380,10 +406,7 @@ export function Terminal({
           {lines.map((line, index) => (
             <motion.div
               key={line.id || `${index}-${line.content.slice(0, 20)}`}
-              className={cn(
-                'terminal-line',
-                `terminal-line-${line.type}`
-              )}
+              className={cn('terminal-line', `terminal-line-${line.type}`)}
               initial={prefersReducedMotion ? {} : { opacity: 0, x: -8 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{
@@ -402,9 +425,7 @@ export function Terminal({
               )}
 
               {line.type === 'command' && (
-                <span className="terminal-prompt">
-                  {line.prompt || prompt}
-                </span>
+                <span className="terminal-prompt">{line.prompt || prompt}</span>
               )}
 
               <span className="terminal-line-content">
@@ -416,11 +437,13 @@ export function Terminal({
         </AnimatePresence>
 
         {/* Streaming indicator */}
-        {isStreaming && lines.length > 0 && !lines[lines.length - 1]?.isStreaming && (
-          <div className="terminal-line terminal-line-output">
-            <StreamingCursor />
-          </div>
-        )}
+        {isStreaming &&
+          lines.length > 0 &&
+          !lines[lines.length - 1]?.isStreaming && (
+            <div className="terminal-line terminal-line-output">
+              <StreamingCursor />
+            </div>
+          )}
 
         {/* Interactive input */}
         {interactive && (
@@ -482,8 +505,14 @@ export interface UseTerminalReturn {
   setTheme: (theme: TerminalTheme) => void
 }
 
-export function useTerminal(options: UseTerminalOptions = {}): UseTerminalReturn {
-  const { initialLines = [], maxLines = 1000, theme: initialTheme = 'night-owl' } = options
+export function useTerminal(
+  options: UseTerminalOptions = {}
+): UseTerminalReturn {
+  const {
+    initialLines = [],
+    maxLines = 1000,
+    theme: initialTheme = 'night-owl',
+  } = options
 
   const [lines, setLines] = React.useState<TerminalLine[]>(initialLines)
   const [theme, setTheme] = React.useState<TerminalTheme>(initialTheme)

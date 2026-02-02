@@ -5,7 +5,7 @@ import { VariableSizeList as List } from 'react-window'
 import AutoSizer from 'react-virtualized-auto-sizer'
 import { useChat } from '../Chat'
 import { ChatBubble } from '../ChatBubble'
-import { cn } from '@/lib/utils'
+import { cn } from '@clarity-chat/primitives'
 import type { Message } from '../types'
 
 interface VirtualizedChatListProps {

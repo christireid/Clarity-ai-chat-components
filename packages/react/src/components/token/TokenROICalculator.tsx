@@ -13,6 +13,7 @@
 
 import * as React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { durations } from '../../animations/zero-dependency'
 import {
   TrendingUp,
   DollarSign,
@@ -188,13 +189,17 @@ function calculateROI(params: {
   const monthlyMaintenanceCost = maintenanceCost
   const netMonthlySavings = monthlySavings - monthlyMaintenanceCost
   const breakEvenDays =
-    netMonthlySavings > 0 ? (totalUpfrontCost / netMonthlySavings) * 30 : Infinity
+    netMonthlySavings > 0
+      ? (totalUpfrontCost / netMonthlySavings) * 30
+      : Infinity
 
   // Calculate ROI
   const firstYearCosts = implementationCost + maintenanceCost * 12
   const firstYearSavings = yearlySavings
   const roiPercent =
-    firstYearCosts > 0 ? ((firstYearSavings - firstYearCosts) / firstYearCosts) * 100 : 0
+    firstYearCosts > 0
+      ? ((firstYearSavings - firstYearCosts) / firstYearCosts) * 100
+      : 0
 
   return {
     totalSavings: yearlySavings,
@@ -291,11 +296,15 @@ function MetricCard({
       className={`rounded-xl border bg-gradient-to-br p-6 ${colorClasses[color]} ${className}`}
     >
       <div className="flex items-start justify-between mb-4">
-        <div className={`p-2 rounded-lg bg-background/50 ${iconColorClasses[color]}`}>
+        <div
+          className={`p-2 rounded-lg bg-background/50 ${iconColorClasses[color]}`}
+        >
           <Icon className="w-5 h-5" />
         </div>
         {trend && (
-          <span className="text-xs font-medium text-muted-foreground">{trend}</span>
+          <span className="text-xs font-medium text-muted-foreground">
+            {trend}
+          </span>
         )}
       </div>
       <div className="space-y-1">
@@ -332,7 +341,9 @@ function SliderInput({
     <div className="space-y-2">
       <div className="flex items-center justify-between">
         <label className="text-sm font-medium text-foreground">{label}</label>
-        <span className="text-sm font-mono text-muted-foreground">{format(value)}</span>
+        <span className="text-sm font-mono text-muted-foreground">
+          {format(value)}
+        </span>
       </div>
       <input
         type="range"
@@ -420,7 +431,9 @@ function BreakEvenTimeline({ days }: { days: number }) {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h3 className="text-lg font-semibold text-foreground">Break-Even Timeline</h3>
+        <h3 className="text-lg font-semibold text-foreground">
+          Break-Even Timeline
+        </h3>
         <span className="text-sm font-medium text-brand-500">
           {isInfinite ? 'Never' : `${Math.ceil(days)} days`}
         </span>
@@ -434,7 +447,10 @@ function BreakEvenTimeline({ days }: { days: number }) {
         <div className="relative flex justify-between">
           {milestones.map((milestone, index) => {
             const isPast = !isInfinite && days <= milestone.days
-            const isBreakEven = !isInfinite && days <= milestone.days && (index === 0 || days > milestones[index - 1].days)
+            const isBreakEven =
+              !isInfinite &&
+              days <= milestone.days &&
+              (index === 0 || days > milestones[index - 1].days)
 
             return (
               <div key={milestone.label} className="flex flex-col items-center">
@@ -449,7 +465,9 @@ function BreakEvenTimeline({ days }: { days: number }) {
                 />
                 <span
                   className={`mt-2 text-xs ${
-                    isPast ? 'text-foreground font-medium' : 'text-muted-foreground'
+                    isPast
+                      ? 'text-foreground font-medium'
+                      : 'text-muted-foreground'
                   }`}
                 >
                   {milestone.label}
@@ -493,13 +511,27 @@ export const TokenROICalculator = React.memo(function TokenROICalculator({
   disableAnimations = false,
 }: TokenROICalculatorProps) {
   // State for interactive parameters
-  const [requestsPerDay, setRequestsPerDay] = React.useState(initialRequestsPerDay)
-  const [tokensPerRequest, setTokensPerRequest] = React.useState(initialTokensPerRequest)
-  const [costPerInputToken, setCostPerInputToken] = React.useState(initialCostPerInputToken)
-  const [costPerOutputToken, setCostPerOutputToken] = React.useState(initialCostPerOutputToken)
-  const [optimizationPercent, setOptimizationPercent] = React.useState(initialOptimizationPercent)
-  const [implementationCost, setImplementationCost] = React.useState(initialImplementationCost)
-  const [maintenanceCost, setMaintenanceCost] = React.useState(initialMaintenanceCost)
+  const [requestsPerDay, setRequestsPerDay] = React.useState(
+    initialRequestsPerDay
+  )
+  const [tokensPerRequest, setTokensPerRequest] = React.useState(
+    initialTokensPerRequest
+  )
+  const [costPerInputToken, setCostPerInputToken] = React.useState(
+    initialCostPerInputToken
+  )
+  const [costPerOutputToken, setCostPerOutputToken] = React.useState(
+    initialCostPerOutputToken
+  )
+  const [optimizationPercent, setOptimizationPercent] = React.useState(
+    initialOptimizationPercent
+  )
+  const [implementationCost, setImplementationCost] = React.useState(
+    initialImplementationCost
+  )
+  const [maintenanceCost, setMaintenanceCost] = React.useState(
+    initialMaintenanceCost
+  )
 
   // Calculate ROI results
   const results = React.useMemo(
@@ -548,8 +580,18 @@ export const TokenROICalculator = React.memo(function TokenROICalculator({
         <MetricCard
           icon={Calendar}
           label="Break-Even"
-          value={isFinite(results.breakEvenDays) ? `${Math.ceil(results.breakEvenDays)} days` : 'Never'}
-          color={results.breakEvenDays <= 90 ? 'green' : results.breakEvenDays <= 180 ? 'amber' : 'red'}
+          value={
+            isFinite(results.breakEvenDays)
+              ? `${Math.ceil(results.breakEvenDays)} days`
+              : 'Never'
+          }
+          color={
+            results.breakEvenDays <= 90
+              ? 'green'
+              : results.breakEvenDays <= 180
+                ? 'amber'
+                : 'red'
+          }
         />
         <MetricCard
           icon={Target}
@@ -639,7 +681,9 @@ export const TokenROICalculator = React.memo(function TokenROICalculator({
 
           <div className="space-y-4">
             <div>
-              <h4 className="text-sm font-medium text-foreground mb-3">Before Optimization</h4>
+              <h4 className="text-sm font-medium text-foreground mb-3">
+                Before Optimization
+              </h4>
               <div className="space-y-3">
                 <ProgressBar
                   label="Input Token Costs"
@@ -663,7 +707,9 @@ export const TokenROICalculator = React.memo(function TokenROICalculator({
             </div>
 
             <div className="border-t border-border pt-4">
-              <h4 className="text-sm font-medium text-foreground mb-3">After Optimization</h4>
+              <h4 className="text-sm font-medium text-foreground mb-3">
+                After Optimization
+              </h4>
               <div className="space-y-3">
                 <ProgressBar
                   label="Input Token Costs"
@@ -703,7 +749,9 @@ export const TokenROICalculator = React.memo(function TokenROICalculator({
             </div>
 
             <div className="flex items-center justify-between pt-4 border-t border-border">
-              <span className="text-lg font-semibold text-foreground">Annual Savings</span>
+              <span className="text-lg font-semibold text-foreground">
+                Annual Savings
+              </span>
               <span className="text-2xl font-bold text-green-500">
                 {formatCurrency(results.savingsPerYear)}
               </span>
@@ -767,8 +815,9 @@ export const TokenROICalculator = React.memo(function TokenROICalculator({
               Excellent ROI Potential
             </p>
             <p className="text-xs text-green-600 dark:text-green-400">
-              This optimization strategy will pay for itself in {Math.ceil(results.breakEvenDays)}{' '}
-              days and generate {formatCurrency(results.netBenefit)} in net annual benefit.
+              This optimization strategy will pay for itself in{' '}
+              {Math.ceil(results.breakEvenDays)} days and generate{' '}
+              {formatCurrency(results.netBenefit)} in net annual benefit.
             </p>
           </div>
         </div>

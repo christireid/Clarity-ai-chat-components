@@ -493,7 +493,7 @@ export function AgentTaskDashboard() {
       status: 'completed',
       agent: 'researcher',
       progress: 100,
-      duration: durations.slower,
+      duration: '15m',
       tokens: 12500,
       cost: 0.025,
       result: 'Identified 5 key trends in AI tooling market',

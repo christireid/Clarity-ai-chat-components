@@ -4,6 +4,7 @@
  */
 
 import { DURATION_SECONDS, EASING_FRAMER } from '../../../animations/constants'
+import { durations } from '../../../animations/zero-dependency'
 
 /**
  * Get content motion props based on reduced motion preference

@@ -31,6 +31,7 @@
 
 import * as React from 'react'
 import { motion } from 'framer-motion'
+import { durations } from '../../animations/zero-dependency'
 import { cn, useReducedMotion } from '@clarity-chat/primitives'
 import { DURATION_SECONDS, EASING_FRAMER } from '../../animations/constants'
 
@@ -46,7 +47,11 @@ export interface VirtualScrollerProps<T> {
   /** Item height (or width for horizontal) - can be number or function */
   itemHeight: number | ((item: T, index: number) => number)
   /** Render function for each item */
-  renderItem: (item: T, index: number, style: React.CSSProperties) => React.ReactNode
+  renderItem: (
+    item: T,
+    index: number,
+    style: React.CSSProperties
+  ) => React.ReactNode
   /** Container height (for vertical) or width (for horizontal) */
   height?: number | string
   /** Container width */
@@ -147,7 +152,8 @@ function VirtualScrollerInner<T>(
 
     for (let i = 0; i < items.length; i++) {
       offsets.push(total)
-      total += getItemSize(itemHeight, items[i], i) + (i < items.length - 1 ? gap : 0)
+      total +=
+        getItemSize(itemHeight, items[i], i) + (i < items.length - 1 ? gap : 0)
     }
 
     return { itemOffsets: offsets, totalSize: total }
@@ -199,7 +205,12 @@ function VirtualScrollerInner<T>(
 
   // Items to render
   const visibleItems = React.useMemo(() => {
-    const result: Array<{ item: T; index: number; offset: number; size: number }> = []
+    const result: Array<{
+      item: T
+      index: number
+      offset: number
+      size: number
+    }> = []
 
     for (let i = visibleRange.startIndex; i <= visibleRange.endIndex; i++) {
       if (i < items.length) {
@@ -267,7 +278,10 @@ function VirtualScrollerInner<T>(
           targetPosition = itemOffset
       }
 
-      targetPosition = Math.max(0, Math.min(targetPosition, totalSize - containerSize))
+      targetPosition = Math.max(
+        0,
+        Math.min(targetPosition, totalSize - containerSize)
+      )
 
       if (isVertical) {
         containerRef.current.scrollTop = targetPosition
@@ -393,7 +407,11 @@ function VirtualScrollerInner<T>(
           <motion.div
             className="virtual-scroller-spinner"
             animate={{ rotate: 360 }}
-            transition={{ duration: durations.slower, repeat: Infinity, ease: 'linear' }}
+            transition={{
+              duration: durations.slower,
+              repeat: Infinity,
+              ease: 'linear',
+            }}
           />
           <span>Loading more...</span>
         </motion.div>
@@ -508,12 +526,18 @@ export function useVirtualScroller<T>(
 // FixedSizeList - Simpler API for fixed-height items
 // ============================================================================
 
-export interface FixedSizeListProps<T> extends Omit<VirtualScrollerProps<T>, 'itemHeight'> {
+export interface FixedSizeListProps<T> extends Omit<
+  VirtualScrollerProps<T>,
+  'itemHeight'
+> {
   /** Fixed height for all items */
   itemSize: number
 }
 
-export function FixedSizeList<T>({ itemSize, ...props }: FixedSizeListProps<T>) {
+export function FixedSizeList<T>({
+  itemSize,
+  ...props
+}: FixedSizeListProps<T>) {
   return <VirtualScroller {...props} itemHeight={itemSize} />
 }
 
@@ -521,12 +545,18 @@ export function FixedSizeList<T>({ itemSize, ...props }: FixedSizeListProps<T>) 
 // VariableSizeList - Explicit API for variable-height items
 // ============================================================================
 
-export interface VariableSizeListProps<T> extends Omit<VirtualScrollerProps<T>, 'itemHeight'> {
+export interface VariableSizeListProps<T> extends Omit<
+  VirtualScrollerProps<T>,
+  'itemHeight'
+> {
   /** Function to get item size */
   getItemSize: (item: T, index: number) => number
 }
 
-export function VariableSizeList<T>({ getItemSize, ...props }: VariableSizeListProps<T>) {
+export function VariableSizeList<T>({
+  getItemSize,
+  ...props
+}: VariableSizeListProps<T>) {
   return <VirtualScroller {...props} itemHeight={getItemSize} />
 }
 

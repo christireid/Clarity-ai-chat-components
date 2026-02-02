@@ -31,6 +31,7 @@
 
 import * as React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { durations } from '../../animations/zero-dependency'
 import { cn, useReducedMotion } from '@clarity-chat/primitives'
 import { DURATION_SECONDS, EASING_FRAMER } from '../../animations/constants'
 
@@ -38,7 +39,13 @@ import { DURATION_SECONDS, EASING_FRAMER } from '../../animations/constants'
 // Types
 // ============================================================================
 
-export type OptionListVariant = 'list' | 'grid' | 'cards' | 'radio' | 'checkbox' | 'compact'
+export type OptionListVariant =
+  | 'list'
+  | 'grid'
+  | 'cards'
+  | 'radio'
+  | 'checkbox'
+  | 'compact'
 export type OptionListSize = 'sm' | 'md' | 'lg'
 
 export interface OptionItem {
@@ -105,13 +112,30 @@ export interface OptionListProps {
 // ============================================================================
 
 const CheckIcon = () => (
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+  <svg
+    width="16"
+    height="16"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2.5"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
     <polyline points="20 6 9 17 4 12" />
   </svg>
 )
 
 const SearchIcon = () => (
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+  <svg
+    width="16"
+    height="16"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+  >
     <circle cx="11" cy="11" r="8" />
     <line x1="21" y1="21" x2="16.65" y2="16.65" />
   </svg>
@@ -162,16 +186,26 @@ function OptionItemComponent({
       aria-checked={isSelected}
       aria-disabled={option.disabled}
       tabIndex={option.disabled ? -1 : 0}
-      whileHover={!option.disabled && !prefersReducedMotion ? { scale: 1.01 } : {}}
-      whileTap={!option.disabled && !prefersReducedMotion ? { scale: 0.99 } : {}}
+      whileHover={
+        !option.disabled && !prefersReducedMotion ? { scale: 1.01 } : {}
+      }
+      whileTap={
+        !option.disabled && !prefersReducedMotion ? { scale: 0.99 } : {}
+      }
       layout={!prefersReducedMotion}
     >
       {/* Selection indicator */}
-      {(variant === 'radio' || variant === 'checkbox' || variant === 'list') && (
-        <div className={cn(
-          'option-list-indicator',
-          multiple ? 'option-list-indicator-checkbox' : 'option-list-indicator-radio'
-        )}>
+      {(variant === 'radio' ||
+        variant === 'checkbox' ||
+        variant === 'list') && (
+        <div
+          className={cn(
+            'option-list-indicator',
+            multiple
+              ? 'option-list-indicator-checkbox'
+              : 'option-list-indicator-radio'
+          )}
+        >
           <AnimatePresence>
             {isSelected && (
               <motion.span
@@ -189,9 +223,7 @@ function OptionItemComponent({
       )}
 
       {/* Icon */}
-      {option.icon && (
-        <div className="option-list-icon">{option.icon}</div>
-      )}
+      {option.icon && <div className="option-list-icon">{option.icon}</div>}
 
       {/* Content */}
       <div className="option-list-content">
@@ -204,9 +236,7 @@ function OptionItemComponent({
         {option.description && (
           <span className="option-list-description">{option.description}</span>
         )}
-        {option.meta && (
-          <span className="option-list-meta">{option.meta}</span>
-        )}
+        {option.meta && <span className="option-list-meta">{option.meta}</span>}
       </div>
 
       {/* Selected check for card variant */}
@@ -335,7 +365,9 @@ export function OptionList({
   // Focus management
   React.useEffect(() => {
     if (focusedIndex >= 0 && listRef.current) {
-      const items = listRef.current.querySelectorAll('[role="radio"], [role="checkbox"]')
+      const items = listRef.current.querySelectorAll(
+        '[role="radio"], [role="checkbox"]'
+      )
       const item = items[focusedIndex] as HTMLElement
       item?.focus()
     }
@@ -355,7 +387,12 @@ export function OptionList({
 
   return (
     <motion.div
-      className={cn('option-list', `option-list-${variant}`, `option-list-${size}`, className)}
+      className={cn(
+        'option-list',
+        `option-list-${variant}`,
+        `option-list-${size}`,
+        className
+      )}
       initial={prefersReducedMotion ? {} : { opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{
@@ -387,7 +424,11 @@ export function OptionList({
           <motion.div
             className="option-list-spinner"
             animate={{ rotate: 360 }}
-            transition={{ duration: durations.slower, repeat: Infinity, ease: 'linear' }}
+            transition={{
+              duration: durations.slower,
+              repeat: Infinity,
+              ease: 'linear',
+            }}
           />
           <span>Loading options...</span>
         </div>
@@ -494,10 +535,13 @@ export interface UseOptionListReturn {
   isSelected: (id: string) => boolean
 }
 
-export function useOptionList(options: UseOptionListOptions = {}): UseOptionListReturn {
+export function useOptionList(
+  options: UseOptionListOptions = {}
+): UseOptionListReturn {
   const { initialOptions = [], initialValue, multiple = false } = options
 
-  const [optionsList, setOptionsList] = React.useState<OptionItem[]>(initialOptions)
+  const [optionsList, setOptionsList] =
+    React.useState<OptionItem[]>(initialOptions)
   const [value, setValue] = React.useState<string | string[]>(
     initialValue ?? (multiple ? [] : '')
   )
@@ -521,22 +565,28 @@ export function useOptionList(options: UseOptionListOptions = {}): UseOptionList
     })
   }, [])
 
-  const updateOption = React.useCallback((id: string, updates: Partial<OptionItem>) => {
-    setOptionsList((prev) =>
-      prev.map((o) => (o.id === id ? { ...o, ...updates } : o))
-    )
-  }, [])
+  const updateOption = React.useCallback(
+    (id: string, updates: Partial<OptionItem>) => {
+      setOptionsList((prev) =>
+        prev.map((o) => (o.id === id ? { ...o, ...updates } : o))
+      )
+    },
+    []
+  )
 
-  const select = React.useCallback((id: string) => {
-    if (multiple) {
-      setValue((prev) => {
-        const arr = Array.isArray(prev) ? prev : [prev].filter(Boolean)
-        return arr.includes(id) ? arr : [...arr, id]
-      })
-    } else {
-      setValue(id)
-    }
-  }, [multiple])
+  const select = React.useCallback(
+    (id: string) => {
+      if (multiple) {
+        setValue((prev) => {
+          const arr = Array.isArray(prev) ? prev : [prev].filter(Boolean)
+          return arr.includes(id) ? arr : [...arr, id]
+        })
+      } else {
+        setValue(id)
+      }
+    },
+    [multiple]
+  )
 
   const deselect = React.useCallback((id: string) => {
     setValue((prev) => {
@@ -547,13 +597,16 @@ export function useOptionList(options: UseOptionListOptions = {}): UseOptionList
     })
   }, [])
 
-  const toggle = React.useCallback((id: string) => {
-    if (selectedValues.includes(id)) {
-      deselect(id)
-    } else {
-      select(id)
-    }
-  }, [selectedValues, select, deselect])
+  const toggle = React.useCallback(
+    (id: string) => {
+      if (selectedValues.includes(id)) {
+        deselect(id)
+      } else {
+        select(id)
+      }
+    },
+    [selectedValues, select, deselect]
+  )
 
   const selectAll = React.useCallback(() => {
     if (multiple) {

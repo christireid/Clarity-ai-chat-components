@@ -28,6 +28,7 @@
 
 import * as React from 'react'
 import { motion } from 'framer-motion'
+import { durations } from '../../animations/zero-dependency'
 import { cn, useReducedMotion } from '@clarity-chat/primitives'
 import { DURATION_SECONDS, EASING_FRAMER } from '../../animations/constants'
 
@@ -35,7 +36,11 @@ import { DURATION_SECONDS, EASING_FRAMER } from '../../animations/constants'
 // Types
 // ============================================================================
 
-export type ResponseActionsVariant = 'inline' | 'toolbar' | 'floating' | 'minimal'
+export type ResponseActionsVariant =
+  | 'inline'
+  | 'toolbar'
+  | 'floating'
+  | 'minimal'
 export type ResponseActionsSize = 'sm' | 'md' | 'lg'
 
 export interface ResponseAction {
@@ -97,20 +102,47 @@ export interface ResponseActionsProps {
 // ============================================================================
 
 const CopyIcon = () => (
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+  <svg
+    width="16"
+    height="16"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
     <rect x="9" y="9" width="13" height="13" rx="2" />
     <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
   </svg>
 )
 
 const CheckIcon = () => (
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+  <svg
+    width="16"
+    height="16"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
     <polyline points="20 6 9 17 4 12" />
   </svg>
 )
 
 const RefreshIcon = () => (
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+  <svg
+    width="16"
+    height="16"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
     <path d="M21 2v6h-6" />
     <path d="M3 12a9 9 0 0 1 15-6.7L21 8" />
     <path d="M3 22v-6h6" />
@@ -119,14 +151,32 @@ const RefreshIcon = () => (
 )
 
 const ThumbsUpIcon = ({ filled = false }: { filled?: boolean }) => (
-  <svg width="16" height="16" viewBox="0 0 24 24" fill={filled ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+  <svg
+    width="16"
+    height="16"
+    viewBox="0 0 24 24"
+    fill={filled ? 'currentColor' : 'none'}
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
     <path d="M7 10v12" />
     <path d="M15 5.88 14 10h5.83a2 2 0 0 1 1.92 2.56l-2.33 8A2 2 0 0 1 17.5 22H4a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h2.76a2 2 0 0 0 1.79-1.11L12 2h0a3.13 3.13 0 0 1 3 3.88Z" />
   </svg>
 )
 
 const ThumbsDownIcon = ({ filled = false }: { filled?: boolean }) => (
-  <svg width="16" height="16" viewBox="0 0 24 24" fill={filled ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+  <svg
+    width="16"
+    height="16"
+    viewBox="0 0 24 24"
+    fill={filled ? 'currentColor' : 'none'}
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
     <path d="M17 14V2" />
     <path d="M9 18.12 10 14H4.17a2 2 0 0 1-1.92-2.56l2.33-8A2 2 0 0 1 6.5 2H20a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-2.76a2 2 0 0 0-1.79 1.11L12 22h0a3.13 3.13 0 0 1-3-3.88Z" />
   </svg>
@@ -165,16 +215,31 @@ function ActionButton({ action, size, variant }: ActionButtonProps) {
       disabled={action.isDisabled || action.isLoading}
       title={action.tooltip || action.label}
       aria-label={action.label}
-      whileHover={!action.isDisabled && !prefersReducedMotion ? { scale: 1.1 } : {}}
-      whileTap={!action.isDisabled && !prefersReducedMotion ? { scale: 0.95 } : {}}
+      whileHover={
+        !action.isDisabled && !prefersReducedMotion ? { scale: 1.1 } : {}
+      }
+      whileTap={
+        !action.isDisabled && !prefersReducedMotion ? { scale: 0.95 } : {}
+      }
     >
       {action.isLoading ? (
         <motion.span
           className="response-action-spinner"
           animate={{ rotate: 360 }}
-          transition={{ duration: durations.slower, repeat: Infinity, ease: 'linear' }}
+          transition={{
+            duration: durations.slower,
+            repeat: Infinity,
+            ease: 'linear',
+          }}
         >
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <svg
+            width="14"
+            height="14"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+          >
             <circle cx="12" cy="12" r="10" opacity="0.25" />
             <path d="M12 2a10 10 0 0 1 10 10" />
           </svg>
@@ -266,7 +331,19 @@ export function ResponseActions({
     }
 
     return actions
-  }, [showCopy, showRegenerate, showLike, showDislike, onCopy, onRegenerate, onLike, onDislike, feedback, copied, isRegenerating])
+  }, [
+    showCopy,
+    showRegenerate,
+    showLike,
+    showDislike,
+    onCopy,
+    onRegenerate,
+    onLike,
+    onDislike,
+    feedback,
+    copied,
+    isRegenerating,
+  ])
 
   const actions = customActions || defaultActions
 
@@ -331,10 +408,14 @@ export interface UseResponseActionsReturn {
   handleDislike: () => void
 }
 
-export function useResponseActions(options: UseResponseActionsOptions = {}): UseResponseActionsReturn {
+export function useResponseActions(
+  options: UseResponseActionsOptions = {}
+): UseResponseActionsReturn {
   const { content, onRegenerate, onFeedback } = options
   const [copied, setCopied] = React.useState(false)
-  const [feedback, setFeedback] = React.useState<'like' | 'dislike' | null>(null)
+  const [feedback, setFeedback] = React.useState<'like' | 'dislike' | null>(
+    null
+  )
   const [isRegenerating, setIsRegenerating] = React.useState(false)
 
   const handleCopy = React.useCallback(async () => {

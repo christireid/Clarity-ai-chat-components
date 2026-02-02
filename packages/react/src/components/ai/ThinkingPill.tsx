@@ -33,6 +33,7 @@
 
 import * as React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { durations } from '../../animations/zero-dependency'
 import { cn, useReducedMotion } from '@clarity-chat/primitives'
 import { DURATION_SECONDS, EASING_FRAMER } from '../../animations/constants'
 
@@ -85,13 +86,16 @@ export interface ThinkingPillProps {
 /**
  * Size configurations
  */
-const SIZE_CONFIG: Record<ThinkingPillSize, {
-  container: string
-  text: string
-  dot: string
-  icon: string
-  stopBtn: string
-}> = {
+const SIZE_CONFIG: Record<
+  ThinkingPillSize,
+  {
+    container: string
+    text: string
+    dot: string
+    icon: string
+    stopBtn: string
+  }
+> = {
   sm: {
     container: 'px-2.5 py-1.5 gap-1.5',
     text: 'text-xs',
@@ -186,19 +190,12 @@ const StopButton = React.memo(function StopButton({
     <motion.button
       type="button"
       onClick={onClick}
-      className={cn(
-        'thinking-bar-stop',
-        size
-      )}
+      className={cn('thinking-bar-stop', size)}
       whileHover={prefersReducedMotion ? {} : { scale: 1.1 }}
       whileTap={prefersReducedMotion ? {} : { scale: 0.95 }}
       aria-label="Stop generation"
     >
-      <svg
-        viewBox="0 0 24 24"
-        fill="currentColor"
-        className="w-2.5 h-2.5"
-      >
+      <svg viewBox="0 0 24 24" fill="currentColor" className="w-2.5 h-2.5">
         <rect x="6" y="6" width="12" height="12" rx="1" />
       </svg>
     </motion.button>
@@ -210,7 +207,11 @@ StopButton.displayName = 'StopButton'
 /**
  * Brain/thinking icon
  */
-const BrainIcon = React.memo(function BrainIcon({ className }: { className?: string }) {
+const BrainIcon = React.memo(function BrainIcon({
+  className,
+}: {
+  className?: string
+}) {
   return (
     <svg
       viewBox="0 0 24 24"
@@ -263,9 +264,8 @@ export function ThinkingPill({
   const variantClass = VARIANT_CONFIG[variant]
 
   // Determine text class based on shimmer preference
-  const textClass = showShimmer && !prefersReducedMotion
-    ? 'thinking-bar-text'
-    : sizeConfig.text
+  const textClass =
+    showShimmer && !prefersReducedMotion ? 'thinking-bar-text' : sizeConfig.text
 
   return (
     <AnimatePresence>
@@ -274,9 +274,15 @@ export function ThinkingPill({
           role="status"
           aria-live="polite"
           aria-label={ariaLabel || `${message}...`}
-          initial={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, scale: 0.95 }}
-          animate={prefersReducedMotion ? { opacity: 1 } : { opacity: 1, scale: 1 }}
-          exit={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, scale: 0.95 }}
+          initial={
+            prefersReducedMotion ? { opacity: 0 } : { opacity: 0, scale: 0.95 }
+          }
+          animate={
+            prefersReducedMotion ? { opacity: 1 } : { opacity: 1, scale: 1 }
+          }
+          exit={
+            prefersReducedMotion ? { opacity: 0 } : { opacity: 0, scale: 0.95 }
+          }
           transition={{
             duration: prefersReducedMotion ? 0.1 : DURATION_SECONDS.fast,
             ease: EASING_FRAMER.out,
@@ -304,9 +310,7 @@ export function ThinkingPill({
           )}
 
           {/* Message text */}
-          <span className={cn(textClass, 'text-foreground')}>
-            {message}
-          </span>
+          <span className={cn(textClass, 'text-foreground')}>{message}</span>
 
           {/* Animated dots */}
           {showDots && (
@@ -405,19 +409,22 @@ export function useThinkingPill({
     }
   }, [])
 
-  const show = React.useCallback((newMessage?: string) => {
-    clearTimeoutRef()
-    if (newMessage) {
-      setMessage(newMessage)
-    }
-    setVisible(true)
+  const show = React.useCallback(
+    (newMessage?: string) => {
+      clearTimeoutRef()
+      if (newMessage) {
+        setMessage(newMessage)
+      }
+      setVisible(true)
 
-    if (autoHideAfter) {
-      timeoutRef.current = setTimeout(() => {
-        setVisible(false)
-      }, autoHideAfter)
-    }
-  }, [autoHideAfter, clearTimeoutRef])
+      if (autoHideAfter) {
+        timeoutRef.current = setTimeout(() => {
+          setVisible(false)
+        }, autoHideAfter)
+      }
+    },
+    [autoHideAfter, clearTimeoutRef]
+  )
 
   const hide = React.useCallback(() => {
     clearTimeoutRef()
