@@ -14,14 +14,14 @@
     "@clarity-chat/react": "workspace:*",
     "@clarity-chat/primitives": "workspace:*",
     "@clarity-chat/types": "workspace:*",
-    "next": "^16.0.9",
-    "react": "^19.2.0",
-    "react-dom": "^19.2.0"
+    "next": "^16.1.6",
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4"
   },
   "devDependencies": {
     "@types/node": "^20.11.0",
-    "@types/react": "^19.0.0",
-    "@types/react-dom": "^19.0.0",
+    "@types/react": "^19.2.10",
+    "@types/react-dom": "^19.2.3",
     "autoprefixer": "^10.4.16",
     "postcss": "^8.4.32",
     "tailwindcss": "^3.4.0",
