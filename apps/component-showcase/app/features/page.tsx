@@ -3155,6 +3155,653 @@ function ConversationManagerDemo() {
 }
 
 // ============================================================================
+// DEV TOOLS DEMOS
+// ============================================================================
+function DevToolsDashboardDemo() {
+  const [activeTab, setActiveTab] = useState('api')
+
+  return (
+    <Card>
+      <CardHeader className="pb-3">
+        <div className="flex items-center justify-between">
+          <CardTitle className="text-lg flex items-center gap-2">
+            <Settings className="h-5 w-5" />
+            Dev Tools Dashboard
+          </CardTitle>
+          <Badge className="bg-green-500/20 text-green-600">Connected</Badge>
+        </div>
+      </CardHeader>
+      <CardContent>
+        <Tabs value={activeTab} onValueChange={setActiveTab}>
+          <TabsList className="w-full justify-start mb-4">
+            <TabsTrigger value="api">API</TabsTrigger>
+            <TabsTrigger value="perf">Performance</TabsTrigger>
+            <TabsTrigger value="state">State</TabsTrigger>
+            <TabsTrigger value="models">Models</TabsTrigger>
+          </TabsList>
+          <TabsContent value="api" className="space-y-2">
+            <div className="p-3 bg-muted rounded-lg">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <div className="w-2 h-2 rounded-full bg-green-500" />
+                  <span className="font-mono text-sm">POST /api/chat</span>
+                </div>
+                <Badge variant="outline">200 OK</Badge>
+              </div>
+              <div className="flex gap-4 mt-2 text-xs text-muted-foreground">
+                <span>234ms</span>
+                <span>2.1KB</span>
+              </div>
+            </div>
+            <div className="p-3 bg-muted rounded-lg">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <div className="w-2 h-2 rounded-full bg-green-500" />
+                  <span className="font-mono text-sm">GET /api/models</span>
+                </div>
+                <Badge variant="outline">200 OK</Badge>
+              </div>
+              <div className="flex gap-4 mt-2 text-xs text-muted-foreground">
+                <span>45ms</span>
+                <span>512B</span>
+              </div>
+            </div>
+          </TabsContent>
+          <TabsContent
+            value="perf"
+            className="text-center py-8 text-muted-foreground"
+          >
+            Performance metrics panel
+          </TabsContent>
+          <TabsContent
+            value="state"
+            className="text-center py-8 text-muted-foreground"
+          >
+            State time travel panel
+          </TabsContent>
+          <TabsContent
+            value="models"
+            className="text-center py-8 text-muted-foreground"
+          >
+            Model comparison panel
+          </TabsContent>
+        </Tabs>
+      </CardContent>
+    </Card>
+  )
+}
+
+function APIInspectorDemo() {
+  const requests = [
+    {
+      id: 1,
+      method: 'POST',
+      endpoint: '/api/chat',
+      status: 200,
+      time: '234ms',
+      size: '2.1KB',
+    },
+    {
+      id: 2,
+      method: 'GET',
+      endpoint: '/api/models',
+      status: 200,
+      time: '45ms',
+      size: '512B',
+    },
+    {
+      id: 3,
+      method: 'POST',
+      endpoint: '/api/stream',
+      status: 200,
+      time: '1.2s',
+      size: '15KB',
+    },
+  ]
+
+  return (
+    <Card>
+      <CardHeader className="pb-3">
+        <div className="flex items-center justify-between">
+          <CardTitle className="text-sm">API Inspector</CardTitle>
+          <div className="flex items-center gap-2">
+            <Badge variant="outline" className="text-xs">
+              3 requests
+            </Badge>
+            <Button variant="ghost" size="icon" className="h-7 w-7">
+              <Trash2 className="h-3.5 w-3.5" />
+            </Button>
+          </div>
+        </div>
+      </CardHeader>
+      <CardContent className="space-y-2">
+        {requests.map((req) => (
+          <div
+            key={req.id}
+            className="flex items-center gap-3 p-2 bg-muted rounded-lg text-sm"
+          >
+            <Badge
+              className={cn(
+                'font-mono text-xs',
+                req.method === 'POST'
+                  ? 'bg-blue-500/20 text-blue-600'
+                  : 'bg-green-500/20 text-green-600'
+              )}
+            >
+              {req.method}
+            </Badge>
+            <span className="font-mono flex-1 truncate">{req.endpoint}</span>
+            <Badge variant="outline">{req.status}</Badge>
+            <span className="text-muted-foreground text-xs">{req.time}</span>
+          </div>
+        ))}
+      </CardContent>
+    </Card>
+  )
+}
+
+function ProfilerPanelDemo() {
+  const metrics = [
+    { name: 'Render Time', value: '12.3ms', trend: 'down' },
+    { name: 'Re-renders', value: '3', trend: 'neutral' },
+    { name: 'Memory', value: '45MB', trend: 'up' },
+    { name: 'FPS', value: '60', trend: 'neutral' },
+  ]
+
+  return (
+    <Card>
+      <CardHeader className="pb-3">
+        <div className="flex items-center justify-between">
+          <CardTitle className="text-sm">Performance Profiler</CardTitle>
+          <Button variant="outline" size="sm" className="gap-2">
+            <Activity className="h-3.5 w-3.5" />
+            Record
+          </Button>
+        </div>
+      </CardHeader>
+      <CardContent>
+        <div className="grid grid-cols-2 gap-3">
+          {metrics.map((metric) => (
+            <div key={metric.name} className="p-3 bg-muted rounded-lg">
+              <p className="text-xs text-muted-foreground">{metric.name}</p>
+              <div className="flex items-center gap-2 mt-1">
+                <p className="text-lg font-bold">{metric.value}</p>
+                {metric.trend === 'down' && (
+                  <TrendingUp className="h-4 w-4 text-green-500 rotate-180" />
+                )}
+                {metric.trend === 'up' && (
+                  <TrendingUp className="h-4 w-4 text-red-500" />
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
+      </CardContent>
+    </Card>
+  )
+}
+
+function TimeTravelDemo() {
+  const [currentIndex, setCurrentIndex] = useState(3)
+  const states = [
+    { id: 0, action: 'INIT', time: '0:00' },
+    { id: 1, action: 'SET_MESSAGE', time: '0:02' },
+    { id: 2, action: 'SEND_REQUEST', time: '0:03' },
+    { id: 3, action: 'RECEIVE_RESPONSE', time: '0:05' },
+  ]
+
+  return (
+    <Card>
+      <CardHeader className="pb-3">
+        <div className="flex items-center justify-between">
+          <CardTitle className="text-sm">State Time Travel</CardTitle>
+          <div className="flex items-center gap-1">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-7 w-7"
+              onClick={() => setCurrentIndex(Math.max(0, currentIndex - 1))}
+            >
+              <SkipBack className="h-3.5 w-3.5" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-7 w-7"
+              onClick={() =>
+                setCurrentIndex(Math.min(states.length - 1, currentIndex + 1))
+              }
+            >
+              <SkipForward className="h-3.5 w-3.5" />
+            </Button>
+          </div>
+        </div>
+      </CardHeader>
+      <CardContent className="space-y-2">
+        {states.map((state, i) => (
+          <button
+            key={state.id}
+            onClick={() => setCurrentIndex(i)}
+            className={cn(
+              'w-full flex items-center gap-3 p-2 rounded-lg text-sm text-left transition-colors',
+              i === currentIndex
+                ? 'bg-primary/10 border border-primary/30'
+                : 'hover:bg-muted'
+            )}
+          >
+            <span className="w-6 h-6 rounded-full bg-muted flex items-center justify-center text-xs font-mono">
+              {i}
+            </span>
+            <span className="flex-1 font-mono">{state.action}</span>
+            <span className="text-xs text-muted-foreground">{state.time}</span>
+          </button>
+        ))}
+      </CardContent>
+    </Card>
+  )
+}
+
+function ModelComparisonDemo() {
+  const models = [
+    { name: 'GPT-4o', cost: '$0.005', latency: '234ms', quality: 95 },
+    { name: 'Claude 3.5', cost: '$0.003', latency: '198ms', quality: 97 },
+    { name: 'GPT-4o-mini', cost: '$0.0001', latency: '89ms', quality: 85 },
+  ]
+
+  return (
+    <Card>
+      <CardHeader className="pb-3">
+        <CardTitle className="text-sm">Model Comparison</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="space-y-3">
+          {models.map((model, i) => (
+            <div
+              key={model.name}
+              className={cn(
+                'p-3 rounded-lg border',
+                i === 0 && 'border-primary bg-primary/5'
+              )}
+            >
+              <div className="flex items-center justify-between mb-2">
+                <span className="font-medium">{model.name}</span>
+                {i === 0 && <Badge>Best Value</Badge>}
+              </div>
+              <div className="grid grid-cols-3 gap-4 text-xs">
+                <div>
+                  <p className="text-muted-foreground">Cost</p>
+                  <p className="font-mono">{model.cost}</p>
+                </div>
+                <div>
+                  <p className="text-muted-foreground">Latency</p>
+                  <p className="font-mono">{model.latency}</p>
+                </div>
+                <div>
+                  <p className="text-muted-foreground">Quality</p>
+                  <p className="font-mono">{model.quality}%</p>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </CardContent>
+    </Card>
+  )
+}
+
+// ============================================================================
+// ERROR HANDLING DEMOS
+// ============================================================================
+function ErrorDisplayDemo() {
+  const errors = [
+    {
+      severity: 'error',
+      title: 'Connection Failed',
+      message: 'Unable to reach the API server',
+      icon: AlertCircle,
+    },
+    {
+      severity: 'warning',
+      title: 'Rate Limited',
+      message: 'Too many requests. Retry in 30s',
+      icon: AlertTriangle,
+    },
+    {
+      severity: 'info',
+      title: 'Maintenance',
+      message: 'Scheduled downtime at 2:00 AM',
+      icon: Info,
+    },
+  ]
+
+  return (
+    <Card>
+      <CardHeader className="pb-3">
+        <CardTitle className="text-lg">Error Display Variants</CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-3">
+        {errors.map((error, i) => (
+          <div
+            key={i}
+            className={cn(
+              'flex items-start gap-3 p-4 rounded-lg border',
+              error.severity === 'error' && 'bg-red-500/10 border-red-500/30',
+              error.severity === 'warning' &&
+                'bg-yellow-500/10 border-yellow-500/30',
+              error.severity === 'info' && 'bg-blue-500/10 border-blue-500/30'
+            )}
+          >
+            <error.icon
+              className={cn(
+                'h-5 w-5 shrink-0',
+                error.severity === 'error' && 'text-red-500',
+                error.severity === 'warning' && 'text-yellow-500',
+                error.severity === 'info' && 'text-blue-500'
+              )}
+            />
+            <div className="flex-1">
+              <p className="font-medium">{error.title}</p>
+              <p className="text-sm text-muted-foreground mt-0.5">
+                {error.message}
+              </p>
+            </div>
+            <Button variant="ghost" size="icon" className="h-7 w-7">
+              <X className="h-4 w-4" />
+            </Button>
+          </div>
+        ))}
+      </CardContent>
+    </Card>
+  )
+}
+
+function ErrorBoundaryDemo() {
+  const [hasError, setHasError] = useState(false)
+
+  return (
+    <Card>
+      <CardHeader className="pb-3">
+        <CardTitle className="text-sm">Error Boundary</CardTitle>
+      </CardHeader>
+      <CardContent>
+        {hasError ? (
+          <div className="p-6 bg-red-500/10 border border-red-500/30 rounded-lg text-center">
+            <AlertCircle className="h-10 w-10 text-red-500 mx-auto mb-3" />
+            <p className="font-medium text-red-600">Something went wrong</p>
+            <p className="text-sm text-muted-foreground mt-1">
+              An unexpected error occurred
+            </p>
+            <Button
+              variant="outline"
+              size="sm"
+              className="mt-4 gap-2"
+              onClick={() => setHasError(false)}
+            >
+              <RotateCw className="h-4 w-4" />
+              Try Again
+            </Button>
+          </div>
+        ) : (
+          <div className="p-6 border rounded-lg text-center">
+            <p className="text-sm text-muted-foreground mb-4">
+              Click to simulate an error
+            </p>
+            <Button
+              variant="destructive"
+              size="sm"
+              onClick={() => setHasError(true)}
+            >
+              Trigger Error
+            </Button>
+          </div>
+        )}
+      </CardContent>
+    </Card>
+  )
+}
+
+function RetryCountdownDemo() {
+  const [isRetrying, setIsRetrying] = useState(false)
+  const [countdown, setCountdown] = useState(5)
+  const [attempt, setAttempt] = useState(0)
+
+  const startRetry = () => {
+    setIsRetrying(true)
+    setCountdown(5)
+    setAttempt(1)
+
+    const interval = setInterval(() => {
+      setCountdown((prev) => {
+        if (prev <= 1) {
+          clearInterval(interval)
+          setIsRetrying(false)
+          return 0
+        }
+        return prev - 1
+      })
+    }, 1000)
+  }
+
+  return (
+    <Card>
+      <CardHeader className="pb-3">
+        <CardTitle className="text-sm">Retry Countdown</CardTitle>
+      </CardHeader>
+      <CardContent>
+        {isRetrying ? (
+          <div className="p-4 bg-yellow-500/10 border border-yellow-500/30 rounded-lg text-center">
+            <div className="w-16 h-16 rounded-full border-4 border-yellow-500/30 flex items-center justify-center mx-auto mb-3">
+              <span className="text-2xl font-bold text-yellow-600">
+                {countdown}
+              </span>
+            </div>
+            <p className="text-sm font-medium">Retrying in {countdown}s</p>
+            <p className="text-xs text-muted-foreground mt-1">
+              Attempt {attempt} of 3
+            </p>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="mt-3"
+              onClick={() => setIsRetrying(false)}
+            >
+              Cancel
+            </Button>
+          </div>
+        ) : (
+          <div className="p-4 border rounded-lg text-center">
+            <p className="text-sm text-muted-foreground mb-4">
+              Simulate retry with countdown
+            </p>
+            <Button size="sm" onClick={startRetry} className="gap-2">
+              <RotateCw className="h-4 w-4" />
+              Start Retry
+            </Button>
+          </div>
+        )}
+      </CardContent>
+    </Card>
+  )
+}
+
+function CircuitBreakerDemo() {
+  const [state, setState] = useState<'closed' | 'open' | 'half-open'>('closed')
+  const [failures, setFailures] = useState(0)
+
+  const simulateRequest = () => {
+    if (state === 'open') return
+
+    const willFail = Math.random() > 0.5
+    if (willFail) {
+      setFailures((prev) => {
+        const newFailures = prev + 1
+        if (newFailures >= 3) {
+          setState('open')
+          setTimeout(() => setState('half-open'), 3000)
+        }
+        return newFailures
+      })
+    } else {
+      setFailures(0)
+      setState('closed')
+    }
+  }
+
+  return (
+    <Card>
+      <CardHeader className="pb-3">
+        <div className="flex items-center justify-between">
+          <CardTitle className="text-sm">Circuit Breaker</CardTitle>
+          <Badge
+            className={cn(
+              state === 'closed' && 'bg-green-500/20 text-green-600',
+              state === 'open' && 'bg-red-500/20 text-red-600',
+              state === 'half-open' && 'bg-yellow-500/20 text-yellow-600'
+            )}
+          >
+            {state.toUpperCase()}
+          </Badge>
+        </div>
+      </CardHeader>
+      <CardContent>
+        <div className="space-y-4">
+          <div className="flex items-center justify-between p-3 bg-muted rounded-lg">
+            <span className="text-sm">Failures</span>
+            <span className="font-mono">{failures} / 3</span>
+          </div>
+          <div className="flex items-center gap-3">
+            <div
+              className={cn(
+                'w-4 h-4 rounded-full',
+                state === 'closed' && 'bg-green-500',
+                state === 'open' && 'bg-red-500',
+                state === 'half-open' && 'bg-yellow-500 animate-pulse'
+              )}
+            />
+            <p className="text-sm">
+              {state === 'closed' && 'Accepting requests'}
+              {state === 'open' && 'Rejecting all requests'}
+              {state === 'half-open' && 'Testing connection...'}
+            </p>
+          </div>
+          <Button
+            size="sm"
+            className="w-full"
+            disabled={state === 'open'}
+            onClick={simulateRequest}
+          >
+            Simulate Request
+          </Button>
+          {state !== 'closed' && (
+            <Button
+              variant="outline"
+              size="sm"
+              className="w-full"
+              onClick={() => {
+                setState('closed')
+                setFailures(0)
+              }}
+            >
+              Reset
+            </Button>
+          )}
+        </div>
+      </CardContent>
+    </Card>
+  )
+}
+
+function ErrorToastDemo() {
+  const [toasts, setToasts] = useState<
+    Array<{ id: number; message: string; type: string }>
+  >([])
+
+  const addToast = (type: string) => {
+    const messages = {
+      error: 'Failed to save changes',
+      warning: 'Your session will expire soon',
+      success: 'Changes saved successfully',
+    }
+    const id = Date.now()
+    setToasts((prev) => [
+      ...prev,
+      { id, message: messages[type as keyof typeof messages], type },
+    ])
+    setTimeout(() => setToasts((prev) => prev.filter((t) => t.id !== id)), 3000)
+  }
+
+  return (
+    <Card>
+      <CardHeader className="pb-3">
+        <CardTitle className="text-sm">Error Toast</CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <div className="flex gap-2">
+          <Button
+            size="sm"
+            variant="destructive"
+            onClick={() => addToast('error')}
+          >
+            Error
+          </Button>
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={() => addToast('warning')}
+          >
+            Warning
+          </Button>
+          <Button
+            size="sm"
+            variant="default"
+            onClick={() => addToast('success')}
+          >
+            Success
+          </Button>
+        </div>
+        <div className="space-y-2 min-h-[100px]">
+          {toasts.map((toast) => (
+            <div
+              key={toast.id}
+              className={cn(
+                'flex items-center gap-3 p-3 rounded-lg animate-in slide-in-from-right',
+                toast.type === 'error' &&
+                  'bg-red-500/10 border border-red-500/30',
+                toast.type === 'warning' &&
+                  'bg-yellow-500/10 border border-yellow-500/30',
+                toast.type === 'success' &&
+                  'bg-green-500/10 border border-green-500/30'
+              )}
+            >
+              {toast.type === 'error' && (
+                <AlertCircle className="h-4 w-4 text-red-500" />
+              )}
+              {toast.type === 'warning' && (
+                <AlertTriangle className="h-4 w-4 text-yellow-500" />
+              )}
+              {toast.type === 'success' && (
+                <CheckCircle className="h-4 w-4 text-green-500" />
+              )}
+              <span className="text-sm flex-1">{toast.message}</span>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-6 w-6"
+                onClick={() =>
+                  setToasts((prev) => prev.filter((t) => t.id !== toast.id))
+                }
+              >
+                <X className="h-3 w-3" />
+              </Button>
+            </div>
+          ))}
+        </div>
+      </CardContent>
+    </Card>
+  )
+}
+
+// ============================================================================
 // MAIN PAGE
 // ============================================================================
 export default function FeaturesPage() {
@@ -3193,6 +3840,12 @@ export default function FeaturesPage() {
           </TabsTrigger>
           <TabsTrigger value="tools" className="rounded-lg">
             Tools & Search
+          </TabsTrigger>
+          <TabsTrigger value="devtools" className="rounded-lg">
+            Dev Tools
+          </TabsTrigger>
+          <TabsTrigger value="errors" className="rounded-lg">
+            Error Handling
           </TabsTrigger>
         </TabsList>
 
@@ -3612,6 +4265,88 @@ export default function FeaturesPage() {
           >
             <SortableListDemo />
           </ComponentSection>
+        </TabsContent>
+
+        <TabsContent value="devtools" className="space-y-8">
+          <ComponentSection
+            title="Developer Tools Dashboard"
+            description="Comprehensive debugging and profiling tools"
+          >
+            <DevToolsDashboardDemo />
+          </ComponentSection>
+
+          <div className="grid grid-cols-2 gap-8">
+            <ComponentSection
+              title="API Inspector"
+              description="Monitor API calls in real-time"
+            >
+              <APIInspectorDemo />
+            </ComponentSection>
+
+            <ComponentSection
+              title="Performance Profiler"
+              description="Track component performance metrics"
+            >
+              <ProfilerPanelDemo />
+            </ComponentSection>
+          </div>
+
+          <div className="grid grid-cols-2 gap-8">
+            <ComponentSection
+              title="State Time Travel"
+              description="Debug state changes with history"
+            >
+              <TimeTravelDemo />
+            </ComponentSection>
+
+            <ComponentSection
+              title="Model Comparison"
+              description="Compare AI model responses"
+            >
+              <ModelComparisonDemo />
+            </ComponentSection>
+          </div>
+        </TabsContent>
+
+        <TabsContent value="errors" className="space-y-8">
+          <ComponentSection
+            title="Error Display"
+            description="Beautiful error presentation with severity levels"
+          >
+            <ErrorDisplayDemo />
+          </ComponentSection>
+
+          <div className="grid grid-cols-2 gap-8">
+            <ComponentSection
+              title="Error Boundary"
+              description="React error boundary with recovery"
+            >
+              <ErrorBoundaryDemo />
+            </ComponentSection>
+
+            <ComponentSection
+              title="Retry Countdown"
+              description="Automatic retry with countdown timer"
+            >
+              <RetryCountdownDemo />
+            </ComponentSection>
+          </div>
+
+          <div className="grid grid-cols-2 gap-8">
+            <ComponentSection
+              title="Circuit Breaker"
+              description="Resilience pattern for API calls"
+            >
+              <CircuitBreakerDemo />
+            </ComponentSection>
+
+            <ComponentSection
+              title="Error Toast"
+              description="Toast notifications for errors"
+            >
+              <ErrorToastDemo />
+            </ComponentSection>
+          </div>
         </TabsContent>
       </Tabs>
     </div>
