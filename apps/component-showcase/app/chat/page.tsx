@@ -1,27 +1,44 @@
 'use client'
 
-import { useState, useRef, useEffect, useCallback } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { PageHeader, ComponentSection } from '@/components/component-section'
 import {
+  // Core Chat Components
   ChatInput,
+  ChatWindow,
+  FollowUpSuggestions,
   CodeBlock,
   MarkdownRenderer,
-  TokenUsageMeter,
-  TokenBudgetBar,
-  TokenCounter,
+
+  // Streaming & Messages
   TypingIndicator,
   StreamingMessage,
   CitationCard,
-  FollowUpSuggestions,
-  ExportDialog,
-  NetworkStatus,
+
+  // Navigation & Commands
   CommandPalette,
-  PromptSuggestions,
-  MemoryActivityIndicator,
+
+  // Input
   VoiceInput,
+
+  // Media
+  ExportDialog,
+
+  // Network
+  NetworkStatus,
+
+  // Prompts
+  PromptSuggestions,
+
+  // Agent & Tools
+  AgentPanel,
 } from '@clarity-chat/react'
 import {
   Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
   Button,
   Badge,
   Input,
@@ -44,6 +61,9 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
   Kbd,
+  Separator,
+  Switch,
+  Checkbox,
   cn,
 } from '@clarity-chat/primitives'
 import {
@@ -59,7 +79,7 @@ import {
   Bot,
   Zap,
   Code,
-  Image,
+  Image as ImageIcon,
   FileText,
   MoreHorizontal,
   ThumbsUp,
@@ -69,10 +89,13 @@ import {
   Share,
   ChevronDown,
   ChevronRight,
+  ChevronUp,
   Star,
   Bookmark,
   ExternalLink,
   Play,
+  Pause,
+  Square,
   CheckCircle,
   Circle,
   ArrowRight,
@@ -88,60 +111,276 @@ import {
   Edit3,
   GitBranch,
   FolderOpen,
+  Folder,
+  File,
   History,
   Command,
   Hash,
   AtSign,
   Slash,
-  File,
-  ImageIcon,
   Video,
   Music,
   Archive,
   Link,
   Eye,
+  EyeOff,
   AlertCircle,
+  AlertTriangle,
   Info,
   Cpu,
   Database,
   Wifi,
   WifiOff,
   Volume2,
-  Square,
   Keyboard,
+  Check,
+  Filter,
+  SortAsc,
+  RotateCw,
+  Shield,
+  ShieldCheck,
+  ShieldAlert,
+  Activity,
+  TrendingUp,
+  TrendingDown,
+  PieChart,
+  BarChart3,
+  Gauge,
+  Target,
+  Layers,
+  Package,
+  GitCommit,
+  GitMerge,
+  GitPullRequest,
+  Bug,
+  TestTube,
+  Wrench,
+  Cog,
+  Lock,
+  Unlock,
+  Key,
+  User,
+  Users,
+  UserPlus,
+  Mail,
+  Bell,
+  BellOff,
+  Calendar,
+  MapPin,
+  Navigation,
+  Compass,
+  Award,
+  Gift,
+  Heart,
+  Lightbulb,
+  Wand2,
+  Move,
+  Maximize2,
+  Minimize2,
+  MoreVertical,
+  Forward,
+  Reply,
+  ReplyAll,
+  ArchiveIcon,
+  Inbox,
+  Tag,
+  Flag,
+  Pin,
+  PinOff,
+  MessageCircle,
+  Send as SendIcon,
+  RotateCcw,
+  AlertOctagon,
+  Timer,
+  Hourglass,
 } from 'lucide-react'
 
+// Force dynamic rendering to avoid SSR issues with complex components
+export const dynamic = 'force-dynamic'
+
 // ============================================================================
-// INTERACTIVE CHAT DEMO
+// TYPES
 // ============================================================================
 interface ChatMessage {
   id: string
   role: 'user' | 'assistant'
   content: string
   timestamp: Date
+  tools?: ToolExecution[]
+  thinking?: ThinkingStep[]
+  citations?: Citation[]
+  status?: 'sending' | 'sent' | 'delivered' | 'read' | 'error'
+  isDraft?: boolean
+  isArchived?: boolean
+  isPinned?: boolean
 }
 
-function InteractiveChatDemo() {
+interface ToolExecution {
+  id: string
+  name: string
+  status: 'pending' | 'running' | 'completed' | 'error'
+  input?: string
+  output?: string
+  duration?: string
+}
+
+interface ThinkingStep {
+  id: string
+  content: string
+  timestamp: Date
+}
+
+interface Citation {
+  id: string
+  title: string
+  url: string
+  snippet: string
+}
+
+// ============================================================================
+// ADVANCED AGENTIC CHAT DEMO
+// ============================================================================
+function AdvancedAgenticChatDemo() {
   const [input, setInput] = useState('')
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
       id: '1',
       role: 'assistant',
-      content: `Hello! I'm your AI assistant. I can help you with coding, analysis, writing, and more. Try asking me something!`,
+      content: `Welcome! I'm an AI assistant with full tool-calling capabilities. I can:
+
+- **Search the web** for real-time information
+- **Execute code** in a sandboxed environment
+- **Read and analyze files** you upload
+- **Generate images** from descriptions
+- **Manage tasks** and workflows
+
+Try asking me something that requires tools!`,
       timestamp: new Date(Date.now() - 60000),
+      status: 'read',
     },
   ])
   const [isStreaming, setIsStreaming] = useState(false)
   const [streamingText, setStreamingText] = useState('')
+  const [activeTools, setActiveTools] = useState<ToolExecution[]>([])
+  const [thinkingSteps, setThinkingSteps] = useState<ThinkingStep[]>([])
+  const [showThinking, setShowThinking] = useState(true)
+  const [tokenUsage, setTokenUsage] = useState({
+    input: 1245,
+    output: 892,
+    total: 2137,
+    budget: 8000,
+  })
   const scrollRef = useRef<HTMLDivElement>(null)
 
-  const simulateStreaming = (text: string) => {
+  const simulateToolExecution = async (toolName: string) => {
+    const toolId = String(Date.now())
+    const tool: ToolExecution = {
+      id: toolId,
+      name: toolName,
+      status: 'running',
+      input: `Executing ${toolName}...`,
+    }
+    setActiveTools((prev) => [...prev, tool])
+
+    await new Promise((r) => setTimeout(r, 1500 + Math.random() * 1000))
+
+    setActiveTools((prev) =>
+      prev.map((t) =>
+        t.id === toolId
+          ? {
+              ...t,
+              status: 'completed',
+              output: `${toolName} completed successfully`,
+              duration: `${(1.5 + Math.random()).toFixed(1)}s`,
+            }
+          : t
+      )
+    )
+
+    return tool
+  }
+
+  const simulateThinking = async (steps: string[]) => {
+    for (const step of steps) {
+      await new Promise((r) => setTimeout(r, 500))
+      setThinkingSteps((prev) => [
+        ...prev,
+        {
+          id: String(Date.now()),
+          content: step,
+          timestamp: new Date(),
+        },
+      ])
+    }
+  }
+
+  const handleSend = async () => {
+    if (!input.trim() || isStreaming) return
+
+    const userMessage: ChatMessage = {
+      id: String(Date.now()),
+      role: 'user',
+      content: input,
+      timestamp: new Date(),
+      status: 'sending',
+    }
+    setMessages((prev) => [...prev, userMessage])
+    setInput('')
+    setActiveTools([])
+    setThinkingSteps([])
     setIsStreaming(true)
-    setStreamingText('')
+
+    // Update status to sent
+    setTimeout(() => {
+      setMessages((prev) =>
+        prev.map((m) =>
+          m.id === userMessage.id ? { ...m, status: 'sent' } : m
+        )
+      )
+    }, 200)
+
+    // Simulate thinking
+    await simulateThinking([
+      'Understanding the request...',
+      'Determining which tools to use...',
+      'Planning execution strategy...',
+    ])
+
+    // Check if user asked for tool usage
+    const lowerInput = input.toLowerCase()
+    if (lowerInput.includes('search') || lowerInput.includes('find')) {
+      await simulateToolExecution('web_search')
+    }
+    if (
+      lowerInput.includes('code') ||
+      lowerInput.includes('run') ||
+      lowerInput.includes('execute')
+    ) {
+      await simulateToolExecution('code_interpreter')
+    }
+    if (
+      lowerInput.includes('file') ||
+      lowerInput.includes('read') ||
+      lowerInput.includes('analyze')
+    ) {
+      await simulateToolExecution('file_reader')
+    }
+
+    // Simulate streaming response
+    const response = `Based on my analysis${activeTools.length > 0 ? ` using ${activeTools.map((t) => t.name).join(', ')}` : ''}, here's what I found:
+
+The requested task has been completed successfully. I've processed the information and here are the key findings:
+
+1. **Primary Result**: The main objective was achieved with high confidence
+2. **Supporting Data**: Additional context was gathered from multiple sources
+3. **Recommendations**: Based on the analysis, I suggest the following next steps
+
+Would you like me to elaborate on any of these points or perform additional analysis?`
+
     let index = 0
     const interval = setInterval(() => {
-      if (index < text.length) {
-        setStreamingText((prev) => prev + text[index])
+      if (index < response.length) {
+        setStreamingText((prev) => prev + response[index])
         index++
       } else {
         clearInterval(interval)
@@ -151,1630 +390,1807 @@ function InteractiveChatDemo() {
           {
             id: String(Date.now()),
             role: 'assistant',
-            content: text,
+            content: response,
             timestamp: new Date(),
-          } as ChatMessage,
+            tools: [...activeTools],
+            thinking: [...thinkingSteps],
+            citations: [
+              {
+                id: '1',
+                title: 'Documentation',
+                url: 'https://docs.example.com',
+                snippet: 'Official documentation',
+              },
+              {
+                id: '2',
+                title: 'Best Practices',
+                url: 'https://example.com/guide',
+                snippet: 'Industry best practices',
+              },
+            ],
+            status: 'delivered',
+          },
         ])
         setStreamingText('')
+        setTokenUsage((prev) => ({
+          ...prev,
+          input: prev.input + Math.floor(Math.random() * 500),
+          output: prev.output + Math.floor(Math.random() * 300),
+          total: prev.total + Math.floor(Math.random() * 800),
+        }))
       }
-    }, 20)
-  }
-
-  const handleSend = () => {
-    if (!input.trim() || isStreaming) return
-
-    const userMessage: ChatMessage = {
-      id: String(Date.now()),
-      role: 'user',
-      content: input,
-      timestamp: new Date(),
-    }
-    setMessages((prev) => [...prev, userMessage])
-    setInput('')
-
-    setTimeout(() => {
-      const responses = [
-        "That's a great question! Let me break this down for you. The key concepts involve understanding the fundamentals first, then building up from there with practical examples.",
-        "I'd be happy to help with that. Here's what I recommend: start by identifying the core problem, then work through potential solutions systematically.",
-        'Interesting! Based on my analysis, there are several approaches you could take. Let me outline the pros and cons of each option.',
-      ]
-      const response = responses[Math.floor(Math.random() * responses.length)]
-      simulateStreaming(response)
-    }, 500)
+    }, 15)
   }
 
   useEffect(() => {
     if (scrollRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight
     }
-  }, [messages, streamingText])
+  }, [messages, streamingText, thinkingSteps])
 
   return (
-    <Card className="h-[500px] flex flex-col overflow-hidden">
-      {/* Header */}
-      <div className="flex items-center justify-between px-4 py-3 border-b">
-        <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
-            <Bot className="h-4 w-4 text-primary-foreground" />
+    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      {/* Main Chat */}
+      <Card className="lg:col-span-2 h-[700px] flex flex-col overflow-hidden">
+        {/* Header */}
+        <div className="flex items-center justify-between px-4 py-3 border-b bg-muted/30">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center shadow-lg">
+              <Brain className="h-5 w-5 text-white" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <h3 className="font-semibold">Agentic Assistant</h3>
+                <Badge className="bg-green-500/20 text-green-600">Online</Badge>
+              </div>
+              <p className="text-xs text-muted-foreground">
+                Claude 3.5 Sonnet • Tools Enabled
+              </p>
+            </div>
           </div>
-          <div>
-            <h3 className="font-medium text-sm">AI Assistant</h3>
-            <p className="text-xs text-muted-foreground">Online</p>
+          <div className="flex items-center gap-2">
+            {/* Token Counter */}
+            <div className="flex items-center gap-2 px-2 py-1 rounded-md bg-muted text-sm">
+              <span className="font-mono">
+                {tokenUsage.total.toLocaleString()}
+              </span>
+              <span className="text-muted-foreground">/</span>
+              <span className="font-mono text-muted-foreground">
+                {tokenUsage.budget.toLocaleString()}
+              </span>
+            </div>
+            <Button variant="ghost" size="icon">
+              <Settings className="h-4 w-4" />
+            </Button>
           </div>
         </div>
-        <div className="flex items-center gap-1">
-          <Button variant="ghost" size="icon" className="h-8 w-8">
-            <Search className="h-4 w-4" />
-          </Button>
-          <Button variant="ghost" size="icon" className="h-8 w-8">
-            <MoreHorizontal className="h-4 w-4" />
-          </Button>
-        </div>
-      </div>
 
-      {/* Messages */}
-      <ScrollArea className="flex-1 p-4" ref={scrollRef}>
-        <div className="space-y-4">
-          {messages.map((msg) => (
-            <div
-              key={msg.id}
-              className={cn(
-                'flex gap-3',
-                msg.role === 'user' && 'flex-row-reverse'
-              )}
-            >
-              <Avatar
-                fallback={msg.role === 'assistant' ? 'AI' : 'U'}
-                size="sm"
-                className={cn(
-                  msg.role === 'assistant'
-                    ? 'bg-primary text-primary-foreground'
-                    : 'bg-secondary'
-                )}
-              />
+        {/* Token Budget Bar */}
+        <div className="px-4 py-2 border-b">
+          <div className="space-y-1">
+            <div className="flex justify-between text-xs text-muted-foreground">
+              <span>Token Budget</span>
+              <span>
+                {Math.round((tokenUsage.total / tokenUsage.budget) * 100)}% used
+              </span>
+            </div>
+            <div className="h-2 w-full bg-muted rounded-full overflow-hidden">
               <div
                 className={cn(
-                  'max-w-[80%] rounded-2xl px-4 py-2.5',
-                  msg.role === 'assistant'
-                    ? 'bg-muted'
-                    : 'bg-primary text-primary-foreground'
+                  'h-full transition-all duration-300',
+                  tokenUsage.total > tokenUsage.budget * 0.9
+                    ? 'bg-red-500'
+                    : tokenUsage.total > tokenUsage.budget * 0.7
+                      ? 'bg-yellow-500'
+                      : 'bg-green-500'
+                )}
+                style={{
+                  width: `${(tokenUsage.total / tokenUsage.budget) * 100}%`,
+                }}
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Messages */}
+        <ScrollArea className="flex-1 p-4" ref={scrollRef}>
+          <div className="space-y-6">
+            {messages.map((msg) => (
+              <div
+                key={msg.id}
+                className={cn(
+                  'flex gap-3',
+                  msg.role === 'user' && 'flex-row-reverse'
                 )}
               >
-                <p className="text-sm leading-relaxed">{msg.content}</p>
-                <p className="text-xs opacity-60 mt-1">
-                  {msg.timestamp.toLocaleTimeString([], {
-                    hour: '2-digit',
-                    minute: '2-digit',
-                  })}
-                </p>
-              </div>
-            </div>
-          ))}
+                <Avatar
+                  fallback={msg.role === 'assistant' ? 'AI' : 'U'}
+                  className={cn(
+                    'w-8 h-8 shrink-0',
+                    msg.role === 'assistant'
+                      ? 'bg-gradient-to-br from-violet-500 to-purple-600 text-white'
+                      : 'bg-primary text-primary-foreground'
+                  )}
+                />
+                <div
+                  className={cn(
+                    'flex-1 space-y-2',
+                    msg.role === 'user' && 'flex flex-col items-end'
+                  )}
+                >
+                  <div
+                    className={cn(
+                      'rounded-2xl px-4 py-3 max-w-[85%]',
+                      msg.role === 'assistant'
+                        ? 'bg-muted'
+                        : 'bg-primary text-primary-foreground'
+                    )}
+                  >
+                    <MarkdownRenderer content={msg.content} />
+                  </div>
 
-          {/* Streaming message */}
-          {isStreaming && (
-            <div className="flex gap-3">
-              <Avatar
-                fallback="AI"
-                size="sm"
-                className="bg-primary text-primary-foreground"
-              />
-              <div className="max-w-[80%] rounded-2xl px-4 py-2.5 bg-muted">
-                <p className="text-sm leading-relaxed">
-                  {streamingText}
-                  <span className="inline-block w-2 h-4 bg-primary ml-1 animate-pulse" />
-                </p>
-              </div>
-            </div>
-          )}
-        </div>
-      </ScrollArea>
+                  {/* Status Indicator */}
+                  {msg.role === 'user' && msg.status && (
+                    <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                      {msg.status === 'sending' && (
+                        <Loader2 className="h-3 w-3 animate-spin" />
+                      )}
+                      {msg.status === 'sent' && <Check className="h-3 w-3" />}
+                      {msg.status === 'delivered' && (
+                        <CheckCircle className="h-3 w-3" />
+                      )}
+                      {msg.status === 'read' && (
+                        <CheckCircle className="h-3 w-3 text-blue-500" />
+                      )}
+                      <span className="capitalize">{msg.status}</span>
+                    </div>
+                  )}
 
-      {/* Input */}
-      <div className="p-4 border-t">
-        <div className="flex items-end gap-2">
-          <Button variant="ghost" size="icon" className="h-9 w-9 shrink-0">
-            <Paperclip className="h-4 w-4" />
-          </Button>
-          <div className="flex-1 relative">
-            <Input
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              placeholder="Type a message..."
-              className="pr-10"
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' && !e.shiftKey) {
-                  e.preventDefault()
-                  handleSend()
-                }
-              }}
-            />
-          </div>
-          <Button
-            onClick={handleSend}
-            disabled={!input.trim() || isStreaming}
-            size="icon"
-            className="h-9 w-9 shrink-0"
-          >
-            {isStreaming ? (
-              <Loader2 className="h-4 w-4 animate-spin" />
-            ) : (
-              <Send className="h-4 w-4" />
+                  {/* Tool Executions */}
+                  {msg.tools && msg.tools.length > 0 && (
+                    <div className="space-y-2 max-w-[85%]">
+                      <p className="text-xs text-muted-foreground font-medium">
+                        Tools Used
+                      </p>
+                      {msg.tools.map((tool) => (
+                        <div
+                          key={tool.id}
+                          className="flex items-center gap-2 p-2 bg-muted/50 rounded-lg text-sm"
+                        >
+                          <div className="w-6 h-6 rounded bg-green-500/20 flex items-center justify-center">
+                            <CheckCircle className="h-3.5 w-3.5 text-green-500" />
+                          </div>
+                          <span className="font-mono">{tool.name}</span>
+                          <span className="text-muted-foreground">
+                            {tool.duration}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* Citations */}
+                  {msg.citations && msg.citations.length > 0 && (
+                    <div className="flex gap-2 overflow-x-auto pb-2 max-w-[85%]">
+                      {msg.citations.map((cite, i) => (
+                        <div
+                          key={cite.id}
+                          className="flex-shrink-0 w-40 p-2 border rounded-lg text-xs cursor-pointer hover:bg-muted"
+                        >
+                          <div className="flex items-center gap-1 mb-1">
+                            <Badge variant="outline" className="text-xs">
+                              {i + 1}
+                            </Badge>
+                          </div>
+                          <p className="font-medium truncate">{cite.title}</p>
+                          <p className="text-muted-foreground truncate">
+                            {cite.url}
+                          </p>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* Message Actions */}
+                  {msg.role === 'assistant' && (
+                    <div className="flex items-center gap-1">
+                      <Button variant="ghost" size="icon" className="h-7 w-7">
+                        <Copy className="h-3.5 w-3.5" />
+                      </Button>
+                      <Button variant="ghost" size="icon" className="h-7 w-7">
+                        <ThumbsUp className="h-3.5 w-3.5" />
+                      </Button>
+                      <Button variant="ghost" size="icon" className="h-7 w-7">
+                        <ThumbsDown className="h-3.5 w-3.5" />
+                      </Button>
+                      <Button variant="ghost" size="icon" className="h-7 w-7">
+                        <RefreshCw className="h-3.5 w-3.5" />
+                      </Button>
+                      <Button variant="ghost" size="icon" className="h-7 w-7">
+                        <Forward className="h-3.5 w-3.5" />
+                      </Button>
+                      <Button variant="ghost" size="icon" className="h-7 w-7">
+                        <Pin className="h-3.5 w-3.5" />
+                      </Button>
+                    </div>
+                  )}
+                </div>
+              </div>
+            ))}
+
+            {/* Streaming Response */}
+            {isStreaming && (
+              <div className="flex gap-3">
+                <Avatar
+                  fallback="AI"
+                  className="w-8 h-8 shrink-0 bg-gradient-to-br from-violet-500 to-purple-600 text-white"
+                />
+                <div className="flex-1 space-y-2">
+                  {showThinking && thinkingSteps.length > 0 && (
+                    <div className="p-3 bg-blue-500/10 border border-blue-500/20 rounded-lg space-y-2">
+                      <div className="flex items-center gap-2 text-sm font-medium text-blue-600">
+                        <Brain className="h-4 w-4 animate-pulse" />
+                        Thinking...
+                      </div>
+                      {thinkingSteps.map((step) => (
+                        <div
+                          key={step.id}
+                          className="flex items-center gap-2 text-sm text-muted-foreground pl-6"
+                        >
+                          <CheckCircle className="h-3 w-3 text-blue-500" />
+                          {step.content}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {activeTools.length > 0 && (
+                    <div className="space-y-2">
+                      {activeTools.map((tool) => (
+                        <div
+                          key={tool.id}
+                          className={cn(
+                            'flex items-center gap-2 p-2 rounded-lg text-sm',
+                            tool.status === 'running'
+                              ? 'bg-yellow-500/10 border border-yellow-500/20'
+                              : 'bg-green-500/10 border border-green-500/20'
+                          )}
+                        >
+                          {tool.status === 'running' ? (
+                            <Loader2 className="h-4 w-4 text-yellow-500 animate-spin" />
+                          ) : (
+                            <CheckCircle className="h-4 w-4 text-green-500" />
+                          )}
+                          <span className="font-mono">{tool.name}</span>
+                          {tool.status === 'running' && (
+                            <span className="text-muted-foreground">
+                              Running...
+                            </span>
+                          )}
+                          {tool.duration && (
+                            <span className="text-muted-foreground">
+                              {tool.duration}
+                            </span>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {streamingText && (
+                    <div className="bg-muted rounded-2xl px-4 py-3">
+                      <MarkdownRenderer content={streamingText} />
+                      <span className="inline-block w-2 h-4 bg-primary animate-pulse ml-1" />
+                    </div>
+                  )}
+                </div>
+              </div>
             )}
-          </Button>
+          </div>
+        </ScrollArea>
+
+        {/* Input Area */}
+        <div className="p-4 border-t">
+          <div className="flex items-end gap-2">
+            <Button variant="ghost" size="icon" className="h-10 w-10 shrink-0">
+              <Paperclip className="h-5 w-5" />
+            </Button>
+            <div className="flex-1">
+              <Input
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                placeholder="Ask me anything or request a tool..."
+                className="h-10"
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault()
+                    handleSend()
+                  }
+                }}
+              />
+            </div>
+            <Button variant="ghost" size="icon" className="h-10 w-10 shrink-0">
+              <Mic className="h-5 w-5" />
+            </Button>
+            <Button
+              onClick={handleSend}
+              disabled={isStreaming || !input.trim()}
+              className="h-10 px-4 gap-2"
+            >
+              {isStreaming ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <Send className="h-4 w-4" />
+              )}
+              Send
+            </Button>
+          </div>
+          <div className="flex items-center gap-4 mt-2 text-xs text-muted-foreground">
+            <div className="flex items-center gap-1">
+              <Kbd shortcut="Enter" /> to send
+            </div>
+            <div className="flex items-center gap-1">
+              <Kbd shortcut="/" /> for commands
+            </div>
+            <div className="flex items-center gap-1">
+              <Kbd shortcut="@" /> to mention
+            </div>
+          </div>
         </div>
+      </Card>
+
+      {/* Right Sidebar */}
+      <div className="space-y-4">
+        {/* Available Tools */}
+        <Card>
+          <CardHeader className="pb-3">
+            <CardTitle className="text-sm flex items-center gap-2">
+              <Wrench className="h-4 w-4" />
+              Available Tools
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-2">
+            {[
+              { name: 'web_search', icon: Globe, desc: 'Search the web' },
+              {
+                name: 'code_interpreter',
+                icon: Terminal,
+                desc: 'Execute code',
+              },
+              { name: 'file_reader', icon: FileText, desc: 'Read files' },
+              { name: 'image_gen', icon: ImageIcon, desc: 'Generate images' },
+              { name: 'calendar', icon: Calendar, desc: 'Manage events' },
+            ].map((tool) => (
+              <div
+                key={tool.name}
+                className="flex items-center gap-3 p-2 rounded-lg hover:bg-muted transition-colors"
+              >
+                <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
+                  <tool.icon className="h-4 w-4 text-primary" />
+                </div>
+                <div className="flex-1">
+                  <p className="text-sm font-medium font-mono">{tool.name}</p>
+                  <p className="text-xs text-muted-foreground">{tool.desc}</p>
+                </div>
+                <Badge variant="outline" className="text-xs">
+                  Ready
+                </Badge>
+              </div>
+            ))}
+          </CardContent>
+        </Card>
+
+        {/* Memory & Token Usage */}
+        <Card>
+          <CardHeader className="pb-3">
+            <CardTitle className="text-sm flex items-center gap-2">
+              <Database className="h-4 w-4" />
+              Memory & Tokens
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            {/* Memory Activity */}
+            <div className="flex items-center gap-2 p-2 rounded-lg bg-green-500/10">
+              <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+              <span className="text-xs text-green-600">
+                Memory active • Storing context
+              </span>
+            </div>
+            <Separator className="my-3" />
+            {/* Token Usage */}
+            <div className="space-y-2">
+              <div className="flex justify-between text-xs">
+                <span className="text-muted-foreground">Input tokens</span>
+                <span className="font-mono">
+                  {tokenUsage.input.toLocaleString()}
+                </span>
+              </div>
+              <div className="flex justify-between text-xs">
+                <span className="text-muted-foreground">Output tokens</span>
+                <span className="font-mono">
+                  {tokenUsage.output.toLocaleString()}
+                </span>
+              </div>
+              <Separator />
+              <div className="flex justify-between text-sm font-medium">
+                <span>Total</span>
+                <span className="font-mono">
+                  {tokenUsage.total.toLocaleString()}
+                </span>
+              </div>
+              <div className="h-1.5 w-full bg-muted rounded-full overflow-hidden">
+                <div
+                  className="h-full bg-primary transition-all duration-300"
+                  style={{
+                    width: `${(tokenUsage.total / tokenUsage.budget) * 100}%`,
+                  }}
+                />
+              </div>
+              <p className="text-xs text-muted-foreground text-right">
+                {Math.round((tokenUsage.total / tokenUsage.budget) * 100)}% of
+                budget
+              </p>
+            </div>
+            <div className="mt-3 p-2 bg-primary/5 rounded-lg">
+              <p className="text-xs text-muted-foreground">Estimated cost</p>
+              <p className="text-lg font-bold text-primary">
+                ${((tokenUsage.total / 1000) * 0.01).toFixed(4)}
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Quick Actions */}
+        <Card>
+          <CardHeader className="pb-3">
+            <CardTitle className="text-sm flex items-center gap-2">
+              <Zap className="h-4 w-4" />
+              Quick Actions
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-2">
+            <Button
+              variant="outline"
+              size="sm"
+              className="w-full justify-start gap-2"
+            >
+              <Download className="h-4 w-4" />
+              Export Chat
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              className="w-full justify-start gap-2"
+            >
+              <GitBranch className="h-4 w-4" />
+              Branch Conversation
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              className="w-full justify-start gap-2"
+            >
+              <Share className="h-4 w-4" />
+              Share
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              className="w-full justify-start gap-2"
+            >
+              <Archive className="h-4 w-4" />
+              Archive
+            </Button>
+          </CardContent>
+        </Card>
       </div>
+    </div>
+  )
+}
+
+// ============================================================================
+// CODE & TERMINAL DEMO
+// ============================================================================
+function CodeTerminalDemo() {
+  const [activeTab, setActiveTab] = useState('code')
+  const [isRunning, setIsRunning] = useState(false)
+  const [terminalOutput, setTerminalOutput] = useState<string[]>([
+    '$ npm install @clarity-chat/react',
+    'added 45 packages in 2.3s',
+    '',
+    '$ npm run build',
+    '> clarity-chat@1.0.0 build',
+    '✓ Compiled successfully in 3.2s',
+  ])
+
+  const sampleCode = `import { ClarityChatApp, useClarityChat } from '@clarity-chat/react'
+
+export default function ChatPage() {
+  const { messages, sendMessage, isStreaming } = useClarityChat({
+    api: '/api/chat',
+    onFinish: (message) => console.log('Done:', message),
+  })
+
+  return (
+    <ClarityChatApp
+      api="/api/chat"
+      features={{
+        memory: true,
+        tools: ['web_search', 'code_interpreter'],
+        tokenOptimization: true,
+      }}
+      preset="enterprise"
+    />
+  )
+}`
+
+  const runCode = () => {
+    setIsRunning(true)
+    setTerminalOutput((prev) => [...prev, '', '$ tsx example.ts'])
+    setTimeout(
+      () =>
+        setTerminalOutput((prev) => [...prev, 'Initializing Clarity Chat...']),
+      500
+    )
+    setTimeout(
+      () => setTerminalOutput((prev) => [...prev, '✓ Connected to API']),
+      1000
+    )
+    setTimeout(
+      () => setTerminalOutput((prev) => [...prev, '✓ Memory initialized']),
+      1500
+    )
+    setTimeout(() => {
+      setTerminalOutput((prev) => [
+        ...prev,
+        '',
+        'Server running at http://localhost:3000',
+      ])
+      setIsRunning(false)
+    }, 2000)
+  }
+
+  return (
+    <Card>
+      <CardHeader className="pb-0">
+        <div className="flex items-center justify-between">
+          <CardTitle className="text-lg">Code & Terminal</CardTitle>
+          <div className="flex items-center gap-2">
+            <Button
+              size="sm"
+              onClick={runCode}
+              disabled={isRunning}
+              className="gap-2"
+            >
+              {isRunning ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <Play className="h-4 w-4" />
+              )}
+              Run
+            </Button>
+            <Button variant="outline" size="sm" className="gap-2">
+              <Copy className="h-4 w-4" />
+              Copy
+            </Button>
+          </div>
+        </div>
+      </CardHeader>
+      <CardContent className="pt-4">
+        <Tabs value={activeTab} onValueChange={setActiveTab}>
+          <TabsList className="mb-4">
+            <TabsTrigger value="code" className="gap-2">
+              <Code className="h-4 w-4" />
+              Code
+            </TabsTrigger>
+            <TabsTrigger value="terminal" className="gap-2">
+              <Terminal className="h-4 w-4" />
+              Terminal
+            </TabsTrigger>
+          </TabsList>
+          <TabsContent value="code" className="mt-0">
+            <CodeBlock
+              code={sampleCode}
+              language="typescript"
+              showLineNumbers
+            />
+          </TabsContent>
+          <TabsContent value="terminal" className="mt-0">
+            <div className="bg-[#1e1e1e] rounded-lg p-4 font-mono text-sm h-[300px] overflow-auto">
+              {terminalOutput.map((line, i) => (
+                <div
+                  key={i}
+                  className={cn(
+                    line.startsWith('✓') && 'text-green-400',
+                    line.startsWith('$') && 'text-blue-400',
+                    line.startsWith('>') && 'text-yellow-400',
+                    !line.startsWith('✓') &&
+                      !line.startsWith('$') &&
+                      !line.startsWith('>') &&
+                      'text-gray-300'
+                  )}
+                >
+                  {line || '\u00A0'}
+                </div>
+              ))}
+              {isRunning && (
+                <div className="flex items-center gap-2 text-gray-400">
+                  <Loader2 className="h-3 w-3 animate-spin" />
+                  Running...
+                </div>
+              )}
+            </div>
+          </TabsContent>
+        </Tabs>
+      </CardContent>
     </Card>
   )
 }
 
 // ============================================================================
-// TYPING INDICATORS DEMO
+// FILE TREE DEMO
 // ============================================================================
-function TypingIndicatorsDemo() {
-  return (
-    <div className="space-y-6">
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <Card className="p-4">
-          <p className="text-sm text-muted-foreground mb-3">Dots</p>
-          <div className="flex items-center gap-2">
-            <Avatar
-              fallback="AI"
-              size="sm"
-              className="bg-primary text-primary-foreground"
-            />
-            <div className="bg-muted rounded-2xl px-4 py-3">
-              <div className="flex gap-1">
-                {[0, 1, 2].map((i) => (
-                  <div
-                    key={i}
-                    className="w-2 h-2 bg-muted-foreground rounded-full animate-bounce"
-                    style={{ animationDelay: `${i * 0.15}s` }}
-                  />
-                ))}
-              </div>
-            </div>
-          </div>
-        </Card>
+function FileTreeDemo() {
+  const [expandedFolders, setExpandedFolders] = useState<Set<string>>(
+    new Set(['src', 'src/components'])
+  )
+  const [selectedFile, setSelectedFile] = useState(
+    'src/components/ChatWindow.tsx'
+  )
 
-        <Card className="p-4">
-          <p className="text-sm text-muted-foreground mb-3">Pulse</p>
-          <div className="flex items-center gap-2">
-            <Avatar
-              fallback="AI"
-              size="sm"
-              className="bg-primary text-primary-foreground"
-            />
-            <div className="bg-muted rounded-2xl px-4 py-3">
-              <div className="flex items-center gap-2">
-                <div className="w-4 h-4 rounded-full bg-primary/50 animate-pulse" />
-                <span className="text-sm text-muted-foreground">
-                  Thinking...
-                </span>
-              </div>
-            </div>
-          </div>
-        </Card>
+  const fileTree = [
+    {
+      name: 'src',
+      type: 'folder' as const,
+      children: [
+        {
+          name: 'components',
+          type: 'folder' as const,
+          children: [
+            { name: 'ChatWindow.tsx', type: 'file' as const },
+            { name: 'ChatInput.tsx', type: 'file' as const },
+            { name: 'MessageList.tsx', type: 'file' as const },
+          ],
+        },
+        {
+          name: 'hooks',
+          type: 'folder' as const,
+          children: [{ name: 'useClarityChat.ts', type: 'file' as const }],
+        },
+      ],
+    },
+    { name: 'package.json', type: 'file' as const },
+    { name: 'README.md', type: 'file' as const },
+  ]
 
-        <Card className="p-4">
-          <p className="text-sm text-muted-foreground mb-3">Wave</p>
-          <div className="flex items-center gap-2">
-            <Avatar
-              fallback="AI"
-              size="sm"
-              className="bg-primary text-primary-foreground"
-            />
-            <div className="bg-muted rounded-2xl px-4 py-3">
-              <div className="flex gap-0.5 items-end h-4">
-                {[0, 1, 2, 3, 4].map((i) => (
-                  <div
-                    key={i}
-                    className="w-1 bg-primary rounded-full animate-pulse"
-                    style={{
-                      height: `${8 + Math.sin(i) * 8}px`,
-                      animationDelay: `${i * 0.1}s`,
-                    }}
-                  />
-                ))}
-              </div>
-            </div>
-          </div>
-        </Card>
+  const toggleFolder = (path: string) => {
+    setExpandedFolders((prev) => {
+      const next = new Set(prev)
+      if (next.has(path)) next.delete(path)
+      else next.add(path)
+      return next
+    })
+  }
+
+  const renderNode = (
+    node: { name: string; type: 'file' | 'folder'; children?: any[] },
+    path: string = '',
+    depth: number = 0
+  ): React.ReactNode => {
+    const fullPath = path ? `${path}/${node.name}` : node.name
+    const isExpanded = expandedFolders.has(fullPath)
+    const isSelected = selectedFile === fullPath
+
+    return (
+      <div key={fullPath}>
+        <button
+          onClick={() =>
+            node.type === 'folder'
+              ? toggleFolder(fullPath)
+              : setSelectedFile(fullPath)
+          }
+          className={cn(
+            'w-full flex items-center gap-2 px-2 py-1.5 text-sm rounded-md',
+            isSelected ? 'bg-primary text-primary-foreground' : 'hover:bg-muted'
+          )}
+          style={{ paddingLeft: `${depth * 16 + 8}px` }}
+        >
+          {node.type === 'folder' ? (
+            <>
+              {isExpanded ? (
+                <ChevronDown className="h-4 w-4" />
+              ) : (
+                <ChevronRight className="h-4 w-4" />
+              )}
+              {isExpanded ? (
+                <FolderOpen className="h-4 w-4 text-yellow-500" />
+              ) : (
+                <Folder className="h-4 w-4 text-yellow-500" />
+              )}
+            </>
+          ) : (
+            <>
+              <span className="w-4" />
+              <File className="h-4 w-4 text-blue-500" />
+            </>
+          )}
+          <span className="truncate">{node.name}</span>
+        </button>
+        {node.type === 'folder' &&
+          isExpanded &&
+          node.children?.map((child: any) =>
+            renderNode(child, fullPath, depth + 1)
+          )}
       </div>
+    )
+  }
 
-      {/* Thinking with steps */}
-      <Card className="p-4">
-        <p className="text-sm text-muted-foreground mb-3">
-          Thinking with Steps
-        </p>
-        <div className="flex gap-3">
-          <Avatar
-            fallback="AI"
-            size="sm"
-            className="bg-primary text-primary-foreground"
-          />
-          <div className="flex-1 space-y-2">
-            <div className="flex items-center gap-2 text-sm">
-              <Brain className="h-4 w-4 text-primary animate-pulse" />
-              <span className="text-muted-foreground">
-                Analyzing your question...
-              </span>
-            </div>
-            <div className="pl-6 space-y-1.5 border-l-2 border-muted">
-              {[
-                { text: 'Understanding context', done: true },
-                { text: 'Gathering relevant information', done: true },
-                { text: 'Formulating response', done: false },
-              ].map((step, i) => (
-                <div key={i} className="flex items-center gap-2 text-sm">
-                  {step.done ? (
-                    <CheckCircle className="h-3.5 w-3.5 text-green-500" />
-                  ) : (
-                    <Loader2 className="h-3.5 w-3.5 text-primary animate-spin" />
-                  )}
-                  <span className={step.done ? 'text-muted-foreground' : ''}>
-                    {step.text}
-                  </span>
-                </div>
-              ))}
-            </div>
-          </div>
+  return (
+    <Card>
+      <CardHeader className="pb-3">
+        <CardTitle className="text-lg flex items-center gap-2">
+          <FolderOpen className="h-5 w-5" />
+          File Explorer
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="border rounded-lg p-2 max-h-[300px] overflow-auto">
+          {fileTree.map((node) => renderNode(node))}
         </div>
-      </Card>
-    </div>
+      </CardContent>
+    </Card>
   )
 }
 
 // ============================================================================
-// TOKEN OPTIMIZATION DEMO
+// SAFETY ALERTS & GUARDRAILS DEMO
 // ============================================================================
-function TokenOptimizationDemo() {
-  const [tokenUsage, setTokenUsage] = useState({
-    used: 3500,
-    budget: 8000,
-    inputTokens: 1200,
-    outputTokens: 2300,
-  })
+function SafetyAlertsDemo() {
+  return (
+    <Card>
+      <CardHeader className="pb-3">
+        <CardTitle className="text-lg flex items-center gap-2">
+          <Shield className="h-5 w-5" />
+          Safety & Guardrails
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-3">
+        {[
+          {
+            type: 'success',
+            title: 'Safe Response',
+            message: 'Content passed all safety checks',
+            icon: ShieldCheck,
+          },
+          {
+            type: 'warning',
+            title: 'Caution',
+            message: 'Response may contain sensitive information',
+            icon: AlertTriangle,
+          },
+          {
+            type: 'error',
+            title: 'Blocked',
+            message: 'Request was blocked due to policy violation',
+            icon: ShieldAlert,
+          },
+          {
+            type: 'info',
+            title: 'Rate Limited',
+            message: 'Request throttled - 5 requests per minute',
+            icon: Timer,
+          },
+        ].map((alert, i) => (
+          <div
+            key={i}
+            className={cn(
+              'flex items-start gap-3 p-3 rounded-lg border',
+              alert.type === 'success' && 'bg-green-500/10 border-green-500/30',
+              alert.type === 'warning' &&
+                'bg-yellow-500/10 border-yellow-500/30',
+              alert.type === 'error' && 'bg-red-500/10 border-red-500/30',
+              alert.type === 'info' && 'bg-blue-500/10 border-blue-500/30'
+            )}
+          >
+            <alert.icon
+              className={cn(
+                'h-5 w-5 shrink-0',
+                alert.type === 'success' && 'text-green-500',
+                alert.type === 'warning' && 'text-yellow-500',
+                alert.type === 'error' && 'text-red-500',
+                alert.type === 'info' && 'text-blue-500'
+              )}
+            />
+            <div>
+              <p className="font-medium text-sm">{alert.title}</p>
+              <p className="text-xs text-muted-foreground">{alert.message}</p>
+            </div>
+          </div>
+        ))}
+      </CardContent>
+    </Card>
+  )
+}
+
+// ============================================================================
+// APPROVAL CARD DEMO
+// ============================================================================
+function ApprovalCardDemo() {
+  const [status, setStatus] = useState<'pending' | 'approved' | 'rejected'>(
+    'pending'
+  )
 
   return (
-    <div className="space-y-6">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {/* Token Usage Meter */}
-        <Card className="p-4">
-          <h4 className="text-sm font-medium mb-4">Token Usage Meter</h4>
-          <div className="space-y-4">
-            <div>
-              <div className="flex justify-between text-sm mb-2">
-                <span className="text-muted-foreground">Used</span>
-                <span className="font-mono">
-                  {tokenUsage.used.toLocaleString()} /{' '}
-                  {tokenUsage.budget.toLocaleString()}
-                </span>
-              </div>
-              <div className="h-3 bg-muted rounded-full overflow-hidden">
-                <div
-                  className="h-full bg-primary rounded-full transition-all"
-                  style={{
-                    width: `${(tokenUsage.used / tokenUsage.budget) * 100}%`,
-                  }}
-                />
-              </div>
+    <Card>
+      <CardHeader className="pb-3">
+        <CardTitle className="text-lg flex items-center gap-2">
+          <ShieldCheck className="h-5 w-5" />
+          Tool Approval
+        </CardTitle>
+        <CardDescription>
+          Human-in-the-loop for sensitive operations
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <div
+          className={cn(
+            'p-4 rounded-lg border-2 border-dashed',
+            status === 'pending' && 'border-yellow-500/50 bg-yellow-500/5',
+            status === 'approved' && 'border-green-500/50 bg-green-500/5',
+            status === 'rejected' && 'border-red-500/50 bg-red-500/5'
+          )}
+        >
+          <div className="flex items-start gap-3">
+            <div
+              className={cn(
+                'w-10 h-10 rounded-lg flex items-center justify-center',
+                status === 'pending' && 'bg-yellow-500/20',
+                status === 'approved' && 'bg-green-500/20',
+                status === 'rejected' && 'bg-red-500/20'
+              )}
+            >
+              {status === 'pending' && (
+                <AlertTriangle className="h-5 w-5 text-yellow-500" />
+              )}
+              {status === 'approved' && (
+                <CheckCircle className="h-5 w-5 text-green-500" />
+              )}
+              {status === 'rejected' && <X className="h-5 w-5 text-red-500" />}
             </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="bg-muted/50 rounded-lg p-3">
-                <p className="text-xs text-muted-foreground">Input</p>
-                <p className="text-lg font-mono font-medium">
-                  {tokenUsage.inputTokens.toLocaleString()}
-                </p>
-              </div>
-              <div className="bg-muted/50 rounded-lg p-3">
-                <p className="text-xs text-muted-foreground">Output</p>
-                <p className="text-lg font-mono font-medium">
-                  {tokenUsage.outputTokens.toLocaleString()}
-                </p>
+            <div className="flex-1">
+              <p className="font-medium">Delete user data</p>
+              <p className="text-sm text-muted-foreground mt-1">
+                The AI wants to execute{' '}
+                <code className="px-1 py-0.5 bg-muted rounded">
+                  delete_user_data
+                </code>
+              </p>
+              <div className="mt-3 p-2 bg-muted rounded font-mono text-xs">
+                {`{ "user_id": "usr_123", "reason": "account_deletion" }`}
               </div>
             </div>
           </div>
-        </Card>
 
-        {/* Token Budget with Warnings */}
-        <Card className="p-4">
-          <h4 className="text-sm font-medium mb-4">Budget Warnings</h4>
-          <div className="space-y-3">
-            {[
-              {
-                label: 'Normal',
-                used: 2000,
-                total: 8000,
-                color: 'bg-green-500',
-              },
-              {
-                label: 'Warning',
-                used: 6000,
-                total: 8000,
-                color: 'bg-yellow-500',
-              },
-              {
-                label: 'Critical',
-                used: 7500,
-                total: 8000,
-                color: 'bg-red-500',
-              },
-            ].map((item) => (
-              <div key={item.label}>
-                <div className="flex justify-between text-sm mb-1">
-                  <span className="text-muted-foreground">{item.label}</span>
-                  <span className="font-mono text-xs">
-                    {Math.round((item.used / item.total) * 100)}%
-                  </span>
+          {status === 'pending' && (
+            <div className="flex items-center gap-2 mt-4">
+              <Button
+                size="sm"
+                className="gap-2 bg-green-600 hover:bg-green-700"
+                onClick={() => setStatus('approved')}
+              >
+                <CheckCircle className="h-4 w-4" />
+                Approve
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                className="gap-2 text-red-500"
+                onClick={() => setStatus('rejected')}
+              >
+                <X className="h-4 w-4" />
+                Reject
+              </Button>
+            </div>
+          )}
+          {status !== 'pending' && (
+            <Button
+              variant="outline"
+              size="sm"
+              className="mt-4"
+              onClick={() => setStatus('pending')}
+            >
+              Reset
+            </Button>
+          )}
+        </div>
+      </CardContent>
+    </Card>
+  )
+}
+
+// ============================================================================
+// CHAIN OF THOUGHT DEMO
+// ============================================================================
+function ChainOfThoughtDemo() {
+  const [expanded, setExpanded] = useState(true)
+  const steps = [
+    {
+      id: 1,
+      content: "Understanding the user's question about React hooks",
+      time: '0.2s',
+    },
+    {
+      id: 2,
+      content:
+        'Identifying relevant concepts: useState, useEffect, custom hooks',
+      time: '0.4s',
+    },
+    {
+      id: 3,
+      content: 'Recalling best practices from documentation',
+      time: '0.6s',
+    },
+    {
+      id: 4,
+      content: 'Formulating clear explanation with examples',
+      time: '0.8s',
+    },
+  ]
+
+  return (
+    <Card>
+      <CardHeader className="pb-3">
+        <button
+          onClick={() => setExpanded(!expanded)}
+          className="flex items-center justify-between w-full"
+        >
+          <CardTitle className="text-lg flex items-center gap-2">
+            <Brain className="h-5 w-5 text-violet-500" />
+            Chain of Thought
+          </CardTitle>
+          {expanded ? (
+            <ChevronUp className="h-5 w-5" />
+          ) : (
+            <ChevronDown className="h-5 w-5" />
+          )}
+        </button>
+      </CardHeader>
+      {expanded && (
+        <CardContent>
+          <div className="relative pl-6 space-y-4">
+            <div className="absolute left-[11px] top-2 bottom-2 w-0.5 bg-violet-500/30" />
+            {steps.map((step, i) => (
+              <div key={step.id} className="relative flex items-start gap-3">
+                <div className="absolute left-[-13px] w-5 h-5 rounded-full flex items-center justify-center text-xs font-medium bg-violet-500 text-white">
+                  {i + 1}
                 </div>
-                <div className="h-2 bg-muted rounded-full overflow-hidden">
-                  <div
-                    className={cn(
-                      'h-full rounded-full transition-all',
-                      item.color
-                    )}
-                    style={{ width: `${(item.used / item.total) * 100}%` }}
-                  />
+                <div className="flex-1 pt-0.5">
+                  <p className="text-sm">{step.content}</p>
+                  <p className="text-xs text-muted-foreground mt-0.5">
+                    {step.time}
+                  </p>
                 </div>
               </div>
             ))}
           </div>
-        </Card>
-      </div>
-
-      {/* Cost Estimation */}
-      <Card className="p-4">
-        <h4 className="text-sm font-medium mb-4">Cost Estimation</h4>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          {[
-            { label: 'This Message', value: '$0.004', tokens: '~400 tokens' },
-            { label: 'Conversation', value: '$0.035', tokens: '~3,500 tokens' },
-            { label: 'Today', value: '$0.82', tokens: '~82,000 tokens' },
-            { label: 'This Month', value: '$24.50', tokens: '~2.4M tokens' },
-          ].map((item) => (
-            <div key={item.label} className="bg-muted/50 rounded-lg p-3">
-              <p className="text-xs text-muted-foreground">{item.label}</p>
-              <p className="text-xl font-mono font-bold text-primary">
-                {item.value}
-              </p>
-              <p className="text-xs text-muted-foreground">{item.tokens}</p>
-            </div>
-          ))}
-        </div>
-      </Card>
-
-      {/* Token Optimization Tips */}
-      <Card className="p-4 border-primary/20 bg-primary/5">
-        <div className="flex gap-3">
-          <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
-            <Zap className="h-4 w-4 text-primary" />
-          </div>
-          <div>
-            <h4 className="text-sm font-medium mb-1">
-              Optimization Suggestions
-            </h4>
-            <ul className="text-sm text-muted-foreground space-y-1">
-              <li>• Enable context compression to save ~40% tokens</li>
-              <li>• Use memory summarization for long conversations</li>
-              <li>• Consider a smaller model for simple queries</li>
-            </ul>
-          </div>
-        </div>
-      </Card>
-    </div>
+        </CardContent>
+      )}
+    </Card>
   )
 }
 
 // ============================================================================
-// PROMPT INPUT VARIATIONS
+// EMPTY STATE DEMO
 // ============================================================================
-function PromptInputVariationsDemo() {
-  const [basicInput, setBasicInput] = useState('')
-  const [advancedInput, setAdvancedInput] = useState('')
-  const [showCommands, setShowCommands] = useState(false)
-  const [showMentions, setShowMentions] = useState(false)
-  const [attachments, setAttachments] = useState<
-    { name: string; type: string; size: string }[]
-  >([])
+function EmptyStateDemo() {
+  return (
+    <Card>
+      <CardHeader className="pb-3">
+        <CardTitle className="text-lg">Empty States</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="grid grid-cols-2 gap-4">
+          <div className="p-8 border rounded-lg text-center">
+            <MessageSquare className="h-12 w-12 text-muted-foreground mx-auto mb-3" />
+            <p className="font-medium">No conversations yet</p>
+            <p className="text-sm text-muted-foreground mt-1">
+              Start a new chat to get going
+            </p>
+            <Button className="mt-4 gap-2">
+              <Plus className="h-4 w-4" />
+              New Chat
+            </Button>
+          </div>
+          <div className="p-8 border rounded-lg text-center">
+            <Search className="h-12 w-12 text-muted-foreground mx-auto mb-3" />
+            <p className="font-medium">No results found</p>
+            <p className="text-sm text-muted-foreground mt-1">
+              Try adjusting your search
+            </p>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  )
+}
 
-  const commands = [
-    { icon: Code, label: '/code', description: 'Generate code' },
-    { icon: FileText, label: '/summarize', description: 'Summarize text' },
-    { icon: Globe, label: '/search', description: 'Search the web' },
-    { icon: Image, label: '/image', description: 'Generate image' },
-    { icon: Terminal, label: '/run', description: 'Execute code' },
-    { icon: Brain, label: '/analyze', description: 'Analyze data' },
+// ============================================================================
+// ERROR PAGE DEMO
+// ============================================================================
+function ErrorPageDemo() {
+  return (
+    <Card>
+      <CardHeader className="pb-3">
+        <CardTitle className="text-lg">Error States</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="grid grid-cols-2 gap-4">
+          <div className="p-6 bg-red-500/10 border border-red-500/30 rounded-lg">
+            <AlertOctagon className="h-10 w-10 text-red-500 mb-3" />
+            <p className="font-medium text-red-600">Connection Failed</p>
+            <p className="text-sm text-muted-foreground mt-1">
+              Unable to reach the server
+            </p>
+            <Button variant="outline" size="sm" className="mt-3 gap-2">
+              <RotateCcw className="h-4 w-4" />
+              Retry
+            </Button>
+          </div>
+          <div className="p-6 bg-yellow-500/10 border border-yellow-500/30 rounded-lg">
+            <AlertTriangle className="h-10 w-10 text-yellow-500 mb-3" />
+            <p className="font-medium text-yellow-600">Rate Limited</p>
+            <p className="text-sm text-muted-foreground mt-1">
+              Too many requests. Retry in 30s
+            </p>
+            <div className="mt-3 flex items-center gap-2 text-sm text-muted-foreground">
+              <Hourglass className="h-4 w-4" />
+              Waiting...
+            </div>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  )
+}
+
+// ============================================================================
+// MESSAGE DRAFTS & ARCHIVE
+// ============================================================================
+function MessageDraftsDemo() {
+  const drafts = [
+    { id: 1, preview: 'Can you help me with...', time: '2 min ago' },
+    { id: 2, preview: 'I need to understand how...', time: '1 hour ago' },
   ]
-
-  const mentions = [
-    { avatar: 'D', name: '@documents', description: 'Your uploaded documents' },
-    { avatar: 'C', name: '@code', description: 'Codebase context' },
-    { avatar: 'W', name: '@web', description: 'Web search results' },
-    { avatar: 'M', name: '@memory', description: 'Conversation memory' },
-  ]
-
-  const handleAddAttachment = () => {
-    const types = [
-      { name: 'report.pdf', type: 'pdf', size: '2.4 MB' },
-      { name: 'data.csv', type: 'csv', size: '156 KB' },
-      { name: 'screenshot.png', type: 'image', size: '890 KB' },
-      { name: 'audio-note.mp3', type: 'audio', size: '1.2 MB' },
-    ]
-    const randomFile = types[Math.floor(Math.random() * types.length)]
-    setAttachments((prev) => [...prev, randomFile])
-  }
-
-  const getFileIcon = (type: string) => {
-    switch (type) {
-      case 'pdf':
-        return <FileText className="h-4 w-4" />
-      case 'csv':
-        return <Database className="h-4 w-4" />
-      case 'image':
-        return <ImageIcon className="h-4 w-4" />
-      case 'audio':
-        return <Music className="h-4 w-4" />
-      default:
-        return <File className="h-4 w-4" />
-    }
-  }
 
   return (
-    <div className="space-y-6">
-      {/* Basic Input */}
-      <Card className="p-4">
-        <h4 className="text-sm font-medium mb-3">Basic Input</h4>
-        <div className="flex items-center gap-2 bg-muted rounded-lg p-2">
-          <Input
-            value={basicInput}
-            onChange={(e) => setBasicInput(e.target.value)}
-            placeholder="Type a message..."
-            className="border-0 bg-transparent focus-visible:ring-0"
-          />
-          <Button size="icon" className="shrink-0">
-            <Send className="h-4 w-4" />
-          </Button>
-        </div>
-      </Card>
-
-      {/* Advanced Input with Slash Commands */}
-      <Card className="p-4">
-        <h4 className="text-sm font-medium mb-3">
-          Advanced Input with <Kbd shortcut="/" /> Commands
-        </h4>
-        <div className="relative">
-          <div className="flex items-end gap-2 bg-muted rounded-xl p-2">
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-8 w-8"
-              onClick={handleAddAttachment}
-            >
-              <Paperclip className="h-4 w-4" />
-            </Button>
-            <div className="flex-1">
-              {/* Attachments Preview */}
-              {attachments.length > 0 && (
-                <div className="flex flex-wrap gap-2 mb-2">
-                  {attachments.map((file, i) => (
-                    <div
-                      key={i}
-                      className="flex items-center gap-2 bg-background rounded-lg px-3 py-1.5 text-sm"
-                    >
-                      {getFileIcon(file.type)}
-                      <span className="max-w-[100px] truncate">
-                        {file.name}
-                      </span>
-                      <span className="text-xs text-muted-foreground">
-                        {file.size}
-                      </span>
-                      <button
-                        onClick={() =>
-                          setAttachments((prev) =>
-                            prev.filter((_, idx) => idx !== i)
-                          )
-                        }
-                        className="text-muted-foreground hover:text-foreground"
-                      >
-                        <X className="h-3 w-3" />
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              )}
-              <Input
-                value={advancedInput}
-                onChange={(e) => {
-                  setAdvancedInput(e.target.value)
-                  setShowCommands(e.target.value.startsWith('/'))
-                  setShowMentions(e.target.value.includes('@'))
-                }}
-                placeholder="Type / for commands, @ for mentions..."
-                className="border-0 bg-transparent focus-visible:ring-0"
-              />
-            </div>
-            <Button variant="ghost" size="icon" className="h-8 w-8">
-              <Mic className="h-4 w-4" />
-            </Button>
-            <Button size="icon" className="h-8 w-8">
-              <Send className="h-4 w-4" />
-            </Button>
+    <Card>
+      <CardHeader className="pb-3">
+        <CardTitle className="text-lg flex items-center gap-2">
+          <Edit3 className="h-5 w-5" />
+          Drafts & Archive
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <div>
+          <p className="text-sm font-medium mb-2">Drafts</p>
+          <div className="space-y-2">
+            {drafts.map((draft) => (
+              <div
+                key={draft.id}
+                className="flex items-center gap-3 p-2 rounded-lg hover:bg-muted"
+              >
+                <Edit3 className="h-4 w-4 text-muted-foreground" />
+                <span className="flex-1 text-sm truncate">{draft.preview}</span>
+                <span className="text-xs text-muted-foreground">
+                  {draft.time}
+                </span>
+              </div>
+            ))}
           </div>
-
-          {/* Slash Commands Dropdown */}
-          {showCommands && (
-            <div className="absolute bottom-full left-0 right-0 mb-2 bg-popover border rounded-lg shadow-lg p-1 z-10">
-              <p className="text-xs text-muted-foreground px-2 py-1">
-                Commands
-              </p>
-              {commands.map((cmd) => (
-                <button
-                  key={cmd.label}
-                  className="w-full flex items-center gap-3 px-2 py-2 rounded-md hover:bg-muted text-left"
-                  onClick={() => {
-                    setAdvancedInput(cmd.label + ' ')
-                    setShowCommands(false)
-                  }}
-                >
-                  <div className="w-8 h-8 rounded-md bg-muted flex items-center justify-center">
-                    <cmd.icon className="h-4 w-4" />
-                  </div>
-                  <div>
-                    <p className="text-sm font-medium">{cmd.label}</p>
-                    <p className="text-xs text-muted-foreground">
-                      {cmd.description}
-                    </p>
-                  </div>
-                </button>
-              ))}
-            </div>
-          )}
-
-          {/* Mentions Dropdown */}
-          {showMentions && (
-            <div className="absolute bottom-full left-0 right-0 mb-2 bg-popover border rounded-lg shadow-lg p-1 z-10">
-              <p className="text-xs text-muted-foreground px-2 py-1">
-                Mentions
-              </p>
-              {mentions.map((mention) => (
-                <button
-                  key={mention.name}
-                  className="w-full flex items-center gap-3 px-2 py-2 rounded-md hover:bg-muted text-left"
-                  onClick={() => {
-                    setAdvancedInput((prev) =>
-                      prev.replace(/@\w*$/, mention.name + ' ')
-                    )
-                    setShowMentions(false)
-                  }}
-                >
-                  <Avatar fallback={mention.avatar} size="sm" />
-                  <div>
-                    <p className="text-sm font-medium">{mention.name}</p>
-                    <p className="text-xs text-muted-foreground">
-                      {mention.description}
-                    </p>
-                  </div>
-                </button>
-              ))}
-            </div>
-          )}
         </div>
-        <div className="flex items-center gap-2 mt-2 text-xs text-muted-foreground">
-          <Kbd shortcut="/" /> for commands
-          <span className="text-muted-foreground/50">•</span>
-          <Kbd shortcut="@" /> for mentions
-          <span className="text-muted-foreground/50">•</span>
-          <Kbd shortcut="mod+enter" /> to send
+        <Separator />
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Archive className="h-4 w-4 text-muted-foreground" />
+            <span className="text-sm">Archived messages</span>
+          </div>
+          <Badge variant="secondary">12</Badge>
         </div>
-      </Card>
-
-      {/* File Attachments Showcase */}
-      <Card className="p-4">
-        <h4 className="text-sm font-medium mb-3">File Attachments Preview</h4>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-          {[
-            {
-              name: 'document.pdf',
-              type: 'pdf',
-              size: '2.4 MB',
-              icon: FileText,
-              color: 'text-red-500',
-            },
-            {
-              name: 'photo.jpg',
-              type: 'image',
-              size: '1.8 MB',
-              icon: ImageIcon,
-              color: 'text-blue-500',
-              preview: true,
-            },
-            {
-              name: 'data.csv',
-              type: 'csv',
-              size: '156 KB',
-              icon: Database,
-              color: 'text-green-500',
-            },
-            {
-              name: 'recording.mp3',
-              type: 'audio',
-              size: '3.2 MB',
-              icon: Music,
-              color: 'text-purple-500',
-            },
-          ].map((file) => (
-            <div
-              key={file.name}
-              className="border rounded-lg p-3 hover:bg-muted/50 transition-colors"
-            >
-              {file.preview ? (
-                <div className="aspect-video bg-gradient-to-br from-blue-100 to-purple-100 dark:from-blue-900/20 dark:to-purple-900/20 rounded-md mb-2 flex items-center justify-center">
-                  <ImageIcon className="h-8 w-8 text-muted-foreground" />
-                </div>
-              ) : (
-                <div className="aspect-video bg-muted rounded-md mb-2 flex items-center justify-center">
-                  <file.icon className={cn('h-8 w-8', file.color)} />
-                </div>
-              )}
-              <p className="text-sm font-medium truncate">{file.name}</p>
-              <p className="text-xs text-muted-foreground">{file.size}</p>
-            </div>
-          ))}
-        </div>
-      </Card>
-    </div>
+      </CardContent>
+    </Card>
   )
 }
 
 // ============================================================================
-// PROMPT SUGGESTIONS DEMO
+// QUICK REPLIES DEMO
 // ============================================================================
-function PromptSuggestionsDemo() {
-  const suggestions = [
-    { icon: Code, text: 'Write a React component for...', category: 'Code' },
-    { icon: FileText, text: 'Summarize this document...', category: 'Writing' },
-    { icon: Brain, text: 'Explain the concept of...', category: 'Learning' },
-    {
-      icon: Sparkles,
-      text: 'Generate creative ideas for...',
-      category: 'Creative',
-    },
-    { icon: Search, text: 'Research and compare...', category: 'Research' },
-    { icon: Terminal, text: 'Debug this code snippet...', category: 'Debug' },
-  ]
-
-  const followUpSuggestions = [
-    'Can you explain that in more detail?',
+function QuickRepliesDemo() {
+  const replies = [
+    'Yes, please continue',
+    'Can you explain more?',
     'Show me an example',
-    'What are the alternatives?',
-    'How does this compare to...',
+    "That's helpful, thanks!",
   ]
 
   return (
-    <div className="space-y-6">
-      {/* Welcome Suggestions */}
-      <Card className="p-6">
-        <div className="text-center mb-6">
-          <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-4">
-            <Sparkles className="h-6 w-6 text-primary" />
-          </div>
-          <h3 className="text-lg font-semibold mb-1">
-            How can I help you today?
-          </h3>
-          <p className="text-sm text-muted-foreground">
-            Choose a suggestion or type your own
-          </p>
-        </div>
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-          {suggestions.map((s) => (
-            <button
-              key={s.text}
-              className="flex items-start gap-3 p-3 rounded-lg border hover:bg-muted transition-colors text-left"
-            >
-              <div className="w-8 h-8 rounded-md bg-primary/10 flex items-center justify-center shrink-0">
-                <s.icon className="h-4 w-4 text-primary" />
-              </div>
-              <div>
-                <Badge variant="outline" className="mb-1 text-xs">
-                  {s.category}
-                </Badge>
-                <p className="text-sm">{s.text}</p>
-              </div>
-            </button>
-          ))}
-        </div>
-      </Card>
-
-      {/* Follow-up Suggestions */}
-      <Card className="p-4">
-        <h4 className="text-sm font-medium mb-3">Follow-up Suggestions</h4>
+    <Card>
+      <CardHeader className="pb-3">
+        <CardTitle className="text-lg flex items-center gap-2">
+          <Reply className="h-5 w-5" />
+          Quick Replies
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
         <div className="flex flex-wrap gap-2">
-          {followUpSuggestions.map((s) => (
+          {replies.map((reply, i) => (
             <Button
-              key={s}
+              key={i}
               variant="outline"
               size="sm"
               className="rounded-full"
             >
-              {s}
+              {reply}
             </Button>
           ))}
         </div>
-      </Card>
-    </div>
+      </CardContent>
+    </Card>
   )
 }
 
 // ============================================================================
-// CITATIONS AND LINKS DEMO
+// NOTIFICATIONS & UNREAD DEMO
 // ============================================================================
-function CitationsDemo() {
-  const citations = [
+function NotificationsDemo() {
+  const notifications = [
     {
-      title: 'React Documentation',
-      url: 'https://react.dev/learn',
-      snippet:
-        'React lets you build user interfaces out of individual pieces called components...',
-      favicon: '⚛️',
+      id: 1,
+      title: 'New message',
+      desc: 'AI responded to your query',
+      time: '2m',
+      unread: true,
     },
     {
-      title: 'MDN Web Docs - JavaScript',
-      url: 'https://developer.mozilla.org/en-US/docs/Web/JavaScript',
-      snippet:
-        'JavaScript (JS) is a lightweight interpreted programming language...',
-      favicon: '📘',
+      id: 2,
+      title: 'Task completed',
+      desc: 'Code execution finished',
+      time: '5m',
+      unread: true,
     },
     {
-      title: 'Stack Overflow Discussion',
-      url: 'https://stackoverflow.com/questions/12345',
-      snippet: 'The best practice for handling this scenario involves...',
-      favicon: '📗',
+      id: 3,
+      title: 'Memory updated',
+      desc: 'New facts stored',
+      time: '10m',
+      unread: false,
     },
   ]
 
   return (
-    <div className="space-y-6">
-      {/* Message with Citations */}
-      <Card className="p-4">
-        <div className="flex gap-3">
-          <Avatar
-            fallback="AI"
-            size="sm"
-            className="bg-primary text-primary-foreground"
-          />
-          <div className="flex-1">
-            <p className="text-sm leading-relaxed mb-4">
-              Based on my research, React components are reusable pieces of UI
-              <sup className="text-primary cursor-pointer hover:underline">
-                [1]
-              </sup>
-              . JavaScript provides the foundation for building these
-              interactive experiences
-              <sup className="text-primary cursor-pointer hover:underline">
-                [2]
-              </sup>
-              . The community has established best practices for handling common
-              scenarios
-              <sup className="text-primary cursor-pointer hover:underline">
-                [3]
-              </sup>
-              .
-            </p>
-
-            {/* Citations List */}
-            <div className="space-y-2">
-              <p className="text-xs text-muted-foreground font-medium">
-                Sources
-              </p>
-              <div className="flex gap-2 overflow-x-auto pb-2">
-                {citations.map((cite, i) => (
-                  <div
-                    key={i}
-                    className="flex-shrink-0 w-[200px] border rounded-lg p-3 hover:bg-muted transition-colors cursor-pointer"
-                  >
-                    <div className="flex items-center gap-2 mb-1">
-                      <span>{cite.favicon}</span>
-                      <span className="text-xs text-primary">[{i + 1}]</span>
-                    </div>
-                    <p className="text-sm font-medium truncate">{cite.title}</p>
-                    <p className="text-xs text-muted-foreground line-clamp-2">
-                      {cite.snippet}
-                    </p>
-                  </div>
-                ))}
-              </div>
+    <Card>
+      <CardHeader className="pb-3">
+        <div className="flex items-center justify-between">
+          <CardTitle className="text-lg flex items-center gap-2">
+            <Bell className="h-5 w-5" />
+            Notifications
+          </CardTitle>
+          <Badge className="bg-red-500">2</Badge>
+        </div>
+      </CardHeader>
+      <CardContent className="space-y-2">
+        {notifications.map((notif) => (
+          <div
+            key={notif.id}
+            className={cn(
+              'flex items-start gap-3 p-2 rounded-lg',
+              notif.unread && 'bg-primary/5'
+            )}
+          >
+            {notif.unread && (
+              <div className="w-2 h-2 rounded-full bg-primary mt-1.5" />
+            )}
+            {!notif.unread && <div className="w-2" />}
+            <div className="flex-1">
+              <p className="text-sm font-medium">{notif.title}</p>
+              <p className="text-xs text-muted-foreground">{notif.desc}</p>
             </div>
+            <span className="text-xs text-muted-foreground">{notif.time}</span>
           </div>
-        </div>
-      </Card>
-
-      {/* Link Preview */}
-      <Card className="p-4">
-        <h4 className="text-sm font-medium mb-3">Link Preview</h4>
-        <div className="border rounded-lg overflow-hidden">
-          <div className="aspect-video bg-gradient-to-br from-blue-100 to-purple-100 dark:from-blue-900/20 dark:to-purple-900/20 flex items-center justify-center">
-            <Globe className="h-12 w-12 text-muted-foreground" />
-          </div>
-          <div className="p-4">
-            <p className="text-xs text-muted-foreground mb-1">react.dev</p>
-            <h3 className="font-semibold mb-1">
-              React - The library for web and native user interfaces
-            </h3>
-            <p className="text-sm text-muted-foreground">
-              Create user interfaces from components. React lets you build user
-              interfaces out of individual pieces called components.
-            </p>
-          </div>
-        </div>
-      </Card>
-    </div>
+        ))}
+      </CardContent>
+    </Card>
   )
 }
 
 // ============================================================================
-// TOOL CALLING DEMO
+// PERSONAS DEMO
 // ============================================================================
-function ToolCallingDemo() {
-  const tools = [
+function PersonasDemo() {
+  const personas = [
     {
-      name: 'web_search',
-      status: 'completed',
+      id: 1,
+      name: 'Code Assistant',
+      desc: 'Expert in programming',
+      icon: Code,
+      active: true,
+    },
+    {
+      id: 2,
+      name: 'Writing Helper',
+      desc: 'Creative writing & editing',
+      icon: Edit3,
+      active: false,
+    },
+    {
+      id: 3,
+      name: 'Research Agent',
+      desc: 'Deep research & analysis',
       icon: Search,
-      description: 'Searching for "React best practices 2024"',
-      result: 'Found 5 relevant articles',
-    },
-    {
-      name: 'code_interpreter',
-      status: 'running',
-      icon: Terminal,
-      description: 'Executing Python code...',
-      result: null,
-    },
-    {
-      name: 'file_read',
-      status: 'pending',
-      icon: FileText,
-      description: 'Reading config.json',
-      result: null,
+      active: false,
     },
   ]
 
   return (
-    <div className="space-y-6">
-      {/* Tool Execution Cards */}
-      <Card className="p-4">
-        <h4 className="text-sm font-medium mb-4">Tool Execution</h4>
-        <div className="space-y-3">
-          {tools.map((tool) => (
+    <Card>
+      <CardHeader className="pb-3">
+        <CardTitle className="text-lg flex items-center gap-2">
+          <Users className="h-5 w-5" />
+          Personas
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-2">
+        {personas.map((persona) => (
+          <div
+            key={persona.id}
+            className={cn(
+              'flex items-center gap-3 p-3 rounded-lg cursor-pointer transition-colors',
+              persona.active
+                ? 'bg-primary/10 border border-primary/30'
+                : 'hover:bg-muted'
+            )}
+          >
             <div
-              key={tool.name}
               className={cn(
-                'flex items-start gap-3 p-3 rounded-lg border',
-                tool.status === 'running' && 'border-primary/50 bg-primary/5'
+                'w-10 h-10 rounded-lg flex items-center justify-center',
+                persona.active
+                  ? 'bg-primary text-primary-foreground'
+                  : 'bg-muted'
+              )}
+            >
+              <persona.icon className="h-5 w-5" />
+            </div>
+            <div className="flex-1">
+              <p className="font-medium text-sm">{persona.name}</p>
+              <p className="text-xs text-muted-foreground">{persona.desc}</p>
+            </div>
+            {persona.active && <Badge>Active</Badge>}
+          </div>
+        ))}
+      </CardContent>
+    </Card>
+  )
+}
+
+// ============================================================================
+// SOURCES DISPLAY DEMO
+// ============================================================================
+function SourcesDemo() {
+  const sources = [
+    {
+      id: 1,
+      title: 'React Documentation',
+      url: 'react.dev',
+      snippet: 'Official React docs...',
+    },
+    {
+      id: 2,
+      title: 'MDN Web Docs',
+      url: 'developer.mozilla.org',
+      snippet: 'Web technology reference...',
+    },
+    {
+      id: 3,
+      title: 'Stack Overflow',
+      url: 'stackoverflow.com',
+      snippet: 'Community Q&A...',
+    },
+  ]
+
+  return (
+    <Card>
+      <CardHeader className="pb-3">
+        <CardTitle className="text-lg flex items-center gap-2">
+          <Link className="h-5 w-5" />
+          Sources
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="space-y-3">
+          {sources.map((source, i) => (
+            <div
+              key={source.id}
+              className="flex items-start gap-3 p-3 border rounded-lg hover:bg-muted cursor-pointer"
+            >
+              <Badge variant="outline">{i + 1}</Badge>
+              <div className="flex-1 min-w-0">
+                <p className="font-medium text-sm truncate">{source.title}</p>
+                <p className="text-xs text-primary truncate">{source.url}</p>
+                <p className="text-xs text-muted-foreground mt-1">
+                  {source.snippet}
+                </p>
+              </div>
+              <ExternalLink className="h-4 w-4 text-muted-foreground shrink-0" />
+            </div>
+          ))}
+        </div>
+      </CardContent>
+    </Card>
+  )
+}
+
+// ============================================================================
+// RETRY LOGIC DEMO
+// ============================================================================
+function RetryLogicDemo() {
+  const [attempt, setAttempt] = useState(0)
+  const [status, setStatus] = useState<
+    'idle' | 'retrying' | 'success' | 'failed'
+  >('idle')
+
+  const simulateRetry = async () => {
+    setStatus('retrying')
+    setAttempt(1)
+
+    for (let i = 1; i <= 3; i++) {
+      await new Promise((r) => setTimeout(r, 1000))
+      setAttempt(i + 1)
+      if (i === 3) {
+        setStatus('success')
+      }
+    }
+  }
+
+  return (
+    <Card>
+      <CardHeader className="pb-3">
+        <CardTitle className="text-lg flex items-center gap-2">
+          <RotateCw className="h-5 w-5" />
+          Retry Logic
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="space-y-4">
+          <div className="p-4 border rounded-lg">
+            <div className="flex items-center justify-between mb-3">
+              <span className="text-sm font-medium">Request Status</span>
+              <Badge
+                className={cn(
+                  status === 'idle' && 'bg-gray-500/20 text-gray-600',
+                  status === 'retrying' && 'bg-yellow-500/20 text-yellow-600',
+                  status === 'success' && 'bg-green-500/20 text-green-600',
+                  status === 'failed' && 'bg-red-500/20 text-red-600'
+                )}
+              >
+                {status}
+              </Badge>
+            </div>
+            {status === 'retrying' && (
+              <div className="space-y-2">
+                <div className="flex items-center gap-2 text-sm">
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  Attempt {attempt} of 3...
+                </div>
+                <div className="w-full h-2 bg-muted rounded-full overflow-hidden">
+                  <div
+                    className="h-full bg-yellow-500 rounded-full transition-all"
+                    style={{ width: `${(attempt / 3) * 100}%` }}
+                  />
+                </div>
+              </div>
+            )}
+            {status === 'success' && (
+              <div className="flex items-center gap-2 text-green-600">
+                <CheckCircle className="h-4 w-4" />
+                Request successful after {attempt - 1} retries
+              </div>
+            )}
+          </div>
+          <Button
+            onClick={simulateRetry}
+            disabled={status === 'retrying'}
+            className="w-full gap-2"
+          >
+            {status === 'retrying' ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <RotateCw className="h-4 w-4" />
+            )}
+            Simulate Retry
+          </Button>
+        </div>
+      </CardContent>
+    </Card>
+  )
+}
+
+// ============================================================================
+// MESSAGE SEARCH DEMO
+// ============================================================================
+function MessageSearchDemo() {
+  const [query, setQuery] = useState('')
+  const results = [
+    { id: 1, content: 'How to implement React hooks...', time: 'Yesterday' },
+    { id: 2, content: 'Best practices for TypeScript...', time: '3 days ago' },
+    { id: 3, content: 'Understanding async/await...', time: 'Last week' },
+  ]
+
+  return (
+    <Card>
+      <CardHeader className="pb-3">
+        <CardTitle className="text-lg flex items-center gap-2">
+          <Search className="h-5 w-5" />
+          Message Search
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="relative mb-4">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Input
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Search messages..."
+            className="pl-9"
+          />
+        </div>
+        <div className="space-y-2">
+          {results.map((result) => (
+            <div
+              key={result.id}
+              className="flex items-center gap-3 p-2 rounded-lg hover:bg-muted cursor-pointer"
+            >
+              <MessageSquare className="h-4 w-4 text-muted-foreground shrink-0" />
+              <span className="flex-1 text-sm truncate">{result.content}</span>
+              <span className="text-xs text-muted-foreground">
+                {result.time}
+              </span>
+            </div>
+          ))}
+        </div>
+      </CardContent>
+    </Card>
+  )
+}
+
+// ============================================================================
+// MODEL FALLBACK DEMO
+// ============================================================================
+function ModelFallbackDemo() {
+  const models = [
+    { name: 'GPT-4o', status: 'primary', latency: '234ms' },
+    { name: 'Claude 3.5', status: 'fallback', latency: '198ms' },
+    { name: 'GPT-4o-mini', status: 'fallback', latency: '89ms' },
+  ]
+
+  return (
+    <Card>
+      <CardHeader className="pb-3">
+        <CardTitle className="text-lg flex items-center gap-2">
+          <Layers className="h-5 w-5" />
+          Model Fallback
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="space-y-2">
+          {models.map((model, i) => (
+            <div
+              key={model.name}
+              className={cn(
+                'flex items-center gap-3 p-3 rounded-lg border',
+                i === 0 && 'border-primary bg-primary/5'
               )}
             >
               <div
                 className={cn(
-                  'w-8 h-8 rounded-md flex items-center justify-center',
-                  tool.status === 'completed'
-                    ? 'bg-green-500/10'
-                    : tool.status === 'running'
-                      ? 'bg-primary/10'
-                      : 'bg-muted'
+                  'w-8 h-8 rounded-lg flex items-center justify-center text-sm font-bold',
+                  i === 0 ? 'bg-primary text-primary-foreground' : 'bg-muted'
                 )}
               >
-                {tool.status === 'running' ? (
-                  <Loader2 className="h-4 w-4 text-primary animate-spin" />
-                ) : tool.status === 'completed' ? (
-                  <CheckCircle className="h-4 w-4 text-green-500" />
-                ) : (
-                  <tool.icon className="h-4 w-4 text-muted-foreground" />
-                )}
+                {i + 1}
               </div>
               <div className="flex-1">
-                <div className="flex items-center gap-2">
-                  <span className="text-sm font-medium font-mono">
-                    {tool.name}
-                  </span>
-                  <Badge
-                    variant="outline"
-                    className={cn(
-                      'text-xs',
-                      tool.status === 'completed' &&
-                        'border-green-500 text-green-500',
-                      tool.status === 'running' && 'border-primary text-primary'
-                    )}
-                  >
-                    {tool.status}
-                  </Badge>
-                </div>
-                <p className="text-sm text-muted-foreground">
-                  {tool.description}
+                <p className="font-medium text-sm">{model.name}</p>
+                <p className="text-xs text-muted-foreground">
+                  Latency: {model.latency}
                 </p>
-                {tool.result && (
-                  <p className="text-sm text-green-600 dark:text-green-400 mt-1">
-                    ✓ {tool.result}
-                  </p>
-                )}
               </div>
+              <Badge variant={i === 0 ? 'default' : 'secondary'}>
+                {model.status}
+              </Badge>
             </div>
           ))}
         </div>
-      </Card>
-
-      {/* Browser Preview */}
-      <Card className="p-4">
-        <h4 className="text-sm font-medium mb-3">Browser Tool</h4>
-        <div className="border rounded-lg overflow-hidden">
-          <div className="flex items-center gap-2 px-3 py-2 bg-muted border-b">
-            <div className="flex gap-1.5">
-              <div className="w-3 h-3 rounded-full bg-red-500" />
-              <div className="w-3 h-3 rounded-full bg-yellow-500" />
-              <div className="w-3 h-3 rounded-full bg-green-500" />
-            </div>
-            <div className="flex-1 flex items-center gap-2 bg-background rounded px-3 py-1 text-sm">
-              <Globe className="h-3 w-3 text-muted-foreground" />
-              <span className="text-muted-foreground">https://example.com</span>
-            </div>
-          </div>
-          <div className="aspect-video bg-background flex items-center justify-center">
-            <div className="text-center">
-              <Eye className="h-8 w-8 text-muted-foreground mx-auto mb-2" />
-              <p className="text-sm text-muted-foreground">Browser preview</p>
-            </div>
-          </div>
-        </div>
-      </Card>
-
-      {/* Terminal */}
-      <Card className="p-4">
-        <h4 className="text-sm font-medium mb-3">Terminal Output</h4>
-        <div className="bg-[#1e1e1e] rounded-lg p-4 font-mono text-sm">
-          <div className="flex items-center gap-2 text-green-400 mb-2">
-            <span>$</span>
-            <span>python analyze.py</span>
-          </div>
-          <div className="text-gray-300 space-y-1">
-            <p>Loading dataset...</p>
-            <p>Processing 1,234 records...</p>
-            <p className="text-green-400">✓ Analysis complete</p>
-            <p>Results saved to output.json</p>
-          </div>
-        </div>
-      </Card>
-    </div>
+      </CardContent>
+    </Card>
   )
 }
 
 // ============================================================================
-// CONVERSATION HISTORY DEMO
+// DATE PICKER DEMO
 // ============================================================================
-function ConversationHistoryDemo() {
-  const conversations = [
-    {
-      id: '1',
-      title: 'React Performance Optimization',
-      preview: 'How can I improve the performance of my React app?',
-      date: 'Today',
-      messages: 12,
-      branch: false,
-    },
-    {
-      id: '2',
-      title: 'TypeScript Generics Guide',
-      preview: 'Can you explain TypeScript generics with examples?',
-      date: 'Yesterday',
-      messages: 8,
-      branch: true,
-    },
-    {
-      id: '3',
-      title: 'API Design Best Practices',
-      preview: 'What are the best practices for REST API design?',
-      date: '2 days ago',
-      messages: 15,
-      branch: false,
-    },
-  ]
-
-  const projects = [
-    { name: 'Work', count: 12, color: 'bg-blue-500' },
-    { name: 'Personal', count: 8, color: 'bg-green-500' },
-    { name: 'Learning', count: 24, color: 'bg-purple-500' },
-  ]
+function DatePickerDemo() {
+  const [selectedDate, setSelectedDate] = useState<Date | null>(new Date())
+  const days = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa']
+  const currentMonth = new Date().toLocaleString('default', {
+    month: 'long',
+    year: 'numeric',
+  })
 
   return (
-    <div className="space-y-6">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {/* Conversation List */}
-        <Card className="p-4">
+    <Card>
+      <CardHeader className="pb-3">
+        <CardTitle className="text-lg flex items-center gap-2">
+          <Calendar className="h-5 w-5" />
+          Date Picker
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="p-3 border rounded-lg">
           <div className="flex items-center justify-between mb-4">
-            <h4 className="text-sm font-medium">Recent Conversations</h4>
-            <Button variant="ghost" size="sm">
-              <Search className="h-4 w-4" />
+            <Button variant="ghost" size="icon">
+              <ChevronUp className="h-4 w-4 rotate-[-90deg]" />
+            </Button>
+            <span className="font-medium">{currentMonth}</span>
+            <Button variant="ghost" size="icon">
+              <ChevronUp className="h-4 w-4 rotate-90" />
             </Button>
           </div>
-          <div className="space-y-2">
-            {conversations.map((conv) => (
-              <div
-                key={conv.id}
-                className="flex items-start gap-3 p-3 rounded-lg hover:bg-muted transition-colors cursor-pointer"
-              >
-                <MessageSquare className="h-5 w-5 text-muted-foreground shrink-0 mt-0.5" />
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2">
-                    <h5 className="text-sm font-medium truncate">
-                      {conv.title}
-                    </h5>
-                    {conv.branch && (
-                      <GitBranch className="h-3.5 w-3.5 text-primary" />
-                    )}
-                  </div>
-                  <p className="text-xs text-muted-foreground truncate">
-                    {conv.preview}
-                  </p>
-                  <div className="flex items-center gap-2 mt-1 text-xs text-muted-foreground">
-                    <span>{conv.date}</span>
-                    <span>•</span>
-                    <span>{conv.messages} messages</span>
-                  </div>
-                </div>
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" size="icon" className="h-7 w-7">
-                      <MoreHorizontal className="h-4 w-4" />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end">
-                    <DropdownMenuItem>
-                      <Edit3 className="h-4 w-4 mr-2" /> Rename
-                    </DropdownMenuItem>
-                    <DropdownMenuItem>
-                      <GitBranch className="h-4 w-4 mr-2" /> Branch
-                    </DropdownMenuItem>
-                    <DropdownMenuItem>
-                      <Download className="h-4 w-4 mr-2" /> Export
-                    </DropdownMenuItem>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem className="text-destructive">
-                      <Trash2 className="h-4 w-4 mr-2" /> Delete
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
+          <div className="grid grid-cols-7 gap-1 text-center text-xs mb-2">
+            {days.map((day) => (
+              <div key={day} className="text-muted-foreground py-1">
+                {day}
               </div>
             ))}
           </div>
-        </Card>
-
-        {/* Projects */}
-        <Card className="p-4">
-          <div className="flex items-center justify-between mb-4">
-            <h4 className="text-sm font-medium">Projects</h4>
-            <Button variant="ghost" size="sm">
-              <Plus className="h-4 w-4" />
-            </Button>
-          </div>
-          <div className="space-y-2">
-            {projects.map((project) => (
-              <div
-                key={project.name}
-                className="flex items-center gap-3 p-3 rounded-lg hover:bg-muted transition-colors cursor-pointer"
-              >
-                <div className={cn('w-3 h-3 rounded-full', project.color)} />
-                <span className="text-sm font-medium flex-1">
-                  {project.name}
-                </span>
-                <Badge variant="secondary">{project.count}</Badge>
-              </div>
-            ))}
-          </div>
-        </Card>
-      </div>
-
-      {/* Conversation Branching */}
-      <Card className="p-4">
-        <h4 className="text-sm font-medium mb-4">Conversation Branching</h4>
-        <div className="flex items-start gap-4">
-          {/* Main Branch */}
-          <div className="flex-1">
-            <div className="border-l-2 border-primary pl-4 space-y-4">
-              {[1, 2, 3].map((i) => (
-                <div key={i} className="relative">
-                  <div className="absolute -left-[21px] w-3 h-3 rounded-full bg-primary" />
-                  <div className="bg-muted rounded-lg p-3">
-                    <p className="text-sm">Message {i} in main branch</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Branch */}
-          <div className="flex-1">
-            <div className="flex items-center gap-2 mb-2 text-sm text-muted-foreground">
-              <GitBranch className="h-4 w-4" />
-              <span>Branch from message 2</span>
-            </div>
-            <div className="border-l-2 border-green-500 pl-4 space-y-4">
-              {[1, 2].map((i) => (
-                <div key={i} className="relative">
-                  <div className="absolute -left-[21px] w-3 h-3 rounded-full bg-green-500" />
-                  <div className="bg-green-500/10 rounded-lg p-3">
-                    <p className="text-sm">Alternative message {i}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </Card>
-    </div>
-  )
-}
-
-// ============================================================================
-// EXPORT/IMPORT DEMO
-// ============================================================================
-function ExportImportDemo() {
-  return (
-    <div className="space-y-6">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {/* Export Options */}
-        <Card className="p-4">
-          <h4 className="text-sm font-medium mb-4">Export Conversation</h4>
-          <div className="space-y-2">
-            {[
-              {
-                icon: FileText,
-                label: 'Markdown (.md)',
-                description: 'Human-readable format',
-              },
-              {
-                icon: Code,
-                label: 'JSON (.json)',
-                description: 'Full data with metadata',
-              },
-              {
-                icon: FileText,
-                label: 'Plain Text (.txt)',
-                description: 'Simple text format',
-              },
-              {
-                icon: FileText,
-                label: 'PDF (.pdf)',
-                description: 'Printable document',
-              },
-            ].map((option) => (
+          <div className="grid grid-cols-7 gap-1 text-center text-sm">
+            {Array.from({ length: 31 }, (_, i) => i + 1).map((day) => (
               <button
-                key={option.label}
-                className="w-full flex items-center gap-3 p-3 rounded-lg border hover:bg-muted transition-colors text-left"
+                key={day}
+                className={cn(
+                  'py-2 rounded-lg hover:bg-muted transition-colors',
+                  day === new Date().getDate() &&
+                    'bg-primary text-primary-foreground'
+                )}
               >
-                <option.icon className="h-5 w-5 text-muted-foreground" />
-                <div className="flex-1">
-                  <p className="text-sm font-medium">{option.label}</p>
-                  <p className="text-xs text-muted-foreground">
-                    {option.description}
-                  </p>
-                </div>
-                <Download className="h-4 w-4 text-muted-foreground" />
+                {day}
               </button>
             ))}
           </div>
-        </Card>
-
-        {/* Import */}
-        <Card className="p-4">
-          <h4 className="text-sm font-medium mb-4">Import Conversation</h4>
-          <div className="border-2 border-dashed rounded-lg p-8 text-center hover:border-primary transition-colors cursor-pointer">
-            <Upload className="h-8 w-8 text-muted-foreground mx-auto mb-3" />
-            <p className="text-sm font-medium mb-1">
-              Drop files here or click to upload
-            </p>
-            <p className="text-xs text-muted-foreground">
-              Supports .json, .md, .txt
-            </p>
-          </div>
-          <div className="mt-4">
-            <p className="text-xs text-muted-foreground mb-2">Recent Imports</p>
-            <div className="space-y-2">
-              {[
-                { name: 'conversation-backup.json', date: '2 hours ago' },
-                { name: 'project-notes.md', date: 'Yesterday' },
-              ].map((file) => (
-                <div
-                  key={file.name}
-                  className="flex items-center gap-3 p-2 rounded-lg bg-muted/50"
-                >
-                  <FileText className="h-4 w-4 text-muted-foreground" />
-                  <span className="text-sm flex-1 truncate">{file.name}</span>
-                  <span className="text-xs text-muted-foreground">
-                    {file.date}
-                  </span>
-                </div>
-              ))}
-            </div>
-          </div>
-        </Card>
-      </div>
-    </div>
-  )
-}
-
-// ============================================================================
-// KEYBOARD SHORTCUTS DEMO
-// ============================================================================
-function KeyboardShortcutsDemo() {
-  const shortcuts = [
-    {
-      category: 'General',
-      items: [
-        { keys: 'mod+k', description: 'Open command palette' },
-        { keys: 'mod+/', description: 'Show keyboard shortcuts' },
-        { keys: 'mod+n', description: 'New conversation' },
-        { keys: 'Escape', description: 'Close dialog / Cancel' },
-      ],
-    },
-    {
-      category: 'Chat',
-      items: [
-        { keys: 'mod+enter', description: 'Send message' },
-        { keys: 'mod+shift+c', description: 'Copy last response' },
-        { keys: 'mod+shift+r', description: 'Regenerate response' },
-        { keys: 'mod+up', description: 'Edit last message' },
-      ],
-    },
-    {
-      category: 'Navigation',
-      items: [
-        { keys: 'mod+1', description: 'Go to conversations' },
-        { keys: 'mod+2', description: 'Go to projects' },
-        { keys: 'mod+3', description: 'Go to settings' },
-        { keys: 'mod+f', description: 'Search conversations' },
-      ],
-    },
-  ]
-
-  return (
-    <Card className="p-4">
-      <div className="flex items-center gap-2 mb-4">
-        <Keyboard className="h-5 w-5" />
-        <h4 className="text-sm font-medium">Keyboard Shortcuts</h4>
-      </div>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {shortcuts.map((group) => (
-          <div key={group.category}>
-            <h5 className="text-xs font-medium text-muted-foreground mb-3 uppercase tracking-wider">
-              {group.category}
-            </h5>
-            <div className="space-y-2">
-              {group.items.map((shortcut) => (
-                <div
-                  key={shortcut.keys}
-                  className="flex items-center justify-between gap-4"
-                >
-                  <span className="text-sm text-muted-foreground">
-                    {shortcut.description}
-                  </span>
-                  <Kbd shortcut={shortcut.keys} />
-                </div>
-              ))}
-            </div>
-          </div>
-        ))}
-      </div>
+        </div>
+      </CardContent>
     </Card>
   )
 }
 
 // ============================================================================
-// COMMAND PALETTE DEMO
+// INLINE CITATIONS DEMO
 // ============================================================================
-function CommandPaletteDemo() {
-  const [open, setOpen] = useState(false)
-
-  const commands = [
-    { icon: Plus, label: 'New Conversation', shortcut: 'mod+n' },
-    { icon: Search, label: 'Search', shortcut: 'mod+f' },
-    { icon: Settings, label: 'Settings', shortcut: 'mod+,' },
-    { icon: Download, label: 'Export', shortcut: 'mod+e' },
-    { icon: Upload, label: 'Import', shortcut: 'mod+i' },
-    { icon: MessageSquare, label: 'Recent Chats', shortcut: 'mod+1' },
-    { icon: FolderOpen, label: 'Projects', shortcut: 'mod+2' },
-    { icon: History, label: 'History', shortcut: 'mod+h' },
-  ]
-
+function InlineCitationsDemo() {
   return (
-    <Card className="p-4">
-      <div className="flex items-center justify-between mb-4">
-        <h4 className="text-sm font-medium">Command Palette</h4>
-        <Button variant="outline" size="sm" onClick={() => setOpen(true)}>
-          <Command className="h-4 w-4 mr-2" />
-          Open
-          <Kbd shortcut="mod+k" className="ml-2" />
-        </Button>
-      </div>
-
-      {/* Inline Preview */}
-      <div className="border rounded-lg overflow-hidden">
-        <div className="flex items-center gap-2 px-3 py-2 border-b bg-muted/50">
-          <Search className="h-4 w-4 text-muted-foreground" />
-          <input
-            type="text"
-            placeholder="Type a command or search..."
-            className="flex-1 bg-transparent border-0 outline-none text-sm"
-          />
+    <Card>
+      <CardHeader className="pb-3">
+        <CardTitle className="text-lg flex items-center gap-2">
+          <FileText className="h-5 w-5" />
+          Inline Citations
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="p-4 bg-muted rounded-lg">
+          <p className="text-sm leading-relaxed">
+            React components are reusable pieces of UI
+            <sup className="text-primary cursor-pointer hover:underline mx-0.5">
+              [1]
+            </sup>
+            that can manage their own state. The Virtual DOM
+            <sup className="text-primary cursor-pointer hover:underline mx-0.5">
+              [2]
+            </sup>
+            enables efficient updates by comparing changes before applying them
+            to the real DOM
+            <sup className="text-primary cursor-pointer hover:underline mx-0.5">
+              [3]
+            </sup>
+            .
+          </p>
         </div>
-        <div className="p-2 max-h-[250px] overflow-y-auto">
-          <p className="text-xs text-muted-foreground px-2 py-1">Commands</p>
-          {commands.map((cmd) => (
-            <button
-              key={cmd.label}
-              className="w-full flex items-center gap-3 px-2 py-2 rounded-md hover:bg-muted text-left"
-            >
-              <cmd.icon className="h-4 w-4 text-muted-foreground" />
-              <span className="flex-1 text-sm">{cmd.label}</span>
-              <Kbd shortcut={cmd.shortcut} />
-            </button>
-          ))}
-        </div>
-      </div>
-    </Card>
-  )
-}
-
-// ============================================================================
-// MEMORY INDICATOR DEMO
-// ============================================================================
-function MemoryIndicatorDemo() {
-  return (
-    <Card className="p-4">
-      <h4 className="text-sm font-medium mb-4">Memory & Context</h4>
-      <div className="space-y-4">
-        {/* Memory Status */}
-        <div className="flex items-center gap-3 p-3 rounded-lg bg-primary/5 border border-primary/20">
-          <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
-            <Brain className="h-4 w-4 text-primary" />
-          </div>
-          <div className="flex-1">
-            <p className="text-sm font-medium">Memory Active</p>
-            <p className="text-xs text-muted-foreground">
-              Remembering context from 12 previous conversations
-            </p>
-          </div>
-          <Badge variant="secondary">12 memories</Badge>
-        </div>
-
-        {/* Memory Items */}
-        <div className="space-y-2">
-          <p className="text-xs text-muted-foreground">Recent Memory Updates</p>
+        <div className="mt-3 space-y-2">
           {[
             {
-              type: 'preference',
-              text: 'User prefers TypeScript over JavaScript',
+              num: 1,
+              title: 'React Docs - Components',
+              url: 'react.dev/learn/components',
             },
-            { type: 'fact', text: 'Working on a React e-commerce project' },
-            { type: 'context', text: 'Uses VS Code as primary editor' },
-          ].map((item, i) => (
-            <div
-              key={i}
-              className="flex items-start gap-3 p-2 rounded-lg bg-muted/50"
-            >
-              <Database className="h-4 w-4 text-muted-foreground mt-0.5" />
-              <div className="flex-1">
-                <Badge variant="outline" className="text-xs mb-1">
-                  {item.type}
-                </Badge>
-                <p className="text-sm">{item.text}</p>
-              </div>
+            {
+              num: 2,
+              title: 'Virtual DOM Explained',
+              url: 'react.dev/learn/vdom',
+            },
+            {
+              num: 3,
+              title: 'Reconciliation',
+              url: 'react.dev/learn/reconciliation',
+            },
+          ].map((cite) => (
+            <div key={cite.num} className="flex items-center gap-2 text-xs">
+              <Badge variant="outline" className="w-5 h-5 p-0 justify-center">
+                {cite.num}
+              </Badge>
+              <span className="font-medium">{cite.title}</span>
+              <span className="text-muted-foreground">- {cite.url}</span>
             </div>
           ))}
         </div>
-      </div>
+      </CardContent>
     </Card>
-  )
-}
-
-// ============================================================================
-// NETWORK STATUS DEMO
-// ============================================================================
-function NetworkStatusDemo() {
-  return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-      <Card className="p-4">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-full bg-green-500/10 flex items-center justify-center">
-            <Wifi className="h-5 w-5 text-green-500" />
-          </div>
-          <div>
-            <p className="text-sm font-medium">Connected</p>
-            <p className="text-xs text-muted-foreground">Latency: 45ms</p>
-          </div>
-        </div>
-      </Card>
-
-      <Card className="p-4">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-full bg-yellow-500/10 flex items-center justify-center">
-            <Wifi className="h-5 w-5 text-yellow-500" />
-          </div>
-          <div>
-            <p className="text-sm font-medium">Reconnecting</p>
-            <p className="text-xs text-muted-foreground">Attempt 2/5</p>
-          </div>
-        </div>
-      </Card>
-
-      <Card className="p-4">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-full bg-red-500/10 flex items-center justify-center">
-            <WifiOff className="h-5 w-5 text-red-500" />
-          </div>
-          <div>
-            <p className="text-sm font-medium">Offline</p>
-            <p className="text-xs text-muted-foreground">
-              Check your connection
-            </p>
-          </div>
-        </div>
-      </Card>
-    </div>
   )
 }
 
 // ============================================================================
 // MAIN PAGE
 // ============================================================================
-export default function ChatComponentsPage() {
+export default function ChatPage() {
   return (
     <div className="space-y-12">
       <PageHeader
-        title="Chat Components"
-        description="Comprehensive showcase of all chat interface components with working examples"
+        title="Advanced Chat Components"
+        description="Comprehensive showcase of all chat, agentic, code, tool-calling, and workflow components with full working functionality"
       />
 
-      <Tabs defaultValue="chat" className="w-full">
+      <Tabs defaultValue="agentic" className="w-full">
         <TabsList className="mb-8 flex-wrap h-auto gap-2 bg-transparent p-0">
-          <TabsTrigger value="chat" className="rounded-lg">
-            Chat Interface
+          <TabsTrigger value="agentic" className="rounded-lg gap-2">
+            <Brain className="h-4 w-4" />
+            Agentic Chat
           </TabsTrigger>
-          <TabsTrigger value="streaming" className="rounded-lg">
-            Streaming & Indicators
+          <TabsTrigger value="code" className="rounded-lg gap-2">
+            <Code className="h-4 w-4" />
+            Code & Files
           </TabsTrigger>
-          <TabsTrigger value="tokens" className="rounded-lg">
-            Token Optimization
+          <TabsTrigger value="tools" className="rounded-lg gap-2">
+            <Wrench className="h-4 w-4" />
+            Tools & Approval
           </TabsTrigger>
-          <TabsTrigger value="input" className="rounded-lg">
-            Input Variations
+          <TabsTrigger value="messages" className="rounded-lg gap-2">
+            <MessageSquare className="h-4 w-4" />
+            Messages
           </TabsTrigger>
-          <TabsTrigger value="suggestions" className="rounded-lg">
-            Suggestions
-          </TabsTrigger>
-          <TabsTrigger value="citations" className="rounded-lg">
-            Citations & Links
-          </TabsTrigger>
-          <TabsTrigger value="tools" className="rounded-lg">
-            Tool Calling
-          </TabsTrigger>
-          <TabsTrigger value="history" className="rounded-lg">
-            History & Branching
-          </TabsTrigger>
-          <TabsTrigger value="export" className="rounded-lg">
-            Export/Import
-          </TabsTrigger>
-          <TabsTrigger value="shortcuts" className="rounded-lg">
-            Shortcuts & Commands
+          <TabsTrigger value="ui" className="rounded-lg gap-2">
+            <Layers className="h-4 w-4" />
+            UI Components
           </TabsTrigger>
         </TabsList>
 
-        <TabsContent value="chat" className="space-y-8">
+        <TabsContent value="agentic" className="space-y-8">
           <ComponentSection
-            title="Interactive Chat"
-            description="Full-featured chat interface with streaming responses"
+            title="Agentic Chat with Tool Calling"
+            description="Full-featured chat with thinking, tools, citations, and token tracking"
           >
-            <InteractiveChatDemo />
-          </ComponentSection>
-
-          <ComponentSection
-            title="Memory Indicator"
-            description="Shows memory and context status"
-          >
-            <MemoryIndicatorDemo />
-          </ComponentSection>
-
-          <ComponentSection
-            title="Network Status"
-            description="Connection state indicators"
-          >
-            <NetworkStatusDemo />
+            <AdvancedAgenticChatDemo />
           </ComponentSection>
         </TabsContent>
 
-        <TabsContent value="streaming" className="space-y-8">
+        <TabsContent value="code" className="space-y-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <ComponentSection
+              title="Code Editor & Terminal"
+              description="Syntax-highlighted code with live execution"
+            >
+              <CodeTerminalDemo />
+            </ComponentSection>
+            <ComponentSection
+              title="File Explorer"
+              description="Navigate project structure"
+            >
+              <FileTreeDemo />
+            </ComponentSection>
+          </div>
           <ComponentSection
-            title="Typing Indicators"
-            description="Various typing and thinking indicator styles"
+            title="Chain of Thought"
+            description="AI reasoning visualization"
           >
-            <TypingIndicatorsDemo />
-          </ComponentSection>
-        </TabsContent>
-
-        <TabsContent value="tokens" className="space-y-8">
-          <ComponentSection
-            title="Token Usage & Optimization"
-            description="Token counting, budget tracking, and optimization tools"
-          >
-            <TokenOptimizationDemo />
-          </ComponentSection>
-        </TabsContent>
-
-        <TabsContent value="input" className="space-y-8">
-          <ComponentSection
-            title="Prompt Input Variations"
-            description="From basic to advanced input with slash commands, mentions, and attachments"
-          >
-            <PromptInputVariationsDemo />
-          </ComponentSection>
-        </TabsContent>
-
-        <TabsContent value="suggestions" className="space-y-8">
-          <ComponentSection
-            title="Prompt Suggestions"
-            description="Welcome suggestions and follow-up prompts"
-          >
-            <PromptSuggestionsDemo />
-          </ComponentSection>
-        </TabsContent>
-
-        <TabsContent value="citations" className="space-y-8">
-          <ComponentSection
-            title="Citations & Link Previews"
-            description="Source citations and rich link previews"
-          >
-            <CitationsDemo />
+            <ChainOfThoughtDemo />
           </ComponentSection>
         </TabsContent>
 
         <TabsContent value="tools" className="space-y-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <ComponentSection
+              title="Tool Approval"
+              description="Human-in-the-loop"
+            >
+              <ApprovalCardDemo />
+            </ComponentSection>
+            <ComponentSection
+              title="Safety & Guardrails"
+              description="Content moderation"
+            >
+              <SafetyAlertsDemo />
+            </ComponentSection>
+          </div>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <ComponentSection
+              title="Retry Logic"
+              description="Automatic retry with backoff"
+            >
+              <RetryLogicDemo />
+            </ComponentSection>
+            <ComponentSection
+              title="Model Fallback"
+              description="Automatic model failover"
+            >
+              <ModelFallbackDemo />
+            </ComponentSection>
+          </div>
+        </TabsContent>
+
+        <TabsContent value="messages" className="space-y-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <ComponentSection
+              title="Drafts & Archive"
+              description="Message drafts and archiving"
+            >
+              <MessageDraftsDemo />
+            </ComponentSection>
+            <ComponentSection
+              title="Quick Replies"
+              description="Pre-defined responses"
+            >
+              <QuickRepliesDemo />
+            </ComponentSection>
+          </div>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <ComponentSection
+              title="Message Search"
+              description="Full-text search"
+            >
+              <MessageSearchDemo />
+            </ComponentSection>
+            <ComponentSection title="Sources" description="Citation sources">
+              <SourcesDemo />
+            </ComponentSection>
+          </div>
           <ComponentSection
-            title="Tool Calling"
-            description="Tool execution cards, browser preview, and terminal output"
+            title="Inline Citations"
+            description="Citations within text"
           >
-            <ToolCallingDemo />
+            <InlineCitationsDemo />
           </ComponentSection>
         </TabsContent>
 
-        <TabsContent value="history" className="space-y-8">
-          <ComponentSection
-            title="Conversation Management"
-            description="History, projects, and conversation branching"
-          >
-            <ConversationHistoryDemo />
-          </ComponentSection>
-        </TabsContent>
-
-        <TabsContent value="export" className="space-y-8">
-          <ComponentSection
-            title="Export & Import"
-            description="Export conversations and import data"
-          >
-            <ExportImportDemo />
-          </ComponentSection>
-        </TabsContent>
-
-        <TabsContent value="shortcuts" className="space-y-8">
-          <ComponentSection
-            title="Command Palette"
-            description="Quick access to all commands"
-          >
-            <CommandPaletteDemo />
-          </ComponentSection>
-
-          <ComponentSection
-            title="Keyboard Shortcuts"
-            description="All available keyboard shortcuts"
-          >
-            <KeyboardShortcutsDemo />
+        <TabsContent value="ui" className="space-y-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <ComponentSection
+              title="Notifications"
+              description="Real-time alerts"
+            >
+              <NotificationsDemo />
+            </ComponentSection>
+            <ComponentSection title="Personas" description="AI personas">
+              <PersonasDemo />
+            </ComponentSection>
+          </div>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <ComponentSection
+              title="Empty States"
+              description="Empty content handling"
+            >
+              <EmptyStateDemo />
+            </ComponentSection>
+            <ComponentSection title="Error States" description="Error handling">
+              <ErrorPageDemo />
+            </ComponentSection>
+          </div>
+          <ComponentSection title="Date Picker" description="Date selection">
+            <DatePickerDemo />
           </ComponentSection>
         </TabsContent>
       </Tabs>

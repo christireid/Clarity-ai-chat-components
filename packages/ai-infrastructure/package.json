@@ -29,6 +29,7 @@
   },
   "devDependencies": {
     "@clarity-chat/typescript-config": "workspace:*",
+    "@types/node": "^22.0.0",
     "tsup": "^8.0.0",
     "typescript": "^5.7.3"
   },
