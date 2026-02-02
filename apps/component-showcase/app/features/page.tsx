@@ -5655,7 +5655,7 @@ function RequestInspectorDemo() {
       method: 'POST',
       endpoint: '/v1/chat/completions',
       status: 200,
-      duration: durations.slower,
+      latencyMs: 120,
       tokens: 156,
     },
     {
@@ -5663,7 +5663,7 @@ function RequestInspectorDemo() {
       method: 'POST',
       endpoint: '/v1/chat/completions',
       status: 200,
-      duration: durations.slower,
+      latencyMs: 350,
       tokens: 342,
     },
     {
@@ -5671,7 +5671,7 @@ function RequestInspectorDemo() {
       method: 'POST',
       endpoint: '/v1/embeddings',
       status: 429,
-      duration: durations.slower,
+      latencyMs: 500,
       tokens: 0,
     },
   ])
@@ -5698,7 +5698,7 @@ function RequestInspectorDemo() {
                 </span>
               </div>
               <div className="flex items-center gap-3 text-xs">
-                <span className="text-muted-foreground">{req.duration}ms</span>
+                <span className="text-muted-foreground">{req.latencyMs}ms</span>
                 {req.tokens > 0 && (
                   <span className="text-green-500">{req.tokens} tok</span>
                 )}
@@ -5717,7 +5717,7 @@ function RequestInspectorDemo() {
                 method: 'POST',
                 endpoint: '/v1/chat/completions',
                 status: Math.random() > 0.2 ? 200 : 429,
-                duration: Math.floor(Math.random() * 500) + 100,
+                latencyMs: Math.floor(Math.random() * 500) + 100,
                 tokens: Math.floor(Math.random() * 300) + 50,
               },
             ])
