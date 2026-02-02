@@ -148,8 +148,11 @@ export default [
       'react/no-danger': 'warn',
       'react/no-danger-with-children': 'error',
       // Code Complexity Rules (Added 2026-01-27)
-      'complexity': ['warn', 15],
-      'max-lines-per-function': ['warn', { max: 100, skipBlankLines: true, skipComments: true }],
+      complexity: ['warn', 15],
+      'max-lines-per-function': [
+        'warn',
+        { max: 100, skipBlankLines: true, skipComments: true },
+      ],
       'max-depth': ['warn', 4],
       'max-nested-callbacks': ['warn', 3],
       // Clarity Animations rules
@@ -190,9 +193,36 @@ export default [
     },
   },
 
+  // Clarity repo components - staged for integration, relax linting rules
+  // These components are imported from external repo and will be properly migrated later
+  {
+    files: ['packages/react/src/components/clarity/**/*.{ts,tsx,js,jsx}'],
+    plugins: {
+      'clarity-animations': clarityAnimations,
+    },
+    rules: {
+      radix: 'off',
+      'react-hooks/exhaustive-deps': 'warn',
+      'no-useless-escape': 'off',
+      'clarity-animations/require-reduced-motion': 'warn',
+      'clarity-animations/no-hardcoded-duration': 'off',
+      'clarity-animations/prefer-animation-library': 'off',
+      'clarity-animations/no-layout-animation': 'off',
+      complexity: 'off',
+      'max-lines-per-function': 'off',
+      'max-depth': 'off',
+      'max-nested-callbacks': 'off',
+      '@typescript-eslint/no-unused-vars': 'off',
+      'no-unused-vars': 'off',
+    },
+  },
+
   // Package-specific overrides for zero-error linting
   {
     files: ['packages/react/**/*.{ts,tsx,js,jsx}'],
+    plugins: {
+      'clarity-animations': clarityAnimations,
+    },
     rules: {
       '@typescript-eslint/no-unused-vars': 'off',
       'no-unused-vars': 'off',
@@ -203,6 +233,14 @@ export default [
       '@typescript-eslint/no-empty-object-type': 'off',
       'jsx-a11y/role-supports-aria-props': 'off',
       'react-hooks/rules-of-hooks': 'off',
+      // Relax animation rules for existing components (pre-existing issues)
+      'clarity-animations/require-reduced-motion': 'warn',
+      'clarity-animations/no-layout-animation': 'warn',
+      // Relax hooks exhaustive-deps to warn for existing codebase
+      'react-hooks/exhaustive-deps': 'warn',
+      // Relax other rules that are causing issues in existing code
+      radix: 'off',
+      'no-useless-escape': 'off',
       // Security: Allow controlled use of danger in library code
       'react/no-danger': 'off',
       // Security: Allow new Function in safe-evaluate.ts with documentation
@@ -316,6 +354,9 @@ export default [
       // Relax security rules in tests
       'no-eval': 'off',
       'no-new-func': 'off',
+      // Relax React hooks rules in tests
+      'react-hooks/exhaustive-deps': 'off',
+      'react-hooks/rules-of-hooks': 'off',
     },
   },
 

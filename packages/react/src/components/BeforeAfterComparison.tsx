@@ -112,7 +112,11 @@ export interface BeforeAfterComparisonProps {
 /**
  * Format number with appropriate units and decimals
  */
-function formatValue(value: number, type: ComparisonType, customUnit?: string): string {
+function formatValue(
+  value: number,
+  type: ComparisonType,
+  customUnit?: string
+): string {
   const unit = customUnit || getDefaultUnit(type)
 
   if (type === 'cost') {
@@ -220,7 +224,7 @@ function MetricCard({
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4 }}
+      transition={{ duration: durations.slow }}
       className={`rounded-xl border p-6 ${
         isBefore
           ? 'border-red-500/20 bg-gradient-to-br from-red-500/10 to-rose-500/5'
@@ -228,8 +232,12 @@ function MetricCard({
       } ${className}`}
     >
       <div className="flex items-start justify-between mb-4">
-        <div className={`p-2 rounded-lg ${isBefore ? 'bg-red-500/10' : 'bg-green-500/10'}`}>
-          <Icon className={`w-5 h-5 ${isBefore ? 'text-red-500' : 'text-green-500'}`} />
+        <div
+          className={`p-2 rounded-lg ${isBefore ? 'bg-red-500/10' : 'bg-green-500/10'}`}
+        >
+          <Icon
+            className={`w-5 h-5 ${isBefore ? 'text-red-500' : 'text-green-500'}`}
+          />
         </div>
         <span
           className={`px-2 py-1 text-xs font-semibold rounded-full ${
@@ -243,7 +251,9 @@ function MetricCard({
       </div>
       <div className="space-y-2">
         <p className="text-sm text-muted-foreground">{label}</p>
-        <p className="text-3xl font-bold text-foreground">{formatValue(value, type, unit)}</p>
+        <p className="text-3xl font-bold text-foreground">
+          {formatValue(value, type, unit)}
+        </p>
       </div>
     </motion.div>
   )
@@ -294,7 +304,7 @@ function SavingsBadge({
     <motion.div
       initial={{ scale: 0.8, opacity: 0 }}
       animate={{ scale: 1, opacity: 1 }}
-      transition={{ duration: 0.5, delay: 0.3 }}
+      transition={{ duration: durations.slow, delay: 0.3 }}
       className={`inline-flex items-center gap-3 px-6 py-4 rounded-2xl border-2 ${
         isExcellent
           ? 'border-green-500 bg-gradient-to-r from-green-500/20 to-emerald-500/20'
@@ -325,7 +335,9 @@ function SavingsBadge({
         )}
       </div>
       <div className="flex flex-col">
-        <span className="text-xs text-muted-foreground font-medium">Total Savings</span>
+        <span className="text-xs text-muted-foreground font-medium">
+          Total Savings
+        </span>
         <span className="text-3xl font-bold text-foreground tabular-nums">
           {displayPercent.toFixed(1)}%
         </span>
@@ -337,7 +349,11 @@ function SavingsBadge({
 /**
  * Strategy Breakdown Component
  */
-function StrategyBreakdown({ strategies }: { strategies: StrategyContribution[] }) {
+function StrategyBreakdown({
+  strategies,
+}: {
+  strategies: StrategyContribution[]
+}) {
   const totalSavings = strategies.reduce((sum, s) => sum + s.savingsPercent, 0)
 
   return (
@@ -350,21 +366,28 @@ function StrategyBreakdown({ strategies }: { strategies: StrategyContribution[] 
       <div className="space-y-3">
         {strategies.map((strategy, index) => {
           const color = strategy.color || getStrategyColor(index)
-          const widthPercent = totalSavings > 0 ? (strategy.savingsPercent / totalSavings) * 100 : 0
+          const widthPercent =
+            totalSavings > 0
+              ? (strategy.savingsPercent / totalSavings) * 100
+              : 0
 
           return (
             <motion.div
               key={strategy.name}
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.4, delay: index * 0.1 }}
+              transition={{ duration: durations.slow, delay: index * 0.1 }}
               className="space-y-2"
             >
               <div className="flex items-center justify-between">
                 <div className="flex-1">
-                  <p className="text-sm font-medium text-foreground">{strategy.name}</p>
+                  <p className="text-sm font-medium text-foreground">
+                    {strategy.name}
+                  </p>
                   {strategy.description && (
-                    <p className="text-xs text-muted-foreground">{strategy.description}</p>
+                    <p className="text-xs text-muted-foreground">
+                      {strategy.description}
+                    </p>
                   )}
                 </div>
                 <span className="text-sm font-semibold text-foreground tabular-nums ml-4">
@@ -378,7 +401,11 @@ function StrategyBreakdown({ strategies }: { strategies: StrategyContribution[] 
                   style={{ backgroundColor: color }}
                   initial={{ width: 0 }}
                   animate={{ width: `${widthPercent}%` }}
-                  transition={{ duration: 1, delay: index * 0.1 + 0.3, ease: 'easeOut' }}
+                  transition={{
+                    duration: durations.slower,
+                    delay: index * 0.1 + 0.3,
+                    ease: 'easeOut',
+                  }}
                 />
               </div>
             </motion.div>
@@ -390,8 +417,8 @@ function StrategyBreakdown({ strategies }: { strategies: StrategyContribution[] 
         <div className="flex items-center gap-2 text-xs text-amber-600 dark:text-amber-400 bg-amber-500/10 rounded-lg p-3">
           <CheckCircle className="w-4 h-4 flex-shrink-0" />
           <span>
-            Note: Strategy contributions total {totalSavings.toFixed(1)}% due to overlapping
-            optimizations
+            Note: Strategy contributions total {totalSavings.toFixed(1)}% due to
+            overlapping optimizations
           </span>
         </div>
       )}
@@ -423,7 +450,9 @@ function BarChartVisualization({
         {/* Before Bar */}
         <div className="space-y-2">
           <div className="flex items-center justify-between">
-            <span className="text-sm font-medium text-foreground">Before Optimization</span>
+            <span className="text-sm font-medium text-foreground">
+              Before Optimization
+            </span>
             <span className="text-sm font-mono text-muted-foreground">
               {formatValue(before, type, unit)}
             </span>
@@ -433,7 +462,7 @@ function BarChartVisualization({
               className="absolute inset-y-0 left-0 bg-gradient-to-r from-red-500 to-rose-500 flex items-center justify-end pr-4"
               initial={{ width: 0 }}
               animate={{ width: `${beforePercent}%` }}
-              transition={{ duration: 1, ease: 'easeOut' }}
+              transition={{ duration: durations.slower, ease: 'easeOut' }}
             >
               <span className="text-xs font-semibold text-white">100%</span>
             </motion.div>
@@ -448,7 +477,9 @@ function BarChartVisualization({
         {/* After Bar */}
         <div className="space-y-2">
           <div className="flex items-center justify-between">
-            <span className="text-sm font-medium text-foreground">After Optimization</span>
+            <span className="text-sm font-medium text-foreground">
+              After Optimization
+            </span>
             <span className="text-sm font-mono text-muted-foreground">
               {formatValue(after, type, unit)}
             </span>
@@ -458,7 +489,11 @@ function BarChartVisualization({
               className="absolute inset-y-0 left-0 bg-gradient-to-r from-green-500 to-emerald-500 flex items-center justify-end pr-4"
               initial={{ width: 0 }}
               animate={{ width: `${afterPercent}%` }}
-              transition={{ duration: 1, delay: 0.3, ease: 'easeOut' }}
+              transition={{
+                duration: durations.slower,
+                delay: 0.3,
+                ease: 'easeOut',
+              }}
             >
               <span className="text-xs font-semibold text-white">
                 {afterPercent.toFixed(0)}%
@@ -519,7 +554,10 @@ export const BeforeAfterComparison = React.memo(function BeforeAfterComparison({
       {/* Savings Badge */}
       {showSavingsBadge && (
         <div className="flex justify-center">
-          <SavingsBadge savingsPercent={savingsPercent} showAnimation={shouldAnimate} />
+          <SavingsBadge
+            savingsPercent={savingsPercent}
+            showAnimation={shouldAnimate}
+          />
         </div>
       )}
 
@@ -565,7 +603,9 @@ export const BeforeAfterComparison = React.memo(function BeforeAfterComparison({
             </div>
             <ArrowRight className="w-8 h-8 text-muted-foreground flex-shrink-0" />
             <div className="text-center flex-1">
-              <p className="text-sm text-muted-foreground mb-2">{after.label || 'After'}</p>
+              <p className="text-sm text-muted-foreground mb-2">
+                {after.label || 'After'}
+              </p>
               <p className="text-3xl font-bold text-green-500">
                 {formatValue(after.value, comparisonType, unit)}
               </p>
@@ -578,7 +618,7 @@ export const BeforeAfterComparison = React.memo(function BeforeAfterComparison({
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4, delay: 0.5 }}
+        transition={{ duration: durations.slow, delay: 0.5 }}
         className="flex items-center justify-between p-4 rounded-lg bg-green-500/10 border border-green-500/20"
       >
         <div className="flex items-center gap-3">
@@ -607,13 +647,17 @@ export const BeforeAfterComparison = React.memo(function BeforeAfterComparison({
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {before.description && (
             <div className="p-4 rounded-lg bg-muted/30 border border-border/50">
-              <p className="text-xs font-medium text-muted-foreground mb-1">Before</p>
+              <p className="text-xs font-medium text-muted-foreground mb-1">
+                Before
+              </p>
               <p className="text-sm text-foreground">{before.description}</p>
             </div>
           )}
           {after.description && (
             <div className="p-4 rounded-lg bg-muted/30 border border-border/50">
-              <p className="text-xs font-medium text-muted-foreground mb-1">After</p>
+              <p className="text-xs font-medium text-muted-foreground mb-1">
+                After
+              </p>
               <p className="text-sm text-foreground">{after.description}</p>
             </div>
           )}

@@ -58,16 +58,10 @@ function toLanChainMessage(msg: ClarityChatMessage): LangChainMessage {
 /**
  * Convert Clarity Chat message to LangChain format
  */
-function fromLangChainMessage(
-  msg: any,
-  id?: string
-): ClarityChatMessage {
+function fromLangChainMessage(msg: any, id?: string): ClarityChatMessage {
   return {
     id: id || Math.random().toString(36).slice(2),
-    role: (msg._getType?.() || 'assistant') as
-      | 'user'
-      | 'assistant'
-      | 'system',
+    role: (msg._getType?.() || 'assistant') as 'user' | 'assistant' | 'system',
     content: msg.content || '',
   }
 }
@@ -75,17 +69,12 @@ function fromLangChainMessage(
 /**
  * Create a Clarity Chat adapter for LangChain
  */
-function createLangChainAdapter(
-  runnable: any
-): ClarityChatAdapter {
+function createLangChainAdapter(runnable: any): ClarityChatAdapter {
   const messages: ClarityChatMessage[] = []
   const callbacks = new Map<string, Function>()
 
   return {
-    async chat(
-      userMessages,
-      options
-    ): Promise<ClarityChatStreamableResponse> {
+    async chat(userMessages, options): Promise<ClarityChatStreamableResponse> {
       const systemMsg = userMessages.find((m) => m.role === 'system')
       const chatHistory = userMessages.filter((m) => m.role !== 'system')
 
@@ -96,6 +85,7 @@ function createLangChainAdapter(
         async *stream() {
           try {
             // Configure streaming callbacks
+            // Note: We collect chunks in the callback and yield them after invoke
             const config: LangChainRunnableConfig = {
               callbacks: {
                 onToken: (token: string) => {
@@ -104,10 +94,6 @@ function createLangChainAdapter(
                     type: 'text-delta',
                     content: token,
                   })
-                  yield {
-                    type: 'text-delta',
-                    content: token,
-                  }
                 },
                 onFinal: (text: string) => {
                   fullResponse = text
@@ -122,11 +108,15 @@ function createLangChainAdapter(
             const response = await runnable.invoke(
               {
                 messages: langchainMessages,
-                input:
-                  chatHistory[chatHistory.length - 1]?.content || '',
+                input: chatHistory[chatHistory.length - 1]?.content || '',
               },
               config
             )
+
+            // Yield all collected chunks
+            for (const chunk of chunks) {
+              yield chunk
+            }
 
             // Emit finish event
             yield {

@@ -46,7 +46,7 @@ Object.defineProperty(window, 'performance', {
 // Mock matchMedia
 Object.defineProperty(window, 'matchMedia', {
   writable: true,
-  value: jest.fn().mockImplementation(query => ({
+  value: jest.fn().mockImplementation((query) => ({
     matches: query === '(prefers-reduced-motion: reduce)' ? false : true,
     media: query,
     onchange: null,
@@ -81,7 +81,10 @@ class MockAudioContext {
   createGain() {
     return {
       connect: jest.fn(),
-      gain: { setValueAtTime: jest.fn(), exponentialRampToValueAtTime: jest.fn() },
+      gain: {
+        setValueAtTime: jest.fn(),
+        exponentialRampToValueAtTime: jest.fn(),
+      },
     }
   }
   get currentTime() {
@@ -134,10 +137,17 @@ describe('Skeleton Integration Tests', () => {
                   </div>
                 </div>
                 <div className="space-y-2">
-                  <p>This is the loaded content that should appear after the skeleton loading state.</p>
-                  <p>It contains detailed information about the user profile.</p>
+                  <p>
+                    This is the loaded content that should appear after the
+                    skeleton loading state.
+                  </p>
+                  <p>
+                    It contains detailed information about the user profile.
+                  </p>
                 </div>
-                <button className="px-4 py-2 bg-blue-500 text-white rounded">Contact</button>
+                <button className="px-4 py-2 bg-blue-500 text-white rounded">
+                  Contact
+                </button>
               </div>
             )
             setIsLoading(false)
@@ -175,13 +185,20 @@ describe('Skeleton Integration Tests', () => {
                     skeleton={
                       <div className="space-y-4">
                         <div className="flex items-center gap-4">
-                          <EnhancedSkeletonAvatar size={64} variant="gradient" />
+                          <EnhancedSkeletonAvatar
+                            size={64}
+                            variant="gradient"
+                          />
                           <div className="space-y-2">
                             <EnhancedSkeletonText lines={2} variant="wave" />
                           </div>
                         </div>
                         <EnhancedSkeletonText lines={3} variant="shimmer" />
-                        <EnhancedSkeleton width={120} height={36} rounded="md" />
+                        <EnhancedSkeleton
+                          width={120}
+                          height={36}
+                          rounded="md"
+                        />
                       </div>
                     }
                     direction="morph"
@@ -202,7 +219,9 @@ describe('Skeleton Integration Tests', () => {
       render(<TestApp />)
 
       // Initially shows loading state
-      expect(screen.getByText('Loading user profile, please wait...')).toBeInTheDocument()
+      expect(
+        screen.getByText('Loading user profile, please wait...')
+      ).toBeInTheDocument()
       expect(screen.getByRole('progressbar')).toBeInTheDocument()
       expect(screen.getByLabelText('Loading...')).toBeInTheDocument()
 
@@ -213,7 +232,9 @@ describe('Skeleton Integration Tests', () => {
 
       await waitFor(() => {
         expect(screen.getByTestId('loaded-content')).toBeInTheDocument()
-        expect(screen.getByText('Profile loaded successfully!')).toBeInTheDocument()
+        expect(
+          screen.getByText('Profile loaded successfully!')
+        ).toBeInTheDocument()
       })
     })
 
@@ -245,14 +266,18 @@ describe('Skeleton Integration Tests', () => {
           <AccessibleSkeleton
             isLoading={isLoading}
             loadingMessage="Attempting to load content..."
-            loadedMessage={hasError ? "Failed to load content" : "Content loaded successfully!"}
+            loadedMessage={
+              hasError
+                ? 'Failed to load content'
+                : 'Content loaded successfully!'
+            }
             progressIndicator="circular"
           >
             <div className="space-y-4">
               {hasError ? (
                 <div className="text-center space-y-4">
                   <p className="text-red-600">Failed to load content</p>
-                  <button 
+                  <button
                     onClick={handleRetry}
                     className="px-4 py-2 bg-blue-500 text-white rounded"
                   >
@@ -273,7 +298,9 @@ describe('Skeleton Integration Tests', () => {
       render(<TestApp />)
 
       // Initially shows loading state
-      expect(screen.getByText('Attempting to load content...')).toBeInTheDocument()
+      expect(
+        screen.getByText('Attempting to load content...')
+      ).toBeInTheDocument()
 
       // Wait for error state
       act(() => {
@@ -289,7 +316,9 @@ describe('Skeleton Integration Tests', () => {
       userEvent.click(screen.getByText('Retry'))
 
       // Should show loading again
-      expect(screen.getByText('Attempting to load content...')).toBeInTheDocument()
+      expect(
+        screen.getByText('Attempting to load content...')
+      ).toBeInTheDocument()
 
       // Wait for successful retry
       act(() => {
@@ -336,7 +365,9 @@ describe('Skeleton Integration Tests', () => {
 
       render(<TestApp />)
 
-      expect(mockPerformance.mark).toHaveBeenCalledWith('test-performance-start')
+      expect(mockPerformance.mark).toHaveBeenCalledWith(
+        'test-performance-start'
+      )
 
       act(() => {
         jest.advanceTimersByTime(1000)
@@ -344,7 +375,9 @@ describe('Skeleton Integration Tests', () => {
 
       await waitFor(() => {
         expect(screen.getByTestId('content')).toBeInTheDocument()
-        expect(mockPerformance.mark).toHaveBeenCalledWith('test-performance-end')
+        expect(mockPerformance.mark).toHaveBeenCalledWith(
+          'test-performance-end'
+        )
         expect(mockPerformance.measure).toHaveBeenCalled()
       })
 
@@ -360,9 +393,12 @@ describe('Skeleton Integration Tests', () => {
 
         React.useEffect(() => {
           // Simulate different loading times
-          const timer = setTimeout(() => {
-            setIsLoading(false)
-          }, Math.random() * 2000 + 500) // Random between 500-2500ms
+          const timer = setTimeout(
+            () => {
+              setIsLoading(false)
+            },
+            Math.random() * 2000 + 500
+          ) // Random between 500-2500ms
           return () => clearTimeout(timer)
         }, [])
 
@@ -457,7 +493,10 @@ describe('Skeleton Integration Tests', () => {
             enableSound={true}
             enableHaptics={true}
           >
-            <div data-testid="interactive-content" className="p-4 bg-gray-100 rounded">
+            <div
+              data-testid="interactive-content"
+              className="p-4 bg-gray-100 rounded"
+            >
               <h3>Interactive Content</h3>
               <p>Hover, focus, or click this content</p>
             </div>
@@ -487,10 +526,9 @@ describe('Skeleton Integration Tests', () => {
 
         React.useEffect(() => {
           const interval = setInterval(() => {
-            setCurrentVariant(prev => (prev + 1) % variants.length)
+            setCurrentVariant((prev) => (prev + 1) % variants.length)
           }, 1000)
           return () => clearInterval(interval)
-          // eslint-disable-next-line react-hooks/exhaustive-deps
         }, []) // variants.length is stable
 
         return (
@@ -500,7 +538,9 @@ describe('Skeleton Integration Tests', () => {
                 key={variant}
                 variant={variant as any}
                 size={40}
-                className={index === currentVariant ? 'opacity-100' : 'opacity-30'}
+                className={
+                  index === currentVariant ? 'opacity-100' : 'opacity-30'
+                }
               />
             ))}
           </div>
@@ -527,7 +567,10 @@ describe('Skeleton Integration Tests', () => {
 
   describe('Responsive Behavior Integration', () => {
     it('adapts to different viewport sizes', async () => {
-      Object.defineProperty(window, 'innerWidth', { value: 500, writable: true })
+      Object.defineProperty(window, 'innerWidth', {
+        value: 500,
+        writable: true,
+      })
 
       const TestApp = () => {
         const size = useResponsiveSize(60, { sm: 40, lg: 80 })
@@ -546,7 +589,10 @@ describe('Skeleton Integration Tests', () => {
       expect(screen.getByTestId('size-info')).toHaveTextContent('Size: 40px')
 
       // Simulate large viewport
-      Object.defineProperty(window, 'innerWidth', { value: 1200, writable: true })
+      Object.defineProperty(window, 'innerWidth', {
+        value: 1200,
+        writable: true,
+      })
       act(() => {
         window.dispatchEvent(new Event('resize'))
       })
@@ -562,7 +608,10 @@ describe('Skeleton Integration Tests', () => {
         components: [
           { type: 'avatar' as const, props: { size: 48 } },
           { type: 'text' as const, props: { lines: 2, variant: 'wave' } },
-          { type: 'skeleton' as const, props: { height: 100, variant: 'shimmer' } },
+          {
+            type: 'skeleton' as const,
+            props: { height: 100, variant: 'shimmer' },
+          },
           { type: 'button' as const, props: { width: 120, height: 36 } },
         ],
       }
@@ -623,8 +672,8 @@ describe('Skeleton Integration Tests', () => {
 
         React.useEffect(() => {
           const interval = setInterval(() => {
-            setIsLoading(prev => !prev)
-            setIteration(prev => prev + 1)
+            setIsLoading((prev) => !prev)
+            setIteration((prev) => prev + 1)
           }, 300)
           return () => clearInterval(interval)
         }, [])
@@ -658,20 +707,17 @@ describe('Skeleton Integration Tests', () => {
           <div>
             {/* Invalid variant */}
             <EnhancedSkeleton variant="invalid-variant" as any />
-            
+
             {/* Missing required props */}
-            <SkeletonTransition
-              isLoading={true}
-              skeleton={null as any}
-            >
+            <SkeletonTransition isLoading={true} skeleton={null as any}>
               {null}
             </SkeletonTransition>
-            
+
             {/* Empty composition */}
             <SkeletonComposer
               composition={{ layout: 'card' as const, components: [] }}
             />
-            
+
             {/* Invalid theme */}
             <SkeletonThemeProvider theme={null as any}>
               <EnhancedSkeleton />

@@ -111,7 +111,8 @@ export function StreamingTextExample() {
   const handleStartStream = () => {
     setIsStreaming(true)
     setText('')
-    const fullText = 'This is streamed text that appears character by character.'
+    const fullText =
+      'This is streamed text that appears character by character.'
     let currentIndex = 0
 
     const interval = setInterval(() => {
@@ -241,7 +242,7 @@ export function ThinkingIndicatorExample() {
             animate="animate"
             exit="exit"
             transition={{
-              duration: 1,
+              duration: durations.slower,
               repeat: Infinity,
             }}
             className="flex items-center gap-2 p-4 bg-purple-100 rounded"
@@ -334,9 +335,7 @@ export function ReducedMotionExample() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={
-          prefersReducedMotion
-            ? { duration: 0 }
-            : TRANSITION_PRESETS.normal
+          prefersReducedMotion ? { duration: 0 } : TRANSITION_PRESETS.normal
         }
         className="p-4 bg-gray-100 rounded"
       >
@@ -434,7 +433,7 @@ export function ChatInterfaceExample() {
               initial="initial"
               animate="animate"
               exit="exit"
-              transition={{ duration: 1, repeat: Infinity }}
+              transition={{ duration: durations.slower, repeat: Infinity }}
               className="flex gap-1 p-3"
             >
               <div className="w-2 h-2 bg-gray-400 rounded-full" />

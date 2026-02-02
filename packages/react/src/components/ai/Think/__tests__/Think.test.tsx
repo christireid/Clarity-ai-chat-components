@@ -56,12 +56,22 @@ describe('Think Component', () => {
   it('supports controlled expansion', () => {
     const onExpandedChange = vi.fn()
     const { rerender } = render(
-      <Think content="Test" expanded={false} onExpandedChange={onExpandedChange} />
+      <Think
+        content="Test"
+        expanded={false}
+        onExpandedChange={onExpandedChange}
+      />
     )
 
     expect(screen.queryByText('Test')).not.toBeInTheDocument()
 
-    rerender(<Think content="Test" expanded={true} onExpandedChange={onExpandedChange} />)
+    rerender(
+      <Think
+        content="Test"
+        expanded={true}
+        onExpandedChange={onExpandedChange}
+      />
+    )
     expect(screen.getByText('Test')).toBeInTheDocument()
   })
 
@@ -72,7 +82,9 @@ describe('Think Component', () => {
 
   it('handles keyboard navigation', () => {
     const onExpandedChange = vi.fn()
-    render(<Think content="Test" onExpandedChange={onExpandedChange} collapsible />)
+    render(
+      <Think content="Test" onExpandedChange={onExpandedChange} collapsible />
+    )
 
     const header = screen.getByRole('button')
     fireEvent.keyDown(header, { key: 'Enter' })
@@ -117,7 +129,9 @@ describe('useThink Hook', () => {
       const think = useThink()
       return (
         <div>
-          <button onClick={() => think.addStep('Test step', 'active')}>Add Step</button>
+          <button onClick={() => think.addStep('Test step', 'active')}>
+            Add Step
+          </button>
           <span data-testid="steps-count">{think.steps.length}</span>
         </div>
       )
@@ -136,7 +150,6 @@ describe('useThink Hook', () => {
 
       React.useEffect(() => {
         think.addStep('Test step', 'active')
-        // eslint-disable-next-line react-hooks/exhaustive-deps
       }, [])
 
       return (
@@ -144,7 +157,9 @@ describe('useThink Hook', () => {
           <button onClick={() => think.updateStepStatus(0, 'complete', 1000)}>
             Complete Step
           </button>
-          <span data-testid="step-status">{think.steps[0]?.status || 'none'}</span>
+          <span data-testid="step-status">
+            {think.steps[0]?.status || 'none'}
+          </span>
         </div>
       )
     }
@@ -163,7 +178,6 @@ describe('useThink Hook', () => {
       React.useEffect(() => {
         think.addStep('Step 1')
         think.addStep('Step 2')
-        // eslint-disable-next-line react-hooks/exhaustive-deps
       }, [])
 
       return (
