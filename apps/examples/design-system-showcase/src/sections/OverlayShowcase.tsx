@@ -1,11 +1,22 @@
 /**
  * Overlay Showcase
- * 
+ *
  * Demonstrates dialogs, tooltips, popovers, and drawer components
  */
 
 import { useState } from 'react'
-import { Dialog, DialogContent, DialogHeader, DialogTitle, Tooltip, Button, Drawer, DrawerContent, DrawerHeader, DrawerTitle } from '@clarity-chat/primitives'
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  Tooltip,
+  Button,
+  Drawer,
+  DrawerContent,
+  DrawerHeader,
+  DrawerTitle,
+} from '@clarity-chat/primitives'
 
 export function OverlayShowcase() {
   const [dialogOpen, setDialogOpen] = useState(false)
@@ -17,7 +28,8 @@ export function OverlayShowcase() {
       <div>
         <h2 className="text-3xl font-bold mb-2">Overlay Components</h2>
         <p className="text-muted-foreground">
-          Dialogs, tooltips, popovers, and drawers with refined animations and focus management
+          Dialogs, tooltips, popovers, and drawers with refined animations and
+          focus management
         </p>
       </div>
 
@@ -25,10 +37,8 @@ export function OverlayShowcase() {
       <section>
         <h3 className="text-xl font-semibold mb-4">Dialog (Modal)</h3>
         <div className="space-y-4">
-          <Button onClick={() => setDialogOpen(true)}>
-            Open Dialog
-          </Button>
-          
+          <Button onClick={() => setDialogOpen(true)}>Open Dialog</Button>
+
           <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
             <DialogContent>
               <DialogHeader>
@@ -50,9 +60,7 @@ export function OverlayShowcase() {
                 <Button variant="outline" onClick={() => setDialogOpen(false)}>
                   Cancel
                 </Button>
-                <Button onClick={() => setDialogOpen(false)}>
-                  Confirm
-                </Button>
+                <Button onClick={() => setDialogOpen(false)}>Confirm</Button>
               </div>
             </DialogContent>
           </Dialog>
@@ -77,11 +85,11 @@ export function OverlayShowcase() {
             <Tooltip content="This is a helpful tooltip">
               <Button>Hover for Tooltip</Button>
             </Tooltip>
-            
+
             <Tooltip content="Tooltips can have longer text that wraps">
               <Button variant="outline">Long Tooltip</Button>
             </Tooltip>
-            
+
             <Tooltip content="Action hint" delay={0}>
               <Button variant="ghost">Instant Tooltip</Button>
             </Tooltip>
@@ -104,12 +112,10 @@ export function OverlayShowcase() {
       <section>
         <h3 className="text-xl font-semibold mb-4">Drawer (Sidebar)</h3>
         <div className="space-y-4">
-          <Button onClick={() => setDrawerOpen(true)}>
-            Open Drawer
-          </Button>
-          
+          <Button onClick={() => setDrawerOpen(true)}>Open Drawer</Button>
+
           <Drawer open={drawerOpen} onOpenChange={setDrawerOpen}>
-            <DrawerContent side="right">
+            <DrawerContent>
               <DrawerHeader>
                 <DrawerTitle>Drawer Title</DrawerTitle>
               </DrawerHeader>
@@ -124,7 +130,10 @@ export function OverlayShowcase() {
                   <li>Backdrop overlay</li>
                 </ul>
                 <div className="pt-4">
-                  <Button className="w-full" onClick={() => setDrawerOpen(false)}>
+                  <Button
+                    className="w-full"
+                    onClick={() => setDrawerOpen(false)}
+                  >
                     Close Drawer
                   </Button>
                 </div>

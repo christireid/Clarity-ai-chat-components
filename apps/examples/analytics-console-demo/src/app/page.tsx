@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import {
   BarChart3,
   Coins,
@@ -84,12 +84,7 @@ export default function AnalyticsConsolePage() {
   const [timeRange, setTimeRange] = useState(30)
   const [isRefreshing, setIsRefreshing] = useState(false)
 
-  useEffect(() => {
-    setIsMounted(true)
-    loadData()
-  }, [timeRange])
-
-  async function loadData() {
+  const loadData = useCallback(async () => {
     setIsLoading(true)
     try {
       // Load summary stats
@@ -111,7 +106,12 @@ export default function AnalyticsConsolePage() {
     } finally {
       setIsLoading(false)
     }
-  }
+  }, [timeRange])
+
+  useEffect(() => {
+    setIsMounted(true)
+    loadData()
+  }, [loadData])
 
   async function handleRefresh() {
     setIsRefreshing(true)

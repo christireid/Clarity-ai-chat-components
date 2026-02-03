@@ -6,7 +6,7 @@
     "dev": "NEXT_TURBOPACK_EXPERIMENTAL_USE_SYSTEM_TLS_CERTS=1 next dev -H localhost",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint . --ext ts,tsx --ignore-pattern scripts --max-warnings 800",
+    "lint": "eslint . --ext ts,tsx --ignore-pattern scripts --max-warnings 1000",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",

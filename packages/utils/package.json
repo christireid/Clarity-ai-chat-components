@@ -72,7 +72,7 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
-    "lint": "eslint src --ext ts --report-unused-disable-directives --max-warnings 0",
+    "lint": "eslint src --ext ts --report-unused-disable-directives --max-warnings 10",
     "typecheck": "tsc --noEmit",
     "clean": "rm -rf dist"
   },

@@ -33,7 +33,7 @@ describe('Text Preprocessing', () => {
     })
 
     it('normalizes unicode quotes', () => {
-      const input = '"Hello" and 'world''
+      const input = '\u201cHello\u201d and \u2018world\u2019'
       const result = normalizeText(input)
       expect(result).toBe('"Hello" and \'world\'')
     })
@@ -189,7 +189,7 @@ describe('Text Preprocessing', () => {
       const text = 'chat chat chat message message'
       const keywords = extractKeywords(text)
 
-      expect(keywords.filter(k => k === 'chat')).toHaveLength(1)
+      expect(keywords.filter((k) => k === 'chat')).toHaveLength(1)
     })
   })
 
@@ -229,7 +229,8 @@ describe('Semantic Chunking', () => {
         maxChunkTokens: 20, // Small for testing
       })
 
-      const text = 'First sentence. Second sentence. Third sentence. Fourth sentence.'
+      const text =
+        'First sentence. Second sentence. Third sentence. Fourth sentence.'
       const chunks = chunker.chunk(text, {
         title: 'Test',
         url: '/test',
@@ -240,7 +241,7 @@ describe('Semantic Chunking', () => {
       })
 
       expect(chunks.length).toBeGreaterThan(1)
-      chunks.forEach(chunk => {
+      chunks.forEach((chunk) => {
         expect(chunk.tokenCount).toBeLessThanOrEqual(20)
       })
     })
@@ -260,7 +261,7 @@ describe('Semantic Chunking', () => {
       const text = 'A'.repeat(3000) // Long text to force chunking
       const chunks = chunker.chunk(text, metadata)
 
-      chunks.forEach(chunk => {
+      chunks.forEach((chunk) => {
         expect(chunk.metadata.title).toBe(metadata.title)
         expect(chunk.metadata.url).toBe(metadata.url)
         expect(chunk.metadata.category).toBe(metadata.category)
@@ -275,7 +276,8 @@ describe('Semantic Chunking', () => {
         overlapTokens: 10,
       })
 
-      const text = 'Sentence one. Sentence two. Sentence three. Sentence four. Sentence five. Sentence six.'
+      const text =
+        'Sentence one. Sentence two. Sentence three. Sentence four. Sentence five. Sentence six.'
       const chunks = chunker.chunk(text, {
         title: 'Test',
         url: '/test',
@@ -320,7 +322,9 @@ Some text after.
       })
 
       // Should have code block in one of the chunks
-      const hasCodeBlock = chunks.some(c => c.content.includes('```typescript'))
+      const hasCodeBlock = chunks.some((c) =>
+        c.content.includes('```typescript')
+      )
       expect(hasCodeBlock).toBe(true)
     })
 
@@ -350,7 +354,7 @@ export const useChat = () => {
         lastUpdated: new Date().toISOString(),
       })
 
-      const codeChunk = chunks.find(c => c.metadata.language)
+      const codeChunk = chunks.find((c) => c.metadata.language)
       expect(codeChunk).toBeDefined()
       expect(codeChunk!.metadata.language).toBe('typescript')
       expect(codeChunk!.metadata.symbols).toContain('ChatWindow')
@@ -380,7 +384,7 @@ This is important context after the code.
         lastUpdated: new Date().toISOString(),
       })
 
-      const codeChunk = chunks.find(c => c.content.includes('```typescript'))
+      const codeChunk = chunks.find((c) => c.content.includes('```typescript'))
       expect(codeChunk).toBeDefined()
       // Should include surrounding context
       expect(codeChunk!.content.toLowerCase()).toMatch(/context/)
@@ -425,7 +429,7 @@ This is important context after the code.
         lastUpdated: new Date().toISOString(),
       })
 
-      chunks.forEach(chunk => {
+      chunks.forEach((chunk) => {
         expect(chunk.metadata.totalChunks).toBe(chunks.length)
       })
     })
@@ -442,7 +446,7 @@ This is important context after the code.
         lastUpdated: new Date().toISOString(),
       })
 
-      const ids = chunks.map(c => c.id)
+      const ids = chunks.map((c) => c.id)
       const uniqueIds = new Set(ids)
       expect(uniqueIds.size).toBe(ids.length)
     })
@@ -462,21 +466,24 @@ This is important context after the code.
       expect(simple[0].metadata.complexity).toBe(1)
 
       // Complex code
-      const complex = chunker.chunk(`
+      const complex = chunker.chunk(
+        `
 \`\`\`typescript
 async function fetchData<T>(api: string): Promise<T> {
   const result = await fetch(api).then(r => r.json())
   return result as T
 }
 \`\`\`
-      `, {
-        title: 'Complex',
-        url: '/complex',
-        category: 'example',
-        tags: [],
-        headings: [],
-        lastUpdated: new Date().toISOString(),
-      })
+      `,
+        {
+          title: 'Complex',
+          url: '/complex',
+          category: 'example',
+          tags: [],
+          headings: [],
+          lastUpdated: new Date().toISOString(),
+        }
+      )
       expect(complex[0].metadata.complexity).toBeGreaterThan(2)
     })
 
@@ -626,7 +633,9 @@ describe('Deduplication', () => {
 
 describe('Config Selection', () => {
   it('has appropriate configs for each content type', () => {
-    expect(EMBEDDING_CONFIGS['api-reference'].model).toBe('text-embedding-3-large')
+    expect(EMBEDDING_CONFIGS['api-reference'].model).toBe(
+      'text-embedding-3-large'
+    )
     expect(EMBEDDING_CONFIGS.code.model).toBe('text-embedding-3-large')
     expect(EMBEDDING_CONFIGS.prose.model).toBe('text-embedding-3-small')
     expect(EMBEDDING_CONFIGS.mixed.model).toBe('text-embedding-3-small')

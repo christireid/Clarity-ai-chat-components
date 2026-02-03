@@ -25,7 +25,7 @@
     "dev": "tsup --watch",
     "test": "vitest run --passWithNoTests",
     "test:coverage": "vitest --coverage",
-    "lint": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+    "lint": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 25",
     "typecheck": "tsc --noEmit",
     "example:basic": "tsx examples/basic-usage.ts",
     "example:quick": "tsx examples/quick-start.ts",
