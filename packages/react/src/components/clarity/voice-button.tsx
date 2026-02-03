@@ -4,7 +4,14 @@ import * as React from 'react'
 import { cn } from '@clarity-chat/primitives'
 import { Button } from '@clarity-chat/primitives'
 import { Mic, MicOff, Square, Volume2, Loader2 } from 'lucide-react'
-import SpeechRecognition from 'speech-recognition'
+
+// Web Speech API types for browser compatibility
+declare global {
+  interface Window {
+    SpeechRecognition: typeof SpeechRecognition
+    webkitSpeechRecognition: typeof SpeechRecognition
+  }
+}
 
 // =============================================================================
 // VOICE BUTTON - Push to talk / Toggle recording

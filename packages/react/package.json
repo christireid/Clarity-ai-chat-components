@@ -158,7 +158,12 @@
     "prismjs": "^1.29.0",
     "react-markdown": "^10.0.0",
     "remark-gfm": "^4.0.0",
-    "rehype-highlight": "^7.0.0"
+    "rehype-highlight": "^7.0.0",
+    "date-fns": "^3.0.0 || ^4.0.0",
+    "recharts": "^2.0.0",
+    "class-variance-authority": "^0.7.0",
+    "react-window": "^1.8.0",
+    "react-virtualized-auto-sizer": "^1.0.0"
   },
   "peerDependenciesMeta": {
     "framer-motion": {
@@ -204,6 +209,21 @@
       "optional": true
     },
     "rehype-highlight": {
+      "optional": true
+    },
+    "date-fns": {
+      "optional": true
+    },
+    "recharts": {
+      "optional": true
+    },
+    "class-variance-authority": {
+      "optional": true
+    },
+    "react-window": {
+      "optional": true
+    },
+    "react-virtualized-auto-sizer": {
       "optional": true
     }
   },

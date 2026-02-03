@@ -42,3 +42,9 @@ export * from './app-api'
 
 // Export the curated public API (legacy, still supported)
 export * from './public-api'
+
+// Export Clarity AI components namespace
+// These are premium components integrated from the Clarity library
+// Usage: import { ClarityComponents } from '@clarity-chat/react'
+// Or:    import * as ClarityAI from '@clarity-chat/react/clarity'
+export * as ClarityComponents from './components/clarity'

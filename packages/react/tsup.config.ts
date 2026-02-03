@@ -31,6 +31,13 @@ const commonConfig = {
     'rehype-highlight',
     'prismjs',
     'zod',
+    // Clarity components externals (optional features)
+    'date-fns',
+    'recharts',
+    'class-variance-authority',
+    'speech-recognition',
+    'react-window',
+    'react-virtualized-auto-sizer',
   ],
   sourcemap: false,
   minify: true,
