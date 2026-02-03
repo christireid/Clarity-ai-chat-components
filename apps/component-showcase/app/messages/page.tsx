@@ -32,10 +32,10 @@ import {
   Forward,
   Pin,
   Bookmark,
-  Flag,
   Trash2,
   Edit,
   Smile,
+  Sparkles,
 } from 'lucide-react'
 
 // ============================================================================
@@ -81,37 +81,30 @@ function MessageBubbleVariants() {
         </div>
       </div>
 
-      {/* Messages with Actions */}
+      {/* Rich Content Message */}
       <div>
-        <h4 className="text-sm font-medium mb-3">Messages with Actions</h4>
+        <h4 className="text-sm font-medium mb-3">Rich Content with Code</h4>
         <div className="p-4 bg-muted/30 rounded-lg">
-          <div className="flex gap-3 group">
-            <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center">
+          <div className="flex gap-3">
+            <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center shrink-0">
               <Bot className="h-4 w-4" />
             </div>
-            <div className="flex-1">
-              <div className="bg-muted rounded-lg rounded-tl-none p-3 max-w-[70%]">
-                <p className="text-sm">
-                  Here&apos;s a code example that demonstrates the concept:
-                </p>
-                <pre className="mt-2 p-2 bg-background rounded text-xs font-mono overflow-x-auto">
-                  {`function greet(name) {\n  return \`Hello, \${name}!\`;\n}`}
-                </pre>
-              </div>
-              <div className="flex items-center gap-1 mt-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                <Button variant="ghost" size="icon" className="h-7 w-7">
-                  <ThumbsUp className="h-3.5 w-3.5" />
-                </Button>
-                <Button variant="ghost" size="icon" className="h-7 w-7">
-                  <ThumbsDown className="h-3.5 w-3.5" />
-                </Button>
-                <Button variant="ghost" size="icon" className="h-7 w-7">
-                  <Copy className="h-3.5 w-3.5" />
-                </Button>
-                <Button variant="ghost" size="icon" className="h-7 w-7">
-                  <RefreshCw className="h-3.5 w-3.5" />
-                </Button>
-              </div>
+            <div className="bg-muted rounded-lg rounded-tl-none p-3 max-w-[80%]">
+              <p className="text-sm mb-2">Here&apos;s a code example:</p>
+              <pre className="p-2 bg-background rounded text-xs font-mono overflow-x-auto">
+                {`function greet(name) {
+  return \`Hello, \${name}!\`;
+}
+
+console.log(greet("World"));`}
+              </pre>
+              <p className="text-sm mt-2">
+                <strong>Key points:</strong>
+              </p>
+              <ul className="text-sm list-disc list-inside text-muted-foreground">
+                <li>Functions can return template literals</li>
+                <li>Template literals use backticks</li>
+              </ul>
             </div>
           </div>
         </div>
@@ -170,6 +163,8 @@ function MessageBubbleVariants() {
 // ============================================================================
 function StreamingMessageDemo() {
   const [isStreaming, setIsStreaming] = useState(true)
+  const text =
+    'React Hooks are a powerful feature that allows you to use state and other React features in functional components. They were introduced in React 16.8 and have become the standard way to manage state in modern React applications.'
 
   return (
     <Card>
@@ -178,7 +173,7 @@ function StreamingMessageDemo() {
           <div>
             <CardTitle className="text-lg">Streaming Message</CardTitle>
             <CardDescription>
-              Real-time text streaming with cursor
+              Real-time text streaming with typing animation
             </CardDescription>
           </div>
           <Button
@@ -193,13 +188,12 @@ function StreamingMessageDemo() {
       <CardContent>
         <div className="p-4 bg-muted/30 rounded-lg">
           <div className="flex gap-3">
-            <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center">
+            <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center shrink-0">
               <Bot className="h-4 w-4" />
             </div>
-            <div className="bg-muted rounded-lg rounded-tl-none p-3 max-w-[80%]">
+            <div className="flex-1 bg-muted rounded-lg rounded-tl-none p-3">
               <p className="text-sm">
-                React Hooks are a powerful feature that allows you to use state
-                and other React features in functional components.
+                {text}
                 {isStreaming && (
                   <span className="inline-block w-2 h-4 bg-primary ml-1 animate-pulse" />
                 )}
@@ -226,14 +220,16 @@ function TypingIndicatorDemo() {
     <Card>
       <CardHeader>
         <CardTitle className="text-lg">Typing Indicators</CardTitle>
-        <CardDescription>Various styles of typing indicators</CardDescription>
+        <CardDescription>
+          Various typing indicator styles for chat interfaces
+        </CardDescription>
       </CardHeader>
       <CardContent>
         <div className="space-y-6">
-          {/* Dots Animation */}
+          {/* Bouncing Dots */}
           <div>
             <h4 className="text-sm font-medium mb-3">Bouncing Dots</h4>
-            <div className="flex gap-3">
+            <div className="flex gap-3 items-center">
               <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center">
                 <Bot className="h-4 w-4" />
               </div>
@@ -256,7 +252,30 @@ function TypingIndicatorDemo() {
             </div>
           </div>
 
-          {/* Text with Dots */}
+          {/* Pulse Indicator */}
+          <div>
+            <h4 className="text-sm font-medium mb-3">Pulse Indicator</h4>
+            <div className="flex gap-3 items-center">
+              <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center">
+                <Bot className="h-4 w-4" />
+              </div>
+              <div className="bg-muted rounded-lg rounded-tl-none p-3">
+                <div className="flex items-center gap-2">
+                  <span className="w-3 h-3 bg-primary rounded-full animate-pulse" />
+                  <span
+                    className="w-3 h-3 bg-primary/60 rounded-full animate-pulse"
+                    style={{ animationDelay: '100ms' }}
+                  />
+                  <span
+                    className="w-3 h-3 bg-primary/30 rounded-full animate-pulse"
+                    style={{ animationDelay: '200ms' }}
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Text with Animation */}
           <div>
             <h4 className="text-sm font-medium mb-3">Text with Animation</h4>
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
@@ -280,25 +299,7 @@ function TypingIndicatorDemo() {
             </div>
           </div>
 
-          {/* Progress Bar Style */}
-          <div>
-            <h4 className="text-sm font-medium mb-3">Progress Style</h4>
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center">
-                <Bot className="h-4 w-4" />
-              </div>
-              <div className="flex-1 max-w-[200px]">
-                <div className="h-1 bg-muted rounded-full overflow-hidden">
-                  <div className="h-full w-1/2 bg-primary rounded-full animate-pulse" />
-                </div>
-                <p className="text-xs text-muted-foreground mt-1">
-                  Generating response...
-                </p>
-              </div>
-            </div>
-          </div>
-
-          {/* Skeleton Style */}
+          {/* Skeleton Loading */}
           <div>
             <h4 className="text-sm font-medium mb-3">Skeleton Loading</h4>
             <div className="flex gap-3">
@@ -322,13 +323,13 @@ function TypingIndicatorDemo() {
 // MESSAGE ACTIONS DEMO
 // ============================================================================
 function MessageActionsDemo() {
+  const [copied, setCopied] = useState(false)
+
   return (
     <Card>
       <CardHeader>
         <CardTitle className="text-lg">Message Actions</CardTitle>
-        <CardDescription>
-          Comprehensive action toolbar for messages
-        </CardDescription>
+        <CardDescription>Interactive actions for messages</CardDescription>
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
@@ -342,8 +343,20 @@ function MessageActionsDemo() {
               <Button variant="ghost" size="icon" className="h-8 w-8">
                 <ThumbsDown className="h-4 w-4" />
               </Button>
-              <Button variant="ghost" size="icon" className="h-8 w-8">
-                <Copy className="h-4 w-4" />
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8"
+                onClick={() => {
+                  setCopied(true)
+                  setTimeout(() => setCopied(false), 2000)
+                }}
+              >
+                {copied ? (
+                  <Check className="h-4 w-4 text-green-500" />
+                ) : (
+                  <Copy className="h-4 w-4" />
+                )}
               </Button>
               <Button variant="ghost" size="icon" className="h-8 w-8">
                 <RefreshCw className="h-4 w-4" />
@@ -379,7 +392,7 @@ function MessageActionsDemo() {
             </div>
           </div>
 
-          {/* Reactions */}
+          {/* Quick Reactions */}
           <div>
             <h4 className="text-sm font-medium mb-3">Quick Reactions</h4>
             <div className="flex items-center gap-2">
@@ -432,7 +445,7 @@ function MessageGroupingDemo() {
 
             {/* Grouped Messages */}
             <div className="flex gap-3">
-              <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center">
+              <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center shrink-0">
                 <Bot className="h-4 w-4" />
               </div>
               <div className="space-y-1">
@@ -450,7 +463,7 @@ function MessageGroupingDemo() {
 
             {/* User Messages */}
             <div className="flex gap-3 flex-row-reverse">
-              <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center">
+              <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center shrink-0">
                 <User className="h-4 w-4 text-primary-foreground" />
               </div>
               <div className="space-y-1 items-end flex flex-col">
@@ -477,7 +490,7 @@ function MessageGroupingDemo() {
 
             {/* Earlier Messages */}
             <div className="flex gap-3">
-              <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center">
+              <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center shrink-0">
                 <Bot className="h-4 w-4" />
               </div>
               <div className="bg-muted rounded-lg rounded-tl-none p-3 max-w-[70%]">
@@ -497,6 +510,68 @@ function MessageGroupingDemo() {
 }
 
 // ============================================================================
+// FOLLOW UP SUGGESTIONS DEMO
+// ============================================================================
+function FollowUpSuggestionsDemo() {
+  const suggestions = [
+    'Tell me more about React hooks',
+    'Show me a useEffect example',
+    'What are custom hooks?',
+    'Compare useState vs useReducer',
+  ]
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="text-lg">Follow-up Suggestions</CardTitle>
+        <CardDescription>
+          Smart contextual suggestions after AI responses
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <div className="space-y-4">
+          {/* Chip Style */}
+          <div>
+            <h4 className="text-sm font-medium mb-3">Chip Style</h4>
+            <div className="flex flex-wrap gap-2">
+              {suggestions.map((suggestion, i) => (
+                <Button
+                  key={i}
+                  variant="outline"
+                  size="sm"
+                  className="gap-2"
+                  onClick={() => alert(`Selected: ${suggestion}`)}
+                >
+                  <Sparkles className="h-3 w-3" />
+                  {suggestion}
+                </Button>
+              ))}
+            </div>
+          </div>
+
+          {/* List Style */}
+          <div>
+            <h4 className="text-sm font-medium mb-3">List Style</h4>
+            <div className="space-y-2">
+              {suggestions.map((suggestion, i) => (
+                <button
+                  key={i}
+                  className="w-full flex items-center gap-3 p-3 text-left text-sm rounded-lg border hover:bg-muted transition-colors"
+                  onClick={() => alert(`Selected: ${suggestion}`)}
+                >
+                  <Sparkles className="h-4 w-4 text-primary shrink-0" />
+                  <span>{suggestion}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  )
+}
+
+// ============================================================================
 // MAIN PAGE
 // ============================================================================
 export default function MessagesPage() {
@@ -504,16 +579,17 @@ export default function MessagesPage() {
     <div className="space-y-8">
       <PageHeader
         title="Messages"
-        description="Message bubbles, streaming, typing indicators, and more"
+        description="Message bubbles, streaming, typing indicators, and actions"
       />
 
       <Tabs defaultValue="bubbles" className="w-full">
-        <TabsList className="mb-6">
+        <TabsList className="mb-6 flex-wrap h-auto gap-2">
           <TabsTrigger value="bubbles">Message Bubbles</TabsTrigger>
           <TabsTrigger value="streaming">Streaming</TabsTrigger>
           <TabsTrigger value="typing">Typing Indicators</TabsTrigger>
           <TabsTrigger value="actions">Actions</TabsTrigger>
           <TabsTrigger value="grouping">Grouping</TabsTrigger>
+          <TabsTrigger value="suggestions">Suggestions</TabsTrigger>
         </TabsList>
 
         <TabsContent value="bubbles">
@@ -558,6 +634,15 @@ export default function MessagesPage() {
             description="Group messages by sender and time"
           >
             <MessageGroupingDemo />
+          </ComponentSection>
+        </TabsContent>
+
+        <TabsContent value="suggestions">
+          <ComponentSection
+            title="Follow-up Suggestions"
+            description="Smart contextual suggestions"
+          >
+            <FollowUpSuggestionsDemo />
           </ComponentSection>
         </TabsContent>
       </Tabs>

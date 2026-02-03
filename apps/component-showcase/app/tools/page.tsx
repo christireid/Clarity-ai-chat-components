@@ -14,8 +14,14 @@ import {
   TabsList,
   TabsTrigger,
   TabsContent,
-  ScrollArea,
   cn,
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
 } from '@clarity-chat/primitives'
 import {
   Wrench,
@@ -37,6 +43,8 @@ import {
   AlertTriangle,
   Copy,
   Eye,
+  Shield,
+  ExternalLink,
 } from 'lucide-react'
 
 // ============================================================================
@@ -80,7 +88,9 @@ function ToolCardDemo() {
     <Card>
       <CardHeader>
         <CardTitle className="text-lg">Tool Cards</CardTitle>
-        <CardDescription>Display available tools with status</CardDescription>
+        <CardDescription>
+          Display available tools with status indicators
+        </CardDescription>
       </CardHeader>
       <CardContent>
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -139,7 +149,7 @@ function ToolCardDemo() {
 }
 
 // ============================================================================
-// TOOL EXECUTION CARD DEMO
+// TOOL EXECUTION DEMO
 // ============================================================================
 function ToolExecutionDemo() {
   const [expanded, setExpanded] = useState<string[]>(['exec-1'])
@@ -192,7 +202,7 @@ function ToolExecutionDemo() {
               )}
             >
               <button
-                className="w-full flex items-center gap-3 p-3 hover:bg-muted/50 transition-colors"
+                className="w-full flex items-center gap-3 p-3 hover:bg-muted/50 transition-colors text-left"
                 onClick={() =>
                   setExpanded((prev) =>
                     prev.includes(exec.id)
@@ -260,21 +270,96 @@ function ToolExecutionDemo() {
 }
 
 // ============================================================================
-// TOOL APPROVAL DEMO
+// WEB SEARCH RESULTS
 // ============================================================================
-function ToolApprovalDemo() {
-  const [pending, setPending] = useState(true)
+function WebSearchResultsDemo() {
+  const results = [
+    {
+      title: 'Next.js 14 | Next.js',
+      url: 'https://nextjs.org/blog/next-14',
+      snippet:
+        'Next.js 14 includes Server Actions, Partial Prerendering, and more...',
+    },
+    {
+      title: 'Understanding Next.js 14 Server Components',
+      url: 'https://dev.to/nextjs',
+      snippet: 'A deep dive into the new Server Components architecture...',
+    },
+    {
+      title: 'Migrating to Next.js 14',
+      url: 'https://vercel.com/guides',
+      snippet: 'Step-by-step guide to upgrading your application...',
+    },
+  ]
 
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-lg">Tool Approval</CardTitle>
+        <CardTitle className="text-lg">Web Search Results</CardTitle>
         <CardDescription>
-          Request user approval for sensitive tools
+          Display search results from web_search tool
         </CardDescription>
       </CardHeader>
       <CardContent>
-        {pending ? (
+        <div className="space-y-1">
+          <div className="flex items-center gap-2 text-sm text-muted-foreground mb-3">
+            <Search className="h-4 w-4" />
+            <span>Query: &quot;Next.js 14 features&quot;</span>
+          </div>
+          <div className="space-y-3">
+            {results.map((result, i) => (
+              <div
+                key={i}
+                className="p-3 rounded-lg border hover:bg-muted/50 transition-colors"
+              >
+                <a
+                  href={result.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-start gap-2 group"
+                >
+                  <div className="flex-1">
+                    <h4 className="text-sm font-medium text-primary group-hover:underline">
+                      {result.title}
+                    </h4>
+                    <p className="text-xs text-green-600 mt-0.5">
+                      {result.url}
+                    </p>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      {result.snippet}
+                    </p>
+                  </div>
+                  <ExternalLink className="h-4 w-4 text-muted-foreground shrink-0" />
+                </a>
+              </div>
+            ))}
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  )
+}
+
+// ============================================================================
+// TOOL APPROVAL DEMO
+// ============================================================================
+function ToolApprovalDemo() {
+  const [status, setStatus] = useState<'pending' | 'approved' | 'rejected'>(
+    'pending'
+  )
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="text-lg">
+          Tool Approval (Human-in-the-Loop)
+        </CardTitle>
+        <CardDescription>
+          Request user approval for sensitive operations
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        {status === 'pending' ? (
           <div className="p-4 border rounded-lg border-yellow-500/50 bg-yellow-500/5">
             <div className="flex items-start gap-3">
               <AlertTriangle className="h-5 w-5 text-yellow-600 mt-0.5" />
@@ -289,20 +374,26 @@ function ToolApprovalDemo() {
                     <span className="font-mono text-sm font-medium">
                       run_terminal
                     </span>
+                    <Badge
+                      variant="secondary"
+                      className="text-xs bg-yellow-500/20 text-yellow-600"
+                    >
+                      Medium Risk
+                    </Badge>
                   </div>
                   <pre className="mt-2 text-xs font-mono text-muted-foreground">
                     {`{\n  "command": "npm install lodash",\n  "cwd": "/project"\n}`}
                   </pre>
                 </div>
                 <div className="flex items-center gap-2 mt-4">
-                  <Button size="sm" onClick={() => setPending(false)}>
+                  <Button size="sm" onClick={() => setStatus('approved')}>
                     <CheckCircle className="h-4 w-4 mr-2" />
                     Approve
                   </Button>
                   <Button
                     size="sm"
                     variant="outline"
-                    onClick={() => setPending(false)}
+                    onClick={() => setStatus('rejected')}
                   >
                     <XCircle className="h-4 w-4 mr-2" />
                     Deny
@@ -316,13 +407,28 @@ function ToolApprovalDemo() {
             </div>
           </div>
         ) : (
-          <div className="p-4 border rounded-lg border-green-500/50 bg-green-500/5">
+          <div
+            className={cn(
+              'p-4 border rounded-lg',
+              status === 'approved'
+                ? 'border-green-500/50 bg-green-500/5'
+                : 'border-red-500/50 bg-red-500/5'
+            )}
+          >
             <div className="flex items-center gap-3">
-              <CheckCircle className="h-5 w-5 text-green-600" />
+              {status === 'approved' ? (
+                <CheckCircle className="h-5 w-5 text-green-600" />
+              ) : (
+                <XCircle className="h-5 w-5 text-red-600" />
+              )}
               <div>
-                <h4 className="font-medium text-sm">Tool Approved</h4>
+                <h4 className="font-medium text-sm">
+                  {status === 'approved' ? 'Tool Approved' : 'Tool Rejected'}
+                </h4>
                 <p className="text-sm text-muted-foreground">
-                  Execution completed successfully
+                  {status === 'approved'
+                    ? 'Execution completed successfully'
+                    : 'Tool execution was blocked'}
                 </p>
               </div>
             </div>
@@ -330,12 +436,75 @@ function ToolApprovalDemo() {
               size="sm"
               variant="outline"
               className="mt-3"
-              onClick={() => setPending(true)}
+              onClick={() => setStatus('pending')}
             >
               Reset Demo
             </Button>
           </div>
         )}
+      </CardContent>
+    </Card>
+  )
+}
+
+// ============================================================================
+// CONFIRMATION DIALOG DEMO
+// ============================================================================
+function ConfirmationDialogDemo() {
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="text-lg">Confirmation Dialog</CardTitle>
+        <CardDescription>
+          Modal confirmation for critical actions
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <div className="flex gap-4">
+          <Dialog>
+            <DialogTrigger asChild>
+              <Button variant="destructive" className="gap-2">
+                <AlertTriangle className="h-4 w-4" />
+                Delete Data
+              </Button>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Are you absolutely sure?</DialogTitle>
+                <DialogDescription>
+                  This action cannot be undone. This will permanently delete the
+                  user data from our servers.
+                </DialogDescription>
+              </DialogHeader>
+              <DialogFooter>
+                <Button variant="outline">Cancel</Button>
+                <Button variant="destructive">Delete</Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+
+          <Dialog>
+            <DialogTrigger asChild>
+              <Button variant="outline" className="gap-2">
+                <Play className="h-4 w-4" />
+                Deploy
+              </Button>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Deploy to Production?</DialogTitle>
+                <DialogDescription>
+                  This will deploy the current build to production servers. Make
+                  sure all tests have passed before proceeding.
+                </DialogDescription>
+              </DialogHeader>
+              <DialogFooter>
+                <Button variant="outline">Cancel</Button>
+                <Button>Deploy Now</Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+        </div>
       </CardContent>
     </Card>
   )
@@ -478,10 +647,12 @@ export default function ToolsPage() {
       />
 
       <Tabs defaultValue="cards" className="w-full">
-        <TabsList className="mb-6">
+        <TabsList className="mb-6 flex-wrap h-auto gap-2">
           <TabsTrigger value="cards">Tool Cards</TabsTrigger>
           <TabsTrigger value="execution">Execution</TabsTrigger>
+          <TabsTrigger value="search">Search Results</TabsTrigger>
           <TabsTrigger value="approval">Approval</TabsTrigger>
+          <TabsTrigger value="confirmation">Confirmation</TabsTrigger>
           <TabsTrigger value="registry">Registry</TabsTrigger>
           <TabsTrigger value="metrics">Metrics</TabsTrigger>
         </TabsList>
@@ -489,7 +660,7 @@ export default function ToolsPage() {
         <TabsContent value="cards">
           <ComponentSection
             title="Tool Cards"
-            description="Display available tools with status indicators"
+            description="Display available tools with status"
           >
             <ToolCardDemo />
           </ComponentSection>
@@ -498,18 +669,36 @@ export default function ToolsPage() {
         <TabsContent value="execution">
           <ComponentSection
             title="Tool Execution"
-            description="View tool call history with details"
+            description="View tool call history"
           >
             <ToolExecutionDemo />
+          </ComponentSection>
+        </TabsContent>
+
+        <TabsContent value="search">
+          <ComponentSection
+            title="Search Results"
+            description="Web search results display"
+          >
+            <WebSearchResultsDemo />
           </ComponentSection>
         </TabsContent>
 
         <TabsContent value="approval">
           <ComponentSection
             title="Tool Approval"
-            description="Human-in-the-loop approval for sensitive actions"
+            description="Human-in-the-loop approval"
           >
             <ToolApprovalDemo />
+          </ComponentSection>
+        </TabsContent>
+
+        <TabsContent value="confirmation">
+          <ComponentSection
+            title="Confirmation"
+            description="Modal confirmation dialogs"
+          >
+            <ConfirmationDialogDemo />
           </ComponentSection>
         </TabsContent>
 
