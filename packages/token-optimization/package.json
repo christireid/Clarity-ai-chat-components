@@ -36,11 +36,11 @@
     "LICENSE"
   ],
   "scripts": {
-    "build": "tsup",
+    "build": "NODE_OPTIONS='--max-old-space-size=8192' tsup",
     "dev": "tsup --watch",
     "test": "vitest",
     "test:coverage": "vitest --coverage",
-    "lint": "eslint src",
+    "lint": "eslint src --ext ts,tsx --ignore-pattern '*.js' --ignore-pattern '*.d.ts'",
     "typecheck": "tsc --noEmit",
     "size": "npx bundlephobia-cli ./dist/index.js",
     "doc:check": "tsx scripts/check-doc-sync.ts",

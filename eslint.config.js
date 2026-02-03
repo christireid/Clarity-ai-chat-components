@@ -89,6 +89,11 @@ export default [
       'apps/streamlined-docs/app/cookbook/provider-caching-setup/page.tsx',
       'apps/streamlined-docs/app/cookbook/token-optimization/compression-comparison/page.tsx',
       'apps/streamlined-docs/app/cookbook/token-optimization/provider-caching-anthropic/page.tsx',
+      // Generated .js files with transpilation issues (classes used before defined)
+      'packages/token-optimization/src/routing/intelligent-routing.js',
+      // React package - compiled output (TypeScript compiles .tsx to .js in same directory)
+      'packages/react/src/**/*.js',
+      'packages/react/src/**/*.d.ts',
     ],
   },
 
