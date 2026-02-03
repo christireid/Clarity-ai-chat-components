@@ -581,7 +581,7 @@ console.log(response.text())`}
                     </ul>
                     <p className="mt-3"><strong>Not ideal for:</strong></p>
                     <ul className="list-disc list-inside space-y-1 ml-2">
-                      <li>Small prompts (<32K tokens - won't cache)</li>
+                      <li>Small prompts (&lt;32K tokens - won&apos;t cache)</li>
                       <li>Frequently changing context</li>
                       <li>Short-burst request patterns</li>
                     </ul>
@@ -616,7 +616,7 @@ console.log(response.text())`}
             </div>
 
             <div className="p-4 rounded-lg bg-white/60 dark:bg-white/[0.02] border border-neutral-200/60 dark:border-white/[0.06]">
-              <h3 className="font-semibold mb-2">📉 Low Cache Hit Rate (<50%)</h3>
+              <h3 className="font-semibold mb-2">📉 Low Cache Hit Rate (&lt;50%)</h3>
               <p className="text-sm text-neutral-600 dark:text-neutral-400 mb-2">
                 <strong>Symptoms:</strong> Fewer cache hits than expected
               </p>

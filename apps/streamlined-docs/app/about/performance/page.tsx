@@ -7,7 +7,7 @@ import {
 import {
   Zap,
   Gauge,
-  PackageCheck,
+  Package,
   TrendingUp,
   Award,
   CheckCircle2,
@@ -281,7 +281,7 @@ export default function PerformancePage() {
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
               {[
                 {
-                  icon: <PackageCheck className="w-5 h-5" />,
+                  icon: <Package className="w-5 h-5" />,
                   title: 'Tree-shakeable',
                   description:
                     'Import only what you need. Unused components are eliminated from your bundle.',

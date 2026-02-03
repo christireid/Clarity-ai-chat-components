@@ -55,8 +55,8 @@ describe('RAGOptimized Security', () => {
     }
 
     // If there were any errors logged from semantic search, verify format
-    const errorCalls = consoleSpy.mock.calls.filter((call) =>
-      call[0]?.includes?.('Semantic search error')
+    const errorCalls = consoleSpy.mock.calls.filter((call: unknown[]) =>
+      (call[0] as string | undefined)?.includes?.('Semantic search error')
     )
 
     for (const call of errorCalls) {

@@ -918,7 +918,7 @@ const { count } = useTokenCount(text, {
             <div className="font-semibold text-yellow-600 mb-3">⚠️ Performance Considerations</div>
             <ul className="text-sm text-muted-foreground space-y-2">
               <li>
-                • Token counting is CPU-intensive for large texts (>10K characters)
+                • Token counting is CPU-intensive for large texts (&gt;10K characters)
               </li>
               <li>
                 • Debouncing is crucial for good UX during typing

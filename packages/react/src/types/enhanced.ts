@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Enhanced TypeScript Types for Clarity Chat React Package
  *

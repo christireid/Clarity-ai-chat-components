@@ -1800,7 +1800,7 @@ const benchmarks = {
               <h3 className="font-semibold mb-2">Use Template-Based When:</h3>
               <ul className="text-sm text-neutral-600 dark:text-neutral-400 space-y-1 ml-4">
                 <li>• Content is highly structured (forms, records, data)</li>
-                <li>• Speed is critical (<10ms required)</li>
+                <li>• Speed is critical (&lt;10ms required)</li>
                 <li>• Zero API costs are important</li>
                 <li>• Perfect quality preservation needed</li>
                 <li>• Patterns are predictable and repetitive</li>
@@ -1859,7 +1859,7 @@ const benchmarks = {
                 <div>
                   <h4 className="font-medium mb-1">Perplexity Delta</h4>
                   <p className="text-neutral-600 dark:text-neutral-400">
-                    Change in language model perplexity. Lower is better. Target: <25%
+                    Change in language model perplexity. Lower is better. Target: &lt;25%
                   </p>
                 </div>
                 <div>
@@ -1978,7 +1978,7 @@ const benchmarks = {
                     <li>• Processing in batch mode (not real-time)</li>
                     <li>• GPU resources available for faster processing</li>
                     <li>• Willing to accept moderate quality loss (88-92%)</li>
-                    <li>• Working with very large documents (>20K tokens)</li>
+                    <li>• Working with very large documents (&gt;20K tokens)</li>
                   </ul>
                   <div className="text-xs text-indigo-700 dark:text-indigo-300 font-medium">
                     Example: Offline processing of research papers, large knowledge base compression
@@ -2256,7 +2256,7 @@ const benchmarks = {
                 Easiest to Implement
               </h4>
               <p className="text-sm text-emerald-700 dark:text-emerald-300">
-                <strong>Template-based:</strong> Pure JavaScript, no dependencies, < 1 hour setup time
+                <strong>Template-based:</strong> Pure JavaScript, no dependencies, &lt;1 hour setup time
               </p>
             </div>
             <div className="p-4 rounded-lg bg-violet-50 dark:bg-violet-950/20 border border-violet-200 dark:border-violet-800/50">

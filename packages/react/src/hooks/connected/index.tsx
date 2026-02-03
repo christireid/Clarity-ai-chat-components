@@ -432,33 +432,33 @@ export function useConnectedProps(
 
   switch (componentName.toLowerCase()) {
     case 'thinkingbar':
-      return useConnectedThinkingBar()
+      return useConnectedThinkingBar() as unknown as Record<string, unknown>
     case 'thinkingpill':
-      return useConnectedThinkingPill()
+      return useConnectedThinkingPill() as unknown as Record<string, unknown>
     case 'streamstatusprogress':
     case 'streamprogress':
-      return useConnectedStreamProgress()
+      return useConnectedStreamProgress() as unknown as Record<string, unknown>
     case 'conversations':
-      return useConnectedConversations()
+      return useConnectedConversations() as unknown as Record<string, unknown>
     case 'sender':
-      return useConnectedSender()
+      return useConnectedSender() as unknown as Record<string, unknown>
     case 'toolcard':
     case 'toolexecutioncard':
-      return useConnectedToolCard()
+      return useConnectedToolCard() as unknown as Record<string, unknown>
     case 'chainofthought':
-      return useConnectedChainOfThought()
+      return useConnectedChainOfThought() as unknown as Record<string, unknown>
     case 'responseactions':
-      return useConnectedResponseActions()
+      return useConnectedResponseActions() as unknown as Record<string, unknown>
     case 'welcome':
-      return useConnectedWelcome()
+      return useConnectedWelcome() as unknown as Record<string, unknown>
     case 'prompts':
-      return useConnectedPrompts()
+      return useConnectedPrompts() as unknown as Record<string, unknown>
     case 'suggestion':
-      return useConnectedSuggestion()
+      return useConnectedSuggestion() as unknown as Record<string, unknown>
     case 'attachments':
-      return useConnectedAttachments()
+      return useConnectedAttachments() as unknown as Record<string, unknown>
     case 'approvalcard':
-      return useConnectedApprovalCard()
+      return useConnectedApprovalCard() as unknown as Record<string, unknown>
     default:
       return null
   }

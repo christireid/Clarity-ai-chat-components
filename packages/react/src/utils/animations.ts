@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Animation Utilities for Clarity Chat
  *

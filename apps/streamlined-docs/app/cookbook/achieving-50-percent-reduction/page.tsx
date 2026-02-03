@@ -455,7 +455,7 @@ if (compressed.quality >= 0.7) {
 
           <div className="mt-6 p-4 rounded-lg bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-800/50">
             <p className="text-sm text-amber-900 dark:text-amber-100">
-              <strong>Quality Gate:</strong> Always check <code>compressed.quality >= 0.7</code> before using compressed text.
+              <strong>Quality Gate:</strong> Always check <code>compressed.quality &gt;= 0.7</code> before using compressed text.
               Fall back to original if quality is too low to ensure good AI responses.
             </p>
           </div>

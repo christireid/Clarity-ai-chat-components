@@ -291,7 +291,7 @@ spec:
                   <li>Monitor metrics for 1 hour after switching to green</li>
                   <li>If error rate &gt;0.5% or cost spike &gt;20%, rollback immediately</li>
                   <li>
-                    Rollback: <code className="px-1 py-0.5 rounded bg-emerald-900/20">kubectl patch service ai-service -p '{"spec":{"selector":{"version":"blue"}}}'</code>
+                    Rollback: <code className="px-1 py-0.5 rounded bg-emerald-900/20">{`kubectl patch service ai-service -p '{"spec":{"selector":{"version":"blue"}}}'`}</code>
                   </li>
                   <li>Investigate issue in green deployment, fix, redeploy</li>
                 </ol>

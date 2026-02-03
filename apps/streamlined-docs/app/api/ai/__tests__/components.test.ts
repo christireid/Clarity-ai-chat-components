@@ -35,7 +35,23 @@ class MockNextResponse {
 
 vi.mock('next/server', () => ({
   NextResponse: MockNextResponse,
+  NextRequest: class MockNextRequest {
+    url: string
+    method: string
+    headers: Map<string, string>
+
+    constructor(input: string | URL, init?: RequestInit) {
+      this.url = typeof input === 'string' ? input : input.toString()
+      this.method = init?.method || 'GET'
+      this.headers = new Map()
+    }
+  }
 }))
+
+// Helper to create a mock request
+function createMockRequest(url = 'http://localhost/api/ai/components') {
+  return { url } as { url: string }
+}
 
 describe('Components API Route', () => {
   beforeEach(() => {
@@ -49,7 +65,7 @@ describe('Components API Route', () => {
   describe('GET /api/ai/components', () => {
     it('returns successful response with components', async () => {
       const { GET } = await import('../components/route')
-      const response = await GET()
+      const response = await GET(createMockRequest() as never)
       const data = await response.json()
 
       expect(data.name).toBe('Clarity Chat Components')
@@ -61,7 +77,7 @@ describe('Components API Route', () => {
 
     it('includes all required response fields', async () => {
       const { GET } = await import('../components/route')
-      const response = await GET()
+      const response = await GET(createMockRequest() as never)
       const data = await response.json()
 
       expect(data).toHaveProperty('name')
@@ -77,7 +93,7 @@ describe('Components API Route', () => {
 
     it('includes usage information', async () => {
       const { GET } = await import('../components/route')
-      const response = await GET()
+      const response = await GET(createMockRequest() as never)
       const data = await response.json()
 
       expect(data.usage.installation).toBe('npm install @clarity-chat/react')
@@ -87,7 +103,7 @@ describe('Components API Route', () => {
 
     it('returns unique categories', async () => {
       const { GET } = await import('../components/route')
-      const response = await GET()
+      const response = await GET(createMockRequest() as never)
       const data = await response.json()
 
       const uniqueCategories = [...new Set(data.categories)]
@@ -96,7 +112,7 @@ describe('Components API Route', () => {
 
     it('each component has required fields', async () => {
       const { GET } = await import('../components/route')
-      const response = await GET()
+      const response = await GET(createMockRequest() as never)
       const data = await response.json()
 
       data.components.forEach(
@@ -124,7 +140,7 @@ describe('Components API Route', () => {
 
     it('component props have required fields', async () => {
       const { GET } = await import('../components/route')
-      const response = await GET()
+      const response = await GET(createMockRequest() as never)
       const data = await response.json()
 
       data.components.forEach(
@@ -148,7 +164,7 @@ describe('Components API Route', () => {
 
     it('returns valid lastUpdated timestamp', async () => {
       const { GET } = await import('../components/route')
-      const response = await GET()
+      const response = await GET(createMockRequest() as never)
       const data = await response.json()
 
       expect(() => new Date(data.lastUpdated)).not.toThrow()
@@ -156,7 +172,7 @@ describe('Components API Route', () => {
 
     it('includes known core components', async () => {
       const { GET } = await import('../components/route')
-      const response = await GET()
+      const response = await GET(createMockRequest() as never)
       const data = await response.json()
 
       const componentNames = data.components.map(

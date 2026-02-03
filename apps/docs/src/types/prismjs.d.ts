@@ -42,51 +42,6 @@ declare module 'prismjs/components/prism-python' {
   export default _default
 }
 
-declare module 'prismjs/components/prism-java' {
-  const _default: void
-  export default _default
-}
-
-declare module 'prismjs/components/prism-c' {
-  const _default: void
-  export default _default
-}
-
-declare module 'prismjs/components/prism-cpp' {
-  const _default: void
-  export default _default
-}
-
-declare module 'prismjs/components/prism-csharp' {
-  const _default: void
-  export default _default
-}
-
-declare module 'prismjs/components/prism-go' {
-  const _default: void
-  export default _default
-}
-
-declare module 'prismjs/components/prism-rust' {
-  const _default: void
-  export default _default
-}
-
-declare module 'prismjs/components/prism-sql' {
-  const _default: void
-  export default _default
-}
-
-declare module 'prismjs/components/prism-yaml' {
-  const _default: void
-  export default _default
-}
-
-declare module 'prismjs/components/prism-markup' {
-  const _default: void
-  export default _default
-}
-
 declare module 'prismjs/components/*' {
   const _default: void
   export default _default

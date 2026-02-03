@@ -958,7 +958,7 @@ console.log('Point 2 (daily):', response.usage.cache_creation_input_tokens)`}
               </h3>
               <ul className="space-y-2 text-sm text-emerald-900 dark:text-emerald-100">
                 <li>• Large system prompts (2K+ tokens)</li>
-                <li>• High-frequency requests (>10/min)</li>
+                <li>• High-frequency requests (&gt;10/min)</li>
                 <li>• Static documentation/guidelines</li>
                 <li>• Customer support chatbots</li>
                 <li>• Document Q&A applications</li>
@@ -972,8 +972,8 @@ console.log('Point 2 (daily):', response.usage.cache_creation_input_tokens)`}
                 Not Ideal For
               </h3>
               <ul className="space-y-2 text-sm text-amber-900 dark:text-amber-100">
-                <li>• Small prompts (<1024 tokens)</li>
-                <li>• Low-frequency requests (<1/min)</li>
+                <li>• Small prompts (&lt;1024 tokens)</li>
+                <li>• Low-frequency requests (&lt;1/min)</li>
                 <li>• Frequently changing context</li>
                 <li>• One-off queries</li>
                 <li>• Batch processing (no reuse)</li>

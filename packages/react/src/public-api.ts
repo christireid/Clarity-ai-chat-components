@@ -215,7 +215,7 @@ export {
   useChatThinking,
   type ClarityChatProviderProps,
   type ClarityChatContextValue,
-  type ClarityChatConfig,
+  type ChatConfig as ClarityChatConfig,
   type ChatMessage as ClarityChatMessage,
   type StreamStatus as ClarityStreamStatus,
   type ThinkingStep as ClarityThinkingStep,

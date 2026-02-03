@@ -48,7 +48,7 @@ Props:
     url: '/reference/components/chat-provider',
     category: 'component',
     score: 0.95,
-    metadata: { lastUpdated: new Date().toISOString() },
+    metadata: { lastUpdated: new Date().toISOString(), tags: ['component', 'provider'] },
   },
   {
     id: 'doc-2',
@@ -68,7 +68,7 @@ Returns:
     url: '/reference/hooks/use-chat',
     category: 'hook',
     score: 0.88,
-    metadata: { lastUpdated: new Date().toISOString() },
+    metadata: { lastUpdated: new Date().toISOString(), tags: ['hook', 'chat'] },
   },
   {
     id: 'doc-3',
@@ -87,6 +87,7 @@ Step 3: Display partial messages`,
       lastUpdated: new Date(
         Date.now() - 10 * 24 * 60 * 60 * 1000
       ).toISOString(), // 10 days ago
+      tags: ['guide', 'streaming'],
     },
   },
 ]
@@ -99,6 +100,7 @@ const mockConversation: Message[] = [
     chatId: 'test',
     createdAt: new Date(),
     updatedAt: new Date(),
+    status: 'sent',
   },
   {
     id: 'msg-2',
@@ -108,6 +110,7 @@ const mockConversation: Message[] = [
     chatId: 'test',
     createdAt: new Date(),
     updatedAt: new Date(),
+    status: 'sent',
   },
   {
     id: 'msg-3',
@@ -116,6 +119,7 @@ const mockConversation: Message[] = [
     chatId: 'test',
     createdAt: new Date(),
     updatedAt: new Date(),
+    status: 'sent',
   },
 ]
 
@@ -272,7 +276,7 @@ describe('Context Prioritization', () => {
         url: '/ref/comp2',
         category: 'component', // Duplicate category
         score: 0.92, // High score but duplicate category
-        metadata: {},
+        metadata: { lastUpdated: new Date().toISOString(), tags: ['component'] },
       },
     ]
 
@@ -291,7 +295,7 @@ describe('Context Prioritization', () => {
       url: '/recent',
       category: 'guide',
       score: 0.7, // Lower score
-      metadata: { lastUpdated: new Date().toISOString() }, // Very recent
+      metadata: { lastUpdated: new Date().toISOString(), tags: ['guide'] }, // Very recent
     }
 
     const sources = [recentSource, ...mockSources]
@@ -353,6 +357,7 @@ describe('Conversation History Formatting', () => {
       chatId: 'test',
       createdAt: new Date(),
       updatedAt: new Date(),
+      status: 'sent',
     }
 
     const formatted = RAGUtils.formatConversationHistory([longMessage])
