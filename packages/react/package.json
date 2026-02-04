@@ -256,7 +256,7 @@
     "@vitejs/plugin-react": "^5.1.1",
     "@vitest/coverage-v8": "^4.0.15",
     "@vitest/ui": "^4.0.15",
-    "happy-dom": "^20.0.11",
+    "happy-dom": "^20.5.0",
     "jsdom": "^27.2.0",
     "prismjs": "^1.30.0",
     "react-markdown": "^10.1.0",
