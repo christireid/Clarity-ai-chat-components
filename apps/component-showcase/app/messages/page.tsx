@@ -36,6 +36,11 @@ import {
   Edit,
   Smile,
   Sparkles,
+  MessagesSquare,
+  Loader2,
+  MousePointerClick,
+  Layers,
+  Lightbulb,
 } from 'lucide-react'
 
 // ============================================================================
@@ -167,7 +172,7 @@ function StreamingMessageDemo() {
     'React Hooks are a powerful feature that allows you to use state and other React features in functional components. They were introduced in React 16.8 and have become the standard way to manage state in modern React applications.'
 
   return (
-    <Card>
+    <Card className="glass-card border-0">
       <CardHeader>
         <div className="flex items-center justify-between">
           <div>
@@ -217,7 +222,7 @@ function StreamingMessageDemo() {
 // ============================================================================
 function TypingIndicatorDemo() {
   return (
-    <Card>
+    <Card className="glass-card border-0">
       <CardHeader>
         <CardTitle className="text-lg">Typing Indicators</CardTitle>
         <CardDescription>
@@ -326,7 +331,7 @@ function MessageActionsDemo() {
   const [copied, setCopied] = useState(false)
 
   return (
-    <Card>
+    <Card className="glass-card border-0">
       <CardHeader>
         <CardTitle className="text-lg">Message Actions</CardTitle>
         <CardDescription>Interactive actions for messages</CardDescription>
@@ -426,7 +431,7 @@ function MessageActionsDemo() {
 // ============================================================================
 function MessageGroupingDemo() {
   return (
-    <Card>
+    <Card className="glass-card border-0">
       <CardHeader>
         <CardTitle className="text-lg">Message Grouping</CardTitle>
         <CardDescription>
@@ -521,7 +526,7 @@ function FollowUpSuggestionsDemo() {
   ]
 
   return (
-    <Card>
+    <Card className="glass-card border-0">
       <CardHeader>
         <CardTitle className="text-lg">Follow-up Suggestions</CardTitle>
         <CardDescription>
@@ -576,26 +581,71 @@ function FollowUpSuggestionsDemo() {
 // ============================================================================
 export default function MessagesPage() {
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 relative">
+      {/* Background Effects */}
+      <div className="fixed inset-0 -z-10 overflow-hidden pointer-events-none">
+        <div className="orb-primary -top-40 -left-40 opacity-30" />
+        <div className="orb-cyan bottom-20 -right-40 opacity-20" />
+      </div>
+
       <PageHeader
         title="Messages"
         description="Message bubbles, streaming, typing indicators, and actions"
+        icon={MessagesSquare}
+        badge="12+ Components"
       />
 
       <Tabs defaultValue="bubbles" className="w-full">
-        <TabsList className="mb-6 flex-wrap h-auto gap-2">
-          <TabsTrigger value="bubbles">Message Bubbles</TabsTrigger>
-          <TabsTrigger value="streaming">Streaming</TabsTrigger>
-          <TabsTrigger value="typing">Typing Indicators</TabsTrigger>
-          <TabsTrigger value="actions">Actions</TabsTrigger>
-          <TabsTrigger value="grouping">Grouping</TabsTrigger>
-          <TabsTrigger value="suggestions">Suggestions</TabsTrigger>
+        <TabsList className="mb-6 flex-wrap h-auto gap-2 p-1 glass-panel">
+          <TabsTrigger
+            value="bubbles"
+            className="rounded-lg gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+          >
+            <MessagesSquare className="h-4 w-4" />
+            Message Bubbles
+          </TabsTrigger>
+          <TabsTrigger
+            value="streaming"
+            className="rounded-lg gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+          >
+            <Loader2 className="h-4 w-4" />
+            Streaming
+          </TabsTrigger>
+          <TabsTrigger
+            value="typing"
+            className="rounded-lg gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+          >
+            <Bot className="h-4 w-4" />
+            Typing Indicators
+          </TabsTrigger>
+          <TabsTrigger
+            value="actions"
+            className="rounded-lg gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+          >
+            <MousePointerClick className="h-4 w-4" />
+            Actions
+          </TabsTrigger>
+          <TabsTrigger
+            value="grouping"
+            className="rounded-lg gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+          >
+            <Layers className="h-4 w-4" />
+            Grouping
+          </TabsTrigger>
+          <TabsTrigger
+            value="suggestions"
+            className="rounded-lg gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+          >
+            <Lightbulb className="h-4 w-4" />
+            Suggestions
+          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="bubbles">
           <ComponentSection
             title="Message Bubble Variants"
             description="Different styles and layouts for chat messages"
+            icon={MessagesSquare}
           >
             <MessageBubbleVariants />
           </ComponentSection>
@@ -605,6 +655,7 @@ export default function MessagesPage() {
           <ComponentSection
             title="Streaming Messages"
             description="Real-time text generation with visual feedback"
+            icon={Loader2}
           >
             <StreamingMessageDemo />
           </ComponentSection>
@@ -614,6 +665,7 @@ export default function MessagesPage() {
           <ComponentSection
             title="Typing Indicators"
             description="Show when someone is composing a message"
+            icon={Bot}
           >
             <TypingIndicatorDemo />
           </ComponentSection>
@@ -623,6 +675,7 @@ export default function MessagesPage() {
           <ComponentSection
             title="Message Actions"
             description="Interactive actions for messages"
+            icon={MousePointerClick}
           >
             <MessageActionsDemo />
           </ComponentSection>
@@ -632,6 +685,7 @@ export default function MessagesPage() {
           <ComponentSection
             title="Message Grouping"
             description="Group messages by sender and time"
+            icon={Layers}
           >
             <MessageGroupingDemo />
           </ComponentSection>
@@ -641,6 +695,7 @@ export default function MessagesPage() {
           <ComponentSection
             title="Follow-up Suggestions"
             description="Smart contextual suggestions"
+            icon={Lightbulb}
           >
             <FollowUpSuggestionsDemo />
           </ComponentSection>
