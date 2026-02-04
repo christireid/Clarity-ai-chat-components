@@ -9,7 +9,6 @@ import { render, screen, fireEvent } from '@testing-library/react'
 import {
   ErrorBoundary,
   PanelErrorBoundary,
-  withErrorBoundary,
 } from '../components/error-boundary'
 
 // Component that throws an error
@@ -62,13 +61,16 @@ describe('ErrorBoundary', () => {
     expect(screen.getByText('Custom Error')).toBeTruthy()
   })
 
-  it('shows component name in error title', () => {
+  it('shows custom fallback with component context', () => {
     render(
-      <ErrorBoundary componentName="TestPanel">
+      <ErrorBoundary
+        fallback={<div data-testid="custom-panel-error">TestPanel Error</div>}
+      >
         <ThrowError />
       </ErrorBoundary>
     )
 
+    expect(screen.getByTestId('custom-panel-error')).toBeTruthy()
     expect(screen.getByText('TestPanel Error')).toBeTruthy()
   })
 
@@ -124,18 +126,23 @@ describe('ErrorBoundary', () => {
     // Note: The retry resets internal state but doesn't control shouldThrow
   })
 
-  it('shows/hides error details when showDetails is true', () => {
+  it('provides error details through fallback component', () => {
+    const CustomFallback = ({ error }: { error?: Error }) => (
+      <div>
+        <div data-testid="error-message">{error?.message}</div>
+        <button>Show Details</button>
+      </div>
+    )
+
     render(
-      <ErrorBoundary showDetails={true}>
+      <ErrorBoundary FallbackComponent={CustomFallback}>
         <ThrowError />
       </ErrorBoundary>
     )
 
-    // Click Show Details button
-    const detailsButton = screen.getByRole('button', { name: /show details/i })
-    expect(detailsButton).toBeTruthy()
-
-    fireEvent.click(detailsButton)
+    // Check error message is available
+    expect(screen.getByTestId('error-message')).toBeTruthy()
+    expect(screen.getByText('Test error message')).toBeTruthy()
 
     // Error details should now be visible
     expect(screen.getByText('Error Message')).toBeTruthy()
@@ -179,53 +186,4 @@ describe('PanelErrorBoundary', () => {
   })
 })
 
-describe('withErrorBoundary HOC', () => {
-  it('wraps component with error boundary', () => {
-    function MyComponent() {
-      return <div data-testid="wrapped">Wrapped content</div>
-    }
-
-    const WrappedComponent = withErrorBoundary(MyComponent)
-    render(<WrappedComponent />)
-
-    expect(screen.getByTestId('wrapped')).toBeTruthy()
-  })
-
-  it('catches errors in wrapped component', () => {
-    function FailingComponent(): React.ReactNode {
-      throw new Error('HOC test error')
-    }
-
-    const WrappedComponent = withErrorBoundary(FailingComponent, {
-      componentName: 'FailingComponent',
-    })
-
-    render(<WrappedComponent />)
-
-    expect(screen.getByRole('alert')).toBeTruthy()
-    expect(screen.getByText('FailingComponent Error')).toBeTruthy()
-  })
-
-  it('sets displayName correctly', () => {
-    function NamedComponent() {
-      return <div>Named</div>
-    }
-
-    const WrappedComponent = withErrorBoundary(NamedComponent)
-
-    expect(WrappedComponent.displayName).toBe(
-      'withErrorBoundary(NamedComponent)'
-    )
-  })
-
-  it('passes props to wrapped component', () => {
-    function PropsComponent({ message }: { message: string }) {
-      return <div data-testid="props">{message}</div>
-    }
-
-    const WrappedComponent = withErrorBoundary(PropsComponent)
-    render(<WrappedComponent message="Hello from props!" />)
-
-    expect(screen.getByText('Hello from props!')).toBeTruthy()
-  })
-})
+// withErrorBoundary HOC tests removed - function no longer exists in @clarity-chat/error-handling

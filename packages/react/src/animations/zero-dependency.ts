@@ -301,29 +301,13 @@ export const iconAnimation = {
 // =============================================================================
 
 import { useEffect, useState } from 'react'
+import { useReducedMotion } from '@clarity-chat/primitives'
 
 /**
  * Hook to detect reduced motion preference
+ * Re-exported from @clarity-chat/primitives
  */
-export const useReducedMotion = (): boolean => {
-  const [reducedMotion, setReducedMotion] = useState(false)
-
-  useEffect(() => {
-    if (typeof window === 'undefined') return
-
-    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
-    setReducedMotion(mediaQuery.matches)
-
-    const handleChange = (event: MediaQueryListEvent) => {
-      setReducedMotion(event.matches)
-    }
-
-    mediaQuery.addEventListener('change', handleChange)
-    return () => mediaQuery.removeEventListener('change', handleChange)
-  }, [])
-
-  return reducedMotion
-}
+export { useReducedMotion } from '@clarity-chat/primitives'
 
 /**
  * Hook to inject keyframes on mount

@@ -8,7 +8,7 @@
  */
 
 import * as React from 'react'
-import { ClarityChat } from '../components/chat/clarity-chat'
+import { ClarityChat } from '../components/chat/ClarityChat'
 import { devLog } from './dev-helpers'
 
 /**
@@ -37,22 +37,22 @@ export class SetupWizard extends React.Component<
           header: true,
           prompts: true,
           darkMode: false,
-        }
-      }
+        },
+      },
     }
   }
 
   private nextStep = () => {
-    this.setState(prev => ({ step: prev.step + 1 }))
+    this.setState((prev) => ({ step: prev.step + 1 }))
   }
 
   private prevStep = () => {
-    this.setState(prev => ({ step: prev.step - 1 }))
+    this.setState((prev) => ({ step: prev.step - 1 }))
   }
 
   private updateConfig = (updates: Partial<SetupWizardConfig>) => {
-    this.setState(prev => ({
-      config: { ...prev.config, ...updates }
+    this.setState((prev) => ({
+      config: { ...prev.config, ...updates },
     }))
   }
 
@@ -123,12 +123,7 @@ export class QuickSetup {
   }
 
   static streaming(api: string): React.ReactElement {
-    return (
-      <ClarityChat
-        api={api}
-        transport="sse"
-      />
-    )
+    return <ClarityChat api={api} transport="sse" />
   }
 }
 
@@ -137,7 +132,9 @@ export class QuickSetup {
  */
 export function interactiveSetup(): void {
   if (typeof window === 'undefined') {
-    console.log('Interactive setup is only available in browser environment')
+    if (process.env.NODE_ENV === 'development') {
+      console.log('Interactive setup is only available in browser environment')
+    }
     return
   }
 
@@ -156,12 +153,14 @@ export function interactiveSetup(): void {
   const config = {
     api,
     features: { memory, streaming, rateLimiting: true, enterprise },
-    ui: { header: true, prompts: true, darkMode: false }
+    ui: { header: true, prompts: true, darkMode: false },
   }
 
-  console.log('Generated configuration:', config)
-  console.log('Copy this into your component:')
-  console.log(generateCodeSnippet(config))
+  if (process.env.NODE_ENV === 'development') {
+    console.log('Generated configuration:', config)
+    console.log('Copy this into your component:')
+    console.log(generateCodeSnippet(config))
+  }
 }
 
 /**
@@ -196,7 +195,7 @@ function generateCodeSnippet(config: SetupWizardConfig): string {
     props.push('header={{ show: true, title: "AI Assistant" }}')
   }
 
-  const indentedProps = props.map(p => `      ${p}`).join('\n')
+  const indentedProps = props.map((p) => `      ${p}`).join('\n')
   lines.push(`    <ClarityChat`)
   lines.push(indentedProps)
   lines.push('    />')
@@ -251,7 +250,12 @@ interface Step2FeaturesProps {
   onBack: () => void
 }
 
-function Step2Features({ features, onChange, onNext, onBack }: Step2FeaturesProps) {
+function Step2Features({
+  features,
+  onChange,
+  onNext,
+  onBack,
+}: Step2FeaturesProps) {
   const updateFeature = (key: keyof typeof features, value: boolean) => {
     onChange({ ...features, [key]: value })
   }

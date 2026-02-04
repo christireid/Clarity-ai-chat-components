@@ -33,6 +33,7 @@ export default function NotFound() {
             className="mb-8"
             initial={{ scale: 0.8, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
+            viewport={{ once: true }}
             transition={{ duration: 0.5, ease: [0.25, 0.1, 0.25, 1] }}
           >
             <div className="relative inline-block">
@@ -119,6 +120,7 @@ export default function NotFound() {
                     key={page.href}
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
                     transition={{ delay: 0.6 + index * 0.1, duration: 0.4 }}
                   >
                     <Link

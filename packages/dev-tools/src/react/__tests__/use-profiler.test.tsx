@@ -10,7 +10,7 @@ import { renderHook, act } from '@testing-library/react'
 let mockProfiler: any = null
 
 // Mock the profiler - must be hoisted
-vi.mock('../../performance', () => {
+vi.mock('../../performance/profiler', () => {
   // Create mock instance inside the factory
   const createMockProfiler = () => ({
     getAllMetrics: vi.fn(() => []),

@@ -334,28 +334,24 @@ export async function downloadAsZip(
  * Copies text to clipboard with fallback for older browsers
  */
 export async function copyToClipboard(text: string): Promise<boolean> {
-  // Try modern Clipboard API first
-  if (
-    navigator.clipboard &&
-    typeof navigator.clipboard.writeText === 'function'
-  ) {
-    try {
+  try {
+    // Try modern Clipboard API first
+    if (
+      navigator.clipboard &&
+      typeof navigator.clipboard.writeText === 'function'
+    ) {
       await navigator.clipboard.writeText(text)
       return true
-    } catch {
-      // Fall through to fallback
     }
-  }
 
-  // Fallback for older browsers using execCommand
-  try {
+    // Fallback for older browsers using execCommand
     const textArea = document.createElement('textarea')
     textArea.value = text
 
-    // Avoid scrolling to bottom
+    // Avoid scrolling to bottom and hide element
+    textArea.style.position = 'fixed'
     textArea.style.top = '0'
     textArea.style.left = '0'
-    textArea.style.position = 'fixed'
     textArea.style.opacity = '0'
     textArea.style.pointerEvents = 'none'
 

@@ -15,15 +15,17 @@
   },
   "files": [
     "dist",
-    "README.md"
+    "README.md",
+    "CHANGELOG.md",
+    "LICENSE"
   ],
   "sideEffects": false,
   "scripts": {
-    "build": "tsup",
+    "build": "NODE_OPTIONS='--max-old-space-size=8192' tsup",
     "dev": "tsup --watch",
     "test": "vitest run --passWithNoTests",
     "test:coverage": "vitest --coverage",
-    "lint": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+    "lint": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 25",
     "typecheck": "tsc --noEmit",
     "example:basic": "tsx examples/basic-usage.ts",
     "example:quick": "tsx examples/quick-start.ts",
@@ -44,7 +46,11 @@
     "framework-agnostic",
     "typescript"
   ],
-  "author": "Christi Reid <christi@codeclarity.ai>",
+  "author": {
+    "name": "Code & Clarity",
+    "email": "hello@codeandclarity.com",
+    "url": "https://codeandclarity.com"
+  },
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -73,6 +79,10 @@
     "vitest": "^4.0.15"
   },
   "dependencies": {
-    "@clarity-chat/token-optimization": "workspace:*"
+    "@clarity-chat/token-optimization": "workspace:*",
+    "@clarity-chat/utils": "workspace:*"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }

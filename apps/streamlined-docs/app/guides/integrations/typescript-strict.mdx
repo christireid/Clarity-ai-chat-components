@@ -1,0 +1,1841 @@
+---
+title: TypeScript Strict Mode Integration
+description: Comprehensive guide to integrating Clarity AI Chat Components with TypeScript strict mode for maximum type safety
+---
+
+# TypeScript Strict Mode Integration
+
+This guide demonstrates how to leverage TypeScript's strict mode for maximum type safety when building AI chat applications with Clarity AI Chat Components.
+
+## Table of Contents
+
+- [Recommended TypeScript Configuration](#recommended-typescript-configuration)
+- [Generic Constraints for Type Safety](#generic-constraints-for-type-safety)
+- [Utility Types for Common Patterns](#utility-types-for-common-patterns)
+- [Type Narrowing Techniques](#type-narrowing-techniques)
+- [Handling Union Types in Components](#handling-union-types-in-components)
+- [Avoiding 'any' and Type Assertions](#avoiding-any-and-type-assertions)
+- [Type Testing Strategies](#type-testing-strategies)
+- [Advanced Examples](#advanced-examples)
+
+---
+
+## Recommended TypeScript Configuration
+
+### Complete tsconfig.json
+
+```json
+{
+  "compilerOptions": {
+    // Strict Type Checking - Enable ALL strict checks
+    "strict": true,
+    "noImplicitAny": true,
+    "strictNullChecks": true,
+    "strictFunctionTypes": true,
+    "strictBindCallApply": true,
+    "strictPropertyInitialization": true,
+    "noImplicitThis": true,
+    "alwaysStrict": true,
+
+    // Additional Checks - Catch common errors
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUncheckedIndexedAccess": true,
+    "noImplicitOverride": true,
+    "noPropertyAccessFromIndexSignature": true,
+
+    // Module Resolution
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true,
+    "allowImportingTsExtensions": true,
+    "isolatedModules": true,
+
+    // JavaScript Support
+    "allowJs": true,
+    "checkJs": false,
+
+    // Emit
+    "noEmit": true,
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true,
+    "removeComments": false,
+    "importHelpers": true,
+    "downlevelIteration": true,
+
+    // Interop Constraints
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "forceConsistentCasingInFileNames": true,
+
+    // Language and Environment
+    "target": "ES2022",
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "jsx": "react-jsx",
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+
+    // Type Acquisition
+    "skipLibCheck": true,
+    "types": ["node", "react", "react-dom"],
+
+    // Path Mapping
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"],
+      "@clarity-chat/react": ["../../packages/react/src/index.ts"],
+      "@clarity-chat/react/types": ["../../packages/react/src/types.ts"]
+    }
+  },
+  "include": ["src/**/*", "tests/**/*"],
+  "exclude": ["node_modules", "dist", "build"]
+}
+```
+
+### Key Configuration Explanations
+
+#### Strict Mode Foundation
+
+```json
+{
+  "strict": true // Enables ALL strict type checking options
+}
+```
+
+This single flag enables:
+- `noImplicitAny` - No implicit 'any' types
+- `strictNullChecks` - Null and undefined must be handled explicitly
+- `strictFunctionTypes` - Function parameters are checked contravariantly
+- `strictBindCallApply` - Strict checking of bind, call, and apply
+- `strictPropertyInitialization` - Class properties must be initialized
+- `noImplicitThis` - 'this' must have an explicit type
+- `alwaysStrict` - Parse in strict mode and emit "use strict"
+
+#### Enhanced Error Detection
+
+```json
+{
+  "noUnusedLocals": true,          // Catch unused variables
+  "noUnusedParameters": true,      // Catch unused function parameters
+  "noImplicitReturns": true,       // All code paths must return a value
+  "noFallthroughCasesInSwitch": true, // No fallthrough cases in switch
+  "noUncheckedIndexedAccess": true // Index signatures return T | undefined
+}
+```
+
+---
+
+## Generic Constraints for Type Safety
+
+### Basic Generic Constraints
+
+```tsx
+import type { Message, MessageRole } from '@clarity-chat/react/types'
+
+/**
+ * Generic message factory with role constraint
+ * Ensures only valid MessageRole types can be used
+ */
+function createMessage<TRole extends MessageRole>(
+  role: TRole,
+  content: string
+): TypedMessage<TRole> {
+  return {
+    id: `${role}-${Date.now()}`,
+    role,
+    content,
+    createdAt: new Date(),
+    status: 'complete' as const,
+  }
+}
+
+// Type-safe usage
+const userMsg = createMessage('user', 'Hello') // TypedMessage<'user'>
+const assistantMsg = createMessage('assistant', 'Hi!') // TypedMessage<'assistant'>
+
+// TypeScript error - 'invalid' is not assignable to MessageRole
+// const invalid = createMessage('invalid', 'Test')
+```
+
+### Constrained Generic Components
+
+```tsx
+import type { GenericMessage } from '@clarity-chat/react/types'
+
+/**
+ * Generic message list component with metadata constraints
+ * TMetadata must extend Record<string, unknown> for type safety
+ */
+interface MessageListProps<TMetadata extends Record<string, unknown>> {
+  messages: GenericMessage<TMetadata>[]
+  onMessageClick?: (message: GenericMessage<TMetadata>) => void
+  filterBy?: keyof TMetadata
+  sortBy?: keyof TMetadata
+}
+
+function MessageList<TMetadata extends Record<string, unknown>>({
+  messages,
+  onMessageClick,
+  filterBy,
+  sortBy,
+}: MessageListProps<TMetadata>) {
+  // Type-safe filtering
+  const filtered = filterBy
+    ? messages.filter((msg) => msg.metadata?.[filterBy] !== undefined)
+    : messages
+
+  // Type-safe sorting
+  const sorted = sortBy
+    ? [...filtered].sort((a, b) => {
+        const aVal = a.metadata?.[sortBy]
+        const bVal = b.metadata?.[sortBy]
+        return String(aVal).localeCompare(String(bVal))
+      })
+    : filtered
+
+  return (
+    <div>
+      {sorted.map((message) => (
+        <div
+          key={message.id}
+          onClick={() => onMessageClick?.(message)}
+          role="button"
+          tabIndex={0}
+        >
+          {message.content}
+        </div>
+      ))}
+    </div>
+  )
+}
+
+// Usage with custom metadata
+interface ChatMetadata {
+  userId: string
+  sentiment: 'positive' | 'negative' | 'neutral'
+  priority: number
+}
+
+const MyChat = () => {
+  const messages: GenericMessage<ChatMetadata>[] = [
+    /* ... */
+  ]
+
+  return (
+    <MessageList
+      messages={messages}
+      filterBy="sentiment" // Type-safe: must be keyof ChatMetadata
+      sortBy="priority" // Type-safe: must be keyof ChatMetadata
+      onMessageClick={(msg) => {
+        // msg.metadata is typed as ChatMetadata | undefined
+        console.log(msg.metadata?.sentiment)
+      }}
+    />
+  )
+}
+```
+
+### Multiple Generic Constraints
+
+```tsx
+import type { StrictChatEvent, EventType } from '@clarity-chat/react/types'
+
+/**
+ * Event handler with multiple generic constraints
+ * TEvent must extend EventType
+ * TPayload is inferred from the event type
+ */
+interface EventHandler<
+  TEvent extends EventType,
+  TPayload = Extract<StrictChatEvent, { type: TEvent }>
+> {
+  type: TEvent
+  handler: (payload: TPayload) => void | Promise<void>
+  once?: boolean
+}
+
+/**
+ * Type-safe event emitter with generic constraints
+ */
+class TypeSafeEventEmitter {
+  private handlers = new Map<EventType, Set<(payload: any) => void>>()
+
+  /**
+   * Register an event handler with full type safety
+   */
+  on<TEvent extends EventType>(
+    type: TEvent,
+    handler: (payload: Extract<StrictChatEvent, { type: TEvent }>) => void
+  ): () => void {
+    if (!this.handlers.has(type)) {
+      this.handlers.set(type, new Set())
+    }
+
+    this.handlers.get(type)!.add(handler)
+
+    // Return unsubscribe function
+    return () => {
+      this.handlers.get(type)?.delete(handler)
+    }
+  }
+
+  /**
+   * Emit an event with type-safe payload
+   */
+  emit<TEvent extends EventType>(
+    type: TEvent,
+    payload: Extract<StrictChatEvent, { type: TEvent }>
+  ): void {
+    this.handlers.get(type)?.forEach((handler) => {
+      handler(payload)
+    })
+  }
+}
+
+// Usage
+const emitter = new TypeSafeEventEmitter()
+
+// Type-safe registration
+const unsubscribe = emitter.on('message:sent', (event) => {
+  // event is typed as MessageSentEvent
+  console.log(event.content, event.messageId)
+})
+
+// Type-safe emission
+emitter.emit('message:sent', {
+  type: 'message:sent' as const,
+  timestamp: new Date(),
+  messageId: '123',
+  content: 'Hello',
+  role: 'user',
+})
+
+// TypeScript error - wrong payload type
+// emitter.emit('message:sent', { type: 'message:sent', invalid: true })
+```
+
+---
+
+## Utility Types for Common Patterns
+
+### Extract Props from Components
+
+```tsx
+import type { InferComponentProps } from '@clarity-chat/react/types'
+import { ClarityChat } from '@clarity-chat/react'
+
+/**
+ * Extract and extend component props
+ */
+type ChatProps = InferComponentProps<typeof ClarityChat>
+
+/**
+ * Create a wrapper with additional props
+ */
+interface CustomChatProps extends Omit<ChatProps, 'adapter'> {
+  customAdapter: 'openai' | 'anthropic' | 'google'
+  enableAnalytics?: boolean
+}
+
+function CustomChat({ customAdapter, enableAnalytics, ...props }: CustomChatProps) {
+  const adapter = createAdapter(customAdapter)
+
+  return <ClarityChat adapter={adapter} {...props} />
+}
+```
+
+### Required and Optional Props
+
+```tsx
+import type { RequirePropKeys, OptionalPropKeys } from '@clarity-chat/react/types'
+
+/**
+ * Base configuration type
+ */
+interface ChatConfig {
+  model?: string
+  temperature?: number
+  maxTokens?: number
+  apiKey?: string
+  endpoint?: string
+}
+
+/**
+ * Make specific props required
+ */
+type RequiredChatConfig = RequirePropKeys<ChatConfig, 'apiKey' | 'endpoint'>
+// Result: { model?: string; temperature?: number; maxTokens?: number; apiKey: string; endpoint: string }
+
+/**
+ * Make all props optional except some
+ */
+type PartialChatConfig = OptionalPropKeys<ChatConfig, 'model' | 'temperature'>
+// Result: { model?: string; temperature?: number; maxTokens: number; apiKey: string; endpoint: string }
+```
+
+### Props by Type Filter
+
+```tsx
+import type { PropsOfType, CallbackProps, DataProps } from '@clarity-chat/react/types'
+
+interface MessageProps {
+  id: string
+  content: string
+  timestamp: Date
+  isStreaming: boolean
+  onEdit?: (id: string, content: string) => void
+  onDelete?: (id: string) => void
+  onCopy?: () => void
+}
+
+/**
+ * Extract only string props
+ */
+type StringProps = PropsOfType<MessageProps, string>
+// Result: { id: string; content: string }
+
+/**
+ * Extract only callback props
+ */
+type Callbacks = CallbackProps<MessageProps>
+// Result: { onEdit?: (id: string, content: string) => void; onDelete?: (id: string) => void; onCopy?: () => void }
+
+/**
+ * Extract only data props (non-callbacks)
+ */
+type Data = DataProps<MessageProps>
+// Result: { id: string; content: string; timestamp: Date; isStreaming: boolean }
+```
+
+### Conditional Props Based on Features
+
+```tsx
+import type { RequireIf } from '@clarity-chat/react/types'
+
+/**
+ * Props that change based on feature flags
+ */
+interface BaseChatProps {
+  messages: Message[]
+  onSend: (message: string) => void
+  enableStreaming?: boolean
+  onStreamChunk?: (chunk: string) => void
+  onStreamComplete?: () => void
+}
+
+/**
+ * Make streaming callbacks required if streaming is enabled
+ */
+type StreamingChatProps<TStreaming extends boolean> = RequireIf<
+  BaseChatProps,
+  TStreaming,
+  'onStreamChunk' | 'onStreamComplete'
+>
+
+// Usage
+const ChatWithStreaming = (props: StreamingChatProps<true>) => {
+  // props.onStreamChunk and props.onStreamComplete are required
+  props.onStreamChunk('chunk') // ✓ Safe
+}
+
+const ChatWithoutStreaming = (props: StreamingChatProps<false>) => {
+  // props.onStreamChunk and props.onStreamComplete are optional
+  props.onStreamChunk?.('chunk') // ✓ Safe - optional chaining required
+}
+```
+
+### Deep Readonly Types
+
+```tsx
+/**
+ * Make all properties deeply readonly
+ */
+type DeepReadonly<T> = {
+  readonly [K in keyof T]: T[K] extends Record<string, unknown>
+    ? DeepReadonly<T[K]>
+    : T[K] extends Array<infer U>
+    ? ReadonlyArray<DeepReadonly<U>>
+    : T[K]
+}
+
+interface MutableConfig {
+  api: {
+    endpoint: string
+    timeout: number
+    headers: Record<string, string>
+  }
+  features: string[]
+}
+
+type ImmutableConfig = DeepReadonly<MutableConfig>
+
+const config: ImmutableConfig = {
+  api: {
+    endpoint: '/api/chat',
+    timeout: 5000,
+    headers: { 'Content-Type': 'application/json' },
+  },
+  features: ['streaming', 'tools'],
+}
+
+// TypeScript errors - all readonly
+// config.api.endpoint = '/new' // Error
+// config.features.push('new') // Error
+```
+
+---
+
+## Type Narrowing Techniques
+
+### Discriminated Unions
+
+```tsx
+import type { FinishReason } from '@clarity-chat/react/types'
+
+/**
+ * Discriminated union for chat responses
+ */
+type ChatResponse =
+  | {
+      status: 'success'
+      message: string
+      finishReason: FinishReason
+      usage: { promptTokens: number; completionTokens: number }
+    }
+  | {
+      status: 'error'
+      error: Error
+      retryable: boolean
+    }
+  | {
+      status: 'pending'
+      progress: number
+    }
+
+/**
+ * Type-safe response handler using discriminated unions
+ */
+function handleResponse(response: ChatResponse) {
+  // TypeScript narrows the type based on status
+  switch (response.status) {
+    case 'success':
+      // response is typed as the success variant
+      console.log('Message:', response.message)
+      console.log('Tokens:', response.usage.promptTokens)
+      break
+
+    case 'error':
+      // response is typed as the error variant
+      if (response.retryable) {
+        console.error('Retryable error:', response.error)
+      } else {
+        console.error('Fatal error:', response.error)
+      }
+      break
+
+    case 'pending':
+      // response is typed as the pending variant
+      console.log('Progress:', response.progress)
+      break
+
+    default:
+      // Exhaustiveness check - ensures all cases are handled
+      const _exhaustive: never = response
+      throw new Error(`Unhandled response type: ${_exhaustive}`)
+  }
+}
+```
+
+### Type Guards
+
+```tsx
+import type { StrictChatEvent } from '@clarity-chat/react/types'
+
+/**
+ * Type guard for message sent events
+ */
+function isMessageSentEvent(event: StrictChatEvent): event is Extract<
+  StrictChatEvent,
+  { type: 'message:sent' }
+> {
+  return event.type === 'message:sent'
+}
+
+/**
+ * Type guard for tool events
+ */
+function isToolEvent(
+  event: StrictChatEvent
+): event is Extract<
+  StrictChatEvent,
+  { type: 'tool:started' | 'tool:completed' | 'tool:error' }
+> {
+  return (
+    event.type === 'tool:started' ||
+    event.type === 'tool:completed' ||
+    event.type === 'tool:error'
+  )
+}
+
+/**
+ * Generic type guard factory
+ */
+function createEventTypeGuard<TType extends StrictChatEvent['type']>(
+  type: TType
+) {
+  return (event: StrictChatEvent): event is Extract<StrictChatEvent, { type: TType }> => {
+    return event.type === type
+  }
+}
+
+// Usage
+const isStreamStarted = createEventTypeGuard('stream:started')
+const isStreamChunk = createEventTypeGuard('stream:chunk')
+
+function processEvent(event: StrictChatEvent) {
+  if (isMessageSentEvent(event)) {
+    // event is now MessageSentEvent
+    console.log(event.content, event.messageId)
+  }
+
+  if (isStreamStarted(event)) {
+    // event is now StreamStartedEvent
+    console.log('Stream started for message:', event.messageId)
+  }
+}
+```
+
+### Assertion Functions
+
+```tsx
+/**
+ * Assertion function for non-null values
+ */
+function assertNonNull<T>(value: T | null | undefined, message?: string): asserts value is T {
+  if (value === null || value === undefined) {
+    throw new Error(message ?? 'Value is null or undefined')
+  }
+}
+
+/**
+ * Assertion function for specific types
+ */
+function assertIsString(value: unknown, message?: string): asserts value is string {
+  if (typeof value !== 'string') {
+    throw new Error(message ?? `Expected string, got ${typeof value}`)
+  }
+}
+
+/**
+ * Assertion function for adapter validation
+ */
+import { validateAdapter, isFormalizedModelAdapter } from '@clarity-chat/react/types'
+
+function processAdapter(adapter: unknown) {
+  // Throws if adapter is invalid, otherwise narrows type
+  validateAdapter(adapter)
+
+  // adapter is now typed as FormalizedModelAdapter
+  console.log('Provider:', adapter.provider)
+  console.log('Capabilities:', adapter.capabilities)
+}
+
+// Usage
+function processMessage(message: unknown) {
+  assertNonNull(message, 'Message cannot be null')
+  // message is now typed as unknown (but guaranteed non-null)
+
+  const content = (message as any).content
+  assertIsString(content, 'Message content must be a string')
+  // content is now typed as string
+
+  console.log(content.toUpperCase()) // ✓ Safe
+}
+```
+
+### Narrowing with 'in' Operator
+
+```tsx
+import type { ChatMessage } from '@clarity-chat/react/types'
+
+/**
+ * Extended message types with optional properties
+ */
+type ExtendedMessage = ChatMessage & {
+  toolCalls?: ToolCall[]
+  citations?: Citation[]
+  attachments?: Attachment[]
+}
+
+/**
+ * Type narrowing using 'in' operator
+ */
+function processMessage(message: ExtendedMessage) {
+  // Narrow by checking property existence
+  if ('toolCalls' in message && message.toolCalls) {
+    // TypeScript knows toolCalls exists
+    message.toolCalls.forEach((call) => {
+      console.log('Tool:', call.function.name)
+    })
+  }
+
+  if ('citations' in message && message.citations) {
+    // TypeScript knows citations exists
+    message.citations.forEach((citation) => {
+      console.log('Source:', citation.source)
+    })
+  }
+
+  if ('attachments' in message && message.attachments) {
+    // TypeScript knows attachments exists
+    message.attachments.forEach((attachment) => {
+      console.log('File:', attachment.name)
+    })
+  }
+}
+```
+
+---
+
+## Handling Union Types in Components
+
+### Union Type Props
+
+```tsx
+import type { Message, MessageRole } from '@clarity-chat/react/types'
+
+/**
+ * Component accepting union type props
+ */
+type MessageType = 'text' | 'image' | 'code' | 'file'
+
+interface MessageContentProps {
+  type: MessageType
+  content: string
+  metadata?:
+    | { type: 'text'; wordCount: number }
+    | { type: 'image'; dimensions: { width: number; height: number } }
+    | { type: 'code'; language: string; lines: number }
+    | { type: 'file'; size: number; mimeType: string }
+}
+
+/**
+ * Type-safe message content renderer
+ */
+function MessageContent({ type, content, metadata }: MessageContentProps) {
+  // Type narrowing with switch
+  switch (type) {
+    case 'text':
+      return (
+        <div className="text-message">
+          <p>{content}</p>
+          {metadata?.type === 'text' && <span>{metadata.wordCount} words</span>}
+        </div>
+      )
+
+    case 'image':
+      return (
+        <div className="image-message">
+          <img src={content} alt="Message attachment" />
+          {metadata?.type === 'image' && (
+            <span>
+              {metadata.dimensions.width} × {metadata.dimensions.height}
+            </span>
+          )}
+        </div>
+      )
+
+    case 'code':
+      return (
+        <div className="code-message">
+          <pre>
+            <code>{content}</code>
+          </pre>
+          {metadata?.type === 'code' && (
+            <span>
+              {metadata.language} ({metadata.lines} lines)
+            </span>
+          )}
+        </div>
+      )
+
+    case 'file':
+      return (
+        <div className="file-message">
+          <a href={content} download>
+            Download File
+          </a>
+          {metadata?.type === 'file' && (
+            <span>
+              {metadata.mimeType} ({metadata.size} bytes)
+            </span>
+          )}
+        </div>
+      )
+
+    default:
+      // Exhaustiveness check
+      const _exhaustive: never = type
+      return null
+  }
+}
+```
+
+### Mapped Union Types
+
+```tsx
+/**
+ * Map union types to component variants
+ */
+type EventVariant = 'success' | 'error' | 'warning' | 'info'
+
+type EventConfig = {
+  [K in EventVariant]: {
+    type: K
+    icon: React.ComponentType
+    color: string
+    autoClose: boolean
+  }
+}
+
+const eventConfigs: EventConfig = {
+  success: {
+    type: 'success',
+    icon: CheckIcon,
+    color: 'green',
+    autoClose: true,
+  },
+  error: {
+    type: 'error',
+    icon: ErrorIcon,
+    color: 'red',
+    autoClose: false,
+  },
+  warning: {
+    type: 'warning',
+    icon: WarningIcon,
+    color: 'yellow',
+    autoClose: true,
+  },
+  info: {
+    type: 'info',
+    icon: InfoIcon,
+    color: 'blue',
+    autoClose: false,
+  },
+}
+
+/**
+ * Type-safe event notification component
+ */
+function EventNotification({ type, message }: { type: EventVariant; message: string }) {
+  const config = eventConfigs[type]
+  const Icon = config.icon
+
+  return (
+    <div style={{ color: config.color }}>
+      <Icon />
+      <span>{message}</span>
+    </div>
+  )
+}
+```
+
+### Conditional Rendering with Union Types
+
+```tsx
+import type { ToolStartedEvent, ToolCompletedEvent, ToolErrorEvent } from '@clarity-chat/react/types'
+
+/**
+ * Union of tool events
+ */
+type ToolEvent = ToolStartedEvent | ToolCompletedEvent | ToolErrorEvent
+
+/**
+ * Type-safe tool event renderer
+ */
+function ToolEventDisplay({ event }: { event: ToolEvent }) {
+  // Type narrowing with type property
+  if (event.type === 'tool:started') {
+    return (
+      <div className="tool-started">
+        <h3>Tool Started</h3>
+        <p>Name: {event.toolName}</p>
+        <pre>{JSON.stringify(event.input, null, 2)}</pre>
+      </div>
+    )
+  }
+
+  if (event.type === 'tool:completed') {
+    return (
+      <div className="tool-completed">
+        <h3>Tool Completed</h3>
+        <p>Name: {event.toolName}</p>
+        <p>Execution Time: {event.executionTimeMs}ms</p>
+        <pre>{JSON.stringify(event.output, null, 2)}</pre>
+      </div>
+    )
+  }
+
+  if (event.type === 'tool:error') {
+    return (
+      <div className="tool-error">
+        <h3>Tool Error</h3>
+        <p>Name: {event.toolName}</p>
+        <p>Error: {event.error.message}</p>
+        <p>Execution Time: {event.executionTimeMs}ms</p>
+      </div>
+    )
+  }
+
+  // Exhaustiveness check
+  const _exhaustive: never = event
+  return null
+}
+```
+
+---
+
+## Avoiding 'any' and Type Assertions
+
+### Use 'unknown' Instead of 'any'
+
+```tsx
+/**
+ * ❌ Bad: Using 'any' loses all type safety
+ */
+function parseResponseBad(response: any) {
+  // No type checking - dangerous!
+  return response.data.messages
+}
+
+/**
+ * ✓ Good: Using 'unknown' requires explicit type checking
+ */
+function parseResponseGood(response: unknown): Message[] {
+  // Must validate before use
+  if (
+    typeof response === 'object' &&
+    response !== null &&
+    'data' in response &&
+    typeof response.data === 'object' &&
+    response.data !== null &&
+    'messages' in response.data &&
+    Array.isArray(response.data.messages)
+  ) {
+    return response.data.messages as Message[]
+  }
+
+  throw new Error('Invalid response format')
+}
+```
+
+### Type Guards Instead of Assertions
+
+```tsx
+import type { ChatMessage } from '@clarity-chat/react/types'
+
+/**
+ * ❌ Bad: Direct type assertion without validation
+ */
+function processMessageBad(data: unknown) {
+  const message = data as ChatMessage // Unsafe!
+  return message.content // Could crash if data is invalid
+}
+
+/**
+ * ✓ Good: Type guard with validation
+ */
+function isChatMessage(data: unknown): data is ChatMessage {
+  return (
+    typeof data === 'object' &&
+    data !== null &&
+    'role' in data &&
+    typeof (data as any).role === 'string' &&
+    ['system', 'user', 'assistant'].includes((data as any).role) &&
+    'content' in data &&
+    (typeof (data as any).content === 'string' ||
+      Array.isArray((data as any).content))
+  )
+}
+
+function processMessageGood(data: unknown): string {
+  if (!isChatMessage(data)) {
+    throw new Error('Invalid message format')
+  }
+
+  // data is now typed as ChatMessage
+  return typeof data.content === 'string'
+    ? data.content
+    : data.content.map((part) => part.text).join('')
+}
+```
+
+### Zod for Runtime Validation
+
+```tsx
+import { z } from 'zod'
+import type { ChatMessage } from '@clarity-chat/react/types'
+
+/**
+ * Runtime validation schema
+ */
+const ChatMessageSchema = z.object({
+  role: z.enum(['system', 'user', 'assistant']),
+  content: z.union([
+    z.string(),
+    z.array(
+      z.object({
+        type: z.enum(['text', 'image', 'tool_result']),
+        text: z.string().optional(),
+        imageUrl: z.string().optional(),
+        toolCallId: z.string().optional(),
+        toolResult: z.unknown().optional(),
+      })
+    ),
+  ]),
+  toolCalls: z
+    .array(
+      z.object({
+        id: z.string(),
+        type: z.literal('function'),
+        function: z.object({
+          name: z.string(),
+          arguments: z.string(),
+        }),
+      })
+    )
+    .optional(),
+  finishReason: z
+    .enum(['stop', 'length', 'tool-calls', 'content-filter'])
+    .optional(),
+})
+
+/**
+ * Type-safe parser with runtime validation
+ */
+function parseMessage(data: unknown): ChatMessage {
+  // Zod validates and returns typed data
+  const validated = ChatMessageSchema.parse(data)
+
+  // No type assertion needed - Zod guarantees the type
+  return validated as ChatMessage
+}
+
+/**
+ * Safe parsing with error handling
+ */
+function parseMessageSafe(data: unknown): ChatMessage | null {
+  const result = ChatMessageSchema.safeParse(data)
+
+  if (!result.success) {
+    console.error('Validation failed:', result.error)
+    return null
+  }
+
+  return result.data as ChatMessage
+}
+```
+
+### Const Assertions for Type Literals
+
+```tsx
+/**
+ * ❌ Bad: Type widening loses precision
+ */
+const statusBad = 'pending' // Type: string
+
+/**
+ * ✓ Good: Const assertion preserves literal type
+ */
+const statusGood = 'pending' as const // Type: 'pending'
+
+/**
+ * ✓ Good: Object const assertions
+ */
+const configGood = {
+  provider: 'openai',
+  model: 'gpt-4',
+  temperature: 0.7,
+} as const
+// Type: { readonly provider: 'openai'; readonly model: 'gpt-4'; readonly temperature: 0.7 }
+
+/**
+ * ✓ Good: Array const assertions
+ */
+const rolesGood = ['system', 'user', 'assistant'] as const
+// Type: readonly ['system', 'user', 'assistant']
+
+type Role = (typeof rolesGood)[number] // 'system' | 'user' | 'assistant'
+```
+
+### Safe Type Narrowing Utilities
+
+```tsx
+/**
+ * Type-safe property access
+ */
+function hasProperty<K extends string>(
+  obj: unknown,
+  key: K
+): obj is Record<K, unknown> {
+  return typeof obj === 'object' && obj !== null && key in obj
+}
+
+/**
+ * Type-safe array check
+ */
+function isArrayOf<T>(
+  value: unknown,
+  guard: (item: unknown) => item is T
+): value is T[] {
+  return Array.isArray(value) && value.every(guard)
+}
+
+// Usage
+function processData(data: unknown) {
+  if (hasProperty(data, 'messages') && isArrayOf(data.messages, isChatMessage)) {
+    // data.messages is now typed as ChatMessage[]
+    data.messages.forEach((msg) => {
+      console.log(msg.content) // ✓ Type-safe
+    })
+  }
+}
+```
+
+---
+
+## Type Testing Strategies
+
+### Using tsd for Type Testing
+
+```tsx
+// tests/types/message.test-d.ts
+import { expectType, expectError, expectAssignable } from 'tsd'
+import type { Message, MessageRole, GenericMessage } from '@clarity-chat/react/types'
+
+/**
+ * Test message role types
+ */
+const userRole: MessageRole = 'user'
+expectType<MessageRole>(userRole)
+
+// Should error on invalid role
+expectError<MessageRole>('invalid')
+
+/**
+ * Test generic message with metadata
+ */
+interface CustomMetadata {
+  userId: string
+  priority: number
+}
+
+const customMessage: GenericMessage<CustomMetadata> = {
+  id: '1',
+  role: 'user',
+  content: 'Hello',
+  createdAt: new Date(),
+  status: 'complete',
+  metadata: {
+    userId: '123',
+    priority: 1,
+  },
+}
+
+expectType<GenericMessage<CustomMetadata>>(customMessage)
+
+// Should error with wrong metadata
+expectError(
+  ({
+    ...customMessage,
+    metadata: { invalid: true },
+  } as GenericMessage<CustomMetadata>)
+)
+
+/**
+ * Test assignability
+ */
+const basicMessage: Message = {
+  id: '1',
+  role: 'user',
+  content: 'Test',
+}
+
+expectAssignable<GenericMessage>(basicMessage)
+```
+
+### Testing Discriminated Unions
+
+```tsx
+// tests/types/events.test-d.ts
+import { expectType } from 'tsd'
+import type {
+  StrictChatEvent,
+  MessageSentEvent,
+  ToolCompletedEvent,
+} from '@clarity-chat/react/types'
+
+/**
+ * Test discriminated union narrowing
+ */
+function testEventNarrowing(event: StrictChatEvent) {
+  if (event.type === 'message:sent') {
+    expectType<MessageSentEvent>(event)
+    expectType<string>(event.content)
+    expectType<string>(event.messageId)
+  }
+
+  if (event.type === 'tool:completed') {
+    expectType<ToolCompletedEvent>(event)
+    expectType<string>(event.toolName)
+    expectType<number>(event.executionTimeMs)
+  }
+}
+```
+
+### Testing Generic Constraints
+
+```tsx
+// tests/types/generics.test-d.ts
+import { expectType, expectError } from 'tsd'
+
+/**
+ * Test generic constraints
+ */
+function createTypedMessage<TRole extends MessageRole>(role: TRole) {
+  return {
+    role,
+    content: 'test',
+  }
+}
+
+const userMsg = createTypedMessage('user')
+expectType<{ role: 'user'; content: string }>(userMsg)
+
+// Should error with invalid role
+expectError(createTypedMessage('invalid'))
+
+/**
+ * Test constrained metadata
+ */
+interface MessageWithMetadata<T extends Record<string, unknown>> {
+  content: string
+  metadata: T
+}
+
+const validMessage: MessageWithMetadata<{ userId: string }> = {
+  content: 'test',
+  metadata: { userId: '123' },
+}
+
+expectType<MessageWithMetadata<{ userId: string }>>(validMessage)
+
+// Should error with non-object metadata
+expectError<MessageWithMetadata<string>>({ content: 'test', metadata: 'invalid' })
+```
+
+### Runtime Type Testing with Vitest
+
+```tsx
+// tests/types/guards.test.ts
+import { describe, it, expect } from 'vitest'
+import { isChatMessage, isToolEvent } from '@/utils/type-guards'
+import type { ChatMessage, StrictChatEvent } from '@clarity-chat/react/types'
+
+describe('Type Guards', () => {
+  describe('isChatMessage', () => {
+    it('should return true for valid message', () => {
+      const validMessage = {
+        role: 'user',
+        content: 'Hello',
+      }
+
+      expect(isChatMessage(validMessage)).toBe(true)
+
+      // Type assertion is safe after guard check
+      if (isChatMessage(validMessage)) {
+        const typed: ChatMessage = validMessage
+        expect(typed.role).toBe('user')
+      }
+    })
+
+    it('should return false for invalid message', () => {
+      expect(isChatMessage(null)).toBe(false)
+      expect(isChatMessage(undefined)).toBe(false)
+      expect(isChatMessage({ invalid: true })).toBe(false)
+      expect(isChatMessage({ role: 'invalid', content: 'test' })).toBe(false)
+    })
+  })
+
+  describe('isToolEvent', () => {
+    it('should narrow tool events correctly', () => {
+      const events: StrictChatEvent[] = [
+        {
+          type: 'tool:started',
+          timestamp: new Date(),
+          messageId: '1',
+          toolId: 't1',
+          toolName: 'search',
+          input: {},
+        },
+        {
+          type: 'message:sent',
+          timestamp: new Date(),
+          messageId: '2',
+          content: 'test',
+          role: 'user',
+        },
+      ]
+
+      const toolEvents = events.filter(isToolEvent)
+      expect(toolEvents).toHaveLength(1)
+
+      // Type is narrowed to tool events
+      toolEvents.forEach((event) => {
+        expect(['tool:started', 'tool:completed', 'tool:error']).toContain(
+          event.type
+        )
+      })
+    })
+  })
+})
+```
+
+### Testing Utility Types
+
+```tsx
+// tests/types/utility-types.test-d.ts
+import { expectType } from 'tsd'
+import type {
+  RequirePropKeys,
+  PropsOfType,
+  CallbackProps,
+  DataProps,
+} from '@clarity-chat/react/types'
+
+interface TestProps {
+  id: string
+  count: number
+  isActive: boolean
+  onUpdate?: (value: string) => void
+  onChange?: (value: number) => void
+}
+
+/**
+ * Test RequirePropKeys
+ */
+type RequiredTestProps = RequirePropKeys<TestProps, 'onUpdate' | 'onChange'>
+const requiredProps: RequiredTestProps = {
+  id: '1',
+  count: 0,
+  isActive: true,
+  onUpdate: () => {},
+  onChange: () => {},
+}
+expectType<RequiredTestProps>(requiredProps)
+
+/**
+ * Test PropsOfType
+ */
+type StringOnlyProps = PropsOfType<TestProps, string>
+expectType<{ id: string }>({} as StringOnlyProps)
+
+/**
+ * Test CallbackProps
+ */
+type Callbacks = CallbackProps<TestProps>
+const callbacks: Callbacks = {
+  onUpdate: () => {},
+  onChange: () => {},
+}
+expectType<Callbacks>(callbacks)
+
+/**
+ * Test DataProps
+ */
+type Data = DataProps<TestProps>
+const data: Data = {
+  id: '1',
+  count: 0,
+  isActive: true,
+}
+expectType<Data>(data)
+```
+
+---
+
+## Advanced Examples
+
+### Example 1: Type-Safe Plugin System
+
+```tsx
+import type {
+  Plugin,
+  PluginConfig,
+  PluginHooks,
+  GenericMessage,
+} from '@clarity-chat/react/types'
+
+/**
+ * Custom metadata for analytics plugin
+ */
+interface AnalyticsMetadata {
+  userId: string
+  sessionId: string
+  eventTimestamp: number
+}
+
+/**
+ * Analytics plugin configuration
+ */
+interface AnalyticsPluginConfig extends PluginConfig<AnalyticsMetadata> {
+  trackingId: string
+  sampleRate: number
+  enableDebug: boolean
+}
+
+/**
+ * Type-safe analytics plugin
+ */
+class AnalyticsPlugin implements Plugin<AnalyticsMetadata> {
+  readonly id: string
+  readonly name = 'analytics'
+  readonly version = '1.0.0'
+  isActive = false
+
+  private trackingId: string
+  private sampleRate: number
+  private enableDebug: boolean
+
+  constructor(config: AnalyticsPluginConfig) {
+    this.id = `${config.name}-${Date.now()}`
+    this.trackingId = config.trackingId
+    this.sampleRate = config.sampleRate
+    this.enableDebug = config.enableDebug
+  }
+
+  async activate(): Promise<void> {
+    this.isActive = true
+    if (this.enableDebug) {
+      console.log('Analytics plugin activated')
+    }
+  }
+
+  async deactivate(): Promise<void> {
+    this.isActive = false
+    if (this.enableDebug) {
+      console.log('Analytics plugin deactivated')
+    }
+  }
+
+  async configure(config: Partial<Record<string, unknown>>): Promise<void> {
+    if ('trackingId' in config && typeof config.trackingId === 'string') {
+      this.trackingId = config.trackingId
+    }
+    if ('sampleRate' in config && typeof config.sampleRate === 'number') {
+      this.sampleRate = config.sampleRate
+    }
+  }
+
+  hooks: PluginHooks<AnalyticsMetadata> = {
+    onMessageSend: async (message) => {
+      // Message is typed with AnalyticsMetadata
+      if (Math.random() < this.sampleRate) {
+        await this.track('message_sent', {
+          messageId: message.id,
+          userId: message.metadata?.userId,
+          sessionId: message.metadata?.sessionId,
+        })
+      }
+    },
+
+    onMessageReceived: async (message) => {
+      if (Math.random() < this.sampleRate) {
+        await this.track('message_received', {
+          messageId: message.id,
+          userId: message.metadata?.userId,
+          sessionId: message.metadata?.sessionId,
+        })
+      }
+    },
+  }
+
+  private async track(eventName: string, data: Record<string, unknown>): Promise<void> {
+    // Track to analytics service
+    if (this.enableDebug) {
+      console.log(`[Analytics] ${eventName}:`, data)
+    }
+    // Actual tracking implementation...
+  }
+}
+
+// Usage
+const analyticsPlugin = new AnalyticsPlugin({
+  name: 'analytics',
+  version: '1.0.0',
+  trackingId: 'UA-XXXXX-Y',
+  sampleRate: 0.1,
+  enableDebug: true,
+})
+```
+
+### Example 2: Type-Safe Event Dispatcher
+
+```tsx
+import type {
+  StrictChatEvent,
+  EventType,
+  EventPayload,
+  StrictEventListener,
+} from '@clarity-chat/react/types'
+
+/**
+ * Advanced type-safe event dispatcher with middleware
+ */
+class EventDispatcher {
+  private listeners = new Map<EventType, Set<StrictEventListener>>()
+  private middleware: Array<(event: StrictChatEvent) => StrictChatEvent | null> = []
+
+  /**
+   * Add middleware to transform/filter events
+   */
+  use(fn: (event: StrictChatEvent) => StrictChatEvent | null): void {
+    this.middleware.push(fn)
+  }
+
+  /**
+   * Register event listener with full type safety
+   */
+  on<T extends EventType>(
+    type: T,
+    listener: StrictEventListener<T>
+  ): () => void {
+    if (!this.listeners.has(type)) {
+      this.listeners.set(type, new Set())
+    }
+
+    this.listeners.get(type)!.add(listener as StrictEventListener)
+
+    // Return unsubscribe function
+    return () => {
+      this.listeners.get(type)?.delete(listener as StrictEventListener)
+    }
+  }
+
+  /**
+   * Register one-time event listener
+   */
+  once<T extends EventType>(
+    type: T,
+    listener: StrictEventListener<T>
+  ): () => void {
+    const wrappedListener = ((event: EventPayload<T>) => {
+      listener(event)
+      this.listeners.get(type)?.delete(wrappedListener as StrictEventListener)
+    }) as StrictEventListener<T>
+
+    return this.on(type, wrappedListener)
+  }
+
+  /**
+   * Emit event with middleware pipeline
+   */
+  emit<T extends EventType>(type: T, payload: EventPayload<T>): void {
+    let event: StrictChatEvent | null = payload as StrictChatEvent
+
+    // Run through middleware pipeline
+    for (const fn of this.middleware) {
+      event = fn(event)
+      if (event === null) {
+        // Middleware filtered out the event
+        return
+      }
+    }
+
+    // Dispatch to listeners
+    const listeners = this.listeners.get(type)
+    if (listeners) {
+      listeners.forEach((listener) => {
+        try {
+          listener(event as any)
+        } catch (error) {
+          console.error(`Error in listener for ${type}:`, error)
+        }
+      })
+    }
+  }
+
+  /**
+   * Remove all listeners for a type
+   */
+  removeAllListeners(type?: EventType): void {
+    if (type) {
+      this.listeners.delete(type)
+    } else {
+      this.listeners.clear()
+    }
+  }
+}
+
+// Usage with middleware
+const dispatcher = new EventDispatcher()
+
+// Add logging middleware
+dispatcher.use((event) => {
+  console.log('[Event]', event.type, event)
+  return event
+})
+
+// Add filtering middleware
+dispatcher.use((event) => {
+  // Filter out error events in production
+  if (process.env.NODE_ENV === 'production' && event.type === 'error:occurred') {
+    return null
+  }
+  return event
+})
+
+// Type-safe event handling
+dispatcher.on('message:sent', (event) => {
+  // event is typed as MessageSentEvent
+  console.log('Message sent:', event.content)
+})
+
+dispatcher.on('tool:completed', (event) => {
+  // event is typed as ToolCompletedEvent
+  console.log('Tool completed:', event.toolName, event.executionTimeMs)
+})
+```
+
+### Example 3: Type-Safe State Machine
+
+```tsx
+/**
+ * Chat state machine with discriminated unions
+ */
+type ChatState =
+  | { status: 'idle' }
+  | { status: 'connecting'; attemptCount: number }
+  | { status: 'connected'; sessionId: string }
+  | {
+      status: 'streaming'
+      messageId: string
+      progress: number
+      tokensReceived: number
+    }
+  | {
+      status: 'error'
+      error: Error
+      retryable: boolean
+      lastState: ChatState
+    }
+
+type ChatAction =
+  | { type: 'CONNECT'; sessionId?: string }
+  | { type: 'CONNECTED'; sessionId: string }
+  | { type: 'START_STREAM'; messageId: string }
+  | { type: 'STREAM_PROGRESS'; progress: number; tokens: number }
+  | { type: 'STREAM_COMPLETE' }
+  | { type: 'ERROR'; error: Error; retryable: boolean }
+  | { type: 'RETRY' }
+  | { type: 'RESET' }
+
+/**
+ * Type-safe state reducer
+ */
+function chatReducer(state: ChatState, action: ChatAction): ChatState {
+  switch (action.type) {
+    case 'CONNECT':
+      if (state.status === 'idle') {
+        return {
+          status: 'connecting',
+          attemptCount: 1,
+        }
+      }
+      if (state.status === 'error' && state.retryable) {
+        return {
+          status: 'connecting',
+          attemptCount:
+            state.lastState.status === 'connecting'
+              ? state.lastState.attemptCount + 1
+              : 1,
+        }
+      }
+      return state
+
+    case 'CONNECTED':
+      if (state.status === 'connecting') {
+        return {
+          status: 'connected',
+          sessionId: action.sessionId,
+        }
+      }
+      return state
+
+    case 'START_STREAM':
+      if (state.status === 'connected') {
+        return {
+          status: 'streaming',
+          messageId: action.messageId,
+          progress: 0,
+          tokensReceived: 0,
+        }
+      }
+      return state
+
+    case 'STREAM_PROGRESS':
+      if (state.status === 'streaming') {
+        return {
+          ...state,
+          progress: action.progress,
+          tokensReceived: state.tokensReceived + action.tokens,
+        }
+      }
+      return state
+
+    case 'STREAM_COMPLETE':
+      if (state.status === 'streaming') {
+        return { status: 'idle' }
+      }
+      return state
+
+    case 'ERROR':
+      return {
+        status: 'error',
+        error: action.error,
+        retryable: action.retryable,
+        lastState: state,
+      }
+
+    case 'RETRY':
+      if (state.status === 'error' && state.retryable) {
+        return state.lastState
+      }
+      return state
+
+    case 'RESET':
+      return { status: 'idle' }
+
+    default:
+      const _exhaustive: never = action
+      return state
+  }
+}
+
+/**
+ * Type-safe state machine hook
+ */
+function useChatStateMachine() {
+  const [state, dispatch] = React.useReducer(chatReducer, { status: 'idle' })
+
+  const connect = React.useCallback((sessionId?: string) => {
+    dispatch({ type: 'CONNECT', sessionId })
+  }, [])
+
+  const startStream = React.useCallback((messageId: string) => {
+    dispatch({ type: 'START_STREAM', messageId })
+  }, [])
+
+  const updateProgress = React.useCallback((progress: number, tokens: number) => {
+    dispatch({ type: 'STREAM_PROGRESS', progress, tokens })
+  }, [])
+
+  const completeStream = React.useCallback(() => {
+    dispatch({ type: 'STREAM_COMPLETE' })
+  }, [])
+
+  const handleError = React.useCallback((error: Error, retryable: boolean) => {
+    dispatch({ type: 'ERROR', error, retryable })
+  }, [])
+
+  const retry = React.useCallback(() => {
+    dispatch({ type: 'RETRY' })
+  }, [])
+
+  const reset = React.useCallback(() => {
+    dispatch({ type: 'RESET' })
+  }, [])
+
+  return {
+    state,
+    connect,
+    startStream,
+    updateProgress,
+    completeStream,
+    handleError,
+    retry,
+    reset,
+  }
+}
+
+// Usage
+function ChatComponent() {
+  const machine = useChatStateMachine()
+
+  React.useEffect(() => {
+    // Type-safe state handling
+    switch (machine.state.status) {
+      case 'idle':
+        console.log('Chat is idle')
+        break
+
+      case 'connecting':
+        console.log('Connecting, attempt:', machine.state.attemptCount)
+        break
+
+      case 'connected':
+        console.log('Connected with session:', machine.state.sessionId)
+        break
+
+      case 'streaming':
+        console.log(
+          'Streaming message:',
+          machine.state.messageId,
+          'Progress:',
+          machine.state.progress
+        )
+        break
+
+      case 'error':
+        console.error('Error:', machine.state.error.message)
+        if (machine.state.retryable) {
+          console.log('Error is retryable')
+        }
+        break
+
+      default:
+        const _exhaustive: never = machine.state
+    }
+  }, [machine.state])
+
+  return <div>{/* Component JSX */}</div>
+}
+```
+
+---
+
+## Summary
+
+This guide demonstrated:
+
+1. **Strict TypeScript Configuration** - Complete tsconfig.json with all strict mode options
+2. **Generic Constraints** - Type-safe generic components and utilities with proper constraints
+3. **Utility Types** - Reusable type helpers for common patterns
+4. **Type Narrowing** - Discriminated unions, type guards, and assertion functions
+5. **Union Types** - Type-safe handling of union types in React components
+6. **Avoiding 'any'** - Using 'unknown', type guards, and validation instead of 'any'
+7. **Type Testing** - Comprehensive strategies for testing types at compile-time and runtime
+8. **Advanced Examples** - Real-world patterns for plugins, events, and state machines
+
+All examples follow TypeScript strict mode best practices and provide maximum type safety for building AI chat applications.
+
+## Related Resources
+
+- [Enhanced Types API Reference](/reference/types/enhanced)
+- [Adapter Types Guide](/guides/integrations/adapters)
+- [Component Props Reference](/reference/components)
+- [TypeScript Official Handbook](https://www.typescriptlang.org/docs/handbook/intro.html)

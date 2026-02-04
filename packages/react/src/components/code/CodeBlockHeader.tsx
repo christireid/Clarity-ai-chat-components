@@ -1,7 +1,7 @@
 'use client'
 
 import * as React from 'react'
-import { cn } from '../../utils/cn'
+import { cn } from '@clarity-chat/primitives'
 import { getLanguageDisplayName } from './utils'
 
 /**
@@ -32,15 +32,24 @@ function WindowControls() {
     <div className="flex items-center gap-2 mr-4 shrink-0" aria-hidden="true">
       <div
         className="w-3 h-3 rounded-full"
-        style={{ backgroundColor: '#FF5F57', boxShadow: 'inset 0 -1px 1px rgba(0,0,0,0.2)' }}
+        style={{
+          backgroundColor: '#FF5F57',
+          boxShadow: 'inset 0 -1px 1px rgba(0,0,0,0.2)',
+        }}
       />
       <div
         className="w-3 h-3 rounded-full"
-        style={{ backgroundColor: '#FEBC2E', boxShadow: 'inset 0 -1px 1px rgba(0,0,0,0.2)' }}
+        style={{
+          backgroundColor: '#FEBC2E',
+          boxShadow: 'inset 0 -1px 1px rgba(0,0,0,0.2)',
+        }}
       />
       <div
         className="w-3 h-3 rounded-full"
-        style={{ backgroundColor: '#28C840', boxShadow: 'inset 0 -1px 1px rgba(0,0,0,0.2)' }}
+        style={{
+          backgroundColor: '#28C840',
+          boxShadow: 'inset 0 -1px 1px rgba(0,0,0,0.2)',
+        }}
       />
     </div>
   )

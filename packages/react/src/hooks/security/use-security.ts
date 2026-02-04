@@ -18,7 +18,8 @@
 
 'use client'
 
-import { useState, useEffect, useCallback, useRef } from 'react'
+import * as React from 'react'
+import { useState, useCallback, useEffect, useRef } from 'react'
 import {
   SecurityManager,
   type SecurityConfig,
@@ -118,17 +119,24 @@ export function useSecurityMonitor(options?: {
   const [metrics, setMetrics] = useState<SecurityMetrics | null>(null)
   const updateInterval = options?.updateInterval || 60000 // 1 minute
 
+  // Stabilize timeRange to prevent unnecessary re-renders
+  const timeRangeRef = React.useRef(options?.timeRange)
+  React.useEffect(() => {
+    timeRangeRef.current = options?.timeRange
+  }, [options?.timeRange])
+
   useEffect(() => {
     // Initial fetch
-    setMetrics(getMetrics(options?.timeRange))
+    setMetrics(getMetrics(timeRangeRef.current))
 
     // Update periodically
     const interval = setInterval(() => {
-      setMetrics(getMetrics(options?.timeRange))
+      setMetrics(getMetrics(timeRangeRef.current))
     }, updateInterval)
 
     return () => clearInterval(interval)
-  }, [getMetrics, updateInterval, options?.timeRange])
+     
+  }, [getMetrics, updateInterval])
 
   return metrics
 }
@@ -192,10 +200,22 @@ export function useSecureChat(options?: {
   const [isProcessing, setIsProcessing] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  const context: SecurityContext = {
-    userId: options?.userId,
-    tenantId: options?.tenantId,
-  }
+  // Memoize context to prevent unnecessary re-renders
+  const context: SecurityContext = React.useMemo(
+    () => ({
+      userId: options?.userId,
+      tenantId: options?.tenantId,
+    }),
+    [options?.userId, options?.tenantId]
+  )
+
+  // Stabilize callbacks to prevent dependency changes
+  const onSecurityBlockRef = React.useRef(options?.onSecurityBlock)
+  const onSecurityWarningRef = React.useRef(options?.onSecurityWarning)
+  React.useEffect(() => {
+    onSecurityBlockRef.current = options?.onSecurityBlock
+    onSecurityWarningRef.current = options?.onSecurityWarning
+  }, [options?.onSecurityBlock, options?.onSecurityWarning])
 
   const sendMessage = useCallback(
     async (
@@ -211,7 +231,7 @@ export function useSecureChat(options?: {
 
         if (!validation.allowed) {
           setError(validation.reason || 'Message blocked by security policy')
-          options?.onSecurityBlock?.(
+          onSecurityBlockRef.current?.(
             validation.reason || 'blocked',
             validation.details
           )
@@ -219,7 +239,7 @@ export function useSecureChat(options?: {
         }
 
         if (validation.action === 'warn') {
-          options?.onSecurityWarning?.('Security warning', validation.details)
+          onSecurityWarningRef.current?.('Security warning', validation.details)
         }
 
         // Step 2: Add user message (use sanitized version)
@@ -242,7 +262,7 @@ export function useSecureChat(options?: {
 
           if (!outputValidation.safe) {
             setError('Response blocked by security policy')
-            options?.onSecurityBlock?.(
+            onSecurityBlockRef.current?.(
               'output_validation_failed',
               outputValidation.risks
             )
@@ -270,7 +290,7 @@ export function useSecureChat(options?: {
         setIsProcessing(false)
       }
     },
-    [messages, validateInput, prepareMessages, validateOutput, context, options]
+    [messages, validateInput, prepareMessages, validateOutput, context]
   )
 
   const clearMessages = useCallback(() => {
@@ -309,23 +329,33 @@ export function useSecurityEvents(options?: {
   const { getEvents, onAlert } = useSecurity(options?.config)
   const [events, setEvents] = useState<SecurityEvent[]>([])
 
+  // Stabilize filter and callback to prevent re-subscriptions
+  const filterRef = React.useRef(options?.filter)
+  const onEventRef = React.useRef(options?.onEvent)
+  React.useEffect(() => {
+    filterRef.current = options?.filter
+    onEventRef.current = options?.onEvent
+  }, [options?.filter, options?.onEvent])
+
   useEffect(() => {
     // Subscribe to new events
     onAlert((event) => {
-      if (options?.filter) {
-        const { type, severity, userId } = options.filter
+      const filter = filterRef.current
+      if (filter) {
+        const { type, severity, userId } = filter
         if (type && event.type !== type) return
         if (severity && event.severity !== severity) return
         if (userId && event.userId !== userId) return
       }
 
       setEvents((prev) => [...prev, event])
-      options?.onEvent?.(event)
+      onEventRef.current?.(event)
     })
 
     // Load initial events
-    setEvents(getEvents(options?.filter))
-  }, [getEvents, onAlert, options])
+    setEvents(getEvents(filterRef.current))
+     
+  }, [getEvents, onAlert])
 
   const clearEvents = useCallback(() => {
     setEvents([])
@@ -349,9 +379,16 @@ export function useSecurityStats(options?: {
   const { getMetrics } = useSecurity(options?.config)
   const [stats, setStats] = useState<SecurityMetrics | null>(null)
 
+  // Stabilize timeRange to prevent unnecessary re-fetches
+  const timeRangeRef = React.useRef(options?.timeRange)
+  React.useEffect(() => {
+    timeRangeRef.current = options?.timeRange
+  }, [options?.timeRange])
+
   useEffect(() => {
-    setStats(getMetrics(options?.timeRange))
-  }, [getMetrics, options?.timeRange])
+    setStats(getMetrics(timeRangeRef.current))
+     
+  }, [getMetrics])
 
   return stats
 }

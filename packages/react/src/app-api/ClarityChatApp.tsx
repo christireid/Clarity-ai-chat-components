@@ -1,8 +1,8 @@
 'use client'
 
-import React, { useMemo, useCallback } from 'react'
+import React, { createContext, useCallback, useContext, useMemo } from 'react'
 import type { Message } from '@clarity-chat/types'
-import type { ClarityChatAppProps, ClarityEvent } from './types'
+import type { ClarityChatAppProps, ClarityEvent, UseClarityChatAppReturn } from './types'
 import { useClarityChatApp } from './use-clarity-chat-app'
 import { resolveConfig, isFeatureEnabled } from './resolve-config'
 import { formatErrorForDisplay, type ClarityError } from './dx-hints'
@@ -519,8 +519,6 @@ export function ClarityChatApp({
 // Context for Advanced Usage
 // =============================================================================
 
-import { createContext, useContext } from 'react'
-import type { UseClarityChatAppReturn } from './types'
 
 const ClarityChatAppContext = createContext<UseClarityChatAppReturn | null>(
   null

@@ -10,13 +10,13 @@
  */
 
 // Core Components (Essential)
-export { ChatWindow } from './components/chat/chat-window'
-export { MessageList } from './components/message/message-list'
+export { ChatWindow } from './components/chat/ChatWindow'
+export { MessageList } from './components/message/MessageList'
 export { Message } from './components/message/message'
-export { ChatInput } from './components/chat/chat-input'
+export { ChatInput } from './components/chat/ChatInput'
 
 // Core Hook
-export { useClarityChat } from './hooks/chat/use-clarity-chat'
+export { useClarityChat } from './hooks/use-clarity-chat'
 export { useAutoScroll } from './hooks/ui/use-auto-scroll'
 
 // Essential Types

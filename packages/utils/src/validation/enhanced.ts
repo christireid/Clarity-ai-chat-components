@@ -536,21 +536,127 @@ export function validateDate(
 // ============================================================================
 
 /**
- * Validate email format
+ * Email validation options
  */
-export function isValidEmail(email: unknown): email is string {
+export interface EmailValidationOptions {
+  /** Check for length limits (local part: 64, total: 254) */
+  checkLimits?: boolean
+  /** Check for double-dot patterns (..) */
+  checkDoubleDots?: boolean
+}
+
+/**
+ * Validate email format
+ *
+ * @param email - Email address to validate
+ * @param options - Optional validation options
+ * @returns true if email is valid
+ *
+ * @example
+ * ```ts
+ * isValidEmail('user@example.com') // true
+ * isValidEmail('user+tag@example.com') // true
+ * isValidEmail('user..name@example.com', { checkDoubleDots: true }) // false
+ * ```
+ */
+export function isValidEmail(
+  email: unknown,
+  options?: EmailValidationOptions
+): email is string {
   if (!isString(email)) return false
+
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-  return emailRegex.test(email)
+  if (!emailRegex.test(email)) return false
+
+  const { checkLimits = false, checkDoubleDots = false } = options || {}
+
+  if (checkLimits) {
+    // RFC 5321 limits
+    if (email.length > 254) return false
+    const [localPart] = email.split('@')
+    if (localPart && localPart.length > 64) return false
+  }
+
+  if (checkDoubleDots) {
+    // Check for consecutive dots (security risk)
+    if (email.includes('..')) return false
+  }
+
+  return true
+}
+
+/**
+ * URL validation options
+ */
+export interface UrlValidationOptions {
+  /** Block localhost URLs */
+  blockLocalhost?: boolean
+  /** Block private IP addresses (10.x, 172.16-31.x, 192.168.x) */
+  blockPrivateIPs?: boolean
+  /** Allowed protocols (defaults to ['http:', 'https:']) */
+  allowedProtocols?: string[]
 }
 
 /**
  * Validate URL format
+ *
+ * @param url - URL to validate
+ * @param options - Optional validation options
+ * @returns true if URL is valid and safe
+ *
+ * @example
+ * ```ts
+ * isValidUrl('https://example.com') // true
+ * isValidUrl('javascript:alert(1)') // false
+ * isValidUrl('http://localhost', { blockLocalhost: true }) // false
+ * isValidUrl('http://192.168.1.1', { blockPrivateIPs: true }) // false
+ * ```
  */
-export function isValidUrl(url: unknown): url is string {
+export function isValidUrl(
+  url: unknown,
+  options?: UrlValidationOptions
+): url is string {
   if (!isString(url)) return false
+
+  const {
+    blockLocalhost = false,
+    blockPrivateIPs = false,
+    allowedProtocols = ['http:', 'https:'],
+  } = options || {}
+
   try {
-    new URL(url)
+    const parsed = new URL(url)
+
+    // Check protocol
+    if (!allowedProtocols.includes(parsed.protocol)) {
+      return false
+    }
+
+    const hostname = parsed.hostname.toLowerCase()
+
+    if (blockLocalhost) {
+      // Block localhost
+      if (
+        hostname === 'localhost' ||
+        hostname === '127.0.0.1' ||
+        hostname === '::1'
+      ) {
+        return false
+      }
+    }
+
+    if (blockPrivateIPs) {
+      // Block private IP ranges
+      const privateIPRegex = /^(10\.|172\.(1[6-9]|2[0-9]|3[01])\.|192\.168\.)/
+      if (privateIPRegex.test(hostname)) {
+        return false
+      }
+      // Block link-local addresses
+      if (hostname.startsWith('169.254.')) {
+        return false
+      }
+    }
+
     return true
   } catch {
     return false
@@ -584,6 +690,61 @@ export function isValidJson(jsonString: unknown): boolean {
 }
 
 /**
+ * Sanitize a URL by ensuring it's valid and safe
+ *
+ * @param urlString - URL to sanitize
+ * @param options - Optional validation options
+ * @returns Sanitized URL or 'about:blank' if invalid
+ *
+ * @example
+ * ```ts
+ * sanitizeUrl('https://example.com') // 'https://example.com'
+ * sanitizeUrl('javascript:alert(1)') // 'about:blank'
+ * sanitizeUrl('  https://example.com  ') // 'https://example.com'
+ * ```
+ */
+export function sanitizeUrl(
+  urlString: string,
+  options?: UrlValidationOptions
+): string {
+  const trimmed = urlString?.trim()
+  if (!trimmed || !isValidUrl(trimmed, options)) {
+    // Safe fallback for invalid or unsafe URLs
+    return 'about:blank'
+  }
+  // Preserve the original string to avoid surprising normalization
+  return trimmed
+}
+
+/**
+ * Extract domain from a URL safely
+ *
+ * @param url - URL to extract domain from
+ * @returns Domain without 'www.' prefix, or original URL if invalid
+ *
+ * @example
+ * ```ts
+ * getDomain('https://www.example.com/path') // 'example.com'
+ * getDomain('https://sub.example.com') // 'sub.example.com'
+ * getDomain('not-a-url') // 'not-a-url'
+ * ```
+ */
+export function getDomain(url: string): string {
+  if (!isValidUrl(url)) {
+    return url
+  }
+  try {
+    return new URL(url).hostname.replace(/^www\./, '')
+  } catch {
+    return url
+  }
+}
+
+// Backward compatibility aliases for primitives package
+export const isEmail = isValidEmail
+export const isUrl = isValidUrl
+
+/**
  * Parse JSON with validation
  */
 export function parseJson<T = unknown>(
@@ -600,11 +761,13 @@ export function parseJson<T = unknown>(
     }
     return { success: true, data: parsed as T }
   } catch (parseError) {
-    console.error('JSON parsing failed', {
-      jsonString,
-      error:
-        parseError instanceof Error ? parseError.message : String(parseError),
-    })
+    if (process.env.NODE_ENV === 'development') {
+      console.error('JSON parsing failed', {
+        jsonString,
+        error:
+          parseError instanceof Error ? parseError.message : String(parseError),
+      })
+    }
     return {
       success: false,
       errors: [

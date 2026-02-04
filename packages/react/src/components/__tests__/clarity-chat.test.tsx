@@ -5,7 +5,7 @@ import * as React from 'react'
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { ClarityChat } from '../chat/clarity-chat'
+import { ClarityChat } from '../chat/ClarityChat'
 import { ToastProvider } from '../ui/toast'
 
 // Mock the useClarityChat hook with validation
@@ -36,7 +36,7 @@ vi.mock('../../hooks/use-clarity-chat', () => ({
 }))
 
 // Import the mocked hook for test manipulation
-import { useClarityChat } from '../../hooks/chat/use-clarity-chat'
+import { useClarityChat } from '../../hooks/use-clarity-chat'
 
 const mockUseClarityChat = vi.mocked(useClarityChat)
 

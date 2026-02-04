@@ -2,6 +2,16 @@ import type { NextConfig } from 'next'
 import createMDX from '@next/mdx'
 import path from 'path'
 
+// Bundle analyzer (only loaded when ANALYZE=true)
+const withBundleAnalyzer =
+  process.env.ANALYZE === 'true'
+    ? // eslint-disable-next-line @typescript-eslint/no-require-imports -- Conditional require for optional dependency
+      require('@next/bundle-analyzer')({
+        enabled: true,
+        openAnalyzer: true,
+      })
+    : (config: NextConfig) => config
+
 /**
  * Next.js 16 Configuration for Documentation Site
  *
@@ -37,8 +47,24 @@ const nextConfig: NextConfig = {
   reactStrictMode: true,
   pageExtensions: ['js', 'jsx', 'mdx', 'ts', 'tsx'],
 
-  // Server-side external packages
-  serverExternalPackages: ['tiktoken'],
+  // Server-side external packages (Wave 3.3 Agent 32 optimizations)
+  serverExternalPackages: [
+    // Tokenization (server-only)
+    'tiktoken',
+
+    // AI SDKs (server-only) - Wave 3.3 Agent 32: -650 KB from client bundle
+    '@anthropic-ai/sdk',
+    'openai',
+    '@google/generative-ai',
+    '@ai-sdk/openai',
+    'ai',
+
+    // Vector DB (server-only)
+    '@pinecone-database/pinecone',
+
+    // Markdown processing (can be external)
+    'gray-matter',
+  ],
 
   // Typed routes disabled - too strict for dynamic href patterns in this codebase
   // typedRoutes: true,
@@ -104,9 +130,76 @@ const nextConfig: NextConfig = {
     contentDispositionType: 'attachment',
   },
 
-  // Comprehensive security headers
+  // Comprehensive security and ISR cache headers
   async headers() {
     return [
+      // Static assets - aggressive caching (immutable)
+      {
+        source: '/_next/static/:path*',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable',
+          },
+        ],
+      },
+      // ISR Cache optimization for static documentation
+      {
+        source: '/api/reference/:path*',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, s-maxage=3600, stale-while-revalidate=86400',
+          },
+        ],
+      },
+      {
+        source: '/get-started/:path*',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, s-maxage=7200, stale-while-revalidate=86400',
+          },
+        ],
+      },
+      {
+        source: '/explore/:path*',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, s-maxage=10800, stale-while-revalidate=86400',
+          },
+        ],
+      },
+      {
+        source: '/about/:path*',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, s-maxage=21600, stale-while-revalidate=86400',
+          },
+        ],
+      },
+      // Home page - 30 min cache (high traffic, more frequent updates)
+      {
+        source: '/',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, s-maxage=1800, stale-while-revalidate=3600',
+          },
+        ],
+      },
+      // API routes - no caching (dynamic data)
+      {
+        source: '/api/:path*',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'no-store, no-cache, must-revalidate',
+          },
+        ],
+      },
       {
         // Apply to all routes
         source: '/:path*',
@@ -136,11 +229,22 @@ const nextConfig: NextConfig = {
             key: 'Referrer-Policy',
             value: 'strict-origin-when-cross-origin',
           },
-          // Permissions/Feature Policy
+          // Permissions/Feature Policy (Wave 3.4 Agent 37 - Enhanced)
           {
             key: 'Permissions-Policy',
-            value:
-              'camera=(), microphone=(), geolocation=(), interest-cohort=()',
+            value: [
+              'camera=()',
+              'microphone=()',
+              'geolocation=()',
+              'payment=()',
+              'usb=()',
+              'magnetometer=()',
+              'gyroscope=()',
+              'accelerometer=()',
+              'interest-cohort=()', // Disable FLoC
+              'sync-xhr=(self)',
+              'fullscreen=(self)',
+            ].join(', '),
           },
           // DNS prefetch control
           {
@@ -155,7 +259,7 @@ const nextConfig: NextConfig = {
         ],
       },
       {
-        // Additional headers for API routes
+        // Additional headers for API routes (Wave 3.4 Agent 37 - Enhanced)
         source: '/api/:path*',
         headers: [
           {
@@ -165,6 +269,21 @@ const nextConfig: NextConfig = {
           {
             key: 'X-Frame-Options',
             value: 'DENY',
+          },
+          // Stricter Permissions-Policy for API routes
+          {
+            key: 'Permissions-Policy',
+            value: [
+              'camera=()',
+              'microphone=()',
+              'geolocation=()',
+              'payment=()',
+              'usb=()',
+              'magnetometer=()',
+              'gyroscope=()',
+              'accelerometer=()',
+              'interest-cohort=()',
+            ].join(', '),
           },
           // Stricter CSP for API routes (no scripts/styles)
           {
@@ -237,13 +356,13 @@ const nextConfig: NextConfig = {
       // Point to package root so package.json exports can resolve correctly
       '@clarity-chat/primitives': primitivesPath,
     }
-    
+
     // Also add to modules for better resolution
     if (!config.resolve.modules) {
       config.resolve.modules = ['node_modules']
     }
     config.resolve.modules.push(primitivesPath)
-    
+
     // Ensure package.json exports are respected
     config.resolve.conditionNames = ['import', 'require', 'default']
     config.resolve.mainFields = ['exports', 'module', 'main']
@@ -265,4 +384,5 @@ const withMDX = createMDX({
   },
 })
 
-export default withMDX(nextConfig)
+// Apply plugins in order: MDX -> Bundle Analyzer
+export default withBundleAnalyzer(withMDX(nextConfig))

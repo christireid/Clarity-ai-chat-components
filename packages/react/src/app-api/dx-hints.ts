@@ -262,10 +262,12 @@ export function devHint(
         ? console.warn
         : console.log
 
-  if (details) {
-    consoleMethod(`%c${HINT_PREFIX} ${message}`, style, details)
-  } else {
-    consoleMethod(`%c${HINT_PREFIX} ${message}`, style)
+  if (process.env.NODE_ENV === 'development') {
+    if (details) {
+      consoleMethod(`%c${HINT_PREFIX} ${message}`, style, details)
+    } else {
+      consoleMethod(`%c${HINT_PREFIX} ${message}`, style)
+    }
   }
 }
 
@@ -283,17 +285,19 @@ export function logInitialization(config: {
     .filter(([, enabled]) => enabled)
     .map(([feature]) => feature)
 
-  console.groupCollapsed(
-    `%c${HINT_PREFIX} ClarityChatApp initialized`,
-    LEVEL_STYLES.success
-  )
-  console.log('API endpoint:', config.api)
-  if (config.preset) {
-    console.log('Preset:', config.preset)
+  if (process.env.NODE_ENV === 'development') {
+    console.groupCollapsed(
+      `%c${HINT_PREFIX} ClarityChatApp initialized`,
+      LEVEL_STYLES.success
+    )
+    console.log('API endpoint:', config.api)
+    if (config.preset) {
+      console.log('Preset:', config.preset)
+    }
+    console.log('Enabled features:', enabledFeatures.join(', ') || 'none')
+    console.log('Tip: Use onEvent prop to observe all chat events')
+    console.groupEnd()
   }
-  console.log('Enabled features:', enabledFeatures.join(', ') || 'none')
-  console.log('Tip: Use onEvent prop to observe all chat events')
-  console.groupEnd()
 }
 
 /**
@@ -408,17 +412,19 @@ export function detectCommonMistakes(config: {
 export function logValidationWarnings(warnings: ValidationWarning[]): void {
   if (!DEV_MODE || warnings.length === 0) return
 
-  console.groupCollapsed(
-    `%c${HINT_PREFIX} ${warnings.length} configuration warning(s) detected`,
-    LEVEL_STYLES.warn
-  )
+  if (process.env.NODE_ENV === 'development') {
+    console.groupCollapsed(
+      `%c${HINT_PREFIX} ${warnings.length} configuration warning(s) detected`,
+      LEVEL_STYLES.warn
+    )
 
-  for (const warning of warnings) {
-    console.warn(`[${warning.code}] ${warning.message}`)
-    console.log('  Suggestion:', warning.suggestion)
+    for (const warning of warnings) {
+      console.warn(`[${warning.code}] ${warning.message}`)
+      console.log('  Suggestion:', warning.suggestion)
+    }
+
+    console.groupEnd()
   }
-
-  console.groupEnd()
 }
 
 // =============================================================================
@@ -488,8 +494,9 @@ export function showQuickStartOnError(): void {
   if (!DEV_MODE || hasShownQuickStart) return
   hasShownQuickStart = true
 
-  console.log(
-    `
+  if (process.env.NODE_ENV === 'development') {
+    console.log(
+      `
 %c${HINT_PREFIX} Quick Start Guide
 %c━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
@@ -514,17 +521,18 @@ export function showQuickStartOnError(): void {
 %cDocs: https://clarity-chat.dev/docs
 %c━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 `,
-    'color: #0066cc; font-size: 14px; font-weight: bold;',
-    'color: #666;',
-    'color: #00cc66; font-weight: bold;',
-    'color: inherit;',
-    'color: #00cc66; font-weight: bold;',
-    'color: inherit;',
-    'color: #00cc66; font-weight: bold;',
-    'color: inherit;',
-    'color: #00cc66; font-weight: bold;',
-    'color: inherit;',
-    'color: #0066cc;',
-    'color: #666;'
-  )
+      'color: #0066cc; font-size: 14px; font-weight: bold;',
+      'color: #666;',
+      'color: #00cc66; font-weight: bold;',
+      'color: inherit;',
+      'color: #00cc66; font-weight: bold;',
+      'color: inherit;',
+      'color: #00cc66; font-weight: bold;',
+      'color: inherit;',
+      'color: #00cc66; font-weight: bold;',
+      'color: inherit;',
+      'color: #0066cc;',
+      'color: #666;'
+    )
+  }
 }

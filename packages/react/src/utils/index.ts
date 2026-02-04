@@ -4,6 +4,7 @@
  * This module provides organized access to all utility functions.
  * Utilities are grouped by domain for better discoverability:
  *
+ * - animations/     Animation presets and hooks (framer-motion)
  * - streaming/      Streaming response utilities
  * - message/        Message conversion and helpers
  * - api/            API, rate limiting, and model utilities
@@ -19,12 +20,16 @@
  */
 
 // Core Utilities (remain at root)
-export { cn } from './cn'
+// Re-export cn from primitives for backward compatibility
+export { cn } from '@clarity-chat/primitives'
 export * from './mobile'
 export * from './export-utils'
 
 // Color Utilities
 export * from './color'
+
+// Animation Utilities
+export * from './animations'
 
 // Streaming Utilities
 export * from './streaming'
@@ -50,21 +55,22 @@ export * from './security'
 // Search Utilities
 export * from './search'
 
+// Markdown Utilities
+export {
+  loadMarkdownDependencies,
+  getMarkdownDependencies,
+  PlainTextMarkdown,
+  useMarkdownAvailability,
+  type PlainTextMarkdownProps,
+} from './markdown/markdown-fallback'
+
 // Tokenization (explicit exports to avoid conflicts with optimization)
 export {
   // Core token counting
-  TokenCounter,
-  smartCountTokens,
-  smartTokenCounter,
-  countTokensRobust,
-  robustTokenCounter,
+  type TokenCounter,
   validateTokenBudget,
   createTokenBudget,
   tokenBudgetValidator,
-  countTokensOptimized,
-  countTokensBatchOptimized,
-  benchmarkTokenCounter,
-  optimizedTokenCounter,
   // Analytics
   recordTokenUsage,
   getTokenAnalytics,
@@ -76,40 +82,12 @@ export {
   autoFixTokenMigration,
   manualMigrateTokens,
   tokenMigrationAssistant,
-  // Text compression (renamed to avoid conflicts)
-  compressText,
-  compressForBudget,
-  compressForRatio,
-  compressSemanticOnly,
-  compressMultiStrategy,
-  SemanticCompressor,
-  // Advanced compression (using module-specific names)
-  AdvancedCompressionOrchestrator,
-  compressWithLLMLingua,
-  compressWithSelectiveContext,
-  compressAdaptive,
-  compressEnsemble,
-  compressIncremental,
-  advancedCompressor,
-  compressionOrchestrator,
-  compressWithAdvanced,
   // Adaptive optimization
   AdaptiveTokenOptimizer,
   adaptiveOptimizer,
   optimizeTokensAdaptively,
   updateConversationState,
   getAdaptiveAnalytics,
-  // Intelligent caching (renamed to avoid conflicts)
-  IntelligentSemanticCache,
-  MultiLevelCacheManager,
-  IntelligentTokenCache,
-  semanticCache,
-  multiLevelCache,
-  tokenCache,
-  getCachedTokenCount,
-  getCachedCompression,
-  setCachedCompression,
-  getCacheAnalytics,
   // Smart truncation
   SmartTruncator,
   SmartSummarizer,
@@ -163,18 +141,10 @@ export {
 
 // Tokenization types (renamed to avoid conflicts with optimization types)
 export type {
-  FallbackStrategy,
-  FallbackContext,
-  TokenCounterError,
-  ErrorContext,
-  ErrorHandlingOptions,
   TokenBudget,
   TokenBudgetConfig,
   TokenBudgetValidation,
   TruncationOptions as TokenTruncationOptions,
-  PerformanceMetrics as TokenPerformanceMetrics,
-  PerformanceBenchmark,
-  CachingConfig,
   TokenUsageEvent,
   TokenAnalytics,
   TokenMetrics,
@@ -182,24 +152,11 @@ export type {
   MigrationRule,
   MigrationAnalysis,
   MigrationResult,
-  CompressionStrategy,
-  CompressionConfig,
-  CompressionResult as TokenCompressionResult,
-  AdvancedCompressionStrategy,
-  AdvancedCompressionConfig,
-  AdvancedCompressionResult,
-  CompressionQualityMetrics,
   ModelEfficiencyProfile,
   ContextProfile,
   ConversationState,
   AdaptiveOptimizationConfig,
   AdaptiveOptimizationResult,
-  CacheLevel,
-  CacheStrategy as TokenCacheStrategy,
-  CacheConfig as TokenCachingConfig,
-  CacheEntry as TokenCacheEntry,
-  CacheStats as TokenCacheStats,
-  SemanticCacheConfig as TokenSemanticCacheConfig,
   TruncationStrategy as TokenizerTruncationStrategy,
   ContentType,
   TruncationConfig,
@@ -262,3 +219,17 @@ export {
   type ToonOptimizationResult,
   type AutoToonOptions,
 } from './toon'
+
+// Peer Detection
+export {
+  detectPeerCapabilities,
+  getPeerModule,
+  isPeerAvailable,
+  clearPeerCache,
+  getPeerDetectionStats,
+  usePeerCapabilities,
+  usePeerAvailable,
+  usePeerModule,
+  getInstallationInstructions,
+  type PeerCapabilities,
+} from './peer-detection'

@@ -12,13 +12,8 @@ import { logger } from '../utils/logger.js'
 import { ValidationError, NotFoundError } from '../utils/errors.js'
 import { pluginRegistry } from '../plugins/index.js'
 import { sanitizeForLogging } from '../utils/security.js'
-import {
-  getServerHealth,
-  getDiagnostics,
-  metrics,
-  formatBytes,
-  formatDuration,
-} from '../utils/health.js'
+import { getServerHealth, getDiagnostics, metrics } from '../utils/health.js'
+import { formatDuration, formatBytes } from '@clarity-chat/utils/format'
 import { globalRateLimiter, toolRateLimiter } from '../utils/rate-limiter.js'
 import { projectCache, modelCache, exampleCache } from '../utils/cache.js'
 import {

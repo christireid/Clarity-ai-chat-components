@@ -1,13 +1,20 @@
 /**
  * useClarityObject Storybook Stories
- * 
+ *
  * Demonstrates structured object generation with type safety
  */
 
 import type { Meta, StoryObj } from '@storybook/react'
 import React, { useState } from 'react'
 import { useClarityObject } from './use-clarity-object'
-import { Button, Card, CardContent, CardHeader, Input, Badge } from '@clarity-chat/primitives'
+import {
+  Button,
+  Card,
+  CardContent,
+  CardHeader,
+  Input,
+  Badge,
+} from '@clarity-chat/primitives'
 
 const meta = {
   title: 'Hooks/useClarityObject',
@@ -42,10 +49,10 @@ const { object, run, isLoading } = useClarityObject<Product>({
 
 await run({ query: 'gaming laptops' })
 \`\`\`
-        `
-      }
-    }
-  }
+        `,
+      },
+    },
+  },
 } satisfies Meta
 
 export default meta
@@ -54,12 +61,12 @@ type Story = StoryObj<typeof meta>
 // Mock API handler for Storybook
 const mockAPI = async (input: any): Promise<any> => {
   // Simulate API delay
-  await new Promise(resolve => setTimeout(resolve, 1000))
-  
+  await new Promise((resolve) => setTimeout(resolve, 1000))
+
   if (input.query === 'error') {
     throw new Error('API Error: Failed to generate object')
   }
-  
+
   // Return mock structured data based on input
   if (input.type === 'product') {
     return {
@@ -69,19 +76,19 @@ const mockAPI = async (input: any): Promise<any> => {
           price: 1299.99,
           description: 'High-performance gaming laptop with RTX 4070',
           inStock: true,
-          rating: 4.5
+          rating: 4.5,
         },
         {
           name: 'Ultrabook Air',
           price: 999.99,
           description: 'Lightweight ultrabook for professionals',
           inStock: true,
-          rating: 4.8
-        }
-      ]
+          rating: 4.8,
+        },
+      ],
     }
   }
-  
+
   if (input.type === 'weather') {
     return {
       location: input.location || 'San Francisco',
@@ -92,14 +99,14 @@ const mockAPI = async (input: any): Promise<any> => {
       forecast: [
         { day: 'Today', high: 72, low: 58, condition: 'Sunny' },
         { day: 'Tomorrow', high: 70, low: 56, condition: 'Partly Cloudy' },
-        { day: 'Wednesday', high: 68, low: 54, condition: 'Cloudy' }
-      ]
+        { day: 'Wednesday', high: 68, low: 54, condition: 'Cloudy' },
+      ],
     }
   }
-  
+
   return {
     message: `Generated object for: ${JSON.stringify(input)}`,
-    timestamp: new Date().toISOString()
+    timestamp: new Date().toISOString(),
   }
 }
 
@@ -118,28 +125,31 @@ interface ProductRecommendation {
 export const BasicUsage: Story = {
   render: () => {
     const [query, setQuery] = useState('gaming laptops')
-    
-    const { object, run, isLoading, error, reset } = useClarityObject<ProductRecommendation>({
-      api: '/api/products',
-      initialInput: { query, type: 'product' },
-      fetch: async (url, options) => {
-        const body = JSON.parse(options?.body as string || '{}')
-        const result = await mockAPI(body)
-        return new Response(JSON.stringify(result), {
-          headers: { 'Content-Type': 'application/json' }
-        })
-      }
-    })
-    
+
+    const { object, run, isLoading, error, reset } =
+      useClarityObject<ProductRecommendation>({
+        api: '/api/products',
+        initialInput: { query, type: 'product' },
+        fetch: async (url, options) => {
+          const body = JSON.parse((options?.body as string) || '{}')
+          const result = await mockAPI(body)
+          return new Response(JSON.stringify(result), {
+            headers: { 'Content-Type': 'application/json' },
+          })
+        },
+      })
+
     return (
       <div className="space-y-4">
         <div>
-          <h3 className="text-lg font-semibold mb-2">Product Recommendations</h3>
+          <h3 className="text-lg font-semibold mb-2">
+            Product Recommendations
+          </h3>
           <p className="text-sm text-muted-foreground mb-4">
             Generate structured product recommendations from a query
           </p>
         </div>
-        
+
         <div className="flex gap-2">
           <Input
             value={query}
@@ -159,7 +169,7 @@ export const BasicUsage: Story = {
             </Button>
           )}
         </div>
-        
+
         {error && (
           <Card className="border-destructive">
             <CardContent className="pt-6">
@@ -167,27 +177,31 @@ export const BasicUsage: Story = {
             </CardContent>
           </Card>
         )}
-        
+
         {isLoading && (
           <Card>
             <CardContent className="pt-6">
-              <div className="text-muted-foreground">Generating recommendations...</div>
+              <div className="text-muted-foreground">
+                Generating recommendations...
+              </div>
             </CardContent>
           </Card>
         )}
-        
+
         {object && (
           <Card>
-            <CardHeader>
+            <CardHeader className="">
               <h4 className="font-semibold">Generated Products</h4>
             </CardHeader>
-            <CardContent>
+            <CardContent className="">
               <div className="space-y-4">
                 {object.products.map((product, idx) => (
                   <div key={idx} className="border rounded-lg p-4">
                     <div className="flex items-start justify-between mb-2">
                       <h5 className="font-semibold">{product.name}</h5>
-                      <Badge variant={product.inStock ? 'default' : 'secondary'}>
+                      <Badge
+                        variant={product.inStock ? 'default' : 'secondary'}
+                      >
                         {product.inStock ? 'In Stock' : 'Out of Stock'}
                       </Badge>
                     </div>
@@ -195,8 +209,12 @@ export const BasicUsage: Story = {
                       {product.description}
                     </p>
                     <div className="flex items-center justify-between">
-                      <span className="text-lg font-bold">${product.price}</span>
-                      <span className="text-sm">Rating: {product.rating} ⭐</span>
+                      <span className="text-lg font-bold">
+                        ${product.price}
+                      </span>
+                      <span className="text-sm">
+                        Rating: {product.rating} ⭐
+                      </span>
                     </div>
                   </div>
                 ))}
@@ -206,7 +224,7 @@ export const BasicUsage: Story = {
         )}
       </div>
     )
-  }
+  },
 }
 
 interface WeatherData {
@@ -226,19 +244,19 @@ interface WeatherData {
 export const WeatherObject: Story = {
   render: () => {
     const [location, setLocation] = useState('San Francisco')
-    
+
     const { object, run, isLoading, error } = useClarityObject<WeatherData>({
       api: '/api/weather',
       initialInput: { location, type: 'weather' },
       fetch: async (url, options) => {
-        const body = JSON.parse(options?.body as string || '{}')
+        const body = JSON.parse((options?.body as string) || '{}')
         const result = await mockAPI(body)
         return new Response(JSON.stringify(result), {
-          headers: { 'Content-Type': 'application/json' }
+          headers: { 'Content-Type': 'application/json' },
         })
-      }
+      },
     })
-    
+
     return (
       <div className="space-y-4">
         <div>
@@ -247,7 +265,7 @@ export const WeatherObject: Story = {
             Generate structured weather data
           </p>
         </div>
-        
+
         <div className="flex gap-2">
           <Input
             value={location}
@@ -262,7 +280,7 @@ export const WeatherObject: Story = {
             {isLoading ? 'Loading...' : 'Get Weather'}
           </Button>
         </div>
-        
+
         {error && (
           <Card className="border-destructive">
             <CardContent className="pt-6">
@@ -270,33 +288,37 @@ export const WeatherObject: Story = {
             </CardContent>
           </Card>
         )}
-        
+
         {isLoading && (
           <Card>
             <CardContent className="pt-6">
-              <div className="text-muted-foreground">Fetching weather data...</div>
+              <div className="text-muted-foreground">
+                Fetching weather data...
+              </div>
             </CardContent>
           </Card>
         )}
-        
+
         {object && (
           <Card>
-            <CardHeader>
+            <CardHeader className="">
               <h4 className="font-semibold">Weather in {object.location}</h4>
             </CardHeader>
-            <CardContent>
+            <CardContent className="">
               <div className="space-y-4">
-                <div className="text-3xl font-bold">
-                  {object.temperature}°F
-                </div>
+                <div className="text-3xl font-bold">{object.temperature}°F</div>
                 <div className="text-muted-foreground">
-                  Condition: {object.condition} | Humidity: {object.humidity}% | Wind: {object.windSpeed} mph
+                  Condition: {object.condition} | Humidity: {object.humidity}% |
+                  Wind: {object.windSpeed} mph
                 </div>
                 <div className="border-t pt-4">
                   <h5 className="font-semibold mb-2">Forecast</h5>
                   <div className="space-y-2">
                     {object.forecast.map((day, idx) => (
-                      <div key={idx} className="flex items-center justify-between">
+                      <div
+                        key={idx}
+                        className="flex items-center justify-between"
+                      >
                         <span>{day.day}</span>
                         <span className="text-muted-foreground">
                           {day.high}° / {day.low}° - {day.condition}
@@ -311,7 +333,7 @@ export const WeatherObject: Story = {
         )}
       </div>
     )
-  }
+  },
 }
 
 export const ErrorHandling: Story = {
@@ -320,21 +342,24 @@ export const ErrorHandling: Story = {
       api: '/api/error',
       initialInput: { query: 'error', type: 'test' },
       fetch: async (url, options) => {
-        const body = JSON.parse(options?.body as string || '{}')
+        const body = JSON.parse((options?.body as string) || '{}')
         try {
           const result = await mockAPI(body)
           return new Response(JSON.stringify(result), {
-            headers: { 'Content-Type': 'application/json' }
+            headers: { 'Content-Type': 'application/json' },
           })
         } catch (err) {
-          return new Response(JSON.stringify({ error: (err as Error).message }), {
-            status: 500,
-            headers: { 'Content-Type': 'application/json' }
-          })
+          return new Response(
+            JSON.stringify({ error: (err as Error).message }),
+            {
+              status: 500,
+              headers: { 'Content-Type': 'application/json' },
+            }
+          )
         }
-      }
+      },
     })
-    
+
     return (
       <div className="space-y-4">
         <div>
@@ -343,7 +368,7 @@ export const ErrorHandling: Story = {
             Demonstrates error handling in useClarityObject
           </p>
         </div>
-        
+
         <Button
           onClick={() => run({ query: 'error', type: 'test' })}
           disabled={isLoading}
@@ -351,13 +376,13 @@ export const ErrorHandling: Story = {
         >
           {isLoading ? 'Loading...' : 'Trigger Error'}
         </Button>
-        
+
         {error && (
           <Card className="border-destructive">
-            <CardHeader>
+            <CardHeader className="">
               <h4 className="font-semibold text-destructive">Error</h4>
             </CardHeader>
-            <CardContent>
+            <CardContent className="">
               <div className="text-destructive">{error.message}</div>
               <Button variant="outline" onClick={reset} className="mt-4">
                 Reset
@@ -365,7 +390,7 @@ export const ErrorHandling: Story = {
             </CardContent>
           </Card>
         )}
-        
+
         {object && (
           <Card>
             <CardContent className="pt-6">
@@ -377,5 +402,5 @@ export const ErrorHandling: Story = {
         )}
       </div>
     )
-  }
+  },
 }

@@ -5,14 +5,19 @@ import { QuickStartTutorial } from '@/components/Layout/QuickStartTutorial'
 import { ScrollReveal, KineticText } from '@/components/Enhanced/ScrollReveal'
 import {
   Zap,
-  Palette,
-  Globe,
   Accessibility,
   Code2,
-  Sparkles,
-  Package,
-  Shield,
+  DollarSign,
+  Brain,
+  Command,
+  Search,
+  Library,
+  TrendingDown,
+  ArrowRight,
 } from 'lucide-react'
+
+// ISR Configuration: Home page has high traffic, revalidate every 30 minutes
+export const revalidate = 1800
 
 export default function Page() {
   return (
@@ -21,14 +26,14 @@ export default function Page() {
       <HeroSection
         title={
           <>
-            Build Beautiful Chat Interfaces
+            Build Production AI Chat Interfaces
             <br />
             <span className="bg-gradient-to-r from-brand-500 via-purple-500 to-pink-500 bg-clip-text text-transparent">
-              In Minutes, Not Weeks
+              With Token Tracking & Streaming Built-In
             </span>
           </>
         }
-        description="A comprehensive React UI library for building beautiful, accessible chat interfaces with 155+ components, 70+ hooks, and 15 themes. Production-ready, fully typed, and optimized for performance."
+        description="React components focused on production AI features: token optimization, real-time streaming, conversation memory, and command palettes. TypeScript-first, accessible, and battle-tested."
         primaryCta={{
           text: 'Get Started',
           href: '/get-started',
@@ -41,6 +46,94 @@ export default function Page() {
         showGitHubStars={true}
       />
 
+      {/* Token Optimization Hero - #1 Differentiator */}
+      <section className="relative overflow-hidden py-12 sm:py-16 md:py-20 border-y border-neutral-200/60 dark:border-neutral-800/60">
+        {/* Animated gradient background */}
+        <div
+          className="absolute inset-0 bg-gradient-to-br from-purple-500/10 via-pink-500/10 to-orange-500/10 dark:from-purple-900/20 dark:via-pink-900/20 dark:to-orange-900/20"
+          aria-hidden="true"
+        />
+
+        <div className="container-docs relative z-10">
+          <ScrollReveal direction="up" delay={0.1}>
+            <div className="max-w-5xl mx-auto">
+              {/* Badge */}
+              <div className="flex justify-center mb-6">
+                <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-purple-600 to-pink-600 text-white text-sm font-semibold shadow-lg">
+                  <TrendingDown className="w-4 h-4" />
+                  #1 Cost Reduction Feature
+                </span>
+              </div>
+
+              {/* Heading */}
+              <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-center mb-6">
+                <span className="bg-gradient-to-r from-purple-600 via-pink-600 to-orange-600 dark:from-purple-400 dark:via-pink-400 dark:to-orange-400 bg-clip-text text-transparent">
+                  Reduce AI Costs by 50-90%
+                </span>
+              </h2>
+
+              {/* Description */}
+              <p className="text-base sm:text-lg md:text-xl text-center text-neutral-600 dark:text-neutral-400 mb-8 max-w-3xl mx-auto">
+                Provider-native caching, intelligent compression, and smart routing work together to dramatically reduce your AI API costs while maintaining quality.
+              </p>
+
+              {/* Stats Grid */}
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 mb-10">
+                <div className="bg-white dark:bg-neutral-900/50 rounded-xl p-4 md:p-6 border border-neutral-200 dark:border-neutral-800 text-center backdrop-blur-sm">
+                  <div className="text-2xl md:text-3xl font-bold text-purple-600 dark:text-purple-400 mb-1">
+                    90%
+                  </div>
+                  <div className="text-xs md:text-sm text-neutral-600 dark:text-neutral-400">
+                    Max Savings
+                  </div>
+                </div>
+                <div className="bg-white dark:bg-neutral-900/50 rounded-xl p-4 md:p-6 border border-neutral-200 dark:border-neutral-800 text-center backdrop-blur-sm">
+                  <div className="text-2xl md:text-3xl font-bold text-pink-600 dark:text-pink-400 mb-1">
+                    87
+                  </div>
+                  <div className="text-xs md:text-sm text-neutral-600 dark:text-neutral-400">
+                    Optimization APIs
+                  </div>
+                </div>
+                <div className="bg-white dark:bg-neutral-900/50 rounded-xl p-4 md:p-6 border border-neutral-200 dark:border-neutral-800 text-center backdrop-blur-sm">
+                  <div className="text-2xl md:text-3xl font-bold text-orange-600 dark:text-orange-400 mb-1">
+                    3
+                  </div>
+                  <div className="text-xs md:text-sm text-neutral-600 dark:text-neutral-400">
+                    Major Providers
+                  </div>
+                </div>
+                <div className="bg-white dark:bg-neutral-900/50 rounded-xl p-4 md:p-6 border border-neutral-200 dark:border-neutral-800 text-center backdrop-blur-sm">
+                  <div className="text-2xl md:text-3xl font-bold text-indigo-600 dark:text-indigo-400 mb-1">
+                    &lt;100ms
+                  </div>
+                  <div className="text-xs md:text-sm text-neutral-600 dark:text-neutral-400">
+                    Overhead
+                  </div>
+                </div>
+              </div>
+
+              {/* CTA Buttons */}
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+                <a
+                  href="/token-optimization"
+                  className="group inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg font-semibold shadow-lg hover:shadow-xl transition-all hover:-translate-y-1 focus-visible:ring-2 focus-visible:ring-purple-500 focus-visible:ring-offset-2 focus-visible:outline-none"
+                >
+                  Explore Token Optimization
+                  <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+                </a>
+                <a
+                  href="/guides/token-optimization"
+                  className="inline-flex items-center gap-2 px-6 py-3 bg-white dark:bg-neutral-900 text-neutral-900 dark:text-white rounded-lg font-medium border border-neutral-200 dark:border-neutral-800 hover:border-purple-300 dark:hover:border-purple-700 transition-all hover:-translate-y-1 focus-visible:ring-2 focus-visible:ring-purple-500 focus-visible:ring-offset-2 focus-visible:outline-none"
+                >
+                  Read the Guide
+                </a>
+              </div>
+            </div>
+          </ScrollReveal>
+        </div>
+      </section>
+
       {/* Features Grid */}
       <section className="container-docs py-16 sm:py-20 md:py-24">
         <ScrollReveal direction="up" delay={0.2}>
@@ -49,61 +142,62 @@ export default function Page() {
               Everything you need
             </KineticText>
             <p className="text-base sm:text-lg text-neutral-600 dark:text-neutral-400">
-              Built with modern best practices, accessibility standards, and performance optimization.
+              Built with modern best practices, accessibility standards, and
+              performance optimization.
             </p>
           </div>
         </ScrollReveal>
 
         <ScrollReveal direction="up" delay={0.4}>
-            <FeaturesGrid
+          <FeaturesGrid
             features={[
               {
-                icon: <Package className="w-5 h-5" />,
-                title: 'Production Ready',
+                icon: <TrendingDown className="w-5 h-5" />,
+                title: 'Token Optimization (50-90% Savings)',
                 description:
-                  '155+ components battle-tested in production. Built with TypeScript, fully typed, and documented.',
+                  'Provider-native caching, compression, and routing reduce costs by 50-90% with 87 optimization APIs.',
               },
               {
                 icon: <Zap className="w-5 h-5" />,
-                title: 'Lightning Fast',
+                title: 'True Streaming',
                 description:
-                  'Optimized bundle size, tree-shakeable, lazy-loaded. Sub-second page loads with 99 Lighthouse score.',
+                  'StreamingMessage and StreamingProgress for smooth, real-time AI responses with proper loading states.',
+              },
+              {
+                icon: <Brain className="w-5 h-5" />,
+                title: 'Conversation Memory',
+                description:
+                  'MemoryActivityIndicator and useMemoryFeedback for context-aware chat experiences.',
+              },
+              {
+                icon: <Command className="w-5 h-5" />,
+                title: 'Command Palette',
+                description:
+                  'Built-in CommandPalette component for keyboard-first navigation and quick actions.',
+              },
+              {
+                icon: <Search className="w-5 h-5" />,
+                title: 'Advanced Search',
+                description:
+                  'SearchFiltersPanel for filtering and finding messages in long conversations.',
+              },
+              {
+                icon: <Library className="w-5 h-5" />,
+                title: 'Prompt Library',
+                description:
+                  'PromptLibrary and TemplateMarketplace for managing reusable prompt templates.',
+              },
+              {
+                icon: <Code2 className="w-5 h-5" />,
+                title: 'TypeScript First',
+                description:
+                  'Fully typed with comprehensive IntelliSense. Catch errors before runtime.',
               },
               {
                 icon: <Accessibility className="w-5 h-5" />,
                 title: 'Accessible by Default',
                 description:
-                  'WCAG AA compliant. Keyboard navigation, screen readers, focus management all included.',
-              },
-              {
-                icon: <Palette className="w-5 h-5" />,
-                title: '15 Beautiful Themes',
-                description:
-                  'Pre-built themes with dark mode support. Customize every aspect with Tailwind CSS.',
-              },
-              {
-                icon: <Code2 className="w-5 h-5" />,
-                title: 'Developer Experience',
-                description:
-                  'IntelliSense auto-complete, comprehensive docs, copy-paste examples. Start in < 5 minutes.',
-              },
-              {
-                icon: <Sparkles className="w-5 h-5" />,
-                title: 'Framer Motion',
-                description:
-                  'Smooth, performant animations built-in. Respect user motion preferences automatically.',
-              },
-              {
-                icon: <Globe className="w-5 h-5" />,
-                title: 'Framework Agnostic',
-                description:
-                  'Works with Next.js, Vite, CRA, Remix. Server components, client components, both supported.',
-              },
-              {
-                icon: <Shield className="w-5 h-5" />,
-                title: 'Enterprise Ready',
-                description:
-                  'Token optimization, cost tracking, error boundaries. Built for scale with production safeguards.',
+                  'WCAG AA compliant with keyboard navigation, screen readers, and focus management.',
               },
             ]}
           />
@@ -135,10 +229,11 @@ export default function Page() {
 
           <div className="container-docs relative z-10 text-center">
             <KineticText className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4">
-              Ready to build something amazing?
+              Ready to Build Production AI Chat?
             </KineticText>
             <p className="text-base sm:text-lg text-neutral-600 dark:text-neutral-400 mb-8 max-w-2xl mx-auto">
-              Join thousands of developers building beautiful chat interfaces with Clarity Chat UI.
+              Stop rebuilding token tracking, streaming UI, and memory management.
+              Start with components built for production.
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <a

@@ -88,10 +88,10 @@ export function ProductRecommendationExample() {
       </div>
 
       <Card>
-        <CardHeader>
+        <CardHeader className="">
           <h2 className="text-lg font-semibold">Search Products</h2>
         </CardHeader>
-        <CardContent>
+        <CardContent className="">
           <div className="flex gap-2">
             <input
               type="text"
@@ -180,7 +180,7 @@ export function ProductRecommendationExample() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {mockProducts.map((product, idx) => (
               <Card key={idx}>
-                <CardHeader>
+                <CardHeader className="">
                   <div className="flex items-start justify-between">
                     <h3 className="text-lg font-semibold">{product.name}</h3>
                     {product.inStock && (
@@ -196,7 +196,7 @@ export function ProductRecommendationExample() {
                     )}
                   </div>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="">
                   <p className="text-sm text-muted-foreground mb-2">
                     {product.description}
                   </p>

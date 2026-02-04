@@ -5,7 +5,7 @@
  */
 
 import { InputValidator } from './input-validator'
-import { smartCountTokens } from './smart-fallback'
+import { smartCountTokens } from '../../components/smart-fallback'
 
 export enum ErrorSeverity {
   LOW = 'low',
@@ -413,7 +413,9 @@ export class TokenOptimizationErrorHandler {
     }
 
     // In production, this would send to monitoring service
-    console.error('[TokenOptimization]', logEntry)
+    if (process.env.NODE_ENV === 'development') {
+      console.error('[TokenOptimization]', logEntry)
+    }
   }
 
   /**

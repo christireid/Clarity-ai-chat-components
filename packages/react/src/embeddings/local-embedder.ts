@@ -169,7 +169,7 @@ function generateFallbackEmbedding(text: string, dimensions: number): number[] {
  * ])
  *
  * // Use with semantic cache
- * const cache = new PersistentSemanticCache({
+ * const cache = new SmartCache({
  *   embedFunction: (text) => embedder.embed(text).then(r => r.embedding)
  * })
  * ```

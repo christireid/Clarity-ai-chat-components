@@ -181,6 +181,7 @@ export function PromptSelector({
               initial={{ opacity: 0, scale: 0.95, y: -10 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: -10 }}
+              viewport={{ once: true }}
               className={cn(
                 'absolute left-0 top-full mt-2 z-50',
                 'bg-popover border border-border rounded-lg shadow-lg',

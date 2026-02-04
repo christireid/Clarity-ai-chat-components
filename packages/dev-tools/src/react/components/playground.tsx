@@ -35,7 +35,8 @@ import {
   useConfirmationDialog,
 } from './confirmation-dialog'
 import { VirtualList } from './virtual-list'
-import { ScreenReaderAnnouncer, SkipLink, useAnnounce } from './accessibility'
+// Import from canonical accessibility sources
+import { useA11y } from '@clarity-chat/primitives'
 
 // ============================================================================
 // Playground Sections
@@ -367,11 +368,11 @@ function VirtualListPlayground() {
 // ============================================================================
 
 function AccessibilityPlayground() {
-  const { announce, Announcer } = useAnnounce()
+  const { announce } = useA11y()
   const [lastAnnouncement, setLastAnnouncement] = React.useState('')
 
   const handleAnnounce = (message: string, level: 'polite' | 'assertive') => {
-    announce(message, level)
+    announce(message, { assertive: level === 'assertive' })
     setLastAnnouncement(`${level}: "${message}"`)
   }
 
@@ -380,8 +381,6 @@ function AccessibilityPlayground() {
       title="Accessibility"
       description="Screen reader and keyboard navigation utilities"
     >
-      <Announcer />
-
       <div className="playground-a11y-group">
         <h3>Screen Reader Announcements</h3>
         <div className="playground-row">
@@ -412,7 +411,31 @@ function AccessibilityPlayground() {
         <p className="playground-note">
           Press Tab to reveal the skip link (visible only on focus)
         </p>
-        <SkipLink targetId="playground-main" />
+        <a
+          href="#playground-main"
+          className="skip-link"
+          style={{
+            position: 'absolute',
+            left: '-10000px',
+            top: 'auto',
+            width: '1px',
+            height: '1px',
+          }}
+          onFocus={(e) => {
+            e.target.style.left = '6px'
+            e.target.style.top = '7px'
+            e.target.style.width = 'auto'
+            e.target.style.height = 'auto'
+          }}
+          onBlur={(e) => {
+            e.target.style.left = '-10000px'
+            e.target.style.top = 'auto'
+            e.target.style.width = '1px'
+            e.target.style.height = '1px'
+          }}
+        >
+          Skip to main content
+        </a>
       </div>
 
       <div className="playground-a11y-group">
@@ -538,7 +561,18 @@ export function Playground({ theme = 'auto', className }: PlaygroundProps) {
 
   return (
     <div className={containerClass} id="playground-main">
-      <SkipLink targetId="playground-main">Skip to playground content</SkipLink>
+      <a
+        href="#playground-main"
+        className="skip-link"
+        style={{
+          position: 'absolute',
+          left: '-10000px',
+          width: '1px',
+          height: '1px',
+        }}
+      >
+        Skip to playground content
+      </a>
 
       <header className="playground-header">
         <div className="playground-header-content">

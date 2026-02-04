@@ -105,6 +105,8 @@ function useMobileFocusTrap(
         lastFocusedElement.focus()
       }
     }
+    // contentRef is a stable ref object, no need to include in dependencies
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpen])
 }
 
@@ -140,8 +142,12 @@ const DialogContent = React.forwardRef<
 
       const observer = new MutationObserver((mutations) => {
         mutations.forEach((mutation) => {
-          if (mutation.type === 'attributes' && mutation.attributeName === 'data-state') {
-            const newState = contentRef.current?.getAttribute('data-state') === 'open'
+          if (
+            mutation.type === 'attributes' &&
+            mutation.attributeName === 'data-state'
+          ) {
+            const newState =
+              contentRef.current?.getAttribute('data-state') === 'open'
             setIsOpen(newState)
           }
         })
@@ -153,7 +159,8 @@ const DialogContent = React.forwardRef<
       })
 
       // Initial state check
-      const initialState = contentRef.current.getAttribute('data-state') === 'open'
+      const initialState =
+        contentRef.current.getAttribute('data-state') === 'open'
       setIsOpen(initialState)
 
       return () => observer.disconnect()

@@ -29,8 +29,8 @@
  * ```
  */
 
-import { MemoryService } from '@clarity-chat/memory'
-import type { MemoryType, MemoryScope, MemoryServiceConfig } from './types'
+import { MemoryService, type MemoryServiceConfig } from '@clarity-chat/memory'
+import type { MemoryType, MemoryScope } from './types'
 
 /**
  * Options for creating a memory store
@@ -122,8 +122,6 @@ export function createMemoryStore(
       thread: 604800,
       global: 0,
     },
-    maxTokens: maxTokens || 8000,
-    strategy,
   }
   const service = customService || new MemoryService(serviceConfig)
 

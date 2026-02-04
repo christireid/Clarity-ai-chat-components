@@ -1,0 +1,1273 @@
+/* ============================================================================
+   ChatComposer.module.css - Comprehensive CSS Module
+   ============================================================================
+
+   A complete CSS module for the ChatComposer component with support for:
+   - All layout presets (standard, split-panel, minimal, fullscreen, embedded)
+   - All slot containers (header, messages, sidebar, thinking, tools, input, suggestions, footer)
+   - Responsive design with mobile-first breakpoints
+   - Dark/light theme support with CSS custom properties
+   - Animation states and transitions
+   - Focus states and accessibility features
+
+   ========================================================================== */
+
+/* ============================================================================
+   1. CSS CUSTOM PROPERTIES - Theme Variables
+   ============================================================================ */
+
+:root {
+  /* ────────────────────────────────────────────────────────────────────── */
+  /* Color System - Primary */
+  /* ────────────────────────────────────────────────────────────────────── */
+  --cc-color-primary: #3b82f6;
+  --cc-color-primary-hover: #2563eb;
+  --cc-color-primary-active: #1d4ed8;
+  --cc-color-primary-light: #dbeafe;
+
+  --cc-color-secondary: #6b7280;
+  --cc-color-secondary-hover: #4b5563;
+  --cc-color-secondary-light: #f3f4f6;
+
+  /* ────────────────────────────────────────────────────────────────────── */
+  /* Color System - Background & Surface */
+  /* ────────────────────────────────────────────────────────────────────── */
+  --cc-color-background: #ffffff;
+  --cc-color-surface-1: #f9fafb;
+  --cc-color-surface-2: #f3f4f6;
+  --cc-color-surface-elevated: #ffffff;
+
+  /* ────────────────────────────────────────────────────────────────────── */
+  /* Color System - Borders & Dividers */
+  /* ────────────────────────────────────────────────────────────────────── */
+  --cc-color-border: #e5e7eb;
+  --cc-color-border-subtle: #f3f4f6;
+  --cc-color-divider: #e5e7eb;
+
+  /* ────────────────────────────────────────────────────────────────────── */
+  /* Color System - Text */
+  /* ────────────────────────────────────────────────────────────────────── */
+  --cc-color-text-primary: #111827;
+  --cc-color-text-secondary: #6b7280;
+  --cc-color-text-tertiary: #9ca3af;
+  --cc-color-text-inverse: #ffffff;
+
+  /* ────────────────────────────────────────────────────────────────────── */
+  /* Color System - Status */
+  /* ────────────────────────────────────────────────────────────────────── */
+  --cc-color-success: #10b981;
+  --cc-color-success-light: #d1fae5;
+  --cc-color-warning: #f59e0b;
+  --cc-color-warning-light: #fef3c7;
+  --cc-color-error: #ef4444;
+  --cc-color-error-light: #fee2e2;
+  --cc-color-info: #3b82f6;
+  --cc-color-info-light: #dbeafe;
+
+  /* ────────────────────────────────────────────────────────────────────── */
+  /* Spacing System - Consistent scale */
+  /* ────────────────────────────────────────────────────────────────────── */
+  --cc-spacing-xs: 0.25rem;    /* 4px */
+  --cc-spacing-sm: 0.5rem;     /* 8px */
+  --cc-spacing-md: 1rem;       /* 16px */
+  --cc-spacing-lg: 1.5rem;     /* 24px */
+  --cc-spacing-xl: 2rem;       /* 32px */
+  --cc-spacing-2xl: 3rem;      /* 48px */
+
+  /* ────────────────────────────────────────────────────────────────────── */
+  /* Typography System */
+  /* ────────────────────────────────────────────────────────────────────── */
+  --cc-font-family-base: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --cc-font-family-mono: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+
+  --cc-font-size-xs: 0.75rem;    /* 12px */
+  --cc-font-size-sm: 0.875rem;   /* 14px */
+  --cc-font-size-base: 1rem;     /* 16px */
+  --cc-font-size-lg: 1.125rem;   /* 18px */
+  --cc-font-size-xl: 1.25rem;    /* 20px */
+  --cc-font-size-2xl: 1.5rem;    /* 24px */
+
+  --cc-font-weight-normal: 400;
+  --cc-font-weight-medium: 500;
+  --cc-font-weight-semibold: 600;
+  --cc-font-weight-bold: 700;
+
+  --cc-line-height-tight: 1.25;
+  --cc-line-height-normal: 1.5;
+  --cc-line-height-relaxed: 1.75;
+
+  /* ────────────────────────────────────────────────────────────────────── */
+  /* Border Radius System */
+  /* ────────────────────────────────────────────────────────────────────── */
+  --cc-radius-sm: 0.375rem;     /* 6px */
+  --cc-radius-md: 0.5rem;       /* 8px */
+  --cc-radius-lg: 0.75rem;      /* 12px */
+  --cc-radius-xl: 1rem;         /* 16px */
+  --cc-radius-full: 9999px;
+
+  /* ────────────────────────────────────────────────────────────────────── */
+  /* Shadow System */
+  /* ────────────────────────────────────────────────────────────────────── */
+  --cc-shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --cc-shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+  --cc-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --cc-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --cc-shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+
+  /* ────────────────────────────────────────────────────────────────────── */
+  /* Transition & Animation */
+  /* ────────────────────────────────────────────────────────────────────── */
+  --cc-transition-fast: 100ms ease-in-out;
+  --cc-transition-base: 200ms ease-in-out;
+  --cc-transition-slow: 300ms ease-in-out;
+  --cc-transition-slower: 500ms ease-in-out;
+
+  --cc-ease-in: cubic-bezier(0.4, 0, 1, 1);
+  --cc-ease-out: cubic-bezier(0, 0, 0.2, 1);
+  --cc-ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* ────────────────────────────────────────────────────────────────────── */
+  /* Z-Index System */
+  /* ────────────────────────────────────────────────────────────────────── */
+  --cc-z-hide: -1;
+  --cc-z-base: 1;
+  --cc-z-sticky: 10;
+  --cc-z-elevated: 20;
+  --cc-z-overlay: 50;
+  --cc-z-modal: 100;
+  --cc-z-tooltip: 110;
+
+  /* ────────────────────────────────────────────────────────────────────── */
+  /* Layout Dimensions */
+  /* ────────────────────────────────────────────────────────────────────── */
+  --cc-header-height: 56px;
+  --cc-input-height-min: 44px;
+  --cc-input-height: 60px;
+  --cc-input-height-max: 180px;
+  --cc-sidebar-width: 320px;
+  --cc-sidebar-width-collapsed: 280px;
+
+  /* ────────────────────────────────────────────────────────────────────── */
+  /* Breakpoints (mobile-first) */
+  /* ────────────────────────────────────────────────────────────────────── */
+  --cc-breakpoint-sm: 640px;
+  --cc-breakpoint-md: 768px;
+  --cc-breakpoint-lg: 1024px;
+  --cc-breakpoint-xl: 1280px;
+  --cc-breakpoint-2xl: 1536px;
+}
+
+/* Dark Mode Theme Variables */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --cc-color-background: #1f2937;
+    --cc-color-surface-1: #111827;
+    --cc-color-surface-2: #0f172a;
+    --cc-color-surface-elevated: #1f2937;
+
+    --cc-color-border: #374151;
+    --cc-color-border-subtle: #111827;
+    --cc-color-divider: #374151;
+
+    --cc-color-text-primary: #f3f4f6;
+    --cc-color-text-secondary: #9ca3af;
+    --cc-color-text-tertiary: #6b7280;
+
+    --cc-color-success-light: #064e3b;
+    --cc-color-warning-light: #78350f;
+    --cc-color-error-light: #7f1d1d;
+    --cc-color-info-light: #082f49;
+  }
+}
+
+/* Reduced Motion Preferences */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --cc-transition-fast: 0ms;
+    --cc-transition-base: 0ms;
+    --cc-transition-slow: 0ms;
+    --cc-transition-slower: 0ms;
+  }
+}
+
+/* ============================================================================
+   2. RESET & BASE STYLES
+   ============================================================================ */
+
+.chatComposer {
+  all: initial;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  font-family: var(--cc-font-family-base);
+  font-size: var(--cc-font-size-base);
+  color: var(--cc-color-text-primary);
+  background-color: var(--cc-color-background);
+  line-height: var(--cc-line-height-normal);
+  transition: background-color var(--cc-transition-base),
+              color var(--cc-transition-base);
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.chatComposer * {
+  box-sizing: border-box;
+}
+
+/* ============================================================================
+   3. LAYOUT VARIANTS - Standard, Split-Panel, Minimal, Fullscreen, Embedded
+   ============================================================================ */
+
+/* ────────────────────────────────────────────────────────────────────────── */
+/* Standard Layout: Header, Messages, Input stacked vertically */
+/* ────────────────────────────────────────────────────────────────────────── */
+
+.layoutStandard {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+  gap: 0;
+}
+
+.layoutStandard .header {
+  flex-shrink: 0;
+  border-bottom: 1px solid var(--cc-color-border);
+  background-color: var(--cc-color-background);
+  min-height: var(--cc-header-height);
+}
+
+.layoutStandard .messages {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.layoutStandard .thinking {
+  flex-shrink: 0;
+  border-top: 1px solid var(--cc-color-border);
+  background-color: var(--cc-color-surface-1);
+}
+
+.layoutStandard .tools {
+  flex-shrink: 0;
+  border-top: 1px solid var(--cc-color-border);
+  background-color: var(--cc-color-surface-1);
+}
+
+.layoutStandard .suggestions {
+  flex-shrink: 0;
+  border-top: 1px solid var(--cc-color-border);
+  padding: var(--cc-spacing-md);
+  background-color: var(--cc-color-surface-1);
+}
+
+.layoutStandard .input {
+  flex-shrink: 0;
+  border-top: 1px solid var(--cc-color-border);
+  background-color: var(--cc-color-background);
+}
+
+.layoutStandard .footer {
+  flex-shrink: 0;
+  border-top: 1px solid var(--cc-color-border);
+  background-color: var(--cc-color-surface-1);
+}
+
+/* ────────────────────────────────────────────────────────────────────────── */
+/* Split Panel Layout: Messages left, sidebar right */
+/* ────────────────────────────────────────────────────────────────────────── */
+
+.layoutSplitPanel {
+  display: flex;
+  flex-direction: row;
+  height: 100%;
+  width: 100%;
+  gap: 0;
+}
+
+.layoutSplitPanel .main {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+  gap: 0;
+}
+
+.layoutSplitPanel .header {
+  flex-shrink: 0;
+  border-bottom: 1px solid var(--cc-color-border);
+  background-color: var(--cc-color-background);
+  min-height: var(--cc-header-height);
+}
+
+.layoutSplitPanel .messages {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.layoutSplitPanel .thinking {
+  flex-shrink: 0;
+  border-top: 1px solid var(--cc-color-border);
+  background-color: var(--cc-color-surface-1);
+}
+
+.layoutSplitPanel .tools {
+  flex-shrink: 0;
+  border-top: 1px solid var(--cc-color-border);
+  background-color: var(--cc-color-surface-1);
+}
+
+.layoutSplitPanel .suggestions {
+  flex-shrink: 0;
+  border-top: 1px solid var(--cc-color-border);
+  padding: var(--cc-spacing-md);
+  background-color: var(--cc-color-surface-1);
+}
+
+.layoutSplitPanel .input {
+  flex-shrink: 0;
+  border-top: 1px solid var(--cc-color-border);
+  background-color: var(--cc-color-background);
+}
+
+.layoutSplitPanel .footer {
+  flex-shrink: 0;
+  border-top: 1px solid var(--cc-color-border);
+  background-color: var(--cc-color-surface-1);
+}
+
+.layoutSplitPanel .sidebar {
+  flex-shrink: 0;
+  width: var(--cc-sidebar-width);
+  height: 100%;
+  border-left: 1px solid var(--cc-color-border);
+  background-color: var(--cc-color-surface-1);
+  overflow-y: auto;
+  overflow-x: hidden;
+  z-index: var(--cc-z-base);
+}
+
+/* ────────────────────────────────────────────────────────────────────────── */
+/* Minimal Layout: Just messages and input */
+/* ────────────────────────────────────────────────────────────────────────── */
+
+.layoutMinimal {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+  gap: 0;
+  background-color: var(--cc-color-background);
+}
+
+.layoutMinimal .messages {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.layoutMinimal .input {
+  flex-shrink: 0;
+  border-top: 1px solid var(--cc-color-border);
+  background-color: var(--cc-color-background);
+}
+
+/* ────────────────────────────────────────────────────────────────────────── */
+/* Fullscreen Layout: Full viewport with optional sidebar */
+/* ────────────────────────────────────────────────────────────────────────── */
+
+.layoutFullscreen {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+  gap: 0;
+}
+
+.layoutFullscreen .header {
+  flex-shrink: 0;
+  border-bottom: 1px solid var(--cc-color-border);
+  background-color: var(--cc-color-background);
+  z-index: var(--cc-z-sticky);
+  position: sticky;
+  top: 0;
+}
+
+.layoutFullscreen .body {
+  display: flex;
+  flex-direction: row;
+  flex: 1;
+  min-height: 0;
+  gap: 0;
+}
+
+.layoutFullscreen .sidebar {
+  flex-shrink: 0;
+  width: var(--cc-sidebar-width);
+  height: 100%;
+  border-right: 1px solid var(--cc-color-border);
+  background-color: var(--cc-color-surface-1);
+  overflow-y: auto;
+  overflow-x: hidden;
+  z-index: var(--cc-z-base);
+}
+
+.layoutFullscreen .content {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+  gap: 0;
+}
+
+.layoutFullscreen .thinking {
+  flex-shrink: 0;
+  border-bottom: 1px solid var(--cc-color-border);
+  background-color: var(--cc-color-surface-1);
+}
+
+.layoutFullscreen .messages {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.layoutFullscreen .tools {
+  flex-shrink: 0;
+  border-top: 1px solid var(--cc-color-border);
+  background-color: var(--cc-color-surface-1);
+}
+
+.layoutFullscreen .suggestions {
+  flex-shrink: 0;
+  border-top: 1px solid var(--cc-color-border);
+  padding: var(--cc-spacing-md);
+  background-color: var(--cc-color-surface-1);
+}
+
+.layoutFullscreen .input {
+  flex-shrink: 0;
+  border-top: 1px solid var(--cc-color-border);
+  background-color: var(--cc-color-background);
+}
+
+.layoutFullscreen .footer {
+  flex-shrink: 0;
+  border-top: 1px solid var(--cc-color-border);
+  background-color: var(--cc-color-surface-1);
+}
+
+/* ────────────────────────────────────────────────────────────────────────── */
+/* Embedded Layout: Compact for embedding in other UIs */
+/* ────────────────────────────────────────────────────────────────────────── */
+
+.layoutEmbedded {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+  gap: 0;
+  border-radius: var(--cc-radius-lg);
+  overflow: hidden;
+  box-shadow: var(--cc-shadow-md);
+}
+
+.layoutEmbedded .thinking {
+  flex-shrink: 0;
+  border-bottom: 1px solid var(--cc-color-border);
+}
+
+.layoutEmbedded .messages {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.layoutEmbedded .input {
+  flex-shrink: 0;
+  border-top: 1px solid var(--cc-color-border);
+}
+
+/* ============================================================================
+   4. SLOT CONTAINERS - Individual Section Styles
+   ============================================================================ */
+
+/* ────────────────────────────────────────────────────────────────────────── */
+/* Header Slot */
+/* ────────────────────────────────────────────────────────────────────────── */
+
+.slotHeader {
+  display: flex;
+  align-items: center;
+  padding: var(--cc-spacing-md) var(--cc-spacing-lg);
+  gap: var(--cc-spacing-md);
+  min-height: var(--cc-header-height);
+}
+
+.slotHeader.sticky {
+  position: sticky;
+  top: 0;
+  z-index: var(--cc-z-sticky);
+}
+
+.slotHeader.bordered {
+  border-bottom: 1px solid var(--cc-color-border);
+}
+
+/* ────────────────────────────────────────────────────────────────────────── */
+/* Messages Slot */
+/* ────────────────────────────────────────────────────────────────────────── */
+
+.slotMessages {
+  display: flex;
+  flex-direction: column;
+  gap: var(--cc-spacing-md);
+  overflow-y: auto;
+  overflow-x: hidden;
+  scroll-behavior: smooth;
+
+  /* Scrollbar styling */
+  scrollbar-width: thin;
+  scrollbar-color: var(--cc-color-border) transparent;
+}
+
+.slotMessages::-webkit-scrollbar {
+  width: 6px;
+}
+
+.slotMessages::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.slotMessages::-webkit-scrollbar-thumb {
+  background-color: var(--cc-color-border);
+  border-radius: var(--cc-radius-full);
+}
+
+.slotMessages::-webkit-scrollbar-thumb:hover {
+  background-color: var(--cc-color-secondary);
+}
+
+.slotMessages.paddingNone {
+  padding: 0;
+}
+
+.slotMessages.paddingSm {
+  padding: var(--cc-spacing-sm);
+}
+
+.slotMessages.paddingMd {
+  padding: var(--cc-spacing-md);
+}
+
+.slotMessages.paddingLg {
+  padding: var(--cc-spacing-lg);
+}
+
+/* ────────────────────────────────────────────────────────────────────────── */
+/* Sidebar Slot */
+/* ────────────────────────────────────────────────────────────────────────── */
+
+.slotSidebar {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  gap: 0;
+  background-color: var(--cc-color-surface-1);
+  overflow: hidden;
+}
+
+.slotSidebar.positionLeft {
+  border-right: 1px solid var(--cc-color-border);
+  order: -1;
+}
+
+.slotSidebar.positionRight {
+  border-left: 1px solid var(--cc-color-border);
+  order: 1;
+}
+
+.slotSidebar.mobileOverlay {
+  position: fixed;
+  top: 0;
+  right: 0;
+  height: 100vh;
+  width: 100%;
+  max-width: var(--cc-sidebar-width);
+  z-index: var(--cc-z-modal);
+  box-shadow: var(--cc-shadow-lg);
+}
+
+.sidebarContent {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.sidebarToggle {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  margin: var(--cc-spacing-sm);
+  background-color: transparent;
+  border: 1px solid var(--cc-color-border);
+  border-radius: var(--cc-radius-md);
+  color: var(--cc-color-text-primary);
+  cursor: pointer;
+  font-size: var(--cc-font-size-lg);
+  transition: all var(--cc-transition-fast);
+}
+
+.sidebarToggle:hover {
+  background-color: var(--cc-color-surface-2);
+  border-color: var(--cc-color-text-primary);
+}
+
+.sidebarToggle:focus-visible {
+  outline: 2px solid var(--cc-color-primary);
+  outline-offset: 2px;
+}
+
+/* ────────────────────────────────────────────────────────────────────────── */
+/* Thinking Slot */
+/* ────────────────────────────────────────────────────────────────────────── */
+
+.slotThinking {
+  display: flex;
+  flex-direction: column;
+  gap: var(--cc-spacing-md);
+  padding: var(--cc-spacing-md) var(--cc-spacing-lg);
+  background-color: var(--cc-color-surface-1);
+  border-top: 1px solid var(--cc-color-border);
+  animation: slideDown var(--cc-transition-slow) ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ────────────────────────────────────────────────────────────────────────── */
+/* Tools Slot */
+/* ────────────────────────────────────────────────────────────────────────── */
+
+.slotTools {
+  display: flex;
+  flex-direction: column;
+  gap: var(--cc-spacing-md);
+  padding: var(--cc-spacing-md) var(--cc-spacing-lg);
+  background-color: var(--cc-color-surface-1);
+  border-top: 1px solid var(--cc-color-border);
+}
+
+.toolCard {
+  display: flex;
+  flex-direction: column;
+  gap: var(--cc-spacing-sm);
+  padding: var(--cc-spacing-md);
+  background-color: var(--cc-color-background);
+  border: 1px solid var(--cc-color-border);
+  border-radius: var(--cc-radius-lg);
+  animation: fadeIn var(--cc-transition-base) ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* ────────────────────────────────────────────────────────────────────────── */
+/* Input Slot */
+/* ────────────────────────────────────────────────────────────────────────── */
+
+.slotInput {
+  display: flex;
+  flex-direction: column;
+  gap: var(--cc-spacing-md);
+  padding: var(--cc-spacing-md) var(--cc-spacing-lg);
+  background-color: var(--cc-color-background);
+  min-height: var(--cc-input-height-min);
+}
+
+.slotInput.sticky {
+  position: sticky;
+  bottom: 0;
+  z-index: var(--cc-z-sticky);
+}
+
+.slotInput.bordered {
+  border-top: 1px solid var(--cc-color-border);
+}
+
+.slotInput.paddingNone {
+  padding: 0;
+}
+
+.slotInput.paddingSm {
+  padding: var(--cc-spacing-sm);
+}
+
+.slotInput.paddingMd {
+  padding: var(--cc-spacing-md);
+}
+
+.slotInput.paddingLg {
+  padding: var(--cc-spacing-lg);
+}
+
+/* ────────────────────────────────────────────────────────────────────────── */
+/* Suggestions Slot */
+/* ────────────────────────────────────────────────────────────────────────── */
+
+.slotSuggestions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--cc-spacing-sm);
+  padding: var(--cc-spacing-md) var(--cc-spacing-lg);
+  background-color: var(--cc-color-surface-1);
+  border-top: 1px solid var(--cc-color-border);
+}
+
+.suggestionChip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--cc-spacing-sm);
+  padding: var(--cc-spacing-sm) var(--cc-spacing-md);
+  background-color: var(--cc-color-background);
+  border: 1px solid var(--cc-color-border);
+  border-radius: var(--cc-radius-full);
+  color: var(--cc-color-text-primary);
+  font-size: var(--cc-font-size-sm);
+  font-weight: var(--cc-font-weight-medium);
+  cursor: pointer;
+  transition: all var(--cc-transition-fast);
+  white-space: nowrap;
+}
+
+.suggestionChip:hover {
+  background-color: var(--cc-color-primary-light);
+  border-color: var(--cc-color-primary);
+  color: var(--cc-color-primary);
+}
+
+.suggestionChip:focus-visible {
+  outline: 2px solid var(--cc-color-primary);
+  outline-offset: 2px;
+}
+
+.suggestionChip:active {
+  background-color: var(--cc-color-primary);
+  color: var(--cc-color-text-inverse);
+}
+
+/* ────────────────────────────────────────────────────────────────────────── */
+/* Footer Slot */
+/* ────────────────────────────────────────────────────────────────────────── */
+
+.slotFooter {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--cc-spacing-md);
+  padding: var(--cc-spacing-md) var(--cc-spacing-lg);
+  background-color: var(--cc-color-surface-1);
+  border-top: 1px solid var(--cc-color-border);
+  font-size: var(--cc-font-size-sm);
+  color: var(--cc-color-text-secondary);
+}
+
+/* ============================================================================
+   5. VARIANT STYLES - Default, Compact, Comfortable
+   ============================================================================ */
+
+/* ────────────────────────────────────────────────────────────────────────── */
+/* Compact Variant */
+/* ────────────────────────────────────────────────────────────────────────── */
+
+.variantCompact .slotHeader {
+  padding: var(--cc-spacing-sm) var(--cc-spacing-md);
+  min-height: 44px;
+}
+
+.variantCompact .slotMessages {
+  gap: var(--cc-spacing-sm);
+  padding: var(--cc-spacing-sm);
+}
+
+.variantCompact .slotInput {
+  padding: var(--cc-spacing-sm) var(--cc-spacing-md);
+  gap: var(--cc-spacing-sm);
+}
+
+.variantCompact .slotThinking {
+  padding: var(--cc-spacing-sm) var(--cc-spacing-md);
+  gap: var(--cc-spacing-sm);
+}
+
+.variantCompact .slotTools {
+  padding: var(--cc-spacing-sm) var(--cc-spacing-md);
+  gap: var(--cc-spacing-sm);
+}
+
+.variantCompact .slotSuggestions {
+  padding: var(--cc-spacing-sm) var(--cc-spacing-md);
+  gap: var(--cc-spacing-xs);
+}
+
+/* ────────────────────────────────────────────────────────────────────────── */
+/* Comfortable Variant */
+/* ────────────────────────────────────────────────────────────────────────── */
+
+.variantComfortable .slotHeader {
+  padding: var(--cc-spacing-lg) var(--cc-spacing-xl);
+  min-height: 64px;
+}
+
+.variantComfortable .slotMessages {
+  gap: var(--cc-spacing-lg);
+  padding: var(--cc-spacing-lg);
+}
+
+.variantComfortable .slotInput {
+  padding: var(--cc-spacing-lg) var(--cc-spacing-xl);
+  gap: var(--cc-spacing-lg);
+}
+
+.variantComfortable .slotThinking {
+  padding: var(--cc-spacing-lg) var(--cc-spacing-xl);
+  gap: var(--cc-spacing-lg);
+}
+
+.variantComfortable .slotTools {
+  padding: var(--cc-spacing-lg) var(--cc-spacing-xl);
+  gap: var(--cc-spacing-lg);
+}
+
+.variantComfortable .slotSuggestions {
+  padding: var(--cc-spacing-lg) var(--cc-spacing-xl);
+  gap: var(--cc-spacing-md);
+}
+
+/* ============================================================================
+   6. RESPONSIVE DESIGN - Mobile-First Breakpoints
+   ============================================================================ */
+
+/* Mobile - Default (< 640px) */
+
+.sidebarToggle {
+  display: flex;
+}
+
+.layoutSplitPanel .sidebar {
+  display: none;
+}
+
+.layoutFullscreen .sidebar {
+  display: none;
+}
+
+/* Small screens and up (640px and up) */
+@media (min-width: 640px) {
+  .slotHeader {
+    padding: var(--cc-spacing-md) var(--cc-spacing-lg);
+  }
+
+  .slotMessages {
+    padding: var(--cc-spacing-md);
+  }
+
+  .slotInput {
+    padding: var(--cc-spacing-md) var(--cc-spacing-lg);
+  }
+}
+
+/* Medium screens and up (768px and up) */
+@media (min-width: 768px) {
+  .sidebarToggle {
+    display: none;
+  }
+
+  .layoutSplitPanel .sidebar {
+    display: flex;
+  }
+
+  .layoutFullscreen .sidebar {
+    display: flex;
+  }
+
+  .slotSidebar.mobileOverlay {
+    position: relative;
+    top: auto;
+    right: auto;
+    height: 100%;
+    width: var(--cc-sidebar-width);
+    max-width: none;
+    z-index: var(--cc-z-base);
+    box-shadow: none;
+  }
+}
+
+/* Large screens and up (1024px and up) */
+@media (min-width: 1024px) {
+  .chatComposer {
+    max-width: 100%;
+  }
+}
+
+/* Extra large screens and up (1280px and up) */
+@media (min-width: 1280px) {
+  .slotHeader {
+    padding: var(--cc-spacing-lg) var(--cc-spacing-xl);
+  }
+
+  .slotMessages {
+    padding: var(--cc-spacing-lg);
+  }
+
+  .slotInput {
+    padding: var(--cc-spacing-lg) var(--cc-spacing-xl);
+  }
+}
+
+/* ============================================================================
+   7. ANIMATION STATES
+   ============================================================================ */
+
+.animateIn {
+  animation: fadeInUp var(--cc-transition-slow) ease-out;
+}
+
+.animateOut {
+  animation: fadeOutDown var(--cc-transition-slow) ease-in;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeOutDown {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideOut {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(100%);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -1000px 0;
+  }
+  100% {
+    background-position: 1000px 0;
+  }
+}
+
+.loading {
+  animation: pulse var(--cc-transition-slow) infinite;
+}
+
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--cc-color-border) 25%,
+    var(--cc-color-surface-2) 50%,
+    var(--cc-color-border) 75%
+  );
+  background-size: 1000px 100%;
+  animation: shimmer 2s infinite;
+}
+
+/* ============================================================================
+   8. FOCUS STATES & ACCESSIBILITY
+   ============================================================================ */
+
+/* Focus Visible for keyboard navigation */
+.chatComposer *:focus-visible {
+  outline: 2px solid var(--cc-color-primary);
+  outline-offset: 2px;
+}
+
+/* Remove focus outline for mouse users */
+.chatComposer *:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: more) {
+  .chatComposer {
+    border: 1px solid var(--cc-color-text-primary);
+  }
+
+  .slotHeader,
+  .slotInput {
+    border-width: 2px;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .chatComposer *,
+  .chatComposer *::before,
+  .chatComposer *::after {
+    animation-duration: 0ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0ms !important;
+  }
+}
+
+/* ============================================================================
+   9. INTERACTIVE STATES
+   ============================================================================ */
+
+/* Button base styles */
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--cc-spacing-sm);
+  padding: var(--cc-spacing-sm) var(--cc-spacing-md);
+  background-color: var(--cc-color-primary);
+  color: var(--cc-color-text-inverse);
+  border: none;
+  border-radius: var(--cc-radius-md);
+  font-size: var(--cc-font-size-base);
+  font-weight: var(--cc-font-weight-medium);
+  cursor: pointer;
+  transition: all var(--cc-transition-fast);
+}
+
+.button:hover:not(:disabled) {
+  background-color: var(--cc-color-primary-hover);
+  transform: translateY(-1px);
+}
+
+.button:active:not(:disabled) {
+  background-color: var(--cc-color-primary-active);
+  transform: translateY(0);
+}
+
+.button:focus-visible {
+  outline: 2px solid var(--cc-color-primary);
+  outline-offset: 2px;
+}
+
+.button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.buttonSecondary {
+  background-color: var(--cc-color-surface-2);
+  color: var(--cc-color-text-primary);
+  border: 1px solid var(--cc-color-border);
+}
+
+.buttonSecondary:hover:not(:disabled) {
+  background-color: var(--cc-color-border);
+  border-color: var(--cc-color-text-primary);
+}
+
+.buttonGhost {
+  background-color: transparent;
+  color: var(--cc-color-text-primary);
+}
+
+.buttonGhost:hover:not(:disabled) {
+  background-color: var(--cc-color-surface-2);
+}
+
+/* Input field styles */
+.input {
+  padding: var(--cc-spacing-sm) var(--cc-spacing-md);
+  background-color: var(--cc-color-background);
+  border: 1px solid var(--cc-color-border);
+  border-radius: var(--cc-radius-md);
+  color: var(--cc-color-text-primary);
+  font-family: var(--cc-font-family-base);
+  font-size: var(--cc-font-size-base);
+  transition: all var(--cc-transition-fast);
+}
+
+.input:hover {
+  border-color: var(--cc-color-secondary);
+}
+
+.input:focus {
+  border-color: var(--cc-color-primary);
+  box-shadow: 0 0 0 3px var(--cc-color-info-light);
+}
+
+.input:disabled {
+  background-color: var(--cc-color-surface-1);
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.input::placeholder {
+  color: var(--cc-color-text-tertiary);
+}
+
+/* ============================================================================
+   10. EMPTY STATE & ERROR STATES
+   ============================================================================ */
+
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--cc-spacing-lg);
+  padding: var(--cc-spacing-2xl);
+  text-align: center;
+  color: var(--cc-color-text-secondary);
+}
+
+.emptyStateIcon {
+  font-size: 48px;
+  opacity: 0.5;
+}
+
+.emptyStateTitle {
+  font-size: var(--cc-font-size-lg);
+  font-weight: var(--cc-font-weight-semibold);
+  color: var(--cc-color-text-primary);
+}
+
+.emptyStateDescription {
+  font-size: var(--cc-font-size-sm);
+  color: var(--cc-color-text-secondary);
+  max-width: 400px;
+}
+
+.errorState {
+  display: flex;
+  align-items: center;
+  gap: var(--cc-spacing-md);
+  padding: var(--cc-spacing-md);
+  background-color: var(--cc-color-error-light);
+  border: 1px solid var(--cc-color-error);
+  border-radius: var(--cc-radius-md);
+  color: var(--cc-color-error);
+}
+
+/* ============================================================================
+   11. UTILITY CLASSES
+   ============================================================================ */
+
+.hidden {
+  display: none !important;
+}
+
+.invisible {
+  visibility: hidden;
+}
+
+.truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.lineClamp2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.lineClamp3 {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.noSelect {
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+}
+
+.fullHeight {
+  height: 100%;
+}
+
+.fullWidth {
+  width: 100%;
+}
+
+/* ============================================================================
+   12. PRINT STYLES
+   ============================================================================ */
+
+@media print {
+  .chatComposer {
+    height: auto;
+  }
+
+  .slotMessages {
+    overflow: visible;
+  }
+
+  .slotInput,
+  .slotHeader {
+    display: none;
+  }
+}

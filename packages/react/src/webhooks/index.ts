@@ -51,14 +51,14 @@
 export * from './types'
 export * from './webhook-manager'
 
-// ✨ ENHANCED: Secure webhook manager with HMAC-SHA256
-export {
-  EnhancedWebhookManager,
-  MemoryWebhookDeliveryStorage,
-  type EnhancedWebhookConfig,
-  type WebhookDeliveryStorage,
-  type EndpointHealth,
-} from './webhook-manager-enhanced'
+// Note: WebhookManager now includes all enterprise security features by default
+// - HMAC-SHA256 signatures (not simple hashing)
+// - Replay protection via timestamp validation
+// - Rate limiting per endpoint
+// - Constant-time comparison to prevent timing attacks
+// - Secure defaults (verifySignatures: true)
+//
+// Backward compatibility: EnhancedWebhookManager is now an alias for WebhookManager
 
 /**
  * Common webhook event types for AI applications

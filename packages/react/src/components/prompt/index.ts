@@ -5,37 +5,40 @@
  * Includes playground, library, versioning, and variable editing.
  */
 
-export { FollowUpSuggestions } from './follow-up-suggestions'
-export type { FollowUpSuggestion, FollowUpSuggestionsProps } from './follow-up-suggestions'
+export { FollowUpSuggestions } from './FollowUpSuggestions'
+export type {
+  FollowUpSuggestion,
+  FollowUpSuggestionsProps,
+} from './FollowUpSuggestions'
 
-export { PromptPlayground } from './prompt-playground'
-export type { PromptPlaygroundProps } from './prompt-playground'
+export { PromptPlayground } from './PromptPlayground'
+export type { PromptPlaygroundProps } from './PromptPlayground'
 
-export { PromptSuggestions, usePromptSuggestions } from './prompt-suggestions'
+export { PromptSuggestions, usePromptSuggestions } from './PromptSuggestions'
 export type {
   PromptSuggestionsProps,
   PromptSuggestion,
   PromptSuggestionType,
-} from './prompt-suggestions'
+} from './PromptSuggestions'
 
-export { PromptVariablesEditor } from './prompt-variables-editor'
-export type { PromptVariablesEditorProps } from './prompt-variables-editor'
+export { PromptVariablesEditor } from './PromptVariablesEditor'
+export type { PromptVariablesEditorProps } from './PromptVariablesEditor'
 
-export { PromptVersionHistory } from './prompt-version-history'
-export type { PromptVersionHistoryProps } from './prompt-version-history'
+export { PromptVersionHistory } from './PromptVersionHistory'
+export type { PromptVersionHistoryProps } from './PromptVersionHistory'
 
 // Prompt Container - comprehensive container for prompt input with suggestions
-export { PromptContainer, useFileAttachments } from './prompt-container'
+export { PromptContainer, useFileAttachments } from './PromptContainer'
 export type {
   PromptContainerProps,
   SuggestionCategory,
   FileAttachment,
-} from './prompt-container'
+} from './PromptContainer'
 
 // Suggestion Cards - grid of interactive suggestion cards with categories
-export { SuggestionCards, useSuggestionCards } from './suggestion-cards'
+export { SuggestionCards, useSuggestionCards } from './SuggestionCards'
 export type {
   SuggestionCardsProps,
   SuggestionCard,
   CategoryFilter,
-} from './suggestion-cards'
+} from './SuggestionCards'

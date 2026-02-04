@@ -31,7 +31,7 @@
  * ```
  */
 
-import { SimpleTokenCounter } from '../tokenizers/simple-counter'
+import { AccurateTokenCounter } from '../tokenizers/accurate-counter'
 
 /**
  * Options for markdown compression
@@ -176,10 +176,10 @@ export interface SavingsEstimate {
  * ```
  */
 export class MarkdownOptimizer {
-  private tokenCounter: SimpleTokenCounter
+  private tokenCounter: AccurateTokenCounter
 
   constructor() {
-    this.tokenCounter = new SimpleTokenCounter(true, { model: 'gpt-4' })
+    this.tokenCounter = new AccurateTokenCounter({ model: 'gpt-4' })
   }
 
   /**

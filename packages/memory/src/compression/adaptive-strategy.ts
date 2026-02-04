@@ -1,15 +1,33 @@
 /**
  * Adaptive Compression Strategy
- * 
+ *
  * Automatically selects the best compression method based on content
  */
 
-import type { CompressionStrategy, CompressionResult } from './compression-strategy'
 import type { Memory } from '../types'
 import { TruncateStrategy } from './truncate-strategy'
 import { ExtractStrategy } from './extract-strategy'
 import { SummarizeStrategy, type LLMSummarizer } from './summarize-strategy'
 import type { Summarizer } from '../summarization/summarizer'
+
+/**
+ * Compression strategy interface
+ */
+export interface CompressionStrategy {
+  canCompress(memory: Memory): boolean
+  compress(memory: Memory, targetRatio: number): Promise<CompressionResult>
+}
+
+/**
+ * Result of compression operation
+ */
+export interface CompressionResult {
+  compressed: string
+  original: string
+  compressionRatio: number
+  tokensSaved: number
+  method: string
+}
 
 export class AdaptiveStrategy implements CompressionStrategy {
   private truncateStrategy: TruncateStrategy
@@ -32,10 +50,13 @@ export class AdaptiveStrategy implements CompressionStrategy {
     )
   }
 
-  async compress(memory: Memory, targetRatio: number): Promise<CompressionResult> {
+  async compress(
+    memory: Memory,
+    targetRatio: number
+  ): Promise<CompressionResult> {
     // Select strategy based on content characteristics
     const strategy = this.selectStrategy(memory)
-    
+
     if (!strategy) {
       // Fallback: return original with minimal compression
       const original = memory.content
@@ -82,17 +103,17 @@ export class AdaptiveStrategy implements CompressionStrategy {
   private isStructured(text: string): boolean {
     // Check for lists, bullet points, numbered items
     const listPatterns = [
-      /^\s*[-•*]\s+/m,           // Bullet points
-      /^\s*\d+[.)]\s+/m,         // Numbered lists
-      /^\s*\w+:\s+/m,            // Key-value pairs
+      /^\s*[-•*]\s+/m, // Bullet points
+      /^\s*\d+[.)]\s+/m, // Numbered lists
+      /^\s*\w+:\s+/m, // Key-value pairs
     ]
-    
-    return listPatterns.some(pattern => pattern.test(text))
+
+    return listPatterns.some((pattern) => pattern.test(text))
   }
 
   private hasNarrativeStructure(text: string): boolean {
     // Check for multiple sentences (narrative structure)
-    const sentences = text.split(/[.!?]+/).filter(s => s.trim().length > 0)
+    const sentences = text.split(/[.!?]+/).filter((s) => s.trim().length > 0)
     return sentences.length > 3
   }
 }

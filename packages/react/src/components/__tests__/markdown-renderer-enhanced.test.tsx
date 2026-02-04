@@ -4,7 +4,7 @@
 
 import { describe, it, expect } from 'vitest'
 import { render, screen } from '@testing-library/react'
-import { EnhancedMarkdownRenderer } from '../ai/enhanced-markdown-renderer'
+import { EnhancedMarkdownRenderer } from '../ai/EnhancedMarkdownRenderer'
 
 describe('EnhancedMarkdownRenderer', () => {
   it('renders basic markdown', () => {
@@ -27,7 +27,12 @@ describe('EnhancedMarkdownRenderer', () => {
   it('renders code blocks', () => {
     const content = '```javascript\nconst x = 42;\n```'
 
-    render(<EnhancedMarkdownRenderer content={content} config={{ enableSyntaxHighlight: true }} />)
+    render(
+      <EnhancedMarkdownRenderer
+        content={content}
+        config={{ enableSyntaxHighlight: true }}
+      />
+    )
 
     expect(screen.getByText(/const x = 42/)).toBeInTheDocument()
   })
@@ -39,7 +44,12 @@ describe('EnhancedMarkdownRenderer', () => {
 | Cell 1   | Cell 2   |
 `
 
-    render(<EnhancedMarkdownRenderer content={content} config={{ enableGFM: true }} />)
+    render(
+      <EnhancedMarkdownRenderer
+        content={content}
+        config={{ enableGFM: true }}
+      />
+    )
 
     expect(screen.getByText('Header 1')).toBeInTheDocument()
     expect(screen.getByText('Cell 1')).toBeInTheDocument()
@@ -48,7 +58,12 @@ describe('EnhancedMarkdownRenderer', () => {
   it('can disable math rendering', () => {
     const content = 'The formula $E = mc^2$ is famous.'
 
-    render(<EnhancedMarkdownRenderer content={content} config={{ enableKaTeX: false }} />)
+    render(
+      <EnhancedMarkdownRenderer
+        content={content}
+        config={{ enableKaTeX: false }}
+      />
+    )
 
     // Should render as plain text when math is disabled
     expect(screen.getByText(/E = mc\^2/)).toBeInTheDocument()

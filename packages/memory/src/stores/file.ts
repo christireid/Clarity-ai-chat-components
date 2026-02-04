@@ -35,7 +35,7 @@ export class FileStore implements VectorStore {
       try {
         const data = await fs.readFile(this.filePath, 'utf-8')
         const parsed: FileStoreData = JSON.parse(data)
-        
+
         // Migrate old format if needed
         if (parsed.memories) {
           for (const memory of parsed.memories) {
@@ -50,7 +50,9 @@ export class FileStore implements VectorStore {
       } catch (error: any) {
         // File doesn't exist or is invalid - start fresh
         if (error.code !== 'ENOENT') {
-          console.warn('Failed to load memory file:', error.message)
+          if (process.env.NODE_ENV === 'development') {
+            console.warn('Failed to load memory file:', error.message)
+          }
         }
       }
 
@@ -90,7 +92,7 @@ export class FileStore implements VectorStore {
     options: SearchOptions
   ): Promise<Array<{ memory: MemoryItem; score: number }>> {
     await this.ensureInitialized()
-    
+
     const results: Array<{ memory: MemoryItem; score: number }> = []
 
     for (const memory of this.memories.values()) {
@@ -129,9 +131,10 @@ export class FileStore implements VectorStore {
         } else {
           const queryWords = new Set(queryLower.split(/\s+/))
           const contentWords = new Set(contentLower.split(/\s+/))
-          const overlap = [...queryWords].filter((w) => contentWords.has(w))
-            .length
-          score = overlap / Math.max(queryWords.size, 1) * 0.5
+          const overlap = [...queryWords].filter((w) =>
+            contentWords.has(w)
+          ).length
+          score = (overlap / Math.max(queryWords.size, 1)) * 0.5
         }
       }
 
@@ -174,6 +177,72 @@ export class FileStore implements VectorStore {
     await this.persist()
     this.memories.clear()
     this.initialized = false
+  }
+
+  /**
+   * Query vectors with filters (delegates to search method)
+   */
+  async query(
+    options: import('../types').VectorStoreQuery
+  ): Promise<import('../types').VectorStoreMatch[]> {
+    await this.ensureInitialized()
+
+    const searchOptions: SearchOptions = {
+      embedding: options.vector,
+      limit: options.topK,
+      minScore: options.minScore,
+      filters: options.filter,
+    }
+
+    const results = await this.search('', searchOptions)
+
+    return results.map(({ memory, score }) => ({
+      id: memory.id,
+      score,
+      values: memory.embedding || [],
+      metadata: memory.metadata,
+    }))
+  }
+
+  /**
+   * Upsert vectors (add or update memories)
+   */
+  async upsert(
+    vectors: import('../types').VectorStoreVector[],
+    _options?: import('../types').VectorStoreUpsertOptions
+  ): Promise<void> {
+    await this.ensureInitialized()
+
+    for (const vector of vectors) {
+      const now = new Date()
+      const memory: MemoryItem = {
+        id: vector.id,
+        content: (vector.metadata?.content as string) || '',
+        type: (vector.metadata?.type as MemoryType) || 'episodic',
+        scope:
+          (vector.metadata?.scope as import('../types').MemoryScope) ||
+          'conversation',
+        embedding: vector.values,
+        metadata: vector.metadata || {},
+        timestamp: now,
+        confidence: (vector.metadata?.confidence as number) || 0.5,
+        priority:
+          (vector.metadata?.priority as import('../types').MemoryPriority) ||
+          'medium',
+        tokens: (vector.metadata?.tokens as number) || 0,
+        accessCount: (vector.metadata?.accessCount as number) || 0,
+        lastAccessed: now,
+        createdAt: now,
+        updatedAt: now,
+      }
+
+      // Check if memory exists for update vs add
+      if (this.memories.has(vector.id)) {
+        await this.update(vector.id, memory)
+      } else {
+        await this.add(memory)
+      }
+    }
   }
 
   // Private helpers
@@ -232,12 +301,16 @@ export class FileStore implements VectorStore {
       try {
         await fs.access(backupPath)
         await fs.rename(backupPath, this.filePath)
-        console.warn('Restored from backup after persist failure')
+        if (process.env.NODE_ENV === 'development') {
+          console.warn('Restored from backup after persist failure')
+        }
       } catch {
         // No backup to restore from
       }
 
-      console.error('Failed to persist memories:', error)
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Failed to persist memories:', error)
+      }
       throw error
     }
   }
@@ -258,5 +331,4 @@ export class FileStore implements VectorStore {
     if (normA === 0 || normB === 0) return 0
     return dotProduct / (Math.sqrt(normA) * Math.sqrt(normB))
   }
-
 }

@@ -5,13 +5,9 @@
  * file uploads, and structured input builders.
  */
 
-export { AdvancedChatInput } from './advanced-chat-input'
-export { FileUpload } from './file-upload'
-export {
-  MentionInput,
-  MentionList,
-  useMentions,
-} from './mention-system'
+export { AdvancedChatInput } from './AdvancedChatInput'
+export { FileUpload } from './FileUpload'
+export { MentionInput, MentionList, useMentions } from './MentionSystem'
 export {
   OutputPreferenceSelector,
   UncontrolledOutputPreferenceSelector,
@@ -20,7 +16,7 @@ export {
   type OutputPreferenceSelectorProps,
   type UncontrolledOutputPreferenceSelectorProps,
   type UncontrolledOutputPreferenceSelectorRef,
-} from './output-preference-selector'
+} from './OutputPreferenceSelector'
 export {
   StructuredInputBuilder,
   useStructuredInput,
@@ -34,4 +30,20 @@ export {
   type SelectOption,
   type TokenBreakdown,
 } from './structured-input-builder'
-export { VoiceInput, InlineVoiceInput } from './voice-input'
+export { VoiceInput, InlineVoiceInput } from './VoiceInput'
+
+// AudioRecorder - Browser-based audio recording with waveform visualization
+export {
+  AudioRecorder,
+  type AudioRecorderProps,
+} from './AudioRecorder'
+
+// PillChatInput - Modern pill-shaped chat input
+export {
+  PillChatInput,
+  usePillChatInput,
+  type PillChatInputProps,
+  type PillChatInputVariant,
+  type UsePillChatInputOptions,
+  type UsePillChatInputReturn,
+} from './PillChatInput'

@@ -122,10 +122,7 @@ export function ComponentPresetExamples() {
       />
 
       {/* Streaming */}
-      <ClarityChatPresets.Streaming
-        api="/api/chat"
-        useWebSocket={false}
-      />
+      <ClarityChatPresets.Streaming api="/api/chat" useWebSocket={false} />
     </div>
   )
 }
@@ -141,9 +138,7 @@ export function BuilderExamples() {
   return (
     <div>
       {/* Basic memory chat */}
-      {ChatBuilder.create('/api/chat')
-        .withMemory('sliding-window')
-        .build()}
+      {ChatBuilder.create('/api/chat').withMemory('sliding-window').build()}
 
       {/* Advanced configuration */}
       {ChatBuilder.create('/api/chat')
@@ -189,17 +184,25 @@ export function FullControlExample() {
       header={{
         show: true,
         title: 'Custom Chat',
-        showMessageCount: true
+        showMessageCount: true,
       }}
       messageActions={{
-        onCopy: (id, content) => console.log('Copied:', content),
-        onFeedback: (id, type) => console.log('Feedback:', type),
+        onCopy: (id, content) => {
+          if (process.env.NODE_ENV === 'development') {
+            console.log('Copied:', content)
+          }
+        },
+        onFeedback: (id, type) => {
+          if (process.env.NODE_ENV === 'development') {
+            console.log('Feedback:', type)
+          }
+        },
       }}
       prompts={{
         starterPrompts: [
           { text: 'Hello!', category: 'greeting' },
-          { text: 'How can I help?', category: 'support' }
-        ]
+          { text: 'How can I help?', category: 'support' },
+        ],
       }}
     />
   )
@@ -229,7 +232,9 @@ export function SetupWizardExamples() {
   return (
     <div>
       {/* Use the generated configurations */}
-      {basicConfig.code && <div dangerouslySetInnerHTML={{ __html: basicConfig.code }} />}
+      {basicConfig.code && (
+        <div dangerouslySetInnerHTML={{ __html: basicConfig.code }} />
+      )}
     </div>
   )
 }
@@ -254,12 +259,7 @@ export function DevelopmentHelpersExample() {
     // ... send logic
   }
 
-  return (
-    <ClarityChat
-      api="/api/chat"
-      onSendMessage={handleSend}
-    />
-  )
+  return <ClarityChat api="/api/chat" onSendMessage={handleSend} />
 }
 
 // ============================================================================
@@ -286,35 +286,44 @@ export const DXExamples = {
  * Quick start guide that runs in development
  */
 export function showDXGuide() {
-  console.log('🚀 Clarity Chat Developer Experience Guide')
-  console.log('=' .repeat(50))
-  console.log('')
-  console.log('🎯 Getting Started (Choose your level):')
-  console.log('')
-  console.log('1. ULTRA-SIMPLE (1 line):')
-  console.log('   chat("/api/chat")')
-  console.log('')
-  console.log('2. PRESETS (2 lines):')
-  console.log('   ChatPresets.Enterprise("/api/chat")')
-  console.log('')
-  console.log('3. BUILDER (fluent API):')
-  console.log('   ChatBuilder.create("/api/chat").withMemory("vector-store").build()')
-  console.log('')
-  console.log('4. FULL CONTROL (hooks + components):')
-  console.log('   const { messages, append } = useClarityChat({ api: "/api/chat" })')
-  console.log('')
-  console.log('🛠️  Development Tools:')
-  console.log('   • QuickSetup.basic("/api/chat") - Interactive setup')
-  console.log('   • showQuickStart("enterprise") - Code templates')
-  console.log('   • devLog.info("debug message") - Development logging')
-  console.log('')
-  console.log('📚 Examples in this file:')
-  Object.keys(DXExamples).forEach(name => {
-    console.log(`   • ${name}`)
-  })
+  if (process.env.NODE_ENV === 'development') {
+    console.log('🚀 Clarity Chat Developer Experience Guide')
+    console.log('='.repeat(50))
+    console.log('')
+    console.log('🎯 Getting Started (Choose your level):')
+    console.log('')
+    console.log('1. ULTRA-SIMPLE (1 line):')
+    console.log('   chat("/api/chat")')
+    console.log('')
+    console.log('2. PRESETS (2 lines):')
+    console.log('   ChatPresets.Enterprise("/api/chat")')
+    console.log('')
+    console.log('3. BUILDER (fluent API):')
+    console.log(
+      '   ChatBuilder.create("/api/chat").withMemory("vector-store").build()'
+    )
+    console.log('')
+    console.log('4. FULL CONTROL (hooks + components):')
+    console.log(
+      '   const { messages, append } = useClarityChat({ api: "/api/chat" })'
+    )
+    console.log('')
+    console.log('🛠️  Development Tools:')
+    console.log('   • QuickSetup.basic("/api/chat") - Interactive setup')
+    console.log('   • showQuickStart("enterprise") - Code templates')
+    console.log('   • devLog.info("debug message") - Development logging')
+    console.log('')
+    console.log('📚 Examples in this file:')
+    Object.keys(DXExamples).forEach((name) => {
+      console.log(`   • ${name}`)
+    })
+  }
 }
 
 // Auto-show guide in development
-if (typeof window !== 'undefined' && process.env['NODE_ENV'] === 'development') {
+if (
+  typeof window !== 'undefined' &&
+  process.env['NODE_ENV'] === 'development'
+) {
   setTimeout(showDXGuide, 1000)
 }

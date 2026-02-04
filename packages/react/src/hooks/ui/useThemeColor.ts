@@ -45,6 +45,9 @@ export function useThemeColor(token: ClarityColorToken): OklchColor | null {
 export function useOklchThemeColors<T extends ClarityColorToken>(
   tokens: T[]
 ): Record<T, OklchColor | null> {
+  // Serialize tokens array to stable string for dependency tracking
+  const tokensKey = tokens.join(',')
+
   return useMemo(() => {
     if (typeof window === 'undefined') {
       return tokens.reduce(
@@ -67,5 +70,6 @@ export function useOklchThemeColors<T extends ClarityColorToken>(
       },
       {} as Record<T, OklchColor | null>
     )
-  }, [tokens.join(',')])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tokensKey]) // Using serialized string to avoid array reference instability
 }

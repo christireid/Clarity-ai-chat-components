@@ -7,53 +7,22 @@
  */
 
 /**
- * Debounce a function
- */
-export function debounce<T extends (...args: unknown[]) => unknown>(
-  fn: T,
-  delay: number
-): (...args: Parameters<T>) => void {
-  let timeoutId: ReturnType<typeof setTimeout> | null = null
-
-  return function debounced(...args: Parameters<T>) {
-    if (timeoutId !== null) {
-      clearTimeout(timeoutId)
-    }
-    timeoutId = setTimeout(() => {
-      fn(...args)
-      timeoutId = null
-    }, delay)
-  }
-}
-
-/**
- * Throttle a function
- */
-export function throttle<T extends (...args: unknown[]) => unknown>(
-  fn: T,
-  limit: number
-): (...args: Parameters<T>) => void {
-  let inThrottle = false
-
-  return function throttled(...args: Parameters<T>) {
-    if (!inThrottle) {
-      fn(...args)
-      inThrottle = true
-      setTimeout(() => {
-        inThrottle = false
-      }, limit)
-    }
-  }
-}
-
-/**
  * Generate a unique ID
+ * Re-exported from @clarity-chat/utils for backward compatibility
  */
-export function generateId(prefix = ''): string {
-  const random = Math.random().toString(36).substring(2, 11)
-  const timestamp = Date.now().toString(36)
-  return prefix ? `${prefix}_${timestamp}_${random}` : `${timestamp}_${random}`
-}
+export { generateId } from '@clarity-chat/utils'
+
+/**
+ * Sleep for a given number of milliseconds
+ * Re-exported from @clarity-chat/utils for backward compatibility
+ */
+export { sleep } from '@clarity-chat/utils/async'
+
+/**
+ * Truncate a string to a maximum length with ellipsis
+ * Re-exported from @clarity-chat/utils for backward compatibility
+ */
+export { truncate } from '@clarity-chat/utils/format'
 
 /**
  * Deep clone an object
@@ -121,85 +90,19 @@ export function deepMerge<T extends Record<string, unknown>>(
 
 /**
  * Clamp a number between min and max
+ * @deprecated Import from @clarity-chat/utils instead
  */
-export function clamp(value: number, min: number, max: number): number {
-  return Math.min(Math.max(value, min), max)
-}
+export { clamp } from '@clarity-chat/utils'
 
-/**
- * Sleep for a specified duration
- */
-export function sleep(ms: number): Promise<void> {
-  return new Promise((resolve) => setTimeout(resolve, ms))
-}
-
-/**
- * Retry an async operation with exponential backoff
- */
-export async function retry<T>(
-  fn: () => Promise<T>,
-  options: {
-    maxAttempts?: number
-    baseDelay?: number
-    maxDelay?: number
-    shouldRetry?: (error: unknown) => boolean
-  } = {}
-): Promise<T> {
-  const {
-    maxAttempts = 3,
-    baseDelay = 1000,
-    maxDelay = 30000,
-    shouldRetry = () => true,
-  } = options
-
-  let lastError: unknown
-
-  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
-    try {
-      return await fn()
-    } catch (error) {
-      lastError = error
-
-      if (attempt === maxAttempts || !shouldRetry(error)) {
-        throw error
-      }
-
-      const delay = Math.min(baseDelay * Math.pow(2, attempt - 1), maxDelay)
-      await sleep(delay)
-    }
-  }
-
-  throw lastError
-}
+// NOTE: retry() has been removed from this file.
+// Import retry from @clarity-chat/utils/async or use retryWithBackoff from @clarity-chat/react/utils/resilience/retry-with-backoff
 
 /**
  * Format bytes to human-readable string
+ * @deprecated Import from @clarity-chat/utils/format instead
  */
-export function formatBytes(bytes: number, decimals: number = 2): string {
-  if (bytes === 0) return '0 Bytes'
-  const k = 1024
-  const dm = decimals < 0 ? 0 : decimals
-  const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB']
-  const i = Math.floor(Math.log(bytes) / Math.log(k))
-  return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i]
-}
-
-/**
- * Memoize a function with a single argument
- */
-export function memoize<T, R>(fn: (arg: T) => R): (arg: T) => R {
-  const cache = new Map<T, R>()
-
-  return (arg: T): R => {
-    if (cache.has(arg)) {
-      return cache.get(arg)!
-    }
-
-    const result = fn(arg)
-    cache.set(arg, result)
-    return result
-  }
-}
+import { formatBytes as formatBytesUtil } from '@clarity-chat/utils/format'
+export { formatBytes } from '@clarity-chat/utils/format'
 
 /**
  * Create a cancellable promise
@@ -235,47 +138,26 @@ export function cancellable<T>(promise: Promise<T>): {
 
 /**
  * Check if code is running in a browser environment
+ * @deprecated Import from @clarity-chat/utils/env instead
  */
-export const isBrowser =
-  typeof window !== 'undefined' && typeof window.document !== 'undefined'
+export { isBrowser } from '@clarity-chat/utils/env'
 
 /**
  * Check if code is running in a server environment
+ * @deprecated Import from @clarity-chat/utils/env instead
  */
-export const isServer = !isBrowser
+export { isServer } from '@clarity-chat/utils/env'
 
 /**
  * Format a date/timestamp as relative time (e.g., "2h ago", "Just now")
+ * Re-exported from @clarity-chat/utils/format for backward compatibility
  */
-export function formatRelativeTime(date: Date | number | undefined): string {
-  if (!date) return ''
-
-  const timestamp = date instanceof Date ? date.getTime() : date
-  const now = Date.now()
-  const diff = now - timestamp
-  const seconds = Math.floor(diff / 1000)
-  const minutes = Math.floor(seconds / 60)
-  const hours = Math.floor(minutes / 60)
-  const days = Math.floor(hours / 24)
-
-  if (days > 0) return `${days}d ago`
-  if (hours > 0) return `${hours}h ago`
-  if (minutes > 0) return `${minutes}m ago`
-  return 'Just now'
-}
+export { formatRelativeTime } from '@clarity-chat/utils/format'
 
 /**
  * Alias for formatBytes - formats file size in human-readable format
  */
-export const formatFileSize = formatBytes
-
-/**
- * Truncate a string to a maximum length with ellipsis
- */
-export function truncate(str: string, maxLength: number): string {
-  if (str.length <= maxLength) return str
-  return str.slice(0, maxLength - 3) + '...'
-}
+export const formatFileSize = formatBytesUtil
 
 /**
  * Calculate percentage

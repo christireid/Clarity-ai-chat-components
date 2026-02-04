@@ -108,6 +108,7 @@ export function ShareButton({
               initial={{ opacity: 0, y: 10, scale: 0.9 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: 10, scale: 0.9 }}
+              viewport={{ once: true }}
               className="absolute bottom-16 right-0 bg-bg-primary border border-border rounded-xl shadow-xl p-2 min-w-[180px]"
             >
               <div className="text-xs font-medium text-text-tertiary px-3 py-2">
@@ -189,6 +190,7 @@ export function ShareButton({
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
+              viewport={{ once: true }}
               onClick={() => setIsOpen(false)}
               className="fixed inset-0 z-40"
             />
@@ -198,6 +200,7 @@ export function ShareButton({
               initial={{ opacity: 0, y: -10, scale: 0.95 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: -10, scale: 0.95 }}
+              viewport={{ once: true }}
               className="absolute top-full left-0 mt-2 z-50 bg-bg-primary border border-border rounded-xl shadow-xl p-2 min-w-[180px]"
             >
               <div className="text-xs font-medium text-text-tertiary px-3 py-2">

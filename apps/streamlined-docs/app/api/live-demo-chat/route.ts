@@ -6,6 +6,11 @@
  *
  * Demonstrates Next.js 16 features:
  * - after() API for post-response analytics logging
+ *
+ * SECURITY:
+ * - DOMPurify sanitization for all user inputs
+ * - Redis-based rate limiting (10 req/min)
+ * - Input validation and injection detection
  */
 
 import { NextRequest } from 'next/server'
@@ -21,6 +26,18 @@ import {
 } from '@/lib/ai/streaming'
 import { trackChatInteraction } from '@/lib/ai/chat-analytics'
 import { getLogger } from '@/lib/logging'
+import {
+  sanitizeChatMessage,
+  validateInputLength,
+  detectInjectionPatterns,
+} from '@/lib/security/sanitize'
+import {
+  checkLiveDemoRateLimit,
+  getClientIdentifier,
+  createRateLimitHeaders,
+} from '@/lib/security/rate-limit'
+import { validateRequestBody, validationErrorResponse } from '@/lib/validation'
+import { liveDemoChatRequestSchema } from './schema'
 
 const logger = getLogger('live-demo-chat')
 
@@ -57,12 +74,7 @@ Clarity Chat is a comprehensive React component library with:
 
 Remember: You're the friendly face of Clarity Chat, helping developers build production-ready chat UIs!`
 
-interface RequestBody {
-  message: string
-}
-
-// Maximum message length (4KB is reasonable for chat)
-const MAX_MESSAGE_LENGTH = 4096
+// Interfaces moved to schema.ts for validation
 
 /**
  * Create a plain text streaming response from StreamChunk generator
@@ -82,7 +94,10 @@ function createPlainTextStream(
         }
         controller.close()
       } catch (error) {
-        logger.error('Streaming error:', error)
+        logger.error('Streaming error', {
+          errorType: error?.constructor?.name || 'Unknown',
+          timestamp: new Date().toISOString(),
+        })
         controller.error(error)
       }
     },
@@ -93,49 +108,71 @@ function createPlainTextStream(
  * POST /api/live-demo-chat
  */
 export async function POST(request: NextRequest) {
-  let body: RequestBody
-
   try {
-    body = (await request.json()) as RequestBody
-  } catch {
-    return Response.json(
-      { error: 'Invalid JSON in request body' },
-      { status: 400 }
+    // VALIDATION: Validate request body with Zod schema
+    const validation = await validateRequestBody(
+      request,
+      liveDemoChatRequestSchema
     )
-  }
 
-  try {
-    // Validate message exists and has content
-    const message = typeof body.message === 'string' ? body.message.trim() : ''
-
-    if (!message) {
-      return Response.json({ error: 'Message is required' }, { status: 400 })
+    if (!validation.success) {
+      return validationErrorResponse(validation.error)
     }
 
-    if (message.length > MAX_MESSAGE_LENGTH) {
+    const { message } = validation.data
+
+    // SECURITY: Detect injection patterns (additional layer after validation)
+    const injectionCheck = detectInjectionPatterns(message)
+    if (injectionCheck.detected) {
+      logger.warn('Malicious input detected', {
+        patterns: injectionCheck.patterns,
+        timestamp: new Date().toISOString(),
+      })
       return Response.json(
         {
-          error: `Message exceeds maximum length of ${MAX_MESSAGE_LENGTH} characters`,
+          error:
+            'Invalid input detected. Please avoid special characters and commands.',
         },
         { status: 400 }
       )
     }
 
-    // Search documentation for relevant context
-    const searchResults = searchDocumentation(message, {
+    // SECURITY: Sanitize message (additional layer after validation)
+    const sanitizedMessage = sanitizeChatMessage(message)
+
+    // SECURITY: Check rate limit
+    const identifier = getClientIdentifier(request)
+    const rateLimitResult = await checkLiveDemoRateLimit(identifier)
+
+    if (!rateLimitResult.allowed) {
+      return Response.json(
+        {
+          error: 'Rate limit exceeded. Please try again later.',
+          retryAfter: rateLimitResult.retryAfter,
+        },
+        {
+          status: 429,
+          headers: createRateLimitHeaders(rateLimitResult),
+        }
+      )
+    }
+
+    // Search documentation for relevant context (use sanitized message)
+    const searchResults = searchDocumentation(sanitizedMessage, {
       topK: 3,
       minScore: 0.5,
     })
 
     const { context: docsContext } = formatSearchResultsForRAG(searchResults)
 
-    // Build message with context
+    // Build message with context (use sanitized message)
     const messageWithContext = docsContext
-      ? `[Documentation Context]\n${docsContext}\n\n[User Question]\n${message}`
-      : message
+      ? `[Documentation Context]\n${docsContext}\n\n[User Question]\n${sanitizedMessage}`
+      : sanitizedMessage
 
     // Choose streaming function based on API key availability
-    const hasAnthropicKey = !!process.env.ANTHROPIC_API_KEY &&
+    const hasAnthropicKey =
+      !!process.env.ANTHROPIC_API_KEY &&
       process.env.ANTHROPIC_API_KEY.startsWith('sk-ant-')
 
     let generator: AsyncGenerator<StreamChunk>
@@ -145,7 +182,7 @@ export async function POST(request: NextRequest) {
       generator = streamFromClaude(
         [
           { role: 'system', content: SYSTEM_PROMPT },
-          { role: 'user', content: messageWithContext }
+          { role: 'user', content: messageWithContext },
         ],
         { model: 'claude-sonnet-4-20250514' }
       )
@@ -162,7 +199,7 @@ export async function POST(request: NextRequest) {
     after(() => {
       // Track chat interaction using the analytics service
       trackChatInteraction({
-        messageLength: message.length,
+        messageLength: sanitizedMessage.length,
         hasDocsContext: !!docsContext,
         searchResultsCount: searchResults.length,
         provider: hasAnthropicKey ? 'claude' : 'demo',
@@ -174,10 +211,14 @@ export async function POST(request: NextRequest) {
         'Content-Type': 'text/plain; charset=utf-8',
         'Cache-Control': 'no-cache',
         Connection: 'keep-alive',
+        ...createRateLimitHeaders(rateLimitResult),
       },
     })
   } catch (error) {
-    console.error('API error:', error)
+    console.error('API error', {
+      errorType: error?.constructor?.name || 'Unknown',
+      timestamp: new Date().toISOString(),
+    })
     return Response.json({ error: 'Internal server error' }, { status: 500 })
   }
 }
@@ -186,7 +227,8 @@ export async function POST(request: NextRequest) {
  * GET /api/live-demo-chat - Health check
  */
 export async function GET() {
-  const hasAnthropicKey = !!process.env.ANTHROPIC_API_KEY &&
+  const hasAnthropicKey =
+    !!process.env.ANTHROPIC_API_KEY &&
     process.env.ANTHROPIC_API_KEY.startsWith('sk-ant-')
   return Response.json({
     status: 'ok',

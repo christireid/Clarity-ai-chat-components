@@ -21,6 +21,23 @@ const commonConfig = {
     'highlight.js/styles/github-dark.css',
     'katex/dist/katex.min.css',
     'dompurify',
+    // Phase 1 externalizations (optional features - ~410KB savings)
+    'shiki',
+    'lucide-react',
+    'jszip',
+    // Phase 2 externalizations (required features - ~175KB savings)
+    'react-markdown',
+    'remark-gfm',
+    'rehype-highlight',
+    'prismjs',
+    'zod',
+    // Clarity components externals (optional features)
+    'date-fns',
+    'recharts',
+    'class-variance-authority',
+    'speech-recognition',
+    'react-window',
+    'react-virtualized-auto-sizer',
   ],
   sourcemap: false,
   minify: true,
@@ -35,7 +52,7 @@ const commonConfig = {
   },
   outExtension({ format }: { format: string }) {
     return {
-      js: `.${format === 'cjs' ? 'js' : 'mjs'}`,
+      js: `.${format === 'cjs' ? 'cjs' : 'js'}`,
     }
   },
 }
@@ -43,16 +60,12 @@ const commonConfig = {
 export default defineConfig([
   // Main entry
   {
-    entry: ['src/index.ts', 'src/styles/index.css'],
+    entry: { index: 'src/index.ts' },
     ...commonConfig,
     clean: true,
-    loader: {
-      '.css': 'copy',
-    },
     outExtension({ format }) {
       return {
-        js: `.${format === 'cjs' ? 'js' : 'mjs'}`,
-        css: '.css',
+        js: `.${format === 'cjs' ? 'cjs' : 'js'}`,
       }
     },
   },

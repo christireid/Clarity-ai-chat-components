@@ -12,6 +12,7 @@
  */
 
 import { useEffect, useState } from 'react'
+import { useReducedMotion } from '@clarity-chat/primitives'
 
 // ============================================================================
 // ID Generation
@@ -248,28 +249,8 @@ export function generateAccessibleColors(baseColor: string): {
 // Reduced Motion
 // ============================================================================
 
-/**
- * Hook to detect if user prefers reduced motion
- */
-export function useReducedMotion(): boolean {
-  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false)
-
-  useEffect(() => {
-    if (typeof window === 'undefined') return
-
-    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
-    setPrefersReducedMotion(mediaQuery.matches)
-
-    const handleChange = (event: MediaQueryListEvent) => {
-      setPrefersReducedMotion(event.matches)
-    }
-
-    mediaQuery.addEventListener('change', handleChange)
-    return () => mediaQuery.removeEventListener('change', handleChange)
-  }, [])
-
-  return prefersReducedMotion
-}
+// Re-export useReducedMotion from primitives
+export { useReducedMotion } from '@clarity-chat/primitives'
 
 /**
  * Get accessible animation duration based on user preferences

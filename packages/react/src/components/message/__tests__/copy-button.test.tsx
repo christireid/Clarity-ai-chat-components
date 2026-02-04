@@ -1,23 +1,33 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { CopyButton } from '../copy-button'
+import { CopyButton } from '../CopyButton'
 
 // Mock framer-motion
 vi.mock('framer-motion', () => ({
   motion: {
-    div: ({ children, className, ...props }: React.HTMLAttributes<HTMLDivElement>) => (
+    div: ({
+      children,
+      className,
+      ...props
+    }: React.HTMLAttributes<HTMLDivElement>) => (
       <div className={className} {...props}>
         {children}
       </div>
     ),
-    span: ({ children, className, ...props }: React.HTMLAttributes<HTMLSpanElement>) => (
+    span: ({
+      children,
+      className,
+      ...props
+    }: React.HTMLAttributes<HTMLSpanElement>) => (
       <span className={className} {...props}>
         {children}
       </span>
     ),
   },
-  AnimatePresence: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+  AnimatePresence: ({ children }: { children: React.ReactNode }) => (
+    <>{children}</>
+  ),
 }))
 
 // Mock useReducedMotion hook
@@ -26,7 +36,12 @@ vi.mock('@clarity-chat/primitives', async () => {
   return {
     ...actual,
     useReducedMotion: vi.fn(() => false),
-    Button: ({ children, onClick, className, ...props }: React.ButtonHTMLAttributes<HTMLButtonElement>) => (
+    Button: ({
+      children,
+      onClick,
+      className,
+      ...props
+    }: React.ButtonHTMLAttributes<HTMLButtonElement>) => (
       <button onClick={onClick} className={className} {...props}>
         {children}
       </button>
@@ -55,7 +70,13 @@ const mockCopy = vi.fn()
 const mockCopied = { current: false }
 
 vi.mock('../../../hooks/ui/use-clipboard', () => ({
-  useClipboard: ({ onSuccess, onError }: { onSuccess?: () => void; onError?: (error: Error) => void }) => ({
+  useClipboard: ({
+    onSuccess,
+    onError,
+  }: {
+    onSuccess?: () => void
+    onError?: (error: Error) => void
+  }) => ({
     copy: async (text: string) => {
       try {
         await mockCopy(text)

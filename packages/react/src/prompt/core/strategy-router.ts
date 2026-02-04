@@ -7,10 +7,10 @@
  * - Model capabilities
  */
 
+import { MODEL_PROFILES, getModelProfileOrDefault } from './model-profiles'
 import type { ModelProfile } from './model-profiles'
-import { getModelProfileOrDefault, MODEL_PROFILES } from './model-profiles'
 import type { OptimizationStrategy } from './optimizer'
-import type { CompressionStrategy } from './compression-chain'
+import type { CompressionStrategy } from './types/compression'
 
 /**
  * Strategy selection result
@@ -196,8 +196,7 @@ export function shouldSwitchModelSync(
   if (alternatives.length > 0) {
     const recommended = alternatives[0]
     const savings =
-      (targetTokens / 1000) *
-      (currentProfile.costPer1K - recommended.costPer1K)
+      (targetTokens / 1000) * (currentProfile.costPer1K - recommended.costPer1K)
 
     // Only recommend if savings are significant
     if (savings > 0.001) {
@@ -297,8 +296,16 @@ export function getRoutingRecommendation(
     // Balanced - prefer current model family if viable
     sortedModels = [...viableModels].sort((a, b) => {
       // Prefer same family
-      if (a.family === currentProfile.family && b.family !== currentProfile.family) return -1
-      if (b.family === currentProfile.family && a.family !== currentProfile.family) return 1
+      if (
+        a.family === currentProfile.family &&
+        b.family !== currentProfile.family
+      )
+        return -1
+      if (
+        b.family === currentProfile.family &&
+        a.family !== currentProfile.family
+      )
+        return 1
       // Then by cost
       return a.costPer1K - b.costPer1K
     })

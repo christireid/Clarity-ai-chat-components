@@ -29,30 +29,25 @@
 import {
   ClarityChat,
   type ClarityChatProps,
-} from './components/chat/clarity-chat'
-import { ChatWindow, type ChatWindowProps } from './components/chat/chat-window'
-import { ChatInput, type ChatInputProps } from './components/chat/chat-input'
+} from './components/chat/ClarityChat'
+import { ChatWindow, type ChatWindowProps } from './components/chat/ChatWindow'
+import { ChatInput, type ChatInputProps } from './components/chat/ChatInput'
 import MessageList, {
   type MessageListProps,
-} from './components/chat/virtualized-message-list'
+} from './components/chat/VirtualizedMessageList'
 import { Message, type MessageProps } from './components/message/message'
-import { ThinkingIndicator } from './components/message/thinking-indicator'
+import { ThinkingIndicator } from './components/message/ThinkingIndicator'
 import {
   PromptSuggestions,
   type PromptSuggestion,
-} from './components/prompt/prompt-suggestions'
+} from './components/prompt/PromptSuggestions'
 
-// Import hooks - use alias to avoid duplicate identifier
-import {
-  useClarityChat as useSimpleChat,
-  type UseChatOptions,
-  type UseChatReturn,
-} from './hooks/chat/use-chat-unified'
+// Import hooks
 import {
   useClarityChat,
   type UseClarityChatOptions,
   type UseClarityChatReturn,
-} from './hooks/chat/use-clarity-chat'
+} from './hooks/use-clarity-chat'
 import {
   useChatHandlers,
   type UseChatHandlersOptions,
@@ -76,9 +71,7 @@ import { convertCoreMessagesToMessages } from './utils/message/message-conversio
  * Namespaced hooks for chat functionality
  */
 export const hooks = {
-  /** Simplified chat hook with sensible defaults */
-  useChat: useSimpleChat,
-  /** Full-featured chat hook with all options */
+  /** Primary chat hook with all options - replaces deprecated useChat */
   useClarityChat,
   /** Pre-configured handlers for ChatWindow */
   useChatHandlers,
@@ -104,9 +97,7 @@ export type {
   MessageListProps,
   MessageProps,
   PromptSuggestion,
-  // Hook options and returns
-  UseChatOptions,
-  UseChatReturn,
+  // Hook options and returns (UseChatOptions/UseChatReturn removed in v2.0)
   UseClarityChatOptions,
   UseClarityChatReturn,
   UseChatHandlersOptions,

@@ -111,17 +111,21 @@ export function useIndexedDB<T>(
     initDB()
 
     return () => {
-      if (dbRef.current) {
-        dbRef.current.close()
+      // Capture ref value for cleanup to prevent stale closure
+      const db = dbRef.current
+      if (db) {
+        db.close()
         dbRef.current = null
       }
     }
-  }, [isAvailable, config, key])
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- config is complex object, intentionally omitted to prevent unnecessary reconnections
+  }, [isAvailable, key])
 
   // Load data on mount
   React.useEffect(() => {
     if (!isAvailable || !key || !dbRef.current) return
     load()
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- load function stable, only run on mount when key/availability changes
   }, [isAvailable, key])
 
   const openDatabase = (config: IndexedDBConfig): Promise<IDBDatabase> => {
@@ -462,10 +466,13 @@ export function useConversationStorage(
     }
 
     return () => {
-      if (dbRef.current) {
-        dbRef.current.close()
+      // Capture ref value for cleanup to prevent stale closure
+      const db = dbRef.current
+      if (db) {
+        db.close()
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- dbConfig stable via useMemo, cleanupOldConversations stable via useCallback
   }, [isAvailable, autoCleanup, maxAgeDays])
 
   const saveConversation = React.useCallback(
@@ -716,7 +723,7 @@ export function useConversationStorage(
         conversations.map((conv) => deleteConversation(conv.id))
       )
     },
-    []
+    [deleteConversation]
   )
 
   return {

@@ -1,0 +1,779 @@
+---
+title: AudioRecorder
+description: Browser-based audio recording component with waveform visualization, noise cancellation, and professional-grade audio processing
+category: Components
+subcategory: Input
+---
+
+import { PropsTable } from '@/components/Docs/PropsTable'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+
+# AudioRecorder
+
+Browser-based audio recording component with waveform visualization, noise cancellation, and format conversion. Built on the Web Audio API with 95% browser compatibility and professional-grade audio processing.
+
+## Features
+
+- **Real-time Waveform Visualization**: Live audio amplitude display with 60-bar animated waveform
+- **Advanced Audio Processing**: Noise cancellation, echo cancellation, and auto-gain control
+- **Multiple Format Support**: WebM, MP3, WAV, OGG, and FLAC (browser-dependent)
+- **Voice Activity Detection**: Automatic pause/resume during silence to save space
+- **Accessible UI**: Full ARIA support with keyboard navigation and screen reader announcements
+- **Pause/Resume**: Control recording flow with optional pause functionality
+- **Duration Controls**: Min/max recording duration with visual countdown timer
+- **Audio Level Meter**: Real-time input level visualization with color gradient
+
+## Installation
+
+```bash
+npm install @clarity-chat/react
+```
+
+## Basic Usage
+
+<Tabs defaultValue="basic">
+  <TabsList>
+    <TabsTrigger value="basic">Basic</TabsTrigger>
+    <TabsTrigger value="advanced">Advanced</TabsTrigger>
+    <TabsTrigger value="custom">Custom UI</TabsTrigger>
+  </TabsList>
+
+  <TabsContent value="basic">
+```tsx
+import { AudioRecorder } from '@clarity-chat/react'
+
+function MyComponent() {
+  const handleStop = (audioBlob: Blob, audioUrl: string) => {
+    console.log('Recording complete:', audioBlob.size, 'bytes')
+    // Upload audioBlob to server or use audioUrl to play
+  }
+
+  return (
+    <AudioRecorder
+      maxDuration={60}
+      onStop={handleStop}
+      onError={(error) => console.error('Recording error:', error)}
+    />
+  )
+}
+```
+  </TabsContent>
+
+  <TabsContent value="advanced">
+```tsx
+import { AudioRecorder } from '@clarity-chat/react'
+import { useState } from 'react'
+
+function AdvancedRecorder() {
+  const [audioUrl, setAudioUrl] = useState<string | null>(null)
+  const [isProcessing, setIsProcessing] = useState(false)
+
+  const handleStop = async (audioBlob: Blob, url: string) => {
+    setIsProcessing(true)
+    setAudioUrl(url)
+
+    // Upload to server
+    const formData = new FormData()
+    formData.append('audio', audioBlob, 'recording.webm')
+
+    try {
+      const response = await fetch('/api/upload-audio', {
+        method: 'POST',
+        body: formData,
+      })
+      const data = await response.json()
+      console.log('Uploaded:', data.url)
+    } catch (error) {
+      console.error('Upload failed:', error)
+    } finally {
+      setIsProcessing(false)
+    }
+  }
+
+  const handleAmplitudeChange = (amplitude: number) => {
+    // Use amplitude for custom visualizations
+    if (amplitude > 0.8) {
+      console.log('Loud audio detected!')
+    }
+  }
+
+  return (
+    <div>
+      <AudioRecorder
+        maxDuration={300}
+        minDuration={3}
+        outputFormat="webm"
+        bitrate={192000}
+        channels={2}
+        enableNoiseCancellation={true}
+        enableEchoCancellation={true}
+        enableAutoGainControl={true}
+        voiceActivityDetection={true}
+        silenceThreshold={0.02}
+        showWaveform={true}
+        showDuration={true}
+        showAmplitudeMeter={true}
+        onStop={handleStop}
+        onAmplitudeChange={handleAmplitudeChange}
+        onDurationChange={(duration) => console.log('Duration:', duration)}
+        theme="dark"
+      />
+
+      {isProcessing && <p>Processing audio...</p>}
+
+      {audioUrl && (
+        <audio controls src={audioUrl} className="mt-4 w-full" />
+      )}
+    </div>
+  )
+}
+```
+  </TabsContent>
+
+  <TabsContent value="custom">
+```tsx
+import { AudioRecorder } from '@clarity-chat/react'
+import { useState } from 'react'
+
+function CustomRecorder() {
+  const [amplitude, setAmplitude] = useState(0)
+  const [duration, setDuration] = useState(0)
+
+  return (
+    <div className="space-y-4">
+      {/* Use component without built-in controls */}
+      <AudioRecorder
+        showControls={false}
+        showWaveform={false}
+        showDuration={false}
+        showAmplitudeMeter={false}
+        onAmplitudeChange={setAmplitude}
+        onDurationChange={setDuration}
+        onStop={(blob, url) => {
+          console.log('Recording saved:', url)
+        }}
+      />
+
+      {/* Custom UI */}
+      <div className="custom-recorder">
+        <div className="custom-waveform">
+          <div
+            className="amplitude-bar"
+            style={{ height: `${amplitude * 100}%` }}
+          />
+        </div>
+
+        <div className="custom-timer">
+          {Math.floor(duration / 60)}:{(duration % 60).toString().padStart(2, '0')}
+        </div>
+
+        {/* Add your own custom controls here */}
+      </div>
+    </div>
+  )
+}
+```
+  </TabsContent>
+</Tabs>
+
+## Props
+
+<PropsTable
+  props={{
+    // Recording Settings
+    maxDuration: {
+      type: 'number',
+      default: '300',
+      description: 'Maximum recording duration in seconds. Recording automatically stops when reached.',
+    },
+    minDuration: {
+      type: 'number',
+      default: '1',
+      description: 'Minimum recording duration in seconds before stop is allowed. Stop button is disabled until reached.',
+    },
+    autoStart: {
+      type: 'boolean',
+      default: 'false',
+      description: 'Automatically start recording when component mounts (requires user gesture for browser permissions).',
+    },
+    pausable: {
+      type: 'boolean',
+      default: 'true',
+      description: 'Enable pause/resume functionality during recording. Shows pause/resume buttons in controls.',
+    },
+    countdownDuration: {
+      type: 'number',
+      default: '0',
+      description: 'Show countdown timer (in seconds) before recording starts. 0 disables countdown.',
+    },
+
+    // Format Options
+    outputFormat: {
+      type: "'mp3' | 'wav' | 'ogg' | 'webm' | 'flac'",
+      default: "'webm'",
+      description: 'Desired output format. Actual format depends on browser support. Falls back to webm if unsupported.',
+    },
+    mimeType: {
+      type: 'string',
+      default: 'undefined',
+      description: 'Override MIME type for MediaRecorder. Auto-detected based on outputFormat if not provided.',
+    },
+    bitrate: {
+      type: 'number',
+      default: '128000',
+      description: 'Audio bitrate in bits per second. Higher values = better quality but larger files (128000 = 128kbps).',
+    },
+    sampleRate: {
+      type: 'number',
+      default: 'undefined',
+      description: 'Audio sample rate in Hz. Defaults to device sample rate (typically 48000). Higher = better quality.',
+    },
+    channels: {
+      type: '1 | 2',
+      default: '1',
+      description: 'Number of audio channels: 1 for mono, 2 for stereo. Mono is recommended for voice, stereo for music.',
+    },
+
+    // Audio Processing
+    enableNoiseCancellation: {
+      type: 'boolean',
+      default: 'false',
+      description: 'Enable Web Audio API noise cancellation. Reduces background noise for clearer recordings.',
+    },
+    enableEchoCancellation: {
+      type: 'boolean',
+      default: 'false',
+      description: 'Enable echo cancellation for clearer recordings. Useful in rooms with echo.',
+    },
+    enableAutoGainControl: {
+      type: 'boolean',
+      default: 'false',
+      description: 'Automatically adjust input gain to maintain consistent volume levels.',
+    },
+    noiseSuppression: {
+      type: 'boolean',
+      default: 'false',
+      description: 'Enable noise suppression using MediaStream constraints. Alternative to enableNoiseCancellation.',
+    },
+    voiceActivityDetection: {
+      type: 'boolean',
+      default: 'false',
+      description: 'Automatically pause recording during silence to save space. Resumes when voice is detected.',
+    },
+    silenceThreshold: {
+      type: 'number',
+      default: '0.01',
+      description: 'Amplitude threshold (0-1) for silence detection. Used with voiceActivityDetection. Lower = more sensitive.',
+    },
+
+    // Callbacks
+    onStart: {
+      type: '() => void',
+      default: 'undefined',
+      description: 'Callback fired when recording starts successfully.',
+    },
+    onStop: {
+      type: '(audioBlob: Blob, audioUrl: string) => void',
+      default: 'undefined',
+      description: 'Callback fired when recording stops. Receives the audio Blob and object URL for playback.',
+    },
+    onPause: {
+      type: '() => void',
+      default: 'undefined',
+      description: 'Callback fired when recording is paused.',
+    },
+    onResume: {
+      type: '() => void',
+      default: 'undefined',
+      description: 'Callback fired when recording is resumed after being paused.',
+    },
+    onDataAvailable: {
+      type: '(data: Blob) => void',
+      default: 'undefined',
+      description: 'Callback fired when audio data chunks become available during recording. Use for real-time processing.',
+    },
+    onError: {
+      type: '(error: Error) => void',
+      default: 'undefined',
+      description: 'Callback fired when an error occurs (permission denied, unsupported format, etc.).',
+    },
+    onDurationChange: {
+      type: '(duration: number) => void',
+      default: 'undefined',
+      description: 'Callback fired every second with current recording duration in seconds.',
+    },
+    onAmplitudeChange: {
+      type: '(amplitude: number) => void',
+      default: 'undefined',
+      description: 'Callback fired with current audio amplitude (0-1) for custom waveform visualization.',
+    },
+
+    // UI Configuration
+    showWaveform: {
+      type: 'boolean',
+      default: 'true',
+      description: 'Display real-time waveform visualization with 60-bar animated display.',
+    },
+    showDuration: {
+      type: 'boolean',
+      default: 'true',
+      description: 'Display recording duration timer in MM:SS format.',
+    },
+    showControls: {
+      type: 'boolean',
+      default: 'true',
+      description: 'Show built-in recording controls (start, stop, pause/resume buttons).',
+    },
+    showAmplitudeMeter: {
+      type: 'boolean',
+      default: 'true',
+      description: 'Display audio input level meter with color gradient (green to red).',
+    },
+    className: {
+      type: 'string',
+      default: 'undefined',
+      description: 'Additional CSS classes for the container element.',
+    },
+    theme: {
+      type: "'light' | 'dark' | 'auto'",
+      default: "'auto'",
+      description: 'Color theme for the recorder UI. Auto follows system preference.',
+    },
+    disabled: {
+      type: 'boolean',
+      default: 'false',
+      description: 'Disable recording functionality. Start button will be disabled.',
+    },
+  }}
+/>
+
+## TypeScript Interfaces
+
+```typescript
+interface AudioRecorderProps {
+  // Recording Settings
+  maxDuration?: number
+  minDuration?: number
+  autoStart?: boolean
+  pausable?: boolean
+  countdownDuration?: number
+
+  // Format Options
+  outputFormat?: 'mp3' | 'wav' | 'ogg' | 'webm' | 'flac'
+  mimeType?: string
+  bitrate?: number
+  sampleRate?: number
+  channels?: 1 | 2
+
+  // Audio Processing
+  enableNoiseCancellation?: boolean
+  enableEchoCancellation?: boolean
+  enableAutoGainControl?: boolean
+  noiseSuppression?: boolean
+  voiceActivityDetection?: boolean
+  silenceThreshold?: number
+
+  // Callbacks
+  onStart?: () => void
+  onStop?: (audioBlob: Blob, audioUrl: string) => void
+  onPause?: () => void
+  onResume?: () => void
+  onDataAvailable?: (data: Blob) => void
+  onError?: (error: Error) => void
+  onDurationChange?: (duration: number) => void
+  onAmplitudeChange?: (amplitude: number) => void
+
+  // UI Configuration
+  showWaveform?: boolean
+  showDuration?: boolean
+  showControls?: boolean
+  showAmplitudeMeter?: boolean
+  className?: string
+  theme?: 'light' | 'dark' | 'auto'
+  disabled?: boolean
+}
+```
+
+## Browser Compatibility
+
+The AudioRecorder component uses the **MediaRecorder API** and **Web Audio API**, which have excellent modern browser support:
+
+### Desktop Browsers
+
+| Browser | Version | MediaRecorder | Web Audio | Notes |
+|---------|---------|---------------|-----------|-------|
+| **Chrome** | 49+ | ✅ Full | ✅ Full | Best support, all formats |
+| **Edge** | 79+ | ✅ Full | ✅ Full | Chromium-based, same as Chrome |
+| **Firefox** | 25+ | ✅ Full | ✅ Full | Good support, prefers Opus/WebM |
+| **Safari** | 14.1+ | ✅ Full | ✅ Full | Limited format support |
+| **Opera** | 36+ | ✅ Full | ✅ Full | Chromium-based |
+
+### Mobile Browsers
+
+| Browser | Version | MediaRecorder | Web Audio | Notes |
+|---------|---------|---------------|-----------|-------|
+| **Chrome Android** | 49+ | ✅ Full | ✅ Full | Excellent support |
+| **Safari iOS** | 14.5+ | ✅ Full | ✅ Full | Requires user gesture |
+| **Firefox Android** | 25+ | ✅ Full | ✅ Full | Good support |
+| **Samsung Internet** | 5.0+ | ✅ Full | ✅ Full | Chromium-based |
+
+### Unsupported Browsers
+
+- Internet Explorer (all versions)
+- Safari < 14.1
+- Chrome < 49
+- Firefox < 25
+
+**Overall Browser Support**: ~95% of global users (as of 2025)
+
+### Format Support by Browser
+
+| Format | Chrome | Firefox | Safari | Edge |
+|--------|--------|---------|--------|------|
+| **WebM/Opus** | ✅ | ✅ | ❌ | ✅ |
+| **WAV** | ⚠️ | ⚠️ | ✅ | ⚠️ |
+| **MP3** | ❌ | ❌ | ✅ | ❌ |
+| **OGG/Opus** | ✅ | ✅ | ❌ | ✅ |
+
+✅ = Full support, ⚠️ = Partial/Experimental, ❌ = Not supported
+
+**Note**: The component automatically detects supported formats and falls back to WebM/Opus if the desired format is unavailable.
+
+## MediaRecorder API Details
+
+The AudioRecorder component is built on the **MediaRecorder API**, which provides native audio recording in the browser without plugins.
+
+### How It Works
+
+1. **Request Microphone Access**: Uses `navigator.mediaDevices.getUserMedia()` to request permission
+2. **Create MediaRecorder**: Initializes MediaRecorder with specified MIME type and bitrate
+3. **Capture Audio Chunks**: Records audio data in chunks (Blob objects)
+4. **Process on Stop**: Combines chunks into final Blob when recording stops
+5. **Create Object URL**: Generates blob:// URL for immediate playback
+
+### Audio Processing Pipeline
+
+```
+Microphone Input
+    ↓
+MediaStream (getUserMedia)
+    ↓
+Audio Constraints Applied
+    ├─ Echo Cancellation
+    ├─ Noise Suppression
+    ├─ Auto Gain Control
+    └─ Sample Rate/Channels
+    ↓
+Web Audio Context (optional)
+    ├─ AnalyserNode (waveform)
+    └─ Amplitude Detection
+    ↓
+MediaRecorder
+    ├─ Codec Selection
+    ├─ Bitrate Control
+    └─ Chunk Recording
+    ↓
+Final Audio Blob
+    ├─ Object URL Creation
+    └─ onStop Callback
+```
+
+### MIME Type Detection
+
+The component automatically detects supported MIME types:
+
+```typescript
+// Example detection flow
+const formatMap = {
+  webm: ['audio/webm;codecs=opus', 'audio/webm'],
+  ogg: ['audio/ogg;codecs=opus', 'audio/ogg'],
+  wav: ['audio/wav', 'audio/wave'],
+  mp3: ['audio/mp3', 'audio/mpeg'],
+  flac: ['audio/flac'],
+}
+
+// Check support
+for (const type of formatMap[outputFormat]) {
+  if (MediaRecorder.isTypeSupported(type)) {
+    return type // Use first supported type
+  }
+}
+
+// Fallback to WebM
+return 'audio/webm'
+```
+
+### Audio Constraints
+
+The component applies these MediaStream constraints:
+
+```typescript
+{
+  audio: {
+    channelCount: 1 | 2,           // Mono or stereo
+    sampleRate: 48000,             // Default device rate
+    echoCancellation: boolean,     // Reduce echo
+    noiseSuppression: boolean,     // Reduce background noise
+    autoGainControl: boolean,      // Normalize volume
+  }
+}
+```
+
+### Voice Activity Detection
+
+When enabled, the component monitors audio amplitude to detect speech:
+
+```typescript
+// Simplified VAD logic
+const rms = calculateRMS(audioData)
+const amplitude = rms * 2 // Normalized 0-1
+
+if (amplitude < silenceThreshold) {
+  // Pause during silence
+  mediaRecorder.pause()
+} else if (amplitude >= silenceThreshold && isPaused) {
+  // Resume on voice
+  mediaRecorder.resume()
+}
+```
+
+## Common Use Cases
+
+### Voice Messages
+
+```tsx
+<AudioRecorder
+  maxDuration={60}
+  outputFormat="webm"
+  channels={1}
+  enableNoiseCancellation={true}
+  enableEchoCancellation={true}
+  onStop={(blob, url) => {
+    // Upload voice message
+    uploadVoiceMessage(blob)
+  }}
+/>
+```
+
+### Music Recording
+
+```tsx
+<AudioRecorder
+  maxDuration={600}
+  outputFormat="wav"
+  bitrate={256000}
+  channels={2}
+  sampleRate={96000}
+  enableNoiseCancellation={false}
+  onStop={(blob, url) => {
+    // Save high-quality recording
+    saveMusicRecording(blob)
+  }}
+/>
+```
+
+### Transcription Input
+
+```tsx
+<AudioRecorder
+  maxDuration={120}
+  voiceActivityDetection={true}
+  silenceThreshold={0.02}
+  enableNoiseCancellation={true}
+  onStop={async (blob) => {
+    // Send to transcription API
+    const formData = new FormData()
+    formData.append('audio', blob)
+    const response = await fetch('/api/transcribe', {
+      method: 'POST',
+      body: formData,
+    })
+    const { transcript } = await response.json()
+    console.log('Transcript:', transcript)
+  }}
+/>
+```
+
+### Podcast Recording
+
+```tsx
+<AudioRecorder
+  maxDuration={7200} // 2 hours
+  outputFormat="mp3"
+  bitrate={192000}
+  channels={2}
+  enableAutoGainControl={true}
+  pausable={true}
+  showWaveform={true}
+  showDuration={true}
+  onStop={(blob, url) => {
+    // Save podcast episode
+    savePodcastEpisode(blob)
+  }}
+  onDurationChange={(duration) => {
+    // Update UI every second
+    updateRecordingUI(duration)
+  }}
+/>
+```
+
+## Accessibility
+
+The AudioRecorder component follows WCAG 2.1 AA guidelines:
+
+### Keyboard Navigation
+
+- **Tab**: Focus next control
+- **Shift + Tab**: Focus previous control
+- **Enter/Space**: Activate focused button
+- **Escape**: Stop recording (when focused)
+
+### ARIA Support
+
+- All buttons have descriptive `aria-label` attributes
+- Recording status announced via `aria-live="polite"` region
+- Icons marked with `aria-hidden="true"` to avoid redundancy
+- Disabled states indicated with `aria-disabled`
+
+### Screen Reader Announcements
+
+```tsx
+// Live region for status updates
+<div role="status" aria-live="polite" className="sr-only">
+  {isRecording && !isPaused && `Recording: ${formatDuration(duration)}`}
+  {isPaused && 'Recording paused'}
+  {!isRecording && 'Ready to record'}
+</div>
+```
+
+### Color Contrast
+
+All UI elements meet WCAG AA standards:
+- Text: 4.5:1 contrast ratio minimum
+- Interactive elements: 3:1 contrast ratio minimum
+- Focus indicators: 3:1 contrast ratio minimum
+
+## Error Handling
+
+### Permission Denied
+
+```tsx
+<AudioRecorder
+  onError={(error) => {
+    if (error.message.includes('Permission denied')) {
+      alert('Please allow microphone access in browser settings')
+    }
+  }}
+/>
+```
+
+### Unsupported Format
+
+The component automatically falls back to WebM if the desired format is unsupported:
+
+```tsx
+// Automatic fallback
+<AudioRecorder
+  outputFormat="mp3" // May not be supported
+  // Falls back to webm automatically
+/>
+```
+
+### Max Duration Reached
+
+```tsx
+<AudioRecorder
+  maxDuration={60}
+  onStop={(blob) => {
+    console.log('Recording stopped automatically at max duration')
+  }}
+/>
+```
+
+### Browser Compatibility
+
+```tsx
+// Check support before rendering
+function RecorderWrapper() {
+  const isSupported =
+    'mediaDevices' in navigator &&
+    'MediaRecorder' in window
+
+  if (!isSupported) {
+    return <p>Your browser does not support audio recording</p>
+  }
+
+  return <AudioRecorder onStop={handleStop} />
+}
+```
+
+## Performance Considerations
+
+### Memory Management
+
+The component automatically cleans up resources:
+
+- Stops MediaStream tracks on unmount
+- Closes AudioContext to free resources
+- Cancels animation frames
+- Clears intervals
+
+### Large Recordings
+
+For long recordings (>10 minutes), consider:
+
+```tsx
+<AudioRecorder
+  maxDuration={3600} // 1 hour
+  onDataAvailable={(chunk) => {
+    // Process chunks incrementally
+    uploadChunk(chunk)
+  }}
+  onStop={(blob) => {
+    // Final processing
+    finalizeRecording(blob)
+  }}
+/>
+```
+
+### Virtual Scrolling
+
+When displaying many recordings, use virtual scrolling:
+
+```tsx
+import { useVirtualizer } from '@tanstack/react-virtual'
+
+function RecordingList({ recordings }) {
+  const virtualizer = useVirtualizer({
+    count: recordings.length,
+    getScrollElement: () => parentRef.current,
+    estimateSize: () => 100,
+  })
+
+  return (
+    <div ref={parentRef} className="h-96 overflow-auto">
+      {virtualizer.getVirtualItems().map((item) => (
+        <RecordingItem key={item.key} recording={recordings[item.index]} />
+      ))}
+    </div>
+  )
+}
+```
+
+## Related Components
+
+- [VoiceInput](/reference/components/voice-input) - Voice input with speech-to-text
+- [FileUpload](/reference/components/file-upload) - File upload with drag-and-drop
+- [ChatInput](/reference/components/chat-input) - Multi-modal chat input
+
+## Examples
+
+See the [AudioRecorder Examples](/examples/audio-recorder) page for interactive demos and code examples.
+
+## API Reference
+
+For more details on the MediaRecorder API:
+
+- [MDN: MediaRecorder](https://developer.mozilla.org/en-US/docs/Web/API/MediaRecorder)
+- [MDN: Web Audio API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Audio_API)
+- [Can I Use: MediaRecorder](https://caniuse.com/mediarecorder)

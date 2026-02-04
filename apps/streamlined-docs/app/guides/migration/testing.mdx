@@ -1,0 +1,788 @@
+---
+title: 'Testing Your Migration'
+description: 'Comprehensive testing guide to ensure your v2.0 migration is successful'
+publishedAt: '2026-01-28'
+status: 'published'
+---
+
+# Testing Your Migration
+
+<Callout type="warning">
+  **Critical:** Thorough testing is essential before deploying to production. This guide covers automated tests, manual QA, and performance validation.
+</Callout>
+
+## Overview
+
+After migrating to v2.0, follow this testing strategy to ensure everything works correctly:
+
+1. **Automated Tests** - Unit, integration, and E2E tests
+2. **Manual QA** - Feature validation and user flows
+3. **Performance Testing** - Bundle size and runtime metrics
+4. **Accessibility Testing** - WCAG compliance
+5. **Cross-Browser Testing** - Compatibility verification
+
+---
+
+## Automated Test Suite
+
+### Pre-Test Setup
+
+Clear all caches before running tests:
+
+```bash
+# Clear build caches
+rm -rf node_modules/.cache
+rm -rf .next/cache
+rm -rf dist/
+
+# Clear test caches
+rm -rf coverage/
+rm -rf .vitest/
+
+# Reinstall dependencies
+npm install
+```
+
+### TypeScript Validation
+
+**Why:** Ensures type safety and catches compile-time errors.
+
+```bash
+npm run typecheck
+```
+
+**Expected output:**
+```
+✓ No TypeScript errors found
+```
+
+**Common issues and fixes:**
+
+```typescript
+// Issue: Property 'append' does not exist
+// Fix: Update hook import
+import { useClarityChat } from '@clarity-chat/react' // ✓ Correct
+import { useChat } from '@clarity-chat/react' // ✗ Old
+
+// Issue: Cannot find module 'lucide-react'
+// Fix: Install peer dependency
+npm install lucide-react@^0.500.0
+```
+
+---
+
+### Unit Tests
+
+**Run all unit tests:**
+
+```bash
+npm test
+```
+
+**Run specific test suites:**
+
+```bash
+# Test hooks
+npm test -- hooks
+
+# Test components
+npm test -- components
+
+# Test utilities
+npm test -- utils
+```
+
+**Create migration-specific tests:**
+
+```typescript
+// tests/migration.test.ts
+import { describe, it, expect } from 'vitest'
+import { useClarityChat } from '@clarity-chat/react'
+import { render } from '@testing-library/react'
+import { ChatWindow } from '@clarity-chat/react'
+
+describe('v2.0 Migration', () => {
+  it('useClarityChat hook works', () => {
+    const { result } = renderHook(() =>
+      useClarityChat({ api: '/api/chat' })
+    )
+
+    expect(result.current).toHaveProperty('messages')
+    expect(result.current).toHaveProperty('append')
+    expect(result.current).toHaveProperty('isLoading')
+  })
+
+  it('ChatWindow renders with new props', () => {
+    const { getByRole } = render(
+      <ChatWindow
+        messages={[]}
+        onSendMessage={() => {}}
+        onMessageCopy={() => {}}
+      />
+    )
+
+    expect(getByRole('region', { name: /chat/i })).toBeInTheDocument()
+  })
+
+  it('peer dependencies are available', () => {
+    // Verify framer-motion
+    expect(() => require('framer-motion')).not.toThrow()
+
+    // Verify lucide-react
+    expect(() => require('lucide-react')).not.toThrow()
+
+    // Verify zod
+    expect(() => require('zod')).not.toThrow()
+  })
+})
+```
+
+**Run with coverage:**
+
+```bash
+npm run test:coverage
+```
+
+**Expected coverage (minimum):**
+- Statements: 85%+
+- Branches: 80%+
+- Functions: 85%+
+- Lines: 85%+
+
+---
+
+### Integration Tests
+
+**Test critical user flows:**
+
+```typescript
+// tests/integration/chat-flow.test.tsx
+import { describe, it, expect } from 'vitest'
+import { render, screen, waitFor } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
+import { ClarityChatApp } from '@clarity-chat/react'
+
+describe('Chat Flow Integration', () => {
+  it('complete chat interaction works', async () => {
+    const user = userEvent.setup()
+
+    render(<ClarityChatApp api="/api/chat" />)
+
+    // Type message
+    const input = screen.getByRole('textbox', { name: /message/i })
+    await user.type(input, 'Hello, assistant!')
+
+    // Send message
+    const sendButton = screen.getByRole('button', { name: /send/i })
+    await user.click(sendButton)
+
+    // Wait for response
+    await waitFor(() => {
+      expect(screen.getByText(/Hello, assistant!/i)).toBeInTheDocument()
+    })
+
+    // Verify message actions
+    const copyButton = screen.getByRole('button', { name: /copy/i })
+    expect(copyButton).toBeInTheDocument()
+  })
+
+  it('token optimization features work', async () => {
+    render(
+      <ClarityChatApp
+        api="/api/chat"
+        features={{ tokenOptimization: true }}
+      />
+    )
+
+    // Verify token counter is present
+    expect(screen.getByText(/tokens/i)).toBeInTheDocument()
+  })
+})
+```
+
+**Run integration tests:**
+
+```bash
+npm run test:integration
+```
+
+---
+
+### End-to-End Tests
+
+**Setup Playwright tests:**
+
+```typescript
+// e2e/migration.spec.ts
+import { test, expect } from '@playwright/test'
+
+test.describe('v2.0 Migration E2E', () => {
+  test('chat functionality works end-to-end', async ({ page }) => {
+    await page.goto('http://localhost:3000')
+
+    // Wait for app to load
+    await page.waitForSelector('[data-testid="chat-window"]')
+
+    // Type and send message
+    await page.fill('[aria-label="Message input"]', 'Test message')
+    await page.click('[aria-label="Send message"]')
+
+    // Wait for response
+    await page.waitForSelector('text=Test message')
+
+    // Verify animations work
+    const messageElement = page.locator('.message').first()
+    await expect(messageElement).toBeVisible()
+
+    // Verify no console errors
+    const errors: string[] = []
+    page.on('console', (msg) => {
+      if (msg.type() === 'error') errors.push(msg.text())
+    })
+
+    expect(errors).toHaveLength(0)
+  })
+
+  test('peer dependencies loaded correctly', async ({ page }) => {
+    await page.goto('http://localhost:3000')
+
+    // Check for framer-motion animations
+    const animated = await page.locator('[style*="transform"]').count()
+    expect(animated).toBeGreaterThan(0)
+
+    // Check for lucide-react icons
+    const icons = await page.locator('svg[class*="lucide"]').count()
+    expect(icons).toBeGreaterThan(0)
+  })
+
+  test('bundle size is acceptable', async ({ page }) => {
+    await page.goto('http://localhost:3000')
+
+    // Get resource sizes
+    const resources = await page.evaluate(() => {
+      return performance.getEntriesByType('resource').map((r: any) => ({
+        name: r.name,
+        size: r.transferSize,
+      }))
+    })
+
+    const totalSize = resources.reduce((acc, r) => acc + r.size, 0)
+
+    // Should be significantly smaller than v1.x
+    // Adjust threshold based on your baseline
+    expect(totalSize).toBeLessThan(2000000) // 2MB total
+  })
+})
+```
+
+**Run E2E tests:**
+
+```bash
+npm run test:e2e
+```
+
+---
+
+## Manual QA Testing
+
+### Core Chat Features
+
+Use this checklist to manually verify functionality:
+
+#### Message Operations
+
+- [ ] **Send message**
+  1. Type text in input
+  2. Click send or press Enter
+  3. ✓ Message appears in chat
+  4. ✓ Loading indicator shows
+  5. ✓ Response streams in
+
+- [ ] **Copy message**
+  1. Hover over message
+  2. Click copy button
+  3. ✓ Confirmation appears
+  4. ✓ Clipboard contains message text
+
+- [ ] **Edit message**
+  1. Click edit button
+  2. Modify text
+  3. Save changes
+  4. ✓ Message updates
+  5. ✓ Edit timestamp shows
+
+- [ ] **Delete message**
+  1. Click delete button
+  2. Confirm deletion
+  3. ✓ Message removed
+  4. ✓ Chat updates correctly
+
+- [ ] **Retry message**
+  1. Click retry on failed message
+  2. ✓ Message resends
+  3. ✓ Loading state shows
+
+- [ ] **Regenerate response**
+  1. Click regenerate on assistant message
+  2. ✓ New response generated
+  3. ✓ Previous response replaced or kept based on config
+
+#### Streaming & Loading
+
+- [ ] **Streaming response**
+  1. Send message
+  2. ✓ Response appears word-by-word
+  3. ✓ Cursor/indicator shows streaming
+  4. ✓ Smooth animation (no flicker)
+
+- [ ] **Stop generation**
+  1. Click stop button during streaming
+  2. ✓ Streaming stops immediately
+  3. ✓ Partial response saved
+  4. ✓ Can send new message
+
+- [ ] **Loading states**
+  1. Verify loading indicator during:
+     - Message send
+     - Response generation
+     - File upload
+  2. ✓ Consistent styling
+  3. ✓ Accessible to screen readers
+
+#### UI/UX
+
+- [ ] **Animations**
+  1. Send multiple messages
+  2. ✓ Smooth entrance animations
+  3. ✓ No layout shifts
+  4. ✓ 60fps performance
+  5. ✓ Respects prefers-reduced-motion
+
+- [ ] **Responsive design**
+  1. Test on mobile (375px)
+  2. Test on tablet (768px)
+  3. Test on desktop (1440px)
+  4. ✓ Layout adapts correctly
+  5. ✓ No horizontal scroll
+  6. ✓ Touch targets appropriate size
+
+- [ ] **Dark mode** (if applicable)
+  1. Toggle theme
+  2. ✓ Colors update
+  3. ✓ Contrast remains accessible
+  4. ✓ No flash of unstyled content
+
+---
+
+### Feature-Specific Testing
+
+#### Token Optimization
+
+If using `features={{ tokenOptimization: true }}`:
+
+- [ ] **Token counter**
+  1. ✓ Displays in input area
+  2. ✓ Updates as you type
+  3. ✓ Shows accurate count
+
+- [ ] **Budget warnings**
+  1. Exceed token budget
+  2. ✓ Warning displays
+  3. ✓ Can still send (or blocked based on config)
+
+- [ ] **Compression**
+  1. Enable compression
+  2. ✓ Indicator shows compression active
+  3. ✓ Token count reduced
+
+- [ ] **ROI calculator**
+  1. Open ROI dashboard
+  2. ✓ Shows cost savings
+  3. ✓ Charts render correctly
+
+#### Document Loaders (RAG)
+
+If using PDF/DOCX loaders:
+
+- [ ] **PDF upload**
+  1. Upload PDF file
+  2. ✓ Progress indicator shows
+  3. ✓ Content extracted
+  4. ✓ Preview available
+  5. ✓ Can reference in chat
+
+- [ ] **DOCX upload**
+  1. Upload DOCX file
+  2. ✓ Progress indicator shows
+  3. ✓ Content extracted
+  4. ✓ Formatting preserved
+
+- [ ] **File management**
+  1. ✓ Can remove uploaded files
+  2. ✓ File list updates
+  3. ✓ Icons display correctly
+
+#### Code Highlighting
+
+If using advanced code features:
+
+- [ ] **Syntax highlighting**
+  1. Send code snippet
+  2. ✓ Colors applied correctly
+  3. ✓ Language detected
+  4. ✓ Line numbers show
+
+- [ ] **Copy code**
+  1. Click copy on code block
+  2. ✓ Confirmation appears
+  3. ✓ Code in clipboard
+
+- [ ] **Code themes**
+  1. Switch between light/dark
+  2. ✓ Code theme adapts
+  3. ✓ Readable in both modes
+
+#### Markdown Rendering
+
+If using react-markdown:
+
+- [ ] **Basic formatting**
+  1. ✓ Bold, italic, strikethrough
+  2. ✓ Headers (h1-h6)
+  3. ✓ Lists (ordered, unordered)
+  4. ✓ Links
+  5. ✓ Blockquotes
+
+- [ ] **GFM features**
+  1. ✓ Tables
+  2. ✓ Task lists
+  3. ✓ Strikethrough
+  4. ✓ Autolinks
+
+---
+
+## Performance Testing
+
+### Bundle Size Analysis
+
+**Compare bundle sizes:**
+
+```bash
+# Build for production
+npm run build
+
+# Analyze bundle (if configured)
+npm run build -- --analyze
+
+# Or use webpack-bundle-analyzer / vite-bundle-visualizer
+```
+
+**Expected results:**
+
+| Configuration | v1.x | v2.0 | Target Reduction |
+|---------------|------|------|------------------|
+| Minimal | 6.2 MB | 0.5 MB | ≥ 90% |
+| + Token opt | 6.3 MB | 0.6 MB | ≥ 85% |
+| + RAG | 6.8 MB | 2.1 MB | ≥ 65% |
+| Full featured | 9.6 MB | 4.9 MB | ≥ 45% |
+
+**Red flags:**
+- ❌ Bundle size same as v1.x → Check peer deps are external
+- ❌ Larger than v1.x → Likely duplicate dependencies
+- ❌ Much smaller than expected → Possibly missing features
+
+### Runtime Performance
+
+**Measure key metrics:**
+
+```typescript
+// scripts/measure-performance.ts
+import { performance } from 'perf_hooks'
+
+async function measurePerformance() {
+  const metrics = {
+    timeToInteractive: 0,
+    firstContentfulPaint: 0,
+    largestContentfulPaint: 0,
+    cumulativeLayoutShift: 0,
+  }
+
+  // Use Lighthouse or WebPageTest for real metrics
+  console.log('Performance Metrics:', metrics)
+}
+
+measurePerformance()
+```
+
+**Lighthouse audit:**
+
+```bash
+# Install Lighthouse CLI
+npm install -g lighthouse
+
+# Run audit
+lighthouse http://localhost:3000 --view
+
+# Check scores
+```
+
+**Expected Lighthouse scores:**
+- Performance: ≥ 90
+- Accessibility: ≥ 90
+- Best Practices: ≥ 90
+- SEO: ≥ 80
+
+### Load Testing
+
+**Test under load:**
+
+```bash
+# Use Artillery, k6, or similar tool
+npm install -g artillery
+
+# Run load test
+artillery quick --count 100 --num 10 http://localhost:3000
+```
+
+**Monitor:**
+- Response times stay < 200ms
+- No memory leaks
+- Error rate < 1%
+
+---
+
+## Accessibility Testing
+
+### Automated Accessibility Tests
+
+**Use axe-core for automated checks:**
+
+```typescript
+// tests/a11y.test.tsx
+import { describe, it, expect } from 'vitest'
+import { render } from '@testing-library/react'
+import { axe } from 'jest-axe'
+import { ChatWindow } from '@clarity-chat/react'
+
+describe('Accessibility', () => {
+  it('has no accessibility violations', async () => {
+    const { container } = render(
+      <ChatWindow messages={[]} onSendMessage={() => {}} />
+    )
+
+    const results = await axe(container)
+    expect(results).toHaveNoViolations()
+  })
+})
+```
+
+**Run accessibility tests:**
+
+```bash
+npm run test:a11y
+```
+
+### Manual Accessibility Testing
+
+**Keyboard navigation:**
+
+- [ ] Tab through all interactive elements
+- [ ] ✓ Focus indicators visible
+- [ ] ✓ Logical tab order
+- [ ] ✓ No keyboard traps
+
+**Screen reader testing:**
+
+- [ ] Test with VoiceOver (Mac)
+- [ ] Test with NVDA (Windows)
+- [ ] ✓ All content announced
+- [ ] ✓ ARIA labels present
+- [ ] ✓ Roles appropriate
+
+**Color contrast:**
+
+- [ ] Use browser DevTools to check
+- [ ] ✓ Text meets WCAG AA (4.5:1)
+- [ ] ✓ Large text meets 3:1
+- [ ] ✓ Interactive elements meet 3:1
+
+---
+
+## Cross-Browser Testing
+
+### Desktop Browsers
+
+- [ ] **Chrome** (latest)
+  - [ ] Basic functionality
+  - [ ] Animations smooth
+  - [ ] No console errors
+
+- [ ] **Firefox** (latest)
+  - [ ] Basic functionality
+  - [ ] Animations smooth
+  - [ ] No console errors
+
+- [ ] **Safari** (latest, macOS)
+  - [ ] Basic functionality
+  - [ ] Animations smooth
+  - [ ] No console errors
+  - [ ] Webkit-specific features work
+
+- [ ] **Edge** (latest)
+  - [ ] Basic functionality
+  - [ ] Animations smooth
+  - [ ] No console errors
+
+### Mobile Browsers
+
+- [ ] **iOS Safari** (latest)
+  - [ ] Touch interactions work
+  - [ ] Virtual keyboard doesn't break layout
+  - [ ] Smooth scrolling
+
+- [ ] **Chrome Mobile** (Android)
+  - [ ] Touch interactions work
+  - [ ] Virtual keyboard doesn't break layout
+  - [ ] Smooth scrolling
+
+---
+
+## Regression Testing
+
+### Create Baseline
+
+Before migration, capture baseline:
+
+```bash
+# Save screenshots
+npm run test:e2e -- --update-snapshots
+
+# Export metrics
+npm run test:performance -- --export baseline.json
+```
+
+### Compare After Migration
+
+```bash
+# Run same tests
+npm run test:e2e
+npm run test:performance -- --compare baseline.json
+
+# Review differences
+```
+
+---
+
+## Continuous Monitoring
+
+### Set Up Monitoring
+
+**Add to your CI/CD pipeline:**
+
+```yaml
+# .github/workflows/test-migration.yml
+name: Migration Tests
+
+on: [push, pull_request]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install peer dependencies
+        run: npm install framer-motion lucide-react zod
+
+      - name: TypeScript check
+        run: npm run typecheck
+
+      - name: Run tests
+        run: npm test
+
+      - name: Build
+        run: npm run build
+
+      - name: Check bundle size
+        run: npm run size
+
+      - name: E2E tests
+        run: npm run test:e2e
+```
+
+---
+
+## Reporting Issues
+
+If you find bugs during testing:
+
+### Create Bug Report
+
+```markdown
+**Bug Title:** [v2.0 Migration] Brief description
+
+**Environment:**
+- Package version: @clarity-chat/react@2.0.0
+- Node version: 18.x
+- Browser: Chrome 120
+- OS: macOS 14
+
+**Peer Dependencies:**
+- framer-motion: ^12.23.25
+- lucide-react: ^0.500.0
+- zod: ^3.24.0
+
+**Steps to Reproduce:**
+1. Install v2.0
+2. Do X
+3. See error
+
+**Expected Behavior:**
+Feature should work as in v1.x
+
+**Actual Behavior:**
+Error occurs / Feature broken
+
+**Migration Context:**
+- Ran codemod: Yes/No
+- Manual changes made: List
+- Migration report: Attach migration-report.json
+
+**Error Messages:**
+```
+[Paste error messages]
+```
+
+**Screenshots:**
+[If applicable]
+```
+
+---
+
+## Summary Checklist
+
+Before considering migration complete:
+
+- [ ] ✅ All automated tests pass
+- [ ] ✅ Manual QA completed
+- [ ] ✅ Performance metrics improved
+- [ ] ✅ Accessibility maintained
+- [ ] ✅ Cross-browser compatibility verified
+- [ ] ✅ Bundle size significantly reduced
+- [ ] ✅ No increase in error rate
+- [ ] ✅ Staging deployment successful
+- [ ] ✅ Monitoring in place
+
+---
+
+<Callout type="success">
+  **Testing complete?** You're ready for production deployment! Document any issues and their resolutions for future reference.
+</Callout>
+
+**Next:** [Production Deployment](/guides/deployment/production) | [Monitoring & Observability](/guides/monitoring)

@@ -12,10 +12,13 @@ import {
   getRecommendedMaxTokens,
   DEFAULT_COMPLETION_SIGNALS,
   DEFAULT_EARLY_STOP_PATTERNS,
-} from '../streaming-optimizer'
+} from '../streaming/streaming-optimizer'
 
 // Mock the estimator
 vi.mock('../tokenization/estimator', () => ({
+  estimateTokens: vi.fn((text: string) => Math.ceil(text.length / 4)),
+}))
+vi.mock('../streaming/tokenization/estimator', () => ({
   estimateTokens: vi.fn((text: string) => Math.ceil(text.length / 4)),
 }))
 
@@ -148,7 +151,9 @@ describe('StreamingResponseMonitor', () => {
       const analysis = repMonitor.onChunk('same text ')
 
       // Should eventually detect repetition
-      expect(analysis.reason === 'repetition' || analysis.shouldContinue).toBeTruthy()
+      expect(
+        analysis.reason === 'repetition' || analysis.shouldContinue
+      ).toBeTruthy()
     })
 
     it('should detect low unique word ratio as repetition', () => {
@@ -367,7 +372,7 @@ describe('createOptimizedStreamHandler', () => {
     const encoder = new TextEncoder()
     const stream = new ReadableStream({
       start(controller) {
-        chunks.forEach(chunk => controller.enqueue(encoder.encode(chunk)))
+        chunks.forEach((chunk) => controller.enqueue(encoder.encode(chunk)))
         controller.close()
       },
     })
@@ -458,21 +463,31 @@ describe('estimateResponseLength', () => {
   })
 
   it('should estimate long for detailed queries', () => {
-    expect(estimateResponseLength('Please explain in detail how this works')).toBe('long')
+    expect(
+      estimateResponseLength('Please explain in detail how this works')
+    ).toBe('long')
     expect(estimateResponseLength('Give me a comprehensive guide')).toBe('long')
-    expect(estimateResponseLength('Step by step instructions for everything')).toBe('long')
+    expect(
+      estimateResponseLength('Step by step instructions for everything')
+    ).toBe('long')
   })
 
   it('should estimate medium for typical queries', () => {
-    expect(estimateResponseLength('How does React work with state management?')).toBe('medium')
+    expect(
+      estimateResponseLength('How does React work with state management?')
+    ).toBe('medium')
   })
 })
 
 describe('getRecommendedMaxTokens', () => {
   it('should return base tokens by response length', () => {
     expect(getRecommendedMaxTokens('Hi')).toBe(500) // short
-    expect(getRecommendedMaxTokens('How does React work with state management?')).toBe(1500) // medium
-    expect(getRecommendedMaxTokens('Explain in detail the comprehensive guide')).toBe(4000) // long
+    expect(
+      getRecommendedMaxTokens('How does React work with state management?')
+    ).toBe(1500) // medium
+    expect(
+      getRecommendedMaxTokens('Explain in detail the comprehensive guide')
+    ).toBe(4000) // long
   })
 
   it('should increase tokens for code context', () => {
@@ -484,14 +499,19 @@ describe('getRecommendedMaxTokens', () => {
 
   it('should increase tokens for technical context', () => {
     const base = getRecommendedMaxTokens('explain this')
-    const technical = getRecommendedMaxTokens('explain this', { isTechnical: true })
+    const technical = getRecommendedMaxTokens('explain this', {
+      isTechnical: true,
+    })
 
     expect(technical).toBeGreaterThan(base)
   })
 
   it('should stack multipliers', () => {
     const withCode = getRecommendedMaxTokens('explain this', { hasCode: true })
-    const withBoth = getRecommendedMaxTokens('explain this', { hasCode: true, isTechnical: true })
+    const withBoth = getRecommendedMaxTokens('explain this', {
+      hasCode: true,
+      isTechnical: true,
+    })
 
     expect(withBoth).toBeGreaterThan(withCode)
   })
@@ -500,17 +520,17 @@ describe('getRecommendedMaxTokens', () => {
 describe('DEFAULT_EARLY_STOP_PATTERNS', () => {
   it('should match end of code block', () => {
     const text = '```'
-    expect(DEFAULT_EARLY_STOP_PATTERNS.some(p => p.test(text))).toBe(true)
+    expect(DEFAULT_EARLY_STOP_PATTERNS.some((p) => p.test(text))).toBe(true)
   })
 
   it('should match [END] marker', () => {
     const text = '[END]'
-    expect(DEFAULT_EARLY_STOP_PATTERNS.some(p => p.test(text))).toBe(true)
+    expect(DEFAULT_EARLY_STOP_PATTERNS.some((p) => p.test(text))).toBe(true)
   })
 
   it('should match [DONE] marker', () => {
     const text = '[DONE]'
-    expect(DEFAULT_EARLY_STOP_PATTERNS.some(p => p.test(text))).toBe(true)
+    expect(DEFAULT_EARLY_STOP_PATTERNS.some((p) => p.test(text))).toBe(true)
   })
 
   it('patterns should be safe from catastrophic backtracking', () => {
@@ -518,7 +538,7 @@ describe('DEFAULT_EARLY_STOP_PATTERNS', () => {
     const pathologicalInput = 'a'.repeat(10000)
 
     const start = Date.now()
-    DEFAULT_EARLY_STOP_PATTERNS.forEach(pattern => {
+    DEFAULT_EARLY_STOP_PATTERNS.forEach((pattern) => {
       pattern.test(pathologicalInput)
     })
     const duration = Date.now() - start

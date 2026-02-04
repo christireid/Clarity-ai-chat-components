@@ -52,12 +52,14 @@ import type { ModelMetadata } from '../../prompt/core/tokenizer'
 import {
   useMemorySafe,
   classifyError,
-  retryOperation,
   extractTextContent,
   validateApiEndpoint,
   warnIfMemoryMisconfigured,
   warnIfTooManyMessages,
 } from './helpers'
+
+// Retry utility
+import { retryWithBackoff } from '../../utils/resilience/retry-with-backoff'
 
 // Debug utilities
 import { debug } from '../../internal/debug'
@@ -183,7 +185,9 @@ export function useClarityChat(
 
       return enrichedMessages
     },
-    [memory?.enabled, originalTransform, currentMemoryContext]
+    // memoryContextRef.current accessed directly in callback - no dependency needed
+    // currentMemoryContext not needed as dependency since we use the ref
+    [memory?.enabled, originalTransform]
   )
 
   // Enhanced onFinish callback to store messages in memory
@@ -276,7 +280,10 @@ export function useClarityChat(
           }
 
           if (memory.retryOnError !== false) {
-            await retryOperation(storeMemory, memory.maxRetryAttempts || 2, 500)
+            const { result } = await retryWithBackoff(storeMemory, {
+              maxRetries: (memory.maxRetryAttempts || 2) - 1, // maxRetries is retries after first attempt
+              baseDelay: 500,
+            })
           } else {
             await storeMemory()
           }
@@ -293,18 +300,7 @@ export function useClarityChat(
         )
       }
     },
-    [
-      memory?.enabled,
-      memory?.autoCapture,
-      memory?.requireConsent,
-      memory?.onConsentRequired,
-      memoryContext?.service,
-      memory?.retryOnError,
-      memory?.maxRetryAttempts,
-      memory?.onMemoryError,
-      consentGranted,
-      originalOnFinish,
-    ]
+    [memoryContext, consentGranted, originalOnFinish, memory]
   )
 
   // Create the chat instance
@@ -352,17 +348,18 @@ export function useClarityChat(
             try {
               const memoryResults =
                 memory.retryOnError !== false
-                  ? await retryOperation(
-                      queryMemory,
-                      memory.maxRetryAttempts || 2,
-                      500
-                    )
+                  ? (
+                      await retryWithBackoff(queryMemory, {
+                        maxRetries: (memory.maxRetryAttempts || 2) - 1,
+                        baseDelay: 500,
+                      })
+                    ).result
                   : await queryMemory()
 
               const contextString =
                 memoryResults.length > 0
                   ? memoryResults
-                      .map((result) => result.memory.content)
+                      .map((result: any) => result.memory.content)
                       .join('\n\n')
                   : ''
 
@@ -415,15 +412,7 @@ export function useClarityChat(
 
       return originalAppend(message, options)
     },
-    [
-      memory?.enabled,
-      memoryContext?.service,
-      memory?.strategy,
-      memory?.retryOnError,
-      memory?.maxRetryAttempts,
-      memory?.onMemoryError,
-      originalAppend,
-    ]
+    [memoryContext, originalAppend, memory]
   )
 
   // Effect for prompt optimization
@@ -515,7 +504,7 @@ export function useClarityChat(
     }
   }, [
     memory?.enabled,
-    memoryContext?.service,
+    memoryContext,
     chat.messages.length,
     currentMemoryContext,
   ])
@@ -540,7 +529,7 @@ export function useClarityChat(
           ? `Added ${memoryStats.contextItems} memory context items`
           : undefined,
     }
-  }, [memory?.enabled, memory?.strategy, memoryContext?.service, memoryStats])
+  }, [memory?.enabled, memory?.strategy, memoryContext, memoryStats])
 
   // Memory error info
   const memoryErrorInfo: ClarityChatErrorInfo = React.useMemo(

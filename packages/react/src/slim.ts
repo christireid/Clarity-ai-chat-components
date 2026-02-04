@@ -39,29 +39,25 @@
 export {
   ClarityChat,
   type ClarityChatProps,
-} from './components/chat/clarity-chat'
-export { ChatWindow, type ChatWindowProps } from './components/chat/chat-window'
-export { ChatInput, type ChatInputProps } from './components/chat/chat-input'
+} from './components/chat/ClarityChat'
+export { ChatWindow, type ChatWindowProps } from './components/chat/ChatWindow'
+export { ChatInput, type ChatInputProps } from './components/chat/ChatInput'
 export {
   default as MessageList,
   type MessageListProps,
-} from './components/chat/virtualized-message-list'
+} from './components/chat/VirtualizedMessageList'
 export { Message, type MessageProps } from './components/message/message'
 
 // ============================================================================
 // CORE HOOKS - Essential chat state management
 // ============================================================================
 
-export {
-  useChat,
-  type UseChatOptions,
-  type UseChatReturn,
-} from './hooks/chat/use-chat-unified'
+// useChat was removed in v2.0 - use useClarityChat instead
 export {
   useClarityChat,
   type UseClarityChatOptions,
   type UseClarityChatReturn,
-} from './hooks/chat/use-clarity-chat'
+} from './hooks/use-clarity-chat'
 export {
   useChatHandlers,
   type UseChatHandlersOptions,

@@ -1,0 +1,435 @@
+openapi: 3.0.3
+info:
+  title: CommandPalette Component API
+  description: |
+    OpenAPI specification for the CommandPalette React component.
+    This component provides a command-k style interface with keyboard navigation,
+    search filtering, and AI context display.
+  version: 1.0.0
+  contact:
+    name: Clarity AI Chat Components
+    url: https://clarity-chat.dev
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+
+servers:
+  - url: https://clarity-chat.dev/api
+    description: Production server
+  - url: http://localhost:3000/api
+    description: Development server
+
+tags:
+  - name: Components
+    description: React component specifications
+  - name: Types
+    description: TypeScript type definitions
+  - name: Hooks
+    description: React hooks and utilities
+
+paths:
+  /components/command-palette:
+    get:
+      summary: Get CommandPalette component specification
+      description: Returns the complete specification for the CommandPalette component including props, types, and usage examples.
+      tags:
+        - Components
+      operationId: getCommandPaletteSpec
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ComponentSpec'
+              example:
+                name: CommandPalette
+                version: 1.0.0
+                description: A fully accessible command palette component
+                props:
+                  - name: items
+                    type: CommandItem[]
+                    required: true
+                  - name: open
+                    type: boolean
+                    required: true
+                  - name: onClose
+                    type: () => void
+                    required: true
+
+components:
+  schemas:
+    # Main Component Specification
+    ComponentSpec:
+      type: object
+      required:
+        - name
+        - version
+        - description
+        - props
+      properties:
+        name:
+          type: string
+          example: CommandPalette
+        version:
+          type: string
+          example: 1.0.0
+        description:
+          type: string
+          example: A fully accessible command palette component
+        props:
+          type: array
+          items:
+            $ref: '#/components/schemas/PropDefinition'
+        types:
+          type: array
+          items:
+            $ref: '#/components/schemas/TypeDefinition'
+
+    # Prop Definition
+    PropDefinition:
+      type: object
+      required:
+        - name
+        - type
+        - required
+      properties:
+        name:
+          type: string
+          example: items
+        type:
+          type: string
+          example: CommandItem[]
+        required:
+          type: boolean
+          example: true
+        default:
+          type: string
+          example: "'Type a command...'"
+        description:
+          type: string
+          example: Array of command items to display
+
+    # Type Definition
+    TypeDefinition:
+      type: object
+      required:
+        - name
+        - definition
+      properties:
+        name:
+          type: string
+          example: CommandItem
+        definition:
+          type: object
+          additionalProperties: true
+
+    # CommandItem Interface
+    CommandItem:
+      type: object
+      required:
+        - id
+        - label
+        - onSelect
+      properties:
+        id:
+          type: string
+          description: Unique identifier for the command
+          example: new-chat
+        label:
+          type: string
+          description: Display label for the command
+          example: New Chat
+          minLength: 1
+          maxLength: 100
+        description:
+          type: string
+          description: Optional description shown below the label
+          example: Start a new conversation
+          maxLength: 200
+        icon:
+          type: string
+          description: Optional icon element (React node serialized)
+          example: <PlusIcon />
+        shortcut:
+          type: array
+          description: Optional keyboard shortcut keys
+          items:
+            type: string
+          example: [Cmd, K]
+          maxItems: 5
+        category:
+          type: string
+          description: Optional category for grouping
+          example: Chat
+          default: Commands
+          maxLength: 50
+        onSelect:
+          type: string
+          description: Callback function identifier
+          example: handleNewChat
+
+    # AIContext Interface
+    AIContext:
+      type: object
+      properties:
+        modelName:
+          type: string
+          description: Current AI model name
+          example: Claude 3.5 Sonnet
+          maxLength: 100
+        conversationId:
+          type: string
+          description: Active conversation ID
+          example: conv-abc123
+          pattern: '^conv-[a-zA-Z0-9]+$'
+        tokenUsage:
+          $ref: '#/components/schemas/TokenUsage'
+        metadata:
+          type: object
+          description: Additional metadata
+          additionalProperties:
+            oneOf:
+              - type: string
+              - type: number
+          example:
+            temperature: 0.7
+            maxTokens: 4096
+
+    # TokenUsage Interface
+    TokenUsage:
+      type: object
+      properties:
+        input:
+          type: integer
+          description: Input tokens used
+          minimum: 0
+          example: 1250
+        output:
+          type: integer
+          description: Output tokens generated
+          minimum: 0
+          example: 850
+        total:
+          type: integer
+          description: Total tokens used
+          minimum: 0
+          example: 2100
+
+    # CommandPaletteProps Interface
+    CommandPaletteProps:
+      type: object
+      required:
+        - items
+        - open
+        - onClose
+      properties:
+        items:
+          type: array
+          description: Array of command items to display
+          items:
+            $ref: '#/components/schemas/CommandItem'
+          minItems: 0
+          maxItems: 1000
+        open:
+          type: boolean
+          description: Whether the palette is open
+          example: true
+        onClose:
+          type: string
+          description: Callback when palette should close
+          example: handleClose
+        placeholder:
+          type: string
+          description: Placeholder text for search input
+          default: Type a command...
+          maxLength: 100
+          example: Search commands...
+        className:
+          type: string
+          description: Additional CSS classes
+          example: custom-palette max-w-3xl
+          maxLength: 200
+        loading:
+          type: boolean
+          description: Show loading spinner during async operations
+          default: false
+          example: false
+        aria-label:
+          type: string
+          description: Accessible label for the command palette
+          default: Command palette
+          maxLength: 100
+          example: Quick actions menu
+        aiContext:
+          $ref: '#/components/schemas/AIContext'
+
+    # Event Handlers
+    EventHandler:
+      type: object
+      properties:
+        name:
+          type: string
+          enum:
+            - onSelect
+            - onClose
+        parameters:
+          type: array
+          items:
+            type: string
+        returnType:
+          type: string
+
+    # Keyboard Event
+    KeyboardEvent:
+      type: object
+      properties:
+        key:
+          type: string
+          enum:
+            - Escape
+            - ArrowDown
+            - ArrowUp
+            - Home
+            - End
+            - Enter
+            - Tab
+          example: Enter
+        action:
+          type: string
+          example: Execute selected command and close
+        description:
+          type: string
+          example: Executes the currently selected command
+
+    # Error Response
+    Error:
+      type: object
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: string
+          example: INVALID_PROPS
+        message:
+          type: string
+          example: The items prop must be an array
+        details:
+          type: object
+          additionalProperties: true
+
+  # Reusable Parameters
+  parameters:
+    ComponentName:
+      name: component
+      in: path
+      required: true
+      description: Name of the component
+      schema:
+        type: string
+        enum:
+          - command-palette
+          - kbd
+          - modal
+
+  # Reusable Response Headers
+  headers:
+    X-Component-Version:
+      description: Component version
+      schema:
+        type: string
+        example: 1.0.0
+    X-Documentation-URL:
+      description: URL to full documentation
+      schema:
+        type: string
+        example: https://clarity-chat.dev/docs/components/command-palette
+
+  # Example Requests/Responses
+  examples:
+    BasicCommandPalette:
+      summary: Basic command palette with two commands
+      value:
+        items:
+          - id: new-chat
+            label: New Chat
+            description: Start a new conversation
+            category: Chat
+            onSelect: handleNewChat
+          - id: settings
+            label: Settings
+            description: Open settings
+            category: System
+            onSelect: handleSettings
+        open: true
+        onClose: handleClose
+        placeholder: Type a command...
+
+    AdvancedCommandPalette:
+      summary: Advanced command palette with AI context
+      value:
+        items:
+          - id: new-chat
+            label: New Chat
+            description: Start a new conversation
+            icon: <PlusIcon />
+            shortcut: [Cmd, N]
+            category: Chat
+            onSelect: handleNewChat
+          - id: switch-model
+            label: Switch Model
+            description: Change AI model
+            icon: <CpuIcon />
+            shortcut: [Cmd, M]
+            category: AI
+            onSelect: handleSwitchModel
+        open: true
+        onClose: handleClose
+        placeholder: Search commands...
+        loading: false
+        aria-label: AI command palette
+        aiContext:
+          modelName: Claude 3.5 Sonnet
+          conversationId: conv-abc123
+          tokenUsage:
+            input: 1250
+            output: 850
+            total: 2100
+
+    CommandItemWithIcon:
+      summary: Command item with icon and shortcut
+      value:
+        id: export-chat
+        label: Export Chat
+        description: Export conversation to file
+        icon: <DownloadIcon />
+        shortcut: [Cmd, E]
+        category: File
+        onSelect: handleExport
+
+    AIContextExample:
+      summary: AI context with token usage
+      value:
+        modelName: Claude 3.5 Sonnet
+        conversationId: conv-abc123
+        tokenUsage:
+          input: 1250
+          output: 850
+          total: 2100
+        metadata:
+          temperature: 0.7
+          maxTokens: 4096
+
+  # Security Schemes (if needed for authenticated APIs)
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT token for authenticated requests
+
+# External Documentation
+externalDocs:
+  description: Full CommandPalette Documentation
+  url: https://clarity-chat.dev/docs/components/command-palette

@@ -93,6 +93,7 @@ export function TemplateSelector({ templates, selectedId, onSelect }: TemplateSe
     <motion.div
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
       transition={{ duration: 0.3 }}
       className="group/selector relative bg-white dark:bg-gray-900/80 rounded-xl overflow-hidden shadow-[0_4px_12px_rgba(0,0,0,0.08),0_8px_24px_rgba(0,0,0,0.06)] dark:shadow-[0_4px_12px_rgba(0,0,0,0.3),0_8px_24px_rgba(0,0,0,0.2)]"
     >
@@ -139,6 +140,7 @@ export function TemplateSelector({ templates, selectedId, onSelect }: TemplateSe
               <motion.button
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true }}
                 exit={{ opacity: 0, scale: 0.8 }}
                 onClick={() => setSearch('')}
                 className="absolute right-2 top-1/2 -translate-y-1/2 p-1 rounded-md hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
@@ -159,6 +161,7 @@ export function TemplateSelector({ templates, selectedId, onSelect }: TemplateSe
               key={category}
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
               transition={{ delay: index * 0.05 }}
               onClick={() => setSelectedCategory(category)}
               className={cn(
@@ -192,6 +195,7 @@ export function TemplateSelector({ templates, selectedId, onSelect }: TemplateSe
               key="empty"
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
               exit={{ opacity: 0, scale: 0.95 }}
               className="p-8 text-center"
             >
@@ -210,6 +214,7 @@ export function TemplateSelector({ templates, selectedId, onSelect }: TemplateSe
               key="list"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
+              viewport={{ once: true }}
               exit={{ opacity: 0 }}
               className="divide-y divide-gray-200 dark:divide-gray-700"
             >
@@ -223,6 +228,7 @@ export function TemplateSelector({ templates, selectedId, onSelect }: TemplateSe
                     data-template-item
                     initial={{ opacity: 0, x: -10 }}
                     animate={{ opacity: 1, x: 0 }}
+                    viewport={{ once: true }}
                     transition={{ delay: index * 0.02 }}
                     onClick={() => onSelect(template.id)}
                     onMouseEnter={() => setFocusedIndex(index)}
@@ -243,6 +249,7 @@ export function TemplateSelector({ templates, selectedId, onSelect }: TemplateSe
                           <motion.div
                             initial={{ scale: 0 }}
                             animate={{ scale: 1 }}
+                            viewport={{ once: true }}
                             className="flex-shrink-0"
                           >
                             <Sparkles className="w-4 h-4 text-brand-600" />
@@ -279,6 +286,7 @@ export function TemplateSelector({ templates, selectedId, onSelect }: TemplateSe
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
+        viewport={{ once: true }}
         transition={{ delay: 0.2 }}
         className="p-3 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50"
       >

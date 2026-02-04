@@ -9,7 +9,7 @@
  * - Historical optimization data
  */
 
-import { TokenCounter } from '@clarity-chat/token-optimization'
+import { AccurateTokenCounter } from '@clarity-chat/token-optimization'
 
 // Model families with different token efficiency characteristics
 export type ModelFamily =
@@ -273,8 +273,9 @@ export class DynamicOptimizer {
     )
 
     // Calculate results
-    const originalTokens = await TokenCounter.count(text)
-    const optimizedTokens = await TokenCounter.count(optimizedText)
+    const counter = new AccurateTokenCounter({ model: modelName })
+    const originalTokens = counter.count(text)
+    const optimizedTokens = counter.count(optimizedText)
     const compressionRatio = optimizedTokens / originalTokens
     const costSavings = this.calculateCostSavings(
       originalTokens,
@@ -335,7 +336,8 @@ export class DynamicOptimizer {
     modelContext: ModelContext,
     contentContext: ContentContext
   ): Promise<any> {
-    const tokens = await TokenCounter.count(text)
+    const counter = new AccurateTokenCounter({ model: modelContext.modelName })
+    const tokens = counter.count(text)
     const words = text.split(/\s+/).length
     const sentences = text.split(/[.!?]+/).length
 
@@ -431,7 +433,8 @@ export class DynamicOptimizer {
 
     // Smart truncation
     const targetRatio = config.targetReduction || 0.2 // 80% reduction
-    const maxTokens = Math.floor((await TokenCounter.count(text)) * targetRatio)
+    const counter = new AccurateTokenCounter({ model: 'gpt-4' })
+    const maxTokens = Math.floor(counter.count(text) * targetRatio)
 
     // Use extractive summarization for aggressive reduction
     const { truncateText } = await import('./smart-truncation')
@@ -449,18 +452,15 @@ export class DynamicOptimizer {
     contentContext: ContentContext
   ): Promise<string> {
     const targetRatio = config.targetReduction || 0.5 // 50% reduction
-    const maxTokens = Math.floor((await TokenCounter.count(text)) * targetRatio)
+    const counter = new AccurateTokenCounter({ model: 'gpt-4' })
+    const maxTokens = Math.floor(counter.count(text) * targetRatio)
 
-    // Use semantic compression for moderate reduction
-    const { compressText } = await import('./text-compression')
-    const result = await compressText(text, {
-      strategy: 'semantic',
-      targetRatio,
-      preserveKeyTerms: contentContext.keyTerms,
-      qualityThreshold: config.qualityThreshold || 0.8,
-    })
+    // Use adaptive compression for moderate reduction
+    const { compressAdaptively } =
+      await import('@clarity-chat/token-optimization')
+    const compressed = await compressAdaptively(text, targetRatio)
 
-    return result.compressedText
+    return compressed
   }
 
   /**
@@ -471,29 +471,26 @@ export class DynamicOptimizer {
     config: OptimizationConfig,
     contentContext: ContentContext
   ): Promise<string> {
-    // Lossless compression first
-    const { compressText } = await import('./text-compression')
-    const losslessResult = await compressText(text, {
-      strategy: 'lossless',
-      preserveKeyTerms: contentContext.keyTerms,
-    })
+    // Lossless compression first (normalize whitespace)
+    const { normalizeWhitespace, compressAdaptively } =
+      await import('@clarity-chat/token-optimization')
+    const losslessResult = normalizeWhitespace(text)
+    const counter = new AccurateTokenCounter({ model: 'gpt-4' })
 
     // If still over budget, apply gentle semantic compression
     if (
       config.budgetTokens &&
-      losslessResult.compressedTokens > config.budgetTokens
+      counter.count(losslessResult.normalized) > config.budgetTokens
     ) {
-      const semanticResult = await compressText(losslessResult.compressedText, {
-        strategy: 'semantic',
-        budgetTokens: config.budgetTokens,
-        preserveKeyTerms: contentContext.keyTerms,
-        qualityThreshold: config.qualityThreshold || 0.9,
-      })
-
-      return semanticResult.compressedText
+      // Use adaptive compression with conservative ratio (0.9 = minimal compression)
+      const compressed = await compressAdaptively(
+        losslessResult.normalized,
+        0.9
+      )
+      return compressed
     }
 
-    return losslessResult.compressedText
+    return losslessResult.normalized
   }
 
   /**
@@ -508,17 +505,18 @@ export class DynamicOptimizer {
       return text
     }
 
-    // Use budget-controlled compression
-    const { compressText } = await import('./text-compression')
-    const result = await compressText(text, {
-      strategy: 'budget-controlled',
-      budgetTokens: config.budgetTokens,
-      preserveKeyTerms: contentContext.keyTerms,
-      preserveStructure: config.preserveStructure,
-      qualityThreshold: config.qualityThreshold || 0.7,
-    })
+    // Use adaptive compression with calculated target ratio to meet budget
+    const { compressAdaptively } =
+      await import('@clarity-chat/token-optimization')
+    const counter = new AccurateTokenCounter({ model: 'gpt-4' })
+    const currentTokens = counter.count(text)
+    const targetRatio = config.budgetTokens / currentTokens
 
-    return result.compressedText
+    const compressed = await compressAdaptively(
+      text,
+      Math.max(0.3, targetRatio)
+    )
+    return compressed
   }
 
   /**
@@ -537,20 +535,21 @@ export class DynamicOptimizer {
     )
 
     // If still over budget, apply gentle semantic compression
-    const currentTokens = await TokenCounter.count(optimized)
+    const counter = new AccurateTokenCounter({ model: 'gpt-4' })
+    const currentTokens = counter.count(optimized)
     const targetTokens =
-      config.budgetTokens || Math.floor((await TokenCounter.count(text)) * 0.8)
+      config.budgetTokens || Math.floor(counter.count(text) * 0.8)
 
     if (currentTokens > targetTokens) {
-      const { compressText } = await import('./text-compression')
-      const result = await compressText(optimized, {
-        strategy: 'semantic',
-        budgetTokens: targetTokens,
-        preserveKeyTerms: contentContext.keyTerms,
-        qualityThreshold: config.qualityThreshold || 0.95,
-      })
-
-      optimized = result.compressedText
+      const { compressAdaptively } =
+        await import('@clarity-chat/token-optimization')
+      const targetRatio = targetTokens / currentTokens
+      // Use high ratio (0.95) for quality-first approach
+      const compressed = await compressAdaptively(
+        optimized,
+        Math.max(0.95, targetRatio)
+      )
+      optimized = compressed
     }
 
     return optimized
@@ -773,14 +772,11 @@ export class DynamicOptimizer {
     contentContext: ContentContext
   ): Promise<string> {
     // Apply aggressive text compression
-    const { compressText } = await import('./text-compression')
-    const result = await compressText(text, {
-      strategy: 'semantic',
-      targetRatio: 0.3, // 70% reduction
-      preserveKeyTerms: contentContext.keyTerms,
-    })
+    const { compressAdaptively } =
+      await import('@clarity-chat/token-optimization')
+    const compressed = await compressAdaptively(text, 0.3) // 70% reduction
 
-    return result.compressedText
+    return compressed
   }
 
   private findSimilarHistoricalCase(
@@ -906,7 +902,8 @@ export async function optimizeForCost(
     throw new Error(`Unknown model: ${modelName}`)
   }
 
-  const tokens = await TokenCounter.count(text)
+  const counter = new AccurateTokenCounter({ model: modelName })
+  const tokens = counter.count(text)
   const currentCost = (tokens / 1000) * modelContext.inputTokenCost
   const targetRatio = targetCost / currentCost
 

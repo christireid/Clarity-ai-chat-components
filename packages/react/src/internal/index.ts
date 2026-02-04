@@ -39,20 +39,21 @@ export {
 
 // Helper functions
 export {
-  debounce,
-  throttle,
   generateId,
   deepClone,
   deepMerge,
   clamp,
-  sleep,
-  retry,
+  // Note: retry is not exported from helpers - use @clarity-chat/utils/async instead
   formatBytes,
   isBrowser,
   isServer,
-  memoize,
   cancellable,
+  truncate,
 } from './helpers'
+
+// Import from canonical sources
+export { debounce, throttle } from '@clarity-chat/utils/async'
+export { memoize } from '@clarity-chat/utils/cache'
 
 // Development warnings (stripped in production)
 export {

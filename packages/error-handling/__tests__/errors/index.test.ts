@@ -5,7 +5,6 @@ import {
   APIError,
   AuthenticationError,
   RateLimitError,
-  ValidationError,
   StreamError,
   TokenLimitError,
   NetworkError,
@@ -135,22 +134,6 @@ describe('RateLimitError', () => {
     expect(error.retryAfter).toBe(60)
     expect(error.limit).toBe(100)
     expect(error.remaining).toBe(0)
-  })
-})
-
-describe('ValidationError', () => {
-  it('should create validation error with field info', () => {
-    const error = new ValidationError('Invalid input', {
-      code: 'VALIDATION_ERROR',
-      field: 'email',
-      value: 'not-an-email',
-      expected: 'email format',
-    })
-
-    expect(error.name).toBe('ValidationError')
-    expect(error.field).toBe('email')
-    expect(error.value).toBe('not-an-email')
-    expect(error.expected).toBe('email format')
   })
 })
 

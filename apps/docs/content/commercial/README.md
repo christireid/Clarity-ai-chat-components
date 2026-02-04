@@ -252,8 +252,7 @@ can be moved to a dedicated business/sales repository.
 
 ## 📞 Contact
 
-**Product Owner:** Christi Reid  
-**Email:** christi@codeclarity.ai  
+**Company:** Code & Clarity **Email:** hello@codeandclarity.com  
 **Website:** https://clarity-chat.dev  
 **GitHub:** https://github.com/christireid/Clarity-ai-chat-components
 

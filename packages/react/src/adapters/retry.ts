@@ -193,13 +193,8 @@ export async function withRetry<T>(
       // Call retry callback
       onRetry(error as AdapterError, attempt, delayMs)
 
-      // Wait before retrying
-      try {
-        await sleep(delayMs, signal)
-      } catch (sleepError) {
-        // Aborted during sleep
-        throw sleepError
-      }
+      // Wait before retrying (throws if aborted during sleep)
+      await sleep(delayMs, signal)
     }
   }
 

@@ -7,9 +7,9 @@
  */
 
 import * as React from 'react'
-import { cn } from '../../../../utils/cn'
-import type { TokenStats } from '../types'
+import { cn } from '@clarity-chat/primitives'
 import { formatCost } from '../types'
+import type { TokenStats } from '../types'
 
 export interface TokenBadgeProps {
   /** Token statistics */

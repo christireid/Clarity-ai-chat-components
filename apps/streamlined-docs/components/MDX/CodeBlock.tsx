@@ -17,7 +17,11 @@
  * - WCAG 2.1 AA accessible
  */
 
-import { CodeBlock as UnifiedCodeBlock, type CodeBlockProps as UnifiedCodeBlockProps } from '@clarity-chat/react'
+// TODO: Import CodeBlock from @clarity-chat/react once it's exported
+// For now, creating a simple wrapper around Prism
+import Prism from 'prismjs'
+import 'prismjs/themes/prism-tomorrow.css'
+import { useEffect, useRef } from 'react'
 
 /**
  * Props for the docs CodeBlock wrapper
@@ -61,26 +65,22 @@ export function CodeBlock({
   highlightLines = [],
   className,
 }: CodeBlockProps) {
-  // Convert array-based highlightLines to string format
-  const highlightLinesString = highlightLines.length > 0
-    ? highlightLines.join(',')
-    : undefined
+  const codeRef = useRef<HTMLElement>(null)
+
+  useEffect(() => {
+    if (codeRef.current) {
+      Prism.highlightElement(codeRef.current)
+    }
+  }, [code, language])
 
   return (
-    <UnifiedCodeBlock
-      language={language}
-      title={title}
-      showLineNumbers={showLineNumbers}
-      highlightLines={highlightLinesString}
-      showCopyButton
-      showDownloadButton
-      enableKeyboardShortcuts
-      className={className}
-    >
-      {code}
-    </UnifiedCodeBlock>
+    <div className={`code-block-wrapper ${className || ''}`}>
+      {title && <div className="code-block-title">{title}</div>}
+      <pre className={`language-${language}`}>
+        <code ref={codeRef} className={`language-${language}`}>
+          {code}
+        </code>
+      </pre>
+    </div>
   )
 }
-
-// Re-export types from unified component for advanced usage
-export type { UnifiedCodeBlockProps as AdvancedCodeBlockProps }

@@ -1,0 +1,2157 @@
+---
+title: TokenOptimizationPanel Integration Guide
+description: Complete guide to integrating TokenOptimizationPanel with real-world analytics backends, charts, alerts, and team dashboards
+---
+
+# TokenOptimizationPanel Real-World Integration Guide
+
+This guide provides production-ready patterns for integrating the TokenOptimizationPanel component with analytics backends, implementing data visualization, setting up alerting systems, and building team usage dashboards.
+
+## Table of Contents
+
+- [Architecture Overview](#architecture-overview)
+- [Backend Integration](#backend-integration)
+- [Data Visualization](#data-visualization)
+- [Alert System](#alert-system)
+- [Multi-Model Comparison](#multi-model-comparison)
+- [Team Dashboard](#team-dashboard)
+- [Export & Reporting](#export--reporting)
+- [Complete Example](#complete-example)
+
+---
+
+## Architecture Overview
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                   TokenOptimizationPanel                     │
+│  ┌─────────────┐  ┌─────────────┐  ┌─────────────────────┐ │
+│  │  Real-time  │  │   Savings   │  │   Budget Alerts     │ │
+│  │   Metrics   │  │   Charts    │  │   & Thresholds      │ │
+│  └──────┬──────┘  └──────┬──────┘  └──────────┬──────────┘ │
+└─────────┼─────────────────┼────────────────────┼────────────┘
+          │                 │                    │
+          ▼                 ▼                    ▼
+┌─────────────────────────────────────────────────────────────┐
+│              Analytics Backend (Express/Next.js)             │
+│  ┌──────────────┐  ┌──────────────┐  ┌──────────────────┐  │
+│  │  Timeseries  │  │  Aggregation │  │  Alert Engine    │  │
+│  │   Storage    │  │   Service    │  │  (Thresholds)    │  │
+│  └──────┬───────┘  └──────┬───────┘  └────────┬─────────┘  │
+└─────────┼──────────────────┼────────────────────┼────────────┘
+          │                  │                    │
+          ▼                  ▼                    ▼
+┌─────────────────────────────────────────────────────────────┐
+│                       Data Layer                             │
+│        PostgreSQL / MongoDB / InfluxDB / Redis               │
+└─────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## Backend Integration
+
+### 1. Analytics API Endpoints
+
+Create a REST API for token optimization analytics.
+
+```typescript
+// app/api/analytics/token-optimization/route.ts
+import { NextRequest, NextResponse } from 'next/server'
+import { z } from 'zod'
+
+// Request validation schema
+const analyticsQuerySchema = z.object({
+  timeRange: z.enum(['1h', '24h', '7d', '30d', '90d', 'custom']),
+  startDate: z.string().datetime().optional(),
+  endDate: z.string().datetime().optional(),
+  aggregation: z.enum(['hour', 'day', 'week', 'month']).default('day'),
+  userId: z.string().optional(),
+  teamId: z.string().optional(),
+  models: z.array(z.string()).optional(),
+})
+
+export async function GET(request: NextRequest) {
+  try {
+    const { searchParams } = new URL(request.url)
+    const query = {
+      timeRange: searchParams.get('timeRange') || '7d',
+      startDate: searchParams.get('startDate'),
+      endDate: searchParams.get('endDate'),
+      aggregation: searchParams.get('aggregation') || 'day',
+      userId: searchParams.get('userId'),
+      teamId: searchParams.get('teamId'),
+      models: searchParams.getAll('models'),
+    }
+
+    // Validate request
+    const validated = analyticsQuerySchema.parse(query)
+
+    // Fetch data from your database
+    const data = await fetchTokenOptimizationMetrics(validated)
+
+    return NextResponse.json(data)
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      return NextResponse.json(
+        { error: 'Invalid request parameters', details: error.errors },
+        { status: 400 }
+      )
+    }
+
+    console.error('Analytics fetch error:', error)
+    return NextResponse.json(
+      { error: 'Failed to fetch analytics data' },
+      { status: 500 }
+    )
+  }
+}
+
+// Database query function
+async function fetchTokenOptimizationMetrics(query: z.infer<typeof analyticsQuerySchema>) {
+  const { timeRange, startDate, endDate, aggregation, userId, teamId, models } = query
+
+  // Calculate date range
+  const dateRange = calculateDateRange(timeRange, startDate, endDate)
+
+  // Query your database (example with PostgreSQL)
+  const metrics = await db.query(`
+    SELECT
+      DATE_TRUNC($1, created_at) as timestamp,
+      COUNT(*) as total_optimizations,
+      SUM(tokens_saved) as tokens_saved,
+      SUM(cost_saved) as cost_saved,
+      AVG(optimization_percent) as avg_optimization_percent,
+      jsonb_object_agg(optimization_method, method_count) as method_breakdown,
+      AVG(cache_hit_rate) as cache_hit_rate
+    FROM token_optimization_events
+    WHERE
+      created_at BETWEEN $2 AND $3
+      ${userId ? 'AND user_id = $4' : ''}
+      ${teamId ? 'AND team_id = $5' : ''}
+      ${models?.length ? 'AND model_id = ANY($6)' : ''}
+    GROUP BY timestamp
+    ORDER BY timestamp DESC
+  `, [
+    aggregation,
+    dateRange.start,
+    dateRange.end,
+    userId,
+    teamId,
+    models,
+  ])
+
+  // Calculate summary statistics
+  const summary = {
+    totalOptimizations: metrics.reduce((sum, m) => sum + m.total_optimizations, 0),
+    totalTokensSaved: metrics.reduce((sum, m) => sum + m.tokens_saved, 0),
+    totalCostSaved: metrics.reduce((sum, m) => sum + m.cost_saved, 0),
+    averageSavings: metrics.reduce((sum, m) => sum + m.avg_optimization_percent, 0) / metrics.length,
+    averageCacheHitRate: metrics.reduce((sum, m) => sum + m.cache_hit_rate, 0) / metrics.length,
+  }
+
+  return {
+    summary,
+    timeseries: metrics,
+    dateRange,
+    aggregation,
+  }
+}
+
+function calculateDateRange(timeRange: string, startDate?: string, endDate?: string) {
+  if (timeRange === 'custom' && startDate && endDate) {
+    return {
+      start: new Date(startDate),
+      end: new Date(endDate),
+    }
+  }
+
+  const end = new Date()
+  const start = new Date()
+
+  switch (timeRange) {
+    case '1h':
+      start.setHours(start.getHours() - 1)
+      break
+    case '24h':
+      start.setHours(start.getHours() - 24)
+      break
+    case '7d':
+      start.setDate(start.getDate() - 7)
+      break
+    case '30d':
+      start.setDate(start.getDate() - 30)
+      break
+    case '90d':
+      start.setDate(start.getDate() - 90)
+      break
+  }
+
+  return { start, end }
+}
+```
+
+### 2. Event Tracking Integration
+
+Track token optimization events in real-time.
+
+```typescript
+// lib/analytics/token-optimization-tracker.ts
+export interface TokenOptimizationEvent {
+  userId: string
+  teamId?: string
+  conversationId: string
+  timestamp: Date
+  originalTokens: number
+  optimizedTokens: number
+  tokensSaved: number
+  optimizationPercent: number
+  optimizationMethod: 'toon' | 'llmlingua' | 'semantic' | 'truncation' | 'caching'
+  modelId: string
+  costBefore: number
+  costAfter: number
+  costSaved: number
+  cacheHit: boolean
+  metadata?: Record<string, unknown>
+}
+
+export class TokenOptimizationTracker {
+  private apiEndpoint: string
+  private batchSize: number
+  private batchInterval: number
+  private eventQueue: TokenOptimizationEvent[] = []
+  private flushInterval?: NodeJS.Timeout
+
+  constructor(config: {
+    apiEndpoint: string
+    batchSize?: number
+    batchInterval?: number
+  }) {
+    this.apiEndpoint = config.apiEndpoint
+    this.batchSize = config.batchSize || 50
+    this.batchInterval = config.batchInterval || 5000 // 5 seconds
+
+    this.startBatchFlush()
+  }
+
+  /**
+   * Track a token optimization event
+   */
+  async trackOptimization(event: TokenOptimizationEvent): Promise<void> {
+    this.eventQueue.push(event)
+
+    // Flush immediately if batch size reached
+    if (this.eventQueue.length >= this.batchSize) {
+      await this.flush()
+    }
+  }
+
+  /**
+   * Flush events to the backend
+   */
+  private async flush(): Promise<void> {
+    if (this.eventQueue.length === 0) return
+
+    const events = [...this.eventQueue]
+    this.eventQueue = []
+
+    try {
+      await fetch(this.apiEndpoint, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ events }),
+      })
+    } catch (error) {
+      console.error('Failed to flush optimization events:', error)
+      // Re-queue events on failure
+      this.eventQueue.unshift(...events)
+    }
+  }
+
+  /**
+   * Start periodic batch flush
+   */
+  private startBatchFlush(): void {
+    this.flushInterval = setInterval(() => {
+      this.flush()
+    }, this.batchInterval)
+  }
+
+  /**
+   * Stop tracking and flush remaining events
+   */
+  async stop(): Promise<void> {
+    if (this.flushInterval) {
+      clearInterval(this.flushInterval)
+    }
+    await this.flush()
+  }
+}
+
+// Usage
+export const optimizationTracker = new TokenOptimizationTracker({
+  apiEndpoint: '/api/analytics/token-optimization/events',
+})
+```
+
+### 3. React Hook for Analytics
+
+Custom hook to fetch and manage analytics data.
+
+```typescript
+// hooks/useTokenOptimizationAnalytics.ts
+import { useState, useEffect, useCallback } from 'react'
+import useSWR from 'swr'
+
+export interface AnalyticsQuery {
+  timeRange: '1h' | '24h' | '7d' | '30d' | '90d' | 'custom'
+  startDate?: string
+  endDate?: string
+  aggregation?: 'hour' | 'day' | 'week' | 'month'
+  userId?: string
+  teamId?: string
+  models?: string[]
+}
+
+export function useTokenOptimizationAnalytics(query: AnalyticsQuery) {
+  const queryString = new URLSearchParams({
+    timeRange: query.timeRange,
+    ...(query.startDate && { startDate: query.startDate }),
+    ...(query.endDate && { endDate: query.endDate }),
+    ...(query.aggregation && { aggregation: query.aggregation }),
+    ...(query.userId && { userId: query.userId }),
+    ...(query.teamId && { teamId: query.teamId }),
+  }).toString()
+
+  const { data, error, mutate, isLoading } = useSWR(
+    `/api/analytics/token-optimization?${queryString}`,
+    async (url) => {
+      const response = await fetch(url)
+      if (!response.ok) {
+        throw new Error('Failed to fetch analytics')
+      }
+      return response.json()
+    },
+    {
+      refreshInterval: 30000, // Refresh every 30 seconds
+      revalidateOnFocus: true,
+    }
+  )
+
+  const refresh = useCallback(() => {
+    mutate()
+  }, [mutate])
+
+  return {
+    data,
+    error,
+    isLoading,
+    refresh,
+  }
+}
+```
+
+---
+
+## Data Visualization
+
+### 1. Savings Over Time Chart
+
+Create a time-series chart component for visualizing savings.
+
+```typescript
+// components/SavingsChart.tsx
+'use client'
+
+import { useMemo } from 'react'
+import { motion } from 'framer-motion'
+import { TrendingUp, DollarSign } from 'lucide-react'
+
+interface DataPoint {
+  timestamp: string
+  tokensSaved: number
+  costSaved: number
+}
+
+interface SavingsChartProps {
+  data: DataPoint[]
+  height?: number
+  showCost?: boolean
+  showTokens?: boolean
+  className?: string
+}
+
+export function SavingsChart({
+  data,
+  height = 300,
+  showCost = true,
+  showTokens = true,
+  className,
+}: SavingsChartProps) {
+  // Calculate scales
+  const { maxTokens, maxCost, points } = useMemo(() => {
+    if (!data.length) return { maxTokens: 0, maxCost: 0, points: [] }
+
+    const maxTokens = Math.max(...data.map((d) => d.tokensSaved))
+    const maxCost = Math.max(...data.map((d) => d.costSaved))
+
+    const points = data.map((d, i) => ({
+      x: (i / (data.length - 1)) * 100,
+      yTokens: ((maxTokens - d.tokensSaved) / maxTokens) * 100,
+      yCost: ((maxCost - d.costSaved) / maxCost) * 100,
+      ...d,
+    }))
+
+    return { maxTokens, maxCost, points }
+  }, [data])
+
+  // Format currency
+  const formatCurrency = (value: number) => {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      minimumFractionDigits: 2,
+    }).format(value)
+  }
+
+  // Format number
+  const formatNumber = (value: number) => {
+    return new Intl.NumberFormat('en-US', {
+      notation: 'compact',
+      maximumFractionDigits: 1,
+    }).format(value)
+  }
+
+  if (!data.length) {
+    return (
+      <div
+        className={`flex items-center justify-center rounded-xl border border-border bg-muted/30 ${className}`}
+        style={{ height }}
+      >
+        <p className="text-sm text-muted-foreground">No data available</p>
+      </div>
+    )
+  }
+
+  return (
+    <div className={`space-y-4 ${className}`}>
+      {/* Summary Stats */}
+      <div className="grid grid-cols-2 gap-4">
+        {showTokens && (
+          <div className="rounded-lg border border-border bg-card p-4">
+            <div className="flex items-center gap-2 text-sm text-muted-foreground mb-1">
+              <TrendingUp className="w-4 h-4" />
+              <span>Total Tokens Saved</span>
+            </div>
+            <p className="text-2xl font-bold text-foreground">
+              {formatNumber(data.reduce((sum, d) => sum + d.tokensSaved, 0))}
+            </p>
+          </div>
+        )}
+
+        {showCost && (
+          <div className="rounded-lg border border-border bg-card p-4">
+            <div className="flex items-center gap-2 text-sm text-muted-foreground mb-1">
+              <DollarSign className="w-4 h-4" />
+              <span>Total Cost Saved</span>
+            </div>
+            <p className="text-2xl font-bold text-green-500">
+              {formatCurrency(data.reduce((sum, d) => sum + d.costSaved, 0))}
+            </p>
+          </div>
+        )}
+      </div>
+
+      {/* Chart */}
+      <div className="relative rounded-xl border border-border bg-card p-6">
+        <svg width="100%" height={height} className="overflow-visible">
+          {/* Grid lines */}
+          <g className="text-muted-foreground/20">
+            {[0, 25, 50, 75, 100].map((y) => (
+              <line
+                key={y}
+                x1="0"
+                y1={`${y}%`}
+                x2="100%"
+                y2={`${y}%`}
+                stroke="currentColor"
+                strokeWidth="1"
+                strokeDasharray="4 4"
+              />
+            ))}
+          </g>
+
+          {/* Cost line (area fill) */}
+          {showCost && (
+            <g>
+              <motion.path
+                d={`
+                  M 0 100%
+                  ${points.map((p) => `L ${p.x}% ${p.yCost}%`).join(' ')}
+                  L 100% 100%
+                  Z
+                `}
+                fill="url(#costGradient)"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 0.3 }}
+                transition={{ duration: 0.8 }}
+              />
+              <motion.path
+                d={`M ${points.map((p) => `${p.x} ${p.yCost}`).join(' L ')}`}
+                stroke="#10b981"
+                strokeWidth="3"
+                fill="none"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                initial={{ pathLength: 0 }}
+                animate={{ pathLength: 1 }}
+                transition={{ duration: 1, ease: 'easeInOut' }}
+              />
+            </g>
+          )}
+
+          {/* Tokens line */}
+          {showTokens && (
+            <motion.path
+              d={`M ${points.map((p) => `${p.x} ${p.yTokens}`).join(' L ')}`}
+              stroke="#3b82f6"
+              strokeWidth="2"
+              fill="none"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeDasharray="8 4"
+              initial={{ pathLength: 0 }}
+              animate={{ pathLength: 1 }}
+              transition={{ duration: 1, ease: 'easeInOut', delay: 0.2 }}
+            />
+          )}
+
+          {/* Data points */}
+          {points.map((point, i) => (
+            <motion.g key={i}>
+              {showCost && (
+                <motion.circle
+                  cx={`${point.x}%`}
+                  cy={`${point.yCost}%`}
+                  r="4"
+                  fill="#10b981"
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  transition={{ duration: 0.3, delay: i * 0.05 }}
+                  className="cursor-pointer hover:r-6 transition-all"
+                >
+                  <title>
+                    {new Date(point.timestamp).toLocaleDateString()}: {formatCurrency(point.costSaved)}
+                  </title>
+                </motion.circle>
+              )}
+              {showTokens && (
+                <motion.circle
+                  cx={`${point.x}%`}
+                  cy={`${point.yTokens}%`}
+                  r="3"
+                  fill="#3b82f6"
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  transition={{ duration: 0.3, delay: i * 0.05 + 0.2 }}
+                  className="cursor-pointer"
+                >
+                  <title>
+                    {new Date(point.timestamp).toLocaleDateString()}: {formatNumber(point.tokensSaved)} tokens
+                  </title>
+                </motion.circle>
+              )}
+            </motion.g>
+          ))}
+
+          {/* Gradients */}
+          <defs>
+            <linearGradient id="costGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stopColor="#10b981" stopOpacity="0.3" />
+              <stop offset="100%" stopColor="#10b981" stopOpacity="0" />
+            </linearGradient>
+          </defs>
+        </svg>
+
+        {/* Legend */}
+        <div className="flex items-center justify-center gap-6 mt-4 text-sm">
+          {showCost && (
+            <div className="flex items-center gap-2">
+              <div className="w-3 h-3 rounded-full bg-green-500" />
+              <span className="text-muted-foreground">Cost Savings</span>
+            </div>
+          )}
+          {showTokens && (
+            <div className="flex items-center gap-2">
+              <div className="w-3 h-0.5 bg-blue-500" style={{ borderTop: '2px dashed' }} />
+              <span className="text-muted-foreground">Token Savings</span>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  )
+}
+```
+
+### 2. Method Breakdown Pie Chart
+
+```typescript
+// components/MethodBreakdownChart.tsx
+'use client'
+
+import { useMemo } from 'react'
+import { motion } from 'framer-motion'
+
+interface MethodData {
+  method: string
+  count: number
+  color: string
+}
+
+interface MethodBreakdownChartProps {
+  data: Record<string, number>
+  size?: number
+  className?: string
+}
+
+const METHOD_COLORS: Record<string, string> = {
+  toon: '#3b82f6', // blue
+  llmlingua: '#10b981', // green
+  semantic: '#f59e0b', // amber
+  truncation: '#ef4444', // red
+  caching: '#8b5cf6', // purple
+}
+
+export function MethodBreakdownChart({
+  data,
+  size = 200,
+  className,
+}: MethodBreakdownChartProps) {
+  const { total, segments } = useMemo(() => {
+    const total = Object.values(data).reduce((sum, count) => sum + count, 0)
+    let currentAngle = 0
+
+    const segments = Object.entries(data).map(([method, count]) => {
+      const percentage = (count / total) * 100
+      const angle = (count / total) * 360
+      const startAngle = currentAngle
+      const endAngle = currentAngle + angle
+
+      currentAngle = endAngle
+
+      return {
+        method,
+        count,
+        percentage,
+        startAngle,
+        endAngle,
+        color: METHOD_COLORS[method] || '#6b7280',
+      }
+    })
+
+    return { total, segments }
+  }, [data])
+
+  const createArc = (startAngle: number, endAngle: number, radius: number) => {
+    const startRadians = ((startAngle - 90) * Math.PI) / 180
+    const endRadians = ((endAngle - 90) * Math.PI) / 180
+
+    const x1 = radius + radius * Math.cos(startRadians)
+    const y1 = radius + radius * Math.sin(startRadians)
+    const x2 = radius + radius * Math.cos(endRadians)
+    const y2 = radius + radius * Math.sin(endRadians)
+
+    const largeArc = endAngle - startAngle > 180 ? 1 : 0
+
+    return `M ${radius} ${radius} L ${x1} ${y1} A ${radius} ${radius} 0 ${largeArc} 1 ${x2} ${y2} Z`
+  }
+
+  if (total === 0) {
+    return (
+      <div
+        className={`flex items-center justify-center rounded-xl border border-border bg-muted/30 ${className}`}
+        style={{ width: size, height: size }}
+      >
+        <p className="text-sm text-muted-foreground">No data</p>
+      </div>
+    )
+  }
+
+  const radius = size / 2
+  const innerRadius = radius * 0.6
+
+  return (
+    <div className={`space-y-4 ${className}`}>
+      <div className="relative" style={{ width: size, height: size }}>
+        <svg width={size} height={size}>
+          {/* Segments */}
+          {segments.map((segment, i) => (
+            <motion.path
+              key={segment.method}
+              d={createArc(segment.startAngle, segment.endAngle, radius)}
+              fill={segment.color}
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.5, delay: i * 0.1 }}
+              className="cursor-pointer hover:opacity-80 transition-opacity"
+            >
+              <title>
+                {segment.method}: {segment.count} ({segment.percentage.toFixed(1)}%)
+              </title>
+            </motion.path>
+          ))}
+
+          {/* Inner circle (donut hole) */}
+          <circle
+            cx={radius}
+            cy={radius}
+            r={innerRadius}
+            fill="hsl(var(--card))"
+          />
+
+          {/* Center text */}
+          <text
+            x={radius}
+            y={radius - 10}
+            textAnchor="middle"
+            className="text-2xl font-bold fill-foreground"
+          >
+            {total}
+          </text>
+          <text
+            x={radius}
+            y={radius + 15}
+            textAnchor="middle"
+            className="text-sm fill-muted-foreground"
+          >
+            Total
+          </text>
+        </svg>
+      </div>
+
+      {/* Legend */}
+      <div className="space-y-2">
+        {segments.map((segment) => (
+          <div key={segment.method} className="flex items-center justify-between text-sm">
+            <div className="flex items-center gap-2">
+              <div
+                className="w-3 h-3 rounded-full"
+                style={{ backgroundColor: segment.color }}
+              />
+              <span className="font-medium capitalize">{segment.method}</span>
+            </div>
+            <div className="flex items-center gap-3">
+              <span className="text-muted-foreground">{segment.count}</span>
+              <span className="font-mono text-xs text-muted-foreground w-12 text-right">
+                {segment.percentage.toFixed(1)}%
+              </span>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
+```
+
+---
+
+## Alert System
+
+### 1. Budget Threshold Alerts
+
+```typescript
+// components/BudgetAlertSystem.tsx
+'use client'
+
+import { useState, useEffect } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
+import { AlertTriangle, AlertCircle, CheckCircle, X, Bell } from 'lucide-react'
+
+export interface BudgetThreshold {
+  id: string
+  name: string
+  type: 'cost' | 'tokens' | 'usage'
+  threshold: number
+  period: 'daily' | 'weekly' | 'monthly'
+  currentValue: number
+  enabled: boolean
+  notificationChannels: ('email' | 'slack' | 'webhook' | 'ui')[]
+}
+
+export interface BudgetAlert {
+  id: string
+  thresholdId: string
+  severity: 'info' | 'warning' | 'critical'
+  message: string
+  currentValue: number
+  threshold: number
+  percentage: number
+  timestamp: Date
+  acknowledged: boolean
+}
+
+interface BudgetAlertSystemProps {
+  thresholds: BudgetThreshold[]
+  onThresholdUpdate?: (threshold: BudgetThreshold) => void
+  onAlertAcknowledge?: (alertId: string) => void
+  className?: string
+}
+
+export function BudgetAlertSystem({
+  thresholds,
+  onThresholdUpdate,
+  onAlertAcknowledge,
+  className,
+}: BudgetAlertSystemProps) {
+  const [alerts, setAlerts] = useState<BudgetAlert[]>([])
+
+  // Check thresholds and generate alerts
+  useEffect(() => {
+    const newAlerts: BudgetAlert[] = []
+
+    thresholds.forEach((threshold) => {
+      if (!threshold.enabled) return
+
+      const percentage = (threshold.currentValue / threshold.threshold) * 100
+
+      if (percentage >= 95) {
+        newAlerts.push({
+          id: `${threshold.id}-critical`,
+          thresholdId: threshold.id,
+          severity: 'critical',
+          message: `Critical: ${threshold.name} at ${percentage.toFixed(1)}% of ${threshold.period} budget`,
+          currentValue: threshold.currentValue,
+          threshold: threshold.threshold,
+          percentage,
+          timestamp: new Date(),
+          acknowledged: false,
+        })
+      } else if (percentage >= 80) {
+        newAlerts.push({
+          id: `${threshold.id}-warning`,
+          thresholdId: threshold.id,
+          severity: 'warning',
+          message: `Warning: ${threshold.name} at ${percentage.toFixed(1)}% of ${threshold.period} budget`,
+          currentValue: threshold.currentValue,
+          threshold: threshold.threshold,
+          percentage,
+          timestamp: new Date(),
+          acknowledged: false,
+        })
+      } else if (percentage >= 60) {
+        newAlerts.push({
+          id: `${threshold.id}-info`,
+          thresholdId: threshold.id,
+          severity: 'info',
+          message: `Info: ${threshold.name} at ${percentage.toFixed(1)}% of ${threshold.period} budget`,
+          currentValue: threshold.currentValue,
+          threshold: threshold.threshold,
+          percentage,
+          timestamp: new Date(),
+          acknowledged: false,
+        })
+      }
+    })
+
+    setAlerts(newAlerts)
+  }, [thresholds])
+
+  const getSeverityStyles = (severity: BudgetAlert['severity']) => {
+    switch (severity) {
+      case 'critical':
+        return {
+          bg: 'bg-red-500/10',
+          border: 'border-red-500/30',
+          text: 'text-red-500',
+          icon: AlertCircle,
+        }
+      case 'warning':
+        return {
+          bg: 'bg-amber-500/10',
+          border: 'border-amber-500/30',
+          text: 'text-amber-500',
+          icon: AlertTriangle,
+        }
+      case 'info':
+        return {
+          bg: 'bg-blue-500/10',
+          border: 'border-blue-500/30',
+          text: 'text-blue-500',
+          icon: Bell,
+        }
+    }
+  }
+
+  const handleAcknowledge = (alertId: string) => {
+    setAlerts((prev) =>
+      prev.map((alert) =>
+        alert.id === alertId ? { ...alert, acknowledged: true } : alert
+      )
+    )
+    onAlertAcknowledge?.(alertId)
+  }
+
+  const activeAlerts = alerts.filter((alert) => !alert.acknowledged)
+
+  return (
+    <div className={`space-y-4 ${className}`}>
+      {/* Alert Summary */}
+      <div className="rounded-xl border border-border bg-card p-4">
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-lg font-semibold text-foreground">Budget Alerts</h3>
+          <div className="flex items-center gap-2">
+            <span className="text-sm text-muted-foreground">
+              {activeAlerts.length} active
+            </span>
+            {activeAlerts.length > 0 && (
+              <motion.div
+                className="w-2 h-2 rounded-full bg-red-500"
+                animate={{ scale: [1, 1.2, 1] }}
+                transition={{ duration: 2, repeat: Infinity }}
+              />
+            )}
+          </div>
+        </div>
+
+        {/* Alert List */}
+        <AnimatePresence mode="popLayout">
+          {activeAlerts.length === 0 ? (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="flex items-center justify-center py-8 text-muted-foreground"
+            >
+              <div className="flex flex-col items-center gap-2">
+                <CheckCircle className="w-8 h-8 text-green-500" />
+                <p className="text-sm">All budgets within limits</p>
+              </div>
+            </motion.div>
+          ) : (
+            <div className="space-y-3">
+              {activeAlerts.map((alert) => {
+                const styles = getSeverityStyles(alert.severity)
+                const Icon = styles.icon
+
+                return (
+                  <motion.div
+                    key={alert.id}
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: 20 }}
+                    className={`flex items-start gap-3 p-4 rounded-lg border ${styles.bg} ${styles.border}`}
+                  >
+                    <Icon className={`w-5 h-5 flex-shrink-0 ${styles.text}`} />
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium text-foreground">
+                        {alert.message}
+                      </p>
+                      <div className="flex items-center gap-4 mt-2 text-xs text-muted-foreground">
+                        <span>
+                          Current: {alert.currentValue.toLocaleString()}
+                        </span>
+                        <span>
+                          Limit: {alert.threshold.toLocaleString()}
+                        </span>
+                        <span>
+                          {new Date(alert.timestamp).toLocaleTimeString()}
+                        </span>
+                      </div>
+
+                      {/* Progress bar */}
+                      <div className="mt-3 h-1.5 bg-muted rounded-full overflow-hidden">
+                        <motion.div
+                          className={`h-full ${
+                            alert.severity === 'critical'
+                              ? 'bg-red-500'
+                              : alert.severity === 'warning'
+                                ? 'bg-amber-500'
+                                : 'bg-blue-500'
+                          }`}
+                          initial={{ width: 0 }}
+                          animate={{ width: `${Math.min(alert.percentage, 100)}%` }}
+                          transition={{ duration: 0.8, ease: 'easeOut' }}
+                        />
+                      </div>
+                    </div>
+                    <button
+                      onClick={() => handleAcknowledge(alert.id)}
+                      className="flex-shrink-0 p-1 rounded-md hover:bg-background/50 transition-colors"
+                      aria-label="Acknowledge alert"
+                    >
+                      <X className="w-4 h-4 text-muted-foreground" />
+                    </button>
+                  </motion.div>
+                )
+              })}
+            </div>
+          )}
+        </AnimatePresence>
+      </div>
+
+      {/* Threshold Configuration */}
+      <div className="rounded-xl border border-border bg-card p-4">
+        <h4 className="text-sm font-semibold text-foreground mb-4">
+          Configured Thresholds
+        </h4>
+        <div className="space-y-3">
+          {thresholds.map((threshold) => (
+            <div
+              key={threshold.id}
+              className="flex items-center justify-between p-3 rounded-lg bg-muted/30"
+            >
+              <div className="flex-1">
+                <p className="text-sm font-medium text-foreground">
+                  {threshold.name}
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  {threshold.threshold.toLocaleString()} {threshold.type} / {threshold.period}
+                </p>
+              </div>
+              <div className="flex items-center gap-3">
+                <div className="text-right">
+                  <p className="text-sm font-mono text-foreground">
+                    {threshold.currentValue.toLocaleString()}
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    {((threshold.currentValue / threshold.threshold) * 100).toFixed(1)}%
+                  </p>
+                </div>
+                <button
+                  onClick={() =>
+                    onThresholdUpdate?.({
+                      ...threshold,
+                      enabled: !threshold.enabled,
+                    })
+                  }
+                  className={`relative w-11 h-6 rounded-full transition-colors ${
+                    threshold.enabled ? 'bg-green-500' : 'bg-muted'
+                  }`}
+                  aria-label={`${threshold.enabled ? 'Disable' : 'Enable'} ${threshold.name}`}
+                >
+                  <motion.div
+                    className="absolute top-1 left-1 w-4 h-4 rounded-full bg-white"
+                    animate={{ x: threshold.enabled ? 20 : 0 }}
+                    transition={{ duration: 0.2 }}
+                  />
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  )
+}
+```
+
+---
+
+## Multi-Model Comparison
+
+```typescript
+// components/ModelComparisonView.tsx
+'use client'
+
+import { useState, useMemo } from 'react'
+import { motion } from 'framer-motion'
+import { TrendingUp, TrendingDown, DollarSign, Zap, Clock } from 'lucide-react'
+
+export interface ModelMetrics {
+  modelId: string
+  modelName: string
+  provider: string
+  totalRequests: number
+  totalTokens: number
+  totalCost: number
+  avgTokensPerRequest: number
+  avgCostPerRequest: number
+  avgLatency: number
+  optimizationRate: number
+  cacheHitRate: number
+}
+
+interface ModelComparisonViewProps {
+  models: ModelMetrics[]
+  selectedMetric?: 'cost' | 'tokens' | 'latency' | 'optimization'
+  onModelSelect?: (modelId: string) => void
+  className?: string
+}
+
+export function ModelComparisonView({
+  models,
+  selectedMetric = 'cost',
+  onModelSelect,
+  className,
+}: ModelComparisonViewProps) {
+  const [sortBy, setSortBy] = useState<'cost' | 'tokens' | 'requests' | 'optimization'>('cost')
+  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc')
+
+  const sortedModels = useMemo(() => {
+    return [...models].sort((a, b) => {
+      let aValue: number, bValue: number
+
+      switch (sortBy) {
+        case 'cost':
+          aValue = a.totalCost
+          bValue = b.totalCost
+          break
+        case 'tokens':
+          aValue = a.totalTokens
+          bValue = b.totalTokens
+          break
+        case 'requests':
+          aValue = a.totalRequests
+          bValue = b.totalRequests
+          break
+        case 'optimization':
+          aValue = a.optimizationRate
+          bValue = b.optimizationRate
+          break
+      }
+
+      return sortDirection === 'asc' ? aValue - bValue : bValue - aValue
+    })
+  }, [models, sortBy, sortDirection])
+
+  const formatCurrency = (value: number) => {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      minimumFractionDigits: 2,
+    }).format(value)
+  }
+
+  const formatNumber = (value: number) => {
+    return new Intl.NumberFormat('en-US', {
+      notation: 'compact',
+      maximumFractionDigits: 1,
+    }).format(value)
+  }
+
+  const handleSort = (column: typeof sortBy) => {
+    if (sortBy === column) {
+      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc')
+    } else {
+      setSortBy(column)
+      setSortDirection('desc')
+    }
+  }
+
+  return (
+    <div className={`space-y-6 ${className}`}>
+      {/* Summary Cards */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="rounded-lg border border-border bg-card p-4">
+          <div className="flex items-center gap-2 text-sm text-muted-foreground mb-1">
+            <DollarSign className="w-4 h-4" />
+            <span>Total Cost</span>
+          </div>
+          <p className="text-2xl font-bold text-foreground">
+            {formatCurrency(models.reduce((sum, m) => sum + m.totalCost, 0))}
+          </p>
+        </div>
+
+        <div className="rounded-lg border border-border bg-card p-4">
+          <div className="flex items-center gap-2 text-sm text-muted-foreground mb-1">
+            <Zap className="w-4 h-4" />
+            <span>Total Tokens</span>
+          </div>
+          <p className="text-2xl font-bold text-foreground">
+            {formatNumber(models.reduce((sum, m) => sum + m.totalTokens, 0))}
+          </p>
+        </div>
+
+        <div className="rounded-lg border border-border bg-card p-4">
+          <div className="flex items-center gap-2 text-sm text-muted-foreground mb-1">
+            <Clock className="w-4 h-4" />
+            <span>Avg Latency</span>
+          </div>
+          <p className="text-2xl font-bold text-foreground">
+            {(models.reduce((sum, m) => sum + m.avgLatency, 0) / models.length).toFixed(0)}ms
+          </p>
+        </div>
+
+        <div className="rounded-lg border border-border bg-card p-4">
+          <div className="flex items-center gap-2 text-sm text-muted-foreground mb-1">
+            <TrendingUp className="w-4 h-4" />
+            <span>Avg Optimization</span>
+          </div>
+          <p className="text-2xl font-bold text-green-500">
+            {(models.reduce((sum, m) => sum + m.optimizationRate, 0) / models.length).toFixed(1)}%
+          </p>
+        </div>
+      </div>
+
+      {/* Comparison Table */}
+      <div className="rounded-xl border border-border bg-card overflow-hidden">
+        <div className="overflow-x-auto">
+          <table className="w-full">
+            <thead>
+              <tr className="border-b border-border bg-muted/30">
+                <th className="text-left p-4 text-sm font-semibold text-foreground">
+                  Model
+                </th>
+                <th
+                  className="text-right p-4 text-sm font-semibold text-foreground cursor-pointer hover:text-brand-500 transition-colors"
+                  onClick={() => handleSort('requests')}
+                >
+                  <div className="flex items-center justify-end gap-1">
+                    Requests
+                    {sortBy === 'requests' && (
+                      <motion.span
+                        initial={{ rotate: sortDirection === 'asc' ? 180 : 0 }}
+                        animate={{ rotate: sortDirection === 'asc' ? 180 : 0 }}
+                      >
+                        ▼
+                      </motion.span>
+                    )}
+                  </div>
+                </th>
+                <th
+                  className="text-right p-4 text-sm font-semibold text-foreground cursor-pointer hover:text-brand-500 transition-colors"
+                  onClick={() => handleSort('tokens')}
+                >
+                  <div className="flex items-center justify-end gap-1">
+                    Tokens
+                    {sortBy === 'tokens' && (
+                      <motion.span
+                        initial={{ rotate: sortDirection === 'asc' ? 180 : 0 }}
+                        animate={{ rotate: sortDirection === 'asc' ? 180 : 0 }}
+                      >
+                        ▼
+                      </motion.span>
+                    )}
+                  </div>
+                </th>
+                <th
+                  className="text-right p-4 text-sm font-semibold text-foreground cursor-pointer hover:text-brand-500 transition-colors"
+                  onClick={() => handleSort('cost')}
+                >
+                  <div className="flex items-center justify-end gap-1">
+                    Cost
+                    {sortBy === 'cost' && (
+                      <motion.span
+                        initial={{ rotate: sortDirection === 'asc' ? 180 : 0 }}
+                        animate={{ rotate: sortDirection === 'asc' ? 180 : 0 }}
+                      >
+                        ▼
+                      </motion.span>
+                    )}
+                  </div>
+                </th>
+                <th className="text-right p-4 text-sm font-semibold text-foreground">
+                  Avg / Request
+                </th>
+                <th
+                  className="text-right p-4 text-sm font-semibold text-foreground cursor-pointer hover:text-brand-500 transition-colors"
+                  onClick={() => handleSort('optimization')}
+                >
+                  <div className="flex items-center justify-end gap-1">
+                    Optimization
+                    {sortBy === 'optimization' && (
+                      <motion.span
+                        initial={{ rotate: sortDirection === 'asc' ? 180 : 0 }}
+                        animate={{ rotate: sortDirection === 'asc' ? 180 : 0 }}
+                      >
+                        ▼
+                      </motion.span>
+                    )}
+                  </div>
+                </th>
+                <th className="text-right p-4 text-sm font-semibold text-foreground">
+                  Cache Hit
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {sortedModels.map((model, i) => (
+                <motion.tr
+                  key={model.modelId}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: i * 0.05 }}
+                  className="border-b border-border/50 hover:bg-muted/30 transition-colors cursor-pointer"
+                  onClick={() => onModelSelect?.(model.modelId)}
+                >
+                  <td className="p-4">
+                    <div>
+                      <p className="text-sm font-medium text-foreground">
+                        {model.modelName}
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        {model.provider}
+                      </p>
+                    </div>
+                  </td>
+                  <td className="p-4 text-right">
+                    <p className="text-sm font-mono text-foreground">
+                      {formatNumber(model.totalRequests)}
+                    </p>
+                  </td>
+                  <td className="p-4 text-right">
+                    <p className="text-sm font-mono text-foreground">
+                      {formatNumber(model.totalTokens)}
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      {formatNumber(model.avgTokensPerRequest)}/req
+                    </p>
+                  </td>
+                  <td className="p-4 text-right">
+                    <p className="text-sm font-mono text-foreground">
+                      {formatCurrency(model.totalCost)}
+                    </p>
+                  </td>
+                  <td className="p-4 text-right">
+                    <p className="text-sm font-mono text-foreground">
+                      {formatCurrency(model.avgCostPerRequest)}
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      {model.avgLatency.toFixed(0)}ms
+                    </p>
+                  </td>
+                  <td className="p-4 text-right">
+                    <div className="flex items-center justify-end gap-2">
+                      <span
+                        className={`text-sm font-semibold ${
+                          model.optimizationRate > 50
+                            ? 'text-green-500'
+                            : model.optimizationRate > 30
+                              ? 'text-amber-500'
+                              : 'text-red-500'
+                        }`}
+                      >
+                        {model.optimizationRate.toFixed(1)}%
+                      </span>
+                      {model.optimizationRate > 50 ? (
+                        <TrendingUp className="w-4 h-4 text-green-500" />
+                      ) : (
+                        <TrendingDown className="w-4 h-4 text-red-500" />
+                      )}
+                    </div>
+                  </td>
+                  <td className="p-4 text-right">
+                    <span className="text-sm font-mono text-foreground">
+                      {model.cacheHitRate.toFixed(1)}%
+                    </span>
+                  </td>
+                </motion.tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  )
+}
+```
+
+---
+
+## Team Dashboard
+
+```typescript
+// components/TeamUsageDashboard.tsx
+'use client'
+
+import { useState } from 'react'
+import { Users, TrendingUp, DollarSign, Zap } from 'lucide-react'
+
+export interface TeamMember {
+  userId: string
+  name: string
+  email: string
+  role: string
+  totalRequests: number
+  totalTokens: number
+  totalCost: number
+  avgOptimization: number
+}
+
+interface TeamUsageDashboardProps {
+  teamId: string
+  members: TeamMember[]
+  teamBudget?: number
+  className?: string
+}
+
+export function TeamUsageDashboard({
+  teamId,
+  members,
+  teamBudget,
+  className,
+}: TeamUsageDashboardProps) {
+  const [sortBy, setSortBy] = useState<'cost' | 'tokens' | 'requests'>('cost')
+
+  const totalCost = members.reduce((sum, m) => sum + m.totalCost, 0)
+  const totalTokens = members.reduce((sum, m) => sum + m.totalTokens, 0)
+  const totalRequests = members.reduce((sum, m) => sum + m.totalRequests, 0)
+  const budgetUsage = teamBudget ? (totalCost / teamBudget) * 100 : 0
+
+  const sortedMembers = [...members].sort((a, b) => {
+    switch (sortBy) {
+      case 'cost':
+        return b.totalCost - a.totalCost
+      case 'tokens':
+        return b.totalTokens - a.totalTokens
+      case 'requests':
+        return b.totalRequests - a.totalRequests
+    }
+  })
+
+  const formatCurrency = (value: number) =>
+    new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+    }).format(value)
+
+  const formatNumber = (value: number) =>
+    new Intl.NumberFormat('en-US', {
+      notation: 'compact',
+      maximumFractionDigits: 1,
+    }).format(value)
+
+  return (
+    <div className={`space-y-6 ${className}`}>
+      {/* Team Summary */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="rounded-lg border border-border bg-card p-4">
+          <div className="flex items-center gap-2 text-sm text-muted-foreground mb-1">
+            <Users className="w-4 h-4" />
+            <span>Team Members</span>
+          </div>
+          <p className="text-2xl font-bold text-foreground">{members.length}</p>
+        </div>
+
+        <div className="rounded-lg border border-border bg-card p-4">
+          <div className="flex items-center gap-2 text-sm text-muted-foreground mb-1">
+            <DollarSign className="w-4 h-4" />
+            <span>Total Cost</span>
+          </div>
+          <p className="text-2xl font-bold text-foreground">
+            {formatCurrency(totalCost)}
+          </p>
+          {teamBudget && (
+            <p className="text-xs text-muted-foreground mt-1">
+              {budgetUsage.toFixed(1)}% of budget
+            </p>
+          )}
+        </div>
+
+        <div className="rounded-lg border border-border bg-card p-4">
+          <div className="flex items-center gap-2 text-sm text-muted-foreground mb-1">
+            <Zap className="w-4 h-4" />
+            <span>Total Tokens</span>
+          </div>
+          <p className="text-2xl font-bold text-foreground">
+            {formatNumber(totalTokens)}
+          </p>
+        </div>
+
+        <div className="rounded-lg border border-border bg-card p-4">
+          <div className="flex items-center gap-2 text-sm text-muted-foreground mb-1">
+            <TrendingUp className="w-4 h-4" />
+            <span>Total Requests</span>
+          </div>
+          <p className="text-2xl font-bold text-foreground">
+            {formatNumber(totalRequests)}
+          </p>
+        </div>
+      </div>
+
+      {/* Budget Progress */}
+      {teamBudget && (
+        <div className="rounded-xl border border-border bg-card p-6">
+          <div className="flex items-center justify-between mb-3">
+            <h3 className="text-lg font-semibold text-foreground">Budget Usage</h3>
+            <span className="text-sm text-muted-foreground">
+              {formatCurrency(totalCost)} / {formatCurrency(teamBudget)}
+            </span>
+          </div>
+          <div className="h-3 bg-muted rounded-full overflow-hidden">
+            <div
+              className={`h-full transition-all duration-500 ${
+                budgetUsage >= 90
+                  ? 'bg-red-500'
+                  : budgetUsage >= 75
+                    ? 'bg-amber-500'
+                    : 'bg-green-500'
+              }`}
+              style={{ width: `${Math.min(budgetUsage, 100)}%` }}
+            />
+          </div>
+        </div>
+      )}
+
+      {/* Member Usage Table */}
+      <div className="rounded-xl border border-border bg-card overflow-hidden">
+        <div className="p-4 border-b border-border">
+          <div className="flex items-center justify-between">
+            <h3 className="text-lg font-semibold text-foreground">Member Usage</h3>
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-muted-foreground">Sort by:</span>
+              <select
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value as typeof sortBy)}
+                className="text-sm border border-border rounded-md px-3 py-1 bg-background text-foreground"
+              >
+                <option value="cost">Cost</option>
+                <option value="tokens">Tokens</option>
+                <option value="requests">Requests</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div className="overflow-x-auto">
+          <table className="w-full">
+            <thead>
+              <tr className="border-b border-border bg-muted/30">
+                <th className="text-left p-4 text-sm font-semibold text-foreground">
+                  Member
+                </th>
+                <th className="text-right p-4 text-sm font-semibold text-foreground">
+                  Requests
+                </th>
+                <th className="text-right p-4 text-sm font-semibold text-foreground">
+                  Tokens
+                </th>
+                <th className="text-right p-4 text-sm font-semibold text-foreground">
+                  Cost
+                </th>
+                <th className="text-right p-4 text-sm font-semibold text-foreground">
+                  Optimization
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {sortedMembers.map((member) => (
+                <tr
+                  key={member.userId}
+                  className="border-b border-border/50 hover:bg-muted/30 transition-colors"
+                >
+                  <td className="p-4">
+                    <div>
+                      <p className="text-sm font-medium text-foreground">
+                        {member.name}
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        {member.email} · {member.role}
+                      </p>
+                    </div>
+                  </td>
+                  <td className="p-4 text-right">
+                    <p className="text-sm font-mono text-foreground">
+                      {formatNumber(member.totalRequests)}
+                    </p>
+                  </td>
+                  <td className="p-4 text-right">
+                    <p className="text-sm font-mono text-foreground">
+                      {formatNumber(member.totalTokens)}
+                    </p>
+                  </td>
+                  <td className="p-4 text-right">
+                    <p className="text-sm font-mono text-foreground">
+                      {formatCurrency(member.totalCost)}
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      {((member.totalCost / totalCost) * 100).toFixed(1)}% of team
+                    </p>
+                  </td>
+                  <td className="p-4 text-right">
+                    <span
+                      className={`text-sm font-semibold ${
+                        member.avgOptimization > 50
+                          ? 'text-green-500'
+                          : member.avgOptimization > 30
+                            ? 'text-amber-500'
+                            : 'text-red-500'
+                      }`}
+                    >
+                      {member.avgOptimization.toFixed(1)}%
+                    </span>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  )
+}
+```
+
+---
+
+## Export & Reporting
+
+```typescript
+// lib/export/analytics-exporter.ts
+export class AnalyticsExporter {
+  /**
+   * Export analytics data to CSV
+   */
+  static exportToCSV(data: any[], filename: string = 'analytics.csv'): void {
+    if (!data.length) return
+
+    // Generate CSV headers
+    const headers = Object.keys(data[0])
+    const csvContent = [
+      headers.join(','),
+      ...data.map((row) =>
+        headers.map((header) => {
+          const value = row[header]
+          // Escape values containing commas or quotes
+          if (typeof value === 'string' && (value.includes(',') || value.includes('"'))) {
+            return `"${value.replace(/"/g, '""')}"`
+          }
+          return value
+        }).join(',')
+      ),
+    ].join('\n')
+
+    this.downloadFile(csvContent, filename, 'text/csv')
+  }
+
+  /**
+   * Export analytics data to JSON
+   */
+  static exportToJSON(data: any, filename: string = 'analytics.json'): void {
+    const jsonContent = JSON.stringify(data, null, 2)
+    this.downloadFile(jsonContent, filename, 'application/json')
+  }
+
+  /**
+   * Export analytics report to PDF (requires jsPDF)
+   */
+  static async exportToPDF(
+    data: {
+      title: string
+      summary: any
+      charts: Array<{ title: string; data: any }>
+      tables: Array<{ title: string; headers: string[]; rows: any[][] }>
+    },
+    filename: string = 'analytics-report.pdf'
+  ): Promise<void> {
+    // This is a simplified example - you'd use a library like jsPDF in production
+    const reportHTML = `
+      <html>
+        <head>
+          <title>${data.title}</title>
+          <style>
+            body { font-family: Arial, sans-serif; margin: 20px; }
+            h1 { color: #333; }
+            table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+            th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+            th { background-color: #f2f2f2; }
+          </style>
+        </head>
+        <body>
+          <h1>${data.title}</h1>
+          <div>
+            <h2>Summary</h2>
+            ${Object.entries(data.summary).map(([key, value]) => `
+              <p><strong>${key}:</strong> ${value}</p>
+            `).join('')}
+          </div>
+          ${data.tables.map((table) => `
+            <div>
+              <h2>${table.title}</h2>
+              <table>
+                <thead>
+                  <tr>${table.headers.map((h) => `<th>${h}</th>`).join('')}</tr>
+                </thead>
+                <tbody>
+                  ${table.rows.map((row) => `
+                    <tr>${row.map((cell) => `<td>${cell}</td>`).join('')}</tr>
+                  `).join('')}
+                </tbody>
+              </table>
+            </div>
+          `).join('')}
+        </body>
+      </html>
+    `
+
+    // Print the HTML (user can save as PDF)
+    const printWindow = window.open('', '', 'height=600,width=800')
+    if (printWindow) {
+      printWindow.document.write(reportHTML)
+      printWindow.document.close()
+      printWindow.print()
+    }
+  }
+
+  /**
+   * Helper to download file
+   */
+  private static downloadFile(content: string, filename: string, mimeType: string): void {
+    const blob = new Blob([content], { type: mimeType })
+    const url = URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = url
+    link.download = filename
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+    URL.revokeObjectURL(url)
+  }
+
+  /**
+   * Generate email-friendly HTML report
+   */
+  static generateEmailReport(data: {
+    teamName: string
+    period: string
+    summary: any
+    topUsers: Array<{ name: string; cost: number }>
+    alerts: Array<{ message: string; severity: string }>
+  }): string {
+    return `
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <style>
+            body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+            .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+            .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px; border-radius: 8px; }
+            .summary { background: #f7fafc; padding: 15px; border-radius: 8px; margin: 20px 0; }
+            .stat { display: inline-block; margin: 10px 20px 10px 0; }
+            .stat-label { font-size: 12px; color: #718096; }
+            .stat-value { font-size: 24px; font-weight: bold; color: #2d3748; }
+            .alert { padding: 10px; border-radius: 4px; margin: 10px 0; }
+            .alert-warning { background: #fef3c7; border-left: 4px solid #f59e0b; }
+            .alert-critical { background: #fee2e2; border-left: 4px solid #ef4444; }
+          </style>
+        </head>
+        <body>
+          <div class="container">
+            <div class="header">
+              <h1>Token Optimization Report</h1>
+              <p>${data.teamName} · ${data.period}</p>
+            </div>
+
+            <div class="summary">
+              <h2>Summary</h2>
+              ${Object.entries(data.summary).map(([key, value]) => `
+                <div class="stat">
+                  <div class="stat-label">${key}</div>
+                  <div class="stat-value">${value}</div>
+                </div>
+              `).join('')}
+            </div>
+
+            <h2>Top Users</h2>
+            <ul>
+              ${data.topUsers.map((user) => `
+                <li>${user.name}: $${user.cost.toFixed(2)}</li>
+              `).join('')}
+            </ul>
+
+            ${data.alerts.length > 0 ? `
+              <h2>Alerts</h2>
+              ${data.alerts.map((alert) => `
+                <div class="alert alert-${alert.severity}">
+                  ${alert.message}
+                </div>
+              `).join('')}
+            ` : ''}
+          </div>
+        </body>
+      </html>
+    `
+  }
+}
+```
+
+---
+
+## Complete Example
+
+Here's a complete working example integrating all components:
+
+```typescript
+// app/dashboard/TokenOptimizationDashboard.tsx
+'use client'
+
+import { useState, useEffect } from 'react'
+import { Download, RefreshCw } from 'lucide-react'
+import { useTokenOptimizationAnalytics } from '@/hooks/useTokenOptimizationAnalytics'
+import { SavingsChart } from '@/components/SavingsChart'
+import { MethodBreakdownChart } from '@/components/MethodBreakdownChart'
+import { BudgetAlertSystem, BudgetThreshold } from '@/components/BudgetAlertSystem'
+import { ModelComparisonView, ModelMetrics } from '@/components/ModelComparisonView'
+import { TeamUsageDashboard, TeamMember } from '@/components/TeamUsageDashboard'
+import { AnalyticsExporter } from '@/lib/export/analytics-exporter'
+
+export function TokenOptimizationDashboard() {
+  const [timeRange, setTimeRange] = useState<'7d' | '30d' | '90d'>('30d')
+  const [activeTab, setActiveTab] = useState<'overview' | 'models' | 'team' | 'alerts'>('overview')
+
+  // Fetch analytics data
+  const { data, isLoading, refresh } = useTokenOptimizationAnalytics({
+    timeRange,
+    teamId: 'your-team-id',
+  })
+
+  // Mock data for demonstration (replace with actual API data)
+  const mockSavingsData = Array.from({ length: 30 }, (_, i) => ({
+    timestamp: new Date(Date.now() - (29 - i) * 24 * 60 * 60 * 1000).toISOString(),
+    tokensSaved: Math.floor(Math.random() * 50000) + 10000,
+    costSaved: Math.random() * 50 + 10,
+  }))
+
+  const mockMethodData = {
+    toon: 892,
+    llmlingua: 534,
+    semantic: 287,
+    truncation: 134,
+    caching: 421,
+  }
+
+  const mockModelMetrics: ModelMetrics[] = [
+    {
+      modelId: 'gpt-4-turbo',
+      modelName: 'GPT-4 Turbo',
+      provider: 'OpenAI',
+      totalRequests: 15234,
+      totalTokens: 8_425_890,
+      totalCost: 842.59,
+      avgTokensPerRequest: 553,
+      avgCostPerRequest: 0.055,
+      avgLatency: 1250,
+      optimizationRate: 67.4,
+      cacheHitRate: 83.2,
+    },
+    {
+      modelId: 'gpt-3.5-turbo',
+      modelName: 'GPT-3.5 Turbo',
+      provider: 'OpenAI',
+      totalRequests: 8432,
+      totalTokens: 3_234_120,
+      totalCost: 161.71,
+      avgTokensPerRequest: 384,
+      avgCostPerRequest: 0.019,
+      avgLatency: 850,
+      optimizationRate: 54.2,
+      cacheHitRate: 75.8,
+    },
+    {
+      modelId: 'claude-3-sonnet',
+      modelName: 'Claude 3 Sonnet',
+      provider: 'Anthropic',
+      totalRequests: 5621,
+      totalTokens: 4_125_340,
+      totalCost: 412.53,
+      avgTokensPerRequest: 734,
+      avgCostPerRequest: 0.073,
+      avgLatency: 1450,
+      optimizationRate: 71.8,
+      cacheHitRate: 88.5,
+    },
+  ]
+
+  const mockTeamMembers: TeamMember[] = [
+    {
+      userId: '1',
+      name: 'Alice Johnson',
+      email: 'alice@company.com',
+      role: 'Engineer',
+      totalRequests: 8234,
+      totalTokens: 4_234_120,
+      totalCost: 423.41,
+      avgOptimization: 68.2,
+    },
+    {
+      userId: '2',
+      name: 'Bob Smith',
+      email: 'bob@company.com',
+      role: 'Product Manager',
+      totalRequests: 5621,
+      totalTokens: 2_125_340,
+      totalCost: 212.53,
+      avgOptimization: 54.7,
+    },
+    {
+      userId: '3',
+      name: 'Carol Davis',
+      email: 'carol@company.com',
+      role: 'Designer',
+      totalRequests: 3421,
+      totalTokens: 1_523_450,
+      totalCost: 152.35,
+      avgOptimization: 61.3,
+    },
+  ]
+
+  const mockThresholds: BudgetThreshold[] = [
+    {
+      id: '1',
+      name: 'Monthly Cost Budget',
+      type: 'cost',
+      threshold: 2000,
+      period: 'monthly',
+      currentValue: 1416.83,
+      enabled: true,
+      notificationChannels: ['email', 'slack', 'ui'],
+    },
+    {
+      id: '2',
+      name: 'Daily Token Limit',
+      type: 'tokens',
+      threshold: 1_000_000,
+      period: 'daily',
+      currentValue: 785_350,
+      enabled: true,
+      notificationChannels: ['ui'],
+    },
+  ]
+
+  // Export handlers
+  const handleExportCSV = () => {
+    AnalyticsExporter.exportToCSV(mockSavingsData, `token-savings-${timeRange}.csv`)
+  }
+
+  const handleExportJSON = () => {
+    const exportData = {
+      period: timeRange,
+      generated: new Date().toISOString(),
+      savings: mockSavingsData,
+      methods: mockMethodData,
+      models: mockModelMetrics,
+      team: mockTeamMembers,
+    }
+    AnalyticsExporter.exportToJSON(exportData, `token-analytics-${timeRange}.json`)
+  }
+
+  const handleExportPDF = async () => {
+    await AnalyticsExporter.exportToPDF(
+      {
+        title: 'Token Optimization Analytics Report',
+        summary: {
+          'Time Period': timeRange,
+          'Total Savings': `$${mockSavingsData.reduce((sum, d) => sum + d.costSaved, 0).toFixed(2)}`,
+          'Total Tokens Saved': mockSavingsData.reduce((sum, d) => sum + d.tokensSaved, 0).toLocaleString(),
+          'Total Models': mockModelMetrics.length,
+          'Team Members': mockTeamMembers.length,
+        },
+        charts: [],
+        tables: [
+          {
+            title: 'Model Comparison',
+            headers: ['Model', 'Requests', 'Cost', 'Optimization'],
+            rows: mockModelMetrics.map((m) => [
+              m.modelName,
+              m.totalRequests.toLocaleString(),
+              `$${m.totalCost.toFixed(2)}`,
+              `${m.optimizationRate.toFixed(1)}%`,
+            ]),
+          },
+        ],
+      },
+      `token-report-${timeRange}.pdf`
+    )
+  }
+
+  return (
+    <div className="min-h-screen bg-background p-6 space-y-6">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold text-foreground">
+            Token Optimization Dashboard
+          </h1>
+          <p className="text-muted-foreground mt-1">
+            Real-time analytics and cost tracking
+          </p>
+        </div>
+
+        <div className="flex items-center gap-3">
+          {/* Time Range Selector */}
+          <select
+            value={timeRange}
+            onChange={(e) => setTimeRange(e.target.value as typeof timeRange)}
+            className="px-4 py-2 border border-border rounded-lg bg-background text-foreground"
+          >
+            <option value="7d">Last 7 days</option>
+            <option value="30d">Last 30 days</option>
+            <option value="90d">Last 90 days</option>
+          </select>
+
+          {/* Export Menu */}
+          <div className="relative group">
+            <button className="flex items-center gap-2 px-4 py-2 border border-border rounded-lg bg-background text-foreground hover:bg-muted transition-colors">
+              <Download className="w-4 h-4" />
+              Export
+            </button>
+            <div className="absolute right-0 mt-2 w-48 rounded-lg border border-border bg-card shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all">
+              <button
+                onClick={handleExportCSV}
+                className="w-full px-4 py-2 text-left text-sm hover:bg-muted transition-colors"
+              >
+                Export as CSV
+              </button>
+              <button
+                onClick={handleExportJSON}
+                className="w-full px-4 py-2 text-left text-sm hover:bg-muted transition-colors"
+              >
+                Export as JSON
+              </button>
+              <button
+                onClick={handleExportPDF}
+                className="w-full px-4 py-2 text-left text-sm hover:bg-muted transition-colors"
+              >
+                Export as PDF
+              </button>
+            </div>
+          </div>
+
+          {/* Refresh Button */}
+          <button
+            onClick={refresh}
+            disabled={isLoading}
+            className="p-2 border border-border rounded-lg bg-background text-foreground hover:bg-muted transition-colors disabled:opacity-50"
+            aria-label="Refresh data"
+          >
+            <RefreshCw className={`w-5 h-5 ${isLoading ? 'animate-spin' : ''}`} />
+          </button>
+        </div>
+      </div>
+
+      {/* Navigation Tabs */}
+      <div className="flex items-center gap-2 border-b border-border">
+        {[
+          { id: 'overview', label: 'Overview' },
+          { id: 'models', label: 'Models' },
+          { id: 'team', label: 'Team' },
+          { id: 'alerts', label: 'Alerts' },
+        ].map((tab) => (
+          <button
+            key={tab.id}
+            onClick={() => setActiveTab(tab.id as typeof activeTab)}
+            className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
+              activeTab === tab.id
+                ? 'border-brand-500 text-brand-500'
+                : 'border-transparent text-muted-foreground hover:text-foreground'
+            }`}
+          >
+            {tab.label}
+          </button>
+        ))}
+      </div>
+
+      {/* Content */}
+      {activeTab === 'overview' && (
+        <div className="space-y-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <SavingsChart data={mockSavingsData} />
+            <MethodBreakdownChart data={mockMethodData} />
+          </div>
+        </div>
+      )}
+
+      {activeTab === 'models' && (
+        <ModelComparisonView models={mockModelMetrics} />
+      )}
+
+      {activeTab === 'team' && (
+        <TeamUsageDashboard
+          teamId="your-team-id"
+          members={mockTeamMembers}
+          teamBudget={2000}
+        />
+      )}
+
+      {activeTab === 'alerts' && (
+        <BudgetAlertSystem thresholds={mockThresholds} />
+      )}
+    </div>
+  )
+}
+```
+
+---
+
+## Best Practices
+
+### 1. Performance Optimization
+
+- **Batch API Requests**: Group analytics requests to reduce API calls
+- **Cache Aggressively**: Use SWR or React Query for client-side caching
+- **Lazy Load Charts**: Only render charts when visible using Intersection Observer
+- **Debounce Updates**: Throttle real-time updates to avoid excessive re-renders
+
+### 2. Security Considerations
+
+- **Validate All Inputs**: Use Zod schemas for API request validation
+- **Rate Limiting**: Implement rate limits on analytics endpoints
+- **Authentication**: Require authentication for all analytics endpoints
+- **RBAC**: Implement role-based access control for team dashboards
+
+### 3. Scalability
+
+- **Time-Series Database**: Use InfluxDB or TimescaleDB for efficient time-series storage
+- **Aggregation**: Pre-aggregate data at multiple granularities (hour, day, week)
+- **Pagination**: Implement pagination for large datasets
+- **CDN Caching**: Cache static analytics reports on CDN
+
+### 4. User Experience
+
+- **Loading States**: Show skeleton loaders while data loads
+- **Empty States**: Provide helpful messages when no data is available
+- **Error Recovery**: Gracefully handle API failures with retry mechanisms
+- **Responsive Design**: Ensure all charts and tables work on mobile devices
+
+---
+
+## Troubleshooting
+
+### Common Issues
+
+**Issue**: Charts not rendering
+
+- **Solution**: Ensure data is in the correct format with required fields
+- **Check**: Browser console for JavaScript errors
+- **Verify**: SVG support in the browser
+
+**Issue**: Alerts not triggering
+
+- **Solution**: Verify threshold values and current metrics are being updated
+- **Check**: Alert system is enabled and thresholds are configured correctly
+
+**Issue**: Export functionality not working
+
+- **Solution**: Check browser security settings for download permissions
+- **Verify**: Data is serializable for CSV/JSON export
+
+---
+
+## Next Steps
+
+1. **Set up backend analytics endpoints** following the patterns in this guide
+2. **Integrate event tracking** into your token optimization workflow
+3. **Configure budget thresholds** based on your team's needs
+4. **Customize charts** to match your design system
+5. **Set up alerting channels** (email, Slack, webhooks)
+6. **Schedule automated reports** for weekly/monthly summaries
+
+---
+
+## Additional Resources
+
+- [TokenOptimizationPanel Component Reference](/reference/components/token-optimization-panel)
+- [Token Optimization System Overview](/reference/components/token-optimization)
+- [Analytics API Best Practices](/guides/token-optimization/best-practices)
+- [SWR Documentation](https://swr.vercel.app)
+- [Zod Validation](https://zod.dev)
+
+---
+
+**Last Updated**: January 28, 2026
+**Version**: 1.0.0
+**Status**: Production Ready

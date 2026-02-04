@@ -7,7 +7,7 @@
 
 import * as React from 'react'
 import { useOptimistic, useCallback, useMemo, useTransition } from 'react'
-import { getProfiler, type PerformanceMetrics } from '../../performance'
+import { getProfiler, type PerformanceMetrics } from '../../performance/profiler'
 
 interface ProfilerState {
   metrics: PerformanceMetrics[]

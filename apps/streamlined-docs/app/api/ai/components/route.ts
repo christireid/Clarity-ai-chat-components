@@ -1,4 +1,4 @@
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 import {
   type ComponentInfo,
   type ComponentsAPIResponse,
@@ -15,6 +15,8 @@ import {
   getDataSourceInfo,
 } from '@/lib/ai/merge-component-data'
 import { getLogger } from '@/lib/logging'
+import { validateQueryParams, validationErrorResponse } from '@/lib/validation'
+import { componentsQuerySchema } from './schema'
 
 const logger = getLogger('ai-components-api')
 
@@ -1362,11 +1364,56 @@ export async function OPTIONS() {
  *
  * Returns a complete catalog of Clarity Chat components
  * with their props, examples, and accessibility information.
+ *
+ * Query parameters:
+ * - category: Filter by component category
+ * - search: Search by name or description
+ * - limit: Limit number of results (1-100, default 50)
+ * - includeExamples: Include code examples (true/false)
+ * - format: Response format (json/markdown, default json)
  */
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
+    // VALIDATION: Validate query parameters with Zod schema
+    const { searchParams } = new URL(request.url)
+    const validation = validateQueryParams(searchParams, componentsQuerySchema)
+
+    if (!validation.success) {
+      return validationErrorResponse(validation.error)
+    }
+
+    const queryParams = validation.data
+
     // Merge curated components with auto-generated data from source
-    const allComponents = mergeComponentData(curatedComponents)
+    let allComponents = mergeComponentData(curatedComponents)
+
+    // Apply filters if provided
+    if (queryParams.category) {
+      allComponents = allComponents.filter(
+        (c) => c.category === queryParams.category
+      )
+    }
+
+    if (queryParams.search) {
+      const searchLower = queryParams.search.toLowerCase()
+      allComponents = allComponents.filter(
+        (c) =>
+          c.name.toLowerCase().includes(searchLower) ||
+          c.description.toLowerCase().includes(searchLower)
+      )
+    }
+
+    if (queryParams.limit) {
+      allComponents = allComponents.slice(0, queryParams.limit)
+    }
+
+    // Strip examples if not requested
+    if (queryParams.includeExamples === false) {
+      allComponents = allComponents.map((c) => {
+        const { examples, ...rest } = c
+        return rest as ComponentInfo
+      })
+    }
 
     // Extract unique categories with proper typing
     const categories = [
@@ -1398,6 +1445,34 @@ export async function GET() {
       },
     }
 
+    // Support markdown format for AI consumption
+    if (queryParams.format === 'markdown') {
+      const markdown = allComponents
+        .map(
+          (c) =>
+            `## ${c.name}\n${c.description}\n\n**Category:** ${c.category}\n**Import:** \`${c.importPath}\`\n\n`
+        )
+        .join('\n')
+
+      // Create custom headers for markdown response (exclude conflicting Content-Type)
+      const markdownHeaders = Object.entries(API_RESPONSE_HEADERS).reduce(
+        (acc, [key, value]) => {
+          if (key.toLowerCase() !== 'content-type') {
+            acc[key] = value
+          }
+          return acc
+        },
+        {} as Record<string, string>
+      )
+
+      return new Response(markdown, {
+        headers: {
+          'Content-Type': 'text/markdown; charset=utf-8',
+          ...markdownHeaders,
+        },
+      })
+    }
+
     return NextResponse.json(response, {
       headers: API_RESPONSE_HEADERS,
     })
@@ -1405,10 +1480,10 @@ export async function GET() {
     // Log error for debugging
     const errorMessage = error instanceof Error ? error.message : String(error)
     const errorStack = error instanceof Error ? error.stack : undefined
-    
-    console.error('[AI Components API] Error:', errorMessage)
-    if (errorStack) {
-      console.error('[AI Components API] Stack:', errorStack)
+
+    logger.error('Components API error:', errorMessage)
+    if (errorStack && process.env.NODE_ENV === 'development') {
+      logger.error('Stack trace:', errorStack)
     }
 
     // Return proper JSON error response

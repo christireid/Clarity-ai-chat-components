@@ -1,0 +1,601 @@
+{
+  "version": "1.0.0",
+  "generatedAt": "2026-01-28T00:00:00Z",
+  "scope": "apps/streamlined-docs",
+  "summary": {
+    "totalSourceFiles": 6,
+    "migratedFiles": 1,
+    "partiallyMigratedFiles": 2,
+    "unmig ratedFiles": 3,
+    "newFilesRequired": 89,
+    "existingStreamlinedPages": 15
+  },
+  "packageDocsToStreamlined": {
+    "ARCHITECTURE.md": {
+      "sourcePath": "packages/token-optimization/docs/ARCHITECTURE.md",
+      "targetPath": "apps/streamlined-docs/app/guides/architecture/page.tsx",
+      "status": "not_migrated",
+      "priority": "P2",
+      "effort": "12 hours",
+      "content": {
+        "totalLines": 631,
+        "sections": [
+          "Overview",
+          "Design Philosophy",
+          "Layer Architecture",
+          "Dual-API Pattern",
+          "Subpath Exports",
+          "Progressive Complexity",
+          "Key Design Decisions",
+          "Module Organization",
+          "Extension Points",
+          "Performance Considerations"
+        ]
+      },
+      "migrationNotes": "Rich architectural content with diagrams. Needs conversion to React with interactive diagrams using Mermaid.",
+      "dependencies": []
+    },
+    "BEST_PRACTICES.md": {
+      "sourcePath": "packages/token-optimization/docs/BEST_PRACTICES.md",
+      "targetPath": "apps/streamlined-docs/app/guides/best-practices/page.tsx",
+      "status": "not_migrated",
+      "priority": "P2",
+      "effort": "10 hours",
+      "content": {
+        "totalLines": 641,
+        "sections": [
+          "Provider Caching",
+          "Performance Optimization",
+          "Security",
+          "Error Handling",
+          "Monitoring & Observability",
+          "Cost Optimization",
+          "React Patterns",
+          "Node.js Patterns",
+          "Production Checklist",
+          "Common Pitfalls"
+        ]
+      },
+      "migrationNotes": "Comprehensive best practices with code examples. Add interactive checkboxes for production checklist.",
+      "dependencies": []
+    },
+    "GETTING_STARTED.md": {
+      "sourcePath": "packages/token-optimization/docs/GETTING_STARTED.md",
+      "targetPath": "apps/streamlined-docs/app/guides/token-optimization/page.tsx",
+      "status": "partially_migrated",
+      "priority": "P0",
+      "effort": "4 hours",
+      "content": {
+        "totalLines": 342,
+        "sections": [
+          "Installation",
+          "Your First Token Count",
+          "React Quick Start",
+          "Node.js Quick Start",
+          "Provider Caching (90% Savings!)",
+          "Next Steps"
+        ]
+      },
+      "migrationNotes": "Most content exists in main guide but quick start examples could be better organized. Fix '90% Savings' to '50-70% baseline, up to 90% with caching'.",
+      "dependencies": [],
+      "migratedSections": [
+        "Installation",
+        "Provider Caching"
+      ],
+      "missingSections": [
+        "Your First Token Count (simplified version)",
+        "React Quick Start (needs better code snippets)",
+        "Node.js Quick Start (needs better code snippets)"
+      ]
+    },
+    "PROVIDER_CACHING.md": {
+      "sourcePath": "packages/token-optimization/docs/PROVIDER_CACHING.md",
+      "targetPath": "apps/streamlined-docs/app/guides/token-optimization/page.tsx (section)",
+      "status": "migrated",
+      "priority": "N/A",
+      "effort": "0 hours (complete)",
+      "content": {
+        "totalLines": 570,
+        "sections": [
+          "Quick Start",
+          "How It Works",
+          "Supported Providers",
+          "API Reference",
+          "Examples",
+          "Best Practices",
+          "Troubleshooting"
+        ]
+      },
+      "migrationNotes": "Excellent coverage already in main guide. Provider caching section is comprehensive (400+ lines).",
+      "dependencies": [],
+      "migratedSections": [
+        "All sections"
+      ]
+    },
+    "SECURITY.md": {
+      "sourcePath": "packages/token-optimization/docs/SECURITY.md",
+      "targetPath": "apps/streamlined-docs/app/guides/security/page.tsx",
+      "status": "not_migrated",
+      "priority": "P2",
+      "effort": "8 hours",
+      "content": {
+        "totalLines": 679,
+        "sections": [
+          "Overview",
+          "OWASP LLM Top 10 Compliance",
+          "Security Features",
+          "Threat Model",
+          "Security Configuration",
+          "PII Redaction",
+          "Audit Logging",
+          "Best Practices",
+          "Reporting Security Issues"
+        ]
+      },
+      "migrationNotes": "Critical security documentation. Add interactive security checklist and configuration generator.",
+      "dependencies": []
+    },
+    "TROUBLESHOOTING.md": {
+      "sourcePath": "packages/token-optimization/docs/TROUBLESHOOTING.md",
+      "targetPath": "apps/streamlined-docs/app/guides/troubleshooting/page.tsx",
+      "status": "partially_migrated",
+      "priority": "P2",
+      "effort": "6 hours",
+      "content": {
+        "totalLines": 690,
+        "sections": [
+          "Installation Issues",
+          "Token Counting Issues",
+          "Provider Caching Issues",
+          "React Hook Issues",
+          "Compression Issues",
+          "TypeScript Issues",
+          "Performance Issues",
+          "Security Issues",
+          "Common Error Codes",
+          "Debug Mode"
+        ]
+      },
+      "migrationNotes": "Some troubleshooting info in main guide but not comprehensive. Needs searchable FAQ format with common error codes.",
+      "dependencies": [],
+      "migratedSections": [
+        "Provider Caching Issues (partial)"
+      ],
+      "missingSections": [
+        "Installation Issues",
+        "Token Counting Issues",
+        "React Hook Issues",
+        "Compression Issues",
+        "TypeScript Issues",
+        "Performance Issues",
+        "Security Issues",
+        "Common Error Codes",
+        "Debug Mode"
+      ]
+    }
+  },
+  "newContentRequired": {
+    "guides": {
+      "achievingFiftySeventyReduction": {
+        "path": "apps/streamlined-docs/app/guides/achieving-50-70-reduction/page.tsx",
+        "status": "required",
+        "priority": "P0",
+        "effort": "8 hours",
+        "description": "Step-by-step guide to achieving baseline 50-70% cost reduction",
+        "sections": [
+          "Introduction",
+          "Strategy Breakdown",
+          "Provider Caching (50%+ savings)",
+          "Compression (10-30% savings)",
+          "Smart Routing (5-15% savings)",
+          "Combined Approach",
+          "Real-World Example",
+          "Measurement & Validation"
+        ],
+        "dependencies": []
+      },
+      "compressionStrategies": {
+        "path": "apps/streamlined-docs/app/guides/compression-strategies/page.tsx",
+        "status": "required",
+        "priority": "P1",
+        "effort": "12 hours",
+        "description": "Complete guide to text compression for token optimization",
+        "sections": [
+          "Overview",
+          "LLMLingua Compression",
+          "Extractive Compression",
+          "Adaptive Compression",
+          "Choosing a Strategy",
+          "Quality Thresholds",
+          "Performance Benchmarks",
+          "Cost Impact Analysis"
+        ],
+        "dependencies": [
+          "API reference for LLMLinguaCompressor",
+          "API reference for ExtractiveCompressor",
+          "API reference for AdaptiveCompressor"
+        ]
+      },
+      "modelRouting": {
+        "path": "apps/streamlined-docs/app/guides/model-routing/page.tsx",
+        "status": "required",
+        "priority": "P1",
+        "effort": "12 hours",
+        "description": "Smart model selection based on complexity for cost optimization",
+        "sections": [
+          "Overview",
+          "Complexity Analysis",
+          "Routing Strategies",
+          "Custom Rules",
+          "Fallback Logic",
+          "Cost Savings (5-15%)",
+          "Production Examples"
+        ],
+        "dependencies": [
+          "API reference for ModelRouter",
+          "API reference for ComplexityAnalyzer"
+        ]
+      },
+      "toonMigration": {
+        "path": "apps/streamlined-docs/app/guides/toon-migration/page.tsx",
+        "status": "required",
+        "priority": "P1",
+        "effort": "8 hours",
+        "description": "Migration guide from legacy TOON library to @clarity-chat/token-optimization",
+        "sections": [
+          "Overview",
+          "Breaking Changes",
+          "API Mapping (old → new)",
+          "Step-by-Step Migration",
+          "Codemod Scripts",
+          "Deprecation Timeline",
+          "FAQ"
+        ],
+        "dependencies": []
+      }
+    },
+    "cookbooks": {
+      "achievingFiftyPercentReduction": {
+        "path": "apps/streamlined-docs/app/cookbook/achieving-50-percent-reduction/page.tsx",
+        "status": "required",
+        "priority": "P0",
+        "effort": "6 hours",
+        "description": "Recipe: Achieve 50% baseline cost reduction",
+        "format": "step-by-step",
+        "dependencies": []
+      },
+      "providerCachingSetup": {
+        "path": "apps/streamlined-docs/app/cookbook/provider-caching-setup/page.tsx",
+        "status": "required",
+        "priority": "P0",
+        "effort": "6 hours",
+        "description": "Recipe: Complete setup for Anthropic/OpenAI/Google caching",
+        "format": "step-by-step",
+        "dependencies": []
+      },
+      "smartRouting": {
+        "path": "apps/streamlined-docs/app/cookbook/smart-routing/page.tsx",
+        "status": "required",
+        "priority": "P0",
+        "effort": "5 hours",
+        "description": "Recipe: Complexity-based model routing",
+        "format": "step-by-step",
+        "dependencies": [
+          "ModelRouter API reference"
+        ]
+      },
+      "toonMigration": {
+        "path": "apps/streamlined-docs/app/cookbook/toon-migration/page.tsx",
+        "status": "required",
+        "priority": "P0",
+        "effort": "5 hours",
+        "description": "Recipe: Migrate from TOON to @clarity-chat/token-optimization",
+        "format": "step-by-step",
+        "dependencies": [
+          "TOON migration guide"
+        ]
+      },
+      "enterprisePipeline": {
+        "path": "apps/streamlined-docs/app/cookbook/enterprise-pipeline/page.tsx",
+        "status": "required",
+        "priority": "P0",
+        "effort": "8 hours",
+        "description": "Recipe: Production deployment with monitoring",
+        "format": "step-by-step",
+        "dependencies": []
+      },
+      "reactIntegration": {
+        "path": "apps/streamlined-docs/app/cookbook/react-integration/page.tsx",
+        "status": "required",
+        "priority": "P0",
+        "effort": "5 hours",
+        "description": "Recipe: Complete React app setup with all optimizations",
+        "format": "step-by-step",
+        "dependencies": []
+      },
+      "nodejsIntegration": {
+        "path": "apps/streamlined-docs/app/cookbook/nodejs-integration/page.tsx",
+        "status": "required",
+        "priority": "P0",
+        "effort": "5 hours",
+        "description": "Recipe: Server-side optimization patterns",
+        "format": "step-by-step",
+        "dependencies": []
+      }
+    },
+    "apiReference": {
+      "classes": {
+        "accurateTokenCounter": {
+          "path": "apps/streamlined-docs/app/reference/classes/accurate-token-counter/page.tsx",
+          "status": "required",
+          "priority": "P0",
+          "effort": "5 hours"
+        },
+        "tieredCache": {
+          "path": "apps/streamlined-docs/app/reference/classes/tiered-cache/page.tsx",
+          "status": "required",
+          "priority": "P0",
+          "effort": "5 hours"
+        },
+        "llmlinguaCompressor": {
+          "path": "apps/streamlined-docs/app/reference/classes/llmlingua-compressor/page.tsx",
+          "status": "required",
+          "priority": "P0",
+          "effort": "5 hours"
+        },
+        "extractiveCompressor": {
+          "path": "apps/streamlined-docs/app/reference/classes/extractive-compressor/page.tsx",
+          "status": "required",
+          "priority": "P0",
+          "effort": "5 hours"
+        },
+        "adaptiveCompressor": {
+          "path": "apps/streamlined-docs/app/reference/classes/adaptive-compressor/page.tsx",
+          "status": "required",
+          "priority": "P0",
+          "effort": "5 hours"
+        },
+        "modelRouter": {
+          "path": "apps/streamlined-docs/app/reference/classes/model-router/page.tsx",
+          "status": "required",
+          "priority": "P0",
+          "effort": "5 hours"
+        },
+        "complexityAnalyzer": {
+          "path": "apps/streamlined-docs/app/reference/classes/complexity-analyzer/page.tsx",
+          "status": "required",
+          "priority": "P0",
+          "effort": "4 hours"
+        },
+        "providerCachingFormatter": {
+          "path": "apps/streamlined-docs/app/reference/classes/provider-caching-formatter/page.tsx",
+          "status": "required",
+          "priority": "P0",
+          "effort": "5 hours"
+        },
+        "costTracker": {
+          "path": "apps/streamlined-docs/app/reference/classes/cost-tracker/page.tsx",
+          "status": "required",
+          "priority": "P0",
+          "effort": "5 hours"
+        },
+        "note": "9 of 22 HIGHEST priority classes documented above. 13 more required (see api-truth-map.json)."
+      },
+      "hooks": {
+        "useTokenCount": {
+          "path": "apps/streamlined-docs/app/reference/hooks/use-token-count/page.tsx",
+          "status": "required",
+          "priority": "P1",
+          "effort": "3 hours"
+        },
+        "useTieredCache": {
+          "path": "apps/streamlined-docs/app/reference/hooks/use-tiered-cache/page.tsx",
+          "status": "required",
+          "priority": "P1",
+          "effort": "3 hours"
+        },
+        "useModelRouter": {
+          "path": "apps/streamlined-docs/app/reference/hooks/use-model-router/page.tsx",
+          "status": "required",
+          "priority": "P1",
+          "effort": "3 hours"
+        },
+        "useProviderCache": {
+          "path": "apps/streamlined-docs/app/reference/hooks/use-provider-cache/page.tsx",
+          "status": "required",
+          "priority": "P1",
+          "effort": "3 hours"
+        },
+        "useCostTracking": {
+          "path": "apps/streamlined-docs/app/reference/hooks/use-cost-tracking/page.tsx",
+          "status": "required",
+          "priority": "P1",
+          "effort": "3 hours"
+        }
+      },
+      "components": {
+        "tokenOptimizationBadge": {
+          "path": "apps/streamlined-docs/app/reference/components/token-optimization-badge/page.tsx",
+          "status": "required",
+          "priority": "P1",
+          "effort": "3 hours"
+        }
+      }
+    },
+    "tools": {
+      "optimizationSimulator": {
+        "path": "apps/streamlined-docs/app/tools/optimization-simulator/page.tsx",
+        "status": "required",
+        "priority": "P1",
+        "effort": "16 hours",
+        "description": "Interactive simulator showing savings potential",
+        "dependencies": []
+      },
+      "strategyRecommender": {
+        "path": "apps/streamlined-docs/app/tools/strategy-recommender/page.tsx",
+        "status": "required",
+        "priority": "P2",
+        "effort": "12 hours",
+        "description": "AI-powered recommendation of optimization strategies",
+        "dependencies": []
+      }
+    },
+    "components": {
+      "beforeAfterComparison": {
+        "path": "apps/streamlined-docs/components/Demos/BeforeAfterComparison.tsx",
+        "status": "required",
+        "priority": "P0",
+        "effort": "4 hours",
+        "description": "Visual before/after cost comparison component",
+        "dependencies": []
+      },
+      "savingsDashboard": {
+        "path": "apps/streamlined-docs/components/Demos/SavingsDashboard.tsx",
+        "status": "required",
+        "priority": "P0",
+        "effort": "6 hours",
+        "description": "Real-time savings tracking dashboard",
+        "dependencies": []
+      }
+    }
+  },
+  "existingStreamlinedPages": {
+    "guides": [
+      {
+        "path": "apps/streamlined-docs/app/guides/token-optimization/page.tsx",
+        "status": "complete",
+        "lines": 1185,
+        "needsUpdate": true,
+        "updates": [
+          "Change '80%+' to '50-70% baseline, up to 90% with caching'",
+          "Add BeforeAfterComparison component",
+          "Add link to new 'Achieving 50-70% Reduction' guide"
+        ]
+      }
+    ],
+    "examples": [
+      {
+        "path": "apps/streamlined-docs/app/examples/token-optimization/page.tsx",
+        "status": "complete",
+        "lines": 300,
+        "needsUpdate": true,
+        "updates": [
+          "Add savings calculations to all demos",
+          "Show 'before optimization' baseline for each demo",
+          "Add BeforeAfterComparison demo"
+        ]
+      }
+    ],
+    "tools": [
+      {
+        "path": "apps/streamlined-docs/app/tools/token-roi-calculator/page.tsx",
+        "status": "unknown",
+        "needsUpdate": true,
+        "updates": [
+          "Feature '50-70% baseline reduction' prominently",
+          "Add preset scenarios (chatbot, document analysis, code assistant)",
+          "Make it the #1 CTA on token optimization landing page"
+        ]
+      }
+    ],
+    "referenceHooks": [
+      {
+        "path": "apps/streamlined-docs/app/reference/hooks/use-token-optimization/page.tsx",
+        "status": "complete",
+        "lines": 400,
+        "needsUpdate": true,
+        "updates": [
+          "Add cost savings section",
+          "Add 'Saves X% on costs' badge",
+          "Link to cookbooks"
+        ]
+      },
+      {
+        "path": "apps/streamlined-docs/app/api/reference/hooks/use-token-budget-monitor/",
+        "status": "complete",
+        "lines": 200,
+        "needsUpdate": false
+      }
+    ],
+    "referenceComponents": [
+      {
+        "path": "apps/streamlined-docs/app/reference/components/token-counter/page.tsx",
+        "status": "complete",
+        "lines": 200,
+        "needsUpdate": true,
+        "updates": [
+          "Add cost savings example",
+          "Show how it enables optimization"
+        ]
+      },
+      {
+        "path": "apps/streamlined-docs/app/reference/components/token-cost-preview/page.tsx",
+        "status": "partial",
+        "needsUpdate": true,
+        "updates": [
+          "Add comprehensive prop table",
+          "Add before/after cost comparison example"
+        ]
+      },
+      {
+        "path": "apps/streamlined-docs/app/reference/components/token-analyzer/page.tsx",
+        "status": "partial",
+        "needsUpdate": true
+      },
+      {
+        "path": "apps/streamlined-docs/app/reference/components/token-optimization-dashboard/page.tsx",
+        "status": "unknown",
+        "needsUpdate": true
+      },
+      {
+        "path": "apps/streamlined-docs/app/reference/components/token-budget-bar/page.tsx",
+        "status": "unknown",
+        "needsUpdate": true
+      },
+      {
+        "path": "apps/streamlined-docs/app/reference/components/token-usage-meter/page.tsx",
+        "status": "unknown",
+        "needsUpdate": true
+      },
+      {
+        "path": "apps/streamlined-docs/app/reference/components/token-roi-calculator/page.tsx",
+        "status": "unknown",
+        "needsUpdate": true
+      },
+      {
+        "path": "apps/streamlined-docs/app/reference/components/token-optimization-panel/page.tsx",
+        "status": "unknown",
+        "needsUpdate": true
+      },
+      {
+        "path": "apps/streamlined-docs/app/reference/components/token-optimization/page.tsx",
+        "status": "unknown",
+        "needsUpdate": true
+      }
+    ]
+  },
+  "effortSummary": {
+    "packageDocsMigration": "46 hours",
+    "newGuidesCreation": "40 hours",
+    "cookbooksCreation": "40 hours",
+    "apiReferenceCreation": "90 hours",
+    "toolsCreation": "28 hours",
+    "componentsCreation": "10 hours",
+    "existingPagesUpdate": "20 hours",
+    "totalEffort": "274 hours"
+  },
+  "priorityBreakdown": {
+    "P0_releaseBlockers": {
+      "items": 32,
+      "effort": "154 hours"
+    },
+    "P1_important": {
+      "items": 18,
+      "effort": "87 hours"
+    },
+    "P2_niceToHave": {
+      "items": 8,
+      "effort": "46 hours"
+    }
+  }
+}

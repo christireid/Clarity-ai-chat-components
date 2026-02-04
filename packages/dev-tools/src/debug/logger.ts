@@ -1,232 +1,51 @@
 /**
  * Enhanced logger with multiple levels and formatting
- * 
- * Provides:
- * - Multiple log levels (trace, debug, info, warn, error)
- * - Colored output for terminal
- * - Structured logging with context
- * - Performance timing
- * - Log filtering
- * 
+ *
+ * Re-exports the canonical logger from @clarity-chat/utils and adds
+ * dev-tools specific UI helpers for boxes and tables.
  */
 
 import { infoBox, warningBox, errorBox, successBox } from '../ui/box'
 import { keyValueTable } from '../ui/table'
-import chalk from 'chalk'
+import {
+  getLogger as utilsGetLogger,
+  type Logger as UtilsLogger,
+  type LoggerOptions as BaseLoggerOptions,
+} from '@clarity-chat/utils/logger'
 
+// Re-export canonical logger types and functions
+export {
+  LogLevel as LogLevelEnum,
+  setGlobalLogLevel,
+  configureLogger,
+  logger,
+  info,
+  warn,
+  error,
+  success,
+  debug,
+} from '@clarity-chat/utils/logger'
+
+export type { LogEntry } from '@clarity-chat/utils/logger'
+
+// String-based log level type for compatibility
 export type LogLevel = 'trace' | 'debug' | 'info' | 'warn' | 'error'
 
-export interface LogEntry {
-  level: LogLevel
-  timestamp: Date
-  message: string
-  context?: Record<string, any>
-  duration?: number
-  stack?: string
+// Extended logger interface with dev-tools specific methods
+export interface Logger extends UtilsLogger {
+  trace: (message: string, context?: Record<string, any>) => void
+  time: (label: string) => void
+  timeEnd: (label: string) => void
 }
 
-export interface LoggerOptions {
-  level?: LogLevel
+// Extended options to support legacy API
+export interface LoggerOptions extends BaseLoggerOptions {
+  level?: string
   prefix?: string
-  colors?: boolean
-  timestamps?: boolean
-  context?: Record<string, any>
+  colors?: boolean // Ignored, kept for compatibility
 }
 
-const LOG_LEVELS: Record<LogLevel, number> = {
-  trace: 0,
-  debug: 1,
-  info: 2,
-  warn: 3,
-  error: 4
-}
-
-const LEVEL_COLORS: Record<LogLevel, string> = {
-  trace: '\x1b[90m', // Gray
-  debug: '\x1b[36m', // Cyan
-  info: '\x1b[32m',  // Green
-  warn: '\x1b[33m',  // Yellow
-  error: '\x1b[31m', // Red
-}
-
-const ICONS: Record<LogLevel, string> = {
-  trace: '🔍',
-  debug: '🐛',
-  info: 'ℹ',
-  warn: '⚠',
-  error: '✗',
-}
-
-let globalLogLevel: LogLevel = 'info'
-let globalContext: Record<string, any> = {}
-
-// Map our log levels (already string-compatible)
-const mapToUtilsLevel = (level: LogLevel): LogLevel => {
-  switch (level) {
-    case 'trace':
-    case 'debug':
-      return 'debug'
-    case 'info':
-      return 'info'
-    case 'warn':
-      return 'warn'
-    case 'error':
-      return 'error'
-    default:
-      return 'info'
-  }
-}
-
-// Compatibility wrapper for legacy code
-export class Logger {
-  private namespace: string
-  private level: LogLevel
-  private colors: boolean
-  private timestamps: boolean
-  private context: Record<string, any>
-
-  constructor(namespace = 'app', options: LoggerOptions = {}) {
-    this.namespace = namespace
-    this.level = options.level || globalLogLevel
-    this.colors = options.colors ?? true
-    this.timestamps = options.timestamps ?? true
-    this.context = { ...globalContext, ...options.context }
-  }
-
-  private shouldLog(level: LogLevel): boolean {
-    return LOG_LEVELS[level] >= LOG_LEVELS[this.level]
-  }
-
-  private formatPrefix(level: LogLevel): string {
-    const parts: string[] = []
-
-    if (this.timestamps) {
-      parts.push(chalk.gray(`[${new Date().toISOString()}]`))
-    }
-
-    parts.push(chalk.gray(`[${this.namespace}]`))
-
-    if (this.colors) {
-      parts.push(`${LEVEL_COLORS[level]}${ICONS[level]}\x1b[0m`)
-    } else {
-      parts.push(`[${level.toUpperCase()}]`)
-    }
-
-    return parts.join(' ')
-  }
-
-  private log(level: LogLevel, message: string, context?: Record<string, any>): void {
-    if (!this.shouldLog(level)) return
-
-    const logContext = { ...this.context, ...context }
-    const fullMessage = this.formatPrefix(level) + ' ' + message
-
-    switch (level) {
-      case 'trace':
-      case 'debug':
-        console.debug(fullMessage, logContext)
-        break
-      case 'info':
-        console.info(fullMessage, logContext)
-        break
-      case 'warn':
-        console.warn(fullMessage, logContext)
-        break
-      case 'error':
-        console.error(fullMessage, logContext)
-        break
-    }
-  }
-
-  trace(message: string, context?: Record<string, any>): void {
-    this.log('trace', message, context)
-  }
-
-  debug(message: string, context?: Record<string, any>): void {
-    this.log('debug', message, context)
-  }
-
-  info(message: string, context?: Record<string, any>): void {
-    this.log('info', message, context)
-  }
-
-  warn(message: string, context?: Record<string, any>): void {
-    this.log('warn', message, context)
-  }
-
-  error(message: string, context?: Record<string, any>): void {
-    this.log('error', message, context)
-  }
-
-  setLevel(level: LogLevel): void {
-    this.level = level
-  }
-
-  getLevel(): LogLevel {
-    return this.level
-  }
-
-  // Performance timing
-  time(label: string): void {
-    console.time(label)
-  }
-
-  timeEnd(label: string): void {
-    console.timeEnd(label)
-  }
-
-  // Group logging
-  group(label: string): void {
-    console.group(label)
-  }
-
-  groupEnd(): void {
-    console.groupEnd()
-  }
-
-  // Log filtering
-  filter(predicate: (entry: LogEntry) => boolean): void {
-    // This is a no-op for compatibility - the new logger doesn't support filtering
-    console.warn('Log filtering is not supported in the new logger')
-  }
-
-  // Get all logs
-  getLogs(level?: LogLevel): LogEntry[] {
-    // This is a no-op for compatibility - the new logger doesn't support log retrieval
-    console.warn('Log retrieval is not supported in the new logger')
-    return []
-  }
-
-  // Export logs
-  exportLogs(options?: {
-    level?: LogLevel
-    format?: 'json' | 'csv'
-    filePath?: string
-  }): void {
-    // This is a no-op for compatibility
-    console.warn('Log export is not supported in the new logger')
-  }
-}
-
-// Factory functions for backward compatibility
-export function createLogger(options: LoggerOptions = {}): Logger {
-  return new Logger('app', options)
-}
-
-export function getLogger(namespace = 'app'): Logger {
-  return new Logger(namespace)
-}
-
-// Global configuration
-export function setGlobalLogLevel(level: LogLevel): void {
-  globalLogLevel = level
-}
-
-export function setGlobalContext(context: Record<string, any>): void {
-  globalContext = context
-}
-
-// UI helpers
+// Dev-tools specific UI logging helpers
 export function logInfoBox(message: string, context?: Record<string, any>): void {
   console.info(message, context)
   if (context) {
@@ -254,12 +73,31 @@ export function logKeyValue(data: Record<string, any>, title?: string): void {
   console.log(keyValueTable(data))
 }
 
-// Re-export the standard utils logger for new code
+/**
+ * Enhanced getLogger that adds dev-tools specific methods
+ */
+export function getLogger(namespace = 'app', options?: LoggerOptions): Logger {
+  const baseLogger = utilsGetLogger(namespace)
 
-export default {
-  Logger,
-  createLogger,
-  getLogger,
-  setGlobalLogLevel,
-  setGlobalContext,
+  return {
+    ...baseLogger,
+    trace: (message: string, context?: Record<string, any>) => {
+      baseLogger.debug(message, context)
+    },
+    time: (label: string) => {
+      console.time(label)
+    },
+    timeEnd: (label: string) => {
+      console.timeEnd(label)
+    },
+  }
+}
+
+/**
+ * Create logger with options (alias for getLogger)
+ * Supports legacy API with prefix option
+ */
+export function createLogger(options?: LoggerOptions): Logger {
+  const namespace = options?.prefix || 'app'
+  return getLogger(namespace, options)
 }

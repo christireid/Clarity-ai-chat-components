@@ -6,21 +6,21 @@
  */
 
 import type { CoreMessage } from '../../hooks/chat/use-chat-enhanced'
+import { toonToMessages } from './toon'
 import type { ToonNode } from './toon'
+import { buildMessagesFromRecipe } from './recipe'
 import type { PromptRecipe } from './recipe'
 import type { ModelMetadata } from './tokenizer'
-import type { OptimizationStrategy, MessagePriority } from './optimizer'
+import { optimizeMessagesForBudget } from './optimizer'
+import type { MessagePriority, OptimizationStrategy } from './optimizer'
+import { getModelProfileOrDefault } from './model-profiles'
 import type { ModelProfile } from './model-profiles'
-import { toonToMessages } from './toon'
-import { buildMessagesFromRecipe } from './recipe'
 import {
   estimateMessageTokens,
   getTokenizerForModel,
   MODEL_PRESETS,
   estimateCost,
 } from './tokenizer'
-import { optimizeMessagesForBudget } from './optimizer'
-import { getModelProfileOrDefault } from './model-profiles'
 
 /**
  * Options for building a model prompt

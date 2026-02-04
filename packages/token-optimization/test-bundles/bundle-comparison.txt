@@ -1,0 +1,73 @@
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                    BUNDLE SIZE COMPARISON                                    ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+WITHOUT TOKENIZERS (Estimation)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+import { estimateTokens } from '@clarity-chat/token-optimization'
+
+Bundle Size: 27.4 KB
+├─ Estimation functions: 16.1 KB
+└─ Utilities: 11.3 KB
+
+[████] 27.4 KB
+
+
+WITH TOKENIZERS (Accurate Counting)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+import { AccurateTokenCounter } from '@clarity-chat/token-optimization/tokenizers'
+
+Bundle Size: 988.9 KB
+├─ gpt-tokenizer library: 961.5 KB
+│  ├─ BPE encoding tables (cl100k_base): 1.03 MB (largest!)
+│  ├─ BytePairEncodingCore: 16.9 KB
+│  ├─ GptEncoding: 15.5 KB
+│  ├─ Model configs: 28 KB
+│  └─ Utilities: ~900 KB
+└─ Core functions: 27.4 KB
+
+[████████████████████████████████████████████████████████████████████████████████
+████████████████████████████████████████████████████████████████████████████████
+████████████████████████████████████████████████████████████████████████████████
+████████████████████████████████████████████████████████████████████████████████
+████████████████████████████████████████████████████████████████████████████████
+████████████████████████████████████████████████████████████████████████████████
+████████████████████████████████████████████████████████████████████████████████
+████████████████████████████████████████████████████████████████████████████████
+████████████████████████████████████████████████████████████████████████████████
+████████████████████████████████████████████████████████████████████████████████
+████████████████████████████████████████████████████████████████████████████████
+████████████████████████████████████████████████████████████████████████████████
+████████████] 988.9 KB
+
+
+SAVINGS BREAKDOWN
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Size Difference:  961.5 KB
+Percentage Saved: 97.2%
+Reduction Ratio:  36.1x smaller
+
+By using lightweight estimation instead of accurate tokenization,
+you save 961.5 KB - nearly 1 MB of JavaScript!
+
+
+RECOMMENDATION
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✅ START WITH ESTIMATION (Default)
+   - 97% smaller bundle
+   - ~90% accuracy
+   - Perfect for UI/UX
+
+⚡ UPGRADE TO ACCURATE WHEN NEEDED
+   - Billing calculations
+   - Strict token limits
+   - Server-side processing
+
+🚀 USE DYNAMIC IMPORTS FOR BEST OF BOTH
+   - Lazy load accurate counter
+   - Keep initial bundle small
+   - Load on-demand when needed
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━

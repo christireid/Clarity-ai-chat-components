@@ -33,6 +33,7 @@
   "author": "Clarity Chat",
   "license": "MIT",
   "dependencies": {
+    "@clarity-chat/utils": "workspace:*",
     "commander": "^12.1.0",
     "glob": "^11.0.0",
     "gray-matter": "^4.0.3",

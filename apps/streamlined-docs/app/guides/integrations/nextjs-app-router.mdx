@@ -1,0 +1,1497 @@
+---
+title: 'Next.js 15 App Router Integration'
+description: 'Complete guide to integrating Clarity Chat with Next.js 15 App Router, including Server Components, Streaming, and advanced caching patterns'
+date: '2026-01-28'
+author: 'Clarity Chat Team'
+tags: ['nextjs', 'integration', 'server-components', 'streaming', 'app-router']
+---
+
+# Next.js 15 App Router Integration
+
+Complete guide to integrating Clarity Chat Components with Next.js 15 App Router, featuring Server Components, Streaming with Suspense, advanced caching strategies, and production-ready patterns.
+
+## Table of Contents
+
+- [Overview](#overview)
+- [Server Component Strategy](#server-component-strategy)
+- [Streaming with Suspense](#streaming-with-suspense)
+- [Route Handlers](#route-handlers)
+- [Caching Strategies](#caching-strategies)
+- [Parallel Routes](#parallel-routes)
+- [Error Boundaries](#error-boundaries)
+- [Loading States](#loading-states)
+- [Metadata Generation](#metadata-generation)
+- [Complete Starter Template](#complete-starter-template)
+- [Performance Optimization](#performance-optimization)
+- [Security Best Practices](#security-best-practices)
+
+---
+
+## Overview
+
+Next.js 15 App Router introduces powerful patterns for building AI chat applications:
+
+- **Server Components**: Reduce JavaScript bundle size by rendering on the server
+- **Streaming**: Progressive rendering with React Suspense
+- **Route Handlers**: Type-safe API endpoints with validation
+- **ISR & Caching**: Incremental Static Regeneration for optimal performance
+- **Parallel Routes**: Complex layouts with independent loading states
+- **Error Boundaries**: Granular error handling at multiple levels
+
+### Quick Start
+
+```bash
+# Install dependencies
+pnpm add @clarity-chat/react @clarity-chat/primitives @clarity-chat/token-optimization
+pnpm add ai zod framer-motion
+
+# Development dependencies
+pnpm add -D @types/node @types/react
+```
+
+---
+
+## Server Component Strategy
+
+### When to Use Server Components
+
+**Default to Server Components for:**
+
+- Static content and layouts
+- Data fetching from databases or APIs
+- Token-heavy operations (counting, validation)
+- SEO-critical content
+- Markdown rendering
+- Initial page loads
+
+```tsx
+// app/chat/layout.tsx (Server Component by default)
+import { Suspense } from 'react'
+import { ChatSidebar } from '@/components/ChatSidebar'
+import { getChatHistory } from '@/lib/db'
+
+export default async function ChatLayout({ children }: { children: React.ReactNode }) {
+  // Server-side data fetching
+  const history = await getChatHistory()
+
+  return (
+    <div className="flex h-screen">
+      {/* Server Component - No client JavaScript */}
+      <Suspense fallback={<SidebarSkeleton />}>
+        <ChatSidebar initialHistory={history} />
+      </Suspense>
+
+      <main className="flex-1 overflow-auto">{children}</main>
+    </div>
+  )
+}
+```
+
+### When to Use Client Components
+
+**Add 'use client' for:**
+
+- Interactive UI (buttons, forms, inputs)
+- Browser APIs (localStorage, geolocation)
+- Event handlers (onClick, onChange)
+- State management (useState, useReducer)
+- Effects (useEffect, useLayoutEffect)
+- Real-time features (WebSocket, SSE)
+- Animation libraries (Framer Motion)
+
+```tsx
+'use client'
+
+// app/components/ChatInput.tsx (Client Component)
+import { useState } from 'react'
+import { PillChatInput } from '@clarity-chat/react'
+import { useChat } from 'ai/react'
+
+export function ChatInput() {
+  const [input, setInput] = useState('')
+  const { append, isLoading } = useChat()
+
+  const handleSubmit = async (value: string) => {
+    await append({ role: 'user', content: value })
+    setInput('')
+  }
+
+  return (
+    <PillChatInput
+      value={input}
+      onChange={setInput}
+      onSubmit={handleSubmit}
+      isGenerating={isLoading}
+      placeholder="Ask anything..."
+    />
+  )
+}
+```
+
+### Component Boundary Pattern
+
+Minimize client JavaScript by isolating interactive components:
+
+```tsx
+// app/chat/[id]/page.tsx (Server Component)
+import { MessageRenderer } from '@/components/MessageRenderer' // Server Component
+import { ChatInput } from '@/components/ChatInput' // Client Component
+import { getConversation } from '@/lib/db'
+
+export default async function ChatPage({ params }: { params: { id: string } }) {
+  const conversation = await getConversation(params.id)
+
+  return (
+    <div className="flex flex-col h-full">
+      {/* Server-rendered messages */}
+      <div className="flex-1 overflow-auto p-4">
+        {conversation.messages.map((message) => (
+          <MessageRenderer key={message.id} message={message} />
+        ))}
+      </div>
+
+      {/* Only this component is client-side */}
+      <ChatInput />
+    </div>
+  )
+}
+```
+
+### Server-Only Utilities
+
+Use `server-only` package to prevent client imports:
+
+```tsx
+// lib/ai/server.ts
+import 'server-only'
+import { openai } from '@ai-sdk/openai'
+
+export async function generateChatCompletion(messages: Message[]) {
+  const response = await openai.chat.completions.create({
+    model: 'gpt-4o',
+    messages,
+  })
+
+  return response.choices[0].message
+}
+```
+
+---
+
+## Streaming with Suspense
+
+### Basic Streaming Pattern
+
+```tsx
+// app/chat/[id]/page.tsx
+import { Suspense } from 'react'
+import { MessageList } from '@/components/MessageList'
+import { MessageListSkeleton } from '@/components/skeletons'
+
+export default function ChatPage({ params }: { params: { id: string } }) {
+  return (
+    <Suspense fallback={<MessageListSkeleton />}>
+      <MessageList conversationId={params.id} />
+    </Suspense>
+  )
+}
+
+// app/components/MessageList.tsx (Server Component)
+import { getMessages } from '@/lib/db'
+
+export async function MessageList({ conversationId }: { conversationId: string }) {
+  // This data fetch will stream
+  const messages = await getMessages(conversationId)
+
+  return (
+    <div className="space-y-4">
+      {messages.map((message) => (
+        <Message key={message.id} {...message} />
+      ))}
+    </div>
+  )
+}
+```
+
+### Nested Suspense Boundaries
+
+Granular loading states for different parts of the UI:
+
+```tsx
+// app/chat/[id]/page.tsx
+import { Suspense } from 'react'
+
+export default function ChatPage({ params }: { params: { id: string } }) {
+  return (
+    <div className="grid grid-cols-[1fr_300px] gap-4">
+      {/* Main content streams first */}
+      <Suspense fallback={<MessageListSkeleton />}>
+        <MessageList conversationId={params.id} />
+      </Suspense>
+
+      {/* Sidebar streams independently */}
+      <aside className="space-y-4">
+        <Suspense fallback={<MetadataSkeleton />}>
+          <ConversationMetadata conversationId={params.id} />
+        </Suspense>
+
+        <Suspense fallback={<RelatedSkeleton />}>
+          <RelatedConversations conversationId={params.id} />
+        </Suspense>
+      </aside>
+    </div>
+  )
+}
+```
+
+### Streaming AI Responses
+
+Use Route Handlers with streaming for real-time AI responses:
+
+```tsx
+// app/api/chat/route.ts
+import { openai } from '@ai-sdk/openai'
+import { streamText } from 'ai'
+
+export const runtime = 'edge'
+
+export async function POST(req: Request) {
+  const { messages } = await req.json()
+
+  const result = await streamText({
+    model: openai('gpt-4o'),
+    messages,
+  })
+
+  return result.toAIStreamResponse()
+}
+```
+
+Client component to consume the stream:
+
+```tsx
+'use client'
+
+import { useChat } from 'ai/react'
+import { MessageRenderer } from '@clarity-chat/react'
+
+export function StreamingChat() {
+  const { messages, input, handleInputChange, handleSubmit, isLoading } = useChat({
+    api: '/api/chat',
+  })
+
+  return (
+    <div>
+      <div className="space-y-4">
+        {messages.map((message) => (
+          <MessageRenderer
+            key={message.id}
+            content={message.content}
+            isStreaming={isLoading && message.id === messages[messages.length - 1].id}
+          />
+        ))}
+      </div>
+
+      <form onSubmit={handleSubmit}>
+        <input value={input} onChange={handleInputChange} />
+        <button type="submit" disabled={isLoading}>
+          Send
+        </button>
+      </form>
+    </div>
+  )
+}
+```
+
+---
+
+## Route Handlers
+
+### Type-Safe Route Handler
+
+```tsx
+// app/api/chat/route.ts
+import { NextRequest, NextResponse } from 'next/server'
+import { z } from 'zod'
+import { openai } from '@ai-sdk/openai'
+import { generateText } from 'ai'
+
+// Runtime validation schema
+const messageSchema = z.object({
+  messages: z.array(
+    z.object({
+      role: z.enum(['user', 'assistant', 'system']),
+      content: z.string().min(1).max(4000),
+    })
+  ),
+  model: z.enum(['gpt-4o', 'gpt-4o-mini']).optional().default('gpt-4o-mini'),
+  temperature: z.number().min(0).max(2).optional().default(0.7),
+})
+
+export async function POST(request: NextRequest) {
+  try {
+    // Parse and validate request body
+    const body = await request.json()
+    const validation = messageSchema.safeParse(body)
+
+    if (!validation.success) {
+      return NextResponse.json(
+        { error: 'Invalid request', details: validation.error.format() },
+        { status: 400 }
+      )
+    }
+
+    const { messages, model, temperature } = validation.data
+
+    // Generate AI response
+    const result = await generateText({
+      model: openai(model),
+      messages,
+      temperature,
+    })
+
+    return NextResponse.json({
+      content: result.text,
+      usage: result.usage,
+      finishReason: result.finishReason,
+    })
+  } catch (error) {
+    console.error('Chat API error:', error)
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+  }
+}
+
+// Enable Edge Runtime for lower latency
+export const runtime = 'edge'
+```
+
+### Streaming Route Handler
+
+```tsx
+// app/api/chat/stream/route.ts
+import { openai } from '@ai-sdk/openai'
+import { streamText } from 'ai'
+import { z } from 'zod'
+
+const streamSchema = z.object({
+  messages: z.array(
+    z.object({
+      role: z.enum(['user', 'assistant', 'system']),
+      content: z.string(),
+    })
+  ),
+})
+
+export async function POST(req: Request) {
+  const body = await req.json()
+  const { messages } = streamSchema.parse(body)
+
+  const result = await streamText({
+    model: openai('gpt-4o'),
+    messages,
+    onFinish: async ({ text, usage }) => {
+      // Log completion or save to database
+      console.log('Stream finished:', { textLength: text.length, usage })
+    },
+  })
+
+  return result.toAIStreamResponse()
+}
+
+export const runtime = 'edge'
+```
+
+### Route Handler with Caching
+
+```tsx
+// app/api/embeddings/route.ts
+import { NextRequest, NextResponse } from 'next/server'
+import { openai } from '@ai-sdk/openai'
+import { embed } from 'ai'
+
+export async function POST(request: NextRequest) {
+  const { text } = await request.json()
+
+  // Cache embeddings for 1 hour
+  const cacheKey = `embedding:${Buffer.from(text).toString('base64')}`
+
+  const result = await embed({
+    model: openai.embedding('text-embedding-3-small'),
+    value: text,
+  })
+
+  return NextResponse.json(
+    { embedding: result.embedding },
+    {
+      headers: {
+        'Cache-Control': 'public, s-maxage=3600, stale-while-revalidate=86400',
+      },
+    }
+  )
+}
+```
+
+---
+
+## Caching Strategies
+
+### ISR (Incremental Static Regeneration)
+
+```tsx
+// app/docs/[slug]/page.tsx
+import { getDocumentation } from '@/lib/docs'
+
+// Revalidate every hour
+export const revalidate = 3600
+
+export default async function DocumentationPage({ params }: { params: { slug: string } }) {
+  const doc = await getDocumentation(params.slug)
+
+  return (
+    <article>
+      <h1>{doc.title}</h1>
+      <div dangerouslySetInnerHTML={{ __html: doc.content }} />
+    </article>
+  )
+}
+
+// Generate static paths at build time
+export async function generateStaticParams() {
+  const docs = await getAllDocumentation()
+  return docs.map((doc) => ({ slug: doc.slug }))
+}
+```
+
+### On-Demand Revalidation
+
+```tsx
+// app/api/revalidate/route.ts
+import { NextRequest, NextResponse } from 'next/server'
+import { revalidatePath, revalidateTag } from 'next/cache'
+
+export async function POST(request: NextRequest) {
+  const { path, tag } = await request.json()
+
+  if (path) {
+    revalidatePath(path)
+    return NextResponse.json({ revalidated: true, path })
+  }
+
+  if (tag) {
+    revalidateTag(tag)
+    return NextResponse.json({ revalidated: true, tag })
+  }
+
+  return NextResponse.json({ error: 'Missing path or tag' }, { status: 400 })
+}
+```
+
+Usage:
+
+```tsx
+// app/admin/docs/[id]/edit/actions.ts
+'use server'
+
+import { revalidatePath } from 'next/cache'
+
+export async function updateDocumentation(id: string, data: UpdateData) {
+  await db.documentation.update({ where: { id }, data })
+
+  // Revalidate the documentation page
+  revalidatePath(`/docs/${data.slug}`)
+  revalidatePath('/docs')
+
+  return { success: true }
+}
+```
+
+### Tagged Caching
+
+```tsx
+// app/chat/[id]/page.tsx
+import { unstable_cache } from 'next/cache'
+import { getConversation } from '@/lib/db'
+
+// Cache with tags for targeted revalidation
+const getCachedConversation = unstable_cache(
+  async (id: string) => getConversation(id),
+  ['conversation'],
+  {
+    tags: (id) => [`conversation:${id}`],
+    revalidate: 60, // 1 minute
+  }
+)
+
+export default async function ChatPage({ params }: { params: { id: string } }) {
+  const conversation = await getCachedConversation(params.id)
+  return <ConversationView conversation={conversation} />
+}
+```
+
+Revalidate specific conversation:
+
+```tsx
+// app/actions/conversation.ts
+'use server'
+
+import { revalidateTag } from 'next/cache'
+
+export async function addMessage(conversationId: string, message: Message) {
+  await db.message.create({ data: { conversationId, ...message } })
+
+  // Revalidate only this conversation
+  revalidateTag(`conversation:${conversationId}`)
+}
+```
+
+### Request Memoization
+
+Automatically deduplicates identical requests during a single render:
+
+```tsx
+// app/chat/[id]/layout.tsx
+import { getConversation } from '@/lib/db'
+
+export default async function ChatLayout({
+  children,
+  params,
+}: {
+  children: React.ReactNode
+  params: { id: string }
+}) {
+  // First call
+  const conversation = await getConversation(params.id)
+
+  return (
+    <div>
+      <Header conversation={conversation} />
+      {children}
+    </div>
+  )
+}
+
+// app/chat/[id]/page.tsx
+import { getConversation } from '@/lib/db'
+
+export default async function ChatPage({ params }: { params: { id: string } }) {
+  // Second call - automatically memoized, no duplicate request
+  const conversation = await getConversation(params.id)
+
+  return <Messages messages={conversation.messages} />
+}
+```
+
+---
+
+## Parallel Routes
+
+### Chat Layout with Parallel Routes
+
+```
+app/
+└── chat/
+    ├── layout.tsx
+    ├── @sidebar/
+    │   ├── default.tsx
+    │   └── page.tsx
+    ├── @main/
+    │   ├── default.tsx
+    │   └── [id]/
+    │       └── page.tsx
+    └── @panel/
+        ├── default.tsx
+        └── settings/
+            └── page.tsx
+```
+
+Layout implementation:
+
+```tsx
+// app/chat/layout.tsx
+export default function ChatLayout({
+  children,
+  sidebar,
+  main,
+  panel,
+}: {
+  children: React.ReactNode
+  sidebar: React.ReactNode
+  main: React.ReactNode
+  panel: React.ReactNode
+}) {
+  return (
+    <div className="grid grid-cols-[280px_1fr_320px] h-screen">
+      {/* Sidebar loads independently */}
+      <Suspense fallback={<SidebarSkeleton />}>{sidebar}</Suspense>
+
+      {/* Main content */}
+      <Suspense fallback={<MainSkeleton />}>{main}</Suspense>
+
+      {/* Settings panel */}
+      <Suspense fallback={<PanelSkeleton />}>{panel}</Suspense>
+    </div>
+  )
+}
+```
+
+Default slots:
+
+```tsx
+// app/chat/@sidebar/default.tsx
+export default function DefaultSidebar() {
+  return <ConversationList />
+}
+
+// app/chat/@main/default.tsx
+export default function DefaultMain() {
+  return <EmptyState />
+}
+
+// app/chat/@panel/default.tsx
+export default function DefaultPanel() {
+  return null // Hidden by default
+}
+```
+
+### Intercepting Routes
+
+```
+app/
+└── chat/
+    ├── [id]/
+    │   └── page.tsx
+    └── (.)[id]/
+        └── page.tsx  # Intercepts /chat/[id] when navigating from /chat
+```
+
+```tsx
+// app/chat/(.)[id]/page.tsx (Modal route)
+import { Modal } from '@/components/Modal'
+import { ChatView } from '@/components/ChatView'
+
+export default function InterceptedChatPage({ params }: { params: { id: string } }) {
+  return (
+    <Modal>
+      <ChatView conversationId={params.id} />
+    </Modal>
+  )
+}
+
+// app/chat/[id]/page.tsx (Full page route)
+export default function ChatPage({ params }: { params: { id: string } }) {
+  return (
+    <div className="h-screen">
+      <ChatView conversationId={params.id} />
+    </div>
+  )
+}
+```
+
+---
+
+## Error Boundaries
+
+### Page-Level Error Boundary
+
+```tsx
+// app/chat/error.tsx
+'use client'
+
+import { useEffect } from 'react'
+import { Button } from '@clarity-chat/primitives'
+
+export default function ChatError({
+  error,
+  reset,
+}: {
+  error: Error & { digest?: string }
+  reset: () => void
+}) {
+  useEffect(() => {
+    // Log error to monitoring service
+    console.error('Chat error:', error)
+  }, [error])
+
+  return (
+    <div className="flex flex-col items-center justify-center h-screen p-4">
+      <h2 className="text-2xl font-bold mb-4">Something went wrong</h2>
+      <p className="text-neutral-600 dark:text-neutral-400 mb-6">
+        {error.message || 'An unexpected error occurred'}
+      </p>
+      <Button onClick={reset}>Try again</Button>
+    </div>
+  )
+}
+```
+
+### Global Error Boundary
+
+```tsx
+// app/global-error.tsx
+'use client'
+
+export default function GlobalError({
+  error,
+  reset,
+}: {
+  error: Error & { digest?: string }
+  reset: () => void
+}) {
+  return (
+    <html>
+      <body>
+        <div className="flex flex-col items-center justify-center min-h-screen">
+          <h2>Critical Error</h2>
+          <p>{error.message}</p>
+          <button onClick={reset}>Try again</button>
+        </div>
+      </body>
+    </html>
+  )
+}
+```
+
+### Not Found Handling
+
+```tsx
+// app/chat/[id]/not-found.tsx
+import Link from 'next/link'
+
+export default function ConversationNotFound() {
+  return (
+    <div className="flex flex-col items-center justify-center h-screen">
+      <h2 className="text-2xl font-bold mb-4">Conversation Not Found</h2>
+      <p className="text-neutral-600 dark:text-neutral-400 mb-6">
+        This conversation doesn&apos;t exist or has been deleted.
+      </p>
+      <Link href="/chat" className="text-brand-500 hover:underline">
+        Back to Chat
+      </Link>
+    </div>
+  )
+}
+
+// app/chat/[id]/page.tsx
+import { notFound } from 'next/navigation'
+import { getConversation } from '@/lib/db'
+
+export default async function ChatPage({ params }: { params: { id: string } }) {
+  const conversation = await getConversation(params.id)
+
+  if (!conversation) {
+    notFound()
+  }
+
+  return <ConversationView conversation={conversation} />
+}
+```
+
+---
+
+## Loading States
+
+### Page-Level Loading
+
+```tsx
+// app/chat/[id]/loading.tsx
+import { Skeleton } from '@clarity-chat/primitives'
+
+export default function ChatLoading() {
+  return (
+    <div className="flex flex-col h-screen p-4 space-y-4">
+      <Skeleton className="h-12 w-full" />
+      <div className="flex-1 space-y-4">
+        <Skeleton className="h-20 w-3/4" />
+        <Skeleton className="h-20 w-2/3 ml-auto" />
+        <Skeleton className="h-20 w-3/4" />
+      </div>
+      <Skeleton className="h-14 w-full" />
+    </div>
+  )
+}
+```
+
+### Component-Level Loading
+
+```tsx
+// app/components/MessageList.tsx
+import { Suspense } from 'react'
+
+function MessageListSkeleton() {
+  return (
+    <div className="space-y-4">
+      {[1, 2, 3].map((i) => (
+        <Skeleton key={i} className="h-20 w-full" />
+      ))}
+    </div>
+  )
+}
+
+export function MessageList({ conversationId }: { conversationId: string }) {
+  return (
+    <Suspense fallback={<MessageListSkeleton />}>
+      <MessageListContent conversationId={conversationId} />
+    </Suspense>
+  )
+}
+
+async function MessageListContent({ conversationId }: { conversationId: string }) {
+  const messages = await getMessages(conversationId)
+  return (
+    <div className="space-y-4">
+      {messages.map((message) => (
+        <Message key={message.id} {...message} />
+      ))}
+    </div>
+  )
+}
+```
+
+---
+
+## Metadata Generation
+
+### Static Metadata
+
+```tsx
+// app/chat/[id]/page.tsx
+import { Metadata } from 'next'
+import { getConversation } from '@/lib/db'
+
+export async function generateMetadata({
+  params,
+}: {
+  params: { id: string }
+}): Promise<Metadata> {
+  const conversation = await getConversation(params.id)
+
+  if (!conversation) {
+    return {
+      title: 'Conversation Not Found',
+    }
+  }
+
+  return {
+    title: conversation.title || 'Chat Conversation',
+    description: conversation.messages[0]?.content.slice(0, 160),
+    openGraph: {
+      title: conversation.title || 'Chat Conversation',
+      description: conversation.messages[0]?.content.slice(0, 160),
+      type: 'website',
+    },
+    twitter: {
+      card: 'summary',
+      title: conversation.title || 'Chat Conversation',
+      description: conversation.messages[0]?.content.slice(0, 160),
+    },
+  }
+}
+
+export default async function ChatPage({ params }: { params: { id: string } }) {
+  const conversation = await getConversation(params.id)
+  return <ConversationView conversation={conversation} />
+}
+```
+
+### Dynamic Metadata
+
+```tsx
+// app/layout.tsx
+import { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  metadataBase: new URL('https://chat.example.com'),
+  title: {
+    default: 'Clarity Chat',
+    template: '%s | Clarity Chat',
+  },
+  description: 'AI-powered chat assistant',
+  keywords: ['AI', 'chat', 'assistant', 'GPT'],
+  authors: [{ name: 'Clarity Chat Team' }],
+  openGraph: {
+    type: 'website',
+    locale: 'en_US',
+    url: 'https://chat.example.com',
+    siteName: 'Clarity Chat',
+    images: [
+      {
+        url: '/og-image.png',
+        width: 1200,
+        height: 630,
+        alt: 'Clarity Chat',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    site: '@claritychat',
+    creator: '@claritychat',
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
+}
+```
+
+---
+
+## Complete Starter Template
+
+Here's a production-ready Next.js 15 App Router template with Clarity Chat:
+
+### Project Structure
+
+```
+app/
+├── (auth)/
+│   ├── login/
+│   │   └── page.tsx
+│   └── layout.tsx
+├── (chat)/
+│   ├── layout.tsx
+│   ├── @sidebar/
+│   │   └── page.tsx
+│   ├── @main/
+│   │   └── [id]/
+│   │       ├── page.tsx
+│   │       ├── loading.tsx
+│   │       ├── error.tsx
+│   │       └── not-found.tsx
+│   └── page.tsx
+├── api/
+│   ├── chat/
+│   │   └── route.ts
+│   ├── conversations/
+│   │   └── route.ts
+│   └── revalidate/
+│       └── route.ts
+├── layout.tsx
+├── page.tsx
+├── error.tsx
+├── loading.tsx
+└── not-found.tsx
+
+components/
+├── chat/
+│   ├── ChatInput.tsx
+│   ├── MessageList.tsx
+│   ├── ConversationSidebar.tsx
+│   └── ChatHeader.tsx
+└── ui/
+    ├── Button.tsx
+    ├── Skeleton.tsx
+    └── Modal.tsx
+
+lib/
+├── db.ts
+├── auth.ts
+├── validation.ts
+└── ai/
+    ├── client.ts
+    └── prompts.ts
+```
+
+### Root Layout
+
+```tsx
+// app/layout.tsx
+import { Inter } from 'next/font/google'
+import { Metadata } from 'next'
+import { Providers } from '@/components/Providers'
+import './globals.css'
+
+const inter = Inter({ subsets: ['latin'] })
+
+export const metadata: Metadata = {
+  title: {
+    default: 'Clarity Chat',
+    template: '%s | Clarity Chat',
+  },
+  description: 'AI-powered chat assistant',
+}
+
+export default function RootLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <html lang="en" suppressHydrationWarning>
+      <body className={inter.className}>
+        <Providers>{children}</Providers>
+      </body>
+    </html>
+  )
+}
+```
+
+### Chat Layout (Server Component)
+
+```tsx
+// app/(chat)/layout.tsx
+import { Suspense } from 'react'
+import { redirect } from 'next/navigation'
+import { getServerSession } from 'next-auth'
+import { ConversationSidebar } from '@/components/chat/ConversationSidebar'
+import { SidebarSkeleton } from '@/components/skeletons'
+
+export default async function ChatLayout({ children }: { children: React.ReactNode }) {
+  const session = await getServerSession()
+
+  if (!session) {
+    redirect('/login')
+  }
+
+  return (
+    <div className="flex h-screen overflow-hidden">
+      <Suspense fallback={<SidebarSkeleton />}>
+        <ConversationSidebar userId={session.user.id} />
+      </Suspense>
+
+      <main className="flex-1 overflow-hidden">{children}</main>
+    </div>
+  )
+}
+```
+
+### Chat Page (Server Component)
+
+```tsx
+// app/(chat)/[id]/page.tsx
+import { Suspense } from 'react'
+import { notFound } from 'next/navigation'
+import { getServerSession } from 'next-auth'
+import { getConversation } from '@/lib/db'
+import { ChatHeader } from '@/components/chat/ChatHeader'
+import { MessageList } from '@/components/chat/MessageList'
+import { ChatInput } from '@/components/chat/ChatInput'
+import { MessageListSkeleton } from '@/components/skeletons'
+import { Metadata } from 'next'
+
+export async function generateMetadata({
+  params,
+}: {
+  params: { id: string }
+}): Promise<Metadata> {
+  const conversation = await getConversation(params.id)
+
+  return {
+    title: conversation?.title || 'Chat',
+    description: 'AI chat conversation',
+  }
+}
+
+export default async function ChatPage({ params }: { params: { id: string } }) {
+  const session = await getServerSession()
+  const conversation = await getConversation(params.id)
+
+  if (!conversation || conversation.userId !== session?.user.id) {
+    notFound()
+  }
+
+  return (
+    <div className="flex flex-col h-full">
+      <ChatHeader conversation={conversation} />
+
+      <Suspense fallback={<MessageListSkeleton />}>
+        <MessageList conversationId={params.id} />
+      </Suspense>
+
+      <ChatInput conversationId={params.id} />
+    </div>
+  )
+}
+
+// ISR: Revalidate every 60 seconds
+export const revalidate = 60
+```
+
+### Chat Input (Client Component)
+
+```tsx
+'use client'
+
+// app/components/chat/ChatInput.tsx
+import { useState } from 'react'
+import { useRouter } from 'next/navigation'
+import { PillChatInput } from '@clarity-chat/react'
+import { addMessage } from '@/app/actions/chat'
+
+export function ChatInput({ conversationId }: { conversationId: string }) {
+  const [input, setInput] = useState('')
+  const [isLoading, setIsLoading] = useState(false)
+  const router = useRouter()
+
+  const handleSubmit = async (value: string) => {
+    setIsLoading(true)
+
+    try {
+      await addMessage(conversationId, {
+        role: 'user',
+        content: value,
+      })
+
+      setInput('')
+      router.refresh()
+    } catch (error) {
+      console.error('Failed to send message:', error)
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  return (
+    <div className="border-t p-4">
+      <PillChatInput
+        value={input}
+        onChange={setInput}
+        onSubmit={handleSubmit}
+        isGenerating={isLoading}
+        placeholder="Ask anything..."
+        maxLength={4000}
+        showCharCounter
+      />
+    </div>
+  )
+}
+```
+
+### Server Actions
+
+```tsx
+// app/actions/chat.ts
+'use server'
+
+import { revalidatePath, revalidateTag } from 'next/cache'
+import { getServerSession } from 'next-auth'
+import { db } from '@/lib/db'
+import { generateAIResponse } from '@/lib/ai/client'
+import { z } from 'zod'
+
+const messageSchema = z.object({
+  role: z.enum(['user', 'assistant', 'system']),
+  content: z.string().min(1).max(4000),
+})
+
+export async function addMessage(
+  conversationId: string,
+  message: z.infer<typeof messageSchema>
+) {
+  const session = await getServerSession()
+
+  if (!session) {
+    throw new Error('Unauthorized')
+  }
+
+  // Validate input
+  const validatedMessage = messageSchema.parse(message)
+
+  // Save user message
+  await db.message.create({
+    data: {
+      conversationId,
+      ...validatedMessage,
+    },
+  })
+
+  // Generate AI response
+  const conversation = await db.conversation.findUnique({
+    where: { id: conversationId },
+    include: { messages: true },
+  })
+
+  const aiResponse = await generateAIResponse(conversation.messages)
+
+  // Save AI response
+  await db.message.create({
+    data: {
+      conversationId,
+      role: 'assistant',
+      content: aiResponse,
+    },
+  })
+
+  // Revalidate the conversation page
+  revalidatePath(`/chat/${conversationId}`)
+  revalidateTag(`conversation:${conversationId}`)
+
+  return { success: true }
+}
+
+export async function deleteConversation(conversationId: string) {
+  const session = await getServerSession()
+
+  if (!session) {
+    throw new Error('Unauthorized')
+  }
+
+  await db.conversation.delete({
+    where: { id: conversationId },
+  })
+
+  revalidatePath('/chat')
+  return { success: true }
+}
+```
+
+### API Route with Streaming
+
+```tsx
+// app/api/chat/route.ts
+import { NextRequest } from 'next/server'
+import { openai } from '@ai-sdk/openai'
+import { streamText } from 'ai'
+import { z } from 'zod'
+import { getServerSession } from 'next-auth'
+
+const chatSchema = z.object({
+  messages: z.array(
+    z.object({
+      role: z.enum(['user', 'assistant', 'system']),
+      content: z.string(),
+    })
+  ),
+})
+
+export async function POST(req: NextRequest) {
+  const session = await getServerSession()
+
+  if (!session) {
+    return new Response('Unauthorized', { status: 401 })
+  }
+
+  try {
+    const body = await req.json()
+    const { messages } = chatSchema.parse(body)
+
+    const result = await streamText({
+      model: openai('gpt-4o'),
+      messages,
+      temperature: 0.7,
+      maxTokens: 2000,
+    })
+
+    return result.toAIStreamResponse()
+  } catch (error) {
+    console.error('Chat API error:', error)
+    return new Response('Internal Server Error', { status: 500 })
+  }
+}
+
+export const runtime = 'edge'
+```
+
+### Middleware for Security
+
+```tsx
+// middleware.ts
+import { NextRequest, NextResponse } from 'next/server'
+import { getToken } from 'next-auth/jwt'
+
+export async function middleware(request: NextRequest) {
+  const token = await getToken({ req: request })
+  const isAuthPage = request.nextUrl.pathname.startsWith('/login')
+  const isApiRoute = request.nextUrl.pathname.startsWith('/api')
+
+  // Redirect to login if not authenticated
+  if (!token && !isAuthPage && !isApiRoute) {
+    return NextResponse.redirect(new URL('/login', request.url))
+  }
+
+  // Redirect to chat if authenticated and on auth page
+  if (token && isAuthPage) {
+    return NextResponse.redirect(new URL('/chat', request.url))
+  }
+
+  const response = NextResponse.next()
+
+  // Security headers
+  response.headers.set('X-Content-Type-Options', 'nosniff')
+  response.headers.set('X-Frame-Options', 'DENY')
+  response.headers.set('X-XSS-Protection', '1; mode=block')
+  response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin')
+
+  return response
+}
+
+export const config = {
+  matcher: ['/((?!_next/static|_next/image|favicon.ico).*)'],
+}
+```
+
+---
+
+## Performance Optimization
+
+### Bundle Analysis
+
+```bash
+# Analyze bundle size
+ANALYZE=true pnpm build
+```
+
+### Lazy Loading Heavy Components
+
+```tsx
+'use client'
+
+import { lazy, Suspense } from 'react'
+
+const CodeEditor = lazy(() => import('@/components/CodeEditor'))
+
+export function ChatMessage({ content }: { content: string }) {
+  if (content.includes('```')) {
+    return (
+      <Suspense fallback={<CodeSkeleton />}>
+        <CodeEditor code={extractCode(content)} />
+      </Suspense>
+    )
+  }
+
+  return <p>{content}</p>
+}
+```
+
+### Image Optimization
+
+```tsx
+import Image from 'next/image'
+
+export function ChatAvatar({ src, alt }: { src: string; alt: string }) {
+  return (
+    <Image
+      src={src}
+      alt={alt}
+      width={40}
+      height={40}
+      className="rounded-full"
+      priority={false}
+      loading="lazy"
+    />
+  )
+}
+```
+
+### Font Optimization
+
+```tsx
+// app/layout.tsx
+import { Inter } from 'next/font/google'
+
+const inter = Inter({
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-inter',
+})
+
+export default function RootLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <html lang="en" className={inter.variable}>
+      <body>{children}</body>
+    </html>
+  )
+}
+```
+
+---
+
+## Security Best Practices
+
+### Environment Variables
+
+```env
+# .env.local
+OPENAI_API_KEY=sk-...
+DATABASE_URL=postgresql://...
+NEXTAUTH_SECRET=...
+NEXTAUTH_URL=http://localhost:3000
+```
+
+### API Key Protection
+
+```tsx
+// lib/ai/client.ts
+import 'server-only'
+import { openai } from '@ai-sdk/openai'
+
+if (!process.env.OPENAI_API_KEY) {
+  throw new Error('Missing OPENAI_API_KEY environment variable')
+}
+
+export const ai = openai(process.env.OPENAI_API_KEY)
+```
+
+### Input Sanitization
+
+```tsx
+// lib/validation.ts
+import { z } from 'zod'
+import DOMPurify from 'isomorphic-dompurify'
+
+export const sanitizeInput = (input: string): string => {
+  return DOMPurify.sanitize(input, {
+    ALLOWED_TAGS: [],
+    ALLOWED_ATTR: [],
+  })
+}
+
+export const messageSchema = z.object({
+  content: z
+    .string()
+    .min(1, 'Message cannot be empty')
+    .max(4000, 'Message too long')
+    .transform(sanitizeInput),
+})
+```
+
+### Rate Limiting
+
+```tsx
+// lib/rate-limit.ts
+import { Ratelimit } from '@upstash/ratelimit'
+import { Redis } from '@upstash/redis'
+
+export const ratelimit = new Ratelimit({
+  redis: Redis.fromEnv(),
+  limiter: Ratelimit.slidingWindow(10, '10 s'),
+  analytics: true,
+})
+
+// Usage in API route
+export async function POST(request: NextRequest) {
+  const ip = request.ip ?? '127.0.0.1'
+  const { success } = await ratelimit.limit(ip)
+
+  if (!success) {
+    return new Response('Too Many Requests', { status: 429 })
+  }
+
+  // Process request
+}
+```
+
+---
+
+## Next Steps
+
+- [Token Optimization Guide](/guides/token-optimization) - Reduce AI costs by 50-70%
+- [Memory Integration](/guides/memory) - Add conversation context
+- [Streaming Patterns](/guides/streaming-patterns) - Advanced streaming techniques
+- [Error Handling](/guides/error-handling) - Robust error recovery
+
+---
+
+## Resources
+
+- [Next.js Documentation](https://nextjs.org/docs)
+- [Vercel AI SDK](https://sdk.vercel.ai/docs)
+- [Clarity Chat Components](https://clarity-chat.dev)
+- [Example App](https://github.com/clarity-chat/examples/nextjs-15)
+
+---
+
+**Last Updated**: January 28, 2026

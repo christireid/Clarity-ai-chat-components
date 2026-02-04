@@ -8,7 +8,7 @@
  */
 
 import * as React from 'react'
-import { ClarityChat } from '../components/chat/clarity-chat'
+import { ClarityChat } from '../components/chat/ClarityChat'
 import { useClarityChat } from '../hooks/use-clarity-chat'
 
 // =============================================================================
@@ -23,7 +23,7 @@ export const VercelAdapter = {
    * Convert Vercel AI SDK messages to Clarity Chat format
    */
   convertMessages: (vercelMessages: any[]): any[] => {
-    return vercelMessages.map(msg => ({
+    return vercelMessages.map((msg) => ({
       id: msg.id || `msg-${Date.now()}-${Math.random()}`,
       content: msg.content,
       role: msg.role,
@@ -46,7 +46,9 @@ export const VercelAdapter = {
     // Map Clarity Chat methods
     append: (message: any) => {
       // This would need to be adapted based on specific use case
-      console.warn('Migration: append method needs custom implementation')
+      if (process.env.NODE_ENV === 'development') {
+        console.warn('Migration: append method needs custom implementation')
+      }
     },
     reload: vercelChat.reload,
     stop: vercelChat.stop,
@@ -64,12 +66,16 @@ export const VercelAdapter = {
       input: '', // Would need state management
       handleInputChange: (e: any) => {
         // Would need to manage input state
-        console.warn('Migration: handleInputChange needs implementation')
+        if (process.env.NODE_ENV === 'development') {
+          console.warn('Migration: handleInputChange needs implementation')
+        }
       },
       handleSubmit: (e: any) => {
         e.preventDefault()
         // Would need to get input value and call append
-        console.warn('Migration: handleSubmit needs implementation')
+        if (process.env.NODE_ENV === 'development') {
+          console.warn('Migration: handleSubmit needs implementation')
+        }
       },
       isLoading: clarityChat.isLoading,
       error: clarityChat.error,
@@ -96,8 +102,12 @@ export const OpenAIAdapter = {
   convertMessages: (openaiMessages: any[]): any[] => {
     return openaiMessages.map((msg, index) => ({
       id: `msg-${Date.now()}-${index}`,
-      content: typeof msg.content === 'string' ? msg.content :
-               Array.isArray(msg.content) ? msg.content.map((c: { text?: string }) => c.text || '').join('') : '',
+      content:
+        typeof msg.content === 'string'
+          ? msg.content
+          : Array.isArray(msg.content)
+            ? msg.content.map((c: { text?: string }) => c.text || '').join('')
+            : '',
       role: msg.role,
       timestamp: Date.now(),
       // Preserve OpenAI-specific fields
@@ -113,22 +123,25 @@ export const OpenAIAdapter = {
       const { messages } = await request.json()
 
       try {
-        const response = await fetch('https://api.openai.com/v1/chat/completions', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${openaiConfig.apiKey}`,
-          },
-          body: JSON.stringify({
-            model: openaiConfig.model || 'gpt-3.5-turbo',
-            messages: messages.map((msg: any) => ({
-              role: msg.role,
-              content: msg.content,
-            })),
-            stream: true,
-            ...openaiConfig.options,
-          }),
-        })
+        const response = await fetch(
+          'https://api.openai.com/v1/chat/completions',
+          {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${openaiConfig.apiKey}`,
+            },
+            body: JSON.stringify({
+              model: openaiConfig.model || 'gpt-3.5-turbo',
+              messages: messages.map((msg: any) => ({
+                role: msg.role,
+                content: msg.content,
+              })),
+              stream: true,
+              ...openaiConfig.options,
+            }),
+          }
+        )
 
         if (!response.ok) {
           throw new Error(`OpenAI API error: ${response.status}`)
@@ -136,9 +149,12 @@ export const OpenAIAdapter = {
 
         return response
       } catch (error) {
-        return new Response(JSON.stringify({
-          error: { message: (error as Error).message }
-        }), { status: 500 })
+        return new Response(
+          JSON.stringify({
+            error: { message: (error as Error).message },
+          }),
+          { status: 500 }
+        )
       }
     }
   },
@@ -156,7 +172,7 @@ export const ChatbotKitAdapter = {
    * Convert react-chatbot-kit messages to Clarity format
    */
   convertMessages: (kitMessages: any[]): any[] => {
-    return kitMessages.map(msg => ({
+    return kitMessages.map((msg) => ({
       id: msg.id || `msg-${Date.now()}-${Math.random()}`,
       content: msg.message,
       role: msg.type === 'user' ? 'user' : 'assistant',
@@ -207,17 +223,25 @@ export const CustomAdapter = {
   /**
    * Generic message converter
    */
-  convertMessages: (messages: any[], converters: {
-    id?: (msg: any) => string
-    content?: (msg: any) => string
-    role?: (msg: any) => 'user' | 'assistant' | 'system'
-    timestamp?: (msg: any) => number
-  } = {}): any[] => {
+  convertMessages: (
+    messages: any[],
+    converters: {
+      id?: (msg: any) => string
+      content?: (msg: any) => string
+      role?: (msg: any) => 'user' | 'assistant' | 'system'
+      timestamp?: (msg: any) => number
+    } = {}
+  ): any[] => {
     return messages.map((msg, index) => ({
       id: converters.id?.(msg) || msg.id || `msg-${Date.now()}-${index}`,
-      content: converters.content?.(msg) || msg.content || msg.text || msg.message,
+      content:
+        converters.content?.(msg) || msg.content || msg.text || msg.message,
       role: converters.role?.(msg) || msg.role || msg.type || 'user',
-      timestamp: converters.timestamp?.(msg) || msg.timestamp || msg.createdAt || Date.now(),
+      timestamp:
+        converters.timestamp?.(msg) ||
+        msg.timestamp ||
+        msg.createdAt ||
+        Date.now(),
       // Preserve original message
       original: msg,
     }))
@@ -244,9 +268,12 @@ export const CustomAdapter = {
 
         return new Response(JSON.stringify(normalizedResponse))
       } catch (error) {
-        return new Response(JSON.stringify({
-          error: { message: (error as Error).message }
-        }), { status: 500 })
+        return new Response(
+          JSON.stringify({
+            error: { message: (error as Error).message },
+          }),
+          { status: 500 }
+        )
       }
     }
   },
@@ -272,7 +299,9 @@ export class MigrationTracker {
 
   getProgress(): { completed: number; total: number; steps: any[] } {
     const total = this.steps.size
-    const completed = Array.from(this.steps.values()).filter(s => s.completed).length
+    const completed = Array.from(this.steps.values()).filter(
+      (s) => s.completed
+    ).length
 
     return {
       completed,
@@ -298,16 +327,16 @@ export class MigrationTracker {
 
     report += `## Completed Steps\n`
     progress.steps
-      .filter(s => s.completed)
-      .forEach(step => {
+      .filter((s) => s.completed)
+      .forEach((step) => {
         report += `- ✅ ${step.step}\n`
         if (step.notes) report += `  ${step.notes}\n`
       })
 
     report += `\n## Remaining Steps\n`
     progress.steps
-      .filter(s => !s.completed)
-      .forEach(step => {
+      .filter((s) => !s.completed)
+      .forEach((step) => {
         report += `- ⏳ ${step.step}\n`
         if (step.notes) report += `  ${step.notes}\n`
       })
@@ -326,35 +355,27 @@ export class MigrationAnalyzer {
     suggestions: string[]
   } {
     const patterns = {
-      'vercel-ai': [
-        /useChat\(/,
-        /from ['"']ai['"']/,
-        /import.*useChat/,
-      ],
-      'openai': [
-        /openai\.chat\.completions/,
-        /import.*openai/,
-        /new OpenAI\(/,
-      ],
+      'vercel-ai': [/useChat\(/, /from ['"']ai['"']/, /import.*useChat/],
+      openai: [/openai\.chat\.completions/, /import.*openai/, /new OpenAI\(/],
       'react-chatbot-kit': [
         /Chatbot/,
         /createChatBotMessage/,
         /react-chatbot-kit/,
       ],
-      'custom': [
-        /fetch.*chat/,
-        /axios.*chat/,
-        /useState.*messages/,
-      ],
+      custom: [/fetch.*chat/, /axios.*chat/, /useState.*messages/],
     }
 
-    let bestMatch = { library: null as string | null, confidence: 0, suggestions: [] as string[] }
+    let bestMatch = {
+      library: null as string | null,
+      confidence: 0,
+      suggestions: [] as string[],
+    }
 
     Object.entries(patterns).forEach(([library, regexes]) => {
       let matches = 0
       const suggestions: string[] = []
 
-      regexes.forEach(regex => {
+      regexes.forEach((regex) => {
         if (regex.test(code)) {
           matches++
           suggestions.push(`Found ${regex.source} pattern`)
@@ -397,11 +418,11 @@ import { useChat } from 'ai/react'
 const { messages, input, handleSubmit } = useChat()
 
 // After
-import { useClarityChat } from '@clarity-chat/react'
+import { OpenAIAdapter, useClarityChat } from '@clarity-chat/react'
 const { messages, append, isLoading } = useClarityChat({ api: '/api/chat' })
 \`\`\`
       `,
-      'openai': `
+      openai: `
 # Migrating from Direct OpenAI API
 
 ## Key Changes
@@ -417,7 +438,6 @@ const { messages, append, isLoading } = useClarityChat({ api: '/api/chat' })
 ## Code Changes
 \`\`\`tsx
 // API Route (app/api/chat/route.ts)
-import { OpenAIAdapter } from '@clarity-chat/react'
 
 export async function POST(request: Request) {
   return OpenAIAdapter.createAPIAdapter({
@@ -427,11 +447,10 @@ export async function POST(request: Request) {
 }
 
 // Frontend
-import { useClarityChat } from '@clarity-chat/react'
 const chat = useClarityChat({ api: '/api/chat' })
 \`\`\`
       `,
-      'custom': `
+      custom: `
 # Migrating from Custom Implementation
 
 ## Key Changes
@@ -457,7 +476,10 @@ const { messages, append, isLoading, error } = useClarityChat({
       `,
     }
 
-    return guides[library as keyof typeof guides] || 'No specific guide available for this library.'
+    return (
+      guides[library as keyof typeof guides] ||
+      'No specific guide available for this library.'
+    )
   }
 }
 
@@ -493,7 +515,10 @@ export const MigrationPresets = {
   }),
 
   /** Migrate from custom implementation */
-  fromCustom: (config: { chatFunction: (...args: any[]) => Promise<any>; messageConverters?: any }) => ({
+  fromCustom: (config: {
+    chatFunction: (...args: any[]) => Promise<any>
+    messageConverters?: any
+  }) => ({
     apiAdapter: CustomAdapter.createAPIRoute(config.chatFunction),
     messageConverter: (messages: any[]) =>
       CustomAdapter.convertMessages(messages, config.messageConverters),
@@ -532,7 +557,7 @@ export function generateMigrationReport(
   }
 
   report += `\n## Analysis Details\n\n`
-  analysis.suggestions.forEach(suggestion => {
+  analysis.suggestions.forEach((suggestion) => {
     report += `- ${suggestion}\n`
   })
 
@@ -546,7 +571,10 @@ export function migrateQuick(
   from: 'vercel-ai' | 'openai' | 'chatbot-kit' | 'custom',
   config: any
 ) {
-  const preset = MigrationPresets[`from${from.charAt(0).toUpperCase() + from.slice(1)}` as keyof typeof MigrationPresets]
+  const preset =
+    MigrationPresets[
+      `from${from.charAt(0).toUpperCase() + from.slice(1)}` as keyof typeof MigrationPresets
+    ]
 
   if (!preset) {
     throw new Error(`No migration preset available for ${from}`)

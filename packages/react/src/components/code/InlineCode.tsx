@@ -1,7 +1,7 @@
 'use client'
 
 import * as React from 'react'
-import { cn } from '../../utils/cn'
+import { cn } from '@clarity-chat/primitives'
 import { useAnalytics, useInteractionTracking } from '../../utils/analytics'
 import { NIGHT_OWL_COLORS } from './themes/night-owl'
 
@@ -36,7 +36,9 @@ export const InlineCode = React.memo<InlineCodeProps>(function InlineCode({
   const { trackClick } = useInteractionTracking('InlineCode')
 
   const codeText = React.useMemo(() => {
-    return typeof children === 'string' ? children.trim() : String(children).trim()
+    return typeof children === 'string'
+      ? children.trim()
+      : String(children).trim()
   }, [children])
 
   const handleClick = React.useCallback(async () => {
@@ -51,16 +53,21 @@ export const InlineCode = React.memo<InlineCodeProps>(function InlineCode({
       // Reset copied state after 2 seconds
       setTimeout(() => setCopied(false), 2000)
     } catch (error) {
-      console.error('Failed to copy inline code:', error)
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Failed to copy inline code:', error)
+      }
     }
   }, [enableCopy, codeText, onCopy, trackInteraction])
 
-  const handleKeyDown = React.useCallback((e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' || e.key === ' ') {
-      e.preventDefault()
-      handleClick()
-    }
-  }, [handleClick])
+  const handleKeyDown = React.useCallback(
+    (e: React.KeyboardEvent) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault()
+        handleClick()
+      }
+    },
+    [handleClick]
+  )
 
   return (
     <code
@@ -72,8 +79,10 @@ export const InlineCode = React.memo<InlineCodeProps>(function InlineCode({
         '[background-color:var(--night-owl-bg)] [color:var(--night-owl-fg)] [border-color:var(--night-owl-border)]',
         // Interactive states (only when copy is enabled)
         enableCopy && 'cursor-pointer transition-colors duration-200',
-        enableCopy && 'hover:[background-color:var(--night-owl-bg-secondary)] hover:[border-color:var(--night-owl-border)]',
-        enableCopy && 'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500/50',
+        enableCopy &&
+          'hover:[background-color:var(--night-owl-bg-secondary)] hover:[border-color:var(--night-owl-border)]',
+        enableCopy &&
+          'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500/50',
         className
       )}
       onClick={enableCopy ? handleClick : undefined}

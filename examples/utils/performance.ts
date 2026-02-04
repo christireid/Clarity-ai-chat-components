@@ -407,6 +407,7 @@ export function usePerformance(
 
 /**
  * Formats bytes to human-readable string.
+ * @deprecated Import from @clarity-chat/utils/format instead
  */
 export function formatBytes(bytes: number): string {
   if (bytes === 0) return '0 B'

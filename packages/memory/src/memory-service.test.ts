@@ -2,7 +2,7 @@
  * MemoryService Tests
  */
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
-import { MemoryService } from './memory-service'
+import { MemoryService } from './memory-service/core'
 import type { MemoryServiceConfig } from './types'
 
 // Create minimal config for testing

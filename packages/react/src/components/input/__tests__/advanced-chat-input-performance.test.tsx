@@ -8,7 +8,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { render, screen, fireEvent, waitFor, act } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { AdvancedChatInput } from '../advanced-chat-input'
+import { AdvancedChatInput } from '../AdvancedChatInput'
 
 // Mock useDebounce to control timing in tests
 vi.mock('../../hooks/ui/use-debounce', () => ({
@@ -70,7 +70,10 @@ describe('AdvancedChatInput Performance Regression', () => {
       const textarea = screen.getByRole('textbox')
 
       // Move cursor and delete
-      await user.type(textarea, '{backspace}{backspace}{backspace}{backspace}{backspace}')
+      await user.type(
+        textarea,
+        '{backspace}{backspace}{backspace}{backspace}{backspace}'
+      )
 
       // Should update immediately
       expect(onChange).toHaveBeenLastCalledWith('initial')
@@ -97,15 +100,23 @@ describe('AdvancedChatInput Performance Regression', () => {
       await user.type(textarea, '@rapidtyping')
 
       // With debouncing, should not call API for every keystroke
-      await waitFor(() => {
-        // API should be called at most once or twice due to debouncing
-        expect(onSuggestionRequest).toHaveBeenCalledTimes(1)
-      }, { timeout: 300 })
+      await waitFor(
+        () => {
+          // API should be called at most once or twice due to debouncing
+          expect(onSuggestionRequest).toHaveBeenCalledTimes(1)
+        },
+        { timeout: 300 }
+      )
     })
 
     it('maintains suggestion functionality after debounce', async () => {
       const suggestions = [
-        { id: '1', type: 'prompt' as const, label: 'test', value: 'test content' }
+        {
+          id: '1',
+          type: 'prompt' as const,
+          label: 'test',
+          value: 'test content',
+        },
       ]
       const onSuggestionRequest = vi.fn().mockResolvedValue(suggestions)
       const onChange = vi.fn()

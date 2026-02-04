@@ -15,7 +15,7 @@ import {
   SmartLinkPreview,
   useLinkPreview,
   type LinkMetadata,
-} from './link-preview'
+} from './link-preview/'
 
 // ============================================================================
 // Meta Configuration

@@ -193,6 +193,7 @@ export function AnalyticsDashboard({
                     <motion.div
                       initial={{ width: 0 }}
                       animate={{ width: `${topic.percentage}%` }}
+                      viewport={{ once: true }}
                       transition={{ duration: 0.5, delay: index * 0.1 }}
                       className="h-full bg-primary"
                     />

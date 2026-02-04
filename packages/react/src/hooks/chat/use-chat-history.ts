@@ -126,9 +126,8 @@ export interface UseChatHistoryReturn {
 // Utilities
 // ============================================
 
-function generateId(): string {
-  return `msg_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`
-}
+// Import message ID generator from canonical utils package
+import { generateMessageId as generateId } from '@clarity-chat/utils'
 
 function cloneMessages(messages: ChatMessage[]): ChatMessage[] {
   return messages.map((m) => ({ ...m }))

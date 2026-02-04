@@ -1,7 +1,7 @@
 import { render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { ChatWindow } from '../chat/chat-window'
+import { ChatWindow } from '../chat/ChatWindow'
 import { ThemeProvider } from '../../theme'
 import type { Message } from '@clarity-chat/types'
 

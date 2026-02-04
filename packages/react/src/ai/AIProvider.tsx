@@ -94,7 +94,9 @@ export function AIProvider({ children, config }: AIProviderProps) {
         })
       } catch (error) {
         if (config.debug) {
-          console.error('[AI] Failed to get suggestions:', error)
+          if (process.env.NODE_ENV === 'development') {
+            console.error('[AI] Failed to get suggestions:', error)
+          }
         }
         return []
       }
@@ -120,7 +122,9 @@ export function AIProvider({ children, config }: AIProviderProps) {
         return await config.moderationProvider(content, context)
       } catch (error) {
         if (config.debug) {
-          console.error('[AI] Failed to moderate content:', error)
+          if (process.env.NODE_ENV === 'development') {
+            console.error('[AI] Failed to moderate content:', error)
+          }
         }
         // On error, default to allowing
         return {
@@ -152,7 +156,9 @@ export function AIProvider({ children, config }: AIProviderProps) {
         return await config.sentimentAnalyzer(text)
       } catch (error) {
         if (config.debug) {
-          console.error('[AI] Failed to analyze sentiment:', error)
+          if (process.env.NODE_ENV === 'development') {
+            console.error('[AI] Failed to analyze sentiment:', error)
+          }
         }
         return {
           sentiment: 'neutral',

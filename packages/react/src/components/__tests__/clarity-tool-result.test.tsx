@@ -5,7 +5,7 @@
 import { describe, it, expect, vi } from 'vitest'
 import { render } from '@testing-library/react'
 import React from 'react'
-import { ClarityToolResult, type ToolCall } from '../clarity-tool-result'
+import { ClarityToolResult, type ToolCall } from '../ClarityToolResult'
 import { createToolUIRegistry } from '../../agents/tool-ui-registry'
 import type { CoreMessage } from '../../hooks/chat/use-chat-enhanced'
 

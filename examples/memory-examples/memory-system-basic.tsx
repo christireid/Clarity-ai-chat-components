@@ -5,7 +5,7 @@
  */
 
 import React from 'react'
-import { ErrorBoundary, LoadingSpinner } from '../utils/error-boundary'
+import { ErrorBoundary, LoadingSpinner } from '../utils/ErrorBoundary'
 // 📚 IMPORT PATTERN:
 // All @clarity-chat/react exports come from the main package entry point.
 // The library uses a flat export structure for simpler imports.
@@ -63,9 +63,9 @@ const memoryConfig: MemoryServiceConfig = {
   tokenOptimization: {
     maxContextWindow: 4096,
     allocation: {
-      systemPrompt: 0.10,
+      systemPrompt: 0.1,
       userPreferences: 0.15,
-      recentContext: 0.30,
+      recentContext: 0.3,
       semanticMemory: 0.25,
       episodicMemory: 0.15,
       responseReserve: 0.05,
@@ -89,10 +89,10 @@ const memoryConfig: MemoryServiceConfig = {
   enableAutoCleanup: true,
   cleanupInterval: 3600000, // 1 hour
   retentionPolicy: {
-    shortTerm: 3600,      // 1 hour
-    session: 86400,       // 24 hours
-    thread: 604800,       // 7 days
-    global: 0,            // Never expires
+    shortTerm: 3600, // 1 hour
+    session: 86400, // 24 hours
+    thread: 604800, // 7 days
+    global: 0, // Never expires
   },
   debug: true,
 }
@@ -122,10 +122,12 @@ const embeddings = new OpenAIEmbeddings({
  * conversation history and user preferences.
  */
 function ChatWithMemory() {
-  const [messages, setMessages] = React.useState<Array<{
-    role: 'user' | 'assistant'
-    content: string
-  }>>([])
+  const [messages, setMessages] = React.useState<
+    Array<{
+      role: 'user' | 'assistant'
+      content: string
+    }>
+  >([])
   const [input, setInput] = React.useState('')
 
   // 🎯 useMemoryContext provides access to the memory system
@@ -149,7 +151,10 @@ function ChatWithMemory() {
   // ============================================================================
 
   // DEMO ONLY: Remove console.log in production
-  const captureMessage = async (content: string, role: 'user' | 'assistant') => {
+  const captureMessage = async (
+    content: string,
+    role: 'user' | 'assistant'
+  ) => {
     // DEMO: Logs to console for demonstration purposes
     console.log(`[Memory] Capturing ${role} message:`, content.substring(0, 50))
     // PRODUCTION: Uncomment and use the real API:
@@ -167,7 +172,10 @@ function ChatWithMemory() {
   // DEMO ONLY: Remove console.log in production
   const getRelevantMemories = async (query: string) => {
     // DEMO: Logs to console for demonstration purposes
-    console.log(`[Memory] Searching for memories related to:`, query.substring(0, 50))
+    console.log(
+      `[Memory] Searching for memories related to:`,
+      query.substring(0, 50)
+    )
     // PRODUCTION: Uncomment and use the real API:
     // return await memoryContext.searchMemories(query)
     return []
@@ -202,19 +210,22 @@ function ChatWithMemory() {
 
     // Add user message
     const userMessage = { role: 'user' as const, content: input }
-    setMessages(prev => [...prev, userMessage])
+    setMessages((prev) => [...prev, userMessage])
 
     // Capture in memory
     await captureMessage(input, 'user')
 
     // Get relevant memories for context
     const relevantMemories = await getRelevantMemories(input)
-    
+
     // Simulate AI response (in real app, call your LLM here)
     const assistantResponse = `I understand you said: "${input}". I found ${relevantMemories.length} relevant memories.`
-    
-    const assistantMessage = { role: 'assistant' as const, content: assistantResponse }
-    setMessages(prev => [...prev, assistantMessage])
+
+    const assistantMessage = {
+      role: 'assistant' as const,
+      content: assistantResponse,
+    }
+    setMessages((prev) => [...prev, assistantMessage])
 
     // Capture assistant response
     await captureMessage(assistantResponse, 'assistant')
@@ -259,8 +270,8 @@ function ChatWithMemory() {
         <input
           type="text"
           value={input}
-          onChange={e => setInput(e.target.value)}
-          onKeyDown={e => e.key === 'Enter' && !e.shiftKey && handleSend()}
+          onChange={(e) => setInput(e.target.value)}
+          onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && handleSend()}
           placeholder="Type a message..."
           className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
         />

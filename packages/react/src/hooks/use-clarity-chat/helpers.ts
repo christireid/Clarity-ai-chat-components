@@ -45,38 +45,8 @@ export function classifyError(error: Error): ErrorType {
   return classifyErrorUtil(error) as ErrorType
 }
 
-/**
- * Retry an async operation with exponential backoff
- *
- * @internal
- * @param operation - The async operation to retry
- * @param maxAttempts - Maximum number of retry attempts (default: 2)
- * @param delayMs - Base delay in milliseconds (default: 1000)
- */
-export async function retryOperation<T>(
-  operation: () => Promise<T>,
-  maxAttempts: number = 2,
-  delayMs: number = 1000
-): Promise<T> {
-  let lastError: Error | null = null
-
-  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
-    try {
-      return await operation()
-    } catch (error) {
-      lastError = error as Error
-
-      // Don't retry on last attempt
-      if (attempt < maxAttempts) {
-        // Exponential backoff: delayMs * 2^(attempt-1)
-        const delay = delayMs * Math.pow(2, attempt - 1)
-        await new Promise((resolve) => setTimeout(resolve, delay))
-      }
-    }
-  }
-
-  throw lastError || new Error('Operation failed after retries')
-}
+// NOTE: retryOperation() has been removed from this file.
+// Import retry from @clarity-chat/utils/async or use retryWithBackoff from @clarity-chat/react/utils/resilience/retry-with-backoff
 
 /**
  * Extract text content from a message
@@ -114,19 +84,20 @@ export function validateApiEndpoint(
   api: string | undefined
 ): asserts api is string {
   if (!api || typeof api !== 'string' || api.trim().length === 0) {
-  throw new ComponentError({
-    code: 'MISSING_PROP',
-    component: 'useClarityChat',
-    message:
-      '"api" option is required. Please provide your API endpoint URL.',
-    expected: 'string (e.g., "/api/chat" or "https://api.example.com/chat")',
-    example:
-      'const chat = useClarityChat({ api: "/api/chat" })\n\n' +
-      '// Or with full URL\n' +
-      'const chat = useClarityChat({ api: "https://api.example.com/chat" })',
-    docsPath: '/hooks/use-clarity-chat#api',
-    suggestion: 'Quick fix: useClarityChat({ api: "/api/chat" }) - replace with your actual API endpoint',
-  })
+    throw new ComponentError({
+      code: 'MISSING_PROP',
+      component: 'useClarityChat',
+      message:
+        '"api" option is required. Please provide your API endpoint URL.',
+      expected: 'string (e.g., "/api/chat" or "https://api.example.com/chat")',
+      example:
+        'const chat = useClarityChat({ api: "/api/chat" })\n\n' +
+        '// Or with full URL\n' +
+        'const chat = useClarityChat({ api: "https://api.example.com/chat" })',
+      docsPath: '/hooks/use-clarity-chat#api',
+      suggestion:
+        'Quick fix: useClarityChat({ api: "/api/chat" }) - replace with your actual API endpoint',
+    })
   }
 
   // Security Check: Detect if user accidentally passed an API key

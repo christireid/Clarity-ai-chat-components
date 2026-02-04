@@ -55,12 +55,10 @@ export type {
   ClarityChatErrorInfo,
   ClarityPromptOptimizationOptions,
   ClarityChatTokenStats,
-} from './hooks/chat/use-clarity-chat'
+} from './hooks/use-clarity-chat'
 
-export type {
-  UseChatOptions,
-  UseChatReturn,
-} from './hooks/chat/use-chat-unified'
+// UseChatOptions and UseChatReturn were removed in v2.0
+// Use UseClarityChatOptions and UseClarityChatReturn instead
 
 export type {
   UseClarityObjectOptions,
@@ -198,17 +196,94 @@ export type {
 // COMPONENT PROPS TYPES
 // =============================================================================
 
-export type { ClarityChatProps } from './components/chat/clarity-chat'
-export type { ClarityChatSimpleProps } from './components/chat/clarity-chat-simple'
-export type { ChatWindowProps } from './components/chat/chat-window'
-export type { TypingIndicatorVariant } from './components/message/typing-indicator'
+export type { ClarityChatProps } from './components/chat/ClarityChat'
+export type { ClarityChatSimpleProps } from './components/chat/ClarityChatSimple'
+export type { ChatWindowProps } from './components/chat/ChatWindow'
+export type { TypingIndicatorVariant } from './components/message/TypingIndicator'
 
 export type {
   ChatCompleteProps,
   ChatWithMemoryProps,
   ChatWithAnalyticsProps,
   ChatWithPresetProps,
-} from './components/chat/chat-recipes'
+} from './components/chat/ChatRecipes'
+
+// =============================================================================
+// ENHANCED TYPES
+// =============================================================================
+
+export type {
+  // Event types
+  StrictChatEvent,
+  MessageSentEvent,
+  MessageReceivedEvent,
+  StreamStartedEvent,
+  StreamChunkReceivedEvent,
+  StreamCompletedEvent,
+  ToolStartedEvent,
+  ToolCompletedEvent,
+  ToolErrorEvent,
+  ThinkingStartedEvent,
+  ThinkingStepEvent,
+  ChatErrorEvent,
+  AdapterChangedEvent,
+  StateUpdatedEvent,
+  EventType,
+  EventPayload,
+  StrictEventListener,
+  StrictEventEmitter,
+  // Generic message types
+  GenericMessage,
+  TypedMessage,
+  UserMessage,
+  AssistantMessage,
+  SystemMessage,
+  ToolMessage,
+  MessageMetadataKeys,
+  // Plugin types
+  PluginHooks,
+  PluginConfig,
+  Plugin,
+  PluginManager,
+  CreatePluginOptions,
+  // Conditional types
+  ChatState,
+  ConditionalStreamingProps,
+  ConditionalToolProps,
+  ConditionalThinkingProps,
+  ConditionalProps,
+  RequireIf,
+  // Component prop types
+  InferComponentProps,
+  RequirePropKeys,
+  OptionalPropKeys,
+  PropsOfType,
+  CallbackProps,
+  DataProps,
+  PropType,
+} from './types/enhanced'
+
+export {
+  // Type guards
+  isFinishReason,
+  isAdapterResponse,
+  isAdapterCapabilities,
+  isFormalizedModelAdapter,
+  supportsCapability,
+  validateAdapter,
+  asAdapter,
+  isEventType,
+  // Factories and builders
+  createMessageFactory,
+  createPlugin,
+  createPropsBuilder,
+  createEventDispatcher,
+  createStrictEventEmitter,
+  // Utilities
+  isMessageRole,
+  deepFreeze,
+  validateConditionalProps,
+} from './types/enhanced'
 
 // =============================================================================
 // LICENSE TYPES

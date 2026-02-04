@@ -42,7 +42,7 @@ concurrency:
 # Minimal global permissions
 permissions:
   contents: read
-  pull-requests: write  # For failure comments
+  pull-requests: write # For failure comments
 
 env:
   NODE_VERSION: '20'
@@ -276,6 +276,12 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
           pnpm-version: ${{ env.PNPM_VERSION }}
+
+      - name: Install peer dependencies for build
+        working-directory: packages/react
+        run: |
+          echo "📦 Installing peer dependencies for build..."
+          node scripts/install-peers-ci.js standard
 
       - name: Setup Turbo Remote Cache
         if: ${{ !inputs.skip_cache }}

@@ -31,6 +31,11 @@ export interface Session {
     lastActivity: string
     totalMessages: number
     userAgent?: string
+    // Context management metadata
+    compressionStrategy?: string
+    originalMessageCount?: number
+    compressionRatio?: number
+    lastCompression?: string
   }
   preferences: {
     theme?: 'light' | 'dark'
@@ -392,10 +397,15 @@ export async function getOrCreateSessionForRequest(
 
 /**
  * Update session with new messages
+ * Automatically manages context window to prevent token overflows
  */
 export async function updateSessionWithMessages(
   sessionId: string,
-  messages: SessionMessage[]
+  messages: SessionMessage[],
+  options: {
+    maxContextTokens?: number
+    enableCompression?: boolean
+  } = {}
 ): Promise<void> {
   const store = getSessionStore()
   const session = await store.get(sessionId)
@@ -412,5 +422,55 @@ export async function updateSessionWithMessages(
     session.messages.push(message)
   }
 
+  // Apply context compression if enabled (default: true)
+  const enableCompression = options.enableCompression !== false
+
+  if (enableCompression && session.messages.length > 20) {
+    const { ContextManager } = await import('./contextManager')
+    const manager = new ContextManager({
+      maxContextTokens: options.maxContextTokens || 8000,
+      reservedTokens: 4000,
+      recentMessagesToKeep: 10,
+      enableSummarization: true,
+    })
+
+    const optimized = await manager.optimizeContext(session.messages)
+
+    // Store optimization metadata
+    if (optimized.strategy !== 'none') {
+      session.messages = optimized.messages
+      session.metadata.compressionStrategy = optimized.strategy
+      session.metadata.originalMessageCount = optimized.keptMessages + optimized.summarizedMessages
+      session.metadata.compressionRatio = optimized.compressionRatio
+    }
+  }
+
   await store.set(session)
+}
+
+/**
+ * Get optimized messages for a session (respecting token budget)
+ */
+export async function getOptimizedSessionMessages(
+  sessionId: string,
+  modelContextWindow: number = 128000
+): Promise<SessionMessage[]> {
+  const store = getSessionStore()
+  const session = await store.get(sessionId)
+
+  if (!session) {
+    return []
+  }
+
+  // If few messages, return as-is
+  if (session.messages.length <= 10) {
+    return session.messages
+  }
+
+  // Optimize for model context window
+  const { ContextManager } = await import('./contextManager')
+  const manager = new ContextManager()
+  const optimized = await manager.optimizeContext(session.messages, modelContextWindow)
+
+  return optimized.messages
 }

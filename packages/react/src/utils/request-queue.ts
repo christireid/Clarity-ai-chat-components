@@ -5,7 +5,7 @@
  * Provides fair resource allocation and user feedback during queue delays.
  */
 
-import { logger } from './logger'
+import { logger } from '@clarity-chat/utils/logger'
 
 export interface QueuedRequest<T = any> {
   id: string
@@ -58,7 +58,11 @@ export class RequestQueue {
       onQueueUpdate?: (position: number, estimatedWaitMs: number) => void
     } = {}
   ): Promise<T> {
-    const { priority = 'normal', maxRetries = this.config.maxRetries, ...callbacks } = options
+    const {
+      priority = 'normal',
+      maxRetries = this.config.maxRetries,
+      ...callbacks
+    } = options
 
     return new Promise<T>((resolve, reject) => {
       const queuedRequest: QueuedRequest<T> = {
@@ -101,7 +105,7 @@ export class RequestQueue {
    * Cancel a queued request
    */
   cancel(requestId: string): boolean {
-    const index = this.queue.findIndex(req => req.id === requestId)
+    const index = this.queue.findIndex((req) => req.id === requestId)
     if (index === -1) return false
 
     this.queue.splice(index, 1)
@@ -160,8 +164,11 @@ export class RequestQueue {
     let insertIndex = this.queue.length
     for (let i = 0; i < this.queue.length; i++) {
       const existingWeight = priorityWeight[this.queue[i].priority]
-      if (requestWeight > existingWeight ||
-          (requestWeight === existingWeight && request.createdAt < this.queue[i].createdAt)) {
+      if (
+        requestWeight > existingWeight ||
+        (requestWeight === existingWeight &&
+          request.createdAt < this.queue[i].createdAt)
+      ) {
         insertIndex = i
         break
       }
@@ -178,7 +185,10 @@ export class RequestQueue {
     this.processing = true
 
     try {
-      while (this.queue.length > 0 && this.activeRequests.size < this.config.maxConcurrent) {
+      while (
+        this.queue.length > 0 &&
+        this.activeRequests.size < this.config.maxConcurrent
+      ) {
         const request = this.queue.shift()
         if (!request) break
 
@@ -198,7 +208,9 @@ export class RequestQueue {
                   this.addToQueue(request)
                   this.processQueue()
                 } else {
-                  request.onError?.(new Error('Rate limit exceeded and max retries reached'))
+                  request.onError?.(
+                    new Error('Rate limit exceeded and max retries reached')
+                  )
                 }
               }, rateLimit.resetAt - Date.now())
               continue
@@ -211,7 +223,8 @@ export class RequestQueue {
           if (request.retryCount < request.maxRetries) {
             // Re-queue with exponential backoff
             request.retryCount++
-            const delay = this.config.retryDelayMs * Math.pow(2, request.retryCount - 1)
+            const delay =
+              this.config.retryDelayMs * Math.pow(2, request.retryCount - 1)
             setTimeout(() => {
               this.addToQueue(request)
               this.processQueue()

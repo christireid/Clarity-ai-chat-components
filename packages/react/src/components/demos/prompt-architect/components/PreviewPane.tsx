@@ -8,7 +8,7 @@
 
 import * as React from 'react'
 import { AnimatePresence } from 'framer-motion'
-import { cn } from '../../../../utils/cn'
+import { cn } from '@clarity-chat/primitives'
 import type {
   PreviewMessage as PreviewMessageType,
   DebugViewMode,
@@ -103,7 +103,7 @@ export function PreviewPane({
       </div>
 
       {/* Content */}
-      <div className="flex-1 overflow-auto p-4">
+      <div className="flex-1 overflow-auto scrollbar-hide p-4">
         {showDebugView ? (
           <DebugView
             mode={debugViewMode}

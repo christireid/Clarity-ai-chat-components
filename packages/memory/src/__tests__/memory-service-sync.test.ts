@@ -8,7 +8,7 @@
  */
 
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { MemoryService } from '../memory-service'
+import { MemoryService } from '../memory-service/core'
 import type { VectorStore, EmbeddingProvider } from '../types'
 
 describe('MemoryService - Cache-Vector Store Sync', () => {

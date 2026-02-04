@@ -1,0 +1,30 @@
+{
+  "phase": "Phase 2",
+  "timestamp": "2026-01-26T20:44:40.409Z",
+  "bundles": [
+    {
+      "file": "index.js",
+      "size": 1208105,
+      "gzipSize": 311245
+    }
+  ],
+  "totalSize": 1208105,
+  "totalGzipSize": 311245,
+  "peerDependencies": {
+    "required": ["framer-motion", "react", "lucide-react", "zod"],
+    "optional": [
+      "react-dom",
+      "flowtoken",
+      "mermaid",
+      "pdfjs-dist",
+      "mammoth",
+      "cohere-ai",
+      "shiki",
+      "jszip",
+      "prismjs",
+      "react-markdown",
+      "remark-gfm",
+      "rehype-highlight"
+    ]
+  }
+}

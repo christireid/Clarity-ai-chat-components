@@ -108,9 +108,7 @@ export class ProviderNativeCounter {
    * @param content - Text string or array of messages
    * @returns Token count result with metadata
    */
-  async count(
-    content: string | CacheableMessage[]
-  ): Promise<TokenCountResult> {
+  async count(content: string | CacheableMessage[]): Promise<TokenCountResult> {
     // Check cache first
     if (this.config.enableCaching) {
       const cached = this.getFromCache(content)
@@ -124,10 +122,14 @@ export class ProviderNativeCounter {
       try {
         result = await this.countWithProviderAPI(content)
       } catch (error) {
-        console.warn(
-          `Provider API failed, falling back to local counting:`,
-          error
-        )
+        if (process.env.NODE_ENV === 'development') {
+          if (process.env.NODE_ENV === 'development') {
+            console.warn(
+              `Provider API failed, falling back to local counting:`,
+              error
+            )
+          }
+        }
         result = await this.countLocally(content)
       }
     } else {
@@ -174,9 +176,7 @@ export class ProviderNativeCounter {
   ): Promise<TokenCountResult> {
     // Convert string to messages format
     const messages: CacheableMessage[] =
-      typeof content === 'string'
-        ? [{ role: 'user', content }]
-        : content
+      typeof content === 'string' ? [{ role: 'user', content }] : content
 
     const response = await fetch(
       'https://api.anthropic.com/v1/messages/count_tokens',
@@ -189,7 +189,7 @@ export class ProviderNativeCounter {
         },
         body: JSON.stringify({
           model: this.config.model,
-          messages: messages.map(msg => ({
+          messages: messages.map((msg) => ({
             role: msg.role,
             content: msg.content,
           })),
@@ -232,7 +232,7 @@ export class ProviderNativeCounter {
     const contents =
       typeof content === 'string'
         ? [{ parts: [{ text: content }] }]
-        : content.map(msg => ({
+        : content.map((msg) => ({
             role: msg.role === 'assistant' ? 'model' : 'user',
             parts: [{ text: msg.content }],
           }))
@@ -279,7 +279,7 @@ export class ProviderNativeCounter {
     const text =
       typeof content === 'string'
         ? content
-        : content.map(msg => msg.content).join(' ')
+        : content.map((msg) => msg.content).join(' ')
 
     let tokens: number
     let method: 'local-accurate' | 'estimated'
@@ -361,7 +361,7 @@ export class ProviderNativeCounter {
     const text =
       typeof content === 'string'
         ? content
-        : JSON.stringify(content.map(m => ({ r: m.role, c: m.content })))
+        : JSON.stringify(content.map((m) => ({ r: m.role, c: m.content })))
 
     // Simple hash for cache key
     let hash = 0

@@ -23,7 +23,8 @@ import {
   Filter,
 } from 'lucide-react'
 import type { ConsoleLogEntry } from '../types'
-import { copyToClipboard, cn } from '../utils'
+import { copyToClipboard } from '../utils'
+import { cn } from '@clarity-chat/primitives'
 
 interface ConsolePanelProps {
   entries: ConsoleLogEntry[]

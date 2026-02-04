@@ -1,6 +1,6 @@
 import { renderHook, act } from '@testing-library/react'
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
-import { useReducedMotion } from '../use-reduced-motion'
+import { useReducedMotion } from '@clarity-chat/primitives'
 
 describe('useReducedMotion', () => {
   let matchMediaMock: ReturnType<typeof vi.fn>

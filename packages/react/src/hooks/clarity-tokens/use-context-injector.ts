@@ -185,13 +185,7 @@ export function useContextInjector(
 
       return parts.join('\n\n')
     },
-    [
-      config.template,
-      config.maxChunks,
-      config.includeSourceReferences,
-      config.contextHeader,
-      config.contextFooter,
-    ]
+    [config]
   )
 
   /**
@@ -232,7 +226,7 @@ export function useContextInjector(
 
       return { text: truncated + '... [Context truncated]', truncated: true }
     },
-    [config.countTokens]
+    [config]
   )
 
   /**
@@ -344,7 +338,7 @@ export function useContextInjector(
         truncated,
       }
     },
-    [config, formatChunks, truncateContext]
+    [formatChunks, truncateContext, config]
   )
 
   /**

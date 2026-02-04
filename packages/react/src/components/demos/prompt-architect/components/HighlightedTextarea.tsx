@@ -8,7 +8,7 @@
  */
 
 import * as React from 'react'
-import { cn } from '../../../../utils/cn'
+import { cn } from '@clarity-chat/primitives'
 import { getTemplateSegments } from '../utils/variable-parser'
 
 export interface HighlightedTextareaProps {

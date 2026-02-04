@@ -4,23 +4,17 @@
  * UI components for theme selection, preview, and customization.
  */
 
-export { ThemeSwitcher, type Theme } from './theme-switcher'
-export { ThemePreview } from './theme-preview'
+export { ThemeSwitcher, type Theme } from './ThemeSwitcher'
+export { ThemePreview } from './ThemePreview'
 export {
   ThemePreviewThumbnail,
   ThemePreviewGrid,
   type ThemePreviewThumbnailProps,
   type ThemePreviewGridProps,
-} from './theme-preview-thumbnail'
-export {
-  ThemeSelector,
-  ThemeSelectorDropdown,
-} from './theme-selector'
+} from './ThemePreviewThumbnail'
+export { ThemeSelector, ThemeSelectorDropdown } from './ThemeSelector'
 export {
   ThemeContrastChecker,
   type ThemeContrastCheckerProps,
-} from './theme-contrast-checker'
-export {
-  ThemeCustomizer,
-  type ThemeCustomizerProps,
-} from './ThemeCustomizer'
+} from './ThemeContrastChecker'
+export { ThemeCustomizer, type ThemeCustomizerProps } from './ThemeCustomizer'

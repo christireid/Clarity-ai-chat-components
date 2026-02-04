@@ -3,241 +3,263 @@
  *
  * Prompt templates that AI agents can use for common tasks
  */
-import { Prompt } from '@modelcontextprotocol/sdk/types.js';
-import { logger } from '../utils/logger.js';
-import { NotFoundError } from '../utils/errors.js';
-import { validateRequired, validateString } from '../utils/validation.js';
+import { Prompt as _Prompt } from '@modelcontextprotocol/sdk/types.js'
+import { logger } from '../utils/logger.js'
+import { NotFoundError } from '../utils/errors.js'
+import { validateRequired, validateString } from '../utils/validation.js'
 /**
  * Available prompts
  */
 export const prompts = [
-    {
-        name: 'implement-feature',
-        description: 'Generate implementation plan for a new feature',
-        arguments: [
-            {
-                name: 'feature',
-                description: 'Description of the feature to implement',
-                required: true,
-            },
-            {
-                name: 'provider',
-                description: 'AI provider to use (openai, anthropic, google)',
-                required: false,
-            },
-        ],
-    },
-    {
-        name: 'debug-issue',
-        description: 'Analyze and suggest fixes for an issue',
-        arguments: [
-            {
-                name: 'issue',
-                description: 'Description of the issue',
-                required: true,
-            },
-            {
-                name: 'code',
-                description: 'Relevant code snippet',
-                required: false,
-            },
-        ],
-    },
-    {
-        name: 'optimize-performance',
-        description: 'Suggest performance optimizations',
-        arguments: [
-            {
-                name: 'context',
-                description: 'Context about current implementation',
-                required: true,
-            },
-        ],
-    },
-    {
-        name: 'review-code',
-        description: 'Perform code review and suggest improvements',
-        arguments: [
-            {
-                name: 'code',
-                description: 'Code to review',
-                required: true,
-            },
-            {
-                name: 'focus',
-                description: 'Specific aspect to focus on (security, performance, readability)',
-                required: false,
-            },
-        ],
-    },
-    {
-        name: 'convert-example',
-        description: 'Convert code example to different provider or framework',
-        arguments: [
-            {
-                name: 'code',
-                description: 'Original code to convert',
-                required: true,
-            },
-            {
-                name: 'from',
-                description: 'Source provider/framework',
-                required: true,
-            },
-            {
-                name: 'to',
-                description: 'Target provider/framework',
-                required: true,
-            },
-        ],
-    },
-    // =============================================================================
-    // Interactive Demo Prompts
-    // =============================================================================
-    {
-        name: 'quick-start-demo',
-        description: 'Interactive guide to build your first Clarity Chat application in 5 minutes',
-        arguments: [
-            {
-                name: 'provider',
-                description: 'AI provider to use (openai, anthropic, google)',
-                required: false,
-            },
-            {
-                name: 'framework',
-                description: 'Framework to use (nextjs, react, express)',
-                required: false,
-            },
-        ],
-    },
-    {
-        name: 'explore-components',
-        description: 'Interactive walkthrough of the Clarity Chat component library',
-        arguments: [
-            {
-                name: 'category',
-                description: 'Component category to explore (chat, input, message, feedback)',
-                required: false,
-            },
-        ],
-    },
-    {
-        name: 'build-chatbot',
-        description: 'Step-by-step guide to building a production-ready chatbot',
-        arguments: [
-            {
-                name: 'type',
-                description: 'Type of chatbot (customer-support, coding-assistant, general)',
-                required: true,
-            },
-            {
-                name: 'features',
-                description: 'Comma-separated features (streaming, voice, file-upload, memory)',
-                required: false,
-            },
-        ],
-    },
-    {
-        name: 'accessibility-guide',
-        description: 'Interactive accessibility audit and implementation guide',
-        arguments: [
-            {
-                name: 'wcagLevel',
-                description: 'WCAG conformance level target (A, AA, AAA)',
-                required: false,
-            },
-        ],
-    },
-    {
-        name: 'model-comparison',
-        description: 'Interactive comparison of AI models for your use case',
-        arguments: [
-            {
-                name: 'useCase',
-                description: 'Your use case (chat, coding, analysis, creative)',
-                required: true,
-            },
-            {
-                name: 'budget',
-                description: 'Monthly budget constraint in USD',
-                required: false,
-            },
-        ],
-    },
-];
+  {
+    name: 'implement-feature',
+    description: 'Generate implementation plan for a new feature',
+    arguments: [
+      {
+        name: 'feature',
+        description: 'Description of the feature to implement',
+        required: true,
+      },
+      {
+        name: 'provider',
+        description: 'AI provider to use (openai, anthropic, google)',
+        required: false,
+      },
+    ],
+  },
+  {
+    name: 'debug-issue',
+    description: 'Analyze and suggest fixes for an issue',
+    arguments: [
+      {
+        name: 'issue',
+        description: 'Description of the issue',
+        required: true,
+      },
+      {
+        name: 'code',
+        description: 'Relevant code snippet',
+        required: false,
+      },
+    ],
+  },
+  {
+    name: 'optimize-performance',
+    description: 'Suggest performance optimizations',
+    arguments: [
+      {
+        name: 'context',
+        description: 'Context about current implementation',
+        required: true,
+      },
+    ],
+  },
+  {
+    name: 'review-code',
+    description: 'Perform code review and suggest improvements',
+    arguments: [
+      {
+        name: 'code',
+        description: 'Code to review',
+        required: true,
+      },
+      {
+        name: 'focus',
+        description:
+          'Specific aspect to focus on (security, performance, readability)',
+        required: false,
+      },
+    ],
+  },
+  {
+    name: 'convert-example',
+    description: 'Convert code example to different provider or framework',
+    arguments: [
+      {
+        name: 'code',
+        description: 'Original code to convert',
+        required: true,
+      },
+      {
+        name: 'from',
+        description: 'Source provider/framework',
+        required: true,
+      },
+      {
+        name: 'to',
+        description: 'Target provider/framework',
+        required: true,
+      },
+    ],
+  },
+  // =============================================================================
+  // Interactive Demo Prompts
+  // =============================================================================
+  {
+    name: 'quick-start-demo',
+    description:
+      'Interactive guide to build your first Clarity Chat application in 5 minutes',
+    arguments: [
+      {
+        name: 'provider',
+        description: 'AI provider to use (openai, anthropic, google)',
+        required: false,
+      },
+      {
+        name: 'framework',
+        description: 'Framework to use (nextjs, react, express)',
+        required: false,
+      },
+    ],
+  },
+  {
+    name: 'explore-components',
+    description:
+      'Interactive walkthrough of the Clarity Chat component library',
+    arguments: [
+      {
+        name: 'category',
+        description:
+          'Component category to explore (chat, input, message, feedback)',
+        required: false,
+      },
+    ],
+  },
+  {
+    name: 'build-chatbot',
+    description: 'Step-by-step guide to building a production-ready chatbot',
+    arguments: [
+      {
+        name: 'type',
+        description:
+          'Type of chatbot (customer-support, coding-assistant, general)',
+        required: true,
+      },
+      {
+        name: 'features',
+        description:
+          'Comma-separated features (streaming, voice, file-upload, memory)',
+        required: false,
+      },
+    ],
+  },
+  {
+    name: 'accessibility-guide',
+    description: 'Interactive accessibility audit and implementation guide',
+    arguments: [
+      {
+        name: 'wcagLevel',
+        description: 'WCAG conformance level target (A, AA, AAA)',
+        required: false,
+      },
+    ],
+  },
+  {
+    name: 'model-comparison',
+    description: 'Interactive comparison of AI models for your use case',
+    arguments: [
+      {
+        name: 'useCase',
+        description: 'Your use case (chat, coding, analysis, creative)',
+        required: true,
+      },
+      {
+        name: 'budget',
+        description: 'Monthly budget constraint in USD',
+        required: false,
+      },
+    ],
+  },
+]
 /**
  * Handle prompt generation with validation
  */
 export async function handlePromptGet(name, args) {
-    logger.debug('Generating prompt', { prompt: name, args });
-    try {
-        switch (name) {
-            case 'implement-feature': {
-                validateRequired(args, ['feature']);
-                const feature = validateString(args.feature, 'feature');
-                const provider = args.provider
-                    ? validateString(args.provider, 'provider')
-                    : undefined;
-                return generateImplementFeaturePrompt(feature, provider);
-            }
-            case 'debug-issue': {
-                validateRequired(args, ['issue']);
-                const issue = validateString(args.issue, 'issue');
-                const code = args.code ? validateString(args.code, 'code') : undefined;
-                return generateDebugIssuePrompt(issue, code);
-            }
-            case 'optimize-performance': {
-                validateRequired(args, ['context']);
-                const context = validateString(args.context, 'context');
-                return generateOptimizePerformancePrompt(context);
-            }
-            case 'review-code': {
-                validateRequired(args, ['code']);
-                const reviewCode = validateString(args.code, 'code');
-                const focus = args.focus
-                    ? validateString(args.focus, 'focus')
-                    : undefined;
-                return generateReviewCodePrompt(reviewCode, focus);
-            }
-            case 'convert-example': {
-                validateRequired(args, ['code', 'from', 'to']);
-                const convertCode = validateString(args.code, 'code');
-                const from = validateString(args.from, 'from');
-                const to = validateString(args.to, 'to');
-                return generateConvertExamplePrompt(convertCode, from, to);
-            }
-            // Interactive Demo Prompts
-            case 'quick-start-demo':
-                return generateQuickStartDemoPrompt(args.provider ? validateString(args.provider, 'provider') : undefined, args.framework
-                    ? validateString(args.framework, 'framework')
-                    : undefined);
-            case 'explore-components':
-                return generateExploreComponentsPrompt(args.category ? validateString(args.category, 'category') : undefined);
-            case 'build-chatbot':
-                validateRequired(args, ['type']);
-                return generateBuildChatbotPrompt(validateString(args.type, 'type'), args.features ? validateString(args.features, 'features') : undefined);
-            case 'accessibility-guide':
-                return generateAccessibilityGuidePrompt(args.wcagLevel
-                    ? validateString(args.wcagLevel, 'wcagLevel')
-                    : undefined);
-            case 'model-comparison':
-                validateRequired(args, ['useCase']);
-                return generateModelComparisonPrompt(validateString(args.useCase, 'useCase'), args.budget ? validateString(args.budget, 'budget') : undefined);
-            default:
-                throw new NotFoundError('Prompt', name);
-        }
+  logger.debug('Generating prompt', { prompt: name, args })
+  try {
+    switch (name) {
+      case 'implement-feature': {
+        validateRequired(args, ['feature'])
+        const feature = validateString(args.feature, 'feature')
+        const provider = args.provider
+          ? validateString(args.provider, 'provider')
+          : undefined
+        return generateImplementFeaturePrompt(feature, provider)
+      }
+      case 'debug-issue': {
+        validateRequired(args, ['issue'])
+        const issue = validateString(args.issue, 'issue')
+        const code = args.code ? validateString(args.code, 'code') : undefined
+        return generateDebugIssuePrompt(issue, code)
+      }
+      case 'optimize-performance': {
+        validateRequired(args, ['context'])
+        const context = validateString(args.context, 'context')
+        return generateOptimizePerformancePrompt(context)
+      }
+      case 'review-code': {
+        validateRequired(args, ['code'])
+        const reviewCode = validateString(args.code, 'code')
+        const focus = args.focus
+          ? validateString(args.focus, 'focus')
+          : undefined
+        return generateReviewCodePrompt(reviewCode, focus)
+      }
+      case 'convert-example': {
+        validateRequired(args, ['code', 'from', 'to'])
+        const convertCode = validateString(args.code, 'code')
+        const from = validateString(args.from, 'from')
+        const to = validateString(args.to, 'to')
+        return generateConvertExamplePrompt(convertCode, from, to)
+      }
+      // Interactive Demo Prompts
+      case 'quick-start-demo':
+        return generateQuickStartDemoPrompt(
+          args.provider ? validateString(args.provider, 'provider') : undefined,
+          args.framework
+            ? validateString(args.framework, 'framework')
+            : undefined
+        )
+      case 'explore-components':
+        return generateExploreComponentsPrompt(
+          args.category ? validateString(args.category, 'category') : undefined
+        )
+      case 'build-chatbot':
+        validateRequired(args, ['type'])
+        return generateBuildChatbotPrompt(
+          validateString(args.type, 'type'),
+          args.features ? validateString(args.features, 'features') : undefined
+        )
+      case 'accessibility-guide':
+        return generateAccessibilityGuidePrompt(
+          args.wcagLevel
+            ? validateString(args.wcagLevel, 'wcagLevel')
+            : undefined
+        )
+      case 'model-comparison':
+        validateRequired(args, ['useCase'])
+        return generateModelComparisonPrompt(
+          validateString(args.useCase, 'useCase'),
+          args.budget ? validateString(args.budget, 'budget') : undefined
+        )
+      default:
+        throw new NotFoundError('Prompt', name)
     }
-    catch (error) {
-        logger.error(`Failed to generate prompt: ${name}`, error instanceof Error ? error : undefined, { args });
-        throw error;
-    }
+  } catch (error) {
+    logger.error(
+      `Failed to generate prompt: ${name}`,
+      error instanceof Error ? error : undefined,
+      { args }
+    )
+    throw error
+  }
 }
 /**
  * Implement Feature Prompt
  */
 function generateImplementFeaturePrompt(feature, provider) {
-    const providerContext = provider ? ` using ${provider.toUpperCase()}` : '';
-    return `You are an expert developer working with the Clarity Chat framework. I need help implementing a new feature${providerContext}.
+  const providerContext = provider ? ` using ${provider.toUpperCase()}` : ''
+  return `You are an expert developer working with the Clarity Chat framework. I need help implementing a new feature${providerContext}.
 
 Feature Description:
 ${feature}
@@ -270,16 +292,16 @@ Please provide:
    - Performance considerations
    - Security considerations
 
-Please provide clear, detailed guidance that follows Clarity Chat patterns and best practices.`;
+Please provide clear, detailed guidance that follows Clarity Chat patterns and best practices.`
 }
 /**
  * Debug Issue Prompt
  */
 function generateDebugIssuePrompt(issue, code) {
-    const codeContext = code
-        ? `\n\nRelevant Code:\n\`\`\`typescript\n${code}\n\`\`\``
-        : '';
-    return `You are a debugging expert familiar with the Clarity Chat framework. I'm encountering an issue that needs troubleshooting.
+  const codeContext = code
+    ? `\n\nRelevant Code:\n\`\`\`typescript\n${code}\n\`\`\``
+    : ''
+  return `You are a debugging expert familiar with the Clarity Chat framework. I'm encountering an issue that needs troubleshooting.
 
 Issue Description:
 ${issue}${codeContext}
@@ -311,13 +333,13 @@ Please help by providing:
    - Similar issues and solutions
    - Helpful tools or libraries
 
-Please provide clear, actionable guidance with code examples where appropriate.`;
+Please provide clear, actionable guidance with code examples where appropriate.`
 }
 /**
  * Optimize Performance Prompt
  */
 function generateOptimizePerformancePrompt(context) {
-    return `You are a performance optimization expert working with AI applications and the Clarity Chat framework.
+  return `You are a performance optimization expert working with AI applications and the Clarity Chat framework.
 
 Current Implementation:
 ${context}
@@ -355,14 +377,14 @@ For each optimization:
 - Estimate the performance impact
 - Note any trade-offs
 
-Please provide production-ready solutions with code examples.`;
+Please provide production-ready solutions with code examples.`
 }
 /**
  * Review Code Prompt
  */
 function generateReviewCodePrompt(code, focus) {
-    const focusArea = focus ? `\n\nPlease focus especially on: ${focus}` : '';
-    return `You are a code review expert familiar with the Clarity Chat framework and AI development best practices.
+  const focusArea = focus ? `\n\nPlease focus especially on: ${focus}` : ''
+  return `You are a code review expert familiar with the Clarity Chat framework and AI development best practices.
 
 Code to Review:
 \`\`\`typescript
@@ -407,13 +429,13 @@ For each issue found:
 - Provide corrected code
 - Explain why the change improves the code
 
-Please be thorough but constructive in your feedback.`;
+Please be thorough but constructive in your feedback.`
 }
 /**
  * Convert Example Prompt
  */
 function generateConvertExamplePrompt(code, from, to) {
-    return `You are an expert in AI frameworks and the Clarity Chat ecosystem. I need help converting code from one provider/framework to another.
+  return `You are an expert in AI frameworks and the Clarity Chat ecosystem. I need help converting code from one provider/framework to another.
 
 Original Code (${from}):
 \`\`\`typescript
@@ -454,7 +476,7 @@ Please ensure the converted code is:
 - Well-documented
 - Follows Clarity Chat conventions
 - Includes proper error handling
-- Uses TypeScript types correctly`;
+- Uses TypeScript types correctly`
 }
 // =============================================================================
 // Interactive Demo Prompt Generators
@@ -463,9 +485,9 @@ Please ensure the converted code is:
  * Quick Start Demo Prompt
  */
 function generateQuickStartDemoPrompt(provider, framework) {
-    const selectedProvider = provider || 'openai';
-    const selectedFramework = framework || 'nextjs';
-    return `Let's build your first Clarity Chat application together! This interactive guide will help you create a working AI chat app in about 5 minutes.
+  const selectedProvider = provider || 'openai'
+  const selectedFramework = framework || 'nextjs'
+  return `Let's build your first Clarity Chat application together! This interactive guide will help you create a working AI chat app in about 5 minutes.
 
 ## Configuration
 - **AI Provider**: ${selectedProvider.toUpperCase()}
@@ -546,16 +568,16 @@ Visit http://localhost:3000 and start chatting!
 - Add voice input with \`useVoiceInput\`
 - Add file uploads with \`<FileUpload />\`
 
-Would you like me to help you add any of these features?`;
+Would you like me to help you add any of these features?`
 }
 /**
  * Explore Components Prompt
  */
 function generateExploreComponentsPrompt(category) {
-    const categoryGuide = category
-        ? `Let's explore the **${category}** category components in detail.`
-        : `Let's take a tour of the Clarity Chat component library.`;
-    return `# Clarity Chat Component Explorer
+  const categoryGuide = category
+    ? `Let's explore the **${category}** category components in detail.`
+    : `Let's take a tour of the Clarity Chat component library.`
+  return `# Clarity Chat Component Explorer
 
 ${categoryGuide}
 
@@ -614,58 +636,61 @@ Use the Clarity Chat tools to explore:
 - \`clarity_get_component_docs\` - Get detailed documentation
 - \`clarity_generate_code\` - Generate starter code
 
-What would you like to explore first?`;
+What would you like to explore first?`
 }
 /**
  * Build Chatbot Prompt
  */
 function generateBuildChatbotPrompt(type, features) {
-    // Limit input length before splitting to prevent memory issues
-    const MAX_FEATURES_INPUT_LENGTH = 1000;
-    const sanitizedFeatures = features?.slice(0, MAX_FEATURES_INPUT_LENGTH) || '';
-    const featureList = sanitizedFeatures
-        .split(',')
-        .map((f) => f.trim())
-        .filter((f) => f.length > 0)
-        .slice(0, 20);
-    const hasStreaming = featureList.includes('streaming');
-    const hasVoice = featureList.includes('voice');
-    const hasFileUpload = featureList.includes('file-upload');
-    const hasMemory = featureList.includes('memory');
-    const typeConfigs = {
-        'customer-support': {
-            title: 'Customer Support Chatbot',
-            systemPrompt: 'You are a helpful customer support agent. Be friendly, professional, and solution-oriented. Always try to resolve issues on the first interaction.',
-            features: [
-                'Quick responses',
-                'Escalation handling',
-                'FAQ integration',
-                'Sentiment analysis',
-            ],
-        },
-        'coding-assistant': {
-            title: 'Coding Assistant',
-            systemPrompt: 'You are an expert programming assistant. Provide clear, well-documented code examples. Explain your reasoning and suggest best practices.',
-            features: [
-                'Code syntax highlighting',
-                'Multi-language support',
-                'Code execution',
-                'Documentation generation',
-            ],
-        },
-        general: {
-            title: 'General Purpose Chatbot',
-            systemPrompt: 'You are a helpful, harmless, and honest AI assistant. Provide accurate information and helpful responses.',
-            features: [
-                'Conversation memory',
-                'Context awareness',
-                'Multi-turn dialogue',
-                'Topic handling',
-            ],
-        },
-    };
-    const config = typeConfigs[type] || typeConfigs['general'];
-    return `# Building a ${config.title}
+  // Limit input length before splitting to prevent memory issues
+  const MAX_FEATURES_INPUT_LENGTH = 1000
+  const sanitizedFeatures = features?.slice(0, MAX_FEATURES_INPUT_LENGTH) || ''
+  const featureList = sanitizedFeatures
+    .split(',')
+    .map((f) => f.trim())
+    .filter((f) => f.length > 0)
+    .slice(0, 20)
+  const hasStreaming = featureList.includes('streaming')
+  const hasVoice = featureList.includes('voice')
+  const hasFileUpload = featureList.includes('file-upload')
+  const hasMemory = featureList.includes('memory')
+  const typeConfigs = {
+    'customer-support': {
+      title: 'Customer Support Chatbot',
+      systemPrompt:
+        'You are a helpful customer support agent. Be friendly, professional, and solution-oriented. Always try to resolve issues on the first interaction.',
+      features: [
+        'Quick responses',
+        'Escalation handling',
+        'FAQ integration',
+        'Sentiment analysis',
+      ],
+    },
+    'coding-assistant': {
+      title: 'Coding Assistant',
+      systemPrompt:
+        'You are an expert programming assistant. Provide clear, well-documented code examples. Explain your reasoning and suggest best practices.',
+      features: [
+        'Code syntax highlighting',
+        'Multi-language support',
+        'Code execution',
+        'Documentation generation',
+      ],
+    },
+    general: {
+      title: 'General Purpose Chatbot',
+      systemPrompt:
+        'You are a helpful, harmless, and honest AI assistant. Provide accurate information and helpful responses.',
+      features: [
+        'Conversation memory',
+        'Context awareness',
+        'Multi-turn dialogue',
+        'Topic handling',
+      ],
+    },
+  }
+  const config = typeConfigs[type] || typeConfigs['general']
+  return `# Building a ${config.title}
 
 Let's build a production-ready ${config.title.toLowerCase()} step by step!
 
@@ -705,24 +730,28 @@ import { streamText${hasMemory ? ', convertToCoreMessages' : ''} } from 'ai'
 
 export async function POST(req: Request) {
   const { messages${hasMemory ? ', conversationId' : ''} } = await req.json()
-  ${hasMemory
-        ? `
+  ${
+    hasMemory
+      ? `
   // Load conversation history if exists
   const history = await loadConversationHistory(conversationId)
   const allMessages = [...history, ...messages]
   `
-        : ''}
+      : ''
+  }
   const result = streamText({
     model: openai('gpt-4o'),
     system: SYSTEM_PROMPT,
     messages${hasMemory ? ': allMessages' : ''},${hasStreaming ? '\n    maxTokens: 4096,' : ''}
   })
-  ${hasMemory
-        ? `
+  ${
+    hasMemory
+      ? `
   // Save updated history
   await saveConversationHistory(conversationId, allMessages)
   `
-        : ''}
+      : ''
+  }
   return result.toDataStreamResponse()
 }
 \`\`\`
@@ -741,9 +770,9 @@ import {
 } from '@clarity-chat/react'
 
 export function ${type
-        .split('-')
-        .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
-        .join('')}Chat() {
+    .split('-')
+    .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+    .join('')}Chat() {
   ${hasMemory ? 'const { messages, addMessage } = useMessageHistory("conversation-1")' : ''}
 
   return (
@@ -771,14 +800,14 @@ ${config.features.map((f) => `- [ ] ${f}`).join('\n')}
 - [ ] Error states handled gracefully
 - [ ] Accessibility requirements met
 
-Would you like me to elaborate on any of these steps or help implement specific features?`;
+Would you like me to elaborate on any of these steps or help implement specific features?`
 }
 /**
  * Accessibility Guide Prompt
  */
 function generateAccessibilityGuidePrompt(wcagLevel) {
-    const level = wcagLevel || 'AA';
-    return `# Accessibility Implementation Guide for Clarity Chat
+  const level = wcagLevel || 'AA'
+  return `# Accessibility Implementation Guide for Clarity Chat
 
 **Target WCAG Level: ${level}**
 
@@ -928,49 +957,49 @@ function AccessibleChat() {
 - [ ] Time limits can be extended (if any)
 - [ ] Content is readable at 200% zoom
 
-Would you like me to help implement any specific accessibility feature?`;
+Would you like me to help implement any specific accessibility feature?`
 }
 /**
  * Model Comparison Prompt
  */
 function generateModelComparisonPrompt(useCase, budget) {
-    const budgetConstraint = budget ? `\n**Monthly Budget**: $${budget}` : '';
-    const useCaseGuides = {
-        chat: {
-            models: ['gpt-4o-mini', 'claude-3-5-haiku-20241022', 'gemini-1.5-flash'],
-            considerations: [
-                'Response latency',
-                'Conversational quality',
-                'Cost per message',
-            ],
-        },
-        coding: {
-            models: ['gpt-4o', 'claude-3-5-sonnet-20241022', 'codestral-latest'],
-            considerations: [
-                'Code accuracy',
-                'Language support',
-                'Context window size',
-            ],
-        },
-        analysis: {
-            models: ['gpt-4o', 'claude-3-opus-20240229', 'gemini-1.5-pro'],
-            considerations: [
-                'Reasoning quality',
-                'Document processing',
-                'Output length',
-            ],
-        },
-        creative: {
-            models: ['claude-3-5-sonnet-20241022', 'gpt-4o', 'gemini-1.5-pro'],
-            considerations: [
-                'Creative writing quality',
-                'Style consistency',
-                'Instruction following',
-            ],
-        },
-    };
-    const guide = useCaseGuides[useCase] || useCaseGuides['chat'];
-    return `# AI Model Comparison for ${useCase.charAt(0).toUpperCase() + useCase.slice(1)}
+  const budgetConstraint = budget ? `\n**Monthly Budget**: $${budget}` : ''
+  const useCaseGuides = {
+    chat: {
+      models: ['gpt-4o-mini', 'claude-3-5-haiku-20241022', 'gemini-1.5-flash'],
+      considerations: [
+        'Response latency',
+        'Conversational quality',
+        'Cost per message',
+      ],
+    },
+    coding: {
+      models: ['gpt-4o', 'claude-3-5-sonnet-20241022', 'codestral-latest'],
+      considerations: [
+        'Code accuracy',
+        'Language support',
+        'Context window size',
+      ],
+    },
+    analysis: {
+      models: ['gpt-4o', 'claude-3-opus-20240229', 'gemini-1.5-pro'],
+      considerations: [
+        'Reasoning quality',
+        'Document processing',
+        'Output length',
+      ],
+    },
+    creative: {
+      models: ['claude-3-5-sonnet-20241022', 'gpt-4o', 'gemini-1.5-pro'],
+      considerations: [
+        'Creative writing quality',
+        'Style consistency',
+        'Instruction following',
+      ],
+    },
+  }
+  const guide = useCaseGuides[useCase] || useCaseGuides['chat']
+  return `# AI Model Comparison for ${useCase.charAt(0).toUpperCase() + useCase.slice(1)}
 ${budgetConstraint}
 
 ## Recommended Models for Your Use Case
@@ -1026,8 +1055,9 @@ Arguments: {
 - Very cost-sensitive
 - Processing long documents
 
-${budget
-        ? `## Budget Analysis
+${
+  budget
+    ? `## Budget Analysis
 
 With a $${budget}/month budget:
 - gpt-4o-mini: ~${Math.floor(Number(budget) / 0.00075)} messages
@@ -1036,7 +1066,8 @@ With a $${budget}/month budget:
 
 *(Assuming average 1000 input + 500 output tokens per message)*
 `
-        : ''}
+    : ''
+}
 
 ## Interactive Comparison
 
@@ -1047,6 +1078,6 @@ Tool: get_model_info
 Arguments: { "modelName": "claude-3-5-sonnet" }
 \`\`\`
 
-Would you like me to provide more details on any specific model or help you set up a hybrid approach using multiple models?`;
+Would you like me to provide more details on any specific model or help you set up a hybrid approach using multiple models?`
 }
 //# sourceMappingURL=index.js.map

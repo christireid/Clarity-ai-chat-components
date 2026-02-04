@@ -53,6 +53,7 @@ export function StreamingAnimation() {
           <motion.div
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
             className="flex flex-col items-center"
           >
             <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-blue-600 to-blue-700 text-white flex items-center justify-center shadow-xl">
@@ -65,22 +66,26 @@ export function StreamingAnimation() {
               <motion.div
                 initial={{ opacity: 0, scale: 0 }}
                 animate={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true }}
                 className="mt-2"
               >
                 <div className="flex gap-1">
                   <motion.div
                     className="w-2 h-2 bg-green-500 rounded-full"
                     animate={{ scale: [1, 1.2, 1], opacity: [1, 0.5, 1] }}
+                    viewport={{ once: true }}
                     transition={{ duration: 1, repeat: Infinity }}
                   />
                   <motion.div
                     className="w-2 h-2 bg-green-500 rounded-full"
                     animate={{ scale: [1, 1.2, 1], opacity: [1, 0.5, 1] }}
+                    viewport={{ once: true }}
                     transition={{ duration: 1, repeat: Infinity, delay: 0.2 }}
                   />
                   <motion.div
                     className="w-2 h-2 bg-green-500 rounded-full"
                     animate={{ scale: [1, 1.2, 1], opacity: [1, 0.5, 1] }}
+                    viewport={{ once: true }}
                     transition={{ duration: 1, repeat: Infinity, delay: 0.4 }}
                   />
                 </div>
@@ -127,6 +132,7 @@ export function StreamingAnimation() {
                           cy: 30,
                           opacity: [0, 1, 1, 0],
                         }}
+                        viewport={{ once: true }}
                         transition={{
                           duration: 1.5,
                           repeat: Infinity,
@@ -149,6 +155,7 @@ export function StreamingAnimation() {
           <motion.div
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
             transition={{ delay: 0.2 }}
             className="flex flex-col"
           >
@@ -166,6 +173,7 @@ export function StreamingAnimation() {
                   <motion.span
                     className="inline-block w-1.5 h-4 bg-blue-600 ml-0.5"
                     animate={{ opacity: [1, 0, 1] }}
+                    viewport={{ once: true }}
                     transition={{ duration: 0.8, repeat: Infinity }}
                   />
                 )}
@@ -200,6 +208,7 @@ export function StreamingAnimation() {
               key={stat.label}
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
               transition={{ delay: 2.2 + index * 0.1 }}
               className="text-center p-4 bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700"
             >

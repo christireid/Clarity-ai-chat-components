@@ -1,6 +1,6 @@
 /**
  * Context Builder
- * 
+ *
  * Builds optimized context bundles for LLMs
  */
 
@@ -34,17 +34,17 @@ export class ContextBuilder {
 
   /**
    * Build optimized context bundle for LLM
-   * 
+   *
    * Gathers and optimizes context components within token budget:
    * - User preferences (profile memories)
    * - Recent context (session memories)
    * - Semantic memories (relevant long-term memories)
    * - Episodic memories (recent events)
    * - Summary (compressed long-term context)
-   * 
+   *
    * @param options - Context building options
    * @returns Optimized context bundle with token breakdown
-   * 
+   *
    * @example
    * ```typescript
    * const bundle = await contextBuilder.build({
@@ -59,18 +59,20 @@ export class ContextBuilder {
     const allocation = this.budgetManager.getAllocation({ maxTokens })
 
     // Gather context components
-    const userPreferences = options?.includePreferences !== false
-      ? await this.getUserPreferences(
-          options?.userId,
-          allocation.userPreferences
-        )
-      : ''
-    const recentContext = options?.includeRecent !== false
-      ? await this.getRecentContext(
-          options?.sessionId,
-          allocation.recentContext
-        )
-      : ''
+    const userPreferences =
+      options?.includePreferences !== false
+        ? await this.getUserPreferences(
+            options?.userId,
+            allocation.userPreferences
+          )
+        : ''
+    const recentContext =
+      options?.includeRecent !== false
+        ? await this.getRecentContext(
+            options?.sessionId,
+            allocation.recentContext
+          )
+        : ''
     const semanticMemories = await this.getSemanticMemories(
       options?.userId,
       allocation.semanticMemory,
@@ -83,7 +85,10 @@ export class ContextBuilder {
 
     // Build summary if enabled
     const summary = options?.includeSummary
-      ? await this.buildSummary([...semanticMemories, ...episodicMemories], allocation.summary ?? 0)
+      ? await this.buildSummary(
+          [...semanticMemories, ...episodicMemories],
+          allocation.summary ?? 0
+        )
       : ''
 
     // Calculate actual token usage
@@ -91,8 +96,14 @@ export class ContextBuilder {
       systemPrompt: this.countTokens(''),
       userPreferences: this.countTokens(userPreferences),
       recentContext: this.countTokens(recentContext),
-      semanticMemory: semanticMemories.reduce((sum, m) => sum + this.countTokens(m.content), 0),
-      episodicMemory: episodicMemories.reduce((sum, m) => sum + this.countTokens(m.content), 0),
+      semanticMemory: semanticMemories.reduce(
+        (sum, m) => sum + this.countTokens(m.content),
+        0
+      ),
+      episodicMemory: episodicMemories.reduce(
+        (sum, m) => sum + this.countTokens(m.content),
+        0
+      ),
       responseReserve: 0,
       summary: this.countTokens(summary),
       total: 0,
@@ -147,7 +158,7 @@ export class ContextBuilder {
     // Filter and format preferences
     const formatted = preferences
       .slice(0, 5) // Limit to top 5
-      .map(m => `- ${m.content}`)
+      .map((m) => `- ${m.content}`)
       .join('\n')
 
     return this.trimToTokens(formatted, tokenBudget)
@@ -166,10 +177,14 @@ export class ContextBuilder {
 
     // Sort by timestamp, get most recent
     const sorted = recent
-      .sort((a, b) => (b.timestamp ?? b.createdAt).getTime() - (a.timestamp ?? a.createdAt).getTime())
+      .sort(
+        (a, b) =>
+          (b.timestamp ?? b.createdAt).getTime() -
+          (a.timestamp ?? a.createdAt).getTime()
+      )
       .slice(0, 10)
 
-    const formatted = sorted.map(m => m.content).join('\n\n')
+    const formatted = sorted.map((m) => m.content).join('\n\n')
     return this.trimToTokens(formatted, tokenBudget)
   }
 
@@ -185,11 +200,13 @@ export class ContextBuilder {
 
     // Filter by relevance if provided
     const filtered = minRelevance
-      ? memories.filter(m => (m.importance ?? 0.5) >= minRelevance)
+      ? memories.filter((m) => (m.importance ?? 0.5) >= minRelevance)
       : memories
 
     // Sort by importance
-    const sorted = filtered.sort((a, b) => (b.importance ?? 0.5) - (a.importance ?? 0.5))
+    const sorted = filtered.sort(
+      (a, b) => (b.importance ?? 0.5) - (a.importance ?? 0.5)
+    )
 
     // Select memories within token budget
     const selected: Memory[] = []
@@ -219,7 +236,9 @@ export class ContextBuilder {
 
     // Sort by timestamp (most recent first)
     const sorted = memories.sort(
-      (a, b) => (b.timestamp ?? b.createdAt).getTime() - (a.timestamp ?? a.createdAt).getTime()
+      (a, b) =>
+        (b.timestamp ?? b.createdAt).getTime() -
+        (a.timestamp ?? a.createdAt).getTime()
     )
 
     // Select memories within token budget
@@ -246,7 +265,7 @@ export class ContextBuilder {
     if (memories.length === 0) return ''
 
     // Simple summarization: concatenate and trim
-    const content = memories.map(m => m.content).join('\n\n')
+    const content = memories.map((m) => m.content).join('\n\n')
     return this.trimToTokens(content, tokenBudget)
   }
 
@@ -270,14 +289,14 @@ export class ContextBuilder {
     if (context.semanticMemories.length > 0) {
       parts.push(
         '## Semantic Memories\n' +
-          context.semanticMemories.map(m => `- ${m.content}`).join('\n')
+          context.semanticMemories.map((m) => `- ${m.content}`).join('\n')
       )
     }
 
     if (context.episodicMemories.length > 0) {
       parts.push(
         '## Episodic Memories\n' +
-          context.episodicMemories.map(m => `- ${m.content}`).join('\n')
+          context.episodicMemories.map((m) => `- ${m.content}`).join('\n')
       )
     }
 

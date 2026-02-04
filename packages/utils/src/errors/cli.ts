@@ -1,4 +1,4 @@
-import { error as logError } from '../logger';
+import { error as logError } from '../logger'
 
 /**
  * CLI Error Classes
@@ -95,16 +95,6 @@ export class CLIError extends Error {
       suggestions: this.suggestions,
       docs: this.docs,
     }
-  }
-}
-
-/**
- * CLI validation error
- */
-export class CLIValidationError extends CLIError {
-  constructor(message: string, suggestions: string[] = []) {
-    super(message, ExitCode.VALIDATION_ERROR, suggestions)
-    this.name = 'ValidationError'
   }
 }
 

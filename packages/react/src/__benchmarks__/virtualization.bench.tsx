@@ -11,7 +11,7 @@ import { describe, bench, beforeEach, afterEach } from 'vitest'
 import { render, cleanup } from '@testing-library/react'
 import * as React from 'react'
 import type { Message } from '@clarity-chat/types'
-import { PerformanceProfiler } from '../utils/profiling/performance-profiler'
+import { PerformanceProfiler } from '@clarity-chat/dev-tools'
 
 // Generate mock messages
 function generateMessages(count: number): Message[] {
@@ -176,7 +176,7 @@ const DynamicHeightVirtualList: React.FC<DynamicHeightVirtualListProps> = ({
     if (hasChanges) {
       setHeights(newHeights)
     }
-  }, [visibleMessages])
+  }, [visibleMessages, heights])
 
   const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
     setScrollTop(e.currentTarget.scrollTop)

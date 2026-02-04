@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { render, screen } from '@testing-library/react'
-import { ContextMenu, ContextMenuItem } from '../context-menu'
+import { ContextMenu, ContextMenuItem } from '../ContextMenu'
 
 describe('ContextMenu Component', () => {
   const mockItems: ContextMenuItem[] = [

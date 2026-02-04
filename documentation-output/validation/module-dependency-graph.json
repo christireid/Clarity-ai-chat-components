@@ -1,0 +1,285 @@
+{
+  "version": "1.0.0",
+  "extractedAt": "2026-01-28T00:00:00Z",
+  "description": "Module dependency relationships for @clarity-chat/token-optimization",
+  "dependencies": {
+    "index.ts": {
+      "imports": [
+        "./defaults",
+        "./models/model-registry",
+        "./models/model-pricing",
+        "./utils/token-estimation",
+        "./security/token-security",
+        "./quality/quality-gate",
+        "./cost/cost-aware-optimizer",
+        "./analytics/cost-calculator",
+        "./caching/advanced-semantic-cache",
+        "./compression",
+        "./budget/memory-budget",
+        "./tokenizers/accurate-counter",
+        "./tokenizers/provider-native-counter",
+        "./providers",
+        "./chunking/text-chunker",
+        "./formats/toon-optimizer/index",
+        "./formats/markdown-optimizer",
+        "./formats/html-optimizer",
+        "./cache/exact-cache",
+        "./cache/smart-cache",
+        "./cache/tiered-cache",
+        "./compression/markdown-compressor",
+        "./routing/complexity-analyzer",
+        "./routing/model-router",
+        "./hooks",
+        "./accessibility",
+        "./errors",
+        "./health",
+        "./observability",
+        "./resilience/circuit-breaker",
+        "./factory"
+      ],
+      "exports": "all",
+      "isEntryPoint": true
+    },
+    "tokenizers/accurate-counter": {
+      "imports": [
+        "../models/model-registry",
+        "../types",
+        "gpt-tokenizer"
+      ],
+      "exports": ["AccurateTokenCounter", "TokenizerConfig", "TokenInfo"],
+      "dependencies": ["gpt-tokenizer"],
+      "tokenOptimizationRelevant": true
+    },
+    "tokenizers/provider-native-counter": {
+      "imports": [
+        "../models/model-registry",
+        "../providers/types",
+        "../types"
+      ],
+      "exports": ["ProviderNativeCounter", "providerNativeCount", "TokenCountResult"],
+      "tokenOptimizationRelevant": true
+    },
+    "cache/tiered-cache": {
+      "imports": [
+        "./exact-cache",
+        "./smart-cache",
+        "../caching/advanced-semantic-cache",
+        "../types"
+      ],
+      "exports": ["TieredCache", "TieredCacheConfig", "TieredCacheResult"],
+      "internalDependencies": [
+        "cache/exact-cache",
+        "cache/smart-cache",
+        "caching/advanced-semantic-cache"
+      ],
+      "tokenOptimizationRelevant": true
+    },
+    "compression/strategies/llmlingua": {
+      "imports": [
+        "../../utils/token-estimation",
+        "../../models/model-registry"
+      ],
+      "exports": ["LLMLinguaCompressor", "compressWithLLMLingua", "LLMLinguaOptions", "LLMLinguaResult"],
+      "tokenOptimizationRelevant": true
+    },
+    "compression/strategies/extractive": {
+      "imports": [
+        "../../utils/token-estimation"
+      ],
+      "exports": ["ExtractiveCompressor", "compressExtractively", "ExtractiveOptions", "ExtractiveResult"],
+      "tokenOptimizationRelevant": true
+    },
+    "compression/strategies/adaptive": {
+      "imports": [
+        "./llmlingua",
+        "./extractive",
+        "../../utils/token-estimation"
+      ],
+      "exports": ["AdaptiveCompressor", "compressAdaptively", "AdaptiveOptions", "AdaptiveResult"],
+      "internalDependencies": [
+        "compression/strategies/llmlingua",
+        "compression/strategies/extractive"
+      ],
+      "tokenOptimizationRelevant": true
+    },
+    "routing/model-router": {
+      "imports": [
+        "./complexity-analyzer",
+        "../models/model-registry",
+        "../models/model-pricing",
+        "../types"
+      ],
+      "exports": ["ModelRouter", "ModelRouterBuilder", "ModelRouterConfig", "RoutingResult"],
+      "internalDependencies": [
+        "routing/complexity-analyzer",
+        "models/model-registry",
+        "models/model-pricing"
+      ],
+      "tokenOptimizationRelevant": true
+    },
+    "providers/prompt-caching": {
+      "imports": [
+        "./types",
+        "../models/model-registry"
+      ],
+      "exports": ["ProviderCachingFormatter", "formatMessagesForProviderCaching", "ProviderCachingConfig", "ProviderCachingResult"],
+      "tokenOptimizationRelevant": true
+    },
+    "analytics/cost-calculator": {
+      "imports": [
+        "../models/model-pricing",
+        "../models/model-registry",
+        "../types"
+      ],
+      "exports": ["CostTracker", "calculateCost", "getSavingsPercentage", "CostBreakdown", "SavingsReport"],
+      "tokenOptimizationRelevant": true
+    },
+    "hooks/use-token-count": {
+      "imports": [
+        "react",
+        "../tokenizers/accurate-counter",
+        "../models/model-registry",
+        "../defaults"
+      ],
+      "exports": ["useTokenCount", "UseTokenCountOptions", "UseTokenCountReturn"],
+      "peerDependencies": ["react"],
+      "tokenOptimizationRelevant": true
+    },
+    "hooks/use-token-optimization": {
+      "imports": [
+        "react",
+        "./use-token-count",
+        "./use-tiered-cache",
+        "./use-model-router",
+        "../compression",
+        "../analytics/cost-calculator"
+      ],
+      "exports": ["useTokenOptimization", "UseTokenOptimizationConfig", "UseTokenOptimizationReturn"],
+      "peerDependencies": ["react"],
+      "internalDependencies": [
+        "hooks/use-token-count",
+        "hooks/use-tiered-cache",
+        "hooks/use-model-router",
+        "compression",
+        "analytics/cost-calculator"
+      ],
+      "tokenOptimizationRelevant": true
+    },
+    "react/components/TokenCostPreview": {
+      "imports": [
+        "react",
+        "../../hooks/use-token-count",
+        "../../models/model-pricing",
+        "../../types"
+      ],
+      "exports": ["TokenCostPreview", "TokenCostPreviewProps"],
+      "peerDependencies": ["react"],
+      "tokenOptimizationRelevant": true
+    },
+    "react/components/TokenOptimizationBadge": {
+      "imports": [
+        "react"
+      ],
+      "exports": ["TokenOptimizationBadge", "TokenOptimizationBadgeProps"],
+      "peerDependencies": ["react"],
+      "tokenOptimizationRelevant": true
+    },
+    "factory": {
+      "imports": [
+        "./tokenizers/accurate-counter",
+        "./cache/tiered-cache",
+        "./compression",
+        "./routing/model-router",
+        "./defaults"
+      ],
+      "exports": ["createOptimizer", "OptimizerPresets", "OptimizerConfig", "Optimizer"],
+      "internalDependencies": [
+        "tokenizers/accurate-counter",
+        "cache/tiered-cache",
+        "compression",
+        "routing/model-router"
+      ],
+      "tokenOptimizationRelevant": true
+    }
+  },
+  "externalDependencies": {
+    "gpt-tokenizer": {
+      "usedBy": ["tokenizers/accurate-counter"],
+      "purpose": "Lightweight tokenization (5-6x smaller than tiktoken)"
+    },
+    "fflate": {
+      "usedBy": ["compression/strategies/binary-compression"],
+      "purpose": "Binary compression"
+    },
+    "lz-string": {
+      "usedBy": ["compression/strategies/string-compression"],
+      "purpose": "String compression"
+    },
+    "msgpackr": {
+      "usedBy": ["formats/binary-serialization"],
+      "purpose": "MessagePack serialization"
+    },
+    "llm-splitter": {
+      "usedBy": ["chunking/text-chunker"],
+      "purpose": "Text chunking (100x smaller than LangChain)"
+    },
+    "validator": {
+      "usedBy": ["security/input-validator"],
+      "purpose": "Input validation and sanitization"
+    },
+    "react": {
+      "usedBy": ["hooks/*", "react/components/*", "components/*"],
+      "purpose": "React integration",
+      "peerDependency": true,
+      "optional": true
+    },
+    "framer-motion": {
+      "usedBy": ["react/components/TokenUsageMeter"],
+      "purpose": "Animation",
+      "peerDependency": true,
+      "optional": true
+    }
+  },
+  "criticalPaths": {
+    "tokenCounting": [
+      "index.ts",
+      "tokenizers/accurate-counter",
+      "models/model-registry",
+      "gpt-tokenizer"
+    ],
+    "caching": [
+      "index.ts",
+      "cache/tiered-cache",
+      "cache/exact-cache",
+      "cache/smart-cache",
+      "caching/advanced-semantic-cache"
+    ],
+    "compression": [
+      "index.ts",
+      "compression/index",
+      "compression/strategies/adaptive",
+      "compression/strategies/llmlingua",
+      "compression/strategies/extractive"
+    ],
+    "routing": [
+      "index.ts",
+      "routing/model-router",
+      "routing/complexity-analyzer",
+      "models/model-registry",
+      "models/model-pricing"
+    ],
+    "providerCaching": [
+      "index.ts",
+      "providers/prompt-caching",
+      "models/model-registry"
+    ],
+    "reactIntegration": [
+      "index.ts",
+      "hooks/use-token-optimization",
+      "hooks/use-token-count",
+      "hooks/use-tiered-cache",
+      "hooks/use-model-router",
+      "react"
+    ]
+  }
+}

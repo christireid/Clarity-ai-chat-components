@@ -1,0 +1,670 @@
+# Next.js Integration - App Router Setup
+
+> Complete guide to integrating Clarity Chat with Next.js 13+ App Router
+
+## Problem
+
+You're building a Next.js application with the App Router and need to integrate AI chat with proper server/client boundaries, streaming support, and optimal performance.
+
+## Solution
+
+Use Next.js App Router's Server Components, Server Actions, and streaming capabilities with Clarity Chat for a seamless integration.
+
+## Complete Code
+
+### Project Structure
+
+```
+app/
+├── api/
+│   └── chat/
+│       └── route.ts          # API route for streaming
+├── chat/
+│   ├── layout.tsx            # Chat layout (optional)
+│   └── page.tsx              # Chat page
+├── components/
+│   └── chat/
+│       ├── ChatInterface.tsx # Client component
+│       └── ChatProvider.tsx  # Context provider
+└── layout.tsx                # Root layout
+```
+
+### Root Layout
+
+```tsx
+// app/layout.tsx
+import type { Metadata } from 'next'
+import { Inter } from 'next/font/google'
+import './globals.css'
+
+const inter = Inter({ subsets: ['latin'] })
+
+export const metadata: Metadata = {
+  title: 'AI Chat App',
+  description: 'Chat with AI powered by Clarity Chat Components',
+}
+
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode
+}) {
+  return (
+    <html lang="en">
+      <body className={inter.className}>
+        {children}
+      </body>
+    </html>
+  )
+}
+```
+
+### Chat Page (Server Component)
+
+```tsx
+// app/chat/page.tsx
+import { ChatInterface } from '@/components/chat/ChatInterface'
+
+export const metadata = {
+  title: 'Chat - AI Assistant',
+  description: 'Chat with our AI assistant',
+}
+
+export default function ChatPage() {
+  // Server component - can fetch initial data
+  const initialData = {
+    conversationId: crypto.randomUUID(),
+    timestamp: new Date().toISOString(),
+  }
+
+  return (
+    <main className="flex h-screen flex-col">
+      <ChatInterface initialData={initialData} />
+    </main>
+  )
+}
+```
+
+### Client Chat Component
+
+```tsx
+// components/chat/ChatInterface.tsx
+'use client'
+
+import {
+  useClarityChat,
+  MessageList,
+  ChatInput,
+  ErrorBoundary,
+} from '@clarity-chat/react'
+import { useEffect } from 'react'
+
+interface ChatInterfaceProps {
+  initialData?: {
+    conversationId: string
+    timestamp: string
+  }
+}
+
+export function ChatInterface({ initialData }: ChatInterfaceProps) {
+  const {
+    messages,
+    append,
+    isLoading,
+    error,
+    reload,
+  } = useClarityChat({
+    api: '/api/chat',
+    id: initialData?.conversationId,
+    initialMessages: [
+      {
+        id: '1',
+        role: 'assistant',
+        content: 'Hello! How can I help you today?',
+      },
+    ],
+  })
+
+  // Log conversation ID for debugging
+  useEffect(() => {
+    console.log('Conversation ID:', initialData?.conversationId)
+  }, [initialData])
+
+  return (
+    <ErrorBoundary
+      fallback={({ error, resetError }) => (
+        <div className="flex h-full items-center justify-center p-4">
+          <div className="max-w-md rounded-lg border border-red-200 bg-red-50 p-6">
+            <h2 className="mb-2 text-lg font-semibold text-red-900">
+              Something went wrong
+            </h2>
+            <p className="mb-4 text-sm text-red-700">{error.message}</p>
+            <button
+              onClick={resetError}
+              className="rounded-lg bg-red-600 px-4 py-2 text-white hover:bg-red-700"
+            >
+              Try Again
+            </button>
+          </div>
+        </div>
+      )}
+    >
+      <div className="flex h-full flex-col">
+        <MessageList
+          messages={messages}
+          isLoading={isLoading}
+          className="flex-1"
+        />
+
+        {error && (
+          <div className="border-t border-red-200 bg-red-50 p-4">
+            <p className="text-sm text-red-700">{error.message}</p>
+            <button
+              onClick={() => reload()}
+              className="mt-2 text-sm font-medium text-red-600 hover:text-red-700"
+            >
+              Retry
+            </button>
+          </div>
+        )}
+
+        <ChatInput
+          onSubmit={(content) => append({ role: 'user', content })}
+          disabled={isLoading}
+          placeholder="Type your message..."
+        />
+      </div>
+    </ErrorBoundary>
+  )
+}
+```
+
+### API Route Handler
+
+```tsx
+// app/api/chat/route.ts
+import { OpenAI } from 'openai'
+import { OpenAIStream, StreamingTextResponse } from 'ai'
+import { NextRequest } from 'next/server'
+
+// Use Edge Runtime for better streaming performance
+export const runtime = 'edge'
+
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY!,
+})
+
+export async function POST(req: NextRequest) {
+  try {
+    const { messages } = await req.json()
+
+    const response = await openai.chat.completions.create({
+      model: 'gpt-4-turbo-preview',
+      stream: true,
+      messages,
+    })
+
+    const stream = OpenAIStream(response)
+
+    return new StreamingTextResponse(stream, {
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Content-Type': 'text/event-stream; charset=utf-8',
+        'Cache-Control': 'no-cache, no-transform',
+        'X-Accel-Buffering': 'no',
+      },
+    })
+  } catch (error) {
+    console.error('Chat API error:', error)
+    return new Response('Internal Server Error', { status: 500 })
+  }
+}
+
+export async function GET() {
+  return new Response('Method not allowed', { status: 405 })
+}
+```
+
+## How It Works
+
+### 1. Server Component Renders
+
+```tsx
+// app/chat/page.tsx (Server Component)
+export default function ChatPage() {
+  // Runs on server
+  const data = fetchInitialData() // Can use async/await
+  return <ChatInterface initialData={data} />
+}
+```
+
+### 2. Client Component Mounts
+
+```tsx
+// components/chat/ChatInterface.tsx (Client Component)
+'use client'
+
+export function ChatInterface() {
+  // Runs on client
+  const { messages, append } = useClarityChat({
+    api: '/api/chat',
+  })
+}
+```
+
+### 3. User Sends Message
+
+```tsx
+append({ role: 'user', content: 'Hello' })
+// POST /api/chat
+```
+
+### 4. API Route Streams Response
+
+```tsx
+// app/api/chat/route.ts
+const stream = OpenAIStream(response)
+return new StreamingTextResponse(stream)
+```
+
+### 5. UI Updates in Real-Time
+
+Each streamed token updates the UI immediately.
+
+## Variations
+
+### With Server Actions
+
+```tsx
+// app/actions/chat.ts
+'use server'
+
+import { createAI, getMutableAIState, streamUI } from 'ai/rsc'
+import { openai } from '@ai-sdk/openai'
+
+export async function sendMessage(content: string) {
+  'use server'
+
+  const aiState = getMutableAIState()
+
+  aiState.update([
+    ...aiState.get(),
+    {
+      role: 'user',
+      content,
+    },
+  ])
+
+  const ui = await streamUI({
+    model: openai('gpt-4-turbo'),
+    messages: aiState.get(),
+    text: ({ content, done }) => {
+      if (done) {
+        aiState.done([
+          ...aiState.get(),
+          {
+            role: 'assistant',
+            content,
+          },
+        ])
+      }
+      return <div>{content}</div>
+    },
+  })
+
+  return ui
+}
+
+export const AI = createAI({
+  actions: {
+    sendMessage,
+  },
+  initialAIState: [],
+})
+```
+
+```tsx
+// app/chat/page.tsx
+import { AI } from '@/app/actions/chat'
+
+export default function ChatPage() {
+  return (
+    <AI>
+      <ChatInterface />
+    </AI>
+  )
+}
+```
+
+### With Middleware Authentication
+
+```tsx
+// middleware.ts
+import { NextResponse } from 'next/server'
+import type { NextRequest } from 'next/server'
+
+export function middleware(request: NextRequest) {
+  // Check authentication
+  const token = request.cookies.get('auth-token')
+
+  if (!token && request.nextUrl.pathname.startsWith('/chat')) {
+    return NextResponse.redirect(new URL('/login', request.url))
+  }
+
+  return NextResponse.next()
+}
+
+export const config = {
+  matcher: ['/chat/:path*', '/api/chat/:path*'],
+}
+```
+
+### With Database Integration
+
+```tsx
+// app/api/chat/route.ts
+import { db } from '@/lib/db'
+import { currentUser } from '@/lib/auth'
+
+export async function POST(req: NextRequest) {
+  const user = await currentUser()
+  if (!user) {
+    return new Response('Unauthorized', { status: 401 })
+  }
+
+  const { messages, conversationId } = await req.json()
+
+  // Load conversation from database
+  const conversation = await db.conversation.findUnique({
+    where: { id: conversationId, userId: user.id },
+    include: { messages: true },
+  })
+
+  // Combine with new messages
+  const allMessages = [
+    ...(conversation?.messages || []),
+    ...messages,
+  ]
+
+  const response = await openai.chat.completions.create({
+    model: 'gpt-4-turbo-preview',
+    stream: true,
+    messages: allMessages,
+  })
+
+  const stream = OpenAIStream(response, {
+    async onCompletion(completion) {
+      // Save to database
+      await db.message.create({
+        data: {
+          conversationId,
+          role: 'assistant',
+          content: completion,
+        },
+      })
+    },
+  })
+
+  return new StreamingTextResponse(stream)
+}
+```
+
+### With Rate Limiting
+
+```tsx
+// lib/rate-limit.ts
+import { LRUCache } from 'lru-cache'
+
+type Options = {
+  uniqueTokenPerInterval?: number
+  interval?: number
+}
+
+export function rateLimit(options?: Options) {
+  const tokenCache = new LRUCache({
+    max: options?.uniqueTokenPerInterval || 500,
+    ttl: options?.interval || 60000,
+  })
+
+  return {
+    check: (limit: number, token: string) =>
+      new Promise<void>((resolve, reject) => {
+        const tokenCount = (tokenCache.get(token) as number[]) || [0]
+        if (tokenCount[0] === 0) {
+          tokenCache.set(token, tokenCount)
+        }
+        tokenCount[0] += 1
+
+        const currentUsage = tokenCount[0]
+        const isRateLimited = currentUsage >= limit
+
+        return isRateLimited ? reject() : resolve()
+      }),
+  }
+}
+
+const limiter = rateLimit({
+  interval: 60 * 1000, // 60 seconds
+  uniqueTokenPerInterval: 500,
+})
+```
+
+```tsx
+// app/api/chat/route.ts
+import { rateLimit } from '@/lib/rate-limit'
+
+const limiter = rateLimit()
+
+export async function POST(req: NextRequest) {
+  const ip = req.ip ?? '127.0.0.1'
+
+  try {
+    await limiter.check(10, ip) // 10 requests per minute
+  } catch {
+    return new Response('Rate limit exceeded', { status: 429 })
+  }
+
+  // ... rest of handler
+}
+```
+
+### With Internationalization (i18n)
+
+```tsx
+// app/[locale]/chat/page.tsx
+import { getDictionary } from '@/lib/i18n'
+import { ChatInterface } from '@/components/chat/ChatInterface'
+
+export default async function ChatPage({
+  params: { locale },
+}: {
+  params: { locale: string }
+}) {
+  const dict = await getDictionary(locale)
+
+  return (
+    <ChatInterface
+      translations={{
+        placeholder: dict.chat.placeholder,
+        send: dict.chat.send,
+        error: dict.chat.error,
+      }}
+    />
+  )
+}
+```
+
+### With Parallel Routes
+
+```tsx
+// app/chat/@sidebar/page.tsx
+export default function Sidebar() {
+  return (
+    <aside className="w-64 border-r">
+      <ConversationList />
+    </aside>
+  )
+}
+
+// app/chat/@main/page.tsx
+export default function Main() {
+  return <ChatInterface />
+}
+
+// app/chat/layout.tsx
+export default function ChatLayout({
+  sidebar,
+  main,
+}: {
+  sidebar: React.ReactNode
+  main: React.ReactNode
+}) {
+  return (
+    <div className="flex h-screen">
+      {sidebar}
+      {main}
+    </div>
+  )
+}
+```
+
+## Common Pitfalls
+
+### Pitfall 1: Using Client Components Unnecessarily
+
+**Problem:** All components marked as 'use client', losing server benefits.
+
+**Solution:** Keep Server Components where possible.
+
+```tsx
+// ✅ Good - Server Component by default
+export default function ChatPage() {
+  const data = fetchServerData()
+  return <ClientChatComponent data={data} />
+}
+
+// ❌ Bad - Unnecessary client component
+'use client'
+export default function ChatPage() {
+  const [data, setData] = useState()
+  useEffect(() => {
+    fetchData().then(setData)
+  }, [])
+}
+```
+
+### Pitfall 2: Not Handling Streaming Errors
+
+**Problem:** Stream errors crash the app.
+
+**Solution:** Implement error handling in API route.
+
+```tsx
+export async function POST(req: NextRequest) {
+  try {
+    const response = await openai.chat.completions.create({
+      // ...
+    })
+
+    const stream = OpenAIStream(response, {
+      onError: (error) => {
+        console.error('Stream error:', error)
+        throw error
+      },
+    })
+
+    return new StreamingTextResponse(stream)
+  } catch (error) {
+    console.error('API error:', error)
+    return new Response('Error', { status: 500 })
+  }
+}
+```
+
+### Pitfall 3: Missing Environment Variables
+
+**Problem:** App crashes in production due to missing env vars.
+
+**Solution:** Validate at build time.
+
+```tsx
+// lib/env.ts
+import { z } from 'zod'
+
+const envSchema = z.object({
+  OPENAI_API_KEY: z.string().min(1),
+  DATABASE_URL: z.string().url(),
+  NEXT_PUBLIC_APP_URL: z.string().url(),
+})
+
+export const env = envSchema.parse(process.env)
+```
+
+### Pitfall 4: Not Using Edge Runtime
+
+**Problem:** Slow cold starts and buffering issues.
+
+**Solution:** Use Edge Runtime for API routes.
+
+```tsx
+// ✅ Good - Edge Runtime
+export const runtime = 'edge'
+
+// ❌ Bad - Node.js runtime (slower)
+export const runtime = 'nodejs'
+```
+
+### Pitfall 5: Hydration Mismatches
+
+**Problem:** Server-rendered HTML doesn't match client.
+
+**Solution:** Use dynamic imports or client-only wrappers.
+
+```tsx
+import dynamic from 'next/dynamic'
+
+const ChatInterface = dynamic(
+  () => import('@/components/chat/ChatInterface'),
+  { ssr: false }
+)
+```
+
+## Environment Variables
+
+```env
+# .env.local
+OPENAI_API_KEY=sk-...
+DATABASE_URL=postgresql://...
+NEXT_PUBLIC_APP_URL=http://localhost:3000
+
+# Optional
+ANTHROPIC_API_KEY=sk-ant-...
+VERCEL_URL=...
+```
+
+## Package.json Scripts
+
+```json
+{
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "type-check": "tsc --noEmit"
+  }
+}
+```
+
+## Next Steps
+
+- [Memory Integration](../memory-integration) - Add conversation memory
+- [Error Handling](../error-handling) - Robust error recovery
+- [Custom Theming](../custom-theming) - Style your chat
+- [Tool Calling](../tool-calling-showcase) - Add AI tools
+
+---
+
+**Time to implement:** 20 minutes
+**Difficulty:** Intermediate
+**Dependencies:** `next`, `@clarity-chat/react`, `openai`, `ai`

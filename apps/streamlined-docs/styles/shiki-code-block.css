@@ -1,0 +1,54 @@
+/**
+ * Shiki Code Block Styles - Night Owl Theme
+ *
+ * Additional styling for Shiki-generated syntax-highlighted code blocks
+ * to ensure consistent rendering with Night Owl theme
+ */
+
+.shiki-code-block {
+  @apply p-4;
+}
+
+.shiki-code-block pre {
+  @apply m-0 p-0;
+  background: transparent !important;
+}
+
+.shiki-code-block code {
+  @apply font-mono text-sm leading-relaxed;
+  background: transparent !important;
+}
+
+/* Line numbers (if Shiki generates them) */
+.shiki-code-block .line-number {
+  @apply inline-block w-8 text-right mr-4 select-none;
+  color: #5f7e97;
+}
+
+/* Highlighted lines (custom class from transformer) */
+.shiki-code-block .highlighted-line {
+  @apply block -mx-4 px-4 border-l-2;
+  background-color: rgba(130, 170, 255, 0.1);
+  border-color: #82aaff;
+}
+
+/* Ensure proper scrolling for long lines */
+.shiki-code-block code {
+  display: block;
+  white-space: pre;
+}
+
+/* Night Owl theme background (fallback if not in inline styles) */
+.shiki-code-block pre[class*='night-owl'] {
+  background-color: #011627 !important;
+}
+
+/* Adjust padding for inline elements */
+.shiki-code-block code > span {
+  @apply block;
+}
+
+/* Focus styles for accessibility */
+.shiki-code-block:focus-visible {
+  @apply outline-none ring-2 ring-[#82aaff] ring-offset-2 ring-offset-[#011627];
+}

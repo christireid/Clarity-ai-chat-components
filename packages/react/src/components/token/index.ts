@@ -5,14 +5,14 @@
  * costs, and optimization.
  */
 
-export { TokenCounter } from './token-counter'
+export { TokenCounter } from './TokenCounter'
 export {
   TokenUsageMeter,
   MODEL_PRICING_PRESETS,
   type TokenUsage as TokenUsageMeterData,
   type ModelPricing as TokenUsageMeterPricing,
   type TokenUsageMeterProps,
-} from './token-usage-meter'
+} from './TokenUsageMeter'
 export {
   TokenOptimizationPanel,
   type TokenOptimizationPanelProps,
@@ -29,8 +29,8 @@ export {
 export {
   type TokenOptimizationStats,
   createEmptyStats,
-} from '../../hooks/clarity-tokens/use-token-optimization-stats'
-export { TokenBudgetBar } from './token-budget-bar'
+} from '@clarity-chat/token-optimization/react'
+export { TokenBudgetBar } from './TokenBudgetBar'
 export {
   TokenCostPreview,
   useTokenEstimate,
@@ -38,3 +38,12 @@ export {
   type UseTokenEstimateOptions,
   type TokenEstimate,
 } from './TokenCostPreview'
+export {
+  TokenROICalculator,
+  type TokenROICalculatorProps,
+  type ROIPeriod,
+  type OptimizationScenario,
+  type CostBreakdown,
+  type ROIResults,
+  type ChartDataPoint,
+} from './TokenROICalculator'

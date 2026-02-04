@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
-import { TokenCounter } from '@clarity-chat/token-optimization'
+import { AccurateTokenCounter as TokenCounter } from '@clarity-chat/token-optimization'
 import { estimateTokens } from '../estimator'
 import { countConversationTokens, countTokens } from '../accurate-counter'
 import { InputValidator } from '../input-validator'

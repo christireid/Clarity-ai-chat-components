@@ -78,7 +78,9 @@ export class SimpleSecurityManager {
 
   logAudit(event: string, details?: Record<string, unknown>): void {
     if (this.config.enableAuditLogging) {
-      console.debug('[SecurityAudit]', event, details)
+      if (process.env.NODE_ENV === 'development') {
+        console.debug('[SecurityAudit]', event, details)
+      }
     }
   }
 

@@ -11,11 +11,11 @@ import { describe, bench, beforeEach, afterEach } from 'vitest'
 import { render, cleanup } from '@testing-library/react'
 import * as React from 'react'
 import type { Message } from '@clarity-chat/types'
-import { PerformanceProfiler } from '../utils/profiling/performance-profiler'
+import { PerformanceProfiler } from '@clarity-chat/dev-tools'
 import {
   createDeviceSimulator,
   DEVICE_PROFILES,
-} from '../utils/profiling/device-simulation'
+} from '@clarity-chat/dev-tools'
 
 // Generate mock messages
 function generateMessages(count: number): Message[] {

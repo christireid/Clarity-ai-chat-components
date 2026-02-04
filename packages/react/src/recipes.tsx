@@ -14,7 +14,7 @@
  * The absolute simplest way to add AI chat to your app.
  */
 export const RecipeMinimal = `
-import { ClarityChat } from '@clarity-chat/react'
+import { ChatWindow, ClarityChat, convertCoreMessagesToMessages, useChatWithOperations, useClarityChat, useClarityChatWithAnalytics } from '@clarity-chat/react'
 import '@clarity-chat/react/dist/styles/index.css'
 
 export default function App() {
@@ -28,7 +28,6 @@ export default function App() {
  * Add customization while keeping it simple.
  */
 export const RecipeCustomized = `
-import { ClarityChat } from '@clarity-chat/react'
 import '@clarity-chat/react/dist/styles/index.css'
 
 export default function App() {
@@ -50,7 +49,6 @@ export default function App() {
  * Use the composed hook for edit/regenerate/delete functionality.
  */
 export const RecipeWithOperations = `
-import { useChatWithOperations, ChatWindow } from '@clarity-chat/react'
 import '@clarity-chat/react/dist/styles/index.css'
 
 function App() {
@@ -86,7 +84,6 @@ function App() {
  * Track user interactions automatically.
  */
 export const RecipeWithAnalytics = `
-import { useClarityChatWithAnalytics, ChatWindow, convertCoreMessagesToMessages } from '@clarity-chat/react'
 import '@clarity-chat/react/dist/styles/index.css'
 
 function App() {
@@ -126,7 +123,6 @@ function App() {
  * Enable conversation memory for context-aware responses.
  */
 export const RecipeWithMemory = `
-import { ClarityChat } from '@clarity-chat/react'
 import '@clarity-chat/react/dist/styles/index.css'
 
 export default function App() {
@@ -146,7 +142,6 @@ export default function App() {
  * Customize the appearance while keeping functionality.
  */
 export const RecipeCustomStyling = `
-import { ClarityChat } from '@clarity-chat/react'
 import '@clarity-chat/react/dist/styles/index.css'
 
 export default function App() {
@@ -214,7 +209,6 @@ function App() {
  * Handle multiple users with user identification.
  */
 export const RecipeMultiUser = `
-import { ClarityChat } from '@clarity-chat/react'
 import '@clarity-chat/react/dist/styles/index.css'
 
 function App({ userId }: { userId: string }) {
@@ -235,7 +229,6 @@ function App({ userId }: { userId: string }) {
  * Handle streaming responses with real-time updates.
  */
 export const RecipeStreaming = `
-import { useClarityChat, ChatWindow, convertCoreMessagesToMessages } from '@clarity-chat/react'
 import '@clarity-chat/react/dist/styles/index.css'
 
 function App() {
@@ -264,7 +257,6 @@ function App() {
  * Automatic retry and error handling.
  */
 export const RecipeErrorRecovery = `
-import { ClarityChat } from '@clarity-chat/react'
 import '@clarity-chat/react/dist/styles/index.css'
 
 function App() {

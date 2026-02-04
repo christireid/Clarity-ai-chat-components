@@ -3,6 +3,7 @@ import React from 'react'
 import { ThemeProvider, ToastProvider } from '@clarity-chat/react'
 import { getAllThemes } from '@clarity-chat/react/theme'
 import { clarityTheme, clarityDarkTheme } from './manager'
+import { withPeerDependencySimulation } from './addons/peer-dependency-simulator/preview'
 import './globals.css'
 
 // Suppress AbortError from Storybook's waitForAnimations in React 19
@@ -319,7 +320,7 @@ const preview: Preview = {
     },
   },
 
-  decorators: [withReducedMotion, withTheme],
+  decorators: [withReducedMotion, withTheme, withPeerDependencySimulation],
 
   globalTypes: {
     reduceMotion: {

@@ -8,8 +8,8 @@
  */
 
 import * as React from 'react'
-import { ClarityChat } from '../components/chat/clarity-chat'
-import { ClarityChatPresets } from '../components/chat/clarity-chat-presets'
+import { ClarityChat } from '../components/chat/ClarityChat'
+import { ClarityChatPresets } from '../components/chat/ClarityChatPresets'
 
 /**
  * Create a basic chat component - the simplest possible API
@@ -68,7 +68,10 @@ export function chat(
  */
 export function chatWithMemory(
   api: string,
-  strategy: 'sliding-window' | 'semantic-chunks' | 'vector-store' = 'sliding-window'
+  strategy:
+    | 'sliding-window'
+    | 'semantic-chunks'
+    | 'vector-store' = 'sliding-window'
 ): React.ReactElement {
   return <ClarityChatPresets.WithMemory api={api} memoryStrategy={strategy} />
 }
@@ -93,12 +96,7 @@ export function enterpriseChat(
   api: string,
   title?: string
 ): React.ReactElement {
-  return (
-    <ClarityChatPresets.Enterprise
-      api={api}
-      sessionTitle={title}
-    />
-  )
+  return <ClarityChatPresets.Enterprise api={api} sessionTitle={title} />
 }
 
 /**
@@ -151,7 +149,12 @@ export class ChatBuilder {
     return new ChatBuilder(api)
   }
 
-  withMemory(strategy: 'sliding-window' | 'semantic-chunks' | 'vector-store' = 'sliding-window'): ChatBuilder {
+  withMemory(
+    strategy:
+      | 'sliding-window'
+      | 'semantic-chunks'
+      | 'vector-store' = 'sliding-window'
+  ): ChatBuilder {
     this.config.memory = { enabled: true, strategy }
     return this
   }
@@ -173,7 +176,7 @@ export class ChatBuilder {
 
   withPrompts(starterPrompts?: string[]): ChatBuilder {
     this.config.prompts = {
-      starterPrompts: starterPrompts?.map(text => ({ text }))
+      starterPrompts: starterPrompts?.map((text) => ({ text })),
     }
     return this
   }
@@ -209,8 +212,8 @@ export const ChatPresets = {
       prompts={{
         starterPrompts: [
           { text: 'How can I help you today?', category: 'support' },
-          { text: 'I need help with...', category: 'support' }
-        ]
+          { text: 'I need help with...', category: 'support' },
+        ],
       }}
     />
   ),
@@ -227,9 +230,9 @@ export const ChatPresets = {
         starterPrompts: [
           { text: 'Explain how to...', category: 'technical' },
           { text: 'Debug this error...', category: 'technical' },
-          { text: 'Best practices for...', category: 'technical' }
-        ]
+          { text: 'Best practices for...', category: 'technical' },
+        ],
       }}
     />
-  )
+  ),
 } as const

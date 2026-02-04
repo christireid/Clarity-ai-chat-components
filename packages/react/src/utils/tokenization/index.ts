@@ -1,22 +1,5 @@
 // Main exports for the tokenization utilities
-export { TokenCounter } from '@clarity-chat/token-optimization'
-
-// Core token counting with different strategies
-export {
-  smartCountTokens,
-  smartTokenCounter,
-  type FallbackStrategy,
-  type FallbackContext,
-} from './smart-fallback'
-
-// Robust error handling
-export {
-  countTokensRobust,
-  robustTokenCounter,
-  type TokenCounterError,
-  type ErrorContext,
-  type ErrorHandlingOptions,
-} from './robust-error-handling'
+export type { TokenCounter } from '@clarity-chat/token-optimization'
 
 // Token budget validation
 export {
@@ -28,17 +11,6 @@ export {
   type TokenBudgetValidation,
   type TruncationOptions,
 } from './token-budget-validator'
-
-// Performance optimization
-export {
-  countTokensOptimized,
-  countTokensBatchOptimized,
-  benchmarkTokenCounter,
-  optimizedTokenCounter,
-  type PerformanceMetrics,
-  type PerformanceBenchmark,
-  type CachingConfig,
-} from './performance-optimization'
 
 // Analytics and monitoring
 export {
@@ -64,37 +36,6 @@ export {
   type MigrationResult,
 } from './migration-assistant'
 
-// Text compression and preprocessing
-export {
-  compressText,
-  compressForBudget,
-  compressForRatio,
-  compressSemanticOnly,
-  compressMultiStrategy,
-  SemanticCompressor,
-  type CompressionStrategy,
-  type CompressionConfig,
-  type CompressionResult,
-} from './text-compression'
-
-// Advanced compression techniques
-export {
-  LLMLinguaCompressor,
-  AdvancedCompressionOrchestrator,
-  compressWithLLMLingua,
-  compressWithSelectiveContext,
-  compressAdaptive,
-  compressEnsemble,
-  compressIncremental,
-  advancedCompressor,
-  compressionOrchestrator,
-  compressWithAdvanced,
-  type AdvancedCompressionStrategy,
-  type AdvancedCompressionConfig,
-  type AdvancedCompressionResult,
-  type CompressionQualityMetrics,
-} from './advanced-compression'
-
 // Adaptive optimization
 export {
   AdaptiveTokenOptimizer,
@@ -108,26 +49,6 @@ export {
   type AdaptiveOptimizationConfig,
   type AdaptiveOptimizationResult,
 } from './adaptive-optimizer'
-
-// Intelligent caching
-export {
-  IntelligentSemanticCache,
-  MultiLevelCacheManager,
-  IntelligentTokenCache,
-  semanticCache,
-  multiLevelCache,
-  tokenCache,
-  getCachedTokenCount,
-  getCachedCompression,
-  setCachedCompression,
-  getCacheAnalytics,
-  type CacheLevel,
-  type CacheStrategy,
-  type CacheConfig,
-  type CacheEntry,
-  type CacheStats,
-  type SemanticCacheConfig,
-} from './intelligent-caching'
 
 // Smart truncation and summarization
 export {
@@ -210,10 +131,7 @@ export {
 
 // Convenience re-exports from the original estimator and accurate-counter
 // These maintain backward compatibility while using the new TokenCounter internally
-export {
-  estimateTokens,
-  estimateMessagesTokens,
-} from './estimator'
+export { estimateTokens, estimateMessagesTokens } from './estimator'
 export {
   countTokens,
   countConversationTokens,

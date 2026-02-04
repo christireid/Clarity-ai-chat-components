@@ -1,0 +1,5 @@
+node_modules/
+dist/
+*.log
+tree-shaking-report.json
+TREE-SHAKING-REPORT.md

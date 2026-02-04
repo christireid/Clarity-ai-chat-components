@@ -39,8 +39,5 @@ export type { VersionSelectorProps } from './VersionSelector'
 export { ErrorFallback } from './ErrorFallback'
 export type { ErrorFallbackProps } from './ErrorFallback'
 
-export { PromptArchitectErrorBoundary } from './PromptArchitectErrorBoundary'
-export type { PromptArchitectErrorBoundaryProps } from './PromptArchitectErrorBoundary'
-
 export { CopyButton } from './CopyButton'
 export type { CopyButtonProps } from './CopyButton'

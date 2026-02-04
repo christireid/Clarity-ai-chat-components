@@ -82,6 +82,7 @@ export function SourcesList({
               initial={{ height: 0, opacity: 0 }}
               animate={{ height: 'auto', opacity: 1 }}
               exit={{ height: 0, opacity: 0 }}
+              viewport={{ once: true }}
               transition={{ duration: 0.2 }}
               className="space-y-1.5 overflow-hidden"
             >
@@ -177,6 +178,7 @@ export function SourcesList({
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: 'auto', opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
+            viewport={{ once: true }}
             transition={{ duration: 0.3 }}
             className="space-y-2 overflow-hidden"
           >

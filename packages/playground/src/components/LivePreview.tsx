@@ -27,7 +27,7 @@ import {
 import type { ConsoleLogEntry, PlaygroundError } from '../types'
 import { isIframeMessage } from '../types'
 import type { PreviewStatus } from '../contexts/PlaygroundContext'
-import { cn } from '../utils/cn'
+import { cn } from '@clarity-chat/primitives'
 
 // Compilation timeout duration (10 seconds)
 const COMPILATION_TIMEOUT_MS = 10000

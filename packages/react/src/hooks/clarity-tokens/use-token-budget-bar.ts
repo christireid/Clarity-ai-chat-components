@@ -52,5 +52,5 @@ export {
   type UseTokenBudgetConfig as UseTokenBudgetBarConfig,
   type UseTokenBudgetReturn as UseTokenBudgetBarReturn,
   type TokenUsageRecord,
-  type BudgetStatus,
+  type TokenBudgetStatus,
 } from './use-token-budget'

@@ -55,6 +55,7 @@ export function SourceCard({
         rel="noopener noreferrer"
         initial={{ opacity: 0, x: -10 }}
         animate={{ opacity: 1, x: 0 }}
+        viewport={{ once: true }}
         transition={{
           duration: durations.moderate,
           delay: index ? index * 0.05 : 0,
@@ -106,6 +107,7 @@ export function SourceCard({
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
       transition={{
         duration: durations.moderate,
         delay: index ? index * 0.05 : 0,
@@ -173,6 +175,7 @@ export function SourceCard({
                 <motion.div
                   initial={{ width: 0 }}
                   animate={{ width: `${source.score * 100}%` }}
+                  viewport={{ once: true }}
                   transition={{ duration: durations.slow, delay: 0.1 }}
                   className={cn('h-full', relevanceColor)}
                 />

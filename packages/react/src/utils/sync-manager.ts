@@ -6,7 +6,7 @@
  */
 
 import React from 'react'
-import { logger } from './logger'
+import { logger } from '@clarity-chat/utils/logger'
 
 export interface SyncableData {
   id: string
@@ -78,7 +78,9 @@ export class ConflictResolver {
 
       case 'manual':
         if (!onManualResolve) {
-          throw new Error('Manual conflict resolution requires onConflict callback')
+          throw new Error(
+            'Manual conflict resolution requires onConflict callback'
+          )
         }
         const resolved = await onManualResolve(conflict)
         if (!resolved) {
@@ -94,7 +96,10 @@ export class ConflictResolver {
     }
   }
 
-  private static mergeData(local: SyncableData, remote: SyncableData): SyncableData {
+  private static mergeData(
+    local: SyncableData,
+    remote: SyncableData
+  ): SyncableData {
     // Simple merge strategy: remote wins for conflicts, combine arrays/objects
     const merged = { ...remote.data }
 
@@ -132,7 +137,11 @@ export class ConflictResolver {
     const result = { ...target }
 
     for (const key in source) {
-      if (source[key] && typeof source[key] === 'object' && !Array.isArray(source[key])) {
+      if (
+        source[key] &&
+        typeof source[key] === 'object' &&
+        !Array.isArray(source[key])
+      ) {
         result[key] = this.deepMerge(target[key] || {}, source[key])
       } else {
         result[key] = source[key]
@@ -159,7 +168,7 @@ export class SyncQueue {
 
   enqueue(type: 'create' | 'update' | 'delete', data: SyncableData): void {
     // Remove any existing operations for this item
-    this.queue = this.queue.filter(item => item.data.id !== data.id)
+    this.queue = this.queue.filter((item) => item.data.id !== data.id)
 
     this.queue.push({
       id: `${type}_${data.id}_${Date.now()}`,
@@ -170,8 +179,12 @@ export class SyncQueue {
     })
   }
 
-  dequeue(): Array<{ id: string; type: 'create' | 'update' | 'delete'; data: SyncableData }> {
-    return this.queue.splice(0).map(item => ({
+  dequeue(): Array<{
+    id: string
+    type: 'create' | 'update' | 'delete'
+    data: SyncableData
+  }> {
+    return this.queue.splice(0).map((item) => ({
       id: item.id,
       type: item.type,
       data: item.data,
@@ -179,7 +192,7 @@ export class SyncQueue {
   }
 
   retry(id: string): boolean {
-    const item = this.queue.find(item => item.id === id)
+    const item = this.queue.find((item) => item.id === id)
     if (!item || item.retries >= this.maxRetries) {
       return false
     }
@@ -227,23 +240,30 @@ export class RealtimeSync {
           const data = JSON.parse(event.data)
           this.onMessage(data)
         } catch (error) {
-          console.warn('Failed to parse real-time sync message:', error)
+          if (process.env.NODE_ENV === 'development') {
+            console.warn('Failed to parse real-time sync message:', error)
+          }
         }
       }
 
       this.eventSource.onerror = (error) => {
-        console.error('Real-time sync connection error:', error)
+        if (process.env.NODE_ENV === 'development') {
+          console.error('Real-time sync connection error:', error)
+        }
         this.onError(error)
         this.scheduleReconnect()
       }
 
       this.eventSource.onopen = () => {
-        console.log('Real-time sync connected')
+        if (process.env.NODE_ENV === 'development') {
+          console.log('Real-time sync connected')
+        }
         this.reconnectAttempts = 0
       }
-
     } catch (error) {
-      console.error('Failed to create EventSource:', error)
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Failed to create EventSource:', error)
+      }
       this.scheduleReconnect()
     }
   }
@@ -262,14 +282,20 @@ export class RealtimeSync {
 
   private scheduleReconnect(): void {
     if (this.reconnectAttempts >= this.maxReconnectAttempts) {
-      console.error('Max real-time sync reconnection attempts reached')
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Max real-time sync reconnection attempts reached')
+      }
       return
     }
 
     this.reconnectAttempts++
     const delay = this.reconnectDelay * Math.pow(2, this.reconnectAttempts - 1)
 
-    console.log(`Reconnecting real-time sync in ${delay}ms (attempt ${this.reconnectAttempts})`)
+    if (process.env.NODE_ENV === 'development') {
+      console.log(
+        `Reconnecting real-time sync in ${delay}ms (attempt ${this.reconnectAttempts})`
+      )
+    }
 
     this.reconnectTimer = setTimeout(() => {
       this.connect()
@@ -394,7 +420,10 @@ export class SyncManager {
             const conflict: SyncConflict = {
               local: localData,
               remote: remoteData,
-              conflictFields: this.getConflictFields(localData.data, remoteData.data),
+              conflictFields: this.getConflictFields(
+                localData.data,
+                remoteData.data
+              ),
             }
 
             try {
@@ -437,7 +466,6 @@ export class SyncManager {
         total: syncedItems,
         conflicts: conflictsResolved,
       })
-
     } catch (error) {
       errors.push({
         type: 'network',
@@ -472,11 +500,15 @@ export class SyncManager {
         endpoint,
         (data) => {
           // Handle real-time updates
-          console.log('Real-time sync update:', data)
+          if (process.env.NODE_ENV === 'development') {
+            console.log('Real-time sync update:', data)
+          }
           this.scheduleSync()
         },
         (error) => {
-          console.error('Real-time sync error:', error)
+          if (process.env.NODE_ENV === 'development') {
+            console.error('Real-time sync error:', error)
+          }
         }
       )
 
@@ -531,7 +563,10 @@ export class SyncManager {
   private getConflictFields(localData: any, remoteData: any): string[] {
     const conflicts: string[] = []
 
-    const allKeys = new Set([...Object.keys(localData), ...Object.keys(remoteData)])
+    const allKeys = new Set([
+      ...Object.keys(localData),
+      ...Object.keys(remoteData),
+    ])
 
     for (const key of allKeys) {
       if (JSON.stringify(localData[key]) !== JSON.stringify(remoteData[key])) {

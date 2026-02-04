@@ -131,12 +131,8 @@ export interface UsePromptLibraryReturn {
   reset: () => void
 }
 
-/**
- * Generate a unique ID
- */
-function generateId(): string {
-  return `${Date.now()}-${Math.random().toString(36).substring(2, 11)}`
-}
+// Import ID generator from canonical utils package
+import { generateId } from '@clarity-chat/utils'
 
 /**
  * Generate semantic version number

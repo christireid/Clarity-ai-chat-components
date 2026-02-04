@@ -101,24 +101,12 @@ export { useContextWindow } from './use-context-window'
 export { useResponseCache } from './use-response-cache'
 
 // =============================================================================
-// Unified Token Optimization Hook
-// =============================================================================
-
-export { useTokenOptimization } from './use-token-optimization'
-
-// =============================================================================
 // P1 Hooks - Core Optimization
 // =============================================================================
 
 export { useSemanticCache } from './use-semantic-cache'
 export { useEmbeddingCache } from './use-embedding-cache'
-export { usePromptCompressor } from './use-prompt-compressor'
 export { useStreamOptimizer } from './use-stream-optimizer'
-export {
-  useExactCache,
-  createInMemoryStore,
-  createIndexedDBStore,
-} from './use-exact-cache'
 
 // =============================================================================
 // P2 Hooks - Advanced Features
@@ -179,10 +167,6 @@ export type {
   UseEmbeddingCacheConfig,
   UseEmbeddingCacheReturn,
 
-  // usePromptCompressor types
-  UsePromptCompressorConfig,
-  UsePromptCompressorReturn,
-
   // useStreamOptimizer types
   UseStreamOptimizerConfig,
   UseStreamOptimizerReturn,
@@ -230,17 +214,8 @@ export type {
   UseTokenBudgetConfig,
   UseTokenBudgetReturn,
   TokenUsageRecord,
-  BudgetStatus,
+  TokenBudgetStatus,
 } from './use-token-budget'
-
-// useExactCache types
-export type {
-  UseExactCacheConfig,
-  UseExactCacheReturn,
-  CacheStore as ExactCacheStore,
-  LLMRequest as ExactCacheLLMRequest,
-  LLMResponse as ExactCacheLLMResponse,
-} from './use-exact-cache'
 
 // useVectorSearch types
 export type {
@@ -290,16 +265,6 @@ export type {
   ContextCompressionOptions,
   UseContextWindowConfigWithCompression,
 } from './use-context-window'
-
-// useTokenOptimization types
-export type {
-  UseTokenOptimizationOptions,
-  CompressionOptions as TokenOptimizationCompressionOptions,
-  CompressionResult as TokenOptimizationCompressionResult,
-  CachedResponse as TokenOptimizationCachedResponse,
-  ModelInfo,
-  TokenOptimizationResult,
-} from './use-token-optimization'
 
 // Token optimization statistics (for display components)
 export {

@@ -1,0 +1,2362 @@
+---
+title: AudioRecorder Complete API Reference
+description: Comprehensive API documentation for the AudioRecorder component including TypeScript signatures, browser compatibility, edge cases, error handling, and accessibility
+category: API Reference
+subcategory: Input Components
+---
+
+# AudioRecorder Complete API Reference
+
+Complete technical documentation for the AudioRecorder component, including props reference, browser compatibility matrix, edge case handling, error patterns, accessibility features, and performance optimization.
+
+## Table of Contents
+
+- [TypeScript Interfaces](#typescript-interfaces)
+- [Props Reference](#props-reference)
+- [Browser Compatibility Matrix](#browser-compatibility-matrix)
+- [Edge Cases & Error Handling](#edge-cases--error-handling)
+- [Accessibility Features](#accessibility-features)
+- [Performance Optimization](#performance-optimization)
+- [Working Code Examples](#working-code-examples)
+
+---
+
+## TypeScript Interfaces
+
+### AudioRecorderProps
+
+Complete TypeScript interface with detailed property descriptions:
+
+```typescript
+interface AudioRecorderProps {
+  // ============================================================================
+  // Recording Settings
+  // ============================================================================
+
+  /**
+   * Maximum recording duration in seconds
+   * @default 300
+   * @range 1-7200 (2 hours recommended maximum)
+   * @remarks Recording automatically stops when this limit is reached
+   */
+  maxDuration?: number
+
+  /**
+   * Minimum recording duration in seconds before stop is allowed
+   * @default 1
+   * @range 0-60
+   * @remarks Stop button is disabled until this duration is reached
+   */
+  minDuration?: number
+
+  /**
+   * Automatically start recording when component mounts
+   * @default false
+   * @requires User gesture for browser security policies
+   * @remarks May be blocked by browser if not triggered by user action
+   */
+  autoStart?: boolean
+
+  /**
+   * Enable pause/resume functionality during recording
+   * @default true
+   * @remarks Shows pause/resume buttons in UI when enabled
+   */
+  pausable?: boolean
+
+  /**
+   * Show countdown timer before recording starts
+   * @default 0
+   * @range 0-10
+   * @remarks Set to 0 to disable countdown
+   */
+  countdownDuration?: number
+
+  // ============================================================================
+  // Format Options
+  // ============================================================================
+
+  /**
+   * Desired output audio format
+   * @default 'webm'
+   * @remarks Actual format depends on browser support. Falls back to webm if unsupported.
+   *
+   * Format recommendations:
+   * - webm: Best cross-browser compatibility, good compression
+   * - mp3: Safari preferred, smaller file sizes
+   * - wav: Uncompressed, largest files, best quality
+   * - ogg: Good compression, limited Safari support
+   * - flac: Lossless compression, limited browser support
+   */
+  outputFormat?: 'mp3' | 'wav' | 'ogg' | 'webm' | 'flac'
+
+  /**
+   * Override MIME type for MediaRecorder
+   * @default undefined (auto-detected)
+   * @example 'audio/webm;codecs=opus'
+   * @remarks Use MediaRecorder.isTypeSupported() to verify support
+   */
+  mimeType?: string
+
+  /**
+   * Audio bitrate in bits per second
+   * @default 128000 (128 kbps)
+   * @range 64000-320000
+   * @remarks Higher bitrate = better quality but larger files
+   *
+   * Recommended values:
+   * - 64000: Voice, minimal quality
+   * - 128000: Voice, standard quality
+   * - 192000: Music, good quality
+   * - 256000: Music, high quality
+   */
+  bitrate?: number
+
+  /**
+   * Audio sample rate in Hz
+   * @default undefined (device default, typically 48000)
+   * @range 8000-96000
+   * @remarks Higher sample rate = better quality. Common values:
+   * - 8000: Telephone quality
+   * - 16000: VoIP quality
+   * - 44100: CD quality
+   * - 48000: Professional audio
+   * - 96000: High-resolution audio
+   */
+  sampleRate?: number
+
+  /**
+   * Number of audio channels
+   * @default 1 (mono)
+   * @remarks
+   * - 1 (mono): Recommended for voice recording, smaller files
+   * - 2 (stereo): Recommended for music recording
+   */
+  channels?: 1 | 2
+
+  // ============================================================================
+  // Audio Processing
+  // ============================================================================
+
+  /**
+   * Enable Web Audio API noise cancellation
+   * @default false
+   * @remarks Reduces background noise for clearer recordings.
+   * Uses browser's built-in noise suppression algorithms.
+   */
+  enableNoiseCancellation?: boolean
+
+  /**
+   * Enable echo cancellation for clearer recordings
+   * @default false
+   * @remarks Useful in rooms with echo or when using speakers
+   * May reduce audio quality slightly
+   */
+  enableEchoCancellation?: boolean
+
+  /**
+   * Automatically adjust input gain to maintain consistent volume
+   * @default false
+   * @remarks Normalizes volume levels, useful for varying speaker volumes
+   */
+  enableAutoGainControl?: boolean
+
+  /**
+   * Enable noise suppression using MediaStream constraints
+   * @default false
+   * @remarks Alternative to enableNoiseCancellation with different algorithm
+   * Can be used together for maximum noise reduction
+   */
+  noiseSuppression?: boolean
+
+  /**
+   * Automatically pause recording during silence
+   * @default false
+   * @remarks Saves space by not recording silent periods
+   * Uses amplitude threshold detection (see silenceThreshold)
+   */
+  voiceActivityDetection?: boolean
+
+  /**
+   * Amplitude threshold for silence detection (0-1)
+   * @default 0.01
+   * @range 0-1
+   * @remarks Used with voiceActivityDetection
+   * - Lower values = more sensitive (pauses less often)
+   * - Higher values = less sensitive (pauses more often)
+   * - Typical range: 0.005-0.05
+   */
+  silenceThreshold?: number
+
+  // ============================================================================
+  // Callbacks
+  // ============================================================================
+
+  /**
+   * Callback when recording starts successfully
+   * @remarks Called after microphone permission is granted and recording begins
+   */
+  onStart?: () => void
+
+  /**
+   * Callback when recording stops
+   * @param audioBlob - Complete audio recording as Blob
+   * @param audioUrl - Object URL for immediate playback (blob:// URL)
+   * @remarks Remember to revoke object URL when done: URL.revokeObjectURL(audioUrl)
+   */
+  onStop?: (audioBlob: Blob, audioUrl: string) => void
+
+  /**
+   * Callback when recording is paused
+   * @remarks Only called if pausable is true
+   */
+  onPause?: () => void
+
+  /**
+   * Callback when recording is resumed after being paused
+   * @remarks Only called if pausable is true
+   */
+  onResume?: () => void
+
+  /**
+   * Callback when audio data chunks become available during recording
+   * @param data - Audio data chunk as Blob
+   * @remarks Useful for real-time processing or incremental uploads
+   * Called periodically during recording (typically every few seconds)
+   */
+  onDataAvailable?: (data: Blob) => void
+
+  /**
+   * Callback when an error occurs
+   * @param error - Error object with message and stack
+   * @remarks Common error scenarios:
+   * - Permission denied: User denied microphone access
+   * - Unsupported format: Browser doesn't support requested format
+   * - MediaRecorder error: Recording device unavailable or busy
+   * - Security error: Not using HTTPS or invalid context
+   */
+  onError?: (error: Error) => void
+
+  /**
+   * Callback fired every second with current recording duration
+   * @param duration - Current duration in seconds
+   * @remarks Useful for custom UI or analytics
+   */
+  onDurationChange?: (duration: number) => void
+
+  /**
+   * Callback with current audio amplitude (0-1)
+   * @param amplitude - Normalized amplitude value (0 = silence, 1 = maximum)
+   * @remarks Fired continuously during recording for custom waveform visualization
+   * Uses RMS (Root Mean Square) calculation for accurate amplitude
+   */
+  onAmplitudeChange?: (amplitude: number) => void
+
+  // ============================================================================
+  // UI Configuration
+  // ============================================================================
+
+  /**
+   * Display real-time waveform visualization
+   * @default true
+   * @remarks Shows 60-bar animated waveform display
+   * Disable for better performance if not needed
+   */
+  showWaveform?: boolean
+
+  /**
+   * Display recording duration timer
+   * @default true
+   * @remarks Shows duration in MM:SS format
+   */
+  showDuration?: boolean
+
+  /**
+   * Show built-in recording controls
+   * @default true
+   * @remarks Includes start, stop, pause/resume buttons
+   * Set to false for custom control implementation
+   */
+  showControls?: boolean
+
+  /**
+   * Display audio input level meter
+   * @default true
+   * @remarks Shows real-time amplitude with color gradient (green to red)
+   */
+  showAmplitudeMeter?: boolean
+
+  /**
+   * Additional CSS classes for the container element
+   * @remarks Applied to the outermost div wrapper
+   */
+  className?: string
+
+  /**
+   * Color theme for the recorder UI
+   * @default 'auto'
+   * @remarks 'auto' follows system preference
+   */
+  theme?: 'light' | 'dark' | 'auto'
+
+  /**
+   * Disable recording functionality
+   * @default false
+   * @remarks Start button will be disabled when true
+   */
+  disabled?: boolean
+}
+```
+
+### Return Values & Callbacks
+
+```typescript
+// onStop callback signature
+type OnStopCallback = (audioBlob: Blob, audioUrl: string) => void
+
+// audioBlob properties
+interface Blob {
+  size: number        // File size in bytes
+  type: string        // MIME type (e.g., 'audio/webm')
+  slice(start?: number, end?: number): Blob
+  arrayBuffer(): Promise<ArrayBuffer>
+  text(): Promise<string>
+}
+
+// audioUrl format
+type AudioUrl = `blob:${string}`  // Object URL for playback
+
+// onError callback signature
+type OnErrorCallback = (error: Error) => void
+
+// Common error types
+type RecordingError =
+  | 'NotAllowedError'         // Permission denied
+  | 'NotFoundError'           // No microphone found
+  | 'NotSupportedError'       // Format not supported
+  | 'SecurityError'           // Not HTTPS or invalid context
+  | 'TypeError'               // Invalid MediaRecorder configuration
+```
+
+---
+
+## Props Reference
+
+### Recording Settings
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `maxDuration` | `number` | `300` | Maximum recording duration in seconds. Recording stops automatically when reached. Range: 1-7200 seconds (2 hours). |
+| `minDuration` | `number` | `1` | Minimum duration before stop is allowed. Stop button is disabled until this duration is reached. Range: 0-60 seconds. |
+| `autoStart` | `boolean` | `false` | Start recording automatically on mount. Requires user gesture for browser security. May be blocked if not user-initiated. |
+| `pausable` | `boolean` | `true` | Enable pause/resume functionality. Shows pause/resume buttons when true. |
+| `countdownDuration` | `number` | `0` | Countdown timer duration before recording starts. Set to 0 to disable. Range: 0-10 seconds. |
+
+### Format Options
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `outputFormat` | `'mp3' \| 'wav' \| 'ogg' \| 'webm' \| 'flac'` | `'webm'` | Desired output format. Falls back to webm if unsupported. WebM has best cross-browser compatibility. |
+| `mimeType` | `string` | `undefined` | Override MIME type for MediaRecorder. Auto-detected if not provided. Example: `'audio/webm;codecs=opus'` |
+| `bitrate` | `number` | `128000` | Audio bitrate in bits per second. Range: 64000-320000. Higher = better quality, larger files. |
+| `sampleRate` | `number` | `undefined` | Sample rate in Hz. Defaults to device rate (typically 48000). Common: 44100 (CD), 48000 (professional), 96000 (high-res). |
+| `channels` | `1 \| 2` | `1` | Number of audio channels. 1 = mono (voice), 2 = stereo (music). |
+
+### Audio Processing
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `enableNoiseCancellation` | `boolean` | `false` | Enable Web Audio API noise cancellation. Reduces background noise using browser algorithms. |
+| `enableEchoCancellation` | `boolean` | `false` | Enable echo cancellation. Useful in rooms with echo or when using speakers. |
+| `enableAutoGainControl` | `boolean` | `false` | Auto-adjust input gain for consistent volume levels. Normalizes speaker volume variations. |
+| `noiseSuppression` | `boolean` | `false` | Enable MediaStream noise suppression. Alternative algorithm to enableNoiseCancellation. Can be used together. |
+| `voiceActivityDetection` | `boolean` | `false` | Auto-pause during silence to save space. Uses amplitude threshold detection. |
+| `silenceThreshold` | `number` | `0.01` | Amplitude threshold (0-1) for silence detection. Lower = more sensitive. Range: 0.005-0.05 typical. |
+
+### Callbacks
+
+| Prop | Type | Description |
+|------|------|-------------|
+| `onStart` | `() => void` | Called when recording starts successfully after permission granted. |
+| `onStop` | `(audioBlob: Blob, audioUrl: string) => void` | Called when recording stops. Receives audio Blob and object URL for playback. |
+| `onPause` | `() => void` | Called when recording is paused (if pausable is true). |
+| `onResume` | `() => void` | Called when recording resumes after pause. |
+| `onDataAvailable` | `(data: Blob) => void` | Called periodically with audio chunks during recording. Use for real-time processing or incremental uploads. |
+| `onError` | `(error: Error) => void` | Called when an error occurs. Common: permission denied, unsupported format, device unavailable. |
+| `onDurationChange` | `(duration: number) => void` | Called every second with current duration. Useful for custom UI or analytics. |
+| `onAmplitudeChange` | `(amplitude: number) => void` | Called continuously with amplitude (0-1). Use for custom waveform visualization. |
+
+### UI Configuration
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `showWaveform` | `boolean` | `true` | Display 60-bar animated waveform visualization. Disable for better performance. |
+| `showDuration` | `boolean` | `true` | Display recording duration timer in MM:SS format. |
+| `showControls` | `boolean` | `true` | Show built-in start/stop/pause/resume buttons. Set false for custom controls. |
+| `showAmplitudeMeter` | `boolean` | `true` | Display real-time input level meter with color gradient. |
+| `className` | `string` | `undefined` | Additional CSS classes for container element. |
+| `theme` | `'light' \| 'dark' \| 'auto'` | `'auto'` | Color theme. 'auto' follows system preference. |
+| `disabled` | `boolean` | `false` | Disable recording functionality. Start button becomes disabled. |
+
+---
+
+## Browser Compatibility Matrix
+
+### Desktop Browsers
+
+| Browser | Version | MediaRecorder | Web Audio API | Format Support | Notes |
+|---------|---------|---------------|---------------|----------------|-------|
+| **Chrome** | 49+ | ✅ Full | ✅ Full | WebM/Opus, VP8, VP9, AV1 | Best overall support, all formats |
+| **Edge** | 79+ | ✅ Full | ✅ Full | WebM/Opus, VP8, VP9 | Chromium-based, same as Chrome |
+| **Firefox** | 29+ | ✅ Full | ✅ Full | WebM/Opus, VP8, VP9 | Excellent support, prefers Opus |
+| **Safari** | 14.1+ | ✅ Full | ✅ Full | MP4/AAC, WAV (limited WebM) | Limited format support, prefers MP4 |
+| **Opera** | 36+ | ✅ Full | ✅ Full | WebM/Opus, VP8, VP9 | Chromium-based |
+
+### Mobile Browsers
+
+| Browser | Version | MediaRecorder | Web Audio API | Format Support | Notes |
+|---------|---------|---------------|---------------|----------------|-------|
+| **Chrome Android** | 49+ | ✅ Full | ✅ Full | WebM/Opus, VP8 | Excellent support, requires user gesture |
+| **Safari iOS** | 14.5+ | ✅ Full | ✅ Full | MP4/AAC, WAV | Requires user gesture, limited WebM |
+| **Firefox Android** | 29+ | ✅ Full | ✅ Full | WebM/Opus, VP8 | Good support |
+| **Samsung Internet** | 5.0+ | ✅ Full | ✅ Full | WebM/Opus, VP8 | Chromium-based |
+
+### Unsupported Browsers
+
+- Internet Explorer (all versions) - ❌ No support
+- Safari < 14.1 - ❌ No MediaRecorder API
+- Chrome < 49 - ❌ No MediaRecorder API
+- Firefox < 29 - ❌ No MediaRecorder API
+
+### Browser Compatibility Score
+
+**Overall Support**: ~95% of global users (as of 2026)
+
+**Sources**:
+- [Can I Use: MediaRecorder](https://caniuse.com/mediarecorder)
+- [LambdaTest Browser Compatibility](https://www.lambdatest.com/web-technologies/mediarecorder)
+- [MDN: MediaRecorder](https://developer.mozilla.org/en-US/docs/Web/API/MediaRecorder)
+
+### Format Support Matrix
+
+| Format | Chrome | Firefox | Safari | Edge | File Size | Quality | Best For |
+|--------|--------|---------|--------|------|-----------|---------|----------|
+| **WebM/Opus** | ✅ | ✅ | ⚠️ Limited | ✅ | Small | Good | Voice, cross-browser |
+| **MP4/AAC** | ⚠️ | ❌ | ✅ | ⚠️ | Medium | Good | Safari compatibility |
+| **WAV** | ✅ | ✅ | ✅ | ✅ | Large | Best | High quality, compatibility |
+| **OGG/Opus** | ✅ | ✅ | ❌ | ✅ | Small | Good | Voice (non-Safari) |
+| **FLAC** | ⚠️ | ⚠️ | ❌ | ⚠️ | Medium | Best | Lossless (limited) |
+
+**Legend**:
+- ✅ = Full support
+- ⚠️ = Partial/Experimental support
+- ❌ = Not supported
+
+### MIME Type Support Detection
+
+```typescript
+// Check format support before using
+const checkFormatSupport = () => {
+  const formats = [
+    'audio/webm;codecs=opus',
+    'audio/webm',
+    'audio/mp4',
+    'audio/wav',
+    'audio/ogg;codecs=opus',
+    'audio/ogg',
+  ]
+
+  const supported = formats.filter(format =>
+    MediaRecorder.isTypeSupported(format)
+  )
+
+  console.log('Supported formats:', supported)
+  return supported[0] // Return first supported format
+}
+
+// Component automatically handles fallback
+<AudioRecorder
+  outputFormat="webm"  // Falls back automatically if unsupported
+  onError={(error) => {
+    console.error('Format error:', error.message)
+  }}
+/>
+```
+
+### Browser-Specific Recommendations
+
+**Chrome/Edge:**
+```tsx
+<AudioRecorder
+  outputFormat="webm"
+  bitrate={128000}
+  channels={1}
+/>
+```
+
+**Firefox:**
+```tsx
+<AudioRecorder
+  outputFormat="ogg"  // Or webm
+  bitrate={128000}
+  channels={1}
+/>
+```
+
+**Safari:**
+```tsx
+<AudioRecorder
+  outputFormat="mp4"  // Or wav
+  bitrate={192000}
+  channels={1}
+/>
+```
+
+**Cross-Browser (Recommended):**
+```tsx
+<AudioRecorder
+  outputFormat="webm"  // Best compatibility, auto-fallback
+  bitrate={128000}
+  channels={1}
+/>
+```
+
+---
+
+## Edge Cases & Error Handling
+
+### 1. Permission Denied
+
+**Scenario**: User denies microphone access or browser blocks permission.
+
+**Error**: `NotAllowedError: Permission denied`
+
+**Handling**:
+
+```tsx
+import { AudioRecorder } from '@clarity-chat/react'
+import { useState } from 'react'
+
+function PermissionHandling() {
+  const [permissionError, setPermissionError] = useState<string | null>(null)
+
+  const handleError = (error: Error) => {
+    if (error.name === 'NotAllowedError' || error.message.includes('Permission denied')) {
+      setPermissionError(
+        'Microphone access denied. Please allow microphone access in your browser settings.'
+      )
+
+      // Show browser-specific instructions
+      const isChrome = /Chrome/.test(navigator.userAgent)
+      const isFirefox = /Firefox/.test(navigator.userAgent)
+      const isSafari = /Safari/.test(navigator.userAgent) && !/Chrome/.test(navigator.userAgent)
+
+      if (isChrome) {
+        console.log('Chrome: Click the camera icon in the address bar')
+      } else if (isFirefox) {
+        console.log('Firefox: Click the microphone icon in the address bar')
+      } else if (isSafari) {
+        console.log('Safari: Safari → Settings → Websites → Microphone')
+      }
+    }
+  }
+
+  return (
+    <div>
+      <AudioRecorder
+        onStart={() => setPermissionError(null)}
+        onError={handleError}
+        onStop={(blob, url) => console.log('Recording saved')}
+      />
+
+      {permissionError && (
+        <div className="mt-4 p-4 bg-red-50 border border-red-200 rounded-lg">
+          <p className="text-sm text-red-700">{permissionError}</p>
+          <button
+            onClick={() => window.location.reload()}
+            className="mt-2 text-sm text-red-600 underline"
+          >
+            Try Again
+          </button>
+        </div>
+      )}
+    </div>
+  )
+}
+```
+
+**Prevention**:
+
+```tsx
+// Check permission before rendering
+async function checkMicrophonePermission(): Promise<PermissionState> {
+  try {
+    const result = await navigator.permissions.query({ name: 'microphone' as PermissionName })
+    return result.state // 'granted', 'denied', or 'prompt'
+  } catch (error) {
+    return 'prompt' // Fallback if Permissions API not supported
+  }
+}
+
+function RecorderWithPermissionCheck() {
+  const [permissionState, setPermissionState] = useState<PermissionState>('prompt')
+
+  useEffect(() => {
+    checkMicrophonePermission().then(setPermissionState)
+  }, [])
+
+  if (permissionState === 'denied') {
+    return (
+      <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+        <p>Microphone access is blocked. Please enable it in your browser settings.</p>
+      </div>
+    )
+  }
+
+  return <AudioRecorder onStop={handleStop} />
+}
+```
+
+### 2. Unsupported Format
+
+**Scenario**: Browser doesn't support the requested audio format.
+
+**Error**: `NotSupportedError: The MIME type is not supported`
+
+**Handling**:
+
+```tsx
+function FormatFallbackHandling() {
+  const [selectedFormat, setSelectedFormat] = useState<'webm' | 'mp4' | 'wav'>('webm')
+
+  // Detect best supported format
+  useEffect(() => {
+    const detectFormat = () => {
+      if (MediaRecorder.isTypeSupported('audio/webm;codecs=opus')) {
+        return 'webm'
+      } else if (MediaRecorder.isTypeSupported('audio/mp4')) {
+        return 'mp4'
+      } else {
+        return 'wav'
+      }
+    }
+
+    setSelectedFormat(detectFormat())
+  }, [])
+
+  const handleError = (error: Error) => {
+    if (error.name === 'NotSupportedError' || error.message.includes('MIME type')) {
+      console.error('Format not supported, falling back to:', selectedFormat)
+
+      // Try alternative formats
+      const fallbackFormats: Array<'webm' | 'mp4' | 'wav'> = ['webm', 'mp4', 'wav']
+      const nextFormat = fallbackFormats.find(fmt =>
+        fmt !== selectedFormat &&
+        MediaRecorder.isTypeSupported(`audio/${fmt}`)
+      )
+
+      if (nextFormat) {
+        setSelectedFormat(nextFormat)
+      }
+    }
+  }
+
+  return (
+    <div>
+      <p className="text-sm text-gray-600 mb-2">
+        Using format: {selectedFormat}
+      </p>
+      <AudioRecorder
+        outputFormat={selectedFormat}
+        onError={handleError}
+        onStop={(blob) => {
+          console.log(`Recording saved as ${blob.type}`)
+        }}
+      />
+    </div>
+  )
+}
+```
+
+**Component Built-in Fallback**:
+
+```tsx
+// AudioRecorder automatically handles format fallback
+<AudioRecorder
+  outputFormat="flac"  // Requested format
+  // If FLAC is not supported:
+  // 1. Tries audio/webm;codecs=opus
+  // 2. Falls back to audio/webm
+  // No error thrown, recording still works
+  onStop={(blob, url) => {
+    // blob.type will reflect actual format used
+    console.log('Actual format:', blob.type)
+  }}
+/>
+```
+
+### 3. Microphone Busy
+
+**Scenario**: Another application or tab is using the microphone.
+
+**Error**: `NotReadableError: Could not start audio source`
+
+**Handling**:
+
+```tsx
+function MicrophoneBusyHandling() {
+  const handleError = (error: Error) => {
+    if (error.name === 'NotReadableError' || error.message.includes('audio source')) {
+      // Microphone is busy
+      alert(
+        'Microphone is currently in use by another application. ' +
+        'Please close other apps using the microphone and try again.'
+      )
+
+      // Check if mic is available
+      navigator.mediaDevices.enumerateDevices().then(devices => {
+        const microphones = devices.filter(d => d.kind === 'audioinput')
+        console.log('Available microphones:', microphones)
+
+        if (microphones.length === 0) {
+          console.error('No microphone devices found')
+        }
+      })
+    }
+  }
+
+  return (
+    <AudioRecorder
+      onError={handleError}
+      onStop={(blob, url) => console.log('Recording saved')}
+    />
+  )
+}
+```
+
+### 4. Network/HTTPS Error
+
+**Scenario**: Component used on non-HTTPS site (except localhost).
+
+**Error**: `SecurityError: Only secure origins are allowed`
+
+**Handling**:
+
+```tsx
+function SecureContextCheck() {
+  const [isSecure, setIsSecure] = useState(true)
+
+  useEffect(() => {
+    // Check if running in secure context
+    const secure = window.isSecureContext || window.location.protocol === 'https:'
+    setIsSecure(secure)
+  }, [])
+
+  if (!isSecure) {
+    return (
+      <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
+        <h3 className="font-semibold text-red-800">HTTPS Required</h3>
+        <p className="text-sm text-red-700 mt-2">
+          Audio recording requires a secure context (HTTPS).
+          Please access this page over HTTPS.
+        </p>
+        <p className="text-xs text-red-600 mt-2">
+          Current protocol: {window.location.protocol}
+        </p>
+      </div>
+    )
+  }
+
+  return <AudioRecorder onStop={handleStop} />
+}
+```
+
+### 5. Browser Not Supported
+
+**Scenario**: Old browser without MediaRecorder API support.
+
+**Handling**:
+
+```tsx
+function BrowserSupportCheck() {
+  const [isSupported, setIsSupported] = useState(true)
+  const [browserInfo, setBrowserInfo] = useState({ name: '', version: '' })
+
+  useEffect(() => {
+    const supported =
+      typeof window !== 'undefined' &&
+      'mediaDevices' in navigator &&
+      'MediaRecorder' in window
+
+    setIsSupported(supported)
+
+    // Detect browser
+    const ua = navigator.userAgent
+    let name = 'Unknown'
+    let version = ''
+
+    if (ua.includes('Chrome')) {
+      name = 'Chrome'
+      version = ua.match(/Chrome\/(\d+)/)?.[1] || ''
+    } else if (ua.includes('Firefox')) {
+      name = 'Firefox'
+      version = ua.match(/Firefox\/(\d+)/)?.[1] || ''
+    } else if (ua.includes('Safari') && !ua.includes('Chrome')) {
+      name = 'Safari'
+      version = ua.match(/Version\/(\d+)/)?.[1] || ''
+    }
+
+    setBrowserInfo({ name, version })
+  }, [])
+
+  if (!isSupported) {
+    return (
+      <div className="p-4 bg-orange-50 border border-orange-200 rounded-lg">
+        <h3 className="font-semibold text-orange-800">Browser Not Supported</h3>
+        <p className="text-sm text-orange-700 mt-2">
+          Your browser ({browserInfo.name} {browserInfo.version}) doesn't support audio recording.
+        </p>
+        <p className="text-sm text-orange-700 mt-2">
+          Please update to a modern browser:
+        </p>
+        <ul className="text-sm text-orange-600 mt-2 ml-4 list-disc">
+          <li>Chrome 49+</li>
+          <li>Firefox 29+</li>
+          <li>Safari 14.1+</li>
+          <li>Edge 79+</li>
+        </ul>
+      </div>
+    )
+  }
+
+  return <AudioRecorder onStop={handleStop} />
+}
+```
+
+### 6. File Size Too Large
+
+**Scenario**: Recording produces file too large for upload or storage.
+
+**Handling**:
+
+```tsx
+function FileSizeHandling() {
+  const MAX_SIZE = 10 * 1024 * 1024 // 10 MB
+
+  const handleStop = (blob: Blob, url: string) => {
+    if (blob.size > MAX_SIZE) {
+      alert(
+        `Recording is too large (${(blob.size / 1024 / 1024).toFixed(2)} MB). ` +
+        `Maximum size is ${MAX_SIZE / 1024 / 1024} MB. ` +
+        `Please record a shorter message or reduce the bitrate.`
+      )
+      return
+    }
+
+    // Upload or save
+    uploadAudio(blob)
+  }
+
+  return (
+    <div>
+      <AudioRecorder
+        maxDuration={300}     // Limit to 5 minutes
+        bitrate={64000}       // Use lower bitrate (64 kbps)
+        channels={1}          // Mono
+        outputFormat="webm"   // Good compression
+        onStop={handleStop}
+      />
+      <p className="text-xs text-gray-500 mt-2">
+        Maximum file size: {MAX_SIZE / 1024 / 1024} MB
+      </p>
+    </div>
+  )
+}
+```
+
+### 7. Voice Activity Detection Issues
+
+**Scenario**: Recording pauses unexpectedly during speech.
+
+**Handling**:
+
+```tsx
+function VADTuning() {
+  const [threshold, setThreshold] = useState(0.01)
+  const [isPausing, setIsPausing] = useState(false)
+
+  const handleAmplitudeChange = (amplitude: number) => {
+    // Monitor if amplitude is near threshold
+    if (amplitude < threshold + 0.01) {
+      setIsPausing(true)
+    } else {
+      setIsPausing(false)
+    }
+  }
+
+  return (
+    <div>
+      <div className="mb-4">
+        <label className="text-sm font-medium">
+          Silence Threshold: {threshold.toFixed(3)}
+        </label>
+        <input
+          type="range"
+          min="0.001"
+          max="0.1"
+          step="0.001"
+          value={threshold}
+          onChange={(e) => setThreshold(parseFloat(e.target.value))}
+          className="w-full"
+        />
+        <p className="text-xs text-gray-500">
+          Lower = more sensitive (pauses less often)
+        </p>
+      </div>
+
+      <AudioRecorder
+        voiceActivityDetection={true}
+        silenceThreshold={threshold}
+        enableNoiseCancellation={true}  // Helps with false pauses
+        enableAutoGainControl={true}    // Normalizes volume
+        onAmplitudeChange={handleAmplitudeChange}
+        onStop={(blob, url) => console.log('Recording saved')}
+      />
+
+      {isPausing && (
+        <div className="mt-2 text-xs text-amber-600">
+          ⚠️ Audio near silence threshold - may pause soon
+        </div>
+      )}
+    </div>
+  )
+}
+```
+
+---
+
+## Accessibility Features
+
+### WCAG 2.1 AA Compliance
+
+The AudioRecorder component meets **WCAG 2.1 AA** standards with the following features:
+
+### 1. Keyboard Navigation
+
+Full keyboard support for all interactive elements:
+
+```tsx
+// All controls are keyboard accessible
+<AudioRecorder
+  showControls={true}
+  onStop={(blob, url) => console.log('Stopped via keyboard')}
+/>
+```
+
+**Keyboard Shortcuts**:
+- **Tab**: Navigate to next control
+- **Shift + Tab**: Navigate to previous control
+- **Enter** or **Space**: Activate focused button (Start/Stop/Pause/Resume)
+- **Escape**: Stop recording (when any control is focused)
+
+**Implementation**:
+
+```tsx
+// Component automatically handles keyboard events
+<button
+  onClick={handleStart}
+  onKeyDown={(e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault()
+      handleStart()
+    }
+  }}
+  aria-label="Start recording"
+>
+  Start Recording
+</button>
+```
+
+### 2. ARIA Labels & Attributes
+
+Comprehensive ARIA support for screen readers:
+
+```tsx
+// Example ARIA implementation in component
+<div
+  className="audio-recorder"
+  role="region"
+  aria-label="Audio recorder controls"
+>
+  {/* Start Button */}
+  <button
+    onClick={startRecording}
+    aria-label="Start recording"
+    aria-describedby="recorder-instructions"
+  >
+    <Mic className="w-5 h-5" aria-hidden="true" />
+    Start Recording
+  </button>
+
+  {/* Pause Button */}
+  <button
+    onClick={pauseRecording}
+    aria-label="Pause recording"
+    aria-pressed={isPaused}
+  >
+    <Pause className="w-4 h-4" aria-hidden="true" />
+    Pause
+  </button>
+
+  {/* Stop Button */}
+  <button
+    onClick={stopRecording}
+    aria-label="Stop recording"
+    aria-disabled={isStopDisabled}
+    disabled={isStopDisabled}
+    title={isStopDisabled ? `Record at least ${minDuration} seconds` : undefined}
+  >
+    <StopCircle className="w-4 h-4" aria-hidden="true" />
+    Stop
+  </button>
+
+  {/* Live Region for Status */}
+  <div role="status" aria-live="polite" className="sr-only">
+    {isRecording && !isPaused && `Recording: ${formatDuration(duration)}`}
+    {isPaused && 'Recording paused'}
+    {!isRecording && 'Ready to record'}
+  </div>
+
+  {/* Instructions */}
+  <div id="recorder-instructions" className="sr-only">
+    Press Enter or Space to start recording. Use Tab to navigate controls.
+  </div>
+</div>
+```
+
+### 3. Screen Reader Announcements
+
+Live status updates for screen readers:
+
+```tsx
+function AccessibleRecorder() {
+  const [status, setStatus] = useState('Ready to record')
+
+  return (
+    <div>
+      <AudioRecorder
+        onStart={() => setStatus('Recording started')}
+        onPause={() => setStatus('Recording paused')}
+        onResume={() => setStatus('Recording resumed')}
+        onStop={() => setStatus('Recording stopped')}
+        onError={(error) => setStatus(`Error: ${error.message}`)}
+      />
+
+      {/* Screen reader announcements */}
+      <div
+        role="status"
+        aria-live="polite"
+        aria-atomic="true"
+        className="sr-only"
+      >
+        {status}
+      </div>
+    </div>
+  )
+}
+```
+
+### 4. Color Contrast
+
+All UI elements meet **WCAG AA** contrast requirements:
+
+- **Text**: 4.5:1 minimum contrast ratio
+- **Interactive elements**: 3:1 minimum contrast ratio
+- **Focus indicators**: 3:1 minimum contrast ratio
+
+```css
+/* Example contrast-compliant colors */
+.recording-button {
+  background: hsl(var(--brand-500)); /* 4.5:1 on white */
+  color: white;
+}
+
+.pause-button {
+  background: hsl(var(--amber-500) / 0.1);
+  color: hsl(var(--amber-700)); /* 4.5:1 contrast */
+  border: 1px solid hsl(var(--amber-300));
+}
+
+/* Focus indicator */
+.button:focus-visible {
+  outline: 2px solid hsl(var(--brand-500));
+  outline-offset: 2px;
+  /* 3:1 contrast with background */
+}
+```
+
+### 5. Focus Management
+
+Clear visual focus indicators:
+
+```tsx
+// Automatic focus management in component
+<button
+  className="
+    px-4 py-2 rounded-lg
+    focus:outline-none
+    focus-visible:ring-2
+    focus-visible:ring-brand-500
+    focus-visible:ring-offset-2
+    transition-shadow
+  "
+  aria-label="Start recording"
+>
+  Start Recording
+</button>
+```
+
+### 6. Reduced Motion Support
+
+Respects `prefers-reduced-motion` preference:
+
+```tsx
+function AccessibleAnimations() {
+  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+
+  return (
+    <AudioRecorder
+      showWaveform={!prefersReducedMotion}  // Disable animations if preferred
+      onStop={(blob, url) => console.log('Recording saved')}
+    />
+  )
+}
+```
+
+### 7. Error Messages
+
+Clear, descriptive error messages:
+
+```tsx
+function AccessibleErrors() {
+  const [errorMessage, setErrorMessage] = useState<string | null>(null)
+
+  const handleError = (error: Error) => {
+    let userMessage = 'An error occurred. Please try again.'
+
+    if (error.name === 'NotAllowedError') {
+      userMessage = 'Microphone access denied. Please allow microphone access in your browser settings to continue.'
+    } else if (error.name === 'NotFoundError') {
+      userMessage = 'No microphone found. Please connect a microphone and try again.'
+    } else if (error.name === 'NotReadableError') {
+      userMessage = 'Microphone is busy. Please close other applications using the microphone.'
+    }
+
+    setErrorMessage(userMessage)
+  }
+
+  return (
+    <div>
+      <AudioRecorder
+        onError={handleError}
+        onStop={(blob, url) => {
+          setErrorMessage(null)
+          console.log('Recording saved')
+        }}
+      />
+
+      {/* Accessible error display */}
+      {errorMessage && (
+        <div
+          role="alert"
+          aria-live="assertive"
+          className="mt-4 p-4 bg-red-50 border-l-4 border-red-500 rounded"
+        >
+          <p className="font-semibold text-red-800">Recording Error</p>
+          <p className="text-sm text-red-700 mt-1">{errorMessage}</p>
+        </div>
+      )}
+    </div>
+  )
+}
+```
+
+### 8. Custom Labels
+
+Provide custom ARIA labels for internationalization:
+
+```tsx
+function LocalizedRecorder() {
+  const t = useTranslation() // Your i18n hook
+
+  return (
+    <div aria-label={t('audioRecorder.label')}>
+      <AudioRecorder
+        onStart={() => announceToScreenReader(t('audioRecorder.started'))}
+        onStop={() => announceToScreenReader(t('audioRecorder.stopped'))}
+      />
+
+      {/* Hidden live region for announcements */}
+      <div role="status" aria-live="polite" className="sr-only" id="sr-announcer" />
+    </div>
+  )
+}
+
+function announceToScreenReader(message: string) {
+  const announcer = document.getElementById('sr-announcer')
+  if (announcer) {
+    announcer.textContent = message
+    setTimeout(() => { announcer.textContent = '' }, 1000)
+  }
+}
+```
+
+---
+
+## Performance Optimization
+
+### 1. Audio Format Selection
+
+Choose formats based on use case and file size requirements:
+
+```tsx
+// Voice Messages (Smallest Size)
+<AudioRecorder
+  outputFormat="webm"    // Best compression
+  bitrate={64000}        // 64 kbps
+  channels={1}           // Mono
+  sampleRate={16000}     // VoIP quality
+  enableNoiseCancellation={true}
+  onStop={(blob) => {
+    // Typical size: ~500 KB per minute
+    console.log('Voice message:', blob.size / 1024, 'KB')
+  }}
+/>
+
+// Podcast Recording (Balanced)
+<AudioRecorder
+  outputFormat="webm"
+  bitrate={128000}       // 128 kbps
+  channels={2}           // Stereo
+  sampleRate={44100}     // CD quality
+  enableAutoGainControl={true}
+  onStop={(blob) => {
+    // Typical size: ~1 MB per minute
+    console.log('Podcast:', blob.size / 1024 / 1024, 'MB')
+  }}
+/>
+
+// Music Recording (Highest Quality)
+<AudioRecorder
+  outputFormat="wav"
+  bitrate={256000}       // 256 kbps
+  channels={2}           // Stereo
+  sampleRate={96000}     // High-resolution
+  enableNoiseCancellation={false}  // Preserve original audio
+  onStop={(blob) => {
+    // Typical size: ~10 MB per minute
+    console.log('Music:', blob.size / 1024 / 1024, 'MB')
+  }}
+/>
+```
+
+**File Size Comparison Table**:
+
+| Format | Bitrate | Channels | Sample Rate | Size/Minute | Use Case |
+|--------|---------|----------|-------------|-------------|----------|
+| WebM | 64 kbps | Mono | 16 kHz | ~480 KB | Voice messages, transcription |
+| WebM | 128 kbps | Mono | 44.1 kHz | ~960 KB | Voice recording, podcasts |
+| WebM | 192 kbps | Stereo | 48 kHz | ~1.4 MB | Music, high-quality voice |
+| WAV | 256 kbps | Stereo | 96 kHz | ~10 MB | Professional audio, archival |
+
+### 2. Buffer Size Optimization
+
+Optimize buffer sizes for different scenarios:
+
+```tsx
+function OptimizedBuffering() {
+  return (
+    <AudioRecorder
+      // For real-time processing (transcription)
+      onDataAvailable={(chunk) => {
+        // Small chunks for immediate processing
+        sendChunkToTranscriptionAPI(chunk)
+      }}
+
+      // For file upload
+      onStop={async (blob) => {
+        // Single blob for efficient upload
+        await uploadFile(blob)
+      }}
+    />
+  )
+}
+```
+
+### 3. Memory Management
+
+Handle memory efficiently for long recordings:
+
+```tsx
+function MemoryEfficientRecording() {
+  const uploadedChunks = useRef<string[]>([])
+  const [uploadProgress, setUploadProgress] = useState(0)
+
+  const handleDataAvailable = async (chunk: Blob) => {
+    // Upload chunks incrementally instead of storing in memory
+    try {
+      const chunkId = await uploadChunk(chunk)
+      uploadedChunks.current.push(chunkId)
+      setUploadProgress(uploadedChunks.current.length)
+    } catch (error) {
+      console.error('Chunk upload failed:', error)
+    }
+  }
+
+  const handleStop = async (blob: Blob, url: string) => {
+    // Finalize upload with all chunk IDs
+    await finalizeRecording(uploadedChunks.current)
+
+    // Clean up object URL immediately
+    URL.revokeObjectURL(url)
+
+    // Clear chunk references
+    uploadedChunks.current = []
+  }
+
+  return (
+    <div>
+      <AudioRecorder
+        maxDuration={3600}  // 1 hour
+        onDataAvailable={handleDataAvailable}
+        onStop={handleStop}
+      />
+      {uploadProgress > 0 && (
+        <p className="text-sm text-gray-600">
+          Uploaded {uploadProgress} chunks
+        </p>
+      )}
+    </div>
+  )
+}
+
+async function uploadChunk(chunk: Blob): Promise<string> {
+  const formData = new FormData()
+  formData.append('chunk', chunk)
+
+  const response = await fetch('/api/upload-chunk', {
+    method: 'POST',
+    body: formData,
+  })
+
+  const { chunkId } = await response.json()
+  return chunkId
+}
+```
+
+### 4. Disable Unnecessary Features
+
+Improve performance by disabling unused features:
+
+```tsx
+// Minimal UI (Best Performance)
+<AudioRecorder
+  showWaveform={false}        // Disable animation
+  showAmplitudeMeter={false}  // Disable meter
+  onAmplitudeChange={undefined}  // No amplitude callbacks
+  onDurationChange={undefined}   // No duration callbacks
+  showControls={true}
+  onStop={(blob, url) => {
+    uploadFile(blob)
+  }}
+/>
+
+// Custom UI with Minimal Processing
+<AudioRecorder
+  showControls={false}  // Hide built-in UI
+  showWaveform={false}
+  showDuration={false}
+  // Implement custom minimal UI
+/>
+```
+
+### 5. Lazy Loading
+
+Lazy load the component when needed:
+
+```tsx
+import { lazy, Suspense } from 'react'
+
+const AudioRecorder = lazy(() =>
+  import('@clarity-chat/react').then(mod => ({ default: mod.AudioRecorder }))
+)
+
+function LazyRecorder() {
+  const [showRecorder, setShowRecorder] = useState(false)
+
+  return (
+    <div>
+      {!showRecorder && (
+        <button onClick={() => setShowRecorder(true)}>
+          Start Recording
+        </button>
+      )}
+
+      {showRecorder && (
+        <Suspense fallback={<div>Loading recorder...</div>}>
+          <AudioRecorder
+            autoStart={true}
+            onStop={(blob, url) => {
+              uploadFile(blob)
+              setShowRecorder(false)
+            }}
+          />
+        </Suspense>
+      )}
+    </div>
+  )
+}
+```
+
+### 6. Throttle Callbacks
+
+Throttle high-frequency callbacks:
+
+```tsx
+import { useCallback, useRef } from 'react'
+
+function ThrottledCallbacks() {
+  const lastAmplitudeUpdate = useRef(0)
+  const lastDurationUpdate = useRef(0)
+
+  const handleAmplitudeChange = useCallback((amplitude: number) => {
+    const now = Date.now()
+    // Update at most once every 100ms
+    if (now - lastAmplitudeUpdate.current > 100) {
+      updateVisualization(amplitude)
+      lastAmplitudeUpdate.current = now
+    }
+  }, [])
+
+  const handleDurationChange = useCallback((duration: number) => {
+    const now = Date.now()
+    // Update at most once every 500ms
+    if (now - lastDurationUpdate.current > 500) {
+      updateUI(duration)
+      lastDurationUpdate.current = now
+    }
+  }, [])
+
+  return (
+    <AudioRecorder
+      onAmplitudeChange={handleAmplitudeChange}
+      onDurationChange={handleDurationChange}
+      onStop={(blob, url) => console.log('Saved')}
+    />
+  )
+}
+```
+
+### 7. Audio Processing Trade-offs
+
+Balance quality vs performance:
+
+```tsx
+// Maximum Quality (Higher CPU Usage)
+<AudioRecorder
+  enableNoiseCancellation={true}
+  enableEchoCancellation={true}
+  enableAutoGainControl={true}
+  noiseSuppression={true}
+  showWaveform={true}
+  showAmplitudeMeter={true}
+  voiceActivityDetection={true}
+/>
+
+// Balanced (Recommended)
+<AudioRecorder
+  enableNoiseCancellation={true}
+  enableEchoCancellation={false}
+  enableAutoGainControl={false}
+  showWaveform={true}
+  showAmplitudeMeter={false}
+/>
+
+// Minimal Processing (Lowest CPU Usage)
+<AudioRecorder
+  enableNoiseCancellation={false}
+  enableEchoCancellation={false}
+  enableAutoGainControl={false}
+  showWaveform={false}
+  showAmplitudeMeter={false}
+/>
+```
+
+**Performance Comparison**:
+
+| Configuration | CPU Usage | Battery Impact | Audio Quality | UI Features |
+|---------------|-----------|----------------|---------------|-------------|
+| Maximum | High | High | Best | Full |
+| Balanced | Medium | Medium | Good | Most |
+| Minimal | Low | Low | Basic | None |
+
+### 8. Mobile Optimization
+
+Optimize for mobile devices:
+
+```tsx
+function MobileOptimizedRecorder() {
+  const [isMobile, setIsMobile] = useState(false)
+
+  useEffect(() => {
+    setIsMobile(/Android|iPhone|iPad|iPod/i.test(navigator.userAgent))
+  }, [])
+
+  return (
+    <AudioRecorder
+      // Lower bitrate on mobile to save battery
+      bitrate={isMobile ? 64000 : 128000}
+      // Disable heavy features on mobile
+      showWaveform={!isMobile}
+      showAmplitudeMeter={!isMobile}
+      // Use hardware audio processing on mobile
+      enableNoiseCancellation={isMobile}
+      enableEchoCancellation={isMobile}
+      onStop={(blob, url) => {
+        console.log(`Mobile recording: ${blob.size / 1024} KB`)
+      }}
+    />
+  )
+}
+```
+
+---
+
+## Working Code Examples
+
+### Example 1: Basic Voice Message Recording
+
+Simple voice message recorder with upload:
+
+```tsx
+import { AudioRecorder } from '@clarity-chat/react'
+import { useState } from 'react'
+
+function VoiceMessageRecorder() {
+  const [isUploading, setIsUploading] = useState(false)
+  const [audioUrl, setAudioUrl] = useState<string | null>(null)
+
+  const handleStop = async (audioBlob: Blob, url: string) => {
+    setAudioUrl(url)
+    setIsUploading(true)
+
+    try {
+      const formData = new FormData()
+      formData.append('audio', audioBlob, 'voice-message.webm')
+
+      const response = await fetch('/api/upload-audio', {
+        method: 'POST',
+        body: formData,
+      })
+
+      if (!response.ok) throw new Error('Upload failed')
+
+      const { fileUrl } = await response.json()
+      console.log('Uploaded to:', fileUrl)
+
+      // Clean up object URL
+      URL.revokeObjectURL(url)
+    } catch (error) {
+      console.error('Upload error:', error)
+      alert('Failed to upload audio. Please try again.')
+    } finally {
+      setIsUploading(false)
+    }
+  }
+
+  const handleError = (error: Error) => {
+    console.error('Recording error:', error)
+    if (error.message.includes('Permission denied')) {
+      alert('Please allow microphone access to record voice messages.')
+    }
+  }
+
+  return (
+    <div className="max-w-md mx-auto p-4">
+      <h2 className="text-xl font-semibold mb-4">Record Voice Message</h2>
+
+      <AudioRecorder
+        maxDuration={60}              // 1 minute max
+        minDuration={1}               // 1 second min
+        outputFormat="webm"
+        bitrate={64000}               // 64 kbps for voice
+        channels={1}                  // Mono
+        enableNoiseCancellation={true}
+        enableEchoCancellation={true}
+        showWaveform={true}
+        showDuration={true}
+        onStop={handleStop}
+        onError={handleError}
+      />
+
+      {isUploading && (
+        <div className="mt-4 text-center">
+          <p className="text-sm text-gray-600">Uploading...</p>
+        </div>
+      )}
+
+      {audioUrl && !isUploading && (
+        <div className="mt-4">
+          <p className="text-sm text-gray-600 mb-2">Preview:</p>
+          <audio controls src={audioUrl} className="w-full" />
+        </div>
+      )}
+    </div>
+  )
+}
+
+export default VoiceMessageRecorder
+```
+
+### Example 2: Podcast Recording with Pause/Resume
+
+Professional podcast recorder with chapter markers:
+
+```tsx
+import { AudioRecorder } from '@clarity-chat/react'
+import { useState } from 'react'
+
+interface Chapter {
+  timestamp: number
+  title: string
+}
+
+function PodcastRecorder() {
+  const [chapters, setChapters] = useState<Chapter[]>([])
+  const [currentDuration, setCurrentDuration] = useState(0)
+  const [chapterTitle, setChapterTitle] = useState('')
+
+  const addChapter = () => {
+    if (!chapterTitle.trim()) return
+
+    setChapters([
+      ...chapters,
+      {
+        timestamp: currentDuration,
+        title: chapterTitle,
+      },
+    ])
+    setChapterTitle('')
+  }
+
+  const formatTime = (seconds: number) => {
+    const h = Math.floor(seconds / 3600)
+    const m = Math.floor((seconds % 3600) / 60)
+    const s = seconds % 60
+    return `${h}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`
+  }
+
+  const handleStop = async (audioBlob: Blob, audioUrl: string) => {
+    // Save recording with chapters
+    const metadata = {
+      duration: currentDuration,
+      chapters: chapters,
+      fileSize: audioBlob.size,
+    }
+
+    console.log('Podcast recorded:', metadata)
+
+    // Upload to server
+    const formData = new FormData()
+    formData.append('audio', audioBlob, 'podcast-episode.webm')
+    formData.append('metadata', JSON.stringify(metadata))
+
+    try {
+      const response = await fetch('/api/save-podcast', {
+        method: 'POST',
+        body: formData,
+      })
+      const data = await response.json()
+      console.log('Podcast saved:', data.episodeId)
+    } catch (error) {
+      console.error('Save error:', error)
+    }
+  }
+
+  return (
+    <div className="max-w-2xl mx-auto p-6">
+      <h2 className="text-2xl font-bold mb-6">Podcast Recorder</h2>
+
+      <div className="mb-6">
+        <AudioRecorder
+          maxDuration={7200}            // 2 hours
+          minDuration={3}
+          outputFormat="webm"
+          bitrate={192000}              // 192 kbps for quality
+          channels={2}                  // Stereo
+          sampleRate={48000}
+          enableAutoGainControl={true}
+          pausable={true}
+          showWaveform={true}
+          showDuration={true}
+          showAmplitudeMeter={true}
+          onDurationChange={setCurrentDuration}
+          onStop={handleStop}
+          theme="dark"
+        />
+      </div>
+
+      {/* Chapter Markers */}
+      <div className="mb-6">
+        <h3 className="text-lg font-semibold mb-3">Chapter Markers</h3>
+
+        <div className="flex gap-2 mb-4">
+          <input
+            type="text"
+            value={chapterTitle}
+            onChange={(e) => setChapterTitle(e.target.value)}
+            placeholder="Chapter title..."
+            className="flex-1 px-3 py-2 border rounded"
+            onKeyPress={(e) => e.key === 'Enter' && addChapter()}
+          />
+          <button
+            onClick={addChapter}
+            className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+          >
+            Add Chapter
+          </button>
+        </div>
+
+        {chapters.length > 0 && (
+          <ul className="space-y-2">
+            {chapters.map((chapter, index) => (
+              <li key={index} className="flex items-center gap-3 p-2 bg-gray-50 rounded">
+                <span className="text-sm font-mono text-gray-600">
+                  {formatTime(chapter.timestamp)}
+                </span>
+                <span className="flex-1">{chapter.title}</span>
+                <button
+                  onClick={() => setChapters(chapters.filter((_, i) => i !== index))}
+                  className="text-red-500 text-sm hover:text-red-700"
+                >
+                  Remove
+                </button>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+
+      {/* Recording Info */}
+      <div className="p-4 bg-gray-50 rounded">
+        <h4 className="font-semibold mb-2">Recording Info</h4>
+        <dl className="text-sm space-y-1">
+          <div className="flex justify-between">
+            <dt>Duration:</dt>
+            <dd className="font-mono">{formatTime(currentDuration)}</dd>
+          </div>
+          <div className="flex justify-between">
+            <dt>Chapters:</dt>
+            <dd>{chapters.length}</dd>
+          </div>
+          <div className="flex justify-between">
+            <dt>Format:</dt>
+            <dd>WebM (192 kbps, Stereo)</dd>
+          </div>
+        </dl>
+      </div>
+    </div>
+  )
+}
+
+export default PodcastRecorder
+```
+
+### Example 3: Speech-to-Text Transcription
+
+Real-time transcription with voice activity detection:
+
+```tsx
+import { AudioRecorder } from '@clarity-chat/react'
+import { useState, useEffect } from 'react'
+
+function TranscriptionRecorder() {
+  const [transcript, setTranscript] = useState<string[]>([])
+  const [isTranscribing, setIsTranscribing] = useState(false)
+  const [silenceDetected, setSilenceDetected] = useState(false)
+
+  const handleDataAvailable = async (chunk: Blob) => {
+    // Send chunk to transcription API in real-time
+    try {
+      const formData = new FormData()
+      formData.append('audio', chunk)
+
+      const response = await fetch('/api/transcribe-chunk', {
+        method: 'POST',
+        body: formData,
+      })
+
+      const { text } = await response.json()
+
+      if (text.trim()) {
+        setTranscript(prev => [...prev, text])
+      }
+    } catch (error) {
+      console.error('Transcription error:', error)
+    }
+  }
+
+  const handleAmplitudeChange = (amplitude: number) => {
+    // Visual feedback for silence detection
+    setSilenceDetected(amplitude < 0.02)
+  }
+
+  const handleStop = async (audioBlob: Blob, audioUrl: string) => {
+    setIsTranscribing(true)
+
+    // Final transcription pass
+    const formData = new FormData()
+    formData.append('audio', audioBlob)
+
+    try {
+      const response = await fetch('/api/transcribe-final', {
+        method: 'POST',
+        body: formData,
+      })
+
+      const { fullTranscript } = await response.json()
+      setTranscript([fullTranscript])
+    } catch (error) {
+      console.error('Final transcription error:', error)
+    } finally {
+      setIsTranscribing(false)
+    }
+  }
+
+  const copyTranscript = () => {
+    const text = transcript.join(' ')
+    navigator.clipboard.writeText(text)
+  }
+
+  return (
+    <div className="max-w-3xl mx-auto p-6">
+      <h2 className="text-2xl font-bold mb-6">Speech-to-Text Transcription</h2>
+
+      <div className="mb-6">
+        <AudioRecorder
+          maxDuration={300}             // 5 minutes
+          outputFormat="webm"
+          bitrate={128000}
+          channels={1}
+          sampleRate={16000}            // Optimized for speech
+          enableNoiseCancellation={true}
+          enableEchoCancellation={true}
+          voiceActivityDetection={true}
+          silenceThreshold={0.02}
+          showWaveform={true}
+          showAmplitudeMeter={true}
+          onDataAvailable={handleDataAvailable}
+          onAmplitudeChange={handleAmplitudeChange}
+          onStop={handleStop}
+        />
+
+        {silenceDetected && (
+          <div className="mt-2 text-sm text-amber-600">
+            🔇 Silence detected - recording paused
+          </div>
+        )}
+      </div>
+
+      {/* Transcript Display */}
+      <div className="border rounded-lg p-4 bg-white shadow">
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-lg font-semibold">Transcript</h3>
+          <button
+            onClick={copyTranscript}
+            disabled={transcript.length === 0}
+            className="px-3 py-1 text-sm bg-blue-500 text-white rounded hover:bg-blue-600 disabled:opacity-50"
+          >
+            Copy
+          </button>
+        </div>
+
+        {isTranscribing && (
+          <div className="text-center py-8">
+            <div className="inline-block animate-spin rounded-full h-8 w-8 border-4 border-gray-200 border-t-blue-500"></div>
+            <p className="mt-2 text-sm text-gray-600">Finalizing transcription...</p>
+          </div>
+        )}
+
+        {!isTranscribing && transcript.length === 0 && (
+          <p className="text-gray-500 italic">Start recording to see transcript...</p>
+        )}
+
+        {!isTranscribing && transcript.length > 0 && (
+          <div className="space-y-2">
+            {transcript.map((text, index) => (
+              <p key={index} className="text-gray-800">
+                {text}
+              </p>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Word Count */}
+      {transcript.length > 0 && (
+        <div className="mt-4 text-sm text-gray-600">
+          Word count: {transcript.join(' ').split(/\s+/).length}
+        </div>
+      )}
+    </div>
+  )
+}
+
+export default TranscriptionRecorder
+```
+
+### Example 4: Multi-Format Recorder with Quality Selection
+
+Advanced recorder with format and quality options:
+
+```tsx
+import { AudioRecorder } from '@clarity-chat/react'
+import { useState } from 'react'
+
+type QualityPreset = 'low' | 'medium' | 'high' | 'professional'
+type FormatOption = 'webm' | 'mp4' | 'wav'
+
+interface QualitySettings {
+  bitrate: number
+  sampleRate: number
+  channels: 1 | 2
+  description: string
+  estimatedSize: string
+}
+
+const QUALITY_PRESETS: Record<QualityPreset, QualitySettings> = {
+  low: {
+    bitrate: 64000,
+    sampleRate: 16000,
+    channels: 1,
+    description: 'Voice messages, minimal quality',
+    estimatedSize: '~500 KB/min',
+  },
+  medium: {
+    bitrate: 128000,
+    sampleRate: 44100,
+    channels: 1,
+    description: 'Voice recording, standard quality',
+    estimatedSize: '~1 MB/min',
+  },
+  high: {
+    bitrate: 192000,
+    sampleRate: 48000,
+    channels: 2,
+    description: 'Music, high quality',
+    estimatedSize: '~1.5 MB/min',
+  },
+  professional: {
+    bitrate: 256000,
+    sampleRate: 96000,
+    channels: 2,
+    description: 'Professional audio, highest quality',
+    estimatedSize: '~2 MB/min',
+  },
+}
+
+function MultiFormatRecorder() {
+  const [quality, setQuality] = useState<QualityPreset>('medium')
+  const [format, setFormat] = useState<FormatOption>('webm')
+  const [recordingInfo, setRecordingInfo] = useState<{
+    duration: number
+    size: number
+  } | null>(null)
+
+  const settings = QUALITY_PRESETS[quality]
+
+  const handleStop = (audioBlob: Blob, audioUrl: string) => {
+    setRecordingInfo({
+      duration: 0, // Updated via onDurationChange
+      size: audioBlob.size,
+    })
+
+    console.log('Recording complete:', {
+      format: audioBlob.type,
+      size: audioBlob.size,
+      quality,
+    })
+
+    // Download file
+    const a = document.createElement('a')
+    a.href = audioUrl
+    a.download = `recording-${quality}.${format}`
+    a.click()
+
+    // Clean up
+    setTimeout(() => URL.revokeObjectURL(audioUrl), 100)
+  }
+
+  return (
+    <div className="max-w-2xl mx-auto p-6">
+      <h2 className="text-2xl font-bold mb-6">Multi-Format Audio Recorder</h2>
+
+      {/* Settings Panel */}
+      <div className="mb-6 p-4 bg-gray-50 rounded-lg">
+        <h3 className="font-semibold mb-4">Recording Settings</h3>
+
+        {/* Format Selection */}
+        <div className="mb-4">
+          <label className="block text-sm font-medium mb-2">Format</label>
+          <div className="flex gap-2">
+            {(['webm', 'mp4', 'wav'] as FormatOption[]).map((fmt) => (
+              <button
+                key={fmt}
+                onClick={() => setFormat(fmt)}
+                className={`
+                  px-4 py-2 rounded border
+                  ${format === fmt
+                    ? 'bg-blue-500 text-white border-blue-500'
+                    : 'bg-white text-gray-700 border-gray-300 hover:border-blue-500'
+                  }
+                `}
+              >
+                {fmt.toUpperCase()}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Quality Selection */}
+        <div>
+          <label className="block text-sm font-medium mb-2">Quality</label>
+          <div className="space-y-2">
+            {(Object.keys(QUALITY_PRESETS) as QualityPreset[]).map((preset) => {
+              const presetSettings = QUALITY_PRESETS[preset]
+              return (
+                <label key={preset} className="flex items-start gap-3 cursor-pointer">
+                  <input
+                    type="radio"
+                    name="quality"
+                    value={preset}
+                    checked={quality === preset}
+                    onChange={(e) => setQuality(e.target.value as QualityPreset)}
+                    className="mt-1"
+                  />
+                  <div>
+                    <div className="font-medium capitalize">{preset}</div>
+                    <div className="text-sm text-gray-600">
+                      {presetSettings.description}
+                    </div>
+                    <div className="text-xs text-gray-500">
+                      {presetSettings.bitrate / 1000} kbps, {presetSettings.sampleRate / 1000} kHz,
+                      {presetSettings.channels === 1 ? ' Mono' : ' Stereo'} • {presetSettings.estimatedSize}
+                    </div>
+                  </div>
+                </label>
+              )
+            })}
+          </div>
+        </div>
+      </div>
+
+      {/* Recorder */}
+      <AudioRecorder
+        outputFormat={format}
+        bitrate={settings.bitrate}
+        sampleRate={settings.sampleRate}
+        channels={settings.channels}
+        maxDuration={600}
+        enableNoiseCancellation={quality === 'low' || quality === 'medium'}
+        enableAutoGainControl={quality !== 'professional'}
+        showWaveform={true}
+        showDuration={true}
+        showAmplitudeMeter={true}
+        onStop={handleStop}
+        onDurationChange={(duration) => {
+          if (recordingInfo) {
+            setRecordingInfo({ ...recordingInfo, duration })
+          }
+        }}
+      />
+
+      {/* Recording Info */}
+      {recordingInfo && (
+        <div className="mt-6 p-4 bg-green-50 border border-green-200 rounded-lg">
+          <h4 className="font-semibold text-green-800 mb-2">Recording Saved</h4>
+          <dl className="text-sm space-y-1">
+            <div className="flex justify-between">
+              <dt>File Size:</dt>
+              <dd className="font-mono">{(recordingInfo.size / 1024 / 1024).toFixed(2)} MB</dd>
+            </div>
+            <div className="flex justify-between">
+              <dt>Quality:</dt>
+              <dd className="capitalize">{quality}</dd>
+            </div>
+            <div className="flex justify-between">
+              <dt>Format:</dt>
+              <dd className="uppercase">{format}</dd>
+            </div>
+          </dl>
+        </div>
+      )}
+    </div>
+  )
+}
+
+export default MultiFormatRecorder
+```
+
+### Example 5: Accessibility-Enhanced Recorder
+
+Fully accessible recorder with comprehensive ARIA support:
+
+```tsx
+import { AudioRecorder } from '@clarity-chat/react'
+import { useState, useEffect } from 'react'
+
+function AccessibleRecorder() {
+  const [status, setStatus] = useState('Ready to record')
+  const [duration, setDuration] = useState(0)
+  const [error, setError] = useState<string | null>(null)
+  const [recordings, setRecordings] = useState<Array<{
+    id: string
+    url: string
+    duration: number
+    timestamp: Date
+  }>>([])
+
+  // Screen reader announcements
+  const announce = (message: string) => {
+    setStatus(message)
+
+    // Also log for debugging
+    console.log('[A11Y]', message)
+  }
+
+  const formatDuration = (seconds: number) => {
+    const mins = Math.floor(seconds / 60)
+    const secs = seconds % 60
+    return `${mins} minute${mins !== 1 ? 's' : ''} ${secs} second${secs !== 1 ? 's' : ''}`
+  }
+
+  const handleStart = () => {
+    announce('Recording started')
+    setError(null)
+  }
+
+  const handlePause = () => {
+    announce('Recording paused')
+  }
+
+  const handleResume = () => {
+    announce('Recording resumed')
+  }
+
+  const handleStop = (audioBlob: Blob, audioUrl: string) => {
+    const recording = {
+      id: Date.now().toString(),
+      url: audioUrl,
+      duration,
+      timestamp: new Date(),
+    }
+
+    setRecordings(prev => [...prev, recording])
+    announce(`Recording stopped. Duration: ${formatDuration(duration)}`)
+    setDuration(0)
+  }
+
+  const handleError = (err: Error) => {
+    let message = 'An error occurred. Please try again.'
+
+    if (err.name === 'NotAllowedError') {
+      message = 'Microphone access denied. Please allow microphone access in your browser settings.'
+    } else if (err.name === 'NotFoundError') {
+      message = 'No microphone found. Please connect a microphone and try again.'
+    } else if (err.name === 'NotReadableError') {
+      message = 'Microphone is busy. Please close other applications using the microphone.'
+    }
+
+    setError(message)
+    announce(`Error: ${message}`)
+  }
+
+  const deleteRecording = (id: string) => {
+    const recording = recordings.find(r => r.id === id)
+    if (recording) {
+      URL.revokeObjectURL(recording.url)
+      setRecordings(prev => prev.filter(r => r.id !== id))
+      announce('Recording deleted')
+    }
+  }
+
+  return (
+    <div className="max-w-2xl mx-auto p-6">
+      <h1 className="text-2xl font-bold mb-6">Accessible Audio Recorder</h1>
+
+      {/* Skip to recordings link */}
+      <a
+        href="#recordings-list"
+        className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:bg-blue-500 focus:text-white focus:px-4 focus:py-2 focus:rounded"
+      >
+        Skip to recordings list
+      </a>
+
+      {/* Instructions */}
+      <div
+        id="recorder-instructions"
+        className="mb-6 p-4 bg-blue-50 border-l-4 border-blue-500"
+        role="region"
+        aria-label="Recording instructions"
+      >
+        <h2 className="font-semibold text-blue-900 mb-2">Instructions</h2>
+        <ul className="text-sm text-blue-800 space-y-1">
+          <li>• Press Enter or Space to start recording</li>
+          <li>• Use Tab to navigate between controls</li>
+          <li>• Press Escape to stop recording</li>
+          <li>• Status updates are announced to screen readers</li>
+        </ul>
+      </div>
+
+      {/* Error Display */}
+      {error && (
+        <div
+          role="alert"
+          aria-live="assertive"
+          className="mb-6 p-4 bg-red-50 border-l-4 border-red-500"
+        >
+          <h3 className="font-semibold text-red-800">Error</h3>
+          <p className="text-sm text-red-700 mt-1">{error}</p>
+        </div>
+      )}
+
+      {/* Recorder */}
+      <div
+        role="region"
+        aria-label="Audio recorder"
+        aria-describedby="recorder-instructions"
+      >
+        <AudioRecorder
+          maxDuration={180}
+          minDuration={1}
+          outputFormat="webm"
+          bitrate={128000}
+          channels={1}
+          enableNoiseCancellation={true}
+          pausable={true}
+          showWaveform={true}
+          showDuration={true}
+          showAmplitudeMeter={true}
+          onStart={handleStart}
+          onPause={handlePause}
+          onResume={handleResume}
+          onStop={handleStop}
+          onError={handleError}
+          onDurationChange={setDuration}
+        />
+      </div>
+
+      {/* Live Region for Status */}
+      <div
+        role="status"
+        aria-live="polite"
+        aria-atomic="true"
+        className="sr-only"
+      >
+        {status}
+      </div>
+
+      {/* Recordings List */}
+      {recordings.length > 0 && (
+        <div
+          id="recordings-list"
+          role="region"
+          aria-label="Saved recordings"
+          className="mt-8"
+        >
+          <h2 className="text-xl font-semibold mb-4">
+            Saved Recordings ({recordings.length})
+          </h2>
+
+          <ul className="space-y-4">
+            {recordings.map((recording, index) => (
+              <li
+                key={recording.id}
+                className="p-4 bg-white border rounded-lg shadow-sm"
+              >
+                <div className="flex items-start justify-between mb-3">
+                  <div>
+                    <h3 className="font-medium">
+                      Recording {index + 1}
+                    </h3>
+                    <p className="text-sm text-gray-600">
+                      {recording.timestamp.toLocaleString()}
+                    </p>
+                    <p className="text-sm text-gray-600">
+                      Duration: {formatDuration(recording.duration)}
+                    </p>
+                  </div>
+                  <button
+                    onClick={() => deleteRecording(recording.id)}
+                    aria-label={`Delete recording ${index + 1}`}
+                    className="px-3 py-1 text-sm text-red-600 hover:bg-red-50 rounded focus:outline-none focus-visible:ring-2 focus-visible:ring-red-500"
+                  >
+                    Delete
+                  </button>
+                </div>
+
+                <audio
+                  controls
+                  src={recording.url}
+                  aria-label={`Play recording ${index + 1}`}
+                  className="w-full"
+                />
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {recordings.length === 0 && (
+        <div className="mt-8 text-center text-gray-500">
+          <p>No recordings yet. Start recording to create your first audio file.</p>
+        </div>
+      )}
+    </div>
+  )
+}
+
+export default AccessibleRecorder
+```
+
+---
+
+## Related Documentation
+
+- [AudioRecorder Basic Guide](/reference/components/audio-recorder) - Component overview and basic usage
+- [Troubleshooting Guide](/reference/components/audio-recorder/troubleshooting) - Common issues and solutions
+- [Best Practices](/reference/components/audio-recorder/best-practices) - Recommended patterns and guidelines
+- [SDK Examples](/reference/components/audio-recorder/sdk-examples) - Integration with AI SDKs
+
+## Browser API References
+
+- [MDN: MediaRecorder API](https://developer.mozilla.org/en-US/docs/Web/API/MediaRecorder)
+- [MDN: Web Audio API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Audio_API)
+- [MDN: getUserMedia](https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/getUserMedia)
+- [Can I Use: MediaRecorder](https://caniuse.com/mediarecorder)
+- [Can I Use: Web Audio API](https://caniuse.com/audio-api)
+
+## Support
+
+For issues, questions, or feature requests:
+
+- [GitHub Issues](https://github.com/clarity-chat/components/issues)
+- [Documentation](https://clarity-chat.dev/docs)
+- [Community Discord](https://discord.gg/clarity-chat)
+
+---
+
+**Last Updated**: January 28, 2026
+**Version**: 1.0.0
+**Component**: AudioRecorder
+**Package**: @clarity-chat/react

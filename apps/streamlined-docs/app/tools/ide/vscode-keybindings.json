@@ -1,0 +1,178 @@
+{
+  "// ============================================================================": "",
+  "// CLARITY AI CHAT COMPONENTS - VSCODE KEYBOARD SHORTCUTS": "",
+  "// ============================================================================": "",
+  "// Save this file to: .vscode/keybindings.json": "",
+  "// Or merge with your user keybindings": "",
+  "// ============================================================================": "",
+
+  "// ============================================================================": "",
+  "// TESTING": "",
+  "// ============================================================================": "",
+  "keybindings": [
+    {
+      "key": "cmd+k cmd+t",
+      "command": "workbench.action.tasks.test",
+      "when": "!inDebugMode"
+    },
+    {
+      "key": "ctrl+shift+t",
+      "command": "testing.runCurrentFile",
+      "when": "editorTextFocus"
+    },
+
+    "// ============================================================================": "",
+    "// BUILDING": "",
+    "// ============================================================================": "",
+    {
+      "key": "cmd+k cmd+b",
+      "command": "workbench.action.tasks.build"
+    },
+    {
+      "key": "cmd+shift+b",
+      "command": "workbench.action.tasks.runTask",
+      "args": "Build Packages Only"
+    },
+
+    "// ============================================================================": "",
+    "// CODE ACTIONS": "",
+    "// ============================================================================": "",
+    {
+      "key": "cmd+k cmd+l",
+      "command": "eslint.executeAutofix"
+    },
+    {
+      "key": "cmd+k cmd+f",
+      "command": "editor.action.formatDocument"
+    },
+    {
+      "key": "cmd+k cmd+o",
+      "command": "editor.action.organizeImports"
+    },
+    {
+      "key": "cmd+k cmd+i",
+      "command": "editor.action.addImport"
+    },
+
+    "// ============================================================================": "",
+    "// TYPESCRIPT": "",
+    "// ============================================================================": "",
+    {
+      "key": "cmd+k cmd+r",
+      "command": "typescript.restartTsServer"
+    },
+    {
+      "key": "cmd+k cmd+d",
+      "command": "editor.action.showDefinitionPreviewHover"
+    },
+    {
+      "key": "alt+t",
+      "command": "editor.action.goToTypeDefinition"
+    },
+
+    "// ============================================================================": "",
+    "// DEBUGGING": "",
+    "// ============================================================================": "",
+    {
+      "key": "cmd+shift+r",
+      "command": "workbench.action.debug.restart",
+      "when": "inDebugMode"
+    },
+    {
+      "key": "f9",
+      "command": "editor.debug.action.toggleBreakpoint",
+      "when": "editorTextFocus"
+    },
+    {
+      "key": "shift+f9",
+      "command": "editor.debug.action.toggleInlineBreakpoint",
+      "when": "editorTextFocus"
+    },
+
+    "// ============================================================================": "",
+    "// NAVIGATION": "",
+    "// ============================================================================": "",
+    {
+      "key": "cmd+k cmd+e",
+      "command": "workbench.view.explorer"
+    },
+    {
+      "key": "cmd+k cmd+g",
+      "command": "workbench.view.scm"
+    },
+    {
+      "key": "cmd+k cmd+x",
+      "command": "workbench.view.extensions"
+    },
+    {
+      "key": "cmd+k cmd+s",
+      "command": "workbench.action.gotoSymbol"
+    },
+
+    "// ============================================================================": "",
+    "// TERMINAL": "",
+    "// ============================================================================": "",
+    {
+      "key": "ctrl+`",
+      "command": "workbench.action.terminal.toggleTerminal"
+    },
+    {
+      "key": "ctrl+shift+`",
+      "command": "workbench.action.terminal.new"
+    },
+
+    "// ============================================================================": "",
+    "// CLARITY CHAT SPECIFIC": "",
+    "// ============================================================================": "",
+    {
+      "key": "cmd+k cmd+c cmd+c",
+      "command": "editor.action.insertSnippet",
+      "args": {
+        "name": "Clarity Chat Component"
+      },
+      "when": "editorTextFocus && editorLangId == 'typescriptreact'"
+    },
+    {
+      "key": "cmd+k cmd+c cmd+h",
+      "command": "editor.action.insertSnippet",
+      "args": {
+        "name": "Clarity Chat Hook"
+      },
+      "when": "editorTextFocus && (editorLangId == 'typescript' || editorLangId == 'typescriptreact')"
+    },
+    {
+      "key": "cmd+k cmd+c cmd+t",
+      "command": "editor.action.insertSnippet",
+      "args": {
+        "name": "Clarity Component Test"
+      },
+      "when": "editorTextFocus && (editorLangId == 'typescript' || editorLangId == 'typescriptreact')"
+    },
+
+    "// ============================================================================": "",
+    "// MULTI-CURSOR EDITING": "",
+    "// ============================================================================": "",
+    {
+      "key": "cmd+d",
+      "command": "editor.action.addSelectionToNextFindMatch",
+      "when": "editorFocus"
+    },
+    {
+      "key": "cmd+k cmd+d",
+      "command": "editor.action.moveSelectionToNextFindMatch",
+      "when": "editorFocus"
+    },
+
+    "// ============================================================================": "",
+    "// PANELS": "",
+    "// ============================================================================": "",
+    {
+      "key": "cmd+k cmd+p",
+      "command": "workbench.action.togglePanel"
+    },
+    {
+      "key": "cmd+k cmd+m",
+      "command": "workbench.action.toggleMaximizedPanel"
+    }
+  ]
+}

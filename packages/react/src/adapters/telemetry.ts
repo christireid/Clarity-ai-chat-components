@@ -10,8 +10,8 @@
 
 import type { AdapterError } from './errors'
 import type { TokenUsage, FinishReason } from './types'
-import type { ProviderHealthMetrics } from './monitoring'
 import { globalHealthMonitorRegistry } from './monitoring'
+import type { ProviderHealthMetrics } from './monitoring'
 import { globalCircuitBreakerRegistry } from './circuit-breaker'
 
 /**
@@ -353,7 +353,12 @@ export function exportPrometheusMetrics(): PrometheusMetrics {
     // Request duration histograms
     metrics.adapter_request_duration_ms.push(
       { provider, operation: 'chat', quantile: 0.5, value: health.latency.p50 },
-      { provider, operation: 'chat', quantile: 0.95, value: health.latency.p95 },
+      {
+        provider,
+        operation: 'chat',
+        quantile: 0.95,
+        value: health.latency.p95,
+      },
       { provider, operation: 'chat', quantile: 0.99, value: health.latency.p99 }
     )
 
@@ -396,7 +401,8 @@ export function exportPrometheusMetrics(): PrometheusMetrics {
 
   // Process circuit breaker stats
   for (const [provider, stats] of Object.entries(circuitStats)) {
-    const stateValue = stats.state === 'CLOSED' ? 0 : stats.state === 'OPEN' ? 1 : 2
+    const stateValue =
+      stats.state === 'CLOSED' ? 0 : stats.state === 'OPEN' ? 1 : 2
 
     metrics.circuit_breaker_state.push({
       provider,

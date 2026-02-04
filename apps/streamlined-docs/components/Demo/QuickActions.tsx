@@ -73,12 +73,14 @@ export function QuickActions({
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
       transition={{ duration: durations.slow, ease: [0.25, 0.1, 0.25, 1] }}
       className={cn('space-y-3', className)}
     >
       <motion.div
         initial="hidden"
         animate="show"
+        viewport={{ once: true }}
         variants={{
           hidden: { opacity: 0 },
           show: {
@@ -99,6 +101,7 @@ export function QuickActions({
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
           animate={copiedCode ? { scale: [1, 1.1, 1] } : {}}
+          viewport={{ once: true }}
           className={cn(
             'flex items-center gap-2 px-4 py-2 rounded-lg font-semibold text-sm transition-all duration-300',
             copiedCode
@@ -113,6 +116,7 @@ export function QuickActions({
                 initial={{ scale: 0, rotate: -180 }}
                 animate={{ scale: 1, rotate: 0 }}
                 exit={{ scale: 0, rotate: 180 }}
+                viewport={{ once: true }}
                 transition={{ duration: durations.normal }}
                 className="flex items-center gap-2"
               >
@@ -125,6 +129,7 @@ export function QuickActions({
                 initial={{ scale: 0, rotate: 180 }}
                 animate={{ scale: 1, rotate: 0 }}
                 exit={{ scale: 0, rotate: -180 }}
+                viewport={{ once: true }}
                 transition={{ duration: durations.normal }}
                 className="flex items-center gap-2"
               >
@@ -146,6 +151,7 @@ export function QuickActions({
             rel="noopener noreferrer"
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
+            viewport={{ once: true }}
             className="flex items-center gap-2 px-4 py-2 rounded-lg font-semibold text-sm bg-yellow-400 hover:bg-yellow-500 text-gray-900 transition-all shadow-md hover:shadow-lg"
           >
             <ExternalLink className="w-4 h-4" />
@@ -164,6 +170,7 @@ export function QuickActions({
             rel="noopener noreferrer"
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
+            viewport={{ once: true }}
             className="flex items-center gap-2 px-4 py-2 rounded-lg font-semibold text-sm bg-brand-500 hover:bg-brand-600 text-white transition-all shadow-md hover:shadow-lg"
           >
             <Zap className="w-4 h-4" />
@@ -175,6 +182,7 @@ export function QuickActions({
       <motion.div
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
         transition={{ duration: durations.moderate, delay: 0.2 }}
         className="grid grid-cols-1 md:grid-cols-2 gap-2"
       >
@@ -192,8 +200,10 @@ export function QuickActions({
             className="absolute inset-0 rounded-lg opacity-50 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
             style={{
               padding: '1px',
-              background: 'linear-gradient(135deg, rgba(34,197,94,0.4) 0%, rgba(16,185,129,0.2) 50%, rgba(34,197,94,0.3) 100%)',
-              WebkitMask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
+              background:
+                'linear-gradient(135deg, rgba(34,197,94,0.4) 0%, rgba(16,185,129,0.2) 50%, rgba(34,197,94,0.3) 100%)',
+              WebkitMask:
+                'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
               WebkitMaskComposite: 'xor',
               maskComposite: 'exclude',
             }}
@@ -220,6 +230,7 @@ export function QuickActions({
                     initial={{ scale: 0, rotate: -180 }}
                     animate={{ scale: 1, rotate: 0 }}
                     exit={{ scale: 0, rotate: 180 }}
+                    viewport={{ once: true }}
                     transition={{ duration: durations.normal }}
                   >
                     <Check className="w-4 h-4 text-green-400" />
@@ -230,6 +241,7 @@ export function QuickActions({
                     initial={{ scale: 0, rotate: 180 }}
                     animate={{ scale: 1, rotate: 0 }}
                     exit={{ scale: 0, rotate: -180 }}
+                    viewport={{ once: true }}
                     transition={{ duration: durations.normal }}
                   >
                     <Copy className="w-4 h-4 text-gray-400" />
@@ -255,8 +267,10 @@ export function QuickActions({
               className="absolute inset-0 rounded-lg opacity-50 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
               style={{
                 padding: '1px',
-                background: 'linear-gradient(135deg, rgba(59,130,246,0.4) 0%, rgba(99,102,241,0.2) 50%, rgba(59,130,246,0.3) 100%)',
-                WebkitMask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
+                background:
+                  'linear-gradient(135deg, rgba(59,130,246,0.4) 0%, rgba(99,102,241,0.2) 50%, rgba(59,130,246,0.3) 100%)',
+                WebkitMask:
+                  'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
                 WebkitMaskComposite: 'xor',
                 maskComposite: 'exclude',
               }}
@@ -283,6 +297,7 @@ export function QuickActions({
                       initial={{ scale: 0, rotate: -180 }}
                       animate={{ scale: 1, rotate: 0 }}
                       exit={{ scale: 0, rotate: 180 }}
+                      viewport={{ once: true }}
                       transition={{ duration: durations.normal }}
                     >
                       <Check className="w-4 h-4 text-green-400" />
@@ -293,6 +308,7 @@ export function QuickActions({
                       initial={{ scale: 0, rotate: 180 }}
                       animate={{ scale: 1, rotate: 0 }}
                       exit={{ scale: 0, rotate: -180 }}
+                      viewport={{ once: true }}
                       transition={{ duration: durations.normal }}
                     >
                       <Copy className="w-4 h-4 text-gray-400" />
@@ -308,6 +324,7 @@ export function QuickActions({
       <motion.div
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
         transition={{ duration: durations.moderate, delay: 0.3 }}
         className="flex items-center gap-2 pt-2 border-t border-gray-200 dark:border-gray-700"
       >

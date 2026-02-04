@@ -14,7 +14,7 @@
  * @module memory-adaptive
  */
 
-import { SimpleTokenCounter } from '../../tokenizers/simple-counter'
+import { AccurateTokenCounter } from '../../tokenizers/accurate-counter'
 import {
   MemoryExtractStrategy,
   type MemoryContent,
@@ -86,11 +86,11 @@ export interface MemoryAdaptiveOptions {
  * Internal truncate strategy for simple truncation
  */
 class TruncateStrategy {
-  private readonly tokenCounter: SimpleTokenCounter
+  private readonly tokenCounter: AccurateTokenCounter
   private readonly minContentLength: number
 
   constructor(minContentLength: number = 100) {
-    this.tokenCounter = new SimpleTokenCounter()
+    this.tokenCounter = new AccurateTokenCounter({ model: 'gpt-4' })
     this.minContentLength = minContentLength
   }
 

@@ -30,7 +30,7 @@ export function ComponentPreview({
       initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: '-50px' }}
-      transition={{ duration: 0.4, ease: [0.25, 0.1, 0.25, 1] }}
+      transition={{ duration: durations.slow, ease: [0.25, 0.1, 0.25, 1] }}
       whileHover={{ y: -4, scale: 1.005 }}
       className={cn(
         'group/preview relative my-6 rounded-xl overflow-hidden',
@@ -48,8 +48,10 @@ export function ComponentPreview({
         className="absolute inset-0 rounded-xl opacity-50 group-hover/preview:opacity-100 transition-opacity duration-300 pointer-events-none z-10"
         style={{
           padding: '1px',
-          background: 'linear-gradient(135deg, rgba(99,102,241,0.3) 0%, rgba(139,92,246,0.2) 50%, rgba(244,114,182,0.25) 100%)',
-          WebkitMask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
+          background:
+            'linear-gradient(135deg, rgba(99,102,241,0.3) 0%, rgba(139,92,246,0.2) 50%, rgba(244,114,182,0.25) 100%)',
+          WebkitMask:
+            'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
           WebkitMaskComposite: 'xor',
           maskComposite: 'exclude',
         }}
@@ -61,7 +63,7 @@ export function ComponentPreview({
           initial={{ opacity: 0, y: -10 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.3, delay: 0.1 }}
+          transition={{ duration: durations.moderate, delay: 0.1 }}
           className="px-4 py-3"
         >
           {title && (
@@ -69,7 +71,7 @@ export function ComponentPreview({
               initial={{ opacity: 0, x: -10 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.3, delay: 0.15 }}
+              transition={{ duration: durations.moderate, delay: 0.15 }}
               className="font-semibold text-lg mb-1"
             >
               {title}
@@ -80,7 +82,7 @@ export function ComponentPreview({
               initial={{ opacity: 0, x: -10 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.3, delay: 0.2 }}
+              transition={{ duration: durations.moderate, delay: 0.2 }}
               className="text-sm text-text-secondary"
             >
               {description}
@@ -93,7 +95,7 @@ export function ComponentPreview({
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.3, delay: 0.25 }}
+          transition={{ duration: durations.moderate, delay: 0.25 }}
           className="flex border-t border-border relative"
           role="tablist"
           aria-label="Preview and code tabs"
@@ -113,7 +115,8 @@ export function ComponentPreview({
           >
             <motion.div
               animate={activeTab === 'preview' ? { scale: [1, 1.2, 1] } : {}}
-              transition={{ duration: 0.3 }}
+              viewport={{ once: true }}
+              transition={{ duration: durations.moderate }}
             >
               <Eye className="w-4 h-4" />
             </motion.div>
@@ -134,7 +137,8 @@ export function ComponentPreview({
           >
             <motion.div
               animate={activeTab === 'code' ? { scale: [1, 1.2, 1] } : {}}
-              transition={{ duration: 0.3 }}
+              viewport={{ once: true }}
+              transition={{ duration: durations.moderate }}
             >
               <Code className="w-4 h-4" />
             </motion.div>
@@ -151,7 +155,11 @@ export function ComponentPreview({
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: 20 }}
-            transition={{ duration: 0.3, ease: [0.25, 0.1, 0.25, 1] }}
+            viewport={{ once: true }}
+            transition={{
+              duration: durations.moderate,
+              ease: [0.25, 0.1, 0.25, 1],
+            }}
             className="p-8 bg-bg-primary min-h-[300px] flex items-center justify-center"
           >
             {children}
@@ -162,7 +170,11 @@ export function ComponentPreview({
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -20 }}
-            transition={{ duration: 0.3, ease: [0.25, 0.1, 0.25, 1] }}
+            viewport={{ once: true }}
+            transition={{
+              duration: durations.moderate,
+              ease: [0.25, 0.1, 0.25, 1],
+            }}
             className="p-0"
           >
             <CodeBlock code={code} language={language} showLineNumbers />

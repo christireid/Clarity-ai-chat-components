@@ -1,0 +1,537 @@
+# Memory Integration - Conversation History Management
+
+> Add intelligent conversation memory with automatic summarization and context management
+
+## Problem
+
+Your AI chat forgets previous messages, requiring users to repeat context. Long conversations exceed token limits, causing errors or degraded responses. You need conversation memory that persists, summarizes intelligently, and stays within budget.
+
+## Solution
+
+Integrate `@clarity-chat/memory` to automatically manage conversation history with smart summarization, token budgeting, and persistent storage.
+
+## Complete Code
+
+### Basic Memory Setup
+
+```tsx
+// app/chat/page.tsx
+'use client'
+
+import { useClarityChat, MessageList, ChatInput } from '@clarity-chat/react'
+
+export default function ChatWithMemory() {
+  const { messages, append, isLoading } = useClarityChat({
+    api: '/api/chat',
+    memory: {
+      enabled: true,
+      maxTokens: 4000, // Stay within context window
+      summarization: {
+        enabled: true,
+        threshold: 0.7, // Summarize when 70% full
+      },
+      persistence: {
+        enabled: true,
+        key: 'chat-conversation', // LocalStorage key
+      },
+    },
+  })
+
+  return (
+    <div className="flex h-screen flex-col">
+      <MessageList messages={messages} isLoading={isLoading} />
+      <ChatInput
+        onSubmit={(content) => append({ role: 'user', content })}
+        disabled={isLoading}
+      />
+    </div>
+  )
+}
+```
+
+### Backend with Memory Context
+
+```tsx
+// app/api/chat/route.ts
+import { OpenAI } from 'openai'
+import { OpenAIStream, StreamingTextResponse } from 'ai'
+import { MemoryService } from '@clarity-chat/memory'
+
+const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY! })
+const memory = new MemoryService({
+  maxTokens: 4000,
+  summarization: {
+    model: 'gpt-3.5-turbo', // Cheaper model for summaries
+    prompt: 'Summarize this conversation concisely, preserving key context:',
+  },
+})
+
+export async function POST(req: Request) {
+  const { messages, conversationId } = await req.json()
+
+  // Load conversation history from memory
+  const conversationHistory = await memory.getHistory(conversationId)
+
+  // Combine with new messages
+  const contextMessages = [
+    ...conversationHistory.summary
+      ? [{ role: 'system', content: `Context: ${conversationHistory.summary}` }]
+      : [],
+    ...conversationHistory.recentMessages,
+    ...messages,
+  ]
+
+  const response = await openai.chat.completions.create({
+    model: 'gpt-4-turbo-preview',
+    stream: true,
+    messages: contextMessages,
+  })
+
+  const stream = OpenAIStream(response, {
+    async onCompletion(completion) {
+      // Save to memory
+      await memory.addMessage(conversationId, {
+        role: 'assistant',
+        content: completion,
+      })
+    },
+  })
+
+  return new StreamingTextResponse(stream)
+}
+```
+
+## How It Works
+
+### 1. Messages Accumulate
+
+As users chat, messages are stored in memory:
+
+```tsx
+// Message 1
+User: "What is React?"
+Assistant: "React is a JavaScript library..."
+
+// Message 2
+User: "How do hooks work?"
+Assistant: "Hooks are functions that let you..."
+
+// Message 3
+User: "Give me an example"
+Assistant: "Here's a useState example..."
+```
+
+### 2. Token Budget Monitoring
+
+Memory service tracks token usage:
+
+```tsx
+const usage = memory.getTokenUsage(conversationId)
+// {
+//   total: 2800,
+//   limit: 4000,
+//   percentage: 0.7 // 70% of budget used
+// }
+```
+
+### 3. Smart Summarization
+
+When threshold is reached (70%), older messages are summarized:
+
+```tsx
+// Before summarization (2800 tokens)
+[
+  { role: 'user', content: 'What is React?' },
+  { role: 'assistant', content: 'React is a JavaScript library...' },
+  { role: 'user', content: 'How do hooks work?' },
+  { role: 'assistant', content: 'Hooks are functions...' },
+  { role: 'user', content: 'Give me an example' },
+]
+
+// After summarization (1200 tokens)
+[
+  {
+    role: 'system',
+    content: 'Summary: Discussed React basics and hooks',
+  },
+  { role: 'user', content: 'Give me an example' }, // Recent messages kept
+]
+```
+
+### 4. Context Preserved
+
+Summary maintains important context for future messages:
+
+```tsx
+User: "Can you explain more about the example?"
+// AI has context from summary + recent messages
+```
+
+## Variations
+
+### With Custom Summarization Strategy
+
+```tsx
+import { MemoryService, SummarizationStrategy } from '@clarity-chat/memory'
+
+const customStrategy: SummarizationStrategy = {
+  shouldSummarize: (messages, tokenCount, maxTokens) => {
+    // Custom logic: Summarize every 10 messages
+    return messages.length >= 10
+  },
+
+  summarize: async (messages) => {
+    // Custom summarization logic
+    const keyPoints = extractKeyPoints(messages)
+    return `Key discussion points: ${keyPoints.join(', ')}`
+  },
+}
+
+const memory = new MemoryService({
+  maxTokens: 4000,
+  summarization: {
+    strategy: customStrategy,
+  },
+})
+```
+
+### With User Consent for Memory
+
+```tsx
+import { useMemoryFeedback } from '@clarity-chat/react'
+
+export default function ChatWithConsentedMemory() {
+  const { hasConsent, requestConsent } = useMemoryFeedback()
+
+  const { messages, append } = useClarityChat({
+    api: '/api/chat',
+    memory: {
+      enabled: hasConsent, // Only enable if user consented
+      maxTokens: 4000,
+    },
+  })
+
+  if (!hasConsent) {
+    return (
+      <div className="p-6">
+        <h2>Enable Conversation Memory?</h2>
+        <p>
+          We'd like to remember our conversations to provide better context.
+          Your data stays private and secure.
+        </p>
+        <button onClick={() => requestConsent(true)}>
+          Enable Memory
+        </button>
+      </div>
+    )
+  }
+
+  return (
+    <div className="flex h-screen flex-col">
+      <MessageList messages={messages} />
+      <ChatInput onSubmit={(content) => append({ role: 'user', content })} />
+    </div>
+  )
+}
+```
+
+### With Database Persistence
+
+```tsx
+// lib/memory/postgres-adapter.ts
+import { MemoryAdapter } from '@clarity-chat/memory'
+import { db } from '@/lib/db'
+
+export class PostgresMemoryAdapter implements MemoryAdapter {
+  async saveConversation(id: string, messages: Message[]) {
+    await db.conversations.upsert({
+      where: { id },
+      create: { id, messages },
+      update: { messages },
+    })
+  }
+
+  async loadConversation(id: string) {
+    const conversation = await db.conversations.findUnique({
+      where: { id },
+    })
+    return conversation?.messages || []
+  }
+
+  async deleteConversation(id: string) {
+    await db.conversations.delete({ where: { id } })
+  }
+}
+```
+
+```tsx
+// app/api/chat/route.ts
+import { MemoryService } from '@clarity-chat/memory'
+import { PostgresMemoryAdapter } from '@/lib/memory/postgres-adapter'
+
+const memory = new MemoryService({
+  adapter: new PostgresMemoryAdapter(),
+  maxTokens: 4000,
+})
+```
+
+### With Memory Activity Indicator
+
+```tsx
+import {
+  useClarityChat,
+  MessageList,
+  ChatInput,
+  MemoryActivityIndicator,
+} from '@clarity-chat/react'
+
+export default function ChatWithMemoryIndicator() {
+  const { messages, append, memory } = useClarityChat({
+    api: '/api/chat',
+    memory: { enabled: true, maxTokens: 4000 },
+  })
+
+  return (
+    <div className="flex h-screen flex-col">
+      <div className="border-b p-4">
+        <MemoryActivityIndicator
+          tokenUsage={memory.tokenUsage}
+          maxTokens={memory.maxTokens}
+          isSummarizing={memory.isSummarizing}
+        />
+      </div>
+
+      <MessageList messages={messages} />
+      <ChatInput onSubmit={(content) => append({ role: 'user', content })} />
+    </div>
+  )
+}
+```
+
+### With Conversation Branching
+
+```tsx
+import { useClarityChat } from '@clarity-chat/react'
+
+export default function ChatWithBranching() {
+  const { messages, append, branches, createBranch } = useClarityChat({
+    api: '/api/chat',
+    memory: {
+      enabled: true,
+      branching: true, // Enable conversation branches
+    },
+  })
+
+  const handleRegenerateFrom = (messageId: string) => {
+    // Create a new branch from this message
+    createBranch(messageId)
+  }
+
+  return (
+    <div className="flex h-screen flex-col">
+      <MessageList
+        messages={messages}
+        onRegenerateFrom={handleRegenerateFrom}
+      />
+      <ChatInput onSubmit={(content) => append({ role: 'user', content })} />
+    </div>
+  )
+}
+```
+
+## Common Pitfalls
+
+### Pitfall 1: Exceeding Context Window
+
+**Problem:** Conversation grows too large, causing API errors.
+
+```tsx
+// ❌ Bad - No token limit
+const { messages, append } = useClarityChat({
+  api: '/api/chat',
+  memory: { enabled: true },
+})
+```
+
+**Solution:** Always set maxTokens below model limit.
+
+```tsx
+// ✅ Good - Token limit enforced
+const { messages, append } = useClarityChat({
+  api: '/api/chat',
+  memory: {
+    enabled: true,
+    maxTokens: 4000, // For 8K model, leave headroom for response
+  },
+})
+```
+
+### Pitfall 2: Not Handling Summarization State
+
+**Problem:** UI freezes during summarization.
+
+**Solution:** Show loading state during summarization.
+
+```tsx
+const { messages, append, memory } = useClarityChat({
+  api: '/api/chat',
+  memory: { enabled: true },
+})
+
+return (
+  <div>
+    {memory.isSummarizing && (
+      <div className="bg-blue-50 p-2 text-sm">
+        📝 Summarizing conversation to optimize memory...
+      </div>
+    )}
+    <MessageList messages={messages} />
+  </div>
+)
+```
+
+### Pitfall 3: Losing Context in Summaries
+
+**Problem:** Important details lost during summarization.
+
+**Solution:** Mark important messages to preserve.
+
+```tsx
+const { append } = useClarityChat({
+  api: '/api/chat',
+  memory: {
+    enabled: true,
+    summarization: {
+      preserveImportant: true, // Keep messages marked as important
+    },
+  },
+})
+
+// Mark message as important
+append({
+  role: 'user',
+  content: 'My customer ID is 12345',
+  metadata: { important: true }, // Won't be summarized
+})
+```
+
+### Pitfall 4: Syncing Issues Across Tabs
+
+**Problem:** Multiple tabs show different conversation states.
+
+**Solution:** Use BroadcastChannel for sync.
+
+```tsx
+import { useClarityChat } from '@clarity-chat/react'
+
+export default function ChatWithSync() {
+  const { messages, append } = useClarityChat({
+    api: '/api/chat',
+    memory: {
+      enabled: true,
+      sync: {
+        enabled: true,
+        channel: 'chat-sync', // BroadcastChannel name
+      },
+    },
+  })
+
+  // Changes automatically sync across tabs
+}
+```
+
+### Pitfall 5: Memory Leaks from Uncleaned Storage
+
+**Problem:** LocalStorage fills up with old conversations.
+
+**Solution:** Implement cleanup strategy.
+
+```tsx
+import { MemoryService } from '@clarity-chat/memory'
+
+const memory = new MemoryService({
+  persistence: {
+    enabled: true,
+    cleanup: {
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+      maxConversations: 100, // Keep last 100
+    },
+  },
+})
+```
+
+## Performance Optimization
+
+### 1. Lazy Load Conversation History
+
+```tsx
+const { messages } = useClarityChat({
+  api: '/api/chat',
+  memory: {
+    enabled: true,
+    lazyLoad: true, // Load history on demand
+    initialLoad: 20, // Load last 20 messages initially
+  },
+})
+```
+
+### 2. Compress Stored Messages
+
+```tsx
+import { compress, decompress } from '@clarity-chat/token-optimization'
+
+const memory = new MemoryService({
+  persistence: {
+    enabled: true,
+    serialize: (messages) => compress(JSON.stringify(messages)),
+    deserialize: (data) => JSON.parse(decompress(data)),
+  },
+})
+```
+
+### 3. Use Cheaper Models for Summaries
+
+```tsx
+const memory = new MemoryService({
+  summarization: {
+    model: 'gpt-3.5-turbo', // 10x cheaper than GPT-4
+    maxTokens: 150, // Keep summaries concise
+  },
+})
+```
+
+## Testing
+
+### Test Memory Persistence
+
+```tsx
+import { render, screen } from '@testing-library/react'
+import { MemoryService } from '@clarity-chat/memory'
+
+describe('Memory Persistence', () => {
+  it('saves and loads conversations', async () => {
+    const memory = new MemoryService({ persistence: { enabled: true } })
+
+    await memory.addMessage('conv-1', {
+      role: 'user',
+      content: 'Hello',
+    })
+
+    const history = await memory.getHistory('conv-1')
+    expect(history.recentMessages).toHaveLength(1)
+  })
+})
+```
+
+## Next Steps
+
+- [Streaming Setup](../streaming-setup) - Add real-time streaming
+- [Error Handling](../error-handling) - Robust error recovery
+- [Token Optimization](../token-optimization) - Reduce memory costs
+- [OpenAI Integration](../openai-streaming-chat) - Advanced features
+
+---
+
+**Time to implement:** 20 minutes
+**Difficulty:** Intermediate
+**Dependencies:** `@clarity-chat/react`, `@clarity-chat/memory`

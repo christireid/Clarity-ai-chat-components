@@ -186,3 +186,14 @@ tools/vscode-extension/.vscode-test/
 
 # Benchmark results
 tools/benchmark-results/
+.archive/
+
+# Development session artifacts
+SESSION_*.md
+WAVE_*.md
+*_COMPLETE.md
+*_SUMMARY.md
+*_PROGRESS.md
+AUDIT_DASHBOARD.md
+docs/internal-reference/
+.api-dx-audit/

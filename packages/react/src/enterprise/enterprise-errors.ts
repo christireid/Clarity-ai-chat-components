@@ -47,12 +47,11 @@ export class ConfigurationError extends EnterpriseError {
     public readonly expected?: string,
     public readonly received?: any
   ) {
-    super(
-      `Configuration error: ${message}`,
-      'CONFIG_ERROR',
-      'high',
-      { configKey, expected, received }
-    )
+    super(`Configuration error: ${message}`, 'CONFIG_ERROR', 'high', {
+      configKey,
+      expected,
+      received,
+    })
     this.name = 'ConfigurationError'
   }
 }
@@ -66,33 +65,11 @@ export class ProcessingError extends EnterpriseError {
     public readonly stage?: string,
     public readonly cause?: Error
   ) {
-    super(
-      `Processing error: ${message}`,
-      'PROCESSING_ERROR',
-      'high',
-      { stage, cause: cause?.message }
-    )
+    super(`Processing error: ${message}`, 'PROCESSING_ERROR', 'high', {
+      stage,
+      cause: cause?.message,
+    })
     this.name = 'ProcessingError'
-  }
-}
-
-/**
- * Validation error
- */
-export class ValidationError extends EnterpriseError {
-  constructor(
-    message: string,
-    public readonly field?: string,
-    public readonly value?: any,
-    public readonly constraints?: string[]
-  ) {
-    super(
-      `Validation error: ${message}`,
-      'VALIDATION_ERROR',
-      'medium',
-      { field, value, constraints }
-    )
-    this.name = 'ValidationError'
   }
 }
 

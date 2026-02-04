@@ -13,13 +13,8 @@ import {
   DocumentationSiteStructuredData,
 } from '@/components/SEO/StructuredData'
 import { LIBRARY_STATS } from '@/lib/library-stats'
-
-// Lazy load the AI assistant to reduce initial bundle size
-const DocsAssistant = dynamic(() =>
-  import('@/components/AI/DocsAssistant').then((mod) => ({
-    default: mod.DocsAssistant,
-  }))
-)
+import { TTFBMonitor } from '@/components/Monitoring/TTFBMonitor'
+import { ClientLayout } from '@/components/Layout/ClientLayout'
 
 // Lazy load scroll progress for better initial bundle
 const ScrollProgress = dynamic(() =>
@@ -35,17 +30,24 @@ const ToastManager = dynamic(() =>
   }))
 )
 
-// Lazy load mobile bottom nav
-const MobileBottomNav = dynamic(() =>
-  import('@/components/Enhanced/MobileBottomNav').then((mod) => ({
-    default: mod.MobileBottomNav,
+// Lazy load accessibility audit (dev only)
+const AccessibilityAudit = dynamic(() =>
+  import('@/components/Accessibility/AccessibilityAudit').then((mod) => ({
+    default: mod.AccessibilityAudit,
   }))
 )
 
-// Lazy load floating action button
-const FloatingActionButton = dynamic(() =>
-  import('@/components/Enhanced/FloatingActionButton').then((mod) => ({
-    default: mod.FloatingActionButton,
+// Lazy load docs assistant (client-only)
+const DocsAssistant = dynamic(() =>
+  import('@/components/AI/DocsAssistantSimplified').then((mod) => ({
+    default: mod.DocsAssistant,
+  }))
+)
+
+// Lazy load docs command bar (client-only)
+const DocsCommandBar = dynamic(() =>
+  import('@/components/Search/DocsCommandBar').then((mod) => ({
+    default: mod.DocsCommandBar,
   }))
 )
 
@@ -127,39 +129,30 @@ export default function RootLayout({
           title="LLM-optimized documentation"
         />
       </head>
-      <body className="font-sans antialiased overflow-x-hidden" suppressHydrationWarning>
+      <body
+        className="font-sans antialiased overflow-x-hidden"
+        suppressHydrationWarning
+      >
         <AnalyticsScript />
+        <TTFBMonitor />
         <Providers>
           <a href="#main-content" className="skip-to-content">
             Skip to content
           </a>
-          <ScrollProgress variant="gradient" showScrollTop />
+          <ScrollProgress variant="gradient" showScrollTop={false} />
           <div className="min-h-screen flex flex-col">
             <Navigation />
             <main id="main-content" className="flex-1">
               {children}
             </main>
             <Footer />
-            <DocsAssistant />
-            <MobileBottomNav />
-            <FloatingActionButton
-              onSearchClick={() => {
-                // Trigger search dialog (handled by Navigation component via window event)
-                const event = new KeyboardEvent('keydown', { key: 'k', metaKey: true })
-                window.dispatchEvent(event)
-              }}
-              onShortcutsClick={() => {
-                const event = new KeyboardEvent('keydown', { key: '?' })
-                window.dispatchEvent(event)
-              }}
-              onAIClick={() => {
-                // Trigger AI assistant (Cmd+.)
-                const event = new KeyboardEvent('keydown', { key: '.', metaKey: true })
-                window.dispatchEvent(event)
-              }}
-            />
+            {/* ClientLayout handles MobileBottomNav and FloatingActionButton with client-side events */}
+            <ClientLayout />
           </div>
           <ToastManager />
+          <AccessibilityAudit />
+          <DocsAssistant />
+          <DocsCommandBar />
         </Providers>
       </body>
     </html>

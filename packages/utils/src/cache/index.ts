@@ -27,21 +27,32 @@
  *
  * @example
  * ```ts
- * getContentHash('hello world') // "b94d27b9934d3e08"
+ * getContentHash('hello world') // Returns 16-character hash like "d58b3fa7a8c4f1e2"
  * ```
  */
 export function getContentHash(content: string): string {
   // Simple hash function that works in all environments (browser + Node.js)
   // FNV-1a hash algorithm - fast and good distribution
-  let hash = 2166136261 // FNV offset basis
+  // Generate two 8-character hashes with different seeds for 16-char result
 
+  // First hash with standard FNV offset basis
+  let hash1 = 2166136261
   for (let i = 0; i < content.length; i++) {
-    hash ^= content.charCodeAt(i)
-    hash = Math.imul(hash, 16777619) // FNV prime
+    hash1 ^= content.charCodeAt(i)
+    hash1 = Math.imul(hash1, 16777619)
   }
 
-  // Convert to unsigned 32-bit and return as hex
-  return (hash >>> 0).toString(16).padStart(8, '0')
+  // Second hash with alternate offset basis for better distribution
+  let hash2 = 2166136261 ^ 0x01000193
+  for (let i = 0; i < content.length; i++) {
+    hash2 ^= content.charCodeAt(i)
+    hash2 = Math.imul(hash2, 16777619)
+  }
+
+  // Convert both to unsigned 32-bit hex and concatenate for 16 chars
+  const part1 = (hash1 >>> 0).toString(16).padStart(8, '0')
+  const part2 = (hash2 >>> 0).toString(16).padStart(8, '0')
+  return part1 + part2
 }
 
 /**

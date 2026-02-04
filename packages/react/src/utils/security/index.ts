@@ -23,6 +23,7 @@ export {
 export {
   sanitizeCodeHtml,
   escapeHtmlEntities,
+  escapeHtml,
   createSafeCodeHtml,
   detectDangerousHtml,
 } from './sanitize-html'

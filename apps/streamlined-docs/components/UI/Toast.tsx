@@ -2,7 +2,13 @@
 
 import { motion, AnimatePresence } from 'framer-motion'
 import { CheckCircle2, XCircle, AlertTriangle, Info, X } from 'lucide-react'
-import { fadeIn, slideInRight, durations, springs, easings } from '@/lib/animations'
+import {
+  fadeIn,
+  slideInRight,
+  durations,
+  springs,
+  easings,
+} from '@/lib/animations'
 import { cn } from '@/lib/utils'
 import type { ToastType } from '@/lib/toast'
 
@@ -43,7 +49,8 @@ function ToastItem({ toast, onDismiss }: ToastItemProps) {
           bgClass: 'bg-success/10 border-success/50',
           textClass: 'text-success',
           progressClass: 'bg-success',
-          shadowClass: 'shadow-[0_4px_12px_rgba(0,0,0,0.08),0_0_20px_rgba(34,197,94,0.15)] dark:shadow-[0_4px_12px_rgba(0,0,0,0.3),0_0_20px_rgba(34,197,94,0.2)]',
+          shadowClass:
+            'shadow-[0_4px_12px_rgba(0,0,0,0.08),0_0_20px_rgba(34,197,94,0.15)] dark:shadow-[0_4px_12px_rgba(0,0,0,0.3),0_0_20px_rgba(34,197,94,0.2)]',
           glowColor: 'rgba(34,197,94,0.4)',
         }
       case 'error':
@@ -52,7 +59,8 @@ function ToastItem({ toast, onDismiss }: ToastItemProps) {
           bgClass: 'bg-error/10 border-error/50',
           textClass: 'text-error',
           progressClass: 'bg-error',
-          shadowClass: 'shadow-[0_4px_12px_rgba(0,0,0,0.08),0_0_20px_rgba(239,68,68,0.15)] dark:shadow-[0_4px_12px_rgba(0,0,0,0.3),0_0_20px_rgba(239,68,68,0.2)]',
+          shadowClass:
+            'shadow-[0_4px_12px_rgba(0,0,0,0.08),0_0_20px_rgba(239,68,68,0.15)] dark:shadow-[0_4px_12px_rgba(0,0,0,0.3),0_0_20px_rgba(239,68,68,0.2)]',
           glowColor: 'rgba(239,68,68,0.4)',
         }
       case 'warning':
@@ -61,7 +69,8 @@ function ToastItem({ toast, onDismiss }: ToastItemProps) {
           bgClass: 'bg-warning/10 border-warning/50',
           textClass: 'text-warning',
           progressClass: 'bg-warning',
-          shadowClass: 'shadow-[0_4px_12px_rgba(0,0,0,0.08),0_0_20px_rgba(245,158,11,0.15)] dark:shadow-[0_4px_12px_rgba(0,0,0,0.3),0_0_20px_rgba(245,158,11,0.2)]',
+          shadowClass:
+            'shadow-[0_4px_12px_rgba(0,0,0,0.08),0_0_20px_rgba(245,158,11,0.15)] dark:shadow-[0_4px_12px_rgba(0,0,0,0.3),0_0_20px_rgba(245,158,11,0.2)]',
           glowColor: 'rgba(245,158,11,0.4)',
         }
       case 'info':
@@ -71,7 +80,8 @@ function ToastItem({ toast, onDismiss }: ToastItemProps) {
           bgClass: 'bg-brand-500/10 border-brand-500/50',
           textClass: 'text-brand-600 dark:text-brand-400',
           progressClass: 'bg-brand-500',
-          shadowClass: 'shadow-[0_4px_12px_rgba(0,0,0,0.08),0_0_20px_rgba(99,102,241,0.15)] dark:shadow-[0_4px_12px_rgba(0,0,0,0.3),0_0_20px_rgba(99,102,241,0.2)]',
+          shadowClass:
+            'shadow-[0_4px_12px_rgba(0,0,0,0.08),0_0_20px_rgba(99,102,241,0.15)] dark:shadow-[0_4px_12px_rgba(0,0,0,0.3),0_0_20px_rgba(99,102,241,0.2)]',
           glowColor: 'rgba(99,102,241,0.4)',
         }
     }
@@ -86,6 +96,7 @@ function ToastItem({ toast, onDismiss }: ToastItemProps) {
       initial={{ opacity: 0, x: 100, scale: 0.95 }}
       animate={{ opacity: 1, x: 0, scale: 1 }}
       exit={{ opacity: 0, x: 100, scale: 0.95 }}
+      viewport={{ once: true }}
       drag="x"
       dragConstraints={{ left: 0, right: 0 }}
       dragElastic={0.2}
@@ -114,14 +125,17 @@ function ToastItem({ toast, onDismiss }: ToastItemProps) {
         style={{
           padding: '1px',
           background: `linear-gradient(135deg, ${config.glowColor} 0%, transparent 50%, ${config.glowColor} 100%)`,
-          WebkitMask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
+          WebkitMask:
+            'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
           WebkitMaskComposite: 'xor',
           maskComposite: 'exclude',
         }}
         aria-hidden="true"
       />
       {/* Icon */}
-      <div className={cn('relative z-10 flex-shrink-0 mt-0.5', config.textClass)}>
+      <div
+        className={cn('relative z-10 flex-shrink-0 mt-0.5', config.textClass)}
+      >
         {toast.icon ?? config.icon}
       </div>
 
@@ -172,6 +186,7 @@ function ToastItem({ toast, onDismiss }: ToastItemProps) {
           )}
           initial={{ width: '100%' }}
           animate={{ width: '0%' }}
+          viewport={{ once: true }}
           transition={{
             duration: duration / 1000,
             ease: 'linear',

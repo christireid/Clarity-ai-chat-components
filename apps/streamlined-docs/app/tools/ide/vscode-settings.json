@@ -1,0 +1,340 @@
+{
+  "// ============================================================================": "",
+  "// CLARITY AI CHAT COMPONENTS - VSCODE WORKSPACE SETTINGS": "",
+  "// ============================================================================": "",
+  "// Save this file to: .vscode/settings.json": "",
+  "// ============================================================================": "",
+
+  "// ============================================================================": "",
+  "// EDITOR SETTINGS": "",
+  "// ============================================================================": "",
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.formatOnSave": true,
+  "editor.formatOnPaste": false,
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit",
+    "source.organizeImports": "explicit",
+    "source.sortImports": "never"
+  },
+  "editor.tabSize": 2,
+  "editor.insertSpaces": true,
+  "editor.detectIndentation": false,
+  "editor.wordWrap": "on",
+  "editor.rulers": [80, 100],
+  "editor.linkedEditing": true,
+  "editor.bracketPairColorization.enabled": true,
+  "editor.guides.bracketPairs": "active",
+  "editor.inlineSuggest.enabled": true,
+  "editor.suggestSelection": "first",
+  "editor.quickSuggestions": {
+    "strings": true
+  },
+  "editor.semanticHighlighting.enabled": true,
+  "editor.acceptSuggestionOnCommitCharacter": false,
+  "editor.snippetSuggestions": "top",
+
+  "// ============================================================================": "",
+  "// TYPESCRIPT SETTINGS": "",
+  "// ============================================================================": "",
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "typescript.enablePromptUseWorkspaceTsdk": true,
+  "typescript.preferences.importModuleSpecifier": "relative",
+  "typescript.preferences.includePackageJsonAutoImports": "on",
+  "typescript.updateImportsOnFileMove.enabled": "always",
+  "typescript.inlayHints.enumMemberValues.enabled": true,
+  "typescript.inlayHints.functionLikeReturnTypes.enabled": true,
+  "typescript.inlayHints.parameterNames.enabled": "all",
+  "typescript.inlayHints.parameterTypes.enabled": true,
+  "typescript.inlayHints.propertyDeclarationTypes.enabled": true,
+  "typescript.inlayHints.variableTypes.enabled": true,
+  "typescript.suggest.autoImports": true,
+  "typescript.suggest.completeFunctionCalls": true,
+  "typescript.suggest.includeAutomaticOptionalChainCompletions": true,
+  "typescript.tsserver.maxTsServerMemory": 4096,
+  "typescript.tsserver.watchOptions": {
+    "excludeDirectories": [
+      "**/node_modules",
+      "**/.next",
+      "**/dist",
+      "**/build"
+    ]
+  },
+  "typescript.preferences.autoImportFileExcludePatterns": [
+    "node_modules",
+    ".next",
+    "dist"
+  ],
+
+  "// ============================================================================": "",
+  "// JAVASCRIPT SETTINGS": "",
+  "// ============================================================================": "",
+  "javascript.preferences.importModuleSpecifier": "relative",
+  "javascript.updateImportsOnFileMove.enabled": "always",
+  "javascript.suggest.autoImports": true,
+  "javascript.inlayHints.enumMemberValues.enabled": true,
+  "javascript.inlayHints.functionLikeReturnTypes.enabled": true,
+  "javascript.inlayHints.parameterNames.enabled": "all",
+
+  "// ============================================================================": "",
+  "// FILES & SEARCH": "",
+  "// ============================================================================": "",
+  "files.autoSave": "onFocusChange",
+  "files.trimTrailingWhitespace": true,
+  "files.insertFinalNewline": true,
+  "files.eol": "\n",
+  "files.exclude": {
+    "**/.git": true,
+    "**/.DS_Store": true,
+    "**/node_modules": true,
+    "**/.next": true,
+    "**/dist": true,
+    "**/build": true,
+    "**/.turbo": true,
+    "**/coverage": true
+  },
+  "files.watcherExclude": {
+    "**/.git/objects/**": true,
+    "**/.git/subtree-cache/**": true,
+    "**/node_modules/**": true,
+    "**/.next/**": true,
+    "**/dist/**": true,
+    "**/build/**": true,
+    "**/.turbo/**": true
+  },
+  "search.exclude": {
+    "**/node_modules": true,
+    "**/dist": true,
+    "**/.next": true,
+    "**/coverage": true,
+    "pnpm-lock.yaml": true
+  },
+  "search.quickOpen.includeHistory": false,
+  "search.maxResults": 5000,
+
+  "// ============================================================================": "",
+  "// ESLINT": "",
+  "// ============================================================================": "",
+  "eslint.enable": true,
+  "eslint.validate": [
+    "javascript",
+    "javascriptreact",
+    "typescript",
+    "typescriptreact"
+  ],
+  "eslint.workingDirectories": [
+    { "mode": "auto" }
+  ],
+  "eslint.format.enable": false,
+
+  "// ============================================================================": "",
+  "// PRETTIER": "",
+  "// ============================================================================": "",
+  "prettier.enable": true,
+  "prettier.requireConfig": true,
+  "prettier.useEditorConfig": false,
+
+  "// ============================================================================": "",
+  "// TAILWIND CSS": "",
+  "// ============================================================================": "",
+  "tailwindCSS.experimental.classRegex": [
+    ["cn\\(([^)]*)\\)", "[\"'`]([^\"'`]*).*?[\"'`]"],
+    ["cva\\(([^)]*)\\)", "[\"'`]([^\"'`]*).*?[\"'`]"]
+  ],
+  "tailwindCSS.includeLanguages": {
+    "typescript": "javascript",
+    "typescriptreact": "javascript"
+  },
+  "tailwindCSS.emmetCompletions": true,
+
+  "// ============================================================================": "",
+  "// EMMET": "",
+  "// ============================================================================": "",
+  "emmet.includeLanguages": {
+    "typescript": "typescriptreact",
+    "javascript": "javascriptreact"
+  },
+  "emmet.triggerExpansionOnTab": true,
+  "emmet.showExpandedAbbreviation": "always",
+
+  "// ============================================================================": "",
+  "// ERROR LENS": "",
+  "// ============================================================================": "",
+  "errorLens.enabled": true,
+  "errorLens.enabledDiagnosticLevels": [
+    "error",
+    "warning"
+  ],
+  "errorLens.messageMaxChars": 200,
+  "errorLens.statusBarMessageEnabled": true,
+
+  "// ============================================================================": "",
+  "// IMPORT COST": "",
+  "// ============================================================================": "",
+  "importCost.showCalculatingDecoration": true,
+  "importCost.bundleSizeDecoration": "both",
+  "importCost.largePackageSize": 100,
+  "importCost.mediumPackageSize": 50,
+  "importCost.smallPackageSize": 20,
+
+  "// ============================================================================": "",
+  "// GIT": "",
+  "// ============================================================================": "",
+  "git.enableSmartCommit": true,
+  "git.autofetch": true,
+  "git.confirmSync": false,
+  "git.decorations.enabled": true,
+  "git.enableStatusBarSync": false,
+
+  "// ============================================================================": "",
+  "// TESTING": "",
+  "// ============================================================================": "",
+  "vitest.enable": true,
+  "vitest.commandLine": "pnpm test",
+
+  "// ============================================================================": "",
+  "// PATH INTELLISENSE": "",
+  "// ============================================================================": "",
+  "path-intellisense.mappings": {
+    "@": "${workspaceFolder}/apps/streamlined-docs",
+    "@clarity-chat/react": "${workspaceFolder}/packages/react/src",
+    "@clarity-chat/primitives": "${workspaceFolder}/packages/primitives/src",
+    "@clarity-chat/utils": "${workspaceFolder}/packages/utils/src",
+    "@clarity-chat/types": "${workspaceFolder}/packages/types/src",
+    "@clarity-chat/memory": "${workspaceFolder}/packages/memory/src",
+    "@clarity-chat/token-optimization": "${workspaceFolder}/packages/token-optimization/src",
+    "@clarity-chat/error-handling": "${workspaceFolder}/packages/error-handling/src",
+    "@clarity-chat/license": "${workspaceFolder}/packages/license/src"
+  },
+
+  "// ============================================================================": "",
+  "// IMPORT SORTER": "",
+  "// ============================================================================": "",
+  "importSorter.generalConfiguration.sortOnBeforeSave": true,
+  "importSorter.sortConfiguration.customOrderingRules": {
+    "rules": [
+      {
+        "type": "importMember",
+        "regex": "^react$",
+        "orderLevel": 10
+      },
+      {
+        "type": "importMember",
+        "regex": "^next",
+        "orderLevel": 20
+      },
+      {
+        "regex": "^@clarity-chat/",
+        "orderLevel": 30
+      },
+      {
+        "regex": "^@/",
+        "orderLevel": 40
+      },
+      {
+        "regex": "^\\.\\.?/",
+        "orderLevel": 50
+      },
+      {
+        "type": "importMember",
+        "regex": "^type ",
+        "orderLevel": 60
+      }
+    ]
+  },
+
+  "// ============================================================================": "",
+  "// MARKDOWN": "",
+  "// ============================================================================": "",
+  "[markdown]": {
+    "editor.defaultFormatter": "yzhang.markdown-all-in-one",
+    "editor.wordWrap": "on"
+  },
+  "markdown.preview.fontSize": 14,
+  "markdown.preview.lineHeight": 1.6,
+
+  "// ============================================================================": "",
+  "// JSON": "",
+  "// ============================================================================": "",
+  "[json]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[jsonc]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+
+  "// ============================================================================": "",
+  "// LANGUAGE SPECIFIC": "",
+  "// ============================================================================": "",
+  "[typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[typescriptreact]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[javascript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[javascriptreact]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[css]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+
+  "// ============================================================================": "",
+  "// PERFORMANCE": "",
+  "// ============================================================================": "",
+  "explorer.sortOrder": "type",
+  "telemetry.telemetryLevel": "off",
+
+  "// ============================================================================": "",
+  "// SPELL CHECKER": "",
+  "// ============================================================================": "",
+  "cSpell.words": [
+    "Clarity",
+    "lucide",
+    "radix",
+    "tanstack",
+    "vitest",
+    "pnpm",
+    "tsup",
+    "Anthropic",
+    "OpenAI",
+    "tailwindcss",
+    "framer",
+    "isomorphic",
+    "dompurify",
+    "sonner",
+    "zod"
+  ],
+  "cSpell.enableFiletypes": [
+    "typescript",
+    "typescriptreact",
+    "javascript",
+    "javascriptreact",
+    "markdown"
+  ],
+
+  "// ============================================================================": "",
+  "// TERMINAL": "",
+  "// ============================================================================": "",
+  "terminal.integrated.defaultProfile.osx": "zsh",
+  "terminal.integrated.fontSize": 13,
+  "terminal.integrated.lineHeight": 1.4,
+  "terminal.integrated.cursorBlinking": true,
+
+  "// ============================================================================": "",
+  "// WINDOW": "",
+  "// ============================================================================": "",
+  "window.title": "${rootName}${separator}${activeEditorShort}",
+  "window.zoomLevel": 0,
+
+  "// ============================================================================": "",
+  "// WORKBENCH": "",
+  "// ============================================================================": "",
+  "workbench.colorTheme": "Default Dark+",
+  "workbench.iconTheme": "vs-seti",
+  "workbench.editor.enablePreview": false,
+  "workbench.editor.highlightModifiedTabs": true,
+  "workbench.startupEditor": "welcomePage"
+}

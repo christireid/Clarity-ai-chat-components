@@ -4,6 +4,8 @@
  * Structured logging utility with log levels, namespaces, and request tracking.
  * Supports both pretty-printed and JSON output formats.
  *
+ * SECURITY: Automatically redacts sensitive information (API keys, passwords, tokens)
+ * from log output to prevent secret leakage.
  *
  * @example
  * ```ts
@@ -14,6 +16,126 @@
  * logger.debug('Debug info') // Only shown when DEBUG=true
  * ```
  */
+
+/**
+ * Sensitive patterns to detect and redact in logs
+ * Prevents accidental exposure of secrets, API keys, passwords, and tokens
+ */
+const SENSITIVE_PATTERNS = [
+  // API keys (various formats)
+  /\b(api[_-]?key|apikey)[\s:=]+['"]?([a-zA-Z0-9_-]{16,})['"]?/gi,
+  // Bearer tokens
+  /\b(bearer|authorization)[\s:]+(['"]?)(bearer\s+)?([a-zA-Z0-9_.]{20,})\2/gi,
+  // Passwords
+  /\b(password|passwd|pwd)[\s:=]+['"]?([^\s'"]{6,})['"]?/gi,
+  // Secret keys
+  /\b(secret[_-]?key|secretkey)[\s:=]+['"]?([a-zA-Z0-9_-]{16,})['"]?/gi,
+  // AWS keys
+  /\b(AWS|aws)[_-]?(SECRET|secret)[_-]?(ACCESS|access)[_-]?(KEY|key)[\s:=]+['"]?([a-zA-Z0-9/+=]{40})['"]?/gi,
+  // Private keys (PEM format indicators)
+  /-----BEGIN\s+(RSA\s+)?PRIVATE\s+KEY-----[\s\S]+?-----END\s+(RSA\s+)?PRIVATE\s+KEY-----/gi,
+  // JWT tokens (3 base64 segments separated by dots)
+  /\beyJ[a-zA-Z0-9_-]+\.eyJ[a-zA-Z0-9_-]+\.[a-zA-Z0-9_-]+/g,
+  // Generic tokens
+  /\b(token|auth[_-]?token)[\s:=]+['"]?([a-zA-Z0-9_.]{20,})['"]?/gi,
+] as const
+
+/**
+ * Sensitive field names to redact in objects
+ */
+const SENSITIVE_FIELDS = new Set([
+  'password',
+  'passwd',
+  'pwd',
+  'secret',
+  'token',
+  'apiKey',
+  'api_key',
+  'apikey',
+  'accessToken',
+  'access_token',
+  'refreshToken',
+  'refresh_token',
+  'privateKey',
+  'private_key',
+  'secretKey',
+  'secret_key',
+  'authorization',
+  'auth',
+  'credentials',
+])
+
+/**
+ * Redact secrets from a string
+ */
+function redactSecretsFromString(str: string): string {
+  let redacted = str
+  for (const pattern of SENSITIVE_PATTERNS) {
+    redacted = redacted.replace(pattern, (match) => {
+      // Keep the field name/prefix visible for debugging context
+      const colonIndex = match.indexOf(':')
+      const equalsIndex = match.indexOf('=')
+      const splitIndex = Math.max(colonIndex, equalsIndex)
+
+      if (splitIndex > 0) {
+        const prefix = match.substring(0, splitIndex + 1)
+        return `${prefix} [REDACTED]`
+      }
+      return '[REDACTED]'
+    })
+  }
+  return redacted
+}
+
+/**
+ * Redact secrets from an object (recursive)
+ */
+function redactSecretsFromObject(obj: unknown): unknown {
+  if (obj === null || obj === undefined) {
+    return obj
+  }
+
+  if (typeof obj === 'string') {
+    return redactSecretsFromString(obj)
+  }
+
+  if (typeof obj !== 'object') {
+    return obj
+  }
+
+  if (Array.isArray(obj)) {
+    return obj.map(redactSecretsFromObject)
+  }
+
+  const redacted: Record<string, unknown> = {}
+  for (const [key, value] of Object.entries(obj)) {
+    const lowerKey = key.toLowerCase()
+
+    // Check if field name is sensitive
+    if (SENSITIVE_FIELDS.has(lowerKey)) {
+      redacted[key] = '[REDACTED]'
+      continue
+    }
+
+    // Recursively redact nested objects
+    if (typeof value === 'string') {
+      redacted[key] = redactSecretsFromString(value)
+    } else if (typeof value === 'object' && value !== null) {
+      redacted[key] = redactSecretsFromObject(value)
+    } else {
+      redacted[key] = value
+    }
+  }
+
+  return redacted
+}
+
+/**
+ * Redact secrets from log arguments
+ */
+function redactSecrets(args: unknown[]): unknown[] {
+  return args.map(redactSecretsFromObject)
+}
 
 /**
  * Log level enum for filtering output
@@ -206,36 +328,54 @@ export function getLogger(
   ): void => {
     if (!shouldLog(logLevel)) return
 
+    // Redact secrets from message and args before logging
+    const redactedMessage = redactSecretsFromString(message)
+    const redactedArgs = redactSecrets(args)
+
     const entry: LogEntry = {
       timestamp: new Date().toISOString(),
       level: logLevel,
       namespace,
-      message,
-      data: args.length > 0 ? args : undefined,
+      message: redactedMessage,
+      data: redactedArgs.length > 0 ? redactedArgs : undefined,
       error,
     }
 
-    const consoleFn =
-      logLevel === LogLevel.ERROR
-        ? console.error
-        : logLevel === LogLevel.WARN
-          ? console.warn
-          : console.log
+    // Allow logging in development, test, or when NODE_ENV is not set (default to logging)
+    const shouldOutput =
+      process.env.NODE_ENV === 'development' ||
+      process.env.NODE_ENV === 'test' ||
+      !process.env.NODE_ENV
 
-    const isJsonMode =
-      globalOptions.jsonOutput ||
-      (typeof process !== 'undefined' && process.env?.JSON_LOGS)
+    if (shouldOutput) {
+      const consoleFn =
+        logLevel === LogLevel.ERROR
+          ? console.error
+          : logLevel === LogLevel.WARN
+            ? console.warn
+            : console.log
 
-    if (isJsonMode) {
-      consoleFn(formatLogEntry(entry))
-    } else {
-      consoleFn(formatPrefix(LOG_ICONS[levelKey]), message, ...args)
+      const isJsonMode =
+        globalOptions.jsonOutput ||
+        (typeof process !== 'undefined' && process.env?.JSON_LOGS)
 
-      if (
-        error?.stack &&
-        (globalOptions.verbose || logLevel === LogLevel.ERROR)
-      ) {
-        console.error(error.stack)
+      if (isJsonMode) {
+        consoleFn(formatLogEntry(entry))
+      } else {
+        consoleFn(
+          formatPrefix(LOG_ICONS[levelKey]),
+          redactedMessage,
+          ...redactedArgs
+        )
+
+        if (
+          error?.stack &&
+          (globalOptions.verbose || logLevel === LogLevel.ERROR)
+        ) {
+          // Redact secrets from error stack traces
+          const redactedStack = redactSecretsFromString(error.stack)
+          console.error(redactedStack)
+        }
       }
     }
   }

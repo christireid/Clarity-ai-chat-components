@@ -7,7 +7,7 @@ export default defineConfig({
     environment: 'node',
     environmentMatchGlobs: [
       // Use jsdom for React hook tests
-      ['src/__tests__/hooks/**', 'jsdom'],
+      ['src/hooks/**', 'jsdom'],
     ],
     include: ['src/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
     exclude: ['node_modules', 'dist', 'coverage'],

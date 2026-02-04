@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { TokenCounter } from '@clarity-chat/react/components/token-counter';
+import { TokenCounter } from '@clarity-chat/react/components/TokenCounter';
 declare const meta: Meta<typeof TokenCounter>;
 export default meta;
 type Story = StoryObj<typeof TokenCounter>;

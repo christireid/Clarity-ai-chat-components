@@ -44,6 +44,7 @@ export function SuccessCelebration({
     <motion.div
       initial={{ opacity: 0, scale: 0.95 }}
       animate={{ opacity: 1, scale: 1 }}
+      viewport={{ once: true }}
       transition={{ duration: durations.slow, ease: [0.25, 0.1, 0.25, 1] }}
       className="my-8 p-6 rounded-2xl bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-950/40 dark:to-emerald-950/40 border-2 border-green-200 dark:border-green-800 relative overflow-hidden"
     >
@@ -62,6 +63,7 @@ export function SuccessCelebration({
               y: '-100%',
               opacity: [0, 1, 0],
             }}
+            viewport={{ once: true }}
             transition={{
               duration: 3 + Math.random() * 2,
               delay: i * 0.5,
@@ -77,6 +79,7 @@ export function SuccessCelebration({
         <motion.div
           initial={{ scale: 0, rotate: -180 }}
           animate={{ scale: 1, rotate: 0 }}
+          viewport={{ once: true }}
           transition={{
             type: 'spring',
             stiffness: 200,
@@ -91,12 +94,14 @@ export function SuccessCelebration({
           <motion.h3
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
             transition={{ delay: 0.3 }}
             className="text-xl font-bold text-green-800 dark:text-green-300 flex items-center gap-2"
           >
             {title}
             <motion.span
               animate={{ rotate: [0, 15, -15, 0] }}
+              viewport={{ once: true }}
               transition={{ duration: durations.slow, delay: 0.5, repeat: 2 }}
             >
               🎉
@@ -105,6 +110,7 @@ export function SuccessCelebration({
           <motion.p
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
             transition={{ delay: 0.4 }}
             className="text-green-700 dark:text-green-400 mt-1"
           >
@@ -117,6 +123,7 @@ export function SuccessCelebration({
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
         transition={{ delay: 0.5 }}
         className="flex items-center gap-2 mb-6 px-4 py-2 rounded-full bg-green-100 dark:bg-green-900/50 w-fit"
       >
@@ -130,6 +137,7 @@ export function SuccessCelebration({
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
         transition={{ delay: 0.6 }}
         className="grid sm:grid-cols-3 gap-3"
       >
@@ -138,6 +146,7 @@ export function SuccessCelebration({
             key={step.href}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
             transition={{ delay: 0.7 + index * 0.1 }}
             whileHover={{ scale: 1.02, y: -2 }}
             whileTap={{ scale: 0.98 }}

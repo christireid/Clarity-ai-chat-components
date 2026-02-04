@@ -1,0 +1,631 @@
+{
+  "generatedAt": "2026-01-28T00:00:00Z",
+  "totalAPIs": 200,
+  "tokenOptimizationAPIs": 87,
+  "taggedAPIs": {
+    "HIGHEST_PRIORITY": {
+      "count": 45,
+      "apis": [
+        {
+          "name": "AccurateTokenCounter",
+          "type": "class",
+          "module": "tokenizers/accurate-counter",
+          "tags": ["token", "counting", "core"],
+          "savingsMechanism": "Accurate token counting prevents over-estimation",
+          "estimatedSavings": "5-10%",
+          "reason": "Foundation for all optimization - accurate counting prevents waste"
+        },
+        {
+          "name": "ProviderNativeCounter",
+          "type": "class",
+          "module": "tokenizers/provider-native-counter",
+          "tags": ["token", "counting", "provider", "accurate"],
+          "savingsMechanism": "100% accurate counting via provider APIs",
+          "estimatedSavings": "5-10%",
+          "reason": "Most accurate counting - eliminates estimation errors"
+        },
+        {
+          "name": "TieredCache",
+          "type": "class",
+          "module": "cache/tiered-cache",
+          "tags": ["cache", "caching", "optimization", "cost-reduction"],
+          "savingsMechanism": "3-tier cache (exact, smart, semantic) avoids redundant API calls",
+          "estimatedSavings": "30-60%",
+          "reason": "#1 cost saver - prevents duplicate processing"
+        },
+        {
+          "name": "ExactCache",
+          "type": "class",
+          "module": "cache/exact-cache",
+          "tags": ["cache", "caching", "optimization"],
+          "savingsMechanism": "O(1) exact match cache",
+          "estimatedSavings": "20-40%",
+          "reason": "Fastest cache tier for repeated prompts"
+        },
+        {
+          "name": "SmartCache",
+          "type": "class",
+          "module": "cache/smart-cache",
+          "tags": ["cache", "caching", "pattern", "optimization"],
+          "savingsMechanism": "Pattern matching for similar prompts",
+          "estimatedSavings": "15-30%",
+          "reason": "Catches variations of same prompt"
+        },
+        {
+          "name": "AdvancedSemanticCache",
+          "type": "class",
+          "module": "caching/advanced-semantic-cache",
+          "tags": ["cache", "caching", "semantic", "optimization"],
+          "savingsMechanism": "Semantic similarity matching",
+          "estimatedSavings": "10-25%",
+          "reason": "Finds semantically similar cached responses"
+        },
+        {
+          "name": "ProviderCachingFormatter",
+          "type": "class",
+          "module": "providers/prompt-caching",
+          "tags": ["cache", "provider", "anthropic", "openai", "google", "optimization"],
+          "savingsMechanism": "Provider-native caching (Anthropic, OpenAI, Google)",
+          "estimatedSavings": "50-90%",
+          "reason": "**HIGHEST IMPACT** - Provider caching = massive savings"
+        },
+        {
+          "name": "anthropicCache",
+          "type": "function",
+          "module": "providers/prompt-caching",
+          "tags": ["cache", "provider", "anthropic", "optimization"],
+          "savingsMechanism": "Anthropic prompt caching",
+          "estimatedSavings": "50-90%",
+          "reason": "Simple API for Anthropic caching"
+        },
+        {
+          "name": "openaiCache",
+          "type": "function",
+          "module": "providers/prompt-caching",
+          "tags": ["cache", "provider", "openai", "optimization"],
+          "savingsMechanism": "OpenAI prompt caching",
+          "estimatedSavings": "50%",
+          "reason": "Simple API for OpenAI caching"
+        },
+        {
+          "name": "googleCache",
+          "type": "function",
+          "module": "providers/prompt-caching",
+          "tags": ["cache", "provider", "google", "gemini", "optimization"],
+          "savingsMechanism": "Google Gemini context caching",
+          "estimatedSavings": "50-75%",
+          "reason": "Simple API for Gemini caching"
+        },
+        {
+          "name": "quickCache",
+          "type": "function",
+          "module": "providers/simple-caching",
+          "tags": ["cache", "provider", "optimization"],
+          "savingsMechanism": "Auto-detect provider and apply caching",
+          "estimatedSavings": "50-90%",
+          "reason": "Easiest way to add provider caching"
+        },
+        {
+          "name": "LLMLinguaCompressor",
+          "type": "class",
+          "module": "compression/strategies/llmlingua",
+          "tags": ["compress", "compression", "token-reduction", "optimization"],
+          "savingsMechanism": "LLM-based compression preserving semantics",
+          "estimatedSavings": "40-60%",
+          "reason": "High-quality compression with minimal quality loss"
+        },
+        {
+          "name": "ExtractiveCompressor",
+          "type": "class",
+          "module": "compression/strategies/extractive",
+          "tags": ["compress", "compression", "token-reduction", "optimization"],
+          "savingsMechanism": "Extract key sentences",
+          "estimatedSavings": "30-50%",
+          "reason": "Fast compression for long documents"
+        },
+        {
+          "name": "AdaptiveCompressor",
+          "type": "class",
+          "module": "compression/strategies/adaptive",
+          "tags": ["compress", "compression", "token-reduction", "optimization", "adaptive"],
+          "savingsMechanism": "Auto-select best compression strategy",
+          "estimatedSavings": "35-55%",
+          "reason": "Intelligent compression selection"
+        },
+        {
+          "name": "compressAdaptively",
+          "type": "function",
+          "module": "compression",
+          "tags": ["compress", "compression", "token-reduction", "optimization"],
+          "savingsMechanism": "Adaptive compression function",
+          "estimatedSavings": "35-55%",
+          "reason": "Recommended compression API"
+        },
+        {
+          "name": "MarkdownCompressor",
+          "type": "class",
+          "module": "compression/markdown-compressor",
+          "tags": ["compress", "compression", "markdown", "optimization"],
+          "savingsMechanism": "Markdown-specific compression",
+          "estimatedSavings": "20-40%",
+          "reason": "Optimized for markdown content"
+        },
+        {
+          "name": "ModelRouter",
+          "type": "class",
+          "module": "routing/model-router",
+          "tags": ["route", "routing", "cost-optimization", "model-selection"],
+          "savingsMechanism": "Route to cost-optimal model based on complexity",
+          "estimatedSavings": "30-50%",
+          "reason": "Avoid using expensive models for simple tasks"
+        },
+        {
+          "name": "ComplexityAnalyzer",
+          "type": "class",
+          "module": "routing/complexity-analyzer",
+          "tags": ["route", "routing", "complexity", "optimization"],
+          "savingsMechanism": "Analyze prompt complexity for routing",
+          "estimatedSavings": "indirect",
+          "reason": "Foundation for smart routing decisions"
+        },
+        {
+          "name": "calculateCost",
+          "type": "function",
+          "module": "models/model-pricing",
+          "tags": ["cost", "pricing", "calculation"],
+          "savingsMechanism": "Calculate actual request cost",
+          "estimatedSavings": "awareness",
+          "reason": "Cost visibility for optimization decisions"
+        },
+        {
+          "name": "calculateCacheSavings",
+          "type": "function",
+          "module": "models/model-pricing",
+          "tags": ["cost", "cache", "savings", "calculation"],
+          "savingsMechanism": "Calculate cache savings",
+          "estimatedSavings": "awareness",
+          "reason": "Quantify cache impact"
+        },
+        {
+          "name": "CostAwareOptimizer",
+          "type": "class",
+          "module": "cost/cost-aware-optimizer",
+          "tags": ["cost", "optimization", "budget"],
+          "savingsMechanism": "Budget-aware optimization strategy selection",
+          "estimatedSavings": "20-40%",
+          "reason": "Optimize within budget constraints"
+        },
+        {
+          "name": "CostTracker",
+          "type": "class",
+          "module": "analytics/cost-calculator",
+          "tags": ["cost", "tracking", "analytics"],
+          "savingsMechanism": "Track costs and savings over time",
+          "estimatedSavings": "awareness",
+          "reason": "Monitor optimization effectiveness"
+        },
+        {
+          "name": "estimatePotentialSavings",
+          "type": "function",
+          "module": "analytics/cost-calculator",
+          "tags": ["cost", "estimate", "savings"],
+          "savingsMechanism": "Estimate savings from optimization",
+          "estimatedSavings": "awareness",
+          "reason": "Project optimization ROI"
+        },
+        {
+          "name": "useTokenCount",
+          "type": "hook",
+          "module": "hooks/use-token-count",
+          "tags": ["token", "counting", "react", "hook"],
+          "savingsMechanism": "Real-time token counting in React",
+          "estimatedSavings": "awareness",
+          "reason": "Most popular hook - simple token counting"
+        },
+        {
+          "name": "useTokenOptimization",
+          "type": "hook",
+          "module": "hooks/use-token-optimization",
+          "tags": ["optimization", "react", "hook", "unified"],
+          "savingsMechanism": "All-in-one optimization hook",
+          "estimatedSavings": "30-70%",
+          "reason": "Unified API for all optimization features"
+        },
+        {
+          "name": "useTieredCache",
+          "type": "hook",
+          "module": "hooks/use-tiered-cache",
+          "tags": ["cache", "caching", "react", "hook"],
+          "savingsMechanism": "React hook for tiered caching",
+          "estimatedSavings": "30-60%",
+          "reason": "Easy caching integration in React"
+        },
+        {
+          "name": "useModelRouter",
+          "type": "hook",
+          "module": "hooks/use-model-router",
+          "tags": ["route", "routing", "react", "hook"],
+          "savingsMechanism": "React hook for model routing",
+          "estimatedSavings": "30-50%",
+          "reason": "Smart routing in React apps"
+        },
+        {
+          "name": "useOptimizationPipeline",
+          "type": "hook",
+          "module": "hooks/use-optimization-pipeline",
+          "tags": ["optimization", "pipeline", "react", "hook"],
+          "savingsMechanism": "Full optimization pipeline hook",
+          "estimatedSavings": "40-70%",
+          "reason": "Complete optimization flow in React"
+        },
+        {
+          "name": "useTokenBudgetTracking",
+          "type": "hook",
+          "module": "hooks/use-token-budget-tracking",
+          "tags": ["budget", "tracking", "react", "hook"],
+          "savingsMechanism": "Track token budget usage",
+          "estimatedSavings": "awareness + prevention",
+          "reason": "Prevent budget overruns"
+        },
+        {
+          "name": "estimateTokens",
+          "type": "function",
+          "module": "utils/token-estimation",
+          "tags": ["token", "estimate", "estimation"],
+          "savingsMechanism": "Fast token estimation",
+          "estimatedSavings": "awareness",
+          "reason": "Quick estimation without full tokenization"
+        },
+        {
+          "name": "countConversationTokens",
+          "type": "function",
+          "module": "utils/token-estimation",
+          "tags": ["token", "counting", "conversation"],
+          "savingsMechanism": "Count tokens in conversation",
+          "estimatedSavings": "awareness",
+          "reason": "Multi-turn conversation counting"
+        },
+        {
+          "name": "MemoryTokenBudgetManager",
+          "type": "class",
+          "module": "budget/memory-budget",
+          "tags": ["budget", "memory", "allocation", "optimization"],
+          "savingsMechanism": "Allocate token budget across memory types",
+          "estimatedSavings": "10-20%",
+          "reason": "Optimize memory usage"
+        },
+        {
+          "name": "TextChunker",
+          "type": "class",
+          "module": "chunking/text-chunker",
+          "tags": ["chunking", "optimization"],
+          "savingsMechanism": "Split text into optimal chunks",
+          "estimatedSavings": "5-15%",
+          "reason": "Avoid context window overflow"
+        },
+        {
+          "name": "ToonOptimizer",
+          "type": "class",
+          "module": "formats/toon-optimizer",
+          "tags": ["format", "optimization", "toon", "compress"],
+          "savingsMechanism": "TOON format compression",
+          "estimatedSavings": "15-30%",
+          "reason": "Efficient object serialization"
+        },
+        {
+          "name": "MarkdownOptimizer",
+          "type": "class",
+          "module": "formats/markdown-optimizer",
+          "tags": ["format", "optimization", "markdown"],
+          "savingsMechanism": "Markdown optimization",
+          "estimatedSavings": "20-40%",
+          "reason": "Strip unnecessary markdown syntax"
+        },
+        {
+          "name": "HTMLOptimizer",
+          "type": "class",
+          "module": "formats/html-optimizer",
+          "tags": ["format", "optimization", "html"],
+          "savingsMechanism": "HTML to text/markdown conversion",
+          "estimatedSavings": "30-50%",
+          "reason": "Remove HTML overhead"
+        },
+        {
+          "name": "normalizeWhitespace",
+          "type": "function",
+          "module": "compression",
+          "tags": ["compress", "optimization", "whitespace"],
+          "savingsMechanism": "Normalize whitespace",
+          "estimatedSavings": "5-10%",
+          "reason": "Remove redundant whitespace"
+        },
+        {
+          "name": "recommendStrategy",
+          "type": "function",
+          "module": "compression",
+          "tags": ["compress", "optimization", "recommendation"],
+          "savingsMechanism": "Recommend best compression strategy",
+          "estimatedSavings": "indirect",
+          "reason": "Guide optimal compression choice"
+        },
+        {
+          "name": "TokenBudgetBar",
+          "type": "component",
+          "module": "components/token-budget-bar",
+          "tags": ["component", "budget", "visualization", "react"],
+          "savingsMechanism": "Visual token budget indicator",
+          "estimatedSavings": "awareness + UI",
+          "reason": "User-facing budget visualization"
+        },
+        {
+          "name": "AccessibleTokenDisplay",
+          "type": "component",
+          "module": "accessibility/token-display",
+          "tags": ["component", "accessibility", "token", "react"],
+          "savingsMechanism": "Accessible token display",
+          "estimatedSavings": "awareness + accessibility",
+          "reason": "WCAG compliant token display"
+        },
+        {
+          "name": "createOptimizer",
+          "type": "function",
+          "module": "factory",
+          "tags": ["factory", "optimization", "unified"],
+          "savingsMechanism": "Create unified optimizer instance",
+          "estimatedSavings": "30-70%",
+          "reason": "Simple API for all optimization features"
+        },
+        {
+          "name": "DEFAULTS",
+          "type": "constant",
+          "module": "defaults",
+          "tags": ["defaults", "configuration"],
+          "savingsMechanism": "Sensible defaults for optimization",
+          "estimatedSavings": "indirect",
+          "reason": "Zero-config optimization"
+        },
+        {
+          "name": "PRESETS",
+          "type": "constant",
+          "module": "defaults",
+          "tags": ["presets", "configuration", "optimization"],
+          "savingsMechanism": "Named optimization presets",
+          "estimatedSavings": "indirect",
+          "reason": "Quick preset-based setup"
+        },
+        {
+          "name": "MemoryExtractStrategy",
+          "type": "class",
+          "module": "compression/strategies/memory-extract",
+          "tags": ["compress", "compression", "memory", "optimization"],
+          "savingsMechanism": "Extract key memory content",
+          "estimatedSavings": "30-50%",
+          "reason": "Memory-specific compression"
+        },
+        {
+          "name": "MemorySummarizeStrategy",
+          "type": "class",
+          "module": "compression/strategies/memory-summarize",
+          "tags": ["compress", "compression", "memory", "summarize", "optimization"],
+          "savingsMechanism": "Summarize memory content",
+          "estimatedSavings": "40-60%",
+          "reason": "Condensed memory representation"
+        },
+        {
+          "name": "MemoryAdaptiveStrategy",
+          "type": "class",
+          "module": "compression/strategies/memory-adaptive",
+          "tags": ["compress", "compression", "memory", "adaptive", "optimization"],
+          "savingsMechanism": "Adaptive memory compression",
+          "estimatedSavings": "35-55%",
+          "reason": "Intelligent memory optimization"
+        }
+      ]
+    },
+    "MEDIUM_PRIORITY": {
+      "count": 32,
+      "apis": [
+        {
+          "name": "MODEL_REGISTRY",
+          "type": "constant",
+          "module": "models/model-registry",
+          "tags": ["model", "registry", "configuration"],
+          "reason": "Foundation for model information"
+        },
+        {
+          "name": "MODEL_PRICING",
+          "type": "constant",
+          "module": "models/model-pricing",
+          "tags": ["model", "pricing", "cost"],
+          "reason": "Pricing information for all models"
+        },
+        {
+          "name": "getAllModelIds",
+          "type": "function",
+          "module": "models/model-registry",
+          "tags": ["model", "query"],
+          "reason": "Query available models"
+        },
+        {
+          "name": "getModelsByProvider",
+          "type": "function",
+          "module": "models/model-registry",
+          "tags": ["model", "query", "provider"],
+          "reason": "Filter models by provider"
+        },
+        {
+          "name": "registerModel",
+          "type": "function",
+          "module": "models/model-registry",
+          "tags": ["model", "registration", "custom"],
+          "reason": "Add custom models"
+        },
+        {
+          "name": "getModelPricing",
+          "type": "function",
+          "module": "models/model-pricing",
+          "tags": ["model", "pricing", "query"],
+          "reason": "Get pricing for specific model"
+        },
+        {
+          "name": "modelSupportsCaching",
+          "type": "function",
+          "module": "models/model-pricing",
+          "tags": ["model", "cache", "query"],
+          "reason": "Check if model supports caching"
+        },
+        {
+          "name": "compareModelCosts",
+          "type": "function",
+          "module": "models/model-pricing",
+          "tags": ["model", "cost", "comparison"],
+          "reason": "Compare costs across models"
+        },
+        {
+          "name": "recommendModel",
+          "type": "function",
+          "module": "models/model-pricing",
+          "tags": ["model", "recommendation"],
+          "reason": "Recommend model based on requirements"
+        }
+      ]
+    },
+    "LOW_PRIORITY": {
+      "count": 10,
+      "apis": [
+        {
+          "name": "TokenSecurityManager",
+          "type": "class",
+          "module": "security/token-security",
+          "tags": ["security", "validation"],
+          "reason": "Input validation and security"
+        },
+        {
+          "name": "HealthChecker",
+          "type": "class",
+          "module": "health",
+          "tags": ["health", "monitoring"],
+          "reason": "System health monitoring"
+        },
+        {
+          "name": "CircuitBreaker",
+          "type": "class",
+          "module": "resilience/circuit-breaker",
+          "tags": ["resilience", "reliability"],
+          "reason": "Fault tolerance pattern"
+        },
+        {
+          "name": "QualityGate",
+          "type": "class",
+          "module": "quality/quality-gate",
+          "tags": ["quality", "validation"],
+          "reason": "Quality validation"
+        },
+        {
+          "name": "Logger",
+          "type": "class",
+          "module": "observability",
+          "tags": ["logging", "observability"],
+          "reason": "Logging utilities"
+        },
+        {
+          "name": "MetricsCollector",
+          "type": "class",
+          "module": "observability",
+          "tags": ["metrics", "observability"],
+          "reason": "Metrics collection"
+        },
+        {
+          "name": "Tracer",
+          "type": "class",
+          "module": "observability",
+          "tags": ["tracing", "observability"],
+          "reason": "Distributed tracing"
+        },
+        {
+          "name": "announce",
+          "type": "function",
+          "module": "accessibility/announcer",
+          "tags": ["accessibility", "a11y"],
+          "reason": "Screen reader announcements"
+        },
+        {
+          "name": "useTokenAnnouncer",
+          "type": "hook",
+          "module": "accessibility/hooks",
+          "tags": ["accessibility", "a11y", "react"],
+          "reason": "Accessibility hook"
+        }
+      ]
+    }
+  },
+  "tagKeywords": {
+    "token": 15,
+    "optimize": 28,
+    "optimization": 28,
+    "cache": 18,
+    "caching": 12,
+    "route": 5,
+    "routing": 5,
+    "batch": 0,
+    "compress": 18,
+    "compression": 18,
+    "reduce": 2,
+    "reduction": 2,
+    "cost": 12,
+    "pricing": 4,
+    "estimate": 4,
+    "calculate": 3,
+    "savings": 4,
+    "budget": 5
+  },
+  "savingsBreakdown": {
+    "providerNativeCaching": {
+      "range": "50-90%",
+      "apis": ["ProviderCachingFormatter", "anthropicCache", "openaiCache", "googleCache", "quickCache"],
+      "impact": "HIGHEST"
+    },
+    "compression": {
+      "range": "30-60%",
+      "apis": ["LLMLinguaCompressor", "ExtractiveCompressor", "AdaptiveCompressor", "MarkdownCompressor"],
+      "impact": "HIGH"
+    },
+    "tieredCaching": {
+      "range": "30-60%",
+      "apis": ["TieredCache", "ExactCache", "SmartCache", "AdvancedSemanticCache"],
+      "impact": "HIGH"
+    },
+    "smartRouting": {
+      "range": "30-50%",
+      "apis": ["ModelRouter", "ComplexityAnalyzer"],
+      "impact": "HIGH"
+    },
+    "accurateCounting": {
+      "range": "5-10%",
+      "apis": ["AccurateTokenCounter", "ProviderNativeCounter"],
+      "impact": "MEDIUM"
+    },
+    "budgetManagement": {
+      "range": "10-20%",
+      "apis": ["CostAwareOptimizer", "MemoryTokenBudgetManager", "useTokenBudgetTracking"],
+      "impact": "MEDIUM"
+    }
+  },
+  "combinedSavingsScenarios": {
+    "conservative": {
+      "techniques": ["accurateCounting", "tieredCaching", "smartRouting"],
+      "estimatedSavings": "50-70%",
+      "complexity": "LOW"
+    },
+    "balanced": {
+      "techniques": ["accurateCounting", "tieredCaching", "compression", "smartRouting"],
+      "estimatedSavings": "60-80%",
+      "complexity": "MEDIUM"
+    },
+    "aggressive": {
+      "techniques": ["providerNativeCaching", "compression", "smartRouting", "budgetManagement"],
+      "estimatedSavings": "70-90%",
+      "complexity": "HIGH"
+    }
+  }
+}

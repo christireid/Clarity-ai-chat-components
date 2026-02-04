@@ -453,5 +453,4 @@ export function getUnifiedStatusFromInvocation(
 // Exports (already exported inline above)
 // =============================================================================
 
-export type { ToolStatusVariant, UnifiedToolStatus }
-// Note: Functions are already exported inline with 'export function' syntax
+// Note: Types and functions are already exported inline with 'export' syntax above

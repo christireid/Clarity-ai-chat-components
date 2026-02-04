@@ -27,6 +27,7 @@ import { GenericClarityError } from './errors/base.js'
 import { getLogger } from './logger/index.js'
 import { isError } from './validation/index.js'
 import { formatError } from './errors/utils.js'
+import { retry } from './async/index.js'
 
 export interface ErrorContext {
   userId?: string
@@ -351,39 +352,31 @@ export class UnifiedErrorHandler {
 
   /**
    * Retry an operation with exponential backoff
+   * Uses centralized retry logic from @clarity-chat/utils/async
    */
   static async retryWithBackoff<T>(
     operation: () => Promise<T>,
     options: Partial<RetryConfig> = {}
   ): Promise<T> {
     const config = { ...this.retryConfig, ...options }
-    let lastError: Error | undefined
 
-    for (let attempt = 1; attempt <= config.maxRetries; attempt++) {
-      try {
-        return await operation()
-      } catch (error) {
-        lastError = isError(error) ? error : new Error(String(error))
-
-        if (!this.isRetryable(lastError) || attempt === config.maxRetries) {
-          throw lastError
-        }
-
-        const delay = Math.min(
-          config.retryDelay * Math.pow(config.backoffMultiplier, attempt - 1),
-          config.maxRetryDelay
-        )
-
+    return retry(operation, {
+      retries: config.maxRetries - 1, // retry() counts retries, not total attempts
+      delay: config.retryDelay,
+      backoffFactor: config.backoffMultiplier,
+      maxDelay: config.maxRetryDelay,
+      shouldRetry: (error) => {
+        const err = isError(error) ? error : new Error(String(error))
+        return this.isRetryable(err)
+      },
+      onRetry: (error, attempt) => {
+        const err = isError(error) ? error : new Error(String(error))
         this.logger.info(
-          `Operation failed (attempt ${attempt}/${config.maxRetries}), retrying in ${delay}ms`,
-          { error: lastError.message }
+          `Operation failed (attempt ${attempt}/${config.maxRetries}), retrying...`,
+          { error: err.message }
         )
-
-        await new Promise((resolve) => setTimeout(resolve, delay))
-      }
-    }
-
-    throw lastError || new Error('Operation failed after all retries')
+      },
+    })
   }
 
   /**

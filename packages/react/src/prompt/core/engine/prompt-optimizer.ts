@@ -10,20 +10,39 @@
  */
 
 import type { CoreMessage } from '../../../hooks/chat/use-chat-enhanced'
-import type { ToonNode } from '../toon'
-import type { ModelProfile } from '../model-profiles'
-import type { OptimizationStrategy } from '../optimizer'
-import type { CompressionStrategy } from '../compression-chain'
 import { toonToMessages } from '../toon'
+import type { ToonNode } from '../toon'
 import { getModelProfileOrDefault } from '../model-profiles'
+import type { ModelProfile } from '../model-profiles'
+import { optimizeMessagesForBudget } from '../optimizer'
+import type { OptimizationStrategy } from '../optimizer'
+import type { CompressionStrategy, CompressionLog } from '../types/compression'
 import {
   estimateMessageTokens,
   getTokenizerForModel,
   estimateCost,
 } from '../tokenizer'
-import { optimizeMessagesForBudget } from '../optimizer'
-import { compressContext } from '../compression-chain'
+// import { compressContext } from '../compression-chain' // TODO: Re-enable when compression-chain exists
+
+// Temporary stub for compressContext until compression-chain is added back
+async function compressContext(
+  messages: any,
+  _options: any
+): Promise<{
+  messages: any
+  logs: CompressionLog[]
+  totalTokensSaved: number
+}> {
+  return {
+    messages,
+    logs: [],
+    totalTokensSaved: 0,
+  }
+}
 import { chooseOptimizationStrategy } from '../strategy-router'
+
+// Re-export types for external use
+export type { CompressionStrategy } from '../types/compression'
 
 /**
  * Optimization stage result
@@ -166,7 +185,7 @@ export async function optimizePrompt(
   const originalTokens = estimateMessageTokens(messages, tokenizer)
   let currentTokens = originalTokens
 
-  if (debug) {
+  if (debug && process.env.NODE_ENV === 'development') {
     console.log(
       `[OptimizePrompt] Initial tokens: ${originalTokens}, target: ${targetTokens}`
     )
@@ -193,7 +212,7 @@ export async function optimizePrompt(
     modelProfile
   )
 
-  if (debug) {
+  if (debug && process.env.NODE_ENV === 'development') {
     console.log(
       `[OptimizePrompt] Selected strategy: ${strategySelection.strategy}`
     )

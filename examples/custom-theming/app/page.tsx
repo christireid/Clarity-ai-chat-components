@@ -1,7 +1,7 @@
 'use client'
 
 import { ThemingDemo } from '@/components/theming-demo'
-import { ErrorBoundary } from '@/components/error-boundary'
+import { ErrorBoundary } from '@/components/ErrorBoundary'
 
 export default function Home() {
   return (

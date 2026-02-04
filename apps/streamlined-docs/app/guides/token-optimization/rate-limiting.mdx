@@ -1,0 +1,2568 @@
+---
+title: 'Rate Limiting & Quota Management'
+description: 'Comprehensive guide to implementing rate limiting, quota management, and backoff strategies for AI applications'
+publishedAt: '2026-01-28'
+status: 'published'
+---
+
+import { Callout } from '@/components/Callout'
+import { CodeBlock } from '@/components/CodeBlock'
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/Tabs'
+
+# Rate Limiting & Quota Management
+
+Prevent API abuse, manage costs, and ensure fair usage with production-ready rate limiting strategies.
+
+<Callout type="info">
+  **What You'll Learn:**
+  - Token bucket algorithm implementation
+  - Per-user and per-organization quotas
+  - Exponential backoff with jitter
+  - Distributed rate limiting with Redis
+  - Client-side rate limit handling
+  - Usage analytics and alerts
+</Callout>
+
+---
+
+## Understanding Rate Limiting
+
+Rate limiting controls the frequency and volume of API requests to protect your infrastructure and manage costs. For AI applications, this is critical due to high per-request costs and resource requirements.
+
+### Why Rate Limit AI Applications?
+
+1. **Cost Control**: Prevent runaway costs from excessive API usage
+2. **Fair Usage**: Ensure all users get reasonable access
+3. **Service Stability**: Protect against DoS attacks
+4. **Provider Compliance**: Stay within provider rate limits
+5. **Budget Management**: Enforce spending limits per user/org
+
+### Key Metrics
+
+```typescript
+interface RateLimitMetrics {
+  // Request frequency
+  requestsPerSecond: number
+  requestsPerMinute: number
+  requestsPerHour: number
+  requestsPerDay: number
+
+  // Token usage
+  tokensPerMinute: number
+  tokensPerDay: number
+  tokensPerMonth: number
+
+  // Cost tracking
+  costPerRequest: number
+  costPerDay: number
+  costPerMonth: number
+
+  // Quota utilization
+  quotaUsagePercent: number
+  remainingQuota: number
+  quotaResetTime: Date
+}
+```
+
+---
+
+## Token Bucket Algorithm
+
+The token bucket algorithm is ideal for AI rate limiting because it allows burst traffic while maintaining average rate limits.
+
+### How It Works
+
+1. **Bucket** holds tokens (credits for requests)
+2. **Refill Rate** adds tokens at fixed intervals
+3. **Capacity** limits maximum burst size
+4. **Consumption** removes tokens on each request
+
+### Implementation
+
+<Tabs defaultValue="implementation">
+  <TabsList>
+    <TabsTrigger value="implementation">Implementation</TabsTrigger>
+    <TabsTrigger value="tests">Tests</TabsTrigger>
+    <TabsTrigger value="usage">Usage</TabsTrigger>
+  </TabsList>
+
+  <TabsContent value="implementation">
+```typescript
+// lib/rate-limiting/token-bucket.ts
+export interface TokenBucketConfig {
+  /** Maximum tokens the bucket can hold */
+  capacity: number
+  /** Tokens added per refill interval */
+  refillRate: number
+  /** Refill interval in milliseconds */
+  refillInterval: number
+  /** Initial tokens in bucket */
+  initialTokens?: number
+}
+
+export interface TokenBucketState {
+  tokens: number
+  lastRefill: number
+}
+
+export class TokenBucket {
+  private tokens: number
+  private lastRefill: number
+  private readonly capacity: number
+  private readonly refillRate: number
+  private readonly refillInterval: number
+
+  constructor(config: TokenBucketConfig) {
+    this.capacity = config.capacity
+    this.refillRate = config.refillRate
+    this.refillInterval = config.refillInterval
+    this.tokens = config.initialTokens ?? config.capacity
+    this.lastRefill = Date.now()
+  }
+
+  /**
+   * Attempt to consume tokens
+   * @returns true if tokens were consumed, false if insufficient
+   */
+  consume(tokens: number = 1): boolean {
+    this.refill()
+
+    if (this.tokens >= tokens) {
+      this.tokens -= tokens
+      return true
+    }
+
+    return false
+  }
+
+  /**
+   * Try to consume tokens, returning available amount
+   * Useful for partial fulfillment
+   */
+  tryConsume(tokens: number): { consumed: number; remaining: number } {
+    this.refill()
+
+    const consumed = Math.min(tokens, this.tokens)
+    this.tokens -= consumed
+
+    return {
+      consumed,
+      remaining: this.tokens,
+    }
+  }
+
+  /**
+   * Refill tokens based on elapsed time
+   */
+  private refill(): void {
+    const now = Date.now()
+    const elapsed = now - this.lastRefill
+    const intervals = Math.floor(elapsed / this.refillInterval)
+
+    if (intervals > 0) {
+      const tokensToAdd = intervals * this.refillRate
+      this.tokens = Math.min(this.capacity, this.tokens + tokensToAdd)
+      this.lastRefill = now
+    }
+  }
+
+  /**
+   * Get current bucket state
+   */
+  getState(): TokenBucketState {
+    this.refill()
+    return {
+      tokens: this.tokens,
+      lastRefill: this.lastRefill,
+    }
+  }
+
+  /**
+   * Get available tokens without refilling
+   */
+  available(): number {
+    this.refill()
+    return this.tokens
+  }
+
+  /**
+   * Calculate time until tokens are available
+   */
+  timeUntilAvailable(tokens: number): number {
+    this.refill()
+
+    if (this.tokens >= tokens) {
+      return 0
+    }
+
+    const deficit = tokens - this.tokens
+    const intervalsNeeded = Math.ceil(deficit / this.refillRate)
+    return intervalsNeeded * this.refillInterval
+  }
+
+  /**
+   * Reset bucket to initial state
+   */
+  reset(): void {
+    this.tokens = this.capacity
+    this.lastRefill = Date.now()
+  }
+
+  /**
+   * Serialize state for persistence
+   */
+  serialize(): string {
+    return JSON.stringify({
+      tokens: this.tokens,
+      lastRefill: this.lastRefill,
+      capacity: this.capacity,
+      refillRate: this.refillRate,
+      refillInterval: this.refillInterval,
+    })
+  }
+
+  /**
+   * Deserialize state from persistence
+   */
+  static deserialize(data: string): TokenBucket {
+    const state = JSON.parse(data)
+    const bucket = new TokenBucket({
+      capacity: state.capacity,
+      refillRate: state.refillRate,
+      refillInterval: state.refillInterval,
+      initialTokens: state.tokens,
+    })
+    bucket.lastRefill = state.lastRefill
+    return bucket
+  }
+}
+```
+  </TabsContent>
+
+  <TabsContent value="tests">
+```typescript
+// lib/rate-limiting/__tests__/token-bucket.test.ts
+import { describe, it, expect, beforeEach, vi } from 'vitest'
+import { TokenBucket } from '../token-bucket'
+
+describe('TokenBucket', () => {
+  beforeEach(() => {
+    vi.useFakeTimers()
+  })
+
+  describe('consume', () => {
+    it('consumes tokens when available', () => {
+      const bucket = new TokenBucket({
+        capacity: 10,
+        refillRate: 1,
+        refillInterval: 1000,
+      })
+
+      expect(bucket.consume(5)).toBe(true)
+      expect(bucket.available()).toBe(5)
+    })
+
+    it('rejects consumption when insufficient tokens', () => {
+      const bucket = new TokenBucket({
+        capacity: 10,
+        refillRate: 1,
+        refillInterval: 1000,
+      })
+
+      expect(bucket.consume(15)).toBe(false)
+      expect(bucket.available()).toBe(10)
+    })
+
+    it('allows exact capacity consumption', () => {
+      const bucket = new TokenBucket({
+        capacity: 10,
+        refillRate: 1,
+        refillInterval: 1000,
+      })
+
+      expect(bucket.consume(10)).toBe(true)
+      expect(bucket.available()).toBe(0)
+    })
+  })
+
+  describe('refill', () => {
+    it('refills tokens over time', () => {
+      const bucket = new TokenBucket({
+        capacity: 10,
+        refillRate: 2,
+        refillInterval: 1000,
+      })
+
+      bucket.consume(10)
+      expect(bucket.available()).toBe(0)
+
+      vi.advanceTimersByTime(1000)
+      expect(bucket.available()).toBe(2)
+
+      vi.advanceTimersByTime(1000)
+      expect(bucket.available()).toBe(4)
+    })
+
+    it('does not exceed capacity', () => {
+      const bucket = new TokenBucket({
+        capacity: 10,
+        refillRate: 5,
+        refillInterval: 1000,
+      })
+
+      bucket.consume(5)
+      vi.advanceTimersByTime(5000)
+
+      expect(bucket.available()).toBe(10) // Not 5 + 25
+    })
+
+    it('handles partial refill intervals', () => {
+      const bucket = new TokenBucket({
+        capacity: 10,
+        refillRate: 1,
+        refillInterval: 1000,
+      })
+
+      bucket.consume(10)
+      vi.advanceTimersByTime(500) // Half interval
+
+      expect(bucket.available()).toBe(0) // No refill yet
+    })
+  })
+
+  describe('tryConsume', () => {
+    it('consumes available tokens when request exceeds capacity', () => {
+      const bucket = new TokenBucket({
+        capacity: 10,
+        refillRate: 1,
+        refillInterval: 1000,
+      })
+
+      const result = bucket.tryConsume(15)
+
+      expect(result.consumed).toBe(10)
+      expect(result.remaining).toBe(0)
+    })
+
+    it('consumes exact amount when available', () => {
+      const bucket = new TokenBucket({
+        capacity: 10,
+        refillRate: 1,
+        refillInterval: 1000,
+      })
+
+      const result = bucket.tryConsume(5)
+
+      expect(result.consumed).toBe(5)
+      expect(result.remaining).toBe(5)
+    })
+  })
+
+  describe('timeUntilAvailable', () => {
+    it('returns 0 when tokens are available', () => {
+      const bucket = new TokenBucket({
+        capacity: 10,
+        refillRate: 1,
+        refillInterval: 1000,
+      })
+
+      expect(bucket.timeUntilAvailable(5)).toBe(0)
+    })
+
+    it('calculates wait time correctly', () => {
+      const bucket = new TokenBucket({
+        capacity: 10,
+        refillRate: 2,
+        refillInterval: 1000,
+      })
+
+      bucket.consume(10)
+
+      // Need 6 tokens, refill 2/second, need 3 intervals
+      expect(bucket.timeUntilAvailable(6)).toBe(3000)
+    })
+  })
+
+  describe('serialization', () => {
+    it('serializes and deserializes state', () => {
+      const bucket = new TokenBucket({
+        capacity: 10,
+        refillRate: 2,
+        refillInterval: 1000,
+      })
+
+      bucket.consume(5)
+      const serialized = bucket.serialize()
+
+      const restored = TokenBucket.deserialize(serialized)
+      expect(restored.available()).toBe(5)
+    })
+
+    it('preserves state across serialization', () => {
+      const bucket = new TokenBucket({
+        capacity: 100,
+        refillRate: 10,
+        refillInterval: 60000,
+      })
+
+      bucket.consume(50)
+      vi.advanceTimersByTime(30000)
+
+      const state1 = bucket.getState()
+      const restored = TokenBucket.deserialize(bucket.serialize())
+      const state2 = restored.getState()
+
+      expect(state1.tokens).toBe(state2.tokens)
+    })
+  })
+
+  describe('reset', () => {
+    it('resets to full capacity', () => {
+      const bucket = new TokenBucket({
+        capacity: 10,
+        refillRate: 1,
+        refillInterval: 1000,
+      })
+
+      bucket.consume(10)
+      expect(bucket.available()).toBe(0)
+
+      bucket.reset()
+      expect(bucket.available()).toBe(10)
+    })
+  })
+})
+```
+  </TabsContent>
+
+  <TabsContent value="usage">
+```typescript
+// Example: Basic token bucket usage
+import { TokenBucket } from '@/lib/rate-limiting/token-bucket'
+
+// Create bucket: 100 requests per minute
+const bucket = new TokenBucket({
+  capacity: 100,
+  refillRate: 100,
+  refillInterval: 60000, // 60 seconds
+})
+
+// Check if request is allowed
+if (bucket.consume(1)) {
+  await processRequest()
+} else {
+  const waitTime = bucket.timeUntilAvailable(1)
+  throw new RateLimitError(`Try again in ${waitTime}ms`)
+}
+
+// Partial consumption (for token-based APIs)
+const { consumed, remaining } = bucket.tryConsume(1000)
+const response = await callAI({ maxTokens: consumed })
+console.log(`Used ${consumed} tokens, ${remaining} remaining`)
+```
+  </TabsContent>
+</Tabs>
+
+---
+
+## Quota Management
+
+Implement per-user and per-organization quotas with usage tracking and automatic enforcement.
+
+### Quota Types
+
+```typescript
+// lib/rate-limiting/quota-types.ts
+export enum QuotaPeriod {
+  MINUTE = 'minute',
+  HOUR = 'hour',
+  DAY = 'day',
+  WEEK = 'week',
+  MONTH = 'month',
+}
+
+export enum QuotaType {
+  REQUESTS = 'requests',
+  TOKENS = 'tokens',
+  COST = 'cost',
+}
+
+export interface QuotaConfig {
+  type: QuotaType
+  period: QuotaPeriod
+  limit: number
+  warningThreshold?: number // 0-1, default 0.8
+  resetTime?: Date
+}
+
+export interface QuotaUsage {
+  used: number
+  limit: number
+  remaining: number
+  utilizationPercent: number
+  resetTime: Date
+  status: 'ok' | 'warning' | 'exceeded'
+}
+
+export interface UserQuotas {
+  userId: string
+  organizationId?: string
+  quotas: Map<string, QuotaConfig>
+  usage: Map<string, QuotaUsage>
+}
+```
+
+### Quota Manager Implementation
+
+<Tabs defaultValue="manager">
+  <TabsList>
+    <TabsTrigger value="manager">Manager</TabsTrigger>
+    <TabsTrigger value="storage">Storage</TabsTrigger>
+    <TabsTrigger value="usage">Usage</TabsTrigger>
+  </TabsList>
+
+  <TabsContent value="manager">
+```typescript
+// lib/rate-limiting/quota-manager.ts
+import { QuotaConfig, QuotaUsage, QuotaPeriod, QuotaType } from './quota-types'
+import { QuotaStorage } from './quota-storage'
+
+export interface QuotaManagerConfig {
+  storage: QuotaStorage
+  onWarning?: (usage: QuotaUsage) => void
+  onExceeded?: (usage: QuotaUsage) => void
+  onReset?: (quotaId: string) => void
+}
+
+export class QuotaManager {
+  private storage: QuotaStorage
+  private onWarning?: (usage: QuotaUsage) => void
+  private onExceeded?: (usage: QuotaUsage) => void
+  private onReset?: (quotaId: string) => void
+
+  constructor(config: QuotaManagerConfig) {
+    this.storage = config.storage
+    this.onWarning = config.onWarning
+    this.onExceeded = config.onExceeded
+    this.onReset = config.onReset
+  }
+
+  /**
+   * Check if request is within quota
+   */
+  async checkQuota(
+    userId: string,
+    quotaId: string,
+    amount: number = 1
+  ): Promise<{ allowed: boolean; usage: QuotaUsage }> {
+    const quota = await this.storage.getQuota(userId, quotaId)
+    if (!quota) {
+      throw new Error(`Quota ${quotaId} not found for user ${userId}`)
+    }
+
+    const usage = await this.getUsage(userId, quotaId)
+
+    // Check if quota needs reset
+    if (Date.now() >= usage.resetTime.getTime()) {
+      await this.resetQuota(userId, quotaId)
+      return this.checkQuota(userId, quotaId, amount)
+    }
+
+    const allowed = usage.remaining >= amount
+
+    if (!allowed && this.onExceeded) {
+      this.onExceeded(usage)
+    } else if (
+      usage.utilizationPercent >= (quota.warningThreshold ?? 0.8) &&
+      this.onWarning
+    ) {
+      this.onWarning(usage)
+    }
+
+    return { allowed, usage }
+  }
+
+  /**
+   * Consume quota
+   */
+  async consume(
+    userId: string,
+    quotaId: string,
+    amount: number = 1
+  ): Promise<QuotaUsage> {
+    const { allowed, usage } = await this.checkQuota(userId, quotaId, amount)
+
+    if (!allowed) {
+      throw new QuotaExceededError(
+        `Quota ${quotaId} exceeded. Resets at ${usage.resetTime.toISOString()}`
+      )
+    }
+
+    await this.storage.incrementUsage(userId, quotaId, amount)
+
+    return {
+      ...usage,
+      used: usage.used + amount,
+      remaining: usage.remaining - amount,
+      utilizationPercent: ((usage.used + amount) / usage.limit) * 100,
+    }
+  }
+
+  /**
+   * Get current usage
+   */
+  async getUsage(userId: string, quotaId: string): Promise<QuotaUsage> {
+    const quota = await this.storage.getQuota(userId, quotaId)
+    if (!quota) {
+      throw new Error(`Quota ${quotaId} not found`)
+    }
+
+    const used = await this.storage.getUsage(userId, quotaId)
+    const remaining = Math.max(0, quota.limit - used)
+    const utilizationPercent = (used / quota.limit) * 100
+
+    let status: QuotaUsage['status'] = 'ok'
+    if (remaining === 0) {
+      status = 'exceeded'
+    } else if (utilizationPercent >= (quota.warningThreshold ?? 0.8) * 100) {
+      status = 'warning'
+    }
+
+    return {
+      used,
+      limit: quota.limit,
+      remaining,
+      utilizationPercent,
+      resetTime: quota.resetTime ?? this.calculateResetTime(quota.period),
+      status,
+    }
+  }
+
+  /**
+   * Set quota configuration
+   */
+  async setQuota(
+    userId: string,
+    quotaId: string,
+    config: QuotaConfig
+  ): Promise<void> {
+    await this.storage.setQuota(userId, quotaId, {
+      ...config,
+      resetTime: config.resetTime ?? this.calculateResetTime(config.period),
+    })
+  }
+
+  /**
+   * Reset quota usage
+   */
+  async resetQuota(userId: string, quotaId: string): Promise<void> {
+    const quota = await this.storage.getQuota(userId, quotaId)
+    if (!quota) {
+      throw new Error(`Quota ${quotaId} not found`)
+    }
+
+    await this.storage.resetUsage(userId, quotaId)
+    await this.storage.setQuota(userId, quotaId, {
+      ...quota,
+      resetTime: this.calculateResetTime(quota.period),
+    })
+
+    if (this.onReset) {
+      this.onReset(quotaId)
+    }
+  }
+
+  /**
+   * Get all quotas for user
+   */
+  async getAllQuotas(userId: string): Promise<Map<string, QuotaUsage>> {
+    const quotaIds = await this.storage.getUserQuotaIds(userId)
+    const usages = new Map<string, QuotaUsage>()
+
+    for (const quotaId of quotaIds) {
+      usages.set(quotaId, await this.getUsage(userId, quotaId))
+    }
+
+    return usages
+  }
+
+  /**
+   * Calculate next reset time based on period
+   */
+  private calculateResetTime(period: QuotaPeriod): Date {
+    const now = new Date()
+
+    switch (period) {
+      case QuotaPeriod.MINUTE:
+        return new Date(now.getTime() + 60 * 1000)
+      case QuotaPeriod.HOUR:
+        return new Date(now.getTime() + 60 * 60 * 1000)
+      case QuotaPeriod.DAY:
+        const tomorrow = new Date(now)
+        tomorrow.setDate(tomorrow.getDate() + 1)
+        tomorrow.setHours(0, 0, 0, 0)
+        return tomorrow
+      case QuotaPeriod.WEEK:
+        const nextWeek = new Date(now)
+        nextWeek.setDate(nextWeek.getDate() + (7 - nextWeek.getDay()))
+        nextWeek.setHours(0, 0, 0, 0)
+        return nextWeek
+      case QuotaPeriod.MONTH:
+        const nextMonth = new Date(now)
+        nextMonth.setMonth(nextMonth.getMonth() + 1)
+        nextMonth.setDate(1)
+        nextMonth.setHours(0, 0, 0, 0)
+        return nextMonth
+      default:
+        throw new Error(`Unknown period: ${period}`)
+    }
+  }
+}
+
+export class QuotaExceededError extends Error {
+  constructor(message: string) {
+    super(message)
+    this.name = 'QuotaExceededError'
+  }
+}
+```
+  </TabsContent>
+
+  <TabsContent value="storage">
+```typescript
+// lib/rate-limiting/quota-storage.ts
+import { QuotaConfig } from './quota-types'
+
+/**
+ * Abstract storage interface for quota persistence
+ * Implement with Redis, PostgreSQL, or in-memory for testing
+ */
+export interface QuotaStorage {
+  /**
+   * Get quota configuration
+   */
+  getQuota(userId: string, quotaId: string): Promise<QuotaConfig | null>
+
+  /**
+   * Set quota configuration
+   */
+  setQuota(userId: string, quotaId: string, config: QuotaConfig): Promise<void>
+
+  /**
+   * Get current usage
+   */
+  getUsage(userId: string, quotaId: string): Promise<number>
+
+  /**
+   * Increment usage
+   */
+  incrementUsage(userId: string, quotaId: string, amount: number): Promise<void>
+
+  /**
+   * Reset usage to zero
+   */
+  resetUsage(userId: string, quotaId: string): Promise<void>
+
+  /**
+   * Get all quota IDs for user
+   */
+  getUserQuotaIds(userId: string): Promise<string[]>
+
+  /**
+   * Delete quota
+   */
+  deleteQuota(userId: string, quotaId: string): Promise<void>
+}
+
+/**
+ * In-memory storage (for testing/development)
+ */
+export class MemoryQuotaStorage implements QuotaStorage {
+  private quotas = new Map<string, QuotaConfig>()
+  private usage = new Map<string, number>()
+
+  private getKey(userId: string, quotaId: string): string {
+    return `${userId}:${quotaId}`
+  }
+
+  async getQuota(userId: string, quotaId: string): Promise<QuotaConfig | null> {
+    return this.quotas.get(this.getKey(userId, quotaId)) ?? null
+  }
+
+  async setQuota(
+    userId: string,
+    quotaId: string,
+    config: QuotaConfig
+  ): Promise<void> {
+    this.quotas.set(this.getKey(userId, quotaId), config)
+  }
+
+  async getUsage(userId: string, quotaId: string): Promise<number> {
+    return this.usage.get(this.getKey(userId, quotaId)) ?? 0
+  }
+
+  async incrementUsage(
+    userId: string,
+    quotaId: string,
+    amount: number
+  ): Promise<void> {
+    const key = this.getKey(userId, quotaId)
+    const current = this.usage.get(key) ?? 0
+    this.usage.set(key, current + amount)
+  }
+
+  async resetUsage(userId: string, quotaId: string): Promise<void> {
+    this.usage.set(this.getKey(userId, quotaId), 0)
+  }
+
+  async getUserQuotaIds(userId: string): Promise<string[]> {
+    const ids: string[] = []
+    for (const key of this.quotas.keys()) {
+      if (key.startsWith(`${userId}:`)) {
+        ids.push(key.split(':')[1])
+      }
+    }
+    return ids
+  }
+
+  async deleteQuota(userId: string, quotaId: string): Promise<void> {
+    const key = this.getKey(userId, quotaId)
+    this.quotas.delete(key)
+    this.usage.delete(key)
+  }
+}
+```
+  </TabsContent>
+
+  <TabsContent value="usage">
+```typescript
+// Example: Quota management
+import { QuotaManager, MemoryQuotaStorage } from '@/lib/rate-limiting'
+import { QuotaPeriod, QuotaType } from '@/lib/rate-limiting/quota-types'
+
+// Initialize quota manager
+const quotaManager = new QuotaManager({
+  storage: new MemoryQuotaStorage(),
+  onWarning: (usage) => {
+    console.warn(`Quota warning: ${usage.utilizationPercent.toFixed(0)}% used`)
+  },
+  onExceeded: (usage) => {
+    console.error(`Quota exceeded! Resets at ${usage.resetTime}`)
+  },
+})
+
+// Set user quotas
+await quotaManager.setQuota('user123', 'requests-per-minute', {
+  type: QuotaType.REQUESTS,
+  period: QuotaPeriod.MINUTE,
+  limit: 60,
+  warningThreshold: 0.8,
+})
+
+await quotaManager.setQuota('user123', 'tokens-per-day', {
+  type: QuotaType.TOKENS,
+  period: QuotaPeriod.DAY,
+  limit: 100000,
+  warningThreshold: 0.9,
+})
+
+// Check and consume quota
+async function handleRequest(userId: string, tokenCount: number) {
+  // Check request quota
+  const { allowed: requestAllowed } = await quotaManager.checkQuota(
+    userId,
+    'requests-per-minute'
+  )
+
+  if (!requestAllowed) {
+    throw new Error('Request rate limit exceeded')
+  }
+
+  // Check token quota
+  const { allowed: tokensAllowed } = await quotaManager.checkQuota(
+    userId,
+    'tokens-per-day',
+    tokenCount
+  )
+
+  if (!tokensAllowed) {
+    throw new Error('Token quota exceeded')
+  }
+
+  // Consume quotas
+  await quotaManager.consume(userId, 'requests-per-minute', 1)
+  await quotaManager.consume(userId, 'tokens-per-day', tokenCount)
+
+  // Process request
+  return await processAIRequest(tokenCount)
+}
+
+// Get usage dashboard
+async function getUsageDashboard(userId: string) {
+  const allQuotas = await quotaManager.getAllQuotas(userId)
+
+  return {
+    quotas: Array.from(allQuotas.entries()).map(([id, usage]) => ({
+      id,
+      ...usage,
+      percentage: usage.utilizationPercent.toFixed(1),
+    })),
+  }
+}
+```
+  </TabsContent>
+</Tabs>
+
+---
+
+## Backoff Strategies
+
+Implement intelligent retry logic with exponential backoff and jitter to handle rate limit errors gracefully.
+
+### Backoff Types
+
+```typescript
+// lib/rate-limiting/backoff-types.ts
+export enum BackoffStrategy {
+  /** Fixed delay between retries */
+  LINEAR = 'linear',
+  /** Exponentially increasing delay */
+  EXPONENTIAL = 'exponential',
+  /** Exponential with random jitter */
+  EXPONENTIAL_JITTER = 'exponential_jitter',
+  /** Decorrelated jitter (AWS recommended) */
+  DECORRELATED = 'decorrelated',
+}
+
+export interface BackoffConfig {
+  strategy: BackoffStrategy
+  baseDelayMs: number
+  maxDelayMs?: number
+  maxRetries?: number
+  jitterFactor?: number // 0-1, default 0.3
+}
+
+export interface RetryResult<T> {
+  success: boolean
+  data?: T
+  error?: Error
+  attempts: number
+  totalDelayMs: number
+}
+```
+
+### Backoff Implementation
+
+<Tabs defaultValue="backoff">
+  <TabsList>
+    <TabsTrigger value="backoff">Backoff</TabsTrigger>
+    <TabsTrigger value="retry">Retry Logic</TabsTrigger>
+    <TabsTrigger value="usage">Usage</TabsTrigger>
+  </TabsList>
+
+  <TabsContent value="backoff">
+```typescript
+// lib/rate-limiting/backoff.ts
+import { BackoffConfig, BackoffStrategy } from './backoff-types'
+
+export class Backoff {
+  private config: Required<BackoffConfig>
+  private attempt: number = 0
+  private lastDelay: number = 0
+
+  constructor(config: BackoffConfig) {
+    this.config = {
+      strategy: config.strategy,
+      baseDelayMs: config.baseDelayMs,
+      maxDelayMs: config.maxDelayMs ?? 60000, // 1 minute default
+      maxRetries: config.maxRetries ?? 5,
+      jitterFactor: config.jitterFactor ?? 0.3,
+    }
+  }
+
+  /**
+   * Calculate next delay
+   */
+  nextDelay(): number {
+    if (this.attempt >= this.config.maxRetries) {
+      throw new Error('Max retries exceeded')
+    }
+
+    const delay = this.calculateDelay()
+    this.lastDelay = delay
+    this.attempt++
+
+    return delay
+  }
+
+  /**
+   * Calculate delay based on strategy
+   */
+  private calculateDelay(): number {
+    switch (this.config.strategy) {
+      case BackoffStrategy.LINEAR:
+        return this.linearDelay()
+      case BackoffStrategy.EXPONENTIAL:
+        return this.exponentialDelay()
+      case BackoffStrategy.EXPONENTIAL_JITTER:
+        return this.exponentialJitterDelay()
+      case BackoffStrategy.DECORRELATED:
+        return this.decorrelatedDelay()
+      default:
+        throw new Error(`Unknown strategy: ${this.config.strategy}`)
+    }
+  }
+
+  /**
+   * Linear backoff: base * attempt
+   */
+  private linearDelay(): number {
+    const delay = this.config.baseDelayMs * (this.attempt + 1)
+    return Math.min(delay, this.config.maxDelayMs)
+  }
+
+  /**
+   * Exponential backoff: base * 2^attempt
+   */
+  private exponentialDelay(): number {
+    const delay = this.config.baseDelayMs * Math.pow(2, this.attempt)
+    return Math.min(delay, this.config.maxDelayMs)
+  }
+
+  /**
+   * Exponential backoff with jitter
+   * Adds randomness to prevent thundering herd
+   */
+  private exponentialJitterDelay(): number {
+    const exponential = this.exponentialDelay()
+    const jitter = this.config.jitterFactor
+    const randomFactor = 1 - jitter + Math.random() * jitter * 2
+    return Math.min(exponential * randomFactor, this.config.maxDelayMs)
+  }
+
+  /**
+   * Decorrelated jitter (AWS recommendation)
+   * https://aws.amazon.com/blogs/architecture/exponential-backoff-and-jitter/
+   */
+  private decorrelatedDelay(): number {
+    const min = this.config.baseDelayMs
+    const max = Math.min(
+      this.config.maxDelayMs,
+      this.lastDelay * 3 || min * 3
+    )
+    const delay = min + Math.random() * (max - min)
+    return Math.min(delay, this.config.maxDelayMs)
+  }
+
+  /**
+   * Reset backoff state
+   */
+  reset(): void {
+    this.attempt = 0
+    this.lastDelay = 0
+  }
+
+  /**
+   * Get current attempt number
+   */
+  getAttempt(): number {
+    return this.attempt
+  }
+
+  /**
+   * Check if max retries reached
+   */
+  isExhausted(): boolean {
+    return this.attempt >= this.config.maxRetries
+  }
+
+  /**
+   * Sleep for calculated delay
+   */
+  async sleep(): Promise<void> {
+    const delay = this.nextDelay()
+    return new Promise((resolve) => setTimeout(resolve, delay))
+  }
+}
+```
+  </TabsContent>
+
+  <TabsContent value="retry">
+```typescript
+// lib/rate-limiting/retry.ts
+import { Backoff } from './backoff'
+import { BackoffConfig, RetryResult } from './backoff-types'
+
+export interface RetryConfig extends BackoffConfig {
+  /** Function to determine if error is retryable */
+  isRetryable?: (error: Error) => boolean
+  /** Callback on each retry */
+  onRetry?: (attempt: number, error: Error, delayMs: number) => void
+}
+
+/**
+ * Retry a function with backoff
+ */
+export async function retry<T>(
+  fn: () => Promise<T>,
+  config: RetryConfig
+): Promise<RetryResult<T>> {
+  const backoff = new Backoff(config)
+  const isRetryable = config.isRetryable ?? defaultIsRetryable
+  let totalDelayMs = 0
+
+  while (true) {
+    try {
+      const data = await fn()
+      return {
+        success: true,
+        data,
+        attempts: backoff.getAttempt() + 1,
+        totalDelayMs,
+      }
+    } catch (error) {
+      const err = error instanceof Error ? error : new Error(String(error))
+
+      // Check if error is retryable
+      if (!isRetryable(err)) {
+        return {
+          success: false,
+          error: err,
+          attempts: backoff.getAttempt() + 1,
+          totalDelayMs,
+        }
+      }
+
+      // Check if max retries exceeded
+      if (backoff.isExhausted()) {
+        return {
+          success: false,
+          error: new Error(
+            `Max retries exceeded. Last error: ${err.message}`
+          ),
+          attempts: backoff.getAttempt(),
+          totalDelayMs,
+        }
+      }
+
+      // Calculate next delay
+      const delayMs = backoff.nextDelay()
+      totalDelayMs += delayMs
+
+      // Call retry callback
+      if (config.onRetry) {
+        config.onRetry(backoff.getAttempt(), err, delayMs)
+      }
+
+      // Wait before retry
+      await new Promise((resolve) => setTimeout(resolve, delayMs))
+    }
+  }
+}
+
+/**
+ * Default retry logic for common rate limit errors
+ */
+function defaultIsRetryable(error: Error): boolean {
+  // Check error message for rate limit indicators
+  const message = error.message.toLowerCase()
+  if (
+    message.includes('rate limit') ||
+    message.includes('too many requests') ||
+    message.includes('quota exceeded')
+  ) {
+    return true
+  }
+
+  // Check for HTTP status codes (if error includes status)
+  const status = (error as any).status || (error as any).statusCode
+  if (status === 429 || status === 503) {
+    return true
+  }
+
+  // Network errors
+  if (
+    message.includes('network') ||
+    message.includes('timeout') ||
+    message.includes('econnrefused')
+  ) {
+    return true
+  }
+
+  return false
+}
+
+/**
+ * Retry with exponential backoff and jitter (recommended)
+ */
+export async function retryWithExponentialBackoff<T>(
+  fn: () => Promise<T>,
+  options?: Partial<RetryConfig>
+): Promise<T> {
+  const result = await retry(fn, {
+    strategy: 'exponential_jitter',
+    baseDelayMs: 1000,
+    maxDelayMs: 60000,
+    maxRetries: 5,
+    jitterFactor: 0.3,
+    ...options,
+  })
+
+  if (!result.success) {
+    throw result.error
+  }
+
+  return result.data!
+}
+```
+  </TabsContent>
+
+  <TabsContent value="usage">
+```typescript
+// Example: Retry with backoff
+import { retry, retryWithExponentialBackoff } from '@/lib/rate-limiting/retry'
+import { BackoffStrategy } from '@/lib/rate-limiting/backoff-types'
+
+// Example 1: Basic retry with exponential backoff
+async function callAIWithRetry(prompt: string) {
+  return retryWithExponentialBackoff(
+    async () => {
+      const response = await fetch('/api/ai/chat', {
+        method: 'POST',
+        body: JSON.stringify({ prompt }),
+      })
+
+      if (!response.ok) {
+        throw new Error(`API error: ${response.status}`)
+      }
+
+      return response.json()
+    },
+    {
+      onRetry: (attempt, error, delayMs) => {
+        console.log(
+          `Retry attempt ${attempt} after ${delayMs}ms. Error: ${error.message}`
+        )
+      },
+    }
+  )
+}
+
+// Example 2: Custom retry logic
+async function callWithCustomRetry() {
+  const result = await retry(
+    async () => {
+      // Your API call
+      return await someAPICall()
+    },
+    {
+      strategy: BackoffStrategy.DECORRELATED,
+      baseDelayMs: 500,
+      maxDelayMs: 30000,
+      maxRetries: 10,
+      isRetryable: (error) => {
+        // Custom retry logic
+        return error.message.includes('temporary')
+      },
+      onRetry: (attempt, error, delayMs) => {
+        // Log to monitoring service
+        logRetry({ attempt, error, delayMs })
+      },
+    }
+  )
+
+  if (!result.success) {
+    throw new Error(`Failed after ${result.attempts} attempts`)
+  }
+
+  return result.data
+}
+
+// Example 3: Retry with rate limit headers
+async function callWithRateLimitHeaders(url: string) {
+  return retryWithExponentialBackoff(
+    async () => {
+      const response = await fetch(url)
+
+      // Check rate limit headers
+      const remaining = response.headers.get('X-RateLimit-Remaining')
+      const reset = response.headers.get('X-RateLimit-Reset')
+
+      if (response.status === 429 && reset) {
+        const resetTime = new Date(reset).getTime()
+        const now = Date.now()
+        const waitMs = Math.max(0, resetTime - now)
+
+        throw new Error(`Rate limited. Wait ${waitMs}ms`)
+      }
+
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`)
+      }
+
+      return response.json()
+    },
+    {
+      baseDelayMs: 2000,
+      maxRetries: 3,
+    }
+  )
+}
+```
+  </TabsContent>
+</Tabs>
+
+---
+
+## Distributed Rate Limiting
+
+For production applications, implement distributed rate limiting with Redis for consistency across multiple servers.
+
+### Redis Implementation
+
+<Tabs defaultValue="redis">
+  <TabsList>
+    <TabsTrigger value="redis">Redis Storage</TabsTrigger>
+    <TabsTrigger value="atomic">Atomic Operations</TabsTrigger>
+    <TabsTrigger value="usage">Usage</TabsTrigger>
+  </TabsList>
+
+  <TabsContent value="redis">
+```typescript
+// lib/rate-limiting/redis-storage.ts
+import { Redis } from 'ioredis'
+import { QuotaStorage } from './quota-storage'
+import { QuotaConfig } from './quota-types'
+
+export class RedisQuotaStorage implements QuotaStorage {
+  private redis: Redis
+
+  constructor(redisUrl?: string) {
+    this.redis = new Redis(redisUrl ?? process.env.REDIS_URL!)
+  }
+
+  private getQuotaKey(userId: string, quotaId: string): string {
+    return `quota:${userId}:${quotaId}`
+  }
+
+  private getUsageKey(userId: string, quotaId: string): string {
+    return `usage:${userId}:${quotaId}`
+  }
+
+  private getUserKey(userId: string): string {
+    return `user:${userId}:quotas`
+  }
+
+  async getQuota(userId: string, quotaId: string): Promise<QuotaConfig | null> {
+    const key = this.getQuotaKey(userId, quotaId)
+    const data = await this.redis.get(key)
+
+    if (!data) {
+      return null
+    }
+
+    const config = JSON.parse(data) as QuotaConfig
+    // Convert resetTime string back to Date
+    if (config.resetTime) {
+      config.resetTime = new Date(config.resetTime)
+    }
+
+    return config
+  }
+
+  async setQuota(
+    userId: string,
+    quotaId: string,
+    config: QuotaConfig
+  ): Promise<void> {
+    const key = this.getQuotaKey(userId, quotaId)
+    const userKey = this.getUserKey(userId)
+
+    // Store quota config
+    await this.redis.set(key, JSON.stringify(config))
+
+    // Add to user's quota set
+    await this.redis.sadd(userKey, quotaId)
+
+    // Set expiration if reset time is specified
+    if (config.resetTime) {
+      const ttl = Math.max(
+        1,
+        Math.ceil((config.resetTime.getTime() - Date.now()) / 1000)
+      )
+      await this.redis.expire(key, ttl)
+    }
+  }
+
+  async getUsage(userId: string, quotaId: string): Promise<number> {
+    const key = this.getUsageKey(userId, quotaId)
+    const usage = await this.redis.get(key)
+    return usage ? parseInt(usage, 10) : 0
+  }
+
+  async incrementUsage(
+    userId: string,
+    quotaId: string,
+    amount: number
+  ): Promise<void> {
+    const key = this.getUsageKey(userId, quotaId)
+    const quota = await this.getQuota(userId, quotaId)
+
+    if (!quota) {
+      throw new Error(`Quota ${quotaId} not found`)
+    }
+
+    // Atomic increment
+    await this.redis.incrby(key, amount)
+
+    // Set expiration to match quota reset time
+    if (quota.resetTime) {
+      const ttl = Math.max(
+        1,
+        Math.ceil((quota.resetTime.getTime() - Date.now()) / 1000)
+      )
+      await this.redis.expire(key, ttl)
+    }
+  }
+
+  async resetUsage(userId: string, quotaId: string): Promise<void> {
+    const key = this.getUsageKey(userId, quotaId)
+    await this.redis.del(key)
+  }
+
+  async getUserQuotaIds(userId: string): Promise<string[]> {
+    const key = this.getUserKey(userId)
+    return this.redis.smembers(key)
+  }
+
+  async deleteQuota(userId: string, quotaId: string): Promise<void> {
+    const quotaKey = this.getQuotaKey(userId, quotaId)
+    const usageKey = this.getUsageKey(userId, quotaId)
+    const userKey = this.getUserKey(userId)
+
+    await Promise.all([
+      this.redis.del(quotaKey),
+      this.redis.del(usageKey),
+      this.redis.srem(userKey, quotaId),
+    ])
+  }
+
+  /**
+   * Atomic check-and-set for race-free quota consumption
+   */
+  async atomicConsume(
+    userId: string,
+    quotaId: string,
+    amount: number
+  ): Promise<boolean> {
+    const usageKey = this.getUsageKey(userId, quotaId)
+    const quota = await this.getQuota(userId, quotaId)
+
+    if (!quota) {
+      throw new Error(`Quota ${quotaId} not found`)
+    }
+
+    // Lua script for atomic check-and-increment
+    const script = `
+      local current = tonumber(redis.call('get', KEYS[1]) or 0)
+      local limit = tonumber(ARGV[1])
+      local amount = tonumber(ARGV[2])
+
+      if current + amount <= limit then
+        redis.call('incrby', KEYS[1], amount)
+        return 1
+      else
+        return 0
+      end
+    `
+
+    const result = await this.redis.eval(
+      script,
+      1,
+      usageKey,
+      quota.limit.toString(),
+      amount.toString()
+    )
+
+    return result === 1
+  }
+
+  /**
+   * Close Redis connection
+   */
+  async close(): Promise<void> {
+    await this.redis.quit()
+  }
+}
+```
+  </TabsContent>
+
+  <TabsContent value="atomic">
+```typescript
+// lib/rate-limiting/atomic-rate-limiter.ts
+import { Redis } from 'ioredis'
+
+export interface AtomicRateLimiterConfig {
+  redis: Redis
+  keyPrefix?: string
+}
+
+export class AtomicRateLimiter {
+  private redis: Redis
+  private keyPrefix: string
+
+  constructor(config: AtomicRateLimiterConfig) {
+    this.redis = config.redis
+    this.keyPrefix = config.keyPrefix ?? 'ratelimit'
+  }
+
+  /**
+   * Token bucket with atomic operations
+   * Returns true if request is allowed
+   */
+  async checkTokenBucket(
+    key: string,
+    capacity: number,
+    refillRate: number,
+    refillIntervalMs: number
+  ): Promise<boolean> {
+    const fullKey = `${this.keyPrefix}:tb:${key}`
+
+    // Lua script for atomic token bucket
+    const script = `
+      local key = KEYS[1]
+      local capacity = tonumber(ARGV[1])
+      local refill_rate = tonumber(ARGV[2])
+      local refill_interval = tonumber(ARGV[3])
+      local now = tonumber(ARGV[4])
+
+      -- Get current state
+      local state = redis.call('hmget', key, 'tokens', 'last_refill')
+      local tokens = tonumber(state[1]) or capacity
+      local last_refill = tonumber(state[2]) or now
+
+      -- Calculate refill
+      local elapsed = now - last_refill
+      local intervals = math.floor(elapsed / refill_interval)
+
+      if intervals > 0 then
+        tokens = math.min(capacity, tokens + (intervals * refill_rate))
+        last_refill = now
+      end
+
+      -- Try to consume
+      if tokens >= 1 then
+        tokens = tokens - 1
+        redis.call('hmset', key, 'tokens', tokens, 'last_refill', last_refill)
+        redis.call('expire', key, 3600) -- 1 hour TTL
+        return 1
+      else
+        return 0
+      end
+    `
+
+    const result = await this.redis.eval(
+      script,
+      1,
+      fullKey,
+      capacity.toString(),
+      refillRate.toString(),
+      refillIntervalMs.toString(),
+      Date.now().toString()
+    )
+
+    return result === 1
+  }
+
+  /**
+   * Sliding window rate limiter
+   * Returns true if request is allowed
+   */
+  async checkSlidingWindow(
+    key: string,
+    limit: number,
+    windowMs: number
+  ): Promise<boolean> {
+    const fullKey = `${this.keyPrefix}:sw:${key}`
+    const now = Date.now()
+    const windowStart = now - windowMs
+
+    // Lua script for sliding window
+    const script = `
+      local key = KEYS[1]
+      local limit = tonumber(ARGV[1])
+      local window_start = tonumber(ARGV[2])
+      local now = tonumber(ARGV[3])
+
+      -- Remove old entries
+      redis.call('zremrangebyscore', key, '-inf', window_start)
+
+      -- Count current requests
+      local count = redis.call('zcard', key)
+
+      if count < limit then
+        -- Add current request
+        redis.call('zadd', key, now, now)
+        redis.call('expire', key, 3600)
+        return 1
+      else
+        return 0
+      end
+    `
+
+    const result = await this.redis.eval(
+      script,
+      1,
+      fullKey,
+      limit.toString(),
+      windowStart.toString(),
+      now.toString()
+    )
+
+    return result === 1
+  }
+
+  /**
+   * Fixed window counter
+   * Returns true if request is allowed
+   */
+  async checkFixedWindow(
+    key: string,
+    limit: number,
+    windowMs: number
+  ): Promise<boolean> {
+    const windowId = Math.floor(Date.now() / windowMs)
+    const fullKey = `${this.keyPrefix}:fw:${key}:${windowId}`
+
+    // Atomic increment
+    const count = await this.redis.incr(fullKey)
+
+    // Set expiration on first request
+    if (count === 1) {
+      await this.redis.pexpire(fullKey, windowMs)
+    }
+
+    return count <= limit
+  }
+
+  /**
+   * Get remaining quota
+   */
+  async getRemaining(
+    key: string,
+    limit: number,
+    windowMs: number
+  ): Promise<number> {
+    const fullKey = `${this.keyPrefix}:sw:${key}`
+    const windowStart = Date.now() - windowMs
+
+    await this.redis.zremrangebyscore(fullKey, '-inf', windowStart)
+    const count = await this.redis.zcard(fullKey)
+
+    return Math.max(0, limit - count)
+  }
+
+  /**
+   * Reset rate limit for key
+   */
+  async reset(key: string): Promise<void> {
+    const pattern = `${this.keyPrefix}:*:${key}*`
+    const keys = await this.redis.keys(pattern)
+
+    if (keys.length > 0) {
+      await this.redis.del(...keys)
+    }
+  }
+}
+```
+  </TabsContent>
+
+  <TabsContent value="usage">
+```typescript
+// Example: Using Redis rate limiter
+import { Redis } from 'ioredis'
+import { AtomicRateLimiter } from '@/lib/rate-limiting/atomic-rate-limiter'
+import { RedisQuotaStorage } from '@/lib/rate-limiting/redis-storage'
+import { QuotaManager } from '@/lib/rate-limiting/quota-manager'
+
+// Initialize Redis
+const redis = new Redis(process.env.REDIS_URL!)
+
+// Create atomic rate limiter
+const rateLimiter = new AtomicRateLimiter({ redis })
+
+// API route with rate limiting
+export async function POST(request: Request) {
+  const userId = await getUserId(request)
+
+  // Check rate limit (100 requests per minute)
+  const allowed = await rateLimiter.checkTokenBucket(
+    `user:${userId}`,
+    100, // capacity
+    100, // refill rate
+    60000 // 1 minute
+  )
+
+  if (!allowed) {
+    return new Response('Rate limit exceeded', { status: 429 })
+  }
+
+  // Process request
+  return processRequest(request)
+}
+
+// Quota management with Redis
+const storage = new RedisQuotaStorage()
+const quotaManager = new QuotaManager({ storage })
+
+// Set user quotas
+await quotaManager.setQuota('user123', 'requests-per-hour', {
+  type: 'requests',
+  period: 'hour',
+  limit: 1000,
+})
+
+// Check and consume
+const { allowed, usage } = await quotaManager.checkQuota(
+  'user123',
+  'requests-per-hour',
+  1
+)
+
+if (allowed) {
+  await quotaManager.consume('user123', 'requests-per-hour', 1)
+}
+```
+  </TabsContent>
+</Tabs>
+
+---
+
+## Client-Side Rate Limit Handling
+
+Implement graceful client-side handling of rate limits with automatic retries and user feedback.
+
+### React Hook for Rate Limiting
+
+```typescript
+// hooks/use-rate-limit.ts
+import { useState, useCallback, useRef } from 'react'
+import { retryWithExponentialBackoff } from '@/lib/rate-limiting/retry'
+
+export interface UseRateLimitOptions {
+  maxRetries?: number
+  baseDelayMs?: number
+  onRateLimited?: (retryAfterMs: number) => void
+  onRetryAttempt?: (attempt: number) => void
+}
+
+export interface UseRateLimitResult<T> {
+  execute: (fn: () => Promise<T>) => Promise<T>
+  isRateLimited: boolean
+  retryAfter: number | null
+  lastError: Error | null
+}
+
+export function useRateLimit<T>(
+  options: UseRateLimitOptions = {}
+): UseRateLimitResult<T> {
+  const [isRateLimited, setIsRateLimited] = useState(false)
+  const [retryAfter, setRetryAfter] = useState<number | null>(null)
+  const [lastError, setLastError] = useState<Error | null>(null)
+  const timeoutRef = useRef<NodeJS.Timeout>()
+
+  const execute = useCallback(
+    async (fn: () => Promise<T>): Promise<T> => {
+      try {
+        setLastError(null)
+        setIsRateLimited(false)
+
+        const result = await retryWithExponentialBackoff(fn, {
+          maxRetries: options.maxRetries ?? 3,
+          baseDelayMs: options.baseDelayMs ?? 1000,
+          onRetry: (attempt, error) => {
+            // Parse retry-after header if available
+            const rateLimitError = error as any
+            if (rateLimitError.headers?.['retry-after']) {
+              const retryAfterSeconds = parseInt(
+                rateLimitError.headers['retry-after'],
+                10
+              )
+              const retryAfterMs = retryAfterSeconds * 1000
+
+              setRetryAfter(retryAfterMs)
+              setIsRateLimited(true)
+
+              if (options.onRateLimited) {
+                options.onRateLimited(retryAfterMs)
+              }
+
+              // Clear rate limit status after retry-after period
+              if (timeoutRef.current) {
+                clearTimeout(timeoutRef.current)
+              }
+              timeoutRef.current = setTimeout(() => {
+                setIsRateLimited(false)
+                setRetryAfter(null)
+              }, retryAfterMs)
+            }
+
+            if (options.onRetryAttempt) {
+              options.onRetryAttempt(attempt)
+            }
+          },
+        })
+
+        return result
+      } catch (error) {
+        const err = error instanceof Error ? error : new Error(String(error))
+        setLastError(err)
+        throw err
+      }
+    },
+    [options]
+  )
+
+  return {
+    execute,
+    isRateLimited,
+    retryAfter,
+    lastError,
+  }
+}
+```
+
+### Rate Limit UI Component
+
+```tsx
+// components/RateLimitNotification.tsx
+'use client'
+
+import { useEffect, useState } from 'react'
+import { Clock, AlertCircle } from 'lucide-react'
+import { cn } from '@/lib/utils'
+
+export interface RateLimitNotificationProps {
+  retryAfterMs: number
+  onRetryReady?: () => void
+  className?: string
+}
+
+export function RateLimitNotification({
+  retryAfterMs,
+  onRetryReady,
+  className,
+}: RateLimitNotificationProps) {
+  const [remaining, setRemaining] = useState(retryAfterMs)
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setRemaining((prev) => {
+        const next = prev - 1000
+        if (next <= 0) {
+          clearInterval(interval)
+          onRetryReady?.()
+          return 0
+        }
+        return next
+      })
+    }, 1000)
+
+    return () => clearInterval(interval)
+  }, [retryAfterMs, onRetryReady])
+
+  const seconds = Math.ceil(remaining / 1000)
+
+  return (
+    <div
+      className={cn(
+        'flex items-center gap-3 p-4 rounded-lg bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-800/50',
+        className
+      )}
+    >
+      <AlertCircle className="w-5 h-5 text-amber-500 flex-shrink-0" />
+      <div className="flex-1">
+        <p className="font-medium text-amber-900 dark:text-amber-100">
+          Rate Limit Exceeded
+        </p>
+        <p className="text-sm text-amber-700 dark:text-amber-300">
+          Too many requests. Please wait {seconds} seconds before retrying.
+        </p>
+      </div>
+      <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-amber-100 dark:bg-amber-900/50">
+        <Clock className="w-4 h-4 text-amber-600 dark:text-amber-400" />
+        <span className="text-sm font-medium text-amber-700 dark:text-amber-300">
+          {seconds}s
+        </span>
+      </div>
+    </div>
+  )
+}
+```
+
+### Usage Example
+
+```tsx
+// app/chat/page.tsx
+'use client'
+
+import { useState } from 'react'
+import { useRateLimit } from '@/hooks/use-rate-limit'
+import { RateLimitNotification } from '@/components/RateLimitNotification'
+
+export default function ChatPage() {
+  const [messages, setMessages] = useState<Message[]>([])
+  const [input, setInput] = useState('')
+
+  const { execute, isRateLimited, retryAfter } = useRateLimit({
+    maxRetries: 3,
+    baseDelayMs: 2000,
+    onRateLimited: (ms) => {
+      console.log(`Rate limited. Retry after ${ms}ms`)
+    },
+    onRetryAttempt: (attempt) => {
+      console.log(`Retry attempt ${attempt}`)
+    },
+  })
+
+  const handleSend = async () => {
+    if (!input.trim()) return
+
+    try {
+      const response = await execute(async () => {
+        const res = await fetch('/api/chat', {
+          method: 'POST',
+          body: JSON.stringify({ message: input }),
+        })
+
+        if (!res.ok) {
+          const error: any = new Error('API error')
+          error.status = res.status
+          error.headers = Object.fromEntries(res.headers.entries())
+          throw error
+        }
+
+        return res.json()
+      })
+
+      setMessages((prev) => [...prev, response])
+      setInput('')
+    } catch (error) {
+      console.error('Failed to send message:', error)
+    }
+  }
+
+  return (
+    <div className="container max-w-4xl mx-auto p-4">
+      {isRateLimited && retryAfter && (
+        <RateLimitNotification
+          retryAfterMs={retryAfter}
+          onRetryReady={() => console.log('Ready to retry')}
+          className="mb-4"
+        />
+      )}
+
+      <div className="space-y-4">
+        {messages.map((msg, i) => (
+          <div key={i}>{msg.content}</div>
+        ))}
+      </div>
+
+      <div className="mt-4">
+        <input
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          onKeyDown={(e) => e.key === 'Enter' && handleSend()}
+          disabled={isRateLimited}
+          placeholder={
+            isRateLimited
+              ? 'Rate limited, please wait...'
+              : 'Type a message...'
+          }
+          className="w-full p-3 rounded-lg border"
+        />
+      </div>
+    </div>
+  )
+}
+```
+
+---
+
+## Usage Analytics & Alerts
+
+Track usage patterns and set up alerts for quota management and cost control.
+
+### Analytics Implementation
+
+```typescript
+// lib/analytics/usage-tracker.ts
+import { Redis } from 'ioredis'
+
+export interface UsageEvent {
+  userId: string
+  organizationId?: string
+  timestamp: Date
+  type: 'request' | 'tokens' | 'cost'
+  value: number
+  metadata?: Record<string, unknown>
+}
+
+export interface UsageStats {
+  total: number
+  average: number
+  peak: number
+  percentile95: number
+  percentile99: number
+}
+
+export class UsageTracker {
+  private redis: Redis
+
+  constructor(redisUrl?: string) {
+    this.redis = new Redis(redisUrl ?? process.env.REDIS_URL!)
+  }
+
+  /**
+   * Track usage event
+   */
+  async track(event: UsageEvent): Promise<void> {
+    const timestamp = event.timestamp.getTime()
+    const key = this.getTimeSeriesKey(event.userId, event.type)
+
+    // Store in sorted set (timestamp as score)
+    await this.redis.zadd(key, timestamp, JSON.stringify(event))
+
+    // Set 30-day expiration
+    await this.redis.expire(key, 30 * 24 * 60 * 60)
+
+    // Update aggregates
+    await this.updateAggregates(event)
+  }
+
+  /**
+   * Get usage stats for time range
+   */
+  async getStats(
+    userId: string,
+    type: UsageEvent['type'],
+    startTime: Date,
+    endTime: Date
+  ): Promise<UsageStats> {
+    const key = this.getTimeSeriesKey(userId, type)
+    const start = startTime.getTime()
+    const end = endTime.getTime()
+
+    // Get events in range
+    const events = await this.redis.zrangebyscore(key, start, end)
+    const values = events.map((e) => JSON.parse(e).value)
+
+    if (values.length === 0) {
+      return {
+        total: 0,
+        average: 0,
+        peak: 0,
+        percentile95: 0,
+        percentile99: 0,
+      }
+    }
+
+    // Calculate stats
+    const total = values.reduce((sum, v) => sum + v, 0)
+    const average = total / values.length
+    const sorted = values.sort((a, b) => a - b)
+    const peak = sorted[sorted.length - 1]
+    const percentile95 = sorted[Math.floor(sorted.length * 0.95)]
+    const percentile99 = sorted[Math.floor(sorted.length * 0.99)]
+
+    return {
+      total,
+      average,
+      peak,
+      percentile95,
+      percentile99,
+    }
+  }
+
+  /**
+   * Get usage over time (for charts)
+   */
+  async getTimeSeries(
+    userId: string,
+    type: UsageEvent['type'],
+    startTime: Date,
+    endTime: Date,
+    bucketMs: number = 60000 // 1 minute default
+  ): Promise<Array<{ timestamp: Date; value: number }>> {
+    const key = this.getTimeSeriesKey(userId, type)
+    const start = startTime.getTime()
+    const end = endTime.getTime()
+
+    const events = await this.redis.zrangebyscore(key, start, end)
+
+    // Bucket events
+    const buckets = new Map<number, number>()
+
+    for (const eventStr of events) {
+      const event = JSON.parse(eventStr) as UsageEvent
+      const bucketTime = Math.floor(event.timestamp.getTime() / bucketMs) * bucketMs
+      buckets.set(bucketTime, (buckets.get(bucketTime) ?? 0) + event.value)
+    }
+
+    // Convert to array
+    return Array.from(buckets.entries())
+      .sort((a, b) => a[0] - b[0])
+      .map(([timestamp, value]) => ({
+        timestamp: new Date(timestamp),
+        value,
+      }))
+  }
+
+  /**
+   * Set usage alert
+   */
+  async setAlert(
+    userId: string,
+    type: UsageEvent['type'],
+    threshold: number,
+    period: 'hour' | 'day' | 'month',
+    callback: (usage: number) => void
+  ): Promise<void> {
+    const key = this.getAlertKey(userId, type, period)
+
+    // Store alert config
+    await this.redis.hset(key, {
+      threshold: threshold.toString(),
+      callback: callback.toString(),
+    })
+  }
+
+  /**
+   * Check alerts
+   */
+  async checkAlerts(userId: string): Promise<void> {
+    const now = new Date()
+    const hourAgo = new Date(now.getTime() - 60 * 60 * 1000)
+    const dayAgo = new Date(now.getTime() - 24 * 60 * 60 * 1000)
+
+    // Check hourly alerts
+    await this.checkPeriodAlert(userId, 'hour', hourAgo, now)
+
+    // Check daily alerts
+    await this.checkPeriodAlert(userId, 'day', dayAgo, now)
+  }
+
+  private async checkPeriodAlert(
+    userId: string,
+    period: 'hour' | 'day' | 'month',
+    startTime: Date,
+    endTime: Date
+  ): Promise<void> {
+    const types: Array<UsageEvent['type']> = ['request', 'tokens', 'cost']
+
+    for (const type of types) {
+      const alertKey = this.getAlertKey(userId, type, period)
+      const config = await this.redis.hgetall(alertKey)
+
+      if (Object.keys(config).length === 0) continue
+
+      const threshold = parseFloat(config.threshold)
+      const stats = await this.getStats(userId, type, startTime, endTime)
+
+      if (stats.total >= threshold) {
+        console.log(
+          `Alert: User ${userId} exceeded ${type} threshold (${stats.total} >= ${threshold})`
+        )
+        // Trigger callback or send notification
+      }
+    }
+  }
+
+  private async updateAggregates(event: UsageEvent): Promise<void> {
+    const date = event.timestamp.toISOString().split('T')[0]
+
+    // Daily aggregate
+    const dailyKey = `aggregate:${event.userId}:${event.type}:${date}`
+    await this.redis.incrbyfloat(dailyKey, event.value)
+    await this.redis.expire(dailyKey, 90 * 24 * 60 * 60) // 90 days
+  }
+
+  private getTimeSeriesKey(userId: string, type: UsageEvent['type']): string {
+    return `usage:${userId}:${type}`
+  }
+
+  private getAlertKey(
+    userId: string,
+    type: UsageEvent['type'],
+    period: string
+  ): string {
+    return `alert:${userId}:${type}:${period}`
+  }
+}
+```
+
+### Dashboard Component
+
+```tsx
+// components/UsageDashboard.tsx
+'use client'
+
+import { useEffect, useState } from 'react'
+import { BarChart, TrendingUp, AlertTriangle, DollarSign } from 'lucide-react'
+import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts'
+
+interface UsageData {
+  timestamp: Date
+  requests: number
+  tokens: number
+  cost: number
+}
+
+export function UsageDashboard({ userId }: { userId: string }) {
+  const [data, setData] = useState<UsageData[]>([])
+  const [stats, setStats] = useState<any>(null)
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    fetchUsageData()
+  }, [userId])
+
+  const fetchUsageData = async () => {
+    try {
+      const response = await fetch(`/api/usage/${userId}?period=7d`)
+      const result = await response.json()
+      setData(result.timeSeries)
+      setStats(result.stats)
+    } catch (error) {
+      console.error('Failed to fetch usage data:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  if (loading) {
+    return <div>Loading usage data...</div>
+  }
+
+  return (
+    <div className="space-y-6">
+      {/* Stats Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <StatCard
+          icon={<BarChart className="w-5 h-5" />}
+          title="Total Requests"
+          value={stats.totalRequests.toLocaleString()}
+          change="+12%"
+          trend="up"
+        />
+        <StatCard
+          icon={<TrendingUp className="w-5 h-5" />}
+          title="Tokens Used"
+          value={stats.totalTokens.toLocaleString()}
+          change="+8%"
+          trend="up"
+        />
+        <StatCard
+          icon={<DollarSign className="w-5 h-5" />}
+          title="Total Cost"
+          value={`$${stats.totalCost.toFixed(2)}`}
+          change="-5%"
+          trend="down"
+        />
+      </div>
+
+      {/* Usage Chart */}
+      <div className="p-6 rounded-xl bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800">
+        <h3 className="text-lg font-semibold mb-4">Usage Over Time</h3>
+        <ResponsiveContainer width="100%" height={300}>
+          <LineChart data={data}>
+            <XAxis
+              dataKey="timestamp"
+              tickFormatter={(value) =>
+                new Date(value).toLocaleDateString(undefined, {
+                  month: 'short',
+                  day: 'numeric',
+                })
+              }
+            />
+            <YAxis />
+            <Tooltip
+              labelFormatter={(value) =>
+                new Date(value).toLocaleDateString(undefined, {
+                  weekday: 'long',
+                  year: 'numeric',
+                  month: 'long',
+                  day: 'numeric',
+                })
+              }
+            />
+            <Line
+              type="monotone"
+              dataKey="requests"
+              stroke="#3b82f6"
+              strokeWidth={2}
+              name="Requests"
+            />
+            <Line
+              type="monotone"
+              dataKey="tokens"
+              stroke="#10b981"
+              strokeWidth={2}
+              name="Tokens"
+            />
+          </LineChart>
+        </ResponsiveContainer>
+      </div>
+
+      {/* Alerts */}
+      {stats.alerts && stats.alerts.length > 0 && (
+        <div className="p-4 rounded-lg bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-800/50">
+          <div className="flex items-start gap-3">
+            <AlertTriangle className="w-5 h-5 text-amber-500 flex-shrink-0 mt-0.5" />
+            <div>
+              <h4 className="font-semibold text-amber-900 dark:text-amber-100 mb-2">
+                Usage Alerts
+              </h4>
+              <ul className="space-y-1 text-sm text-amber-700 dark:text-amber-300">
+                {stats.alerts.map((alert: string, i: number) => (
+                  <li key={i}>• {alert}</li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}
+
+function StatCard({
+  icon,
+  title,
+  value,
+  change,
+  trend,
+}: {
+  icon: React.ReactNode
+  title: string
+  value: string
+  change: string
+  trend: 'up' | 'down'
+}) {
+  return (
+    <div className="p-6 rounded-xl bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800">
+      <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400">
+          {icon}
+        </div>
+        <span
+          className={`text-sm font-medium ${
+            trend === 'up'
+              ? 'text-green-600 dark:text-green-400'
+              : 'text-red-600 dark:text-red-400'
+          }`}
+        >
+          {change}
+        </span>
+      </div>
+      <h3 className="text-sm text-neutral-600 dark:text-neutral-400 mb-1">
+        {title}
+      </h3>
+      <p className="text-2xl font-bold">{value}</p>
+    </div>
+  )
+}
+```
+
+---
+
+## Production Checklist
+
+<Callout type="success">
+  **Before deploying to production:**
+
+  - [ ] Token bucket or sliding window rate limiting implemented
+  - [ ] Per-user quotas configured and tested
+  - [ ] Per-organization quotas (if applicable)
+  - [ ] Exponential backoff with jitter for retries
+  - [ ] Redis or database for distributed rate limiting
+  - [ ] Rate limit headers included in responses
+  - [ ] Client-side rate limit handling with UI feedback
+  - [ ] Usage tracking and analytics enabled
+  - [ ] Alert thresholds configured
+  - [ ] Cost monitoring dashboard
+  - [ ] Rate limit bypass for trusted IPs/keys (optional)
+  - [ ] Load testing performed under rate limits
+  - [ ] Documentation for rate limit tiers
+</Callout>
+
+---
+
+## Best Practices
+
+### 1. Choose the Right Algorithm
+
+- **Token Bucket**: Best for AI workloads with variable costs
+- **Sliding Window**: Better for strict limits without bursts
+- **Fixed Window**: Simplest but can allow burst at window boundaries
+
+### 2. Set Appropriate Limits
+
+```typescript
+// User tiers with different limits
+const RATE_LIMITS = {
+  free: {
+    requestsPerMinute: 10,
+    tokensPerDay: 10000,
+    costPerMonth: 5,
+  },
+  pro: {
+    requestsPerMinute: 60,
+    tokensPerDay: 100000,
+    costPerMonth: 50,
+  },
+  enterprise: {
+    requestsPerMinute: 600,
+    tokensPerDay: 1000000,
+    costPerMonth: 500,
+  },
+}
+```
+
+### 3. Include Rate Limit Headers
+
+```typescript
+export async function GET(request: Request) {
+  const userId = await getUserId(request)
+  const remaining = await getRemainingQuota(userId)
+
+  return new Response(JSON.stringify({ data }), {
+    headers: {
+      'X-RateLimit-Limit': '60',
+      'X-RateLimit-Remaining': remaining.toString(),
+      'X-RateLimit-Reset': new Date(Date.now() + 60000).toISOString(),
+    },
+  })
+}
+```
+
+### 4. Provide Clear Error Messages
+
+```typescript
+if (!allowed) {
+  return new Response(
+    JSON.stringify({
+      error: 'Rate limit exceeded',
+      message: 'You have exceeded your quota for this period',
+      resetTime: usage.resetTime.toISOString(),
+      upgradeUrl: '/pricing',
+    }),
+    {
+      status: 429,
+      headers: {
+        'Retry-After': Math.ceil(
+          (usage.resetTime.getTime() - Date.now()) / 1000
+        ).toString(),
+      },
+    }
+  )
+}
+```
+
+### 5. Monitor and Alert
+
+```typescript
+// Set up monitoring
+const tracker = new UsageTracker()
+
+await tracker.setAlert(
+  userId,
+  'cost',
+  100, // $100 threshold
+  'day',
+  (usage) => {
+    sendAlert({
+      to: user.email,
+      subject: 'Daily usage alert',
+      message: `You've spent $${usage} today`,
+    })
+  }
+)
+```
+
+---
+
+## Troubleshooting
+
+### Rate Limits Not Working
+
+```typescript
+// Check Redis connection
+const redis = new Redis(process.env.REDIS_URL)
+await redis.ping() // Should return 'PONG'
+
+// Verify quota configuration
+const quota = await storage.getQuota(userId, quotaId)
+console.log('Quota config:', quota)
+
+// Check current usage
+const usage = await storage.getUsage(userId, quotaId)
+console.log('Current usage:', usage)
+```
+
+### Inconsistent Limits Across Servers
+
+```typescript
+// Use atomic Redis operations
+const allowed = await atomicRateLimiter.checkTokenBucket(
+  key,
+  capacity,
+  refillRate,
+  refillInterval
+)
+
+// Don't use local in-memory storage in production
+// ❌ Bad
+const bucket = new TokenBucket({ ... })
+
+// ✅ Good
+const storage = new RedisQuotaStorage()
+```
+
+### High Redis Latency
+
+```typescript
+// Use pipelining for batch operations
+const pipeline = redis.pipeline()
+pipeline.get('key1')
+pipeline.get('key2')
+pipeline.incr('key3')
+const results = await pipeline.exec()
+
+// Use connection pooling
+const redis = new Redis({
+  host: 'localhost',
+  port: 6379,
+  maxRetriesPerRequest: 3,
+  lazyConnect: true,
+})
+```
+
+---
+
+## Next Steps
+
+- [Cost Dashboard Implementation](/guides/token-optimization/cost-tracking)
+- [Provider Caching Guide](/guides/token-optimization/caching)
+- [Model Routing Strategies](/guides/token-optimization/routing)
+- [API Reference](/reference/token-optimization)
+
+---
+
+## Resources
+
+- [Redis Rate Limiting Patterns](https://redis.io/docs/manual/patterns/rate-limiter/)
+- [AWS Exponential Backoff](https://aws.amazon.com/blogs/architecture/exponential-backoff-and-jitter/)
+- [Token Bucket Algorithm](https://en.wikipedia.org/wiki/Token_bucket)
+- [OpenAI Rate Limits](https://platform.openai.com/docs/guides/rate-limits)
+- [Anthropic Rate Limits](https://docs.anthropic.com/claude/reference/rate-limits)

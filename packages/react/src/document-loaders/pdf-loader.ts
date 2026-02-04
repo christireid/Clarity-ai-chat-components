@@ -4,8 +4,23 @@
  * Extracts text from PDF files preserving structure, headings, and metadata.
  * Supports both browser and Node.js environments.
  *
+ * @requires pdfjs-dist - PDF parsing library (optional peer dependency)
+ * @installation npm install pdfjs-dist
+ * @bundleImpact ~600KB (includes worker bundle)
+ * @note Requires additional setup for worker configuration
+ * @fallback Throws error if pdfjs-dist is not installed
+ * @docs https://clarity-chat.dev/docs/document-loaders#pdf-setup
+ *
  * @example
  * ```tsx
+ * // 1. Install pdfjs-dist
+ * // npm install pdfjs-dist
+ *
+ * // 2. Configure worker (browser)
+ * import * as pdfjsLib from 'pdfjs-dist'
+ * pdfjsLib.GlobalWorkerOptions.workerSrc = '/pdf.worker.min.js'
+ *
+ * // 3. Use loader
  * const loader = new PDFLoader()
  * const docs = await loader.load(pdfFile)
  *
@@ -43,11 +58,13 @@ export class PDFLoader implements DocumentLoader {
   ): Promise<Document[]> {
     // Check if pdfjs-dist is available
     if (typeof window !== 'undefined' && !(window as any).pdfjsLib) {
-      console.warn(
-        'PDFLoader: pdfjs-dist not loaded. Please include pdfjs-dist in your project:\n' +
-        'npm install pdfjs-dist\n' +
-        'Then import: import * as pdfjsLib from "pdfjs-dist"'
-      )
+      if (process.env.NODE_ENV === 'development') {
+        console.warn(
+          'PDFLoader: pdfjs-dist not loaded. Please include pdfjs-dist in your project:\n' +
+            'npm install pdfjs-dist\n' +
+            'Then import: import * as pdfjsLib from "pdfjs-dist"'
+        )
+      }
       throw new Error('PDF parsing library not available')
     }
 
@@ -82,7 +99,9 @@ export class PDFLoader implements DocumentLoader {
             })
           }
         } catch (error) {
-          console.error(`Failed to extract page ${pageNum}:`, error)
+          if (process.env.NODE_ENV === 'development') {
+            console.error(`Failed to extract page ${pageNum}:`, error)
+          }
           // Continue with other pages
         }
       }
@@ -156,10 +175,7 @@ export class PDFLoader implements DocumentLoader {
   /**
    * Parse PDF using pdfjs-dist
    */
-  private async parsePDF(
-    data: ArrayBuffer,
-    password?: string
-  ): Promise<any> {
+  private async parsePDF(data: ArrayBuffer, password?: string): Promise<any> {
     const pdfjsLib = (window as any).pdfjsLib
     if (!pdfjsLib) {
       throw new Error('pdfjs-dist not available')
@@ -223,7 +239,10 @@ export class PDFLoader implements DocumentLoader {
   /**
    * Parse page range string (e.g., "1-10", "1,3,5", "1-5,10-15")
    */
-  private parsePageRange(range: string | undefined, totalPages: number): number[] {
+  private parsePageRange(
+    range: string | undefined,
+    totalPages: number
+  ): number[] {
     if (!range) {
       return Array.from({ length: totalPages }, (_, i) => i + 1)
     }

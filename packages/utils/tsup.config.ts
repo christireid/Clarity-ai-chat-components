@@ -16,6 +16,8 @@ export default defineConfig({
     'errors/utils': 'src/errors/utils.ts',
     'async/index': 'src/async/index.ts',
     'validation/index': 'src/validation/index.ts',
+    'math/index': 'src/math/index.ts',
+    'env/index': 'src/env/index.ts',
     fs: 'src/fs.ts',
   },
   format: ['esm', 'cjs'],

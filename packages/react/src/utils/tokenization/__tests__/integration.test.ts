@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { renderHook, act, waitFor } from '@testing-library/react'
-import { TokenCounter } from '@clarity-chat/token-optimization'
+import { AccurateTokenCounter as TokenCounter } from '@clarity-chat/token-optimization'
 import {
   useTokenValidator,
   useAutoTokenValidator,
@@ -14,6 +14,9 @@ import { getTokenizerStats } from '../accurate-counter'
 
 // Mock the dependencies
 vi.mock('@clarity-chat/token-optimization', () => ({
+  AccurateTokenCounter: {
+    count: vi.fn((text: string) => text.length / 4),
+  },
   TokenCounter: {
     count: vi.fn((text: string) => text.length / 4),
   },

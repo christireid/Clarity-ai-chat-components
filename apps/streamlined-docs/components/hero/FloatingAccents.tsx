@@ -86,6 +86,7 @@ function FloatingElement({ size, x, y, depth, variant, delay }: FloatingElementP
               scale: 1,
               rotate: [0, 360],
             }}
+            viewport={{ once: true }}
             transition={{
               opacity: { duration: 1, delay },
               scale: { duration: 1, delay },
@@ -118,6 +119,7 @@ function FloatingElement({ size, x, y, depth, variant, delay }: FloatingElementP
               opacity: baseOpacity,
               scale: [1, 1.2, 1],
             }}
+            viewport={{ once: true }}
             transition={{
               opacity: { duration: 0.8, delay },
               scale: {
@@ -148,6 +150,7 @@ function FloatingElement({ size, x, y, depth, variant, delay }: FloatingElementP
               opacity: baseOpacity,
               scaleX: 1,
             }}
+            viewport={{ once: true }}
             transition={{
               opacity: { duration: 1.5, delay },
               scaleX: { duration: 1.5, delay },
@@ -175,6 +178,7 @@ function FloatingElement({ size, x, y, depth, variant, delay }: FloatingElementP
               opacity: baseOpacity * 0.8,
               scale: [1, 1.1, 1],
             }}
+            viewport={{ once: true }}
             transition={{
               opacity: { duration: 2, delay },
               scale: {

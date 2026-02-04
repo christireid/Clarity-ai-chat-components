@@ -8,8 +8,8 @@
  * - Feature capabilities
  */
 
-import type { Tokenizer } from './tokenizer'
 import { ApproximateTokenizer, ClaudeTokenizer } from './tokenizer'
+import type { Tokenizer } from './tokenizer'
 
 /**
  * Prompt style preference
@@ -19,7 +19,13 @@ export type PromptStyle = 'concise' | 'dense' | 'structured' | 'verbose'
 /**
  * Model family identifier
  */
-export type ModelFamily = 'openai' | 'anthropic' | 'google' | 'mistral' | 'meta' | 'other'
+export type ModelFamily =
+  | 'openai'
+  | 'anthropic'
+  | 'google'
+  | 'mistral'
+  | 'meta'
+  | 'other'
 
 /**
  * Model capability profile
@@ -414,9 +420,7 @@ export function getModelsByFamily(family: ModelFamily): ModelProfile[] {
 /**
  * Get models within token budget
  */
-export function getModelsWithinBudget(
-  requiredTokens: number
-): ModelProfile[] {
+export function getModelsWithinBudget(requiredTokens: number): ModelProfile[] {
   return Object.values(MODEL_PROFILES).filter(
     (p) => p.maxTokens >= requiredTokens
   )

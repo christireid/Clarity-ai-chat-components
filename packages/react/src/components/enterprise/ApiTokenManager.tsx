@@ -161,7 +161,9 @@ export const ApiTokenManager: React.FC<ApiTokenManagerProps> = ({
         onCopy?.(token)
         setTimeout(() => setCopiedTokenId(null), 2000)
       } catch (err) {
-        console.error('Failed to copy token:', err)
+        if (process.env.NODE_ENV === 'development') {
+          console.error('Failed to copy token:', err)
+        }
       }
     },
     [onCopy]
@@ -424,7 +426,7 @@ export const ApiTokenManager: React.FC<ApiTokenManagerProps> = ({
       {/* Revoke Confirmation Dialog */}
       <Dialog open={!!revokeToken} onOpenChange={() => setRevokeToken(null)}>
         <DialogContent>
-          <DialogHeader>
+          <DialogHeader className="">
             <DialogTitle>Revoke API token?</DialogTitle>
             <DialogDescription>
               This will immediately revoke the token "{revokeToken?.label}". Any
@@ -432,7 +434,7 @@ export const ApiTokenManager: React.FC<ApiTokenManagerProps> = ({
               authenticate. This action cannot be undone.
             </DialogDescription>
           </DialogHeader>
-          <DialogFooter>
+          <DialogFooter className="">
             <Button variant="ghost" onClick={() => setRevokeToken(null)}>
               Cancel
             </Button>
@@ -449,7 +451,7 @@ export const ApiTokenManager: React.FC<ApiTokenManagerProps> = ({
         onOpenChange={() => setRegenerateToken(null)}
       >
         <DialogContent>
-          <DialogHeader>
+          <DialogHeader className="">
             <DialogTitle>Regenerate API token?</DialogTitle>
             <DialogDescription>
               This will generate a new token for "{regenerateToken?.label}" and
@@ -458,7 +460,7 @@ export const ApiTokenManager: React.FC<ApiTokenManagerProps> = ({
               shown once.
             </DialogDescription>
           </DialogHeader>
-          <DialogFooter>
+          <DialogFooter className="">
             <Button variant="ghost" onClick={() => setRegenerateToken(null)}>
               Cancel
             </Button>

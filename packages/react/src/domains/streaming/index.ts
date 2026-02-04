@@ -20,7 +20,7 @@ export {
   useStreamingWebSocket,
   type UseStreamingWebSocketOptions,
 } from '../../hooks/use-streaming-websocket'
-export { StreamingMessage } from '../../components/streaming-message'
+export { StreamingMessage } from '../../components/StreamingMessage'
 
 // Low-level: Primitives
 // Note: Low-level streaming utilities (parseStreamChunk, createStreamParser, handleReconnect)

@@ -5,8 +5,8 @@
  */
 
 import type { CoreMessage } from '../../hooks/chat/use-chat-enhanced'
-import type { ToonNode } from './toon'
 import { toonToMessages } from './toon'
+import type { ToonNode } from './toon'
 
 /**
  * Prompt recipe definition

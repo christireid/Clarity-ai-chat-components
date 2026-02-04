@@ -3,14 +3,12 @@
  */
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
+import { throttle, debounce, sleep } from '@clarity-chat/utils/async'
 import {
-  debounce,
-  throttle,
   generateId,
   deepClone,
   deepMerge,
   clamp,
-  sleep,
   retry,
   formatBytes,
   isBrowser,

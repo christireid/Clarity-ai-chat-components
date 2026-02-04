@@ -11,6 +11,9 @@ module.exports = {
      * Rule: no-hardcoded-duration
      * Prevents hardcoded animation duration values.
      * Enforces use of duration tokens from animation library.
+     *
+     * Context-aware: Only triggers within animation-related contexts
+     * (transition objects, motion component props, etc.)
      */
     'no-hardcoded-duration': {
       meta: {
@@ -29,6 +32,49 @@ module.exports = {
         schema: [],
       },
       create(context) {
+        // Animation-related parent property names that indicate this is an animation context
+        const animationContextProps = [
+          'transition',
+          'animate',
+          'initial',
+          'exit',
+          'whileHover',
+          'whileTap',
+          'whileFocus',
+          'whileDrag',
+          'whileInView',
+          'variants',
+        ]
+
+        /**
+         * Check if the node is within an animation context
+         */
+        function isInAnimationContext(node) {
+          let parent = node.parent
+
+          while (parent) {
+            // Check if we're in an object that's a value of an animation property
+            if (parent.type === 'Property' && parent.key) {
+              const keyName = parent.key.name || parent.key.value
+              if (animationContextProps.includes(keyName)) {
+                return true
+              }
+            }
+
+            // Check if we're in a JSX attribute that's animation-related
+            if (parent.type === 'JSXAttribute' && parent.name) {
+              const attrName = parent.name.name
+              if (animationContextProps.includes(attrName)) {
+                return true
+              }
+            }
+
+            parent = parent.parent
+          }
+
+          return false
+        }
+
         return {
           Property(node) {
             // Check if property is named 'duration'
@@ -45,6 +91,13 @@ module.exports = {
 
                 // Skip if it's 0 (often used for instant/no animation)
                 if (value === 0) return
+
+                // Skip values > 1 - these are likely milliseconds, not seconds
+                // Animation durations in Framer Motion are typically 0.1-1.0 seconds
+                if (value > 1) return
+
+                // Only report if we're in an animation context
+                if (!isInAnimationContext(node)) return
 
                 context.report({
                   node: node.value,

@@ -9,6 +9,7 @@ import { createLogger, type LogLevel } from '../../debug/logger'
 import { successBox, infoBox, warningBox } from '../../ui/box'
 import { keyValueTable } from '../../ui/table'
 import chalk from 'chalk'
+import { sleep } from '@clarity-chat/utils'
 
 export const debugCommand = new Command('debug').description(
   'Debug utilities for Clarity Chat applications'
@@ -96,7 +97,9 @@ debugCommand
     console.debug('This is a debug message', { detail: 'debugging info' })
     console.info('This is an info message', { detail: 'general info' })
     console.warn('This is a warning message', { detail: 'something to watch' })
-    console.error('This is an error message', { detail: 'something went wrong' })
+    console.error('This is an error message', {
+      detail: 'something went wrong',
+    })
 
     console.debug()
     console.debug(chalk.bold.blue('Custom message:'))
@@ -114,7 +117,7 @@ debugCommand
   .option('-d, --delay <ms>', 'Simulated delay in milliseconds', '100')
   .action(async (options) => {
     const logger = createLogger({ level: 'debug' })
-    const delay = parseInt(options.delay)
+    const delay = parseInt(options.delay, 10)
 
     console.debug()
     console.debug(chalk.bold.blue(`Testing timing with ${delay}ms delay...`))
@@ -212,7 +215,3 @@ debugCommand
     console.debug(infoBox(keyValueTable(summary), 'Request Summary'))
     console.debug()
   })
-
-function sleep(ms: number): Promise<void> {
-  return new Promise((resolve) => setTimeout(resolve, ms))
-}

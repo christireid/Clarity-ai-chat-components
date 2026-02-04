@@ -1,0 +1,16 @@
+{
+  "timestamp": "2026-01-26T20:56:17.614Z",
+  "commit": "2f41537a7",
+  "branch": "clean-up",
+  "bundles": [
+    {
+      "file": "index.mjs",
+      "size": 1116012,
+      "gzipSize": 306792,
+      "brotliSize": 0
+    }
+  ],
+  "totalSize": 1116012,
+  "totalGzipSize": 306792,
+  "totalBrotliSize": 0
+}

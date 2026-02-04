@@ -1,7 +1,7 @@
 import * as React from 'react'
 import { render, screen, fireEvent } from '@testing-library/react'
 import { vi, describe, it, expect } from 'vitest'
-import { TokenBudgetBar, TokenBudgetIndicator } from '../token-budget-bar'
+import { TokenBudgetBar, TokenBudgetIndicator } from '../TokenBudgetBar'
 import type { TokenUsage } from '../../hooks/token/use-token-budget-monitor'
 
 // Mock framer-motion

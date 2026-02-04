@@ -468,6 +468,7 @@ export function useDashboardData<T>(
       isMountedRef.current = false
       clearTimers()
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- Only run on mount, fetchData and clearTimers are stable
   }, [])
 
   // Refetch on dependency changes
@@ -476,6 +477,7 @@ export function useDashboardData<T>(
       log('Dependencies changed, refetching...')
       refetch()
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- dependencies is user-provided and controls when to refetch
   }, dependencies)
 
   // Staleness timer (scheduled after commit, not during fetch).

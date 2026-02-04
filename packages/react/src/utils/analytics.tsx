@@ -6,7 +6,7 @@
  */
 
 import React from 'react'
-import { errorReporter } from '../components/ui/error-boundary'
+import { errorReporter } from '../components/ui/ErrorBoundary'
 
 // ============================================================================
 // TYPES
@@ -139,7 +139,11 @@ class AnalyticsManager {
       trackInteractions: true,
       trackComponents: true,
       onEvent: () => {},
-      onError: (error) => console.error('Analytics error:', error),
+      onError: (error) => {
+        if (process.env.NODE_ENV === 'development') {
+          console.error('Analytics error:', error)
+        }
+      },
     }
   }
 
@@ -659,13 +663,18 @@ export function AnalyticsProvider({
       trackInteractions: true,
       trackComponents: true,
       onEvent: () => {},
-      onError: (error) => console.error('Analytics error:', error),
+      onError: (error) => {
+        if (process.env.NODE_ENV === 'development') {
+          console.error('Analytics error:', error)
+        }
+      },
       ...config,
     })
   )
 
   React.useEffect(() => {
     analyticsManager.initialize(currentConfig)
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- only run on mount
   }, [])
 
   React.useEffect(() => {
@@ -731,35 +740,10 @@ export function createEventHandler(
   }
 }
 
-/**
- * Performance measurement utility
- */
-export function measurePerformance<T>(
-  componentName: string,
-  operation: string,
-  fn: () => T
-): T {
-  const startTime = performance.now()
-  try {
-    const result = fn()
-    const duration = performance.now() - startTime
-
-    analyticsManager.trackPerformance(componentName, 'render', {
-      duration,
-    })
-
-    return result
-  } catch (error) {
-    const duration = performance.now() - startTime
-
-    analyticsManager.trackError(error as Error, componentName, {
-      operation,
-      duration,
-    })
-
-    throw error
-  }
-}
+// NOTE: measurePerformance has been removed from this file.
+// Use the canonical version from @clarity-chat/react/internal/debug
+// which provides better production mode handling and 16ms frame budget warnings.
+// For analytics integration, use analyticsManager.trackPerformance directly.
 
 /**
  * Batch analytics events

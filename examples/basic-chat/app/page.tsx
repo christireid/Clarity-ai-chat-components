@@ -1,7 +1,7 @@
 'use client'
 
 import { BasicChat } from '@/components/basic-chat'
-import { ErrorBoundary } from '@/components/error-boundary'
+import { ErrorBoundary } from '@/components/ErrorBoundary'
 
 export default function Home() {
   return (

@@ -66,6 +66,7 @@ const CLEANUP_INTERVAL = 50
  * Check if we're in development mode.
  * Uses a more robust check that works in various bundler configurations.
  * @internal
+ * @deprecated Import isDev from @clarity-chat/utils/env instead
  */
 export function isDevelopment(): boolean {
   // Check for explicit NODE_ENV

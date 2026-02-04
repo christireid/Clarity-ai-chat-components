@@ -1,0 +1,1966 @@
+---
+title: RAG Pipeline Configuration Guide
+description: Complete guide to building end-to-end RAG pipelines with document loaders, chunking strategies, embeddings, vector stores, error handling, and monitoring
+---
+
+# RAG Pipeline Configuration Guide
+
+Build production-ready Retrieval-Augmented Generation (RAG) pipelines with optimal component integration, performance tuning, and comprehensive error handling.
+
+## Overview
+
+### What is a RAG Pipeline?
+
+A RAG pipeline retrieves relevant information from a knowledge base to augment LLM responses with factual, up-to-date context. The pipeline consists of:
+
+1. **Document Loading** - Ingest documents from various formats
+2. **Text Chunking** - Split documents into semantic units
+3. **Embedding Generation** - Convert text to vector representations
+4. **Vector Storage** - Store and index embeddings
+5. **Retrieval** - Query and rank relevant chunks
+6. **Generation** - Augment LLM prompts with retrieved context
+
+**Key Benefits:**
+
+- **Factual Accuracy** - Ground responses in source documents
+- **Up-to-date Information** - Include recent data not in training set
+- **Source Attribution** - Cite specific documents and passages
+- **Cost Efficiency** - Reduce context size with targeted retrieval
+
+### Architecture Overview
+
+```typescript
+// High-level pipeline flow
+Document → Loader → Chunker → Embeddings → Vector Store → Retrieval → LLM
+```
+
+---
+
+## Quick Start
+
+### Basic Pipeline Setup
+
+```typescript
+import {
+  TextLoader,
+  RecursiveTextSplitter,
+  createEmbeddingProvider,
+  createVectorStore,
+} from '@clarity-chat/react'
+
+// 1. Initialize components
+const loader = new TextLoader()
+const splitter = new RecursiveTextSplitter()
+const embeddings = createEmbeddingProvider({
+  provider: 'openai',
+  apiKey: process.env.OPENAI_API_KEY,
+  model: 'text-embedding-3-small',
+})
+const vectorStore = createVectorStore({
+  provider: 'pinecone',
+  apiKey: process.env.PINECONE_API_KEY,
+  environment: 'us-east1-gcp',
+  indexName: 'my-knowledge-base',
+})
+
+// 2. Load and process documents
+const docs = await loader.load(file)
+const chunks = splitter.splitDocuments(docs, {
+  chunkSize: 1000,
+  chunkOverlap: 200,
+})
+
+// 3. Generate embeddings
+const vectors = await Promise.all(
+  chunks.map(async (chunk) => ({
+    id: chunk.id,
+    values: await embeddings.embedText(chunk.content),
+    metadata: {
+      text: chunk.content,
+      source: chunk.metadata.source,
+    },
+  }))
+)
+
+// 4. Store in vector database
+await vectorStore.initialize()
+await vectorStore.upsert(vectors)
+
+// 5. Query for retrieval
+const queryVector = await embeddings.embedText('How do I configure authentication?')
+const results = await vectorStore.query({
+  vector: queryVector,
+  topK: 5,
+  includeMetadata: true,
+})
+
+// 6. Use in LLM prompt
+const context = results.matches
+  .map((match) => match.metadata?.text)
+  .join('\n\n')
+
+const prompt = `Context:\n${context}\n\nQuestion: How do I configure authentication?`
+```
+
+---
+
+## Component Integration
+
+### 1. Document Loaders
+
+Load documents from various file formats with appropriate parsers.
+
+#### Available Loaders
+
+```typescript
+import {
+  TextLoader,      // Plain text files
+  JSONLoader,      // JSON documents
+  PDFLoader,       // PDF files (requires pdf.js)
+  DocxLoader,      // Word documents (requires mammoth)
+  MarkdownLoader,  // Markdown files
+  HTMLLoader,      // HTML content
+  CSVLoader,       // CSV data
+  CodeLoader,      // Source code with syntax awareness
+} from '@clarity-chat/react'
+```
+
+#### Loader Registry Pattern
+
+Automatically select the right loader based on file type:
+
+```typescript
+import { LoaderRegistry } from '@clarity-chat/react'
+
+// Create registry with all loaders
+const registry = new LoaderRegistry()
+registry.register(new TextLoader())
+registry.register(new PDFLoader())
+registry.register(new DocxLoader())
+registry.register(new JSONLoader())
+
+// Auto-detect and load
+const docs = await registry.load(file) // Automatically picks loader
+
+// Or specify explicitly
+const pdfDocs = await registry.load(file, { loader: 'pdf' })
+```
+
+#### Custom Loader
+
+Create custom loaders for specific formats:
+
+```typescript
+import type { DocumentLoader, Document } from '@clarity-chat/react'
+
+class CustomCSVLoader implements DocumentLoader {
+  name = 'custom-csv'
+  supportedTypes = ['text/csv', 'csv']
+
+  async load(source: string | File | Blob): Promise<Document[]> {
+    const content = typeof source === 'string'
+      ? source
+      : await source.text()
+
+    // Parse CSV
+    const rows = content.split('\n').map(row => row.split(','))
+    const headers = rows[0]
+    const data = rows.slice(1)
+
+    // Create document per row
+    return data.map((row, index) => ({
+      content: headers.map((h, i) => `${h}: ${row[i]}`).join('\n'),
+      metadata: {
+        source: source instanceof File ? source.name : 'csv',
+        type: 'csv',
+        row: index + 1,
+      },
+    }))
+  }
+
+  supports(type: string): boolean {
+    return this.supportedTypes.includes(type)
+  }
+}
+
+registry.register(new CustomCSVLoader())
+```
+
+#### PDF Loading with Options
+
+```typescript
+import { PDFLoader } from '@clarity-chat/react'
+
+const pdfLoader = new PDFLoader()
+
+// Load with options
+const docs = await pdfLoader.load(file, {
+  // Split by page
+  splitPages: true,
+  // Include page numbers in metadata
+  includePageNumbers: true,
+  // Max file size (bytes)
+  maxSize: 10 * 1024 * 1024, // 10 MB
+})
+
+// Each page becomes a separate document
+docs.forEach((doc) => {
+  console.log(`Page ${doc.metadata.page}: ${doc.content.substring(0, 100)}...`)
+})
+```
+
+### 2. Text Chunking
+
+Split documents into semantic units optimized for retrieval.
+
+#### RecursiveTextSplitter
+
+Smart splitting with sentence boundary preservation:
+
+```typescript
+import { RecursiveTextSplitter } from '@clarity-chat/react'
+
+const splitter = new RecursiveTextSplitter()
+
+// Split with options
+const chunks = splitter.splitDocuments(docs, {
+  chunkSize: 1000,           // Target tokens per chunk
+  chunkOverlap: 200,         // Overlap for context continuity
+  splitBySentence: true,     // Preserve sentence boundaries
+  separators: ['\n\n', '\n', '. ', ' '], // Priority order
+  keepSeparator: true,       // Keep separators in chunks
+})
+
+// Each chunk includes metadata
+chunks.forEach((chunk) => {
+  console.log(`Chunk ${chunk.index}:`, chunk.content)
+  console.log('Source:', chunk.metadata.source)
+  console.log('Position:', chunk.start, '-', chunk.end)
+})
+```
+
+#### Semantic Chunking
+
+Advanced chunking based on semantic coherence:
+
+```typescript
+import { SemanticChunker } from '@clarity-chat/react/utils'
+import { AccurateTokenCounter } from '@clarity-chat/token-optimization'
+
+const counter = new AccurateTokenCounter({ model: 'gpt-4' })
+const semanticChunker = new SemanticChunker(
+  (text) => counter.count(text),
+  (text) => embeddings.embedText(text),
+  {
+    chunkSize: 200,             // Target tokens
+    overlap: 50,                // Overlap tokens
+    similarityThreshold: 0.75,  // Grouping threshold
+    preserveSentences: true,    // Keep sentences intact
+  }
+)
+
+// Chunk with semantic awareness
+const semanticChunks = await semanticChunker.chunkConversation(longDocument)
+
+// Chunks include topic and importance scoring
+semanticChunks.forEach((chunk) => {
+  console.log(`Topic: ${chunk.topic}`)
+  console.log(`Importance: ${chunk.importanceScore}`)
+  console.log(`Tokens: ${chunk.tokens}`)
+})
+```
+
+#### Chunking Strategy Comparison
+
+| Strategy | Best For | Pros | Cons |
+|----------|----------|------|------|
+| **Fixed Size** | Simple documents | Fast, predictable | May split mid-sentence |
+| **Recursive** | General use | Good balance | Requires tuning |
+| **Semantic** | Complex documents | High coherence | Slower, needs embeddings |
+| **Token-based** | LLM optimization | Precise token control | Model-specific |
+
+### 3. Embedding Generation
+
+Convert text chunks to vector representations for similarity search.
+
+#### OpenAI Embeddings
+
+```typescript
+import { createEmbeddingProvider } from '@clarity-chat/react'
+
+const openaiEmbeddings = createEmbeddingProvider({
+  provider: 'openai',
+  apiKey: process.env.OPENAI_API_KEY,
+  model: 'text-embedding-3-small', // or 'text-embedding-3-large'
+  batchSize: 100, // Batch for efficiency
+})
+
+// Single embedding
+const vector = await openaiEmbeddings.embedText('Sample text')
+console.log('Dimension:', vector.length) // 1536 for small, 3072 for large
+
+// Batch embeddings (more efficient)
+const vectors = await openaiEmbeddings.embedBatch([
+  'Document 1 content',
+  'Document 2 content',
+  'Document 3 content',
+])
+```
+
+#### Cohere Embeddings
+
+```typescript
+const cohereEmbeddings = createEmbeddingProvider({
+  provider: 'cohere',
+  apiKey: process.env.COHERE_API_KEY,
+  model: 'embed-english-v3.0',
+  config: {
+    inputType: 'search_document', // or 'search_query', 'classification'
+  },
+})
+
+// Cohere supports different input types for optimization
+const docEmbedding = await cohereEmbeddings.embedText('Document content', {
+  inputType: 'search_document',
+})
+
+const queryEmbedding = await cohereEmbeddings.embedText('User query', {
+  inputType: 'search_query',
+})
+```
+
+#### Cached Embeddings
+
+Reduce costs and latency with caching:
+
+```typescript
+import { createCachedEmbeddingProvider, MemoryEmbeddingCache } from '@clarity-chat/react'
+
+// In-memory cache
+const cache = new MemoryEmbeddingCache()
+const cachedEmbeddings = createCachedEmbeddingProvider(openaiEmbeddings, { cache })
+
+// First call - generates embedding
+const vector1 = await cachedEmbeddings.embedText('Hello world')
+
+// Second call - cached (instant, free)
+const vector2 = await cachedEmbeddings.embedText('Hello world')
+
+// Check cache stats
+const stats = await cachedEmbeddings.getCacheStats()
+console.log('Cache stats:', stats)
+// { size: 1, hits: 1, misses: 1, hitRate: 0.5 }
+```
+
+#### Local Embeddings (Browser-based)
+
+For privacy-sensitive applications:
+
+```typescript
+import { LocalEmbedder } from '@clarity-chat/react'
+
+const localEmbeddings = new LocalEmbedder({
+  model: 'universal-sentence-encoder', // or 'all-MiniLM-L6-v2'
+})
+
+await localEmbeddings.initialize()
+
+// Generate embeddings locally
+const vector = await localEmbeddings.embedText('Private document content')
+// No API calls, runs in browser
+```
+
+#### Embedding Provider Comparison
+
+| Provider | Model | Dimension | Cost/1M tokens | Best For |
+|----------|-------|-----------|----------------|----------|
+| **OpenAI** | text-embedding-3-small | 1536 | $0.02 | General purpose |
+| **OpenAI** | text-embedding-3-large | 3072 | $0.13 | High quality |
+| **Cohere** | embed-english-v3.0 | 1024 | $0.10 | Multilingual |
+| **Local** | USE | 512 | Free | Privacy, offline |
+
+### 4. Vector Store Integration
+
+Store and query embeddings efficiently at scale.
+
+#### Pinecone
+
+Cloud-native vector database:
+
+```typescript
+import { createVectorStore } from '@clarity-chat/react'
+
+const pinecone = createVectorStore({
+  provider: 'pinecone',
+  apiKey: process.env.PINECONE_API_KEY,
+  environment: 'us-east1-gcp',
+  indexName: 'knowledge-base',
+})
+
+await pinecone.initialize()
+
+// Upsert vectors with metadata
+await pinecone.upsert([
+  {
+    id: 'doc-1-chunk-1',
+    values: vector1,
+    metadata: {
+      text: 'Chunk content...',
+      source: 'document-1.pdf',
+      page: 1,
+      timestamp: Date.now(),
+    },
+  },
+  // ... more vectors
+])
+
+// Query with filters
+const results = await pinecone.query({
+  vector: queryVector,
+  topK: 10,
+  filter: {
+    source: { $eq: 'document-1.pdf' },
+    page: { $gte: 1, $lte: 5 },
+  },
+  includeMetadata: true,
+  includeValues: false, // Don't return vectors (saves bandwidth)
+})
+```
+
+#### Qdrant
+
+High-performance open-source vector database:
+
+```typescript
+const qdrant = createVectorStore({
+  provider: 'qdrant',
+  endpoint: process.env.QDRANT_URL || 'http://localhost:6333',
+  apiKey: process.env.QDRANT_API_KEY,
+  indexName: 'documents',
+})
+
+await qdrant.initialize()
+
+// Qdrant supports complex filtering
+const results = await qdrant.query({
+  vector: queryVector,
+  topK: 5,
+  filter: {
+    must: [
+      { key: 'category', match: { value: 'technical' } },
+      { key: 'date', range: { gte: '2024-01-01' } },
+    ],
+  },
+})
+```
+
+#### Weaviate
+
+GraphQL-based vector search:
+
+```typescript
+const weaviate = createVectorStore({
+  provider: 'weaviate',
+  endpoint: process.env.WEAVIATE_URL,
+  apiKey: process.env.WEAVIATE_API_KEY,
+  indexName: 'Document',
+})
+
+// Weaviate's hybrid search (vector + keyword)
+const results = await weaviate.query({
+  vector: queryVector,
+  topK: 10,
+  alpha: 0.75, // 0 = keyword only, 1 = vector only, 0.75 = balanced
+  includeMetadata: true,
+})
+```
+
+#### Chroma
+
+Lightweight embedded database:
+
+```typescript
+const chroma = createVectorStore({
+  provider: 'chroma',
+  endpoint: 'http://localhost:8000',
+  indexName: 'my-collection',
+})
+
+// Simple setup for development
+await chroma.initialize()
+await chroma.upsert(vectors)
+const results = await chroma.query({ vector: queryVector, topK: 5 })
+```
+
+---
+
+## Configuration Best Practices
+
+### 1. Chunk Size Optimization
+
+Choose chunk size based on your use case:
+
+```typescript
+// Small chunks (200-500 tokens): Precise retrieval
+const precisionChunks = splitter.splitDocuments(docs, {
+  chunkSize: 300,
+  chunkOverlap: 50,
+})
+// Pros: High precision, specific answers
+// Cons: May miss broader context
+
+// Medium chunks (500-1000 tokens): Balanced
+const balancedChunks = splitter.splitDocuments(docs, {
+  chunkSize: 800,
+  chunkOverlap: 150,
+})
+// Pros: Good balance of precision and context
+// Cons: Requires more tokens per retrieval
+
+// Large chunks (1000-2000 tokens): Context-heavy
+const contextChunks = splitter.splitDocuments(docs, {
+  chunkSize: 1500,
+  chunkOverlap: 300,
+})
+// Pros: Rich context, fewer retrievals needed
+// Cons: Higher token costs, may include irrelevant info
+```
+
+#### Chunk Size Decision Matrix
+
+```typescript
+function determineOptimalChunkSize(docType: string): number {
+  switch (docType) {
+    case 'technical-docs':
+      return 800  // Code examples need context
+    case 'legal':
+      return 1200 // Clauses need full context
+    case 'faq':
+      return 400  // Q&A pairs are self-contained
+    case 'blog':
+      return 600  // Paragraphs with some context
+    case 'code':
+      return 1000 // Functions/classes with context
+    default:
+      return 800  // Balanced default
+  }
+}
+```
+
+### 2. Overlap Configuration
+
+Maintain context continuity across chunks:
+
+```typescript
+// Calculate optimal overlap (typically 10-20% of chunk size)
+const chunkSize = 1000
+const overlap = Math.floor(chunkSize * 0.15) // 15% = 150 tokens
+
+const chunks = splitter.splitDocuments(docs, {
+  chunkSize,
+  chunkOverlap: overlap,
+  preserveSentences: true, // Don't split mid-sentence
+})
+
+// Validate overlap effectiveness
+function validateOverlap(chunks: DocumentChunk[]) {
+  for (let i = 0; i < chunks.length - 1; i++) {
+    const current = chunks[i]
+    const next = chunks[i + 1]
+
+    if (!current || !next) continue
+
+    const overlapText = current.content.slice(-overlap)
+    const hasOverlap = next.content.includes(overlapText)
+
+    if (!hasOverlap) {
+      console.warn(`Chunks ${i} and ${i + 1} have no overlap`)
+    }
+  }
+}
+```
+
+### 3. Embedding Model Selection
+
+Choose the right model for your workload:
+
+```typescript
+interface EmbeddingRequirements {
+  budget: 'low' | 'medium' | 'high'
+  quality: 'basic' | 'good' | 'excellent'
+  latency: 'fast' | 'medium' | 'slow'
+  privacy: boolean
+}
+
+function selectEmbeddingModel(requirements: EmbeddingRequirements) {
+  if (requirements.privacy) {
+    return {
+      provider: 'local',
+      model: 'universal-sentence-encoder',
+      dimension: 512,
+    }
+  }
+
+  if (requirements.budget === 'low') {
+    return {
+      provider: 'openai',
+      model: 'text-embedding-3-small',
+      dimension: 1536,
+      cost: 0.02, // per 1M tokens
+    }
+  }
+
+  if (requirements.quality === 'excellent') {
+    return {
+      provider: 'openai',
+      model: 'text-embedding-3-large',
+      dimension: 3072,
+      cost: 0.13, // per 1M tokens
+    }
+  }
+
+  // Balanced default
+  return {
+    provider: 'cohere',
+    model: 'embed-english-v3.0',
+    dimension: 1024,
+    cost: 0.10, // per 1M tokens
+  }
+}
+```
+
+### 4. Vector Store Selection
+
+Choose based on scale and requirements:
+
+```typescript
+interface VectorStoreRequirements {
+  scale: 'small' | 'medium' | 'large'
+  hosting: 'cloud' | 'self-hosted' | 'embedded'
+  features: string[] // 'filtering', 'hybrid-search', 'reranking'
+}
+
+function selectVectorStore(requirements: VectorStoreRequirements) {
+  if (requirements.scale === 'small' && requirements.hosting === 'embedded') {
+    return { provider: 'chroma', cost: 'free' }
+  }
+
+  if (requirements.hosting === 'cloud') {
+    if (requirements.features.includes('hybrid-search')) {
+      return { provider: 'weaviate', cost: 'medium' }
+    }
+    return { provider: 'pinecone', cost: 'low-to-high' }
+  }
+
+  if (requirements.scale === 'large') {
+    return { provider: 'qdrant', cost: 'self-hosted' }
+  }
+
+  return { provider: 'pinecone', cost: 'pay-as-you-go' }
+}
+```
+
+---
+
+## Performance Optimization
+
+### 1. Batch Processing
+
+Process documents efficiently in batches:
+
+```typescript
+async function processDocumentsBatch(
+  files: File[],
+  batchSize: number = 10
+) {
+  const results = []
+
+  for (let i = 0; i < files.length; i += batchSize) {
+    const batch = files.slice(i, i + batchSize)
+
+    // Load documents in parallel within batch
+    const loadPromises = batch.map((file) => loader.load(file))
+    const docBatches = await Promise.all(loadPromises)
+    const allDocs = docBatches.flat()
+
+    // Chunk all documents
+    const chunks = splitter.splitDocuments(allDocs, {
+      chunkSize: 1000,
+      chunkOverlap: 200,
+    })
+
+    // Generate embeddings in batch
+    const texts = chunks.map((c) => c.content)
+    const embeddings = await embeddingProvider.embedBatch(texts)
+
+    // Create vectors
+    const vectors = chunks.map((chunk, idx) => ({
+      id: chunk.id,
+      values: embeddings[idx] || [],
+      metadata: {
+        text: chunk.content,
+        source: chunk.metadata.source,
+        index: chunk.index,
+      },
+    }))
+
+    // Upsert in batch
+    await vectorStore.upsert(vectors)
+
+    results.push(...vectors)
+
+    console.log(`Processed batch ${i / batchSize + 1}/${Math.ceil(files.length / batchSize)}`)
+  }
+
+  return results
+}
+```
+
+### 2. Parallel Processing
+
+Maximize throughput with parallel operations:
+
+```typescript
+async function parallelDocumentProcessing(files: File[]) {
+  const startTime = Date.now()
+
+  // Process in parallel with concurrency limit
+  const concurrency = 5
+  const results = []
+
+  for (let i = 0; i < files.length; i += concurrency) {
+    const batch = files.slice(i, i + concurrency)
+
+    const batchResults = await Promise.all(
+      batch.map(async (file) => {
+        try {
+          // Load
+          const docs = await loader.load(file)
+
+          // Chunk
+          const chunks = splitter.splitDocuments(docs, {
+            chunkSize: 1000,
+            chunkOverlap: 200,
+          })
+
+          // Embed (batch internally)
+          const vectors = await Promise.all(
+            chunks.map(async (chunk) => ({
+              id: chunk.id,
+              values: await embeddingProvider.embedText(chunk.content),
+              metadata: { text: chunk.content, source: file.name },
+            }))
+          )
+
+          return { success: true, vectors, file: file.name }
+        } catch (error) {
+          console.error(`Failed to process ${file.name}:`, error)
+          return { success: false, error, file: file.name }
+        }
+      })
+    )
+
+    results.push(...batchResults)
+  }
+
+  const duration = Date.now() - startTime
+  const successful = results.filter((r) => r.success).length
+
+  console.log(`Processed ${successful}/${files.length} files in ${duration}ms`)
+
+  return results
+}
+```
+
+### 3. Caching Strategy
+
+Implement multi-level caching:
+
+```typescript
+import { TieredCache } from '@clarity-chat/token-optimization'
+import { createCachedEmbeddingProvider } from '@clarity-chat/react'
+
+// Level 1: In-memory cache (fastest, limited size)
+const memoryCache = new MemoryEmbeddingCache()
+
+// Level 2: Redis cache (fast, larger capacity)
+const redisCache = new RedisEmbeddingCache({
+  host: process.env.REDIS_HOST,
+  port: 6379,
+  ttl: 3600, // 1 hour
+})
+
+// Tiered cache strategy
+class TieredEmbeddingCache {
+  async get(text: string, model: string) {
+    // Try L1 first
+    const memResult = await memoryCache.get(text, model)
+    if (memResult) return memResult
+
+    // Try L2
+    const redisResult = await redisCache.get(text, model)
+    if (redisResult) {
+      // Promote to L1
+      await memoryCache.set(text, model, redisResult)
+      return redisResult
+    }
+
+    return null
+  }
+
+  async set(text: string, model: string, embedding: number[]) {
+    // Write to both levels
+    await Promise.all([
+      memoryCache.set(text, model, embedding),
+      redisCache.set(text, model, embedding),
+    ])
+  }
+}
+
+const tieredCache = new TieredEmbeddingCache()
+const cachedEmbeddings = createCachedEmbeddingProvider(embeddings, {
+  cache: tieredCache,
+})
+```
+
+### 4. Query Optimization
+
+Optimize retrieval performance:
+
+```typescript
+async function optimizedRetrieval(query: string, options: {
+  maxResults?: number
+  minScore?: number
+  rerank?: boolean
+}) {
+  const { maxResults = 10, minScore = 0.7, rerank = true } = options
+
+  // 1. Generate query embedding
+  const queryVector = await embeddings.embedText(query)
+
+  // 2. Retrieve more candidates than needed (for reranking)
+  const candidateCount = rerank ? maxResults * 3 : maxResults
+  const results = await vectorStore.query({
+    vector: queryVector,
+    topK: candidateCount,
+    includeMetadata: true,
+  })
+
+  // 3. Filter by minimum score
+  const filtered = results.matches.filter(
+    (match) => (match.score || 0) >= minScore
+  )
+
+  // 4. Rerank with cross-encoder (optional)
+  if (rerank) {
+    const reranked = await rerankResults(query, filtered)
+    return reranked.slice(0, maxResults)
+  }
+
+  return filtered.slice(0, maxResults)
+}
+
+async function rerankResults(
+  query: string,
+  candidates: any[]
+): Promise<any[]> {
+  // Use a cross-encoder model for more accurate ranking
+  // This is slower but more accurate than vector similarity
+  const scores = await Promise.all(
+    candidates.map(async (candidate) => {
+      const text = candidate.metadata?.text || ''
+      const score = await calculateRelevanceScore(query, text)
+      return { ...candidate, rerankScore: score }
+    })
+  )
+
+  return scores.sort((a, b) => (b.rerankScore || 0) - (a.rerankScore || 0))
+}
+
+function calculateRelevanceScore(query: string, text: string): number {
+  // Simple scoring based on keyword overlap (use ML model in production)
+  const queryWords = new Set(query.toLowerCase().split(/\s+/))
+  const textWords = text.toLowerCase().split(/\s+/)
+
+  const matches = textWords.filter((word) => queryWords.has(word))
+  return matches.length / queryWords.size
+}
+```
+
+---
+
+## Error Handling
+
+### 1. Document Loading Errors
+
+Handle various loading failures gracefully:
+
+```typescript
+async function safeLoadDocument(file: File) {
+  try {
+    // Validate file size
+    const maxSize = 10 * 1024 * 1024 // 10 MB
+    if (file.size > maxSize) {
+      throw new Error(`File too large: ${file.size} bytes (max ${maxSize})`)
+    }
+
+    // Validate file type
+    const supportedTypes = ['application/pdf', 'text/plain', 'application/json']
+    if (!supportedTypes.includes(file.type)) {
+      throw new Error(`Unsupported file type: ${file.type}`)
+    }
+
+    // Load document
+    const docs = await loader.load(file)
+
+    // Validate content
+    if (!docs || docs.length === 0) {
+      throw new Error('No content extracted from file')
+    }
+
+    return { success: true, docs }
+  } catch (error) {
+    console.error(`Failed to load ${file.name}:`, error)
+
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Unknown error',
+      file: file.name,
+    }
+  }
+}
+
+// Batch with error recovery
+async function loadDocumentsWithRetry(files: File[], maxRetries = 3) {
+  const results = []
+
+  for (const file of files) {
+    let lastError
+
+    for (let attempt = 0; attempt < maxRetries; attempt++) {
+      const result = await safeLoadDocument(file)
+
+      if (result.success) {
+        results.push(result)
+        break
+      }
+
+      lastError = result.error
+      console.warn(`Retry ${attempt + 1}/${maxRetries} for ${file.name}`)
+
+      // Exponential backoff
+      await new Promise((resolve) =>
+        setTimeout(resolve, Math.pow(2, attempt) * 1000)
+      )
+    }
+
+    if (lastError) {
+      results.push({
+        success: false,
+        error: lastError,
+        file: file.name,
+      })
+    }
+  }
+
+  return results
+}
+```
+
+### 2. Embedding Generation Errors
+
+Handle API failures and rate limits:
+
+```typescript
+async function safeEmbedText(
+  text: string,
+  options: {
+    maxRetries?: number
+    timeout?: number
+  } = {}
+) {
+  const { maxRetries = 3, timeout = 30000 } = options
+
+  for (let attempt = 0; attempt < maxRetries; attempt++) {
+    try {
+      // Set timeout
+      const controller = new AbortController()
+      const timeoutId = setTimeout(() => controller.abort(), timeout)
+
+      const embedding = await embeddings.embedText(text)
+
+      clearTimeout(timeoutId)
+      return { success: true, embedding }
+    } catch (error: any) {
+      // Handle rate limits
+      if (error.status === 429) {
+        const retryAfter = error.headers?.['retry-after'] || Math.pow(2, attempt)
+        console.warn(`Rate limited, retrying after ${retryAfter}s`)
+        await new Promise((resolve) => setTimeout(resolve, retryAfter * 1000))
+        continue
+      }
+
+      // Handle timeouts
+      if (error.name === 'AbortError') {
+        console.warn(`Timeout on attempt ${attempt + 1}`)
+        continue
+      }
+
+      // Handle other errors
+      if (attempt === maxRetries - 1) {
+        return {
+          success: false,
+          error: error instanceof Error ? error.message : 'Unknown error',
+        }
+      }
+
+      // Exponential backoff
+      await new Promise((resolve) =>
+        setTimeout(resolve, Math.pow(2, attempt) * 1000)
+      )
+    }
+  }
+
+  return { success: false, error: 'Max retries exceeded' }
+}
+
+// Batch with partial failure handling
+async function embedBatchWithFallback(texts: string[]) {
+  try {
+    // Try batch first
+    return await embeddings.embedBatch(texts)
+  } catch (error) {
+    console.warn('Batch embedding failed, falling back to individual')
+
+    // Fall back to individual embeddings
+    const results = await Promise.all(
+      texts.map(async (text) => {
+        const result = await safeEmbedText(text)
+        return result.success ? result.embedding : null
+      })
+    )
+
+    return results.filter((r): r is number[] => r !== null)
+  }
+}
+```
+
+### 3. Vector Store Errors
+
+Handle database connection and operation failures:
+
+```typescript
+class RobustVectorStore {
+  private store: any
+  private circuitBreaker: CircuitBreaker
+
+  constructor(store: any) {
+    this.store = store
+    this.circuitBreaker = new CircuitBreaker({
+      failureThreshold: 5,
+      resetTimeout: 60000, // 1 minute
+    })
+  }
+
+  async query(params: any) {
+    // Check circuit breaker
+    if (this.circuitBreaker.isOpen()) {
+      throw new Error('Circuit breaker open - vector store unavailable')
+    }
+
+    try {
+      const result = await this.store.query(params)
+      this.circuitBreaker.recordSuccess()
+      return result
+    } catch (error) {
+      this.circuitBreaker.recordFailure()
+
+      // Fallback to cached results or degraded mode
+      console.error('Vector store query failed:', error)
+      return this.getFallbackResults(params)
+    }
+  }
+
+  private async getFallbackResults(params: any) {
+    // Return cached results if available
+    const cached = await this.getCachedResults(params)
+    if (cached) return cached
+
+    // Return empty results as last resort
+    return { matches: [] }
+  }
+
+  private async getCachedResults(params: any) {
+    // Implement result caching
+    return null
+  }
+}
+
+class CircuitBreaker {
+  private failures = 0
+  private lastFailure = 0
+
+  constructor(
+    private config: {
+      failureThreshold: number
+      resetTimeout: number
+    }
+  ) {}
+
+  isOpen(): boolean {
+    if (this.failures >= this.config.failureThreshold) {
+      const timeSinceLastFailure = Date.now() - this.lastFailure
+      if (timeSinceLastFailure < this.config.resetTimeout) {
+        return true
+      }
+      // Reset after timeout
+      this.failures = 0
+    }
+    return false
+  }
+
+  recordSuccess() {
+    this.failures = 0
+  }
+
+  recordFailure() {
+    this.failures++
+    this.lastFailure = Date.now()
+  }
+}
+```
+
+### 4. Pipeline Error Recovery
+
+Comprehensive error handling for the full pipeline:
+
+```typescript
+interface PipelineResult<T> {
+  success: boolean
+  data?: T
+  error?: string
+  stage?: string
+}
+
+async function executePipelineWithRecovery(
+  file: File
+): Promise<PipelineResult<any>> {
+  try {
+    // Stage 1: Load
+    const loadResult = await safeLoadDocument(file)
+    if (!loadResult.success) {
+      return {
+        success: false,
+        error: loadResult.error,
+        stage: 'loading',
+      }
+    }
+
+    // Stage 2: Chunk
+    let chunks
+    try {
+      chunks = splitter.splitDocuments(loadResult.docs || [], {
+        chunkSize: 1000,
+        chunkOverlap: 200,
+      })
+    } catch (error) {
+      return {
+        success: false,
+        error: 'Chunking failed',
+        stage: 'chunking',
+      }
+    }
+
+    // Stage 3: Embed
+    const embeddings = await embedBatchWithFallback(
+      chunks.map((c) => c.content)
+    )
+
+    if (embeddings.length !== chunks.length) {
+      console.warn('Some embeddings failed, using partial results')
+    }
+
+    // Stage 4: Store
+    const vectors = chunks
+      .map((chunk, idx) => {
+        const embedding = embeddings[idx]
+        if (!embedding) return null
+
+        return {
+          id: chunk.id,
+          values: embedding,
+          metadata: { text: chunk.content, source: file.name },
+        }
+      })
+      .filter((v): v is NonNullable<typeof v> => v !== null)
+
+    try {
+      await vectorStore.upsert(vectors)
+    } catch (error) {
+      return {
+        success: false,
+        error: 'Vector store upsert failed',
+        stage: 'storing',
+      }
+    }
+
+    return {
+      success: true,
+      data: {
+        chunks: chunks.length,
+        vectors: vectors.length,
+        file: file.name,
+      },
+    }
+  } catch (error) {
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Unknown error',
+      stage: 'unknown',
+    }
+  }
+}
+```
+
+---
+
+## Monitoring and Observability
+
+### 1. Pipeline Metrics
+
+Track pipeline performance:
+
+```typescript
+interface PipelineMetrics {
+  documentsProcessed: number
+  chunksCreated: number
+  embeddingsGenerated: number
+  vectorsStored: number
+  errors: number
+  totalDuration: number
+  avgDocumentSize: number
+  avgChunksPerDoc: number
+}
+
+class PipelineMonitor {
+  private metrics: PipelineMetrics = {
+    documentsProcessed: 0,
+    chunksCreated: 0,
+    embeddingsGenerated: 0,
+    vectorsStored: 0,
+    errors: 0,
+    totalDuration: 0,
+    avgDocumentSize: 0,
+    avgChunksPerDoc: 0,
+  }
+
+  async trackPipeline(fn: () => Promise<any>) {
+    const startTime = Date.now()
+
+    try {
+      const result = await fn()
+      const duration = Date.now() - startTime
+
+      this.metrics.totalDuration += duration
+      this.updateMetrics(result)
+
+      return result
+    } catch (error) {
+      this.metrics.errors++
+      throw error
+    }
+  }
+
+  private updateMetrics(result: any) {
+    this.metrics.documentsProcessed++
+    this.metrics.chunksCreated += result.chunks || 0
+    this.metrics.embeddingsGenerated += result.embeddings || 0
+    this.metrics.vectorsStored += result.vectors || 0
+
+    // Update averages
+    const docs = this.metrics.documentsProcessed
+    this.metrics.avgChunksPerDoc =
+      this.metrics.chunksCreated / docs
+  }
+
+  getMetrics(): PipelineMetrics {
+    return { ...this.metrics }
+  }
+
+  reset() {
+    this.metrics = {
+      documentsProcessed: 0,
+      chunksCreated: 0,
+      embeddingsGenerated: 0,
+      vectorsStored: 0,
+      errors: 0,
+      totalDuration: 0,
+      avgDocumentSize: 0,
+      avgChunksPerDoc: 0,
+    }
+  }
+}
+
+// Usage
+const monitor = new PipelineMonitor()
+
+await monitor.trackPipeline(async () => {
+  const docs = await loader.load(file)
+  const chunks = splitter.splitDocuments(docs)
+  const embeddings = await embeddingProvider.embedBatch(
+    chunks.map((c) => c.content)
+  )
+  await vectorStore.upsert(vectors)
+
+  return { chunks: chunks.length, embeddings: embeddings.length }
+})
+
+console.log('Pipeline metrics:', monitor.getMetrics())
+```
+
+### 2. Cost Tracking
+
+Monitor costs across the pipeline:
+
+```typescript
+interface CostMetrics {
+  embeddingCost: number
+  vectorStorageCost: number
+  totalCost: number
+  tokenCount: number
+}
+
+class CostTracker {
+  private costs: CostMetrics = {
+    embeddingCost: 0,
+    vectorStorageCost: 0,
+    totalCost: 0,
+    tokenCount: 0,
+  }
+
+  private pricing = {
+    embeddings: {
+      'text-embedding-3-small': 0.02 / 1_000_000, // per token
+      'text-embedding-3-large': 0.13 / 1_000_000,
+    },
+    vectorStore: {
+      pinecone: 0.096 / 1000, // per 1K vectors per month
+      qdrant: 0, // self-hosted
+    },
+  }
+
+  trackEmbedding(tokens: number, model: string) {
+    const cost = tokens * (this.pricing.embeddings[model] || 0)
+    this.costs.embeddingCost += cost
+    this.costs.tokenCount += tokens
+    this.costs.totalCost += cost
+  }
+
+  trackVectorStorage(vectorCount: number, provider: string) {
+    const cost = vectorCount * (this.pricing.vectorStore[provider] || 0)
+    this.costs.vectorStorageCost += cost
+    this.costs.totalCost += cost
+  }
+
+  getCosts(): CostMetrics {
+    return { ...this.costs }
+  }
+
+  getProjectedMonthlyCost(vectorsPerDay: number): number {
+    const dailyEmbeddingCost =
+      (this.costs.embeddingCost / this.costs.tokenCount) *
+      vectorsPerDay *
+      500 // avg tokens per doc
+
+    const monthlyStorage =
+      vectorsPerDay * 30 * this.pricing.vectorStore.pinecone
+
+    return (dailyEmbeddingCost * 30) + monthlyStorage
+  }
+}
+
+// Usage
+const costTracker = new CostTracker()
+
+// Track embedding costs
+const tokens = 10000
+costTracker.trackEmbedding(tokens, 'text-embedding-3-small')
+
+// Track storage costs
+costTracker.trackVectorStorage(1000, 'pinecone')
+
+console.log('Current costs:', costTracker.getCosts())
+console.log('Projected monthly:', costTracker.getProjectedMonthlyCost(1000))
+```
+
+### 3. Quality Metrics
+
+Monitor retrieval quality:
+
+```typescript
+interface QualityMetrics {
+  averageRelevanceScore: number
+  topKRecall: number
+  precision: number
+  averageLatency: number
+  cacheHitRate: number
+}
+
+class QualityMonitor {
+  private samples: Array<{
+    query: string
+    results: any[]
+    relevantIds: Set<string>
+    latency: number
+    cached: boolean
+  }> = []
+
+  async trackQuery(
+    query: string,
+    relevantIds: string[],
+    fn: () => Promise<any[]>
+  ) {
+    const startTime = Date.now()
+    const results = await fn()
+    const latency = Date.now() - startTime
+
+    this.samples.push({
+      query,
+      results,
+      relevantIds: new Set(relevantIds),
+      latency,
+      cached: false, // Track from cache stats
+    })
+
+    return results
+  }
+
+  calculateMetrics(): QualityMetrics {
+    const total = this.samples.length
+    if (total === 0) {
+      return {
+        averageRelevanceScore: 0,
+        topKRecall: 0,
+        precision: 0,
+        averageLatency: 0,
+        cacheHitRate: 0,
+      }
+    }
+
+    let totalRelevance = 0
+    let totalRecall = 0
+    let totalPrecision = 0
+    let totalLatency = 0
+    let cacheHits = 0
+
+    for (const sample of this.samples) {
+      // Average relevance score
+      const avgScore =
+        sample.results.reduce((sum, r) => sum + (r.score || 0), 0) /
+        sample.results.length
+      totalRelevance += avgScore
+
+      // Recall: % of relevant docs retrieved
+      const retrieved = new Set(sample.results.map((r) => r.id))
+      const relevant = sample.relevantIds
+      const intersection = new Set(
+        [...retrieved].filter((x) => relevant.has(x))
+      )
+      const recall = relevant.size > 0 ? intersection.size / relevant.size : 0
+      totalRecall += recall
+
+      // Precision: % of retrieved docs that are relevant
+      const precision =
+        retrieved.size > 0 ? intersection.size / retrieved.size : 0
+      totalPrecision += precision
+
+      totalLatency += sample.latency
+      if (sample.cached) cacheHits++
+    }
+
+    return {
+      averageRelevanceScore: totalRelevance / total,
+      topKRecall: totalRecall / total,
+      precision: totalPrecision / total,
+      averageLatency: totalLatency / total,
+      cacheHitRate: cacheHits / total,
+    }
+  }
+}
+```
+
+### 4. Logging and Debugging
+
+Comprehensive logging for troubleshooting:
+
+```typescript
+enum LogLevel {
+  DEBUG = 'debug',
+  INFO = 'info',
+  WARN = 'warn',
+  ERROR = 'error',
+}
+
+class PipelineLogger {
+  private logs: Array<{
+    timestamp: number
+    level: LogLevel
+    stage: string
+    message: string
+    data?: any
+  }> = []
+
+  log(level: LogLevel, stage: string, message: string, data?: any) {
+    const entry = {
+      timestamp: Date.now(),
+      level,
+      stage,
+      message,
+      data,
+    }
+
+    this.logs.push(entry)
+
+    // Console output
+    const formattedMessage = `[${stage}] ${message}`
+    switch (level) {
+      case LogLevel.DEBUG:
+        console.debug(formattedMessage, data)
+        break
+      case LogLevel.INFO:
+        console.info(formattedMessage, data)
+        break
+      case LogLevel.WARN:
+        console.warn(formattedMessage, data)
+        break
+      case LogLevel.ERROR:
+        console.error(formattedMessage, data)
+        break
+    }
+  }
+
+  debug(stage: string, message: string, data?: any) {
+    this.log(LogLevel.DEBUG, stage, message, data)
+  }
+
+  info(stage: string, message: string, data?: any) {
+    this.log(LogLevel.INFO, stage, message, data)
+  }
+
+  warn(stage: string, message: string, data?: any) {
+    this.log(LogLevel.WARN, stage, message, data)
+  }
+
+  error(stage: string, message: string, data?: any) {
+    this.log(LogLevel.ERROR, stage, message, data)
+  }
+
+  getLogs(filter?: { level?: LogLevel; stage?: string }) {
+    return this.logs.filter((log) => {
+      if (filter?.level && log.level !== filter.level) return false
+      if (filter?.stage && log.stage !== filter.stage) return false
+      return true
+    })
+  }
+
+  exportLogs(): string {
+    return JSON.stringify(this.logs, null, 2)
+  }
+}
+
+// Usage
+const logger = new PipelineLogger()
+
+logger.info('loading', 'Starting document load', { filename: file.name })
+logger.debug('chunking', 'Created chunks', { count: chunks.length })
+logger.warn('embedding', 'Some embeddings failed', { failed: 3, total: 100 })
+logger.error('storing', 'Vector store connection failed', { error: err })
+
+// Export for debugging
+console.log(logger.exportLogs())
+```
+
+---
+
+## Complete Working Examples
+
+### Example 1: Basic RAG Pipeline
+
+```typescript
+import {
+  TextLoader,
+  RecursiveTextSplitter,
+  createEmbeddingProvider,
+  createVectorStore,
+} from '@clarity-chat/react'
+
+async function basicRAGPipeline(file: File) {
+  // 1. Initialize components
+  const loader = new TextLoader()
+  const splitter = new RecursiveTextSplitter()
+  const embeddings = createEmbeddingProvider({
+    provider: 'openai',
+    apiKey: process.env.OPENAI_API_KEY,
+    model: 'text-embedding-3-small',
+  })
+  const vectorStore = createVectorStore({
+    provider: 'pinecone',
+    apiKey: process.env.PINECONE_API_KEY,
+    environment: 'us-east1-gcp',
+    indexName: 'knowledge-base',
+  })
+
+  // 2. Load document
+  const docs = await loader.load(file)
+  console.log(`Loaded ${docs.length} documents`)
+
+  // 3. Chunk documents
+  const chunks = splitter.splitDocuments(docs, {
+    chunkSize: 1000,
+    chunkOverlap: 200,
+  })
+  console.log(`Created ${chunks.length} chunks`)
+
+  // 4. Generate embeddings
+  const vectors = await Promise.all(
+    chunks.map(async (chunk) => ({
+      id: chunk.id,
+      values: await embeddings.embedText(chunk.content),
+      metadata: {
+        text: chunk.content,
+        source: file.name,
+        index: chunk.index,
+      },
+    }))
+  )
+
+  // 5. Store vectors
+  await vectorStore.initialize()
+  await vectorStore.upsert(vectors)
+
+  console.log(`Stored ${vectors.length} vectors`)
+
+  return { docs, chunks, vectors }
+}
+```
+
+### Example 2: Production RAG Pipeline
+
+```typescript
+import {
+  LoaderRegistry,
+  RecursiveTextSplitter,
+  createCachedEmbeddingProvider,
+  createVectorStore,
+  SemanticChunker,
+} from '@clarity-chat/react'
+import { AccurateTokenCounter } from '@clarity-chat/token-optimization'
+
+async function productionRAGPipeline(
+  files: File[],
+  options: {
+    batchSize?: number
+    useSemanticChunking?: boolean
+    monitoring?: boolean
+  } = {}
+) {
+  const {
+    batchSize = 10,
+    useSemanticChunking = false,
+    monitoring = true,
+  } = options
+
+  // Initialize monitoring
+  const monitor = monitoring ? new PipelineMonitor() : null
+  const logger = monitoring ? new PipelineLogger() : null
+  const costTracker = monitoring ? new CostTracker() : null
+
+  logger?.info('pipeline', 'Starting RAG pipeline', {
+    files: files.length,
+    batchSize,
+  })
+
+  // Initialize components with error handling
+  const registry = new LoaderRegistry()
+  const embeddings = createCachedEmbeddingProvider({
+    provider: 'openai',
+    apiKey: process.env.OPENAI_API_KEY,
+    model: 'text-embedding-3-small',
+  })
+  const vectorStore = new RobustVectorStore(
+    createVectorStore({
+      provider: 'pinecone',
+      apiKey: process.env.PINECONE_API_KEY,
+      environment: 'us-east1-gcp',
+      indexName: 'production-kb',
+    })
+  )
+
+  // Initialize vector store
+  await vectorStore.store.initialize()
+
+  // Process in batches
+  const results = []
+
+  for (let i = 0; i < files.length; i += batchSize) {
+    const batch = files.slice(i, i + batchSize)
+    logger?.info('pipeline', `Processing batch ${i / batchSize + 1}`, {
+      files: batch.length,
+    })
+
+    const batchResults = await Promise.all(
+      batch.map(async (file) => {
+        return await monitor?.trackPipeline(async () => {
+          // Load with retry
+          const loadResult = await safeLoadDocument(file)
+          if (!loadResult.success) {
+            logger?.error('loading', 'Failed to load document', {
+              file: file.name,
+              error: loadResult.error,
+            })
+            return { success: false, error: loadResult.error }
+          }
+
+          // Chunk
+          let chunks
+          if (useSemanticChunking) {
+            const counter = new AccurateTokenCounter({ model: 'gpt-4' })
+            const semanticChunker = new SemanticChunker(
+              (text) => counter.count(text),
+              (text) => embeddings.embedText(text)
+            )
+            const allText = loadResult.docs?.map((d) => d.content).join('\n\n')
+            chunks = await semanticChunker.chunkConversation(allText || '')
+          } else {
+            const splitter = new RecursiveTextSplitter()
+            chunks = splitter.splitDocuments(loadResult.docs || [], {
+              chunkSize: 1000,
+              chunkOverlap: 200,
+            })
+          }
+
+          logger?.debug('chunking', 'Created chunks', {
+            file: file.name,
+            chunks: chunks.length,
+          })
+
+          // Embed with fallback
+          const embedResults = await embedBatchWithFallback(
+            chunks.map((c) => c.content || c.text)
+          )
+
+          // Track costs
+          const totalTokens = chunks.reduce(
+            (sum, c) => sum + (c.tokens || 0),
+            0
+          )
+          costTracker?.trackEmbedding(totalTokens, 'text-embedding-3-small')
+
+          // Create vectors
+          const vectors = chunks
+            .map((chunk, idx) => {
+              const embedding = embedResults[idx]
+              if (!embedding) return null
+
+              return {
+                id: `${file.name}-${idx}`,
+                values: embedding,
+                metadata: {
+                  text: chunk.content || chunk.text,
+                  source: file.name,
+                  index: idx,
+                  topic: chunk.topic,
+                },
+              }
+            })
+            .filter((v): v is NonNullable<typeof v> => v !== null)
+
+          // Store with error handling
+          try {
+            await vectorStore.store.upsert(vectors)
+            costTracker?.trackVectorStorage(vectors.length, 'pinecone')
+
+            logger?.info('storing', 'Stored vectors', {
+              file: file.name,
+              vectors: vectors.length,
+            })
+          } catch (error) {
+            logger?.error('storing', 'Failed to store vectors', {
+              file: file.name,
+              error,
+            })
+            return { success: false, error: 'Storage failed' }
+          }
+
+          return {
+            success: true,
+            file: file.name,
+            chunks: chunks.length,
+            vectors: vectors.length,
+          }
+        })
+      })
+    )
+
+    results.push(...batchResults)
+  }
+
+  // Generate report
+  const successful = results.filter((r) => r?.success).length
+  logger?.info('pipeline', 'Pipeline complete', {
+    total: files.length,
+    successful,
+    failed: files.length - successful,
+  })
+
+  if (monitoring) {
+    console.log('Pipeline Metrics:', monitor?.getMetrics())
+    console.log('Cost Tracking:', costTracker?.getCosts())
+    console.log(
+      'Projected Monthly Cost:',
+      costTracker?.getProjectedMonthlyCost(100)
+    )
+  }
+
+  return {
+    results,
+    metrics: monitor?.getMetrics(),
+    costs: costTracker?.getCosts(),
+    logs: logger?.getLogs(),
+  }
+}
+```
+
+### Example 3: Query and Retrieval
+
+```typescript
+async function queryKnowledgeBase(
+  query: string,
+  options: {
+    topK?: number
+    minScore?: number
+    rerank?: boolean
+    filters?: Record<string, any>
+  } = {}
+) {
+  const {
+    topK = 5,
+    minScore = 0.7,
+    rerank = true,
+    filters = {},
+  } = options
+
+  // Generate query embedding
+  const queryVector = await embeddings.embedText(query)
+
+  // Retrieve candidates
+  const candidateCount = rerank ? topK * 3 : topK
+  const results = await vectorStore.query({
+    vector: queryVector,
+    topK: candidateCount,
+    filter: filters,
+    includeMetadata: true,
+  })
+
+  // Filter by score
+  let filtered = results.matches.filter(
+    (match) => (match.score || 0) >= minScore
+  )
+
+  // Rerank if requested
+  if (rerank) {
+    filtered = await rerankResults(query, filtered)
+  }
+
+  // Take top K
+  const topResults = filtered.slice(0, topK)
+
+  // Format context
+  const context = topResults
+    .map((result, idx) => {
+      const text = result.metadata?.text || ''
+      const source = result.metadata?.source || 'unknown'
+      return `[${idx + 1}] (Source: ${source})\n${text}`
+    })
+    .join('\n\n')
+
+  return {
+    results: topResults,
+    context,
+    prompt: `Context:\n${context}\n\nQuestion: ${query}\n\nAnswer:`,
+  }
+}
+
+// Usage with LLM
+async function askQuestion(question: string) {
+  const { context, results } = await queryKnowledgeBase(question, {
+    topK: 5,
+    rerank: true,
+  })
+
+  const response = await fetch('/api/chat', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      messages: [
+        {
+          role: 'system',
+          content: 'You are a helpful assistant. Answer based on the provided context.',
+        },
+        {
+          role: 'user',
+          content: `Context:\n${context}\n\nQuestion: ${question}`,
+        },
+      ],
+    }),
+  })
+
+  const answer = await response.json()
+
+  return {
+    question,
+    answer: answer.content,
+    sources: results.map((r) => ({
+      text: r.metadata?.text,
+      source: r.metadata?.source,
+      score: r.score,
+    })),
+  }
+}
+```
+
+---
+
+## Production Checklist
+
+Before deploying your RAG pipeline to production:
+
+- [ ] **Document Loading** - Test all file formats, handle errors gracefully
+- [ ] **Chunking** - Validate chunk sizes, test overlap effectiveness
+- [ ] **Embeddings** - Implement caching, handle rate limits, monitor costs
+- [ ] **Vector Storage** - Set up backups, configure scaling, test failover
+- [ ] **Error Handling** - Add retries, circuit breakers, fallbacks
+- [ ] **Monitoring** - Track metrics, costs, quality, latency
+- [ ] **Performance** - Optimize batch sizes, enable parallel processing
+- [ ] **Security** - Validate inputs, sanitize outputs, protect API keys
+- [ ] **Testing** - Unit tests, integration tests, load tests
+- [ ] **Documentation** - API docs, runbooks, troubleshooting guides
+
+---
+
+## Next Steps
+
+- [Document Loader API Reference](/reference/document-loaders) - Detailed loader documentation
+- [Embedding Providers Guide](/guides/rag-document-processing/embedding-providers) - Provider comparison
+- [Vector Store Setup](/guides/rag-document-processing/vector-stores) - Database configuration
+- [Chunking Strategies](/guides/rag-document-processing/chunking-strategies) - Advanced chunking
+- [Advanced RAG Patterns](/guides/advanced-rag) - Hybrid search, reranking, caching
+
+---
+
+## Additional Resources
+
+- [LangChain RAG Tutorial](https://python.langchain.com/docs/use_cases/question_answering/)
+- [Pinecone RAG Guide](https://www.pinecone.io/learn/retrieval-augmented-generation/)
+- [OpenAI Embeddings Guide](https://platform.openai.com/docs/guides/embeddings)
+- [RAG Best Practices](https://www.anthropic.com/research/retrieval-augmented-generation)

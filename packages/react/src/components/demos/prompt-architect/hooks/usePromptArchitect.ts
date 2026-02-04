@@ -416,7 +416,7 @@ export function usePromptArchitect(
         payload: currentValues,
       })
     }
-  }, [state.systemPrompt, state.userPromptTemplate])
+  }, [state.systemPrompt, state.userPromptTemplate, state.variableValues])
 
   // ==========================================================================
   // TOKEN COUNTING (debounced)
@@ -509,7 +509,9 @@ export function usePromptArchitect(
         localStorage.setItem(storageKey, JSON.stringify(toSave))
         dispatch({ type: 'MARK_SAVED' })
       } catch (e) {
-        console.warn('[PromptArchitect] Failed to save to localStorage:', e)
+        if (process.env.NODE_ENV === 'development') {
+          console.warn('[PromptArchitect] Failed to save to localStorage:', e)
+        }
       }
     }, autoSaveDelay)
 
@@ -787,6 +789,7 @@ export function usePromptArchitect(
   // Load from storage on mount
   React.useEffect(() => {
     loadFromStorage()
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- Intentionally only run once on mount
   }, [])
 
   // ==========================================================================

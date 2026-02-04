@@ -17,11 +17,11 @@ export * from './api-inspector'
 
 // Re-export logger with renamed types to avoid conflicts
 export {
-  Logger,
+  type Logger,
   createLogger,
   getLogger,
   setGlobalLogLevel,
-  setGlobalContext,
+  configureLogger,
   logInfoBox,
   logWarningBox,
   logErrorBox,

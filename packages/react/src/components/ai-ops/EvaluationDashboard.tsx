@@ -12,7 +12,7 @@ import {
 import {
   ResponseQualityMeter,
   type ResponseQualityMeterProps,
-} from '../dashboards/response-quality-meter'
+} from '../dashboards/ResponseQualityMeter'
 import { Skeleton } from '../ui/skeleton'
 
 export interface EvaluationMetricItem {
@@ -156,7 +156,7 @@ export const EvaluationDashboard: React.FC<EvaluationDashboardProps> = ({
             )}
           </div>
         </CardHeader>
-        <CardContent>
+        <CardContent className="">
           <div
             className="grid gap-4 sm:grid-cols-2"
             role="region"

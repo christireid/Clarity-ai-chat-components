@@ -12,14 +12,12 @@ export * from './types'
 // Core service (re-exported from @clarity-chat/memory)
 export { MemoryService } from '@clarity-chat/memory'
 
-// Token optimization
+// Token optimization (re-exported from @clarity-chat/memory)
 export {
   TokenCounter as MemoryTokenCounter,
   TokenBudgetManager,
-  MemoryCompressor,
-  SemanticChunker,
   ContextOptimizer,
-} from './token-optimizer'
+} from '@clarity-chat/memory'
 
 // React integration
 export {

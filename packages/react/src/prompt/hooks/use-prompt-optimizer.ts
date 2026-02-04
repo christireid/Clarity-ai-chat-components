@@ -9,11 +9,12 @@ import type { CoreMessage } from '../../hooks/chat/use-chat-enhanced'
 import type { ToonNode } from '../core/toon'
 import type { ModelProfile } from '../core/model-profiles'
 import type { OptimizationStrategy } from '../core/optimizer'
-import type { CompressionStrategy } from '../core/compression-chain'
+// Import stub type from prompt-optimizer until compression-chain is added back
 import {
   optimizePrompt,
   type OptimizePromptOptions,
   type OptimizePromptResult,
+  type CompressionStrategy,
 } from '../core/engine/prompt-optimizer'
 
 /**
@@ -159,7 +160,7 @@ export function usePromptOptimizer(
     } finally {
       setIsOptimizing(false)
     }
-  }, [optimizeOptions, debug])
+  }, [optimizeOptions])
 
   // Auto-optimize when dependencies change
   useEffect(() => {

@@ -62,6 +62,8 @@
   ],
   "dependencies": {
     "@clarity-chat/utils": "workspace:*",
+    "@clarity-chat/error-handling": "workspace:*",
+    "@clarity-chat/primitives": "workspace:*",
     "chalk": "^5.6.2",
     "boxen": "^8.0.1",
     "commander": "^12.1.0"

@@ -1,0 +1,955 @@
+---
+title: 'Streaming Response Handling'
+description: 'Best practices for handling streaming AI responses with robust error recovery, cancellation, and optimal UI updates'
+category: 'Advanced'
+---
+
+# Streaming Response Handling
+
+Learn production-ready patterns for handling streaming AI responses with proper error recovery, cancellation handling, and optimized UI updates.
+
+## Overview
+
+Streaming responses provide real-time feedback to users as AI generates content. However, they introduce unique challenges around error handling, network reliability, and UI performance.
+
+This guide covers:
+
+- **Chunked Processing**: Handle streaming data efficiently
+- **Error Recovery**: Gracefully handle connection failures
+- **Cancellation**: Clean up resources when stopping streams
+- **Backpressure**: Manage fast streams without overwhelming the UI
+- **UI Optimization**: Update the interface smoothly with debouncing and batching
+- **Testing**: Verify streaming implementations work reliably
+
+## Architecture Layers
+
+Clarity Chat provides streaming hooks at three architectural levels:
+
+```tsx
+// Low-Level: Generic ReadableStream handling
+useStreaming()
+
+// Mid-Level: Protocol-specific (SSE, WebSocket)
+useStreamingSSE()
+useStreamingWebSocket()
+
+// Top-Level: Complete chat streaming
+useClarityChat({ streaming: true })
+```
+
+Choose the appropriate level based on your use case.
+
+## Pattern 1: Basic Streaming with Error Handling
+
+The simplest streaming pattern with proper error boundaries and cleanup.
+
+### Implementation
+
+```tsx
+'use client'
+
+import { useStreaming } from '@clarity-chat/react'
+import { useState } from 'react'
+
+export function BasicStreamingChat() {
+  const [error, setError] = useState<Error | null>(null)
+  const [isStarted, setIsStarted] = useState(false)
+
+  const { content, isStreaming, startStreaming, stopStreaming, reset } = useStreaming({
+    onChunk: (chunk) => {
+      console.log('Received chunk:', chunk)
+    },
+    onComplete: (fullText) => {
+      console.log('Stream complete:', fullText.length, 'chars')
+      setIsStarted(false)
+    },
+    onError: (err) => {
+      console.error('Stream error:', err)
+      setError(err)
+      setIsStarted(false)
+    },
+    // Optional: Timeout after 30 seconds
+    timeout: 30000,
+    onTimeout: () => {
+      console.warn('Stream timed out')
+      setError(new Error('Request timed out'))
+    },
+    // Optional: Limit content to 1MB
+    maxContentLength: 1024 * 1024,
+    onContentLimitExceeded: (current, limit) => {
+      console.warn(`Content limit exceeded: ${current} > ${limit}`)
+    },
+  })
+
+  const handleSend = async (message: string) => {
+    setError(null)
+    setIsStarted(true)
+    reset()
+
+    try {
+      // Call your API endpoint
+      const response = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message }),
+      })
+
+      if (!response.ok) {
+        throw new Error(`API error: ${response.status}`)
+      }
+
+      if (!response.body) {
+        throw new Error('No response body')
+      }
+
+      // Start streaming
+      await startStreaming(response.body)
+    } catch (err) {
+      setError(err as Error)
+      setIsStarted(false)
+    }
+  }
+
+  return (
+    <div className="flex flex-col gap-4">
+      {/* Error Display */}
+      {error && (
+        <div className="rounded-lg bg-red-50 p-4 text-red-800">
+          <p className="font-semibold">Error</p>
+          <p className="text-sm">{error.message}</p>
+          <button
+            onClick={() => setError(null)}
+            className="mt-2 text-sm underline"
+          >
+            Dismiss
+          </button>
+        </div>
+      )}
+
+      {/* Streaming Content */}
+      <div className="min-h-[200px] rounded-lg border p-4">
+        {content || (
+          <p className="text-muted-foreground">
+            {isStreaming ? 'Streaming...' : 'Send a message to start'}
+          </p>
+        )}
+      </div>
+
+      {/* Controls */}
+      <div className="flex gap-2">
+        <button
+          onClick={() => handleSend('Tell me a story')}
+          disabled={isStreaming}
+          className="rounded bg-primary px-4 py-2 text-white disabled:opacity-50"
+        >
+          Send Message
+        </button>
+
+        {isStreaming && (
+          <button
+            onClick={stopStreaming}
+            className="rounded bg-red-500 px-4 py-2 text-white"
+          >
+            Stop
+          </button>
+        )}
+
+        <button
+          onClick={reset}
+          disabled={isStreaming}
+          className="rounded border px-4 py-2 disabled:opacity-50"
+        >
+          Reset
+        </button>
+      </div>
+    </div>
+  )
+}
+```
+
+### Key Features
+
+- **Timeout Protection**: Automatically abort streams that take too long
+- **Content Limits**: Prevent memory exhaustion from oversized responses
+- **Error Display**: Show errors to users with dismissal option
+- **Clean Cancellation**: Properly stop streaming with `stopStreaming()`
+- **State Reset**: Clear content between messages
+
+### Error Types to Handle
+
+```tsx
+// Network errors
+catch (err) {
+  if (err.name === 'AbortError') {
+    // User cancelled or timeout
+  } else if (err.message.includes('Failed to fetch')) {
+    // Network connection lost
+  } else if (err.message.includes('API error')) {
+    // Server-side error
+  }
+}
+```
+
+## Pattern 2: SSE Streaming with Reconnection
+
+Server-Sent Events with automatic reconnection and event parsing.
+
+### Implementation
+
+```tsx
+'use client'
+
+import { useStreamingSSE } from '@clarity-chat/react'
+import { useState } from 'react'
+
+export function SSEStreamingChat() {
+  const [messages, setMessages] = useState<Array<{ role: string; content: string }>>([])
+  const [connectionQuality, setConnectionQuality] = useState<'good' | 'reconnecting' | 'error'>('good')
+
+  const {
+    status,
+    data,
+    error,
+    connect,
+    disconnect,
+    reconnectAttempt,
+    isReconnecting,
+  } = useStreamingSSE({
+    url: '/api/chat/stream',
+    method: 'POST',
+    body: {
+      message: 'Hello',
+      conversationId: 'conv-123',
+    },
+    authToken: 'your-auth-token',
+
+    // Automatic reconnection with exponential backoff
+    autoReconnect: true,
+    maxReconnectAttempts: 5,
+    reconnectDelay: 1000, // Start at 1s
+    maxReconnectDelay: 30000, // Max 30s
+    reconnectSuccessThreshold: 3, // Reset backoff after 3 successes
+
+    // Connection monitoring
+    heartbeatInterval: 30000, // 30s heartbeat
+    connectionTimeout: 15000, // 15s connection timeout
+
+    // Memory limits
+    maxEventBufferSize: 1000,
+    onEventBufferOverflow: (droppedCount, bufferSize) => {
+      console.warn(`Dropped ${droppedCount} events (buffer: ${bufferSize})`)
+    },
+
+    // Event handlers
+    onOpen: () => {
+      console.log('SSE connected')
+      setConnectionQuality('good')
+    },
+    onMessage: (event) => {
+      console.log('Event:', event.type, event.data)
+
+      // Handle different event types
+      if (event.type === 'token') {
+        // Token streaming
+      } else if (event.type === 'done') {
+        // Stream complete
+        disconnect()
+        setMessages((prev) => [
+          ...prev,
+          { role: 'assistant', content: data },
+        ])
+      } else if (event.type === 'error') {
+        // Server-sent error
+        console.error('Server error:', event.data)
+      }
+    },
+    onError: (err) => {
+      console.error('SSE error:', err)
+      setConnectionQuality('error')
+    },
+    onReconnecting: (attempt, delay) => {
+      console.log(`Reconnecting (attempt ${attempt}) in ${delay}ms`)
+      setConnectionQuality('reconnecting')
+    },
+    onMaxReconnectAttemptsReached: () => {
+      console.error('Max reconnection attempts reached')
+      setConnectionQuality('error')
+    },
+  })
+
+  return (
+    <div className="flex flex-col gap-4">
+      {/* Connection Status */}
+      <div className="flex items-center gap-2">
+        <div
+          className={`h-2 w-2 rounded-full ${
+            connectionQuality === 'good'
+              ? 'bg-green-500'
+              : connectionQuality === 'reconnecting'
+                ? 'bg-yellow-500 animate-pulse'
+                : 'bg-red-500'
+          }`}
+        />
+        <span className="text-sm text-muted-foreground">
+          {status === 'streaming'
+            ? 'Streaming'
+            : isReconnecting
+              ? `Reconnecting (${reconnectAttempt}/5)...`
+              : status}
+        </span>
+      </div>
+
+      {/* Error Display */}
+      {error && (
+        <div className="rounded-lg bg-red-50 p-4 text-red-800">
+          <p className="font-semibold">Connection Error</p>
+          <p className="text-sm">{error.message}</p>
+        </div>
+      )}
+
+      {/* Messages */}
+      <div className="space-y-4">
+        {messages.map((msg, i) => (
+          <div key={i} className="rounded-lg border p-4">
+            <p className="text-sm font-semibold">{msg.role}</p>
+            <p>{msg.content}</p>
+          </div>
+        ))}
+
+        {/* Current streaming message */}
+        {data && (
+          <div className="rounded-lg border border-blue-500 p-4">
+            <p className="text-sm font-semibold">assistant (streaming)</p>
+            <p>{data}</p>
+          </div>
+        )}
+      </div>
+
+      {/* Controls */}
+      <div className="flex gap-2">
+        <button
+          onClick={connect}
+          disabled={status !== 'idle' && status !== 'closed' && status !== 'error'}
+          className="rounded bg-primary px-4 py-2 text-white disabled:opacity-50"
+        >
+          Send Message
+        </button>
+
+        {status === 'streaming' && (
+          <button
+            onClick={disconnect}
+            className="rounded bg-red-500 px-4 py-2 text-white"
+          >
+            Stop
+          </button>
+        )}
+      </div>
+    </div>
+  )
+}
+```
+
+### Key Features
+
+- **Automatic Reconnection**: Exponential backoff with jitter prevents thundering herd
+- **Connection Monitoring**: Heartbeat detection for stale connections
+- **Event Resume**: Resume from last event ID after reconnection
+- **Memory Protection**: Bounded event buffer prevents memory leaks
+- **Connection Quality**: Visual feedback for connection health
+
+### Reconnection Strategy
+
+```tsx
+// Exponential backoff with jitter
+const baseDelay = initialDelay * Math.pow(2, attemptNumber)
+const jitter = (Math.random() - 0.5) * 2 * (baseDelay * 0.3) // ±30%
+const finalDelay = Math.min(baseDelay + jitter, maxDelay)
+
+// Reset backoff after sustained success
+if (consecutiveSuccesses >= threshold) {
+  reconnectDelay = initialDelay
+}
+```
+
+## Pattern 3: Optimized UI Updates with Batching
+
+Handle high-frequency streaming with debounced and batched updates for 60fps rendering.
+
+### Implementation
+
+```tsx
+'use client'
+
+import { useStreaming } from '@clarity-chat/react'
+import { useRef, useEffect, useState } from 'react'
+
+export function OptimizedStreamingUI() {
+  const [displayContent, setDisplayContent] = useState('')
+  const pendingContentRef = useRef('')
+  const rafRef = useRef<number | null>(null)
+
+  const { content, isStreaming, startStreaming, stopStreaming } = useStreaming({
+    onChunk: (chunk) => {
+      // Accumulate chunks without triggering re-render
+      pendingContentRef.current += chunk
+
+      // Schedule batched update using requestAnimationFrame
+      if (!rafRef.current) {
+        rafRef.current = requestAnimationFrame(() => {
+          setDisplayContent(pendingContentRef.current)
+          rafRef.current = null
+        })
+      }
+    },
+    onComplete: (fullText) => {
+      // Ensure final content is displayed
+      if (rafRef.current) {
+        cancelAnimationFrame(rafRef.current)
+        rafRef.current = null
+      }
+      setDisplayContent(fullText)
+      pendingContentRef.current = ''
+    },
+  })
+
+  // Cleanup RAF on unmount
+  useEffect(() => {
+    return () => {
+      if (rafRef.current) {
+        cancelAnimationFrame(rafRef.current)
+      }
+    }
+  }, [])
+
+  return (
+    <div className="flex flex-col gap-4">
+      {/* Optimized Rendering */}
+      <div className="min-h-[300px] rounded-lg border p-4">
+        <StreamingContent content={displayContent} isStreaming={isStreaming} />
+      </div>
+
+      <div className="flex gap-2">
+        <button
+          onClick={() =>
+            startStreaming(
+              /* your stream */
+            )
+          }
+          disabled={isStreaming}
+          className="rounded bg-primary px-4 py-2 text-white disabled:opacity-50"
+        >
+          Start
+        </button>
+        <button
+          onClick={stopStreaming}
+          disabled={!isStreaming}
+          className="rounded bg-red-500 px-4 py-2 text-white disabled:opacity-50"
+        >
+          Stop
+        </button>
+      </div>
+    </div>
+  )
+}
+
+// Memoized rendering component
+function StreamingContent({ content, isStreaming }: { content: string; isStreaming: boolean }) {
+  return (
+    <div className="space-y-2">
+      <p className="whitespace-pre-wrap">{content}</p>
+      {isStreaming && (
+        <span className="inline-block h-4 w-1 animate-pulse bg-current" />
+      )}
+    </div>
+  )
+}
+```
+
+### Performance Optimizations
+
+1. **RAF Batching**: Groups multiple chunks into single render
+2. **Ref Accumulation**: Avoids re-renders during chunk accumulation
+3. **Memoized Components**: Prevents unnecessary re-renders
+4. **Cleanup**: Cancels pending updates on unmount
+
+### Debouncing Strategy
+
+```tsx
+// For text-heavy streams, add debouncing
+const debouncedUpdate = useDebouncedCallback((text: string) => {
+  setDisplayContent(text)
+}, 100) // Update at most every 100ms
+
+onChunk: (chunk) => {
+  pendingContentRef.current += chunk
+  debouncedUpdate(pendingContentRef.current)
+}
+```
+
+## Pattern 4: Backpressure Handling
+
+Manage fast streams that could overwhelm the UI or cause memory issues.
+
+### Implementation
+
+```tsx
+'use client'
+
+import { useStreaming } from '@clarity-chat/react'
+import { useRef, useState } from 'react'
+
+interface StreamStats {
+  chunksReceived: number
+  chunksPaused: number
+  bytesReceived: number
+  throughput: number // bytes per second
+}
+
+export function BackpressureStreamingChat() {
+  const [stats, setStats] = useState<StreamStats>({
+    chunksReceived: 0,
+    chunksPaused: 0,
+    bytesReceived: 0,
+    throughput: 0,
+  })
+  const [isPaused, setIsPaused] = useState(false)
+
+  // Backpressure thresholds
+  const MAX_QUEUE_SIZE = 100 // Max chunks in queue
+  const MAX_CHUNK_RATE = 50 // Max chunks per second
+  const PAUSE_THRESHOLD = 80 // Pause at 80% queue capacity
+
+  const chunkQueueRef = useRef<string[]>([])
+  const lastProcessedRef = useRef(Date.now())
+  const startTimeRef = useRef(Date.now())
+
+  const { content, isStreaming, startStreaming, stopStreaming } = useStreaming({
+    onChunk: (chunk) => {
+      const now = Date.now()
+      const elapsed = (now - lastProcessedRef.current) / 1000
+      const rate = 1 / elapsed
+
+      // Calculate backpressure
+      const queueSize = chunkQueueRef.current.length
+      const queuePercent = (queueSize / MAX_QUEUE_SIZE) * 100
+
+      // Update stats
+      setStats((prev) => ({
+        chunksReceived: prev.chunksReceived + 1,
+        chunksPaused: prev.chunksPaused,
+        bytesReceived: prev.bytesReceived + chunk.length,
+        throughput: prev.bytesReceived / ((now - startTimeRef.current) / 1000),
+      }))
+
+      // Apply backpressure if needed
+      if (queuePercent > PAUSE_THRESHOLD || rate > MAX_CHUNK_RATE) {
+        setIsPaused(true)
+        setStats((prev) => ({ ...prev, chunksPaused: prev.chunksPaused + 1 }))
+
+        // Delay processing
+        setTimeout(() => {
+          chunkQueueRef.current.push(chunk)
+          processQueue()
+          setIsPaused(false)
+        }, 50)
+      } else {
+        chunkQueueRef.current.push(chunk)
+        processQueue()
+      }
+
+      lastProcessedRef.current = now
+    },
+  })
+
+  const processQueue = () => {
+    // Process chunks from queue in batches
+    const batchSize = 10
+    const batch = chunkQueueRef.current.splice(0, batchSize)
+
+    if (batch.length > 0) {
+      // Process batch...
+      requestAnimationFrame(() => {
+        if (chunkQueueRef.current.length > 0) {
+          processQueue()
+        }
+      })
+    }
+  }
+
+  return (
+    <div className="flex flex-col gap-4">
+      {/* Backpressure Stats */}
+      <div className="grid grid-cols-2 gap-4 rounded-lg border p-4 sm:grid-cols-4">
+        <div>
+          <p className="text-sm text-muted-foreground">Chunks</p>
+          <p className="text-2xl font-bold">{stats.chunksReceived}</p>
+        </div>
+        <div>
+          <p className="text-sm text-muted-foreground">Paused</p>
+          <p className="text-2xl font-bold">{stats.chunksPaused}</p>
+        </div>
+        <div>
+          <p className="text-sm text-muted-foreground">Bytes</p>
+          <p className="text-2xl font-bold">{(stats.bytesReceived / 1024).toFixed(1)} KB</p>
+        </div>
+        <div>
+          <p className="text-sm text-muted-foreground">Throughput</p>
+          <p className="text-2xl font-bold">{(stats.throughput / 1024).toFixed(1)} KB/s</p>
+        </div>
+      </div>
+
+      {/* Backpressure Indicator */}
+      {isPaused && (
+        <div className="rounded-lg bg-yellow-50 p-4 text-yellow-800">
+          <p className="text-sm">
+            Stream paused due to backpressure (queue processing...)
+          </p>
+        </div>
+      )}
+
+      {/* Content Display */}
+      <div className="min-h-[200px] rounded-lg border p-4">
+        <p className="whitespace-pre-wrap">{content}</p>
+      </div>
+
+      {/* Controls */}
+      <div className="flex gap-2">
+        <button
+          onClick={() => {
+            startTimeRef.current = Date.now()
+            setStats({
+              chunksReceived: 0,
+              chunksPaused: 0,
+              bytesReceived: 0,
+              throughput: 0,
+            })
+            // Start streaming...
+          }}
+          disabled={isStreaming}
+          className="rounded bg-primary px-4 py-2 text-white disabled:opacity-50"
+        >
+          Start
+        </button>
+        <button
+          onClick={stopStreaming}
+          disabled={!isStreaming}
+          className="rounded bg-red-500 px-4 py-2 text-white disabled:opacity-50"
+        >
+          Stop
+        </button>
+      </div>
+    </div>
+  )
+}
+```
+
+### Backpressure Strategies
+
+1. **Queue Management**: Limit queue size to prevent memory exhaustion
+2. **Rate Limiting**: Slow down chunk processing when rate is too high
+3. **Batch Processing**: Process multiple chunks in single operation
+4. **Monitoring**: Track stats to detect backpressure conditions
+
+### When to Apply Backpressure
+
+```tsx
+// High-frequency streams (>50 chunks/sec)
+if (chunkRate > 50) {
+  applyBackpressure()
+}
+
+// Large queue buildup
+if (queueSize > MAX_QUEUE_SIZE * 0.8) {
+  applyBackpressure()
+}
+
+// Memory pressure
+if (bytesInMemory > 10 * 1024 * 1024) { // 10MB
+  applyBackpressure()
+}
+```
+
+## Cancellation and Cleanup
+
+Proper cleanup is critical for preventing memory leaks and resource exhaustion.
+
+### Cleanup Checklist
+
+```tsx
+const cleanupStream = () => {
+  // 1. Cancel ReadableStream reader
+  if (readerRef.current) {
+    readerRef.current.cancel().catch(() => {
+      // Ignore cancellation errors
+    })
+    readerRef.current = null
+  }
+
+  // 2. Abort fetch request
+  if (abortControllerRef.current) {
+    abortControllerRef.current.abort()
+    abortControllerRef.current = null
+  }
+
+  // 3. Clear timeouts
+  if (timeoutRef.current) {
+    clearTimeout(timeoutRef.current)
+    timeoutRef.current = null
+  }
+
+  // 4. Clear intervals
+  if (heartbeatRef.current) {
+    clearInterval(heartbeatRef.current)
+    heartbeatRef.current = null
+  }
+
+  // 5. Cancel RAF
+  if (rafRef.current) {
+    cancelAnimationFrame(rafRef.current)
+    rafRef.current = null
+  }
+
+  // 6. Clear buffers
+  pendingChunksRef.current = []
+
+  // 7. Update state
+  setIsStreaming(false)
+}
+```
+
+### Cleanup Hook Pattern
+
+```tsx
+useEffect(() => {
+  // Setup streaming...
+
+  // Cleanup on unmount
+  return () => {
+    cleanupStream()
+  }
+}, []) // Empty deps - cleanup only on unmount
+```
+
+## Testing Streaming Implementations
+
+Comprehensive testing ensures streaming works reliably across scenarios.
+
+### Unit Tests
+
+```tsx
+import { renderHook, act } from '@testing-library/react'
+import { useStreaming } from '@clarity-chat/react'
+
+describe('useStreaming', () => {
+  it('accumulates streamed content', async () => {
+    const { result } = renderHook(() => useStreaming())
+
+    const mockStream = new ReadableStream({
+      start(controller) {
+        controller.enqueue(new TextEncoder().encode('Hello '))
+        controller.enqueue(new TextEncoder().encode('World'))
+        controller.close()
+      },
+    })
+
+    await act(async () => {
+      await result.current.startStreaming(mockStream)
+    })
+
+    expect(result.current.content).toBe('Hello World')
+  })
+
+  it('handles cancellation', async () => {
+    const { result } = renderHook(() => useStreaming())
+
+    const mockStream = new ReadableStream({
+      start(controller) {
+        setTimeout(() => controller.enqueue(new TextEncoder().encode('test')), 100)
+      },
+    })
+
+    await act(async () => {
+      const streamPromise = result.current.startStreaming(mockStream)
+      result.current.stopStreaming()
+      await streamPromise
+    })
+
+    expect(result.current.isStreaming).toBe(false)
+  })
+
+  it('calls error handler on failure', async () => {
+    const onError = vi.fn()
+    const { result } = renderHook(() => useStreaming({ onError }))
+
+    const mockStream = new ReadableStream({
+      start(controller) {
+        controller.error(new Error('Stream error'))
+      },
+    })
+
+    await act(async () => {
+      await result.current.startStreaming(mockStream)
+    })
+
+    expect(onError).toHaveBeenCalledWith(expect.any(Error))
+  })
+
+  it('respects timeout', async () => {
+    const onTimeout = vi.fn()
+    const { result } = renderHook(() =>
+      useStreaming({ timeout: 100, onTimeout })
+    )
+
+    // Stream that never completes
+    const mockStream = new ReadableStream({
+      start() {
+        // Never enqueue or close
+      },
+    })
+
+    await act(async () => {
+      await result.current.startStreaming(mockStream)
+    })
+
+    expect(onTimeout).toHaveBeenCalled()
+  })
+})
+```
+
+### Integration Tests
+
+```tsx
+import { render, screen, fireEvent, waitFor } from '@testing-library/react'
+import { BasicStreamingChat } from './BasicStreamingChat'
+
+describe('BasicStreamingChat Integration', () => {
+  it('displays streamed content', async () => {
+    // Mock fetch
+    global.fetch = vi.fn().mockResolvedValue({
+      ok: true,
+      body: new ReadableStream({
+        start(controller) {
+          controller.enqueue(new TextEncoder().encode('Hello'))
+          setTimeout(() => {
+            controller.enqueue(new TextEncoder().encode(' World'))
+            controller.close()
+          }, 50)
+        },
+      }),
+    })
+
+    render(<BasicStreamingChat />)
+
+    fireEvent.click(screen.getByText('Send Message'))
+
+    await waitFor(() => {
+      expect(screen.getByText(/Hello/)).toBeInTheDocument()
+    })
+
+    await waitFor(() => {
+      expect(screen.getByText(/Hello World/)).toBeInTheDocument()
+    })
+  })
+
+  it('handles stop button', async () => {
+    render(<BasicStreamingChat />)
+
+    fireEvent.click(screen.getByText('Send Message'))
+    await waitFor(() => {
+      expect(screen.getByText('Stop')).toBeInTheDocument()
+    })
+
+    fireEvent.click(screen.getByText('Stop'))
+
+    await waitFor(() => {
+      expect(screen.queryByText('Stop')).not.toBeInTheDocument()
+    })
+  })
+})
+```
+
+### E2E Tests
+
+```tsx
+import { test, expect } from '@playwright/test'
+
+test.describe('Streaming Chat', () => {
+  test('streams message successfully', async ({ page }) => {
+    await page.goto('/chat')
+
+    await page.fill('input[name="message"]', 'Hello')
+    await page.click('button:has-text("Send")')
+
+    // Wait for streaming to start
+    await expect(page.locator('[data-streaming="true"]')).toBeVisible()
+
+    // Wait for completion
+    await expect(page.locator('[data-streaming="true"]')).not.toBeVisible({
+      timeout: 30000,
+    })
+
+    // Verify content
+    await expect(page.locator('.message-content')).toContainText(/Hello/)
+  })
+
+  test('can cancel streaming', async ({ page }) => {
+    await page.goto('/chat')
+
+    await page.fill('input[name="message"]', 'Tell me a long story')
+    await page.click('button:has-text("Send")')
+
+    // Wait for streaming to start
+    await expect(page.locator('[data-streaming="true"]')).toBeVisible()
+
+    // Click cancel
+    await page.click('button:has-text("Stop")')
+
+    // Verify stopped
+    await expect(page.locator('[data-streaming="true"]')).not.toBeVisible()
+  })
+})
+```
+
+## Best Practices Summary
+
+### Error Handling
+
+1. **Always catch errors**: Network failures, timeouts, server errors
+2. **Display errors to users**: Clear, actionable error messages
+3. **Log errors**: Track patterns for debugging
+4. **Retry with backoff**: Automatic retry for transient failures
+
+### Cancellation
+
+1. **Immediate cleanup**: Cancel readers and abort controllers
+2. **Clear all timers**: Timeouts, intervals, RAF
+3. **Reset state**: Update UI to reflect cancellation
+4. **Prevent memory leaks**: Clear buffers and references
+
+### Performance
+
+1. **Batch updates**: Use RAF for 60fps rendering
+2. **Debounce high-frequency**: Limit update rate for text-heavy streams
+3. **Memoize components**: Prevent unnecessary re-renders
+4. **Monitor memory**: Set buffer limits and clear old data
+
+### User Experience
+
+1. **Loading states**: Show when streaming starts
+2. **Progress indicators**: Visual feedback during streaming
+3. **Cancellation option**: Let users stop streams
+4. **Error recovery**: Allow retry after failures
+
+## Related Resources
+
+- [Error Handling Guide](/guides/advanced/error-handling)
+- [Performance Optimization](/guides/advanced/performance/optimization-strategies)
+- [SSE Hooks API](/reference/hooks/useStreamingSSE)
+- [Streaming Hooks API](/reference/hooks/useStreaming)
+
+## Next Steps
+
+- Implement one of the patterns in your application
+- Add error boundaries for production resilience
+- Test streaming with network throttling
+- Monitor performance with real user data

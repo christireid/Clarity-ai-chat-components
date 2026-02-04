@@ -23,7 +23,10 @@ function getLuminance(r: number, g: number, b: number): number {
  * Calculate contrast ratio between two colors
  * https://www.w3.org/TR/WCAG20-TECHS/G17.html#G17-procedure
  */
-function getContrastRatio(color1: [number, number, number], color2: [number, number, number]): number {
+function getContrastRatio(
+  color1: [number, number, number],
+  color2: [number, number, number]
+): number {
   const lum1 = getLuminance(...color1)
   const lum2 = getLuminance(...color2)
   const lighter = Math.max(lum1, lum2)
@@ -40,12 +43,13 @@ function hslToRgb(h: number, s: number, l: number): [number, number, number] {
 
   const k = (n: number) => (n + h / 30) % 12
   const a = s * Math.min(l, 1 - l)
-  const f = (n: number) => l - a * Math.max(-1, Math.min(k(n) - 3, Math.min(9 - k(n), 1)))
+  const f = (n: number) =>
+    l - a * Math.max(-1, Math.min(k(n) - 3, Math.min(9 - k(n), 1)))
 
   return [
     Math.round(f(0) * 255),
     Math.round(f(8) * 255),
-    Math.round(f(4) * 255)
+    Math.round(f(4) * 255),
   ]
 }
 
@@ -60,7 +64,7 @@ function blendColors(
   return [
     Math.round(fg[0] * opacity + bg[0] * (1 - opacity)),
     Math.round(fg[1] * opacity + bg[1] * (1 - opacity)),
-    Math.round(fg[2] * opacity + bg[2] * (1 - opacity))
+    Math.round(fg[2] * opacity + bg[2] * (1 - opacity)),
   ]
 }
 
@@ -76,7 +80,12 @@ describe('Message Bubble Gradient Contrast', () => {
       // WCAG AA requires 4.5:1 for normal text
       expect(ratio).toBeGreaterThanOrEqual(4.5)
 
-      console.log('✓ Light mode gradient start contrast:', ratio.toFixed(2) + ':1')
+      if (process.env.NODE_ENV === 'development') {
+        console.log(
+          '✓ Light mode gradient start contrast:',
+          ratio.toFixed(2) + ':1'
+        )
+      }
     })
 
     it('should have sufficient contrast at gradient end', () => {
@@ -85,7 +94,12 @@ describe('Message Bubble Gradient Contrast', () => {
       // WCAG AA requires 4.5:1 for normal text
       expect(ratio).toBeGreaterThanOrEqual(4.5)
 
-      console.log('✓ Light mode gradient end contrast:', ratio.toFixed(2) + ':1')
+      if (process.env.NODE_ENV === 'development') {
+        console.log(
+          '✓ Light mode gradient end contrast:',
+          ratio.toFixed(2) + ':1'
+        )
+      }
     })
   })
 
@@ -97,7 +111,12 @@ describe('Message Bubble Gradient Contrast', () => {
     it('should FAIL contrast at gradient start (OLD)', () => {
       const ratio = getContrastRatio(primaryForeground, primaryColor)
 
-      console.log('✗ OLD Light mode gradient start contrast:', ratio.toFixed(2) + ':1')
+      if (process.env.NODE_ENV === 'development') {
+        console.log(
+          '✗ OLD Light mode gradient start contrast:',
+          ratio.toFixed(2) + ':1'
+        )
+      }
 
       // This should fail to show the problem was real
       expect(ratio).toBeLessThan(4.5)
@@ -108,7 +127,12 @@ describe('Message Bubble Gradient Contrast', () => {
       const blendedBg = blendColors(primaryColor, lightBackground, 0.9)
       const ratio = getContrastRatio(primaryForeground, blendedBg)
 
-      console.log('✗ OLD Light mode gradient end contrast:', ratio.toFixed(2) + ':1')
+      if (process.env.NODE_ENV === 'development') {
+        console.log(
+          '✗ OLD Light mode gradient end contrast:',
+          ratio.toFixed(2) + ':1'
+        )
+      }
 
       // This should fail even more
       expect(ratio).toBeLessThan(4.5)
@@ -123,7 +147,12 @@ describe('Message Bubble Gradient Contrast', () => {
     it('should have sufficient contrast at gradient start (100% opacity)', () => {
       const ratio = getContrastRatio(primaryForeground, primaryColor)
 
-      console.log('Dark mode gradient start contrast:', ratio.toFixed(2) + ':1')
+      if (process.env.NODE_ENV === 'development') {
+        console.log(
+          'Dark mode gradient start contrast:',
+          ratio.toFixed(2) + ':1'
+        )
+      }
 
       // WCAG AA requires 4.5:1 for normal text
       expect(ratio).toBeGreaterThanOrEqual(4.5)
@@ -134,8 +163,10 @@ describe('Message Bubble Gradient Contrast', () => {
       const blendedBg = blendColors(primaryColor, darkBackground, 0.9)
       const ratio = getContrastRatio(primaryForeground, blendedBg)
 
-      console.log('Dark mode gradient end contrast:', ratio.toFixed(2) + ':1')
-      console.log('Blended background RGB:', blendedBg)
+      if (process.env.NODE_ENV === 'development') {
+        console.log('Dark mode gradient end contrast:', ratio.toFixed(2) + ':1')
+        console.log('Blended background RGB:', blendedBg)
+      }
 
       // This is likely passing since both fg and bg are dark
       expect(ratio).toBeGreaterThanOrEqual(4.5)

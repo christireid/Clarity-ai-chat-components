@@ -1,0 +1,594 @@
+# OpenAI Streaming Chat - Complete Integration
+
+> Build a production-ready streaming chat with OpenAI GPT-4, function calling, and advanced features
+
+## Problem
+
+You want to leverage OpenAI's GPT-4 with streaming responses, function calling, and production-grade features like token counting, cost tracking, and prompt caching.
+
+## Solution
+
+Use `useClarityChat` with OpenAI's SDK, implementing streaming, tools, and optimization features for a complete production experience.
+
+## Complete Code
+
+### Frontend Implementation
+
+```tsx
+// app/chat/page.tsx
+'use client'
+
+import {
+  useClarityChat,
+  MessageList,
+  ChatInput,
+  TokenUsageMeter,
+  StreamingProgress,
+} from '@clarity-chat/react'
+
+export default function OpenAIChatPage() {
+  const {
+    messages,
+    append,
+    isLoading,
+    error,
+    usage,
+    streamStatus,
+  } = useClarityChat({
+    api: '/api/openai/chat',
+    streamMode: 'text',
+    initialMessages: [
+      {
+        id: '1',
+        role: 'system',
+        content: 'You are a helpful AI assistant powered by GPT-4.',
+      },
+    ],
+    onFinish: (message, usage) => {
+      console.log('Message complete:', message)
+      console.log('Token usage:', usage)
+    },
+  })
+
+  return (
+    <div className="flex h-screen flex-col">
+      {/* Header with token usage */}
+      <div className="border-b p-4">
+        <div className="flex items-center justify-between">
+          <h1 className="text-lg font-semibold">GPT-4 Chat</h1>
+          <TokenUsageMeter
+            usage={usage}
+            model="gpt-4-turbo-preview"
+            showCost
+          />
+        </div>
+      </div>
+
+      {/* Messages */}
+      <MessageList
+        messages={messages}
+        isLoading={isLoading}
+        className="flex-1"
+      />
+
+      {/* Streaming progress */}
+      {isLoading && (
+        <StreamingProgress
+          status={streamStatus}
+          tokensReceived={streamStatus.tokensReceived}
+        />
+      )}
+
+      {/* Input */}
+      <ChatInput
+        onSubmit={(content) => append({ role: 'user', content })}
+        disabled={isLoading}
+        placeholder="Ask GPT-4 anything..."
+        maxLength={4000}
+      />
+
+      {/* Error display */}
+      {error && (
+        <div className="border-t border-red-200 bg-red-50 p-4 text-red-700">
+          {error.message}
+        </div>
+      )}
+    </div>
+  )
+}
+```
+
+### Backend API Route
+
+```tsx
+// app/api/openai/chat/route.ts
+import { OpenAI } from 'openai'
+import { OpenAIStream, StreamingTextResponse } from 'ai'
+import { headers } from 'next/headers'
+
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY!,
+})
+
+export const runtime = 'edge' // Use Edge Runtime for better streaming
+
+export async function POST(req: Request) {
+  try {
+    const { messages } = await req.json()
+
+    // Validate input
+    if (!messages || !Array.isArray(messages)) {
+      return new Response('Invalid messages', { status: 400 })
+    }
+
+    const response = await openai.chat.completions.create({
+      model: 'gpt-4-turbo-preview',
+      stream: true,
+      messages,
+      temperature: 0.7,
+      max_tokens: 2000,
+      top_p: 1,
+      frequency_penalty: 0,
+      presence_penalty: 0,
+    })
+
+    // Convert to Web Stream with callbacks
+    const stream = OpenAIStream(response, {
+      onStart: async () => {
+        console.log('Stream started')
+      },
+      onToken: async (token) => {
+        // Track tokens in real-time
+        console.log('Token:', token)
+      },
+      onCompletion: async (completion) => {
+        // Log completion for analytics
+        console.log('Completion:', completion.substring(0, 50) + '...')
+      },
+      onFinal: async (completion) => {
+        // Store in database, update analytics, etc.
+        await logCompletion({
+          completion,
+          model: 'gpt-4-turbo-preview',
+          timestamp: Date.now(),
+        })
+      },
+    })
+
+    return new StreamingTextResponse(stream, {
+      headers: {
+        'X-Content-Type-Options': 'nosniff',
+        'X-Frame-Options': 'DENY',
+      },
+    })
+  } catch (error) {
+    console.error('OpenAI API error:', error)
+
+    if (error instanceof OpenAI.APIError) {
+      return new Response(
+        JSON.stringify({
+          error: error.message,
+          code: error.code,
+          status: error.status,
+        }),
+        { status: error.status || 500 }
+      )
+    }
+
+    return new Response('Internal server error', { status: 500 })
+  }
+}
+
+async function logCompletion(data: {
+  completion: string
+  model: string
+  timestamp: number
+}) {
+  // Implement your logging logic
+  // e.g., save to database, send to analytics
+}
+```
+
+## How It Works
+
+### 1. User Sends Message
+
+```tsx
+append({ role: 'user', content: 'Explain quantum computing' })
+```
+
+### 2. Request Sent to OpenAI
+
+```tsx
+const response = await openai.chat.completions.create({
+  model: 'gpt-4-turbo-preview',
+  stream: true,
+  messages: [
+    { role: 'system', content: 'You are a helpful assistant' },
+    { role: 'user', content: 'Explain quantum computing' },
+  ],
+})
+```
+
+### 3. Tokens Stream Back
+
+```tsx
+// Server-Sent Events (SSE)
+data: {"id":"chatcmpl-123","object":"chat.completion.chunk","created":1234567890,"model":"gpt-4-turbo-preview","choices":[{"index":0,"delta":{"content":"Quantum"},"finish_reason":null}]}
+data: {"choices":[{"delta":{"content":" computing"}}]}
+data: {"choices":[{"delta":{"content":" is"}}]}
+// ... more chunks
+data: [DONE]
+```
+
+### 4. UI Updates Incrementally
+
+Each token received updates the UI immediately, creating the typewriter effect.
+
+## Variations
+
+### With Function Calling
+
+```tsx
+// app/api/openai/chat/route.ts
+const tools = [
+  {
+    type: 'function',
+    function: {
+      name: 'get_current_weather',
+      description: 'Get the current weather in a given location',
+      parameters: {
+        type: 'object',
+        properties: {
+          location: {
+            type: 'string',
+            description: 'The city and state, e.g. San Francisco, CA',
+          },
+          unit: {
+            type: 'string',
+            enum: ['celsius', 'fahrenheit'],
+          },
+        },
+        required: ['location'],
+      },
+    },
+  },
+]
+
+export async function POST(req: Request) {
+  const { messages } = await req.json()
+
+  const response = await openai.chat.completions.create({
+    model: 'gpt-4-turbo-preview',
+    stream: true,
+    messages,
+    tools,
+    tool_choice: 'auto',
+  })
+
+  const stream = OpenAIStream(response, {
+    async experimental_onToolCall(toolCall, appendToolCallMessage) {
+      // Execute the function
+      if (toolCall.function.name === 'get_current_weather') {
+        const args = JSON.parse(toolCall.function.arguments)
+        const weather = await getWeather(args.location, args.unit)
+
+        // Send result back to OpenAI
+        return appendToolCallMessage({
+          tool_call_id: toolCall.id,
+          function_name: toolCall.function.name,
+          tool_call_result: weather,
+        })
+      }
+    },
+  })
+
+  return new StreamingTextResponse(stream)
+}
+
+async function getWeather(location: string, unit: string) {
+  // Implement weather API call
+  return `The weather in ${location} is sunny, 72°${unit === 'celsius' ? 'C' : 'F'}`
+}
+```
+
+### With Prompt Caching (Save 90% on Costs)
+
+```tsx
+// app/api/openai/chat/route.ts
+import { anthropicAdapter } from '@clarity-chat/react/adapters'
+
+// Use Anthropic for prompt caching (90% cheaper for repeated context)
+const anthropic = new Anthropic({
+  apiKey: process.env.ANTHROPIC_API_KEY!,
+})
+
+export async function POST(req: Request) {
+  const { messages } = await req.json()
+
+  // Extract system prompt for caching
+  const systemPrompt = messages.find((m) => m.role === 'system')?.content || ''
+  const userMessages = messages.filter((m) => m.role !== 'system')
+
+  const response = await anthropic.messages.create({
+    model: 'claude-3-5-sonnet-20241022',
+    max_tokens: 4096,
+    stream: true,
+    system: [
+      {
+        type: 'text',
+        text: systemPrompt,
+        cache_control: { type: 'ephemeral' }, // Cache this!
+      },
+    ],
+    messages: userMessages,
+  })
+
+  const stream = AnthropicStream(response)
+  return new StreamingTextResponse(stream)
+}
+```
+
+### With Token Budget Monitoring
+
+```tsx
+'use client'
+
+import { useClarityChat, useTokenBudget } from '@clarity-chat/react'
+
+export default function ChatWithBudget() {
+  const { remaining, percentage, exceeded } = useTokenBudget({
+    limit: 100000, // 100K tokens per day
+    window: 'day',
+  })
+
+  const { messages, append, isLoading } = useClarityChat({
+    api: '/api/openai/chat',
+    onBeforeRequest: () => {
+      if (exceeded) {
+        throw new Error('Daily token budget exceeded')
+      }
+    },
+  })
+
+  return (
+    <div className="flex h-screen flex-col">
+      <div className="border-b p-4">
+        <div className="mb-2 flex items-center justify-between text-sm">
+          <span>Token Budget</span>
+          <span className={exceeded ? 'text-red-600' : 'text-green-600'}>
+            {remaining.toLocaleString()} remaining
+          </span>
+        </div>
+        <div className="h-2 overflow-hidden rounded-full bg-gray-200">
+          <div
+            className={`h-full transition-all ${
+              exceeded ? 'bg-red-600' : 'bg-green-600'
+            }`}
+            style={{ width: `${Math.min(percentage, 100)}%` }}
+          />
+        </div>
+      </div>
+
+      <MessageList messages={messages} isLoading={isLoading} />
+      <ChatInput
+        onSubmit={(content) => append({ role: 'user', content })}
+        disabled={isLoading || exceeded}
+      />
+    </div>
+  )
+}
+```
+
+### With Multi-Modal Support (Images)
+
+```tsx
+// app/api/openai/chat/route.ts
+export async function POST(req: Request) {
+  const { messages, image } = await req.json()
+
+  const response = await openai.chat.completions.create({
+    model: 'gpt-4-vision-preview',
+    stream: true,
+    messages: [
+      ...messages,
+      {
+        role: 'user',
+        content: [
+          {
+            type: 'text',
+            text: 'What do you see in this image?',
+          },
+          {
+            type: 'image_url',
+            image_url: {
+              url: image, // base64 or URL
+              detail: 'high', // 'low' | 'high' | 'auto'
+            },
+          },
+        ],
+      },
+    ],
+    max_tokens: 4096,
+  })
+
+  const stream = OpenAIStream(response)
+  return new StreamingTextResponse(stream)
+}
+```
+
+### With Conversation History Management
+
+```tsx
+import { useClarityChat } from '@clarity-chat/react'
+import { compressText } from '@clarity-chat/token-optimization'
+
+export default function ChatWithHistory() {
+  const { messages, append } = useClarityChat({
+    api: '/api/openai/chat',
+    onBeforeRequest: async (messages) => {
+      // Compress old messages to stay within token limit
+      const compressed = await Promise.all(
+        messages.map(msg => compressText(msg.content, {
+          maxTokens: 6000, // Leave room for response
+          preserveRecent: 5, // Keep last 5 messages uncompressed
+        }))
+      )
+
+      return compressed
+    },
+  })
+
+  // ... rest of component
+}
+```
+
+## Common Pitfalls
+
+### Pitfall 1: Not Handling Rate Limits
+
+**Problem:** Too many requests cause 429 errors.
+
+**Solution:** Implement exponential backoff.
+
+```tsx
+let retryCount = 0
+const maxRetries = 3
+
+async function makeRequest() {
+  try {
+    return await openai.chat.completions.create(/* ... */)
+  } catch (error) {
+    if (error.status === 429 && retryCount < maxRetries) {
+      const delay = Math.pow(2, retryCount) * 1000
+      await sleep(delay)
+      retryCount++
+      return makeRequest()
+    }
+    throw error
+  }
+}
+```
+
+### Pitfall 2: Exceeding Context Window
+
+**Problem:** Conversation grows too long, causing errors.
+
+**Solution:** Monitor token count and truncate.
+
+```tsx
+import { useTokenCount } from '@clarity-chat/token-optimization'
+
+const totalTokens = messages.reduce((sum, msg) => {
+  const { count } = useTokenCount(msg.content, { model: 'gpt-4' })
+  return sum + count
+}, 0)
+
+if (totalTokens > 6000) {
+  // Truncate old messages
+  messages = messages.slice(-10)
+}
+```
+
+### Pitfall 3: Not Sanitizing User Input
+
+**Problem:** Malicious prompts cause unexpected behavior.
+
+**Solution:** Validate and sanitize.
+
+```tsx
+import DOMPurify from 'isomorphic-dompurify'
+
+export async function POST(req: Request) {
+  const { messages } = await req.json()
+
+  // Sanitize each message
+  const sanitized = messages.map((msg) => ({
+    ...msg,
+    content: DOMPurify.sanitize(msg.content, {
+      ALLOWED_TAGS: [], // Text only
+    }),
+  }))
+
+  const response = await openai.chat.completions.create({
+    messages: sanitized,
+    // ...
+  })
+}
+```
+
+### Pitfall 4: Exposing API Keys
+
+**Problem:** API keys leak in client-side code.
+
+**Solution:** Keep keys server-side only.
+
+```tsx
+// ❌ Bad - API key in client
+const openai = new OpenAI({
+  apiKey: 'sk-...',
+})
+
+// ✅ Good - API key server-side only
+// In API route only
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+})
+```
+
+### Pitfall 5: Not Monitoring Costs
+
+**Problem:** Unexpected bills from high usage.
+
+**Solution:** Track and alert on usage.
+
+```tsx
+import { CostTracker } from '@clarity-chat/token-optimization'
+
+const tracker = new CostTracker()
+
+const stream = OpenAIStream(response, {
+  onFinal: async (completion) => {
+    const tokens = countTokens(completion)
+
+    tracker.trackUsage({
+      model: 'gpt-4-turbo-preview',
+      inputTokens: Math.floor(tokens * 0.4), // Approximate input/output split
+      outputTokens: Math.floor(tokens * 0.6),
+    })
+
+    const cost = tracker.getTotalCost()
+
+    // Alert if over budget
+    if (cost > DAILY_BUDGET) {
+      sendAlert('Daily budget exceeded!')
+    }
+  },
+})
+```
+
+## Production Checklist
+
+- [ ] API keys stored securely (environment variables)
+- [ ] Rate limiting implemented
+- [ ] Error handling with retries
+- [ ] Token budget monitoring
+- [ ] Input sanitization
+- [ ] Conversation history management
+- [ ] Cost tracking and alerting
+- [ ] Edge runtime for lower latency
+- [ ] Proper TypeScript types
+- [ ] Comprehensive error messages
+
+## Next Steps
+
+- [Memory Integration](../memory-integration) - Add conversation memory
+- [Error Handling](../error-handling) - Robust error recovery
+- [Token Optimization](../token-optimization) - Reduce costs by 50-90%
+- [Custom Theming](../custom-theming) - Style your chat
+
+---
+
+**Time to implement:** 30 minutes
+**Difficulty:** Intermediate
+**Dependencies:** `@clarity-chat/react`, `openai`, `ai`

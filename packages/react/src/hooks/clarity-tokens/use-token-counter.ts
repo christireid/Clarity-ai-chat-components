@@ -110,21 +110,20 @@ export function useTokenCounter(
   // State
   const [tokenCount, setTokenCount] = React.useState(0)
   const [streamTokenCount, setStreamTokenCount] = React.useState(0)
-  const debounceTimerRef = React.useRef<ReturnType<typeof setTimeout> | null>(null)
+  const debounceTimerRef = React.useRef<ReturnType<typeof setTimeout> | null>(
+    null
+  )
 
   /**
    * Synchronous token count using AccurateTokenCounter
    */
-  const countTokensSync = React.useCallback(
-    (text: string): number => {
-      if (!counterRef.current) {
-        // Fallback estimation if counter not ready
-        return Math.ceil(text.length / 4)
-      }
-      return counterRef.current.count(text)
-    },
-    []
-  )
+  const countTokensSync = React.useCallback((text: string): number => {
+    if (!counterRef.current) {
+      // Fallback estimation if counter not ready
+      return Math.ceil(text.length / 4)
+    }
+    return counterRef.current.count(text)
+  }, [])
 
   /**
    * Count tokens for chat messages using AccurateTokenCounter
@@ -189,15 +188,12 @@ export function useTokenCounter(
   /**
    * Process streaming chunk
    */
-  const onStreamChunk = React.useCallback(
-    (chunk: string): void => {
-      const chunkTokens = counterRef.current
-        ? counterRef.current.count(chunk)
-        : Math.ceil(chunk.length / 4)
-      setStreamTokenCount((prev) => prev + chunkTokens)
-    },
-    []
-  )
+  const onStreamChunk = React.useCallback((chunk: string): void => {
+    const chunkTokens = counterRef.current
+      ? counterRef.current.count(chunk)
+      : Math.ceil(chunk.length / 4)
+    setStreamTokenCount((prev) => prev + chunkTokens)
+  }, [])
 
   /**
    * Reset stream counter

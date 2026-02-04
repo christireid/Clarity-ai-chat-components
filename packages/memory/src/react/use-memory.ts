@@ -1,9 +1,11 @@
+'use client'
+
 /**
  * React Hook for Clarity Memory
  */
 
 import { useState, useEffect, useCallback, useRef } from 'react'
-import { ClarityMemory } from '../memory-service'
+import { ClarityMemory } from '../memory-service/core'
 import type {
   MemoryConfig,
   Memory,
@@ -110,16 +112,14 @@ export function useMemory(options?: UseMemoryOptions): UseMemoryReturn {
 
     return () => {
       // Cleanup on unmount
-      memoryRef.current?.close().catch(console.error)
+      memoryRef.current?.close().catch((error) => {
+        if (process.env.NODE_ENV === 'development') {
+          console.error(error)
+        }
+      })
     }
-  }, []) // Only create once
-
-  // Auto-initialize if enabled
-  useEffect(() => {
-    if (options?.autoInitialize !== false && memory && !initialized) {
-      initialize()
-    }
-  }, [memory, initialized, options?.autoInitialize])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []) // Only create once on mount - options intentionally excluded
 
   const initialize = useCallback(async () => {
     if (!memory || initialized) return
@@ -146,6 +146,13 @@ export function useMemory(options?: UseMemoryOptions): UseMemoryReturn {
       setLoading(false)
     }
   }, [memory, initialized])
+
+  // Auto-initialize if enabled
+  useEffect(() => {
+    if (options?.autoInitialize !== false && memory && !initialized) {
+      initialize()
+    }
+  }, [memory, initialized, options?.autoInitialize, initialize])
 
   const add = useCallback(
     async (content: string, opts?: Parameters<ClarityMemory['add']>[1]) => {

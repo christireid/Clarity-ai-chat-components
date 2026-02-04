@@ -7,47 +7,57 @@
 
 // Core Message Components
 export { Message } from './message'
-export { MessageList } from './message-list'
-export { MessageMetadata } from './message-metadata'
-export { MessageOptimized } from './message-optimized'
-export { MessageThreadView, ThreadList } from './message-thread-view'
+export { MessageList } from './MessageList'
+export { MessageMetadata } from './MessageMetadata'
+export { MessageOptimized } from './MessageOptimized'
+export { MessageThreadView, ThreadList } from './MessageThreadView'
+
+// MessageBubble - Modern message bubble with role-based styling
+export {
+  MessageBubble,
+  UserMessage,
+  AssistantMessage,
+  SystemMessage,
+  MessageGroup,
+  type MessageBubbleProps,
+  type MessageRole,
+  type MessageAvatar,
+  type MessageGroupProps,
+} from './MessageBubble'
 
 // Streaming Components
-export { StreamingMessage } from './streaming-message'
-export { StreamingTextRenderer } from './streaming-text-renderer'
-export { StreamBlock } from './stream-block'
-export { StreamCancellation } from './stream-cancellation'
+export { StreamingMessage } from './StreamingMessage'
+export { StreamingTextRenderer } from './StreamingTextRenderer'
+export { StreamBlock } from './StreamBlock'
+export { StreamCancellation } from './StreamCancellation'
 
 // Message Indicators
-export { ThinkingIndicator } from './thinking-indicator'
-export {
-  TypingIndicator,
-  type TypingIndicatorVariant,
-} from './typing-indicator'
-export { TimeSeparator } from './time-separator'
+export { ThinkingIndicator } from './ThinkingIndicator'
+export { TypingIndicator, type TypingIndicatorVariant } from './TypingIndicator'
+export { TimeSeparator } from './TimeSeparator'
 
 // Tool & Citation Components
-export { CitationCard } from './citation-card'
-export { ClarityToolResult } from './clarity-tool-result'
-export { ToolInvocationCard } from './tool-invocation-card'
+export { CitationCard } from './CitationCard'
+export { ClarityToolResult } from './ClarityToolResult'
+export { ToolInvocationCard } from './ToolInvocationCard'
 
 // Message Actions
-export { MessageActions } from './message-actions'
+export { MessageActions } from './MessageActions'
 export {
   MessageActionsSecure,
   type SecurityInfo,
   type MessageActionsSecureProps,
-} from './message-actions-secure'
-export { CopyButton } from './copy-button'
-export { DeleteButton } from './delete-button'
-export { EditableMessageContent } from './editable-message-content'
-export { FeedbackDialog } from './feedback-dialog'
+} from './MessageActionsSecure'
+export { CopyButton } from './CopyButton'
+export { DeleteButton } from './DeleteButton'
+export { EditableMessageContent } from './EditableMessageContent'
+export { FeedbackDialog } from './FeedbackDialog'
 
 // Markdown & Code
-export { MarkdownCodeBlock } from './markdown-code-block'
+export { MarkdownCodeBlock } from './MarkdownCodeBlock'
 
 // Animations
-export { ConfettiAnimation } from './confetti-animation'
+export { ConfettiAnimation } from './ConfettiAnimation'
 
 // FlowToken Integration (optional - requires 'flowtoken' package)
 export {
@@ -58,4 +68,4 @@ export {
   type FlowTokenStreamingTextProps,
   type FlowTokenMarkdownProps,
   type UseFlowTokenReturn,
-} from './flowtoken-adapter'
+} from './FlowtokenAdapter'

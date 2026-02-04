@@ -62,6 +62,15 @@ module.exports = {
           DEFAULT: 'hsl(var(--info))',
           foreground: 'hsl(var(--info-foreground))',
         },
+        // AI-specific colors (OKLCH format)
+        ai: {
+          assistant: 'var(--ai-assistant)',
+          user: 'var(--ai-user)',
+          system: 'var(--ai-system)',
+          thinking: 'var(--ai-thinking)',
+          tool: 'var(--ai-tool)',
+          error: 'var(--ai-error)',
+        },
       },
       borderRadius: {
         lg: 'var(--radius)',

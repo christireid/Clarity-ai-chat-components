@@ -97,7 +97,9 @@ export function AnalyticsProvider({
         (navigator as any).msDoNotTrack
       if (doNotTrack === '1' || doNotTrack === 'yes') {
         if (config.debug) {
-          console.debug('[Analytics] Disabled due to Do Not Track setting')
+          if (process.env.NODE_ENV === 'development') {
+            console.debug('[Analytics] Disabled due to Do Not Track setting')
+          }
         }
         return false
       }
@@ -115,10 +117,12 @@ export function AnalyticsProvider({
 
     const initializeProviders = async () => {
       if (config.debug) {
-        console.debug(
-          '[Analytics] Initializing providers:',
-          config.providers?.map((p) => p.name)
-        )
+        if (process.env.NODE_ENV === 'development') {
+          console.debug(
+            '[Analytics] Initializing providers:',
+            config.providers?.map((p) => p.name)
+          )
+        }
       }
 
       try {
@@ -128,16 +132,89 @@ export function AnalyticsProvider({
         setIsInitialized(true)
 
         if (config.debug) {
-          console.debug('[Analytics] Providers initialized successfully')
+          if (process.env.NODE_ENV === 'development') {
+            console.debug('[Analytics] Providers initialized successfully')
+          }
         }
       } catch (error) {
-        console.error('[Analytics] Failed to initialize providers:', error)
+        if (process.env.NODE_ENV === 'development') {
+          console.error('[Analytics] Failed to initialize providers:', error)
+        }
         setIsInitialized(true) // Continue even if initialization fails
       }
     }
 
     initializeProviders()
   }, [isEnabled, config.providers, config.debug])
+
+  // Track function
+  const track = React.useCallback(
+    (eventName: string, properties?: Record<string, any>) => {
+      if (!isEnabled || !isInitialized) return
+
+      const event: AnalyticsEvent = {
+        name: config.eventPrefix
+          ? `${config.eventPrefix}${eventName}`
+          : eventName,
+        properties: {
+          ...properties,
+          session_id: sessionId,
+          timestamp: Date.now(),
+        },
+        timestamp: Date.now(),
+        userId: currentUserId.current,
+        sessionId,
+      }
+
+      if (config.debug) {
+        if (process.env.NODE_ENV === 'development') {
+          console.debug('[Analytics] Track:', event)
+        }
+      }
+
+      // Send to all providers
+      config.providers?.forEach((provider) => {
+        try {
+          provider.track(event)
+        } catch (error) {
+          if (process.env.NODE_ENV === 'development') {
+            console.error(
+              `[Analytics] Error in provider ${provider.name}:`,
+              error
+            )
+          }
+        }
+      })
+    },
+    [isEnabled, isInitialized, config, sessionId]
+  )
+
+  // Page function
+  const page = React.useCallback(
+    (pageView: PageView) => {
+      if (!isEnabled || !isInitialized) return
+
+      if (config.debug) {
+        if (process.env.NODE_ENV === 'development') {
+          console.debug('[Analytics] Page:', pageView)
+        }
+      }
+
+      config.providers?.forEach((provider) => {
+        try {
+          provider.page?.(pageView)
+        } catch (error) {
+          if (process.env.NODE_ENV === 'development') {
+            console.error(
+              `[Analytics] Error in provider ${provider.name}:`,
+              error
+            )
+          }
+        }
+      })
+    },
+    [isEnabled, isInitialized, config]
+  )
 
   // Auto-track page views
   React.useEffect(() => {
@@ -179,7 +256,7 @@ export function AnalyticsProvider({
       window.history.pushState = originalPushState
       window.history.replaceState = originalReplaceState
     }
-  }, [isEnabled, config.autoTrackPageViews, isInitialized])
+  }, [isEnabled, config.autoTrackPageViews, isInitialized, page])
 
   // Auto-track errors
   React.useEffect(() => {
@@ -208,45 +285,7 @@ export function AnalyticsProvider({
       window.removeEventListener('error', handleError)
       window.removeEventListener('unhandledrejection', handleUnhandledRejection)
     }
-  }, [isEnabled, config.autoTrackErrors, isInitialized])
-
-  // Track function
-  const track = React.useCallback(
-    (eventName: string, properties?: Record<string, any>) => {
-      if (!isEnabled || !isInitialized) return
-
-      const event: AnalyticsEvent = {
-        name: config.eventPrefix
-          ? `${config.eventPrefix}${eventName}`
-          : eventName,
-        properties: {
-          ...properties,
-          session_id: sessionId,
-          timestamp: Date.now(),
-        },
-        timestamp: Date.now(),
-        userId: currentUserId.current,
-        sessionId,
-      }
-
-      if (config.debug) {
-        console.debug('[Analytics] Track:', event)
-      }
-
-      // Send to all providers
-      config.providers?.forEach((provider) => {
-        try {
-          provider.track(event)
-        } catch (error) {
-          console.error(
-            `[Analytics] Error in provider ${provider.name}:`,
-            error
-          )
-        }
-      })
-    },
-    [isEnabled, isInitialized, config, sessionId]
-  )
+  }, [isEnabled, config.autoTrackErrors, isInitialized, track])
 
   // Identify function
   const identify = React.useCallback(
@@ -256,40 +295,21 @@ export function AnalyticsProvider({
       currentUserId.current = user.id
 
       if (config.debug) {
-        console.debug('[Analytics] Identify:', user)
+        if (process.env.NODE_ENV === 'development') {
+          console.debug('[Analytics] Identify:', user)
+        }
       }
 
       config.providers?.forEach((provider) => {
         try {
           provider.identify?.(user)
         } catch (error) {
-          console.error(
-            `[Analytics] Error in provider ${provider.name}:`,
-            error
-          )
-        }
-      })
-    },
-    [isEnabled, isInitialized, config]
-  )
-
-  // Page function
-  const page = React.useCallback(
-    (pageView: PageView) => {
-      if (!isEnabled || !isInitialized) return
-
-      if (config.debug) {
-        console.debug('[Analytics] Page:', pageView)
-      }
-
-      config.providers?.forEach((provider) => {
-        try {
-          provider.page?.(pageView)
-        } catch (error) {
-          console.error(
-            `[Analytics] Error in provider ${provider.name}:`,
-            error
-          )
+          if (process.env.NODE_ENV === 'development') {
+            console.error(
+              `[Analytics] Error in provider ${provider.name}:`,
+              error
+            )
+          }
         }
       })
     },
@@ -303,14 +323,21 @@ export function AnalyticsProvider({
     currentUserId.current = undefined
 
     if (config.debug) {
-      console.debug('[Analytics] Reset')
+      if (process.env.NODE_ENV === 'development') {
+        console.debug('[Analytics] Reset')
+      }
     }
 
     config.providers?.forEach((provider) => {
       try {
         provider.reset?.()
       } catch (error) {
-        console.error(`[Analytics] Error in provider ${provider.name}:`, error)
+        if (process.env.NODE_ENV === 'development') {
+          console.error(
+            `[Analytics] Error in provider ${provider.name}:`,
+            error
+          )
+        }
       }
     })
   }, [isEnabled, isInitialized, config])

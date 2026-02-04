@@ -119,7 +119,7 @@ export function useMergedRef<T>(...refs: ReactRef<T>[]): React.RefCallback<T> {
     (element: T | null) => {
       refs.forEach((ref) => setRef(ref, element))
     },
-
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     refs
   )
 }
@@ -200,7 +200,7 @@ export function useMergedRefWithCleanup<T>(
         cleanup()
       }
     },
-
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [...refs, cleanup]
   )
 }

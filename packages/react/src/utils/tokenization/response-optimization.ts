@@ -10,9 +10,24 @@
  * - Response caching and reuse
  */
 
-import { TokenCounter } from '@clarity-chat/token-optimization'
+import {
+  AccurateTokenCounter,
+  AdvancedSemanticCache,
+} from '@clarity-chat/token-optimization'
+
+// Module-level counter instance for token counting
+const tokenCounter = new AccurateTokenCounter({ model: 'gpt-4' })
+// Module-level semantic cache instance
+const semanticCache = new AdvancedSemanticCache({
+  maxSize: 1000,
+  maxAge: 1000 * 60 * 60, // 1 hour
+  similarityThreshold: 0.8,
+  enableEmbeddingCache: true,
+  enableContextAwareness: true,
+  enablePredictiveCaching: false,
+  compressionThreshold: 10000, // Compress if larger than 10KB
+})
 import { adaptiveOptimizer } from './adaptive-optimizer'
-import { semanticCache } from './intelligent-caching'
 
 export type ResponseOptimizationStrategy =
   | 'length_control' // Control response length
@@ -129,7 +144,7 @@ export class ResponseLengthPredictor {
     model: string,
     context?: ConversationContext
   ): Promise<ResponsePrediction> {
-    const promptTokens = await TokenCounter.count(prompt)
+    const promptTokens = await tokenCounter.count(prompt)
 
     // Analyze prompt characteristics
     const promptAnalysis = this.analyzePrompt(prompt)
@@ -343,7 +358,11 @@ export class ResponseLengthPredictor {
     // Increase confidence with historical data
     const consistency = historicalPattern?.consistency
     if (consistency !== undefined && consistency > 0.8) confidence += 0.2
-    if (historicalPattern?.trend !== 0 && historicalPattern?.trend !== undefined) confidence += 0.1
+    if (
+      historicalPattern?.trend !== 0 &&
+      historicalPattern?.trend !== undefined
+    )
+      confidence += 0.1
 
     return Math.min(0.95, confidence)
   }
@@ -487,7 +506,7 @@ export class ResponseLengthPredictor {
     const key = `${model}_${context?.conversationId || 'global'}`
     const history = this.historicalData.get(key) || []
 
-    const actualTokens = await TokenCounter.count(actualResponse)
+    const actualTokens = await tokenCounter.count(actualResponse)
     const prediction = await this.predictResponseLength(prompt, model, context)
 
     history.push({
@@ -531,11 +550,11 @@ export class ResponseLengthPredictor {
  */
 export class ResponseOptimizer {
   private predictor: ResponseLengthPredictor
-  private tokenCounter: TokenCounter
+  private tokenCounter: AccurateTokenCounter
 
   constructor() {
     this.predictor = new ResponseLengthPredictor()
-    this.tokenCounter = new TokenCounter()
+    this.tokenCounter = new AccurateTokenCounter({ model: 'gpt-4' })
   }
 
   /**
@@ -630,8 +649,8 @@ export class ResponseOptimizer {
     prediction: ResponsePrediction,
     model: string
   ): Promise<ResponseMetrics> {
-    const originalTokens = await TokenCounter.count(originalPrompt)
-    const optimizedTokens = await TokenCounter.count(optimizedPrompt)
+    const originalTokens = await tokenCounter.count(originalPrompt)
+    const optimizedTokens = await tokenCounter.count(optimizedPrompt)
     const predictedTokens = prediction.predictedTokens
 
     const informationDensity = this.calculateInformationDensity(optimizedPrompt)
@@ -701,7 +720,7 @@ export class ResponseOptimizer {
       `\n\nPlease provide your response in chunks of approximately ${chunkSize} tokens.`
 
     const metrics: ResponseMetrics = {
-      actualTokens: await TokenCounter.count(optimizedPrompt),
+      actualTokens: await tokenCounter.count(optimizedPrompt),
       predictedTokens: prediction.predictedTokens,
       qualityScore: prediction.qualityEstimate,
       informationDensity: 0.7,
@@ -854,17 +873,23 @@ export class ResponseOptimizer {
     metadata?: Record<string, unknown>
   ): Promise<void> {
     const cacheKey = this.generateCacheKey(prompt, model)
-    const responseTokens = await TokenCounter.count(response)
+    const responseTokens = await tokenCounter.count(response)
 
-    // Type assertion needed as semanticCache uses generic unknown type
-     
-    await semanticCache.set(cacheKey, {
+    await semanticCache.set(
+      cacheKey,
       response,
-      tokens: responseTokens,
-      model,
-      timestamp: Date.now(),
-      metadata,
-    } as any)
+      {
+        contentType: 'text' as const,
+        semanticFingerprint: cacheKey,
+        qualityScore: 0.9,
+        domain: model,
+        ...metadata,
+      },
+      {
+        domain: 'response-optimization',
+        userContext: model,
+      }
+    )
   }
 
   /**
@@ -876,11 +901,13 @@ export class ResponseOptimizer {
     similarityThreshold = 0.8
   ): Promise<string | null> {
     const cacheKey = this.generateCacheKey(prompt, model)
-    // Type assertion needed as semanticCache uses generic unknown type
-    const cached = await semanticCache.get(cacheKey) as { response?: string } | null
+    const result = await semanticCache.get(cacheKey, {
+      domain: 'response-optimization',
+      userContext: model,
+    })
 
-    if (cached && cached.response) {
-      return cached.response
+    if (result.found && result.entry) {
+      return result.entry.content
     }
 
     // Try semantic matching

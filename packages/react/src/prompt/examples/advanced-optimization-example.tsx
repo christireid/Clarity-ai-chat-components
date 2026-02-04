@@ -65,7 +65,7 @@ export function AdvancedOptimizationExample() {
     if (showDebugger && chat.messages.length > 0) {
       promptDebugger.debug()
     }
-  }, [showDebugger, chat.messages.length])
+  }, [showDebugger, chat.messages.length, promptDebugger])
 
   return (
     <div className="flex h-screen bg-gray-50">

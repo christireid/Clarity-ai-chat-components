@@ -23,6 +23,7 @@ export interface StructuredDataProps {
     | 'hook'
     | 'howto'
     | 'faq'
+    | 'api-reference'
   title?: string
   description?: string
   url?: string
@@ -37,6 +38,16 @@ export interface StructuredDataProps {
   steps?: Array<{ name: string; text: string; code?: string }>
   // FAQ specific props
   faqs?: Array<{ question: string; answer: string }>
+  // APIReference specific props
+  apiName?: string
+  apiSignature?: string
+  returnType?: string
+  parameters?: Array<{
+    name: string
+    type: string
+    description: string
+    required?: boolean
+  }>
 }
 
 export function StructuredData({
@@ -52,6 +63,10 @@ export function StructuredData({
   props,
   steps,
   faqs,
+  apiName,
+  apiSignature,
+  returnType,
+  parameters,
 }: StructuredDataProps) {
   const baseUrl = 'https://clarity-chat.dev'
 
@@ -246,6 +261,72 @@ export function StructuredData({
           }),
         }
 
+      // New type: API Reference for comprehensive API documentation
+      case 'api-reference':
+        return {
+          ...baseData,
+          '@type': 'TechArticle',
+          headline: `${apiName || title} - API Reference`,
+          name: apiName || title,
+          description,
+          url,
+          articleSection: category || 'API Reference',
+          author: {
+            '@type': 'Organization',
+            name: 'Clarity Chat Team',
+          },
+          publisher: {
+            '@type': 'Organization',
+            name: 'Clarity Chat',
+            logo: {
+              '@type': 'ImageObject',
+              url: `${baseUrl}/logo.png`,
+            },
+          },
+          dateModified: getStableTimestamp(),
+          about: {
+            '@type': 'SoftwareSourceCode',
+            name: apiName || title,
+            programmingLanguage: {
+              '@type': 'ComputerLanguage',
+              name: 'TypeScript',
+            },
+            runtimePlatform: 'React',
+            ...(apiSignature && { codeSignature: apiSignature }),
+            ...(codeExample && { text: codeExample }),
+            ...(dependencies && { dependencies: dependencies.join(', ') }),
+          },
+          // Include parameters as structured data for AI retrieval
+          ...(parameters && {
+            hasPart: parameters.map((param) => ({
+              '@type': 'PropertyValue',
+              name: param.name,
+              value: param.type,
+              description: param.description,
+              ...(param.required !== undefined && {
+                valueRequired: param.required,
+              }),
+            })),
+          }),
+          ...(returnType && {
+            result: {
+              '@type': 'PropertyValue',
+              name: 'Returns',
+              value: returnType,
+            },
+          }),
+          version,
+          // Enhanced discoverability
+          keywords: [
+            'api',
+            'reference',
+            'documentation',
+            apiName || title,
+            'typescript',
+            'react',
+          ].join(', '),
+        }
+
       case 'website':
       default:
         return {
@@ -353,8 +434,7 @@ export function SoftwareLibraryStructuredData() {
     '@type': 'SoftwareSourceCode',
     name: 'Clarity Chat',
     alternateName: '@clarity-chat/react',
-    description:
-      LIBRARY_DESCRIPTIONS.metaDescription,
+    description: LIBRARY_DESCRIPTIONS.metaDescription,
     url: 'https://clarity-chat.dev',
     codeRepository: 'https://github.com/christireid/Clarity-ai-chat-components',
     programmingLanguage: [
@@ -538,6 +618,51 @@ export function DocumentationSiteStructuredData() {
     <script
       type="application/ld+json"
       dangerouslySetInnerHTML={{ __html: JSON.stringify(data) }}
+    />
+  )
+}
+
+/**
+ * API Reference structured data helper
+ *
+ * Simplified component for generating API reference structured data.
+ */
+export function APIReferenceStructuredData({
+  name,
+  description,
+  url,
+  category,
+  signature,
+  returnType,
+  parameters,
+  codeExample,
+}: {
+  name: string
+  description: string
+  url: string
+  category?: string
+  signature?: string
+  returnType?: string
+  parameters?: Array<{
+    name: string
+    type: string
+    description: string
+    required?: boolean
+  }>
+  codeExample?: string
+}) {
+  return (
+    <StructuredData
+      type="api-reference"
+      title={name}
+      description={description}
+      url={url}
+      apiName={name}
+      category={category}
+      apiSignature={signature}
+      returnType={returnType}
+      parameters={parameters}
+      codeExample={codeExample}
     />
   )
 }

@@ -1,11 +1,16 @@
 /**
  * Sliding Context Window Manager with RAG Integration
- * 
+ *
  * Dynamically manages conversation history by maintaining a fixed-size buffer
  * while using semantic search (RAG) to retrieve relevant historical context.
  */
 
-import type { MemoryItem, MemoryRetrievalOptions, OptimizedContext, MemoryLayer } from './types'
+import type {
+  MemoryItem,
+  MemoryRetrievalOptions,
+  OptimizedContext,
+  MemoryLayer,
+} from './types'
 import type { ContextMessage } from '../context-window'
 import type { VectorStoreAdapter } from './vector-store-adapter'
 
@@ -19,9 +24,9 @@ export interface MemoryVectorStore {
       filter?: Record<string, any>
     }
   ): Promise<MemoryItem[]>
-  
+
   storeMemory(memory: MemoryItem): Promise<void>
-  
+
   deleteMemory(memoryId: string): Promise<void>
 }
 
@@ -50,7 +55,8 @@ export class VectorStoreAdapterWrapper implements MemoryVectorStore {
   }
 
   async storeMemory(memory: MemoryItem): Promise<void> {
-    const embedding = memory.embedding || await this.adapter.createEmbedding(memory.value)
+    const embedding =
+      memory.embedding || (await this.adapter.createEmbedding(memory.value))
     await this.adapter.storeMemory(memory, embedding)
   }
 
@@ -71,7 +77,12 @@ export interface SlidingContextConfig {
  * Sliding Context Manager with RAG Integration
  */
 export class SlidingContextManager {
-  private config: Required<Pick<SlidingContextConfig, 'maxTokens' | 'contextRatio' | 'immediateWindowSize' | 'countTokens'>> & {
+  private config: Required<
+    Pick<
+      SlidingContextConfig,
+      'maxTokens' | 'contextRatio' | 'immediateWindowSize' | 'countTokens'
+    >
+  > & {
     vectorStore?: MemoryVectorStore
   }
   private historyBuffer: ContextMessage[] = []
@@ -93,7 +104,7 @@ export class SlidingContextManager {
    */
   addMessage(message: ContextMessage): void {
     this.historyBuffer.push(message)
-    
+
     // Maintain buffer size
     if (this.historyBuffer.length > this.maxBufferSize) {
       this.historyBuffer = this.historyBuffer.slice(-this.maxBufferSize)
@@ -113,10 +124,10 @@ export class SlidingContextManager {
   ): Promise<OptimizedContext> {
     // Get immediate context from sliding window
     const immediateContext = this.getImmediateContext()
-    
+
     // Retrieve relevant historical context using semantic search
     let historicalContext: MemoryItem[] = []
-    
+
     if (this.config.vectorStore) {
       try {
         historicalContext = await this.config.vectorStore.similaritySearch(
@@ -128,7 +139,9 @@ export class SlidingContextManager {
           }
         )
       } catch (error) {
-        console.warn('Vector store retrieval failed:', error)
+        if (process.env.NODE_ENV === 'development') {
+          console.warn('Vector store retrieval failed:', error)
+        }
         // Fallback to empty historical context
       }
     }
@@ -160,9 +173,11 @@ export class SlidingContextManager {
       systemMessage?: string
     }
   ): OptimizedContext {
-    const contextTokens = Math.floor(this.config.maxTokens * this.config.contextRatio)
+    const contextTokens = Math.floor(
+      this.config.maxTokens * this.config.contextRatio
+    )
     const layersUsed: MemoryLayer[] = ['real-time']
-    
+
     const result: ContextMessage[] = []
     let currentTokens = 0
 
@@ -190,7 +205,10 @@ export class SlidingContextManager {
       currentTokens += immediateTokens
     } else {
       // Compress immediate context
-      const compressed = this.compressMessages(immediate, Math.floor(contextTokens * 0.6) - currentTokens)
+      const compressed = this.compressMessages(
+        immediate,
+        Math.floor(contextTokens * 0.6) - currentTokens
+      )
       result.push(...compressed)
       currentTokens += compressed.reduce(
         (sum, msg) => sum + this.config.countTokens(msg.content),
@@ -201,8 +219,11 @@ export class SlidingContextManager {
     // Add historical context if space allows
     const remainingTokens = contextTokens - currentTokens
     if (remainingTokens > 0 && historical.length > 0) {
-      const historicalContext = this.selectHistoricalContext(historical, remainingTokens)
-      
+      const historicalContext = this.selectHistoricalContext(
+        historical,
+        remainingTokens
+      )
+
       // Convert memory items to context messages
       historicalContext.forEach((memory) => {
         result.push({
@@ -210,7 +231,7 @@ export class SlidingContextManager {
           content: `[Memory: ${memory.label}] ${memory.value}`,
         })
         currentTokens += this.config.countTokens(memory.value)
-        
+
         // Track layers used
         if (!layersUsed.includes(memory.layer)) {
           layersUsed.push(memory.layer)
@@ -219,14 +240,13 @@ export class SlidingContextManager {
     }
 
     return {
-      messages: result.filter(m => m.role !== 'function') as Array<{
+      messages: result.filter((m) => m.role !== 'function') as Array<{
         role: 'user' | 'assistant' | 'system'
         content: string
       }>,
       totalTokens: currentTokens,
-      compressionRatio: immediate.length > 0 
-        ? result.length / immediate.length 
-        : undefined,
+      compressionRatio:
+        immediate.length > 0 ? result.length / immediate.length : undefined,
       layersUsed,
       retrievedMemories: historical,
     }
@@ -235,7 +255,10 @@ export class SlidingContextManager {
   /**
    * Compress messages to fit token budget
    */
-  private compressMessages(messages: ContextMessage[], maxTokens: number): ContextMessage[] {
+  private compressMessages(
+    messages: ContextMessage[],
+    maxTokens: number
+  ): ContextMessage[] {
     if (messages.length === 0) return []
 
     // Strategy: Keep most recent messages, summarize older ones
@@ -262,7 +285,7 @@ export class SlidingContextManager {
     if (remainingTokens > 50 && kept.length < messages.length) {
       const summarized = messages.slice(0, messages.length - kept.length)
       const summary = this.createSummary(summarized, remainingTokens)
-      
+
       if (summary) {
         kept.unshift({
           role: 'system',
@@ -277,16 +300,19 @@ export class SlidingContextManager {
   /**
    * Create summary of messages
    */
-  private createSummary(messages: ContextMessage[], maxTokens: number): string | null {
+  private createSummary(
+    messages: ContextMessage[],
+    maxTokens: number
+  ): string | null {
     if (messages.length === 0) return null
 
-    const content = messages
-      .map((m) => `${m.role}: ${m.content}`)
-      .join('\n')
-    
+    const content = messages.map((m) => `${m.role}: ${m.content}`).join('\n')
+
     // Simple summarization: extract key sentences
-    const sentences = content.split(/[.!?]+/).filter((s) => s.trim().length > 20)
-    
+    const sentences = content
+      .split(/[.!?]+/)
+      .filter((s) => s.trim().length > 20)
+
     if (sentences.length === 0) return null
 
     // Keep first and last sentences, plus key middle ones
@@ -327,7 +353,10 @@ export class SlidingContextManager {
   /**
    * Select historical context that fits within token budget
    */
-  private selectHistoricalContext(memories: MemoryItem[], maxTokens: number): MemoryItem[] {
+  private selectHistoricalContext(
+    memories: MemoryItem[],
+    maxTokens: number
+  ): MemoryItem[] {
     const selected: MemoryItem[] = []
     let tokens = 0
 
@@ -335,13 +364,14 @@ export class SlidingContextManager {
     const sorted = [...memories].sort((a, b) => {
       const importanceDiff = (b.importanceScore ?? 0) - (a.importanceScore ?? 0)
       if (Math.abs(importanceDiff) > 0.1) return importanceDiff
-      
+
       return b.lastUpdated.getTime() - a.lastUpdated.getTime()
     })
 
     for (const memory of sorted) {
-      const memoryTokens = memory.tokens || this.config.countTokens(memory.value)
-      
+      const memoryTokens =
+        memory.tokens || this.config.countTokens(memory.value)
+
       if (tokens + memoryTokens <= maxTokens) {
         selected.push(memory)
         tokens += memoryTokens

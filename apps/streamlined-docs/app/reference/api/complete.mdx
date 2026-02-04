@@ -1,0 +1,2407 @@
+---
+title: Complete API Reference
+description: Comprehensive TypeScript API reference for all Clarity Chat Components - components, hooks, utilities, types, and constants
+---
+
+# Complete API Reference
+
+<div className="not-prose">
+  <div className="bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-950/30 dark:to-purple-950/30 border border-blue-200 dark:border-blue-800 rounded-lg p-6 mb-8">
+    <p className="text-sm text-blue-900 dark:text-blue-100 m-0">
+      **Auto-generated from TypeScript definitions** • Last updated: {new Date().toLocaleDateString()} • Package version: 1.0+
+    </p>
+  </div>
+</div>
+
+This is the complete API reference for `@clarity-chat/react`, including all components, hooks, utilities, types, and constants exported from the library.
+
+## Table of Contents
+
+1. [Core Components](#core-components)
+2. [Hooks](#hooks)
+3. [Utilities](#utilities)
+4. [Type Definitions](#type-definitions)
+5. [Constants & Enums](#constants--enums)
+6. [Deprecated APIs](#deprecated-apis)
+
+---
+
+## Core Components
+
+### Primary Components
+
+#### ClarityChatApp
+
+Drop-in chat interface with all features included.
+
+```tsx
+import { ClarityChatApp } from '@clarity-chat/react'
+
+interface ClarityChatAppProps {
+  /** API endpoint for chat requests */
+  api: string
+  /** Initial messages */
+  initialMessages?: Message[]
+  /** Enable memory features */
+  memory?: boolean | MemoryOptions
+  /** Enable token optimization */
+  tokenOptimization?: boolean | TokenOptimizationOptions
+  /** Enable RAG/knowledge base */
+  rag?: boolean | RAGOptions
+  /** Tool definitions */
+  tools?: Tool[]
+  /** Custom theme */
+  theme?: 'light' | 'dark' | 'auto'
+  /** Additional CSS classes */
+  className?: string
+  /** Enable thinking visualization */
+  showThinking?: boolean
+  /** Enable tool approval workflow */
+  requireToolApproval?: boolean
+}
+
+// Usage
+export default function ChatPage() {
+  return (
+    <ClarityChatApp
+      api="/api/chat"
+      memory={true}
+      showThinking={true}
+    />
+  )
+}
+```
+
+**Props:**
+- `api` (required): API endpoint URL
+- `initialMessages`: Array of initial messages to display
+- `memory`: Enable conversation memory (boolean or config object)
+- `tokenOptimization`: Enable token optimization features
+- `rag`: Enable RAG/knowledge base integration
+- `tools`: Array of tool definitions for function calling
+- `theme`: Color theme ('light' | 'dark' | 'auto')
+- `className`: Additional CSS classes
+- `showThinking`: Display thinking process visualization
+- `requireToolApproval`: Require user approval for tool execution
+
+---
+
+#### MessageList
+
+Virtualized, accessible message display with automatic scrolling.
+
+```tsx
+import { MessageList } from '@clarity-chat/react'
+
+interface MessageListProps {
+  /** Messages to display */
+  messages: Message[]
+  /** Custom message renderer */
+  renderMessage?: (message: Message) => React.ReactNode
+  /** Loading state */
+  isLoading?: boolean
+  /** Auto-scroll behavior */
+  autoScroll?: boolean
+  /** Virtualization enabled */
+  virtualized?: boolean
+  /** Height of container */
+  height?: string | number
+  /** Custom empty state */
+  emptyState?: React.ReactNode
+  /** Message actions (edit, delete, copy) */
+  onMessageAction?: (action: MessageAction, message: Message) => void
+}
+```
+
+**Features:**
+- Virtual scrolling for optimal performance with 1000+ messages
+- Automatic scroll-to-bottom on new messages
+- Keyboard navigation support (arrow keys, home, end)
+- ARIA labels and screen reader support
+- Customizable message renderers
+
+**Example:**
+```tsx
+<MessageList
+  messages={messages}
+  autoScroll={true}
+  virtualized={messages.length > 50}
+  height="600px"
+  onMessageAction={(action, message) => {
+    if (action === 'delete') {
+      deleteMessage(message.id)
+    }
+  }}
+/>
+```
+
+---
+
+#### ChatInput
+
+Feature-rich input component with file upload, voice input, and suggestions.
+
+```tsx
+import { ChatInput } from '@clarity-chat/react'
+
+interface ChatInputProps {
+  /** Placeholder text */
+  placeholder?: string
+  /** Submit handler */
+  onSubmit: (message: string, attachments?: File[]) => void
+  /** Loading/disabled state */
+  disabled?: boolean
+  /** Enable file upload */
+  fileUpload?: boolean | FileUploadOptions
+  /** Enable voice input */
+  voiceInput?: boolean | VoiceInputOptions
+  /** Show character/token counter */
+  showCounter?: boolean
+  /** Max length */
+  maxLength?: number
+  /** Keyboard shortcuts */
+  shortcuts?: KeyboardShortcut[]
+  /** Auto-focus on mount */
+  autoFocus?: boolean
+  /** Multi-line input */
+  multiline?: boolean
+  /** Min/max rows for multiline */
+  minRows?: number
+  maxRows?: number
+}
+```
+
+**Keyboard Shortcuts (Default):**
+- `Enter`: Submit message (or `Cmd/Ctrl+Enter` in multiline mode)
+- `Esc`: Clear input
+- `Cmd/Ctrl+K`: Open command palette
+- `Cmd/Ctrl+/`: Toggle voice input
+
+**Example:**
+```tsx
+<ChatInput
+  placeholder="Ask me anything..."
+  onSubmit={(message, files) => {
+    sendMessage({ content: message, files })
+  }}
+  fileUpload={{
+    maxSize: 10 * 1024 * 1024, // 10MB
+    accept: ['image/*', 'application/pdf']
+  }}
+  voiceInput={true}
+  showCounter={true}
+  maxLength={4000}
+  autoFocus={true}
+/>
+```
+
+---
+
+#### MarkdownRenderer
+
+Enhanced markdown with syntax highlighting and interactive elements.
+
+```tsx
+import { MarkdownRenderer } from '@clarity-chat/react'
+
+interface MarkdownRendererProps {
+  /** Markdown content */
+  children: string
+  /** Code syntax highlighting theme */
+  codeTheme?: 'light' | 'dark' | 'auto'
+  /** Enable code copy button */
+  copyButton?: boolean
+  /** Enable LaTeX rendering */
+  latex?: boolean
+  /** Enable mermaid diagrams */
+  mermaid?: boolean
+  /** Custom component overrides */
+  components?: Partial<Components>
+  /** Enable HTML sanitization */
+  sanitize?: boolean
+  /** Additional CSS classes */
+  className?: string
+}
+```
+
+**Supported Features:**
+- GitHub Flavored Markdown (GFM)
+- Syntax highlighting (170+ languages via Prism.js)
+- LaTeX math expressions (via KaTeX)
+- Mermaid diagrams
+- Tables, task lists, footnotes
+- Auto-linking URLs
+- HTML sanitization (XSS protection)
+
+**Example:**
+```tsx
+<MarkdownRenderer
+  codeTheme="dark"
+  copyButton={true}
+  latex={true}
+  mermaid={true}
+>
+  {`# Hello World
+
+\`\`\`python
+def greet(name: str) -> str:
+    return f"Hello, {name}!"
+\`\`\`
+
+Math: $E = mc^2$
+`}
+</MarkdownRenderer>
+```
+
+---
+
+### Message Components
+
+#### StreamingMessage
+
+Real-time streaming message display with typing animation.
+
+```tsx
+import { StreamingMessage } from '@clarity-chat/react'
+
+interface StreamingMessageProps {
+  /** Message content */
+  content: string
+  /** Streaming state */
+  isStreaming: boolean
+  /** Show typing indicator */
+  showIndicator?: boolean
+  /** Typing speed (ms per character) */
+  speed?: number
+  /** Message role */
+  role: 'user' | 'assistant' | 'system'
+  /** Tool calls */
+  toolCalls?: ToolCall[]
+  /** Citations */
+  citations?: Citation[]
+}
+```
+
+---
+
+#### TypingIndicator
+
+Animated typing indicator for assistant messages.
+
+```tsx
+import { TypingIndicator } from '@clarity-chat/react'
+
+type TypingIndicatorVariant = 'dots' | 'pulse' | 'wave' | 'thinking'
+
+interface TypingIndicatorProps {
+  /** Indicator style */
+  variant?: TypingIndicatorVariant
+  /** Custom text */
+  text?: string
+  /** Show avatar */
+  showAvatar?: boolean
+  /** Size */
+  size?: 'sm' | 'md' | 'lg'
+}
+```
+
+**Example:**
+```tsx
+<TypingIndicator
+  variant="thinking"
+  text="Claude is thinking..."
+  showAvatar={true}
+/>
+```
+
+---
+
+#### CitationCard
+
+Display source citations with confidence scores.
+
+```tsx
+import { CitationCard } from '@clarity-chat/react'
+
+interface CitationCardProps {
+  /** Citation data */
+  citation: Citation
+  /** Click handler */
+  onClick?: () => void
+  /** Show confidence score */
+  showScore?: boolean
+  /** Compact layout */
+  compact?: boolean
+}
+
+interface Citation {
+  id: string
+  source: string
+  chunkText: string
+  confidence?: number
+  url?: string
+  metadata?: Record<string, unknown>
+}
+```
+
+---
+
+### Chat Components
+
+#### ChatWindow
+
+Complete chat window with header, messages, and input.
+
+```tsx
+import { ChatWindow } from '@clarity-chat/react'
+
+interface ChatWindowProps {
+  /** Window title */
+  title?: string
+  /** Show header */
+  showHeader?: boolean
+  /** Header actions */
+  headerActions?: React.ReactNode
+  /** Messages */
+  messages: Message[]
+  /** Input props */
+  inputProps?: Partial<ChatInputProps>
+  /** Loading state */
+  isLoading?: boolean
+  /** Error state */
+  error?: Error | string
+  /** Empty state */
+  emptyState?: React.ReactNode
+  /** Additional CSS classes */
+  className?: string
+}
+```
+
+---
+
+#### EmptyChatState
+
+Customizable empty state with suggestions.
+
+```tsx
+import { EmptyChatState } from '@clarity-chat/react'
+
+interface EmptyChatStateProps {
+  /** Title text */
+  title?: string
+  /** Description text */
+  description?: string
+  /** Suggestion chips */
+  suggestions?: string[]
+  /** Suggestion click handler */
+  onSuggestionClick?: (suggestion: string) => void
+  /** Custom icon */
+  icon?: React.ReactNode
+}
+```
+
+---
+
+#### FollowUpSuggestions
+
+Smart follow-up question suggestions.
+
+```tsx
+import { FollowUpSuggestions } from '@clarity-chat/react'
+
+interface FollowUpSuggestionsProps {
+  /** Suggestions */
+  suggestions: string[]
+  /** Click handler */
+  onSelect: (suggestion: string) => void
+  /** Loading state */
+  isLoading?: boolean
+  /** Max suggestions to show */
+  maxSuggestions?: number
+  /** Layout style */
+  layout?: 'horizontal' | 'vertical' | 'grid'
+}
+```
+
+---
+
+### Token Components
+
+#### TokenUsageMeter
+
+Real-time token usage visualization.
+
+```tsx
+import { TokenUsageMeter } from '@clarity-chat/react'
+
+interface TokenUsageMeterProps {
+  /** Tokens used */
+  used: number
+  /** Total budget */
+  total?: number
+  /** Show percentage */
+  showPercentage?: boolean
+  /** Show cost estimate */
+  showCost?: boolean
+  /** Model for cost calculation */
+  model?: string
+  /** Variant style */
+  variant?: 'bar' | 'circle' | 'minimal'
+}
+```
+
+---
+
+#### TokenBudgetBar
+
+Budget bar with warnings and alerts.
+
+```tsx
+import { TokenBudgetBar } from '@clarity-chat/react'
+
+interface TokenBudgetBarProps {
+  /** Current usage */
+  current: number
+  /** Budget limit */
+  limit: number
+  /** Warning threshold (%) */
+  warningThreshold?: number
+  /** Critical threshold (%) */
+  criticalThreshold?: number
+  /** Show label */
+  showLabel?: boolean
+  /** Alert handler */
+  onThresholdExceeded?: (threshold: 'warning' | 'critical') => void
+}
+```
+
+---
+
+#### TokenCounter
+
+Simple token counter display.
+
+```tsx
+import { TokenCounter } from '@clarity-chat/react'
+
+interface TokenCounterProps {
+  /** Text to count */
+  text: string
+  /** Model for counting */
+  model?: string
+  /** Show cost */
+  showCost?: boolean
+  /** Format */
+  format?: 'compact' | 'verbose'
+}
+```
+
+---
+
+### Navigation Components
+
+#### CommandPalette
+
+Keyboard-first command palette with fuzzy search.
+
+```tsx
+import { CommandPalette } from '@clarity-chat/react'
+
+interface CommandPaletteProps {
+  /** Commands */
+  commands: Command[]
+  /** Trigger key */
+  triggerKey?: string
+  /** Open state */
+  open?: boolean
+  /** Open state change handler */
+  onOpenChange?: (open: boolean) => void
+  /** Placeholder text */
+  placeholder?: string
+  /** Groups */
+  groups?: CommandGroup[]
+  /** Recent commands */
+  showRecent?: boolean
+  /** Max recent items */
+  maxRecent?: number
+}
+
+interface Command {
+  id: string
+  label: string
+  description?: string
+  icon?: React.ReactNode
+  shortcut?: string[]
+  group?: string
+  action: () => void | Promise<void>
+}
+```
+
+**Features:**
+- Fuzzy search with scoring
+- Keyboard navigation (arrow keys, enter, escape)
+- Command history
+- Command groups
+- Keyboard shortcuts display
+
+**Example:**
+```tsx
+<CommandPalette
+  commands={[
+    {
+      id: 'new-chat',
+      label: 'New Chat',
+      description: 'Start a new conversation',
+      shortcut: ['⌘', 'N'],
+      group: 'chat',
+      action: () => createNewChat(),
+    },
+    {
+      id: 'export',
+      label: 'Export Conversation',
+      shortcut: ['⌘', 'E'],
+      group: 'file',
+      action: async () => {
+        await exportConversation()
+      },
+    },
+  ]}
+  triggerKey="k"
+  showRecent={true}
+/>
+```
+
+---
+
+### Search Components
+
+#### MessageSearch
+
+Search messages with filters and highlights.
+
+```tsx
+import { MessageSearch } from '@clarity-chat/react'
+
+interface MessageSearchProps {
+  /** Messages to search */
+  messages: Message[]
+  /** Search query */
+  query?: string
+  /** Query change handler */
+  onQueryChange?: (query: string) => void
+  /** Result click handler */
+  onResultClick?: (message: Message) => void
+  /** Show filters */
+  showFilters?: boolean
+  /** Filters */
+  filters?: SearchFilters
+  /** Highlight matches */
+  highlightMatches?: boolean
+}
+
+interface SearchFilters {
+  role?: ('user' | 'assistant' | 'system')[]
+  dateRange?: { start: Date; end: Date }
+  hasAttachments?: boolean
+  hasCitations?: boolean
+}
+```
+
+---
+
+#### SearchFiltersPanel
+
+Advanced search filters panel.
+
+```tsx
+import { SearchFiltersPanel } from '@clarity-chat/react'
+
+interface SearchFiltersPanelProps {
+  /** Current filters */
+  filters: SearchFilters
+  /** Filter change handler */
+  onChange: (filters: SearchFilters) => void
+  /** Show date range */
+  showDateRange?: boolean
+  /** Show role filter */
+  showRole?: boolean
+  /** Custom filters */
+  customFilters?: CustomFilter[]
+}
+```
+
+---
+
+### Prompt Components
+
+#### PromptLibrary
+
+Prompt template library with categories.
+
+```tsx
+import { PromptLibrary } from '@clarity-chat/react'
+
+interface PromptLibraryProps {
+  /** Prompt templates */
+  prompts: PromptTemplate[]
+  /** Select handler */
+  onSelect: (prompt: PromptTemplate) => void
+  /** Categories */
+  categories?: string[]
+  /** Show search */
+  showSearch?: boolean
+  /** Show favorites */
+  showFavorites?: boolean
+  /** Compact layout */
+  compact?: boolean
+}
+
+interface PromptTemplate {
+  id: string
+  title: string
+  description?: string
+  content: string
+  category?: string
+  tags?: string[]
+  variables?: PromptVariable[]
+  favorite?: boolean
+}
+```
+
+---
+
+#### TemplateMarketplace
+
+Browse and install community templates.
+
+```tsx
+import { TemplateMarketplace } from '@clarity-chat/react'
+
+interface TemplateMarketplaceProps {
+  /** API endpoint */
+  apiEndpoint?: string
+  /** Install handler */
+  onInstall?: (template: PromptTemplate) => Promise<void>
+  /** Categories */
+  categories?: string[]
+  /** Sort by */
+  sortBy?: 'popular' | 'recent' | 'rating'
+}
+```
+
+---
+
+#### PromptSuggestions
+
+Context-aware prompt suggestions.
+
+```tsx
+import { PromptSuggestions } from '@clarity-chat/react'
+
+type PromptSuggestionType = 'question' | 'action' | 'clarification' | 'followup'
+
+interface PromptSuggestion {
+  id: string
+  text: string
+  type: PromptSuggestionType
+  confidence?: number
+}
+
+interface PromptSuggestionsProps {
+  /** Suggestions */
+  suggestions: PromptSuggestion[]
+  /** Click handler */
+  onClick: (suggestion: PromptSuggestion) => void
+  /** Max suggestions */
+  max?: number
+  /** Show type badges */
+  showTypes?: boolean
+}
+```
+
+---
+
+### Composition Components
+
+#### ChatComposer
+
+Declarative chat layout builder with presets.
+
+```tsx
+import {
+  ChatComposer,
+  MinimalChat,
+  StandardChat,
+  AgentChat,
+  FullscreenChat
+} from '@clarity-chat/react'
+
+interface ChatComposerProps {
+  /** Layout preset */
+  layout?: ChatComposerLayout
+  /** Enabled features */
+  features?: ChatComposerFeature[]
+  /** Custom components */
+  components?: Partial<ChatComposerComponents>
+  /** Theme */
+  theme?: Theme
+  /** Children */
+  children?: React.ReactNode
+}
+
+type ChatComposerLayout = 'minimal' | 'standard' | 'agent' | 'fullscreen' | 'custom'
+
+type ChatComposerFeature =
+  | 'search'
+  | 'export'
+  | 'thinking'
+  | 'tools'
+  | 'memory'
+  | 'voice'
+  | 'attachments'
+  | 'suggestions'
+```
+
+**Presets:**
+```tsx
+// Minimal chat (messages + input only)
+<MinimalChat />
+
+// Standard chat (with header, search, export)
+<StandardChat />
+
+// Agent chat (with thinking, tools, approval)
+<AgentChat />
+
+// Fullscreen chat (immersive mode)
+<FullscreenChat />
+
+// Custom composition
+<ChatComposer layout="custom" features={['search', 'voice', 'memory']}>
+  <ChatComposer.Header>
+    <ChatComposer.Title>My Custom Chat</ChatComposer.Title>
+  </ChatComposer.Header>
+  <ChatComposer.Messages />
+  <ChatComposer.Input />
+</ChatComposer>
+```
+
+---
+
+#### MessageRenderer
+
+Plugin-based message rendering system.
+
+```tsx
+import {
+  MessageRenderer,
+  defaultPlugins,
+  createPlugin
+} from '@clarity-chat/react'
+
+interface MessageRendererProps {
+  /** Message to render */
+  message: Message
+  /** Plugins */
+  plugins?: MessagePlugin[]
+  /** Fallback renderer */
+  fallback?: (message: Message) => React.ReactNode
+}
+
+interface MessagePlugin {
+  id: string
+  match: (message: Message) => boolean
+  render: (message: Message) => React.ReactNode
+  priority?: number
+}
+```
+
+**Creating Custom Plugins:**
+```tsx
+// Code block plugin
+const codePlugin = createPlugin({
+  id: 'code-block',
+  match: (msg) => msg.content.includes('```'),
+  render: (msg) => <CodeBlock code={extractCode(msg.content)} />,
+  priority: 10,
+})
+
+// Weather plugin
+const weatherPlugin = createPlugin({
+  id: 'weather',
+  match: (msg) => msg.metadata?.type === 'weather',
+  render: (msg) => <WeatherCard data={msg.metadata.data} />,
+})
+
+<MessageRenderer
+  message={message}
+  plugins={[...defaultPlugins, codePlugin, weatherPlugin]}
+/>
+```
+
+---
+
+#### AgentPanel
+
+Unified agent execution view with thinking, tools, and approval.
+
+```tsx
+import { AgentPanel, useAgentPanel } from '@clarity-chat/react'
+
+interface AgentPanelProps {
+  /** Panel variant */
+  variant?: AgentPanelVariant
+  /** Show thinking */
+  showThinking?: boolean
+  /** Show tools */
+  showTools?: boolean
+  /** Tool approval handler */
+  onToolApprove?: (toolId: string) => void
+  /** Tool rejection handler */
+  onToolReject?: (toolId: string, reason?: string) => void
+  /** Collapsible */
+  collapsible?: boolean
+  /** Initially collapsed */
+  defaultCollapsed?: boolean
+}
+
+type AgentPanelVariant = 'sidebar' | 'inline' | 'modal' | 'minimal'
+```
+
+**Example:**
+```tsx
+<AgentPanel
+  variant="sidebar"
+  showThinking={true}
+  showTools={true}
+  onToolApprove={async (toolId) => {
+    await approveToolExecution(toolId)
+  }}
+  onToolReject={async (toolId, reason) => {
+    await rejectToolExecution(toolId, reason)
+  }}
+  collapsible={true}
+/>
+```
+
+---
+
+### Input Components
+
+#### VoiceInput
+
+Voice recording with visualization.
+
+```tsx
+import { VoiceInput } from '@clarity-chat/react'
+
+interface VoiceInputProps {
+  /** Recording callback */
+  onRecording: (blob: Blob) => Promise<void>
+  /** Max recording duration (seconds) */
+  maxDuration?: number
+  /** Show waveform visualization */
+  showVisualization?: boolean
+  /** Auto-send on stop */
+  autoSend?: boolean
+  /** Disabled state */
+  disabled?: boolean
+}
+```
+
+---
+
+#### AudioRecorder
+
+Advanced audio recorder with controls.
+
+```tsx
+import { AudioRecorder } from '@clarity-chat/react'
+
+interface AudioRecorderProps {
+  /** Recording complete handler */
+  onRecordingComplete: (blob: Blob, duration: number) => void
+  /** Max duration (ms) */
+  maxDuration?: number
+  /** Audio format */
+  format?: 'wav' | 'mp3' | 'webm'
+  /** Show timer */
+  showTimer?: boolean
+  /** Show waveform */
+  showWaveform?: boolean
+  /** Allow playback */
+  allowPlayback?: boolean
+}
+```
+
+---
+
+### Media Components
+
+#### ExportDialog
+
+Export conversations in multiple formats.
+
+```tsx
+import { ExportDialog } from '@clarity-chat/react'
+
+interface ExportDialogProps {
+  /** Open state */
+  open: boolean
+  /** Close handler */
+  onClose: () => void
+  /** Messages to export */
+  messages: Message[]
+  /** Available formats */
+  formats?: ExportFormat[]
+  /** Export handler */
+  onExport?: (format: ExportFormat, data: ExportData) => void
+}
+
+type ExportFormat = 'json' | 'markdown' | 'pdf' | 'html' | 'csv'
+```
+
+---
+
+### UI Components
+
+#### ErrorBoundary
+
+React error boundary with fallback UI.
+
+```tsx
+import { ErrorBoundary } from '@clarity-chat/react'
+
+interface ErrorBoundaryProps {
+  /** Fallback UI */
+  fallback?: React.ReactNode | ((error: Error) => React.ReactNode)
+  /** Error handler */
+  onError?: (error: Error, errorInfo: React.ErrorInfo) => void
+  /** Children */
+  children: React.ReactNode
+}
+```
+
+**Example:**
+```tsx
+<ErrorBoundary
+  fallback={(error) => (
+    <div>
+      <h2>Something went wrong</h2>
+      <pre>{error.message}</pre>
+    </div>
+  )}
+  onError={(error, errorInfo) => {
+    logError(error, errorInfo)
+  }}
+>
+  <ChatWindow />
+</ErrorBoundary>
+```
+
+---
+
+### Feedback Components
+
+#### NetworkStatus
+
+Network connectivity indicator.
+
+```tsx
+import { NetworkStatus } from '@clarity-chat/react'
+
+interface NetworkStatusProps {
+  /** Show when online */
+  showWhenOnline?: boolean
+  /** Custom messages */
+  messages?: {
+    online?: string
+    offline?: string
+    reconnecting?: string
+  }
+  /** Position */
+  position?: 'top' | 'bottom'
+}
+```
+
+---
+
+## Hooks
+
+### Chat Hooks
+
+#### useClarityChat
+
+Primary hook for chat functionality with memory, streaming, and tools.
+
+```tsx
+import { useClarityChat } from '@clarity-chat/react'
+
+interface UseClarityChatOptions {
+  /** API endpoint */
+  api: string
+  /** Initial messages */
+  initialMessages?: Message[]
+  /** Memory configuration */
+  memory?: boolean | ClarityMemoryOptions
+  /** WebSocket configuration */
+  websocket?: boolean | ClarityWebSocketOptions
+  /** Prompt optimization */
+  promptOptimization?: boolean | ClarityPromptOptimizationOptions
+  /** Model configuration */
+  model?: string
+  /** Temperature */
+  temperature?: number
+  /** Max tokens */
+  maxTokens?: number
+  /** Headers */
+  headers?: Record<string, string>
+  /** Credentials */
+  credentials?: RequestCredentials
+  /** On finish callback */
+  onFinish?: (message: Message) => void
+  /** On error callback */
+  onError?: (error: Error) => void
+}
+
+interface UseClarityChatReturn {
+  /** Current messages */
+  messages: Message[]
+  /** Send message */
+  append: (message: string | Message) => Promise<void>
+  /** Reload last message */
+  reload: () => Promise<void>
+  /** Stop generation */
+  stop: () => void
+  /** Loading state */
+  isLoading: boolean
+  /** Error state */
+  error?: Error
+  /** Input value */
+  input: string
+  /** Set input value */
+  setInput: (value: string) => void
+  /** Handle input change */
+  handleInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void
+  /** Handle submit */
+  handleSubmit: (e: React.FormEvent) => void
+  /** Token statistics */
+  tokenStats?: ClarityChatTokenStats
+  /** Memory info */
+  memoryInfo?: ClarityChatMemoryInfo
+  /** Set messages */
+  setMessages: React.Dispatch<React.SetStateAction<Message[]>>
+}
+```
+
+**Example:**
+```tsx
+function ChatComponent() {
+  const {
+    messages,
+    append,
+    reload,
+    stop,
+    isLoading,
+    error,
+    input,
+    setInput,
+    handleSubmit,
+    tokenStats,
+  } = useClarityChat({
+    api: '/api/chat',
+    memory: true,
+    maxTokens: 2000,
+    onFinish: (message) => {
+      console.log('Generation complete:', message)
+    },
+  })
+
+  return (
+    <div>
+      <MessageList messages={messages} isLoading={isLoading} />
+      <form onSubmit={handleSubmit}>
+        <input
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          placeholder="Type a message..."
+        />
+        <button type="submit" disabled={isLoading}>
+          Send
+        </button>
+        {isLoading && <button onClick={stop}>Stop</button>}
+      </form>
+      {tokenStats && (
+        <TokenUsageMeter
+          used={tokenStats.totalTokens}
+          showCost={true}
+          model={tokenStats.model}
+        />
+      )}
+    </div>
+  )
+}
+```
+
+---
+
+#### useStreaming
+
+Low-level streaming hook for custom implementations.
+
+```tsx
+import { useStreaming } from '@clarity-chat/react'
+
+interface UseStreamingOptions {
+  /** API endpoint */
+  api: string
+  /** Request headers */
+  headers?: Record<string, string>
+  /** Stream callbacks */
+  onChunk?: (chunk: StreamChunk) => void
+  onComplete?: (data: unknown) => void
+  onError?: (error: Error) => void
+}
+
+interface UseStreamingReturn {
+  /** Start streaming */
+  start: (messages: Message[]) => Promise<void>
+  /** Stop streaming */
+  stop: () => void
+  /** Streaming state */
+  isStreaming: boolean
+  /** Error state */
+  error?: Error
+}
+```
+
+---
+
+#### useTokenBudget
+
+Token budget management with alerts.
+
+```tsx
+import { useTokenBudget } from '@clarity-chat/react'
+
+interface UseTokenBudgetOptions {
+  /** Budget limit */
+  limit: number
+  /** Warning threshold (%) */
+  warningThreshold?: number
+  /** Critical threshold (%) */
+  criticalThreshold?: number
+  /** On threshold exceeded */
+  onThresholdExceeded?: (threshold: 'warning' | 'critical') => void
+}
+
+interface UseTokenBudgetReturn {
+  /** Current usage */
+  current: number
+  /** Remaining tokens */
+  remaining: number
+  /** Percentage used */
+  percentage: number
+  /** Add tokens */
+  add: (tokens: number) => void
+  /** Reset budget */
+  reset: () => void
+  /** Is over budget */
+  isOverBudget: boolean
+  /** Is at warning */
+  isWarning: boolean
+  /** Is critical */
+  isCritical: boolean
+}
+```
+
+---
+
+#### useMemoryFeedback
+
+Memory feedback and validation.
+
+```tsx
+import { useMemoryFeedback } from '@clarity-chat/react'
+
+interface UseMemoryFeedbackReturn {
+  /** Submit feedback */
+  submitFeedback: (messageId: string, feedback: MemoryFeedback) => Promise<void>
+  /** Get feedback */
+  getFeedback: (messageId: string) => MemoryFeedback | undefined
+  /** Loading state */
+  isLoading: boolean
+  /** Error state */
+  error?: Error
+}
+
+interface MemoryFeedback {
+  helpful: boolean
+  accurate: boolean
+  relevant: boolean
+  comment?: string
+}
+```
+
+---
+
+### UI Hooks
+
+#### useToast
+
+Toast notification system.
+
+```tsx
+import { useToast } from '@clarity-chat/react'
+
+interface ToastContextValue {
+  /** Show toast */
+  toast: (options: ToastOptions) => void
+  /** Show success toast */
+  success: (message: string) => void
+  /** Show error toast */
+  error: (message: string) => void
+  /** Show warning toast */
+  warning: (message: string) => void
+  /** Show info toast */
+  info: (message: string) => void
+}
+
+interface ToastOptions {
+  title?: string
+  description: string
+  variant?: 'default' | 'success' | 'error' | 'warning'
+  duration?: number
+  action?: {
+    label: string
+    onClick: () => void
+  }
+}
+```
+
+**Example:**
+```tsx
+function MyComponent() {
+  const { toast, success, error } = useToast()
+
+  const handleSave = async () => {
+    try {
+      await saveData()
+      success('Data saved successfully')
+    } catch (err) {
+      error('Failed to save data')
+    }
+  }
+
+  return <button onClick={handleSave}>Save</button>
+}
+```
+
+---
+
+#### useAutoScroll
+
+Auto-scroll behavior management.
+
+```tsx
+import { useAutoScroll } from '@clarity-chat/react'
+
+interface UseAutoScrollOptions {
+  /** Enable auto-scroll */
+  enabled?: boolean
+  /** Scroll behavior */
+  behavior?: ScrollBehavior
+  /** Threshold for user scroll */
+  threshold?: number
+}
+
+interface UseAutoScrollReturn {
+  /** Ref for scrollable container */
+  scrollRef: React.RefObject<HTMLDivElement>
+  /** Scroll to bottom */
+  scrollToBottom: (behavior?: ScrollBehavior) => void
+  /** Is at bottom */
+  isAtBottom: boolean
+  /** Enable/disable auto-scroll */
+  setEnabled: (enabled: boolean) => void
+}
+```
+
+---
+
+#### useClipboard
+
+Clipboard operations with feedback.
+
+```tsx
+import { useClipboard } from '@clarity-chat/react'
+
+interface UseClipboardOptions {
+  /** Copy timeout (ms) */
+  timeout?: number
+  /** On success callback */
+  onSuccess?: () => void
+  /** On error callback */
+  onError?: (error: Error) => void
+}
+
+interface UseClipboardReturn {
+  /** Copy to clipboard */
+  copy: (text: string) => Promise<boolean>
+  /** Copied state */
+  copied: boolean
+  /** Error state */
+  error?: Error
+}
+```
+
+---
+
+#### useReducedMotion
+
+Detect reduced motion preference.
+
+```tsx
+import { useReducedMotion } from '@clarity-chat/react'
+
+function AnimatedComponent() {
+  const prefersReducedMotion = useReducedMotion()
+
+  return (
+    <motion.div
+      animate={prefersReducedMotion ? {} : { scale: 1.2 }}
+      transition={{ duration: 0.3 }}
+    >
+      Content
+    </motion.div>
+  )
+}
+```
+
+---
+
+#### useThrottledCallback
+
+Throttle callback execution.
+
+```tsx
+import { useThrottledCallback } from '@clarity-chat/react'
+
+function SearchInput() {
+  const throttledSearch = useThrottledCallback(
+    (query: string) => {
+      performSearch(query)
+    },
+    500 // Wait 500ms between calls
+  )
+
+  return (
+    <input
+      onChange={(e) => throttledSearch(e.target.value)}
+      placeholder="Search..."
+    />
+  )
+}
+```
+
+---
+
+### Storage Hooks
+
+#### useLocalStorage
+
+Persistent local storage with React state.
+
+```tsx
+import { useLocalStorage } from '@clarity-chat/react'
+
+interface UseLocalStorageOptions<T> {
+  /** Default value */
+  defaultValue?: T
+  /** Serializer */
+  serializer?: (value: T) => string
+  /** Deserializer */
+  deserializer?: (value: string) => T
+}
+
+function MyComponent() {
+  const [theme, setTheme] = useLocalStorage<'light' | 'dark'>('theme', {
+    defaultValue: 'light',
+  })
+
+  return (
+    <button onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}>
+      Toggle theme (current: {theme})
+    </button>
+  )
+}
+```
+
+---
+
+### Keyboard Hooks
+
+#### useKeyboardShortcuts
+
+Register keyboard shortcuts.
+
+```tsx
+import { useKeyboardShortcuts } from '@clarity-chat/react'
+
+interface KeyboardShortcut {
+  /** Shortcut keys */
+  keys: string[]
+  /** Callback */
+  callback: (event: KeyboardEvent) => void
+  /** Description */
+  description?: string
+  /** Enable state */
+  enabled?: boolean
+  /** Prevent default */
+  preventDefault?: boolean
+}
+
+function MyComponent() {
+  useKeyboardShortcuts([
+    {
+      keys: ['cmd+k', 'ctrl+k'],
+      callback: () => openCommandPalette(),
+      description: 'Open command palette',
+    },
+    {
+      keys: ['cmd+n', 'ctrl+n'],
+      callback: () => createNewChat(),
+      description: 'New chat',
+      preventDefault: true,
+    },
+    {
+      keys: ['esc'],
+      callback: () => closeDialog(),
+      description: 'Close dialog',
+    },
+  ])
+
+  return <div>Press Cmd+K to open command palette</div>
+}
+```
+
+---
+
+### Accessibility Hooks
+
+#### useFocusTrap
+
+Trap focus within a container (for modals/dialogs).
+
+```tsx
+import { useFocusTrap } from '@clarity-chat/react'
+
+interface UseFocusTrapOptions {
+  /** Enable focus trap */
+  enabled?: boolean
+  /** Initial focus element */
+  initialFocus?: React.RefObject<HTMLElement>
+  /** Return focus on unmount */
+  returnFocus?: boolean
+}
+
+function Modal({ open }: { open: boolean }) {
+  const modalRef = useFocusTrap({ enabled: open, returnFocus: true })
+
+  if (!open) return null
+
+  return (
+    <div ref={modalRef} role="dialog" aria-modal="true">
+      <h2>Modal Title</h2>
+      <button>Action</button>
+      <button>Close</button>
+    </div>
+  )
+}
+```
+
+---
+
+#### useFocusRestoration
+
+Restore focus after navigation.
+
+```tsx
+import { useFocusRestoration } from '@clarity-chat/react'
+
+interface UseFocusRestorationReturn {
+  /** Save current focus */
+  save: () => void
+  /** Restore saved focus */
+  restore: () => void
+}
+
+function NavigationMenu() {
+  const { save, restore } = useFocusRestoration()
+
+  const handleNavigate = (path: string) => {
+    save()
+    router.push(path)
+  }
+
+  return <nav>{/* Navigation items */}</nav>
+}
+```
+
+---
+
+### Connected Component Hooks
+
+These hooks automatically connect to `ClarityChatProvider` for seamless integration.
+
+#### useConnectedThinkingBar
+
+```tsx
+import { useConnectedThinkingBar } from '@clarity-chat/react'
+
+// Automatically connects to ClarityChatProvider
+function ThinkingBar() {
+  const props = useConnectedThinkingBar()
+  return <div>{props.currentStep}</div>
+}
+```
+
+---
+
+#### useConnectedStreamProgress
+
+```tsx
+import { useConnectedStreamProgress } from '@clarity-chat/react'
+
+function StreamProgress() {
+  const { isStreaming, progress, phase } = useConnectedStreamProgress()
+  return <ProgressBar value={progress} />
+}
+```
+
+---
+
+### SDK Bridge Hooks
+
+#### useVercelAIBridge
+
+Bridge Vercel AI SDK with Clarity Chat.
+
+```tsx
+import { useVercelAIBridge } from '@clarity-chat/react'
+import { useChat } from 'ai/react'
+
+function ChatWithVercelAI() {
+  const vercelChat = useChat({ api: '/api/chat' })
+  const clarityChat = useVercelAIBridge(vercelChat)
+
+  return (
+    <ClarityChatProvider adapter={clarityChat.adapter}>
+      <ChatWindow />
+    </ClarityChatProvider>
+  )
+}
+```
+
+---
+
+#### useLangChainBridge
+
+Bridge LangChain with Clarity Chat.
+
+```tsx
+import { useLangChainBridge } from '@clarity-chat/react'
+
+interface LangChainBridgeOptions {
+  chain: BaseChain
+  memory?: BaseMemory
+  callbacks?: Callbacks
+}
+
+function ChatWithLangChain() {
+  const bridge = useLangChainBridge({
+    chain: myChain,
+    memory: new BufferMemory(),
+  })
+
+  return (
+    <ClarityChatProvider adapter={bridge.adapter}>
+      <ChatWindow />
+    </ClarityChatProvider>
+  )
+}
+```
+
+---
+
+## Utilities
+
+### Core Utilities
+
+#### cn
+
+Classname utility (re-exported from `@clarity-chat/primitives`).
+
+```tsx
+import { cn } from '@clarity-chat/react'
+
+// Merge class names intelligently
+const className = cn(
+  'base-class',
+  condition && 'conditional-class',
+  'override-class'
+)
+
+// Works with Tailwind
+const buttonClass = cn(
+  'px-4 py-2 rounded',
+  variant === 'primary' && 'bg-blue-500 text-white',
+  variant === 'secondary' && 'bg-gray-200 text-gray-900',
+  disabled && 'opacity-50 cursor-not-allowed'
+)
+```
+
+---
+
+### Tokenization Utilities
+
+#### countTokens
+
+Count tokens in text.
+
+```tsx
+import { countTokens } from '@clarity-chat/react'
+
+const tokens = await countTokens('Hello, world!', 'gpt-4')
+// Returns: 4
+```
+
+---
+
+#### estimateMessagesTokens
+
+Estimate tokens for message array.
+
+```tsx
+import { estimateMessagesTokens } from '@clarity-chat/react'
+
+const totalTokens = await estimateMessagesTokens(messages, 'gpt-4')
+```
+
+---
+
+#### truncateToTokenBudget
+
+Truncate text to fit token budget.
+
+```tsx
+import { truncateToTokenBudget } from '@clarity-chat/react'
+
+const truncated = await truncateToTokenBudget(
+  longText,
+  1000, // max tokens
+  'gpt-4'
+)
+```
+
+---
+
+### TOON (Token-Oriented Object Notation)
+
+#### jsonToToon
+
+Convert JSON to compact TOON format (50-70% smaller).
+
+```tsx
+import { jsonToToon, toonToJson } from '@clarity-chat/react'
+
+const data = {
+  name: 'John Doe',
+  age: 30,
+  email: 'john@example.com',
+}
+
+const toon = jsonToToon(data)
+// Returns: "n:John Doe|a:30|e:john@example.com"
+
+const restored = toonToJson(toon)
+// Returns: { name: 'John Doe', age: 30, email: 'john@example.com' }
+```
+
+---
+
+#### autoOptimize
+
+Automatically optimize data for LLMs.
+
+```tsx
+import { autoOptimize } from '@clarity-chat/react'
+
+const optimized = autoOptimize(largeDataObject, {
+  maxTokens: 1000,
+  format: 'toon',
+  preserveKeys: ['id', 'name'],
+})
+```
+
+---
+
+### Prompt Caching
+
+#### PromptCacheManager
+
+Manage prompt caching for cost reduction.
+
+```tsx
+import { PromptCacheManager } from '@clarity-chat/react'
+
+const cache = new PromptCacheManager({
+  provider: 'anthropic',
+  ttl: 5 * 60 * 1000, // 5 minutes
+})
+
+// Add cacheable content
+cache.add({
+  id: 'system-prompt',
+  content: longSystemPrompt,
+  priority: 'high',
+})
+
+// Create cached messages
+const messages = cache.createCachedMessages([
+  { role: 'system', content: longSystemPrompt },
+  { role: 'user', content: userMessage },
+])
+
+// Estimate savings
+const savings = cache.estimateSavings(messages)
+// Returns: { tokensSaved: 1500, costSaved: 0.045 }
+```
+
+---
+
+### Resilience Utilities
+
+#### withRetry
+
+Retry failed operations with exponential backoff.
+
+```tsx
+import { withRetry } from '@clarity-chat/react'
+
+const result = await withRetry(
+  async () => {
+    return await fetchData()
+  },
+  {
+    maxAttempts: 3,
+    baseDelay: 1000,
+    maxDelay: 10000,
+    backoffMultiplier: 2,
+  }
+)
+```
+
+---
+
+#### CircuitBreaker
+
+Prevent cascading failures with circuit breaker pattern.
+
+```tsx
+import { CircuitBreaker } from '@clarity-chat/react'
+
+const breaker = new CircuitBreaker({
+  failureThreshold: 5,
+  successThreshold: 2,
+  timeout: 30000,
+  resetTimeout: 60000,
+})
+
+try {
+  const result = await breaker.execute(async () => {
+    return await apiCall()
+  })
+} catch (error) {
+  if (error.name === 'CircuitBreakerError') {
+    // Circuit is open, use fallback
+  }
+}
+```
+
+---
+
+### API Utilities
+
+#### detectPeerCapabilities
+
+Detect available peer dependencies at runtime.
+
+```tsx
+import { detectPeerCapabilities, usePeerCapabilities } from '@clarity-chat/react'
+
+// Programmatic detection
+const capabilities = await detectPeerCapabilities()
+// Returns: { markdown: true, latex: false, mermaid: true, ... }
+
+// React hook
+function MyComponent() {
+  const { markdown, latex } = usePeerCapabilities()
+
+  return (
+    <div>
+      {markdown ? <MarkdownRenderer /> : <PlainText />}
+      {latex && <LatexRenderer />}
+    </div>
+  )
+}
+```
+
+---
+
+### Animation Utilities
+
+Pre-configured Framer Motion animations.
+
+```tsx
+import {
+  fadeIn,
+  slideIn,
+  scaleIn,
+  useAnimationPreset
+} from '@clarity-chat/react'
+
+// Use preset animations
+<motion.div {...fadeIn}>Content</motion.div>
+<motion.div {...slideIn('left')}>Slide from left</motion.div>
+<motion.div {...scaleIn}>Scale up</motion.div>
+
+// Hook for conditional animations
+function AnimatedCard() {
+  const animation = useAnimationPreset('fadeIn', {
+    skipAnimation: useReducedMotion(),
+  })
+
+  return <motion.div {...animation}>Card content</motion.div>
+}
+```
+
+---
+
+## Type Definitions
+
+### Core Types
+
+#### Message
+
+```tsx
+interface Message {
+  id: string
+  role: 'user' | 'assistant' | 'system' | 'tool'
+  content: string
+  createdAt?: Date
+  metadata?: MessageMetadata
+}
+
+interface MessageMetadata {
+  model?: string
+  tokens?: number
+  cost?: number
+  latency?: number
+  finishReason?: FinishReason
+  [key: string]: unknown
+}
+
+type MessageRole = 'user' | 'assistant' | 'system' | 'tool'
+```
+
+---
+
+#### StreamMessage
+
+```tsx
+interface StreamMessage extends Message {
+  isStreaming?: boolean
+  streamedContent?: string
+  toolCalls?: ToolCall[]
+  citations?: Citation[]
+}
+```
+
+---
+
+### Provider Types
+
+#### ClarityChatContextValue
+
+```tsx
+interface ClarityChatContextValue {
+  // State
+  messages: ChatMessage[]
+  isConnected: boolean
+  streamStatus: StreamStatus
+  tools: ToolExecution[]
+  thinking: ThinkingStep[]
+
+  // Actions
+  sendMessage: (content: string, attachments?: MessageAttachment[]) => Promise<void>
+  stopGeneration: () => void
+  regenerateMessage: (messageId: string) => Promise<void>
+  deleteMessage: (messageId: string) => void
+  editMessage: (messageId: string, content: string) => void
+
+  // Tool actions
+  approveTool: (toolId: string) => Promise<void>
+  rejectTool: (toolId: string, reason?: string) => Promise<void>
+
+  // Events
+  on: (event: ClarityEventType, handler: EventHandler) => () => void
+  emit: (event: ClarityEventType, data?: unknown) => void
+}
+```
+
+---
+
+#### AgentExecutionContextValue
+
+```tsx
+interface AgentExecutionContextValue {
+  // State
+  status: ExecutionStatus
+  plan: PlanStep[]
+  tools: ToolCall[]
+  thinking: ThinkingStep[]
+  error?: ExecutionError
+
+  // Actions
+  start: () => Promise<void>
+  pause: () => void
+  resume: () => void
+  stop: () => void
+  reset: () => void
+
+  // Events
+  on: (event: AgentExecutionEventType, handler: EventHandler) => () => void
+}
+
+type ExecutionStatus = 'idle' | 'planning' | 'executing' | 'paused' | 'complete' | 'error'
+```
+
+---
+
+### Adapter Types
+
+#### ModelConfig
+
+```tsx
+interface ModelConfig {
+  provider: 'openai' | 'anthropic' | 'google' | 'custom'
+  model: string
+  apiKey?: string
+  baseURL?: string
+  temperature?: number
+  maxTokens?: number
+  topP?: number
+  frequencyPenalty?: number
+  presencePenalty?: number
+  stop?: string[]
+  tools?: ToolDefinition[]
+  timeout?: number
+  signal?: AbortSignal
+}
+```
+
+---
+
+#### ChatMessage (Adapter)
+
+```tsx
+interface ChatMessage {
+  role: 'system' | 'user' | 'assistant'
+  content: string | ContentPart[]
+  toolCalls?: ToolCall[]
+  citations?: Citation[]
+  name?: string
+  finishReason?: FinishReason
+}
+
+interface ContentPart {
+  type: 'text' | 'image' | 'tool_result'
+  text?: string
+  imageUrl?: string
+  toolCallId?: string
+  toolResult?: unknown
+}
+```
+
+---
+
+#### ToolCall
+
+```tsx
+interface ToolCall {
+  id: string
+  type: 'function'
+  function: {
+    name: string
+    arguments: string // JSON string
+  }
+}
+```
+
+---
+
+#### Citation
+
+```tsx
+interface Citation {
+  id: string
+  source: string
+  chunkText: string
+  confidence?: number
+  metadata?: Record<string, unknown>
+  url?: string
+}
+```
+
+---
+
+#### StreamChunk
+
+```tsx
+interface StreamChunk {
+  type: 'token' | 'tool_call' | 'thinking' | 'citation' | 'done' | 'error'
+  content?: string
+  toolCall?: ToolCall
+  thinkingStep?: string
+  citation?: Citation
+  usage?: TokenUsage
+  finishReason?: FinishReason
+  error?: string
+  rateLimitInfo?: RateLimitInfo
+}
+```
+
+---
+
+#### TokenUsage
+
+```tsx
+interface TokenUsage {
+  promptTokens: number
+  completionTokens: number
+  totalTokens: number
+  estimatedCost?: number
+}
+```
+
+---
+
+### Enhanced Types
+
+#### StrictChatEvent
+
+Type-safe event system.
+
+```tsx
+type StrictChatEvent =
+  | MessageSentEvent
+  | MessageReceivedEvent
+  | StreamStartedEvent
+  | StreamChunkReceivedEvent
+  | StreamCompletedEvent
+  | ToolStartedEvent
+  | ToolCompletedEvent
+  | ToolErrorEvent
+  | ThinkingStartedEvent
+  | ThinkingStepEvent
+  | ChatErrorEvent
+
+interface MessageSentEvent {
+  type: 'message:sent'
+  payload: { message: Message }
+}
+
+interface StreamChunkReceivedEvent {
+  type: 'stream:chunk'
+  payload: { chunk: StreamChunk; messageId: string }
+}
+```
+
+---
+
+#### Generic Message Types
+
+```tsx
+type GenericMessage<TRole extends string = string> = {
+  id: string
+  role: TRole
+  content: string
+  metadata?: Record<string, unknown>
+}
+
+type UserMessage = GenericMessage<'user'>
+type AssistantMessage = GenericMessage<'assistant'>
+type SystemMessage = GenericMessage<'system'>
+type ToolMessage = GenericMessage<'tool'>
+```
+
+---
+
+## Constants & Enums
+
+### Model Constants
+
+```tsx
+// OpenAI models
+export const OPENAI_MODELS = {
+  GPT_4_TURBO: 'gpt-4-turbo-preview',
+  GPT_4: 'gpt-4',
+  GPT_35_TURBO: 'gpt-3.5-turbo',
+} as const
+
+// Anthropic models
+export const ANTHROPIC_MODELS = {
+  CLAUDE_3_OPUS: 'claude-3-opus-20240229',
+  CLAUDE_3_SONNET: 'claude-3-sonnet-20240229',
+  CLAUDE_3_HAIKU: 'claude-3-haiku-20240307',
+} as const
+
+// Google models
+export const GOOGLE_MODELS = {
+  GEMINI_PRO: 'gemini-pro',
+  GEMINI_PRO_VISION: 'gemini-pro-vision',
+} as const
+```
+
+---
+
+### Default Configuration
+
+```tsx
+export const DEFAULT_CHAT_CONFIG = {
+  temperature: 0.7,
+  maxTokens: 2000,
+  topP: 1,
+  frequencyPenalty: 0,
+  presencePenalty: 0,
+  timeout: 30000,
+} as const
+
+export const DEFAULT_RETRY_CONFIG = {
+  maxAttempts: 3,
+  baseDelay: 1000,
+  maxDelay: 10000,
+  backoffMultiplier: 2,
+} as const
+
+export const DEFAULT_CIRCUIT_BREAKER_CONFIG = {
+  failureThreshold: 5,
+  successThreshold: 2,
+  timeout: 30000,
+  resetTimeout: 60000,
+} as const
+```
+
+---
+
+### Error Codes
+
+```tsx
+export enum AdapterErrorCode {
+  // Authentication
+  AUTHENTICATION_ERROR = 'AUTHENTICATION_ERROR',
+  API_KEY_MISSING = 'API_KEY_MISSING',
+
+  // Rate limiting
+  RATE_LIMIT_EXCEEDED = 'RATE_LIMIT_EXCEEDED',
+  QUOTA_EXCEEDED = 'QUOTA_EXCEEDED',
+
+  // Request errors
+  INVALID_REQUEST = 'INVALID_REQUEST',
+  INVALID_MODEL = 'INVALID_MODEL',
+  CONTEXT_LENGTH_EXCEEDED = 'CONTEXT_LENGTH_EXCEEDED',
+
+  // Server errors
+  SERVER_ERROR = 'SERVER_ERROR',
+  SERVICE_UNAVAILABLE = 'SERVICE_UNAVAILABLE',
+
+  // Network errors
+  NETWORK_ERROR = 'NETWORK_ERROR',
+  TIMEOUT = 'TIMEOUT',
+
+  // Content errors
+  CONTENT_FILTER = 'CONTENT_FILTER',
+
+  // Unknown
+  UNKNOWN = 'UNKNOWN',
+}
+```
+
+---
+
+### Log Levels
+
+```tsx
+export enum LogLevel {
+  DEBUG = 0,
+  INFO = 1,
+  WARN = 2,
+  ERROR = 3,
+}
+```
+
+---
+
+### Circuit States
+
+```tsx
+export enum CircuitState {
+  CLOSED = 'CLOSED',
+  OPEN = 'OPEN',
+  HALF_OPEN = 'HALF_OPEN',
+}
+```
+
+---
+
+## Deprecated APIs
+
+<div className="not-prose">
+  <div className="bg-yellow-50 dark:bg-yellow-950/30 border border-yellow-200 dark:border-yellow-800 rounded-lg p-6 mb-8">
+    <h3 className="text-yellow-900 dark:text-yellow-100 font-semibold mb-2">⚠️ Deprecation Notice</h3>
+    <p className="text-sm text-yellow-800 dark:text-yellow-200 m-0">
+      The following APIs are deprecated and will be removed in v2.0. Please migrate to the recommended alternatives.
+    </p>
+  </div>
+</div>
+
+### Deprecated Components
+
+#### Think Component
+
+**Deprecated in:** v1.5.0
+**Removed in:** v2.0.0
+**Migration:** Use `AgentPanel` with `showThinking={true}` instead
+
+```tsx
+// ❌ Deprecated
+import { Think } from '@clarity-chat/react'
+<Think steps={thinkingSteps} />
+
+// ✅ Use instead
+import { AgentPanel } from '@clarity-chat/react'
+<AgentPanel showThinking={true} variant="inline" />
+```
+
+---
+
+### Deprecated Hooks
+
+#### useChatOptions / useChatReturn
+
+**Deprecated in:** v1.8.0
+**Removed in:** v2.0.0
+**Migration:** Use `UseClarityChatOptions` / `UseClarityChatReturn` instead
+
+```tsx
+// ❌ Deprecated
+import type { UseChatOptions, UseChatReturn } from '@clarity-chat/react/types'
+
+// ✅ Use instead
+import type { UseClarityChatOptions, UseClarityChatReturn } from '@clarity-chat/react'
+```
+
+---
+
+### Deprecated Utilities
+
+#### Legacy Token Counting
+
+**Deprecated in:** v1.6.0
+**Removed in:** v2.0.0
+**Migration:** Use new `countTokens` from `@clarity-chat/react`
+
+```tsx
+// ❌ Deprecated
+import { countTokensLegacy } from '@clarity-chat/react/utils'
+const tokens = countTokensLegacy(text)
+
+// ✅ Use instead
+import { countTokens } from '@clarity-chat/react'
+const tokens = await countTokens(text, 'gpt-4')
+```
+
+---
+
+## Migration Guide
+
+### v1.x to v2.0
+
+Key breaking changes in v2.0:
+
+1. **Removed `Think` component** - Use `AgentPanel` instead
+2. **Renamed types** - `UseChatOptions` → `UseClarityChatOptions`
+3. **Async token counting** - `countTokens` now returns Promise
+4. **Updated provider props** - Check component prop changes
+5. **New adapter system** - Formalized adapter interface
+
+**Automated Migration:**
+```bash
+npx @clarity-chat/codemod migrate-v2
+```
+
+---
+
+## Additional Resources
+
+### Documentation Links
+
+- [Getting Started Guide](/docs/getting-started)
+- [Component Examples](/examples)
+- [Hook Examples](/examples/hooks)
+- [TypeScript Guide](/docs/typescript)
+- [Migration Guide](/docs/migration)
+- [Contributing Guide](/docs/contributing)
+
+### External Links
+
+- [GitHub Repository](https://github.com/clarity-chat/react)
+- [NPM Package](https://www.npmjs.com/package/@clarity-chat/react)
+- [Discord Community](https://discord.gg/clarity-chat)
+- [Stack Overflow](https://stackoverflow.com/questions/tagged/clarity-chat)
+
+---
+
+## Auto-Generation Scripts
+
+This API reference is auto-generated from TypeScript source code using:
+
+```bash
+# Generate API documentation
+pnpm run docs:generate
+
+# Watch for changes
+pnpm run docs:watch
+
+# Validate documentation
+pnpm run docs:validate
+```
+
+**Source Locations:**
+- Components: `packages/react/src/components/`
+- Hooks: `packages/react/src/hooks/`
+- Utilities: `packages/react/src/utils/`
+- Types: `packages/react/src/types/`
+- Adapters: `packages/react/src/adapters/`
+
+---
+
+<div className="not-prose mt-12 pt-8 border-t border-gray-200 dark:border-gray-800">
+  <p className="text-sm text-gray-600 dark:text-gray-400">
+    **Last Generated:** {new Date().toISOString()} • **Package Version:** 1.0+ • **Node Version:** {process.version}
+  </p>
+  <p className="text-sm text-gray-600 dark:text-gray-400 mt-2">
+    Found an error? [Report an issue](https://github.com/clarity-chat/react/issues/new) or [Edit this page](https://github.com/clarity-chat/react/edit/main/apps/streamlined-docs/app/reference/api/complete.mdx)
+  </p>
+</div>

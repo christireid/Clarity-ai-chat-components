@@ -4,37 +4,6 @@
  * Token optimization, compression, caching, and performance utilities.
  */
 
-// Prompt Compression
-export {
-  compressPrompt,
-  aggressiveCompress,
-  conservativeCompress,
-  balancedCompress,
-  compressConversation,
-  type CompressionOptions,
-  type CompressionResult,
-} from './prompt-compression'
-
-export {
-  compressPromptSemantic,
-  compressPromptCombined,
-  calculateTokenImportance,
-  estimateCompressibility,
-  type SemanticCompressionOptions,
-  type SemanticCompressionResult,
-  type TokenImportance,
-} from './prompt-compression-advanced'
-
-export {
-  LLMLinguaCompressor,
-  compressRAGContext,
-  intelligentCompress,
-  createLLMLinguaCompressor,
-  type LLMLinguaConfig,
-  type CompressionResult as LLMLinguaCompressionResult,
-  type CompressorStats,
-} from './llmlingua-compressor'
-
 // Chain-of-Thought
 export {
   analyzeCoTPrompt,
@@ -126,16 +95,6 @@ export {
 } from './smart-cache'
 
 export {
-  PersistentSemanticCache,
-  createPersistentSemanticCache,
-  usePersistentSemanticCacheConfig,
-  type SemanticCacheConfig,
-  type CachedResponse,
-  type SemanticCacheStats,
-  type CacheCheckResult,
-} from './semantic-cache-persistent'
-
-export {
   SchemaCache,
   createOpenAIWarmingRequest,
   estimateSchemaLatency,
@@ -179,27 +138,25 @@ export {
   type BatchingOptions,
 } from './token-optimization'
 
-// Performance (explicit exports to avoid conflicts)
+// Performance utilities (re-export from @clarity-chat/utils)
 export {
   throttle,
   debounce,
   Batcher,
+  BatchProcessor,
   measurePerformance,
-  PerformanceMonitor,
+  measurePerformanceAsync,
+  UnifiedPerformanceMonitor as PerformanceMonitor,
   lazyLoad,
   optimizeArray,
-} from './performance'
-
-export {
   calculateVisibleRange,
   createDebouncedFunction,
   createThrottledFunction,
-  MemoryManager,
-  calculateMessageDiff,
-  BatchProcessor,
-  PerformanceTracker,
   checkPerformanceTarget,
   type VirtualScrollConfig,
   type DebounceConfig,
   type ThrottleConfig,
-} from './performance-optimization'
+} from '@clarity-chat/utils'
+
+// Note: MemoryManager and calculateMessageDiff removed - use domain-specific implementations
+// PerformanceTracker removed - use PerformanceMonitor.getStats() instead

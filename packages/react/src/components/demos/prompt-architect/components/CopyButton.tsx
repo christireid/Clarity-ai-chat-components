@@ -12,8 +12,8 @@ import { logger } from '@clarity-chat/utils/logger'
  */
 
 import * as React from 'react'
-import { cn } from '../../../../utils/cn'
-import { CopyButton as BaseCopyButton } from '../../../message/copy-button'
+import { cn } from '@clarity-chat/primitives'
+import { CopyButton as BaseCopyButton } from '../../../message/CopyButton'
 
 export interface CopyButtonProps {
   /** Text to copy to clipboard */

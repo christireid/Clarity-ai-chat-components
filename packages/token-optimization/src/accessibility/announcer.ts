@@ -99,7 +99,9 @@ export function announce(
   if (!region) {
     // Not in browser environment, log to console in development
     if (process.env.NODE_ENV === 'development') {
-      console.log(`[Screen Reader Announcement - ${priority}]: ${message}`)
+      if (process.env.NODE_ENV === 'development') {
+        console.log(`[Screen Reader Announcement - ${priority}]: ${message}`)
+      }
     }
     return
   }

@@ -411,15 +411,23 @@ export function useDashboardComposer<T extends Record<string, unknown>>(
       refetchAll()
     }
 
+    // Copy refs to local variables for cleanup
+    const staleTimeouts = staleTimeoutsRef.current
+    const clockRef = clock
+
     return () => {
       isMountedRef.current = false
       // Clear all stale timeouts
-      for (const timeout of staleTimeoutsRef.current.values()) {
-        clock.clearTimeout(timeout)
+      for (const timeout of staleTimeouts.values()) {
+        clockRef.clearTimeout(timeout)
       }
-      staleTimeoutsRef.current.clear()
+      staleTimeouts.clear()
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- Only run on mount
   }, [])
+
+  // Track if onAllSuccess has been called for current state
+  const onAllSuccessCalledRef = React.useRef(false)
 
   // Check for all success
   React.useEffect(() => {
@@ -430,12 +438,16 @@ export function useDashboardComposer<T extends Record<string, unknown>>(
       (key) => sourcesState[key]?.error === null
     )
 
-    if (allLoaded && noErrors && onAllSuccess) {
+    if (allLoaded && noErrors && onAllSuccess && !onAllSuccessCalledRef.current) {
       const data = {} as T
       for (const key of sourceKeys) {
         ;(data as Record<string, unknown>)[key] = sourcesState[key].data
       }
       onAllSuccess(data)
+      onAllSuccessCalledRef.current = true
+    } else if (!allLoaded || !noErrors) {
+      // Reset flag when state changes
+      onAllSuccessCalledRef.current = false
     }
   }, [sourcesState, sourceKeys, onAllSuccess])
 
@@ -472,8 +484,10 @@ export function useDashboardComposer<T extends Record<string, unknown>>(
 
       if (state.lastFetchedAt === null) continue
 
+      // Copy ref to local variable for timeout callback
+      const isMounted = isMountedRef
       const timeout = clock.setTimeout(() => {
-        if (!isMountedRef.current) return
+        if (!isMounted.current) return
         log(`Source ${key} marked as stale`)
         dispatch({ type: 'SET_STALE', key })
       }, staleTime)

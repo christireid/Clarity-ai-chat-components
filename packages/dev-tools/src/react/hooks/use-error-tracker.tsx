@@ -269,9 +269,9 @@ export function useErrorTracker(
 }
 
 /**
- * Error boundary hook
+ * Error boundary hook (renamed to avoid conflict with @clarity-chat/error-handling)
  */
-export function useErrorBoundary(options?: UseErrorTrackerOptions) {
+export function useErrorTrackerBoundary(options?: UseErrorTrackerOptions) {
   const [error, setError] = React.useState<Error | null>(null)
   const tracker = useErrorTracker(options)
 

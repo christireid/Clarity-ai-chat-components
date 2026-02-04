@@ -7,11 +7,11 @@
 
 import * as React from 'react'
 import '@clarity-chat/react/styles.css'
-import { ClarityChat, ClarityChatPresets } from '../components/clarity-chat'
+import { ClarityChat, ClarityChatPresets } from '../components/ClarityChat'
 import { useClarityChat } from '../hooks/use-clarity-chat'
 import { useClarityObject } from '../hooks/use-clarity-object'
 import { useChatHandlers } from '../hooks/use-chat-handlers'
-import { ChatWindow } from '../components/chat/chat-window'
+import { ChatWindow } from '../components/chat/ChatWindow'
 
 // ============================================================================
 // Example 1: ClarityChat Component (3 lines)
@@ -84,7 +84,8 @@ export function MinimalStructuredOutput() {
 
   React.useEffect(() => {
     run({ prompt: 'Create a user profile' })
-  }, [])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []) // Only run once on mount
 
   return (
     <div>

@@ -1,0 +1,1340 @@
+/* ============================================================================
+   AgentPanel Component Stylesheet
+   BEM Naming Convention: .agent-panel as the block
+   ============================================================================ */
+
+/* ============================================================================
+   CSS Custom Properties (Theme Variables)
+   ============================================================================ */
+
+:root {
+  /* Status Colors */
+  --agent-panel-status-idle: #6b7280;
+  --agent-panel-status-planning: #f59e0b;
+  --agent-panel-status-waiting-approval: #8b5cf6;
+  --agent-panel-status-executing: #3b82f6;
+  --agent-panel-status-paused: #ec4899;
+  --agent-panel-status-complete: #10b981;
+  --agent-panel-status-error: #ef4444;
+  --agent-panel-status-cancelled: #6b7280;
+
+  /* Neutral Colors */
+  --agent-panel-bg-primary: #ffffff;
+  --agent-panel-bg-secondary: #f9fafb;
+  --agent-panel-bg-tertiary: #f3f4f6;
+  --agent-panel-border: #e5e7eb;
+  --agent-panel-text-primary: #111827;
+  --agent-panel-text-secondary: #6b7280;
+  --agent-panel-text-tertiary: #9ca3af;
+
+  /* Interactive Colors */
+  --agent-panel-action-primary: #3b82f6;
+  --agent-panel-action-success: #10b981;
+  --agent-panel-action-danger: #ef4444;
+  --agent-panel-action-warning: #f59e0b;
+
+  /* Spacing */
+  --agent-panel-spacing-xs: 0.25rem;
+  --agent-panel-spacing-sm: 0.5rem;
+  --agent-panel-spacing-md: 1rem;
+  --agent-panel-spacing-lg: 1.5rem;
+  --agent-panel-spacing-xl: 2rem;
+
+  /* Border Radius */
+  --agent-panel-radius-sm: 0.375rem;
+  --agent-panel-radius-md: 0.5rem;
+  --agent-panel-radius-lg: 0.75rem;
+
+  /* Typography */
+  --agent-panel-font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  --agent-panel-font-size-xs: 0.75rem;
+  --agent-panel-font-size-sm: 0.875rem;
+  --agent-panel-font-size-md: 1rem;
+  --agent-panel-font-size-lg: 1.125rem;
+  --agent-panel-font-size-xl: 1.25rem;
+
+  /* Shadows */
+  --agent-panel-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --agent-panel-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --agent-panel-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --agent-panel-shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+
+  /* Transitions */
+  --agent-panel-transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --agent-panel-transition-base: 200ms cubic-bezier(0.4, 0, 0.2, 1);
+  --agent-panel-transition-slow: 300ms cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* Z-Index */
+  --agent-panel-z-modal: 1000;
+  --agent-panel-z-overlay: 999;
+}
+
+/* Dark Mode */
+@media (prefers-color-scheme: dark) {
+  :root {
+    /* Neutral Colors */
+    --agent-panel-bg-primary: #1f2937;
+    --agent-panel-bg-secondary: #111827;
+    --agent-panel-bg-tertiary: #0f172a;
+    --agent-panel-border: #374151;
+    --agent-panel-text-primary: #f9fafb;
+    --agent-panel-text-secondary: #d1d5db;
+    --agent-panel-text-tertiary: #9ca3af;
+  }
+}
+
+/* ============================================================================
+   Base Panel Styles
+   ============================================================================ */
+
+.agent-panel {
+  font-family: var(--agent-panel-font-family);
+  color: var(--agent-panel-text-primary);
+  background-color: var(--agent-panel-bg-primary);
+  border: 1px solid var(--agent-panel-border);
+  border-radius: var(--agent-panel-radius-lg);
+  display: flex;
+  flex-direction: column;
+  transition: all var(--agent-panel-transition-base);
+}
+
+/* ============================================================================
+   Panel Variants
+   ============================================================================ */
+
+/* Sidebar Variant */
+.agent-panel--sidebar {
+  width: 100%;
+  max-width: 24rem;
+  height: 100%;
+  border-radius: 0;
+  border: none;
+  border-right: 1px solid var(--agent-panel-border);
+  box-shadow: none;
+}
+
+/* Inline Variant */
+.agent-panel--inline {
+  width: 100%;
+  margin-bottom: var(--agent-panel-spacing-md);
+  box-shadow: var(--agent-panel-shadow-sm);
+}
+
+/* Modal Variant */
+.agent-panel--modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 90vw;
+  max-width: 48rem;
+  max-height: 90vh;
+  box-shadow: var(--agent-panel-shadow-xl);
+  z-index: var(--agent-panel-z-modal);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.agent-panel--modal::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: calc(var(--agent-panel-z-modal) - 1);
+}
+
+/* Compact Variant */
+.agent-panel--compact {
+  padding: var(--agent-panel-spacing-md);
+}
+
+.agent-panel--compact .agent-panel__section {
+  margin-bottom: var(--agent-panel-spacing-sm);
+}
+
+.agent-panel--compact .agent-panel__header {
+  padding: var(--agent-panel-spacing-sm);
+}
+
+/* Full Variant */
+.agent-panel--full {
+  width: 100%;
+  height: 100%;
+  border-radius: 0;
+  border: none;
+}
+
+/* ============================================================================
+   Panel Layout
+   ============================================================================ */
+
+.agent-panel__content {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--agent-panel-spacing-lg);
+  gap: var(--agent-panel-spacing-md);
+}
+
+.agent-panel__content::-webkit-scrollbar {
+  width: 8px;
+}
+
+.agent-panel__content::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.agent-panel__content::-webkit-scrollbar-thumb {
+  background: var(--agent-panel-border);
+  border-radius: var(--agent-panel-radius-md);
+}
+
+.agent-panel__content::-webkit-scrollbar-thumb:hover {
+  background: var(--agent-panel-text-tertiary);
+}
+
+/* ============================================================================
+   Section Styles
+   ============================================================================ */
+
+.agent-panel__section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--agent-panel-spacing-sm);
+  margin-bottom: var(--agent-panel-spacing-md);
+}
+
+.agent-panel__section--collapsed {
+  display: none;
+}
+
+/* Header Section */
+.agent-panel__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--agent-panel-spacing-lg);
+  border-bottom: 1px solid var(--agent-panel-border);
+  gap: var(--agent-panel-spacing-md);
+}
+
+.agent-panel__header-content {
+  display: flex;
+  align-items: center;
+  gap: var(--agent-panel-spacing-md);
+  flex: 1;
+}
+
+.agent-panel__header-title {
+  font-size: var(--agent-panel-font-size-lg);
+  font-weight: 600;
+  margin: 0;
+  line-height: 1.5;
+}
+
+.agent-panel__header-description {
+  font-size: var(--agent-panel-font-size-sm);
+  color: var(--agent-panel-text-secondary);
+  margin: 0;
+}
+
+.agent-panel__header-actions {
+  display: flex;
+  gap: var(--agent-panel-spacing-sm);
+  align-items: center;
+}
+
+/* Status Section */
+.agent-panel__status {
+  display: flex;
+  align-items: center;
+  gap: var(--agent-panel-spacing-md);
+  padding: var(--agent-panel-spacing-md);
+  background-color: var(--agent-panel-bg-secondary);
+  border-radius: var(--agent-panel-radius-md);
+  font-size: var(--agent-panel-font-size-sm);
+}
+
+.agent-panel__status-indicator {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  animation: none;
+}
+
+.agent-panel__status-text {
+  flex: 1;
+  font-weight: 500;
+}
+
+.agent-panel__status-timestamp {
+  font-size: var(--agent-panel-font-size-xs);
+  color: var(--agent-panel-text-tertiary);
+}
+
+/* Plan Section */
+.agent-panel__plan {
+  padding: var(--agent-panel-spacing-md);
+  background-color: var(--agent-panel-bg-secondary);
+  border-radius: var(--agent-panel-radius-md);
+  border-left: 4px solid var(--agent-panel-status-planning);
+}
+
+.agent-panel__plan-title {
+  font-size: var(--agent-panel-font-size-sm);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--agent-panel-text-secondary);
+  margin: 0 0 var(--agent-panel-spacing-sm) 0;
+}
+
+.agent-panel__plan-steps {
+  display: flex;
+  flex-direction: column;
+  gap: var(--agent-panel-spacing-sm);
+}
+
+.agent-panel__plan-step {
+  display: flex;
+  gap: var(--agent-panel-spacing-sm);
+  padding: var(--agent-panel-spacing-sm);
+  border-radius: var(--agent-panel-radius-sm);
+  background-color: var(--agent-panel-bg-primary);
+  font-size: var(--agent-panel-font-size-sm);
+}
+
+.agent-panel__plan-step-number {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  min-width: 24px;
+  border-radius: 50%;
+  background-color: var(--agent-panel-status-planning);
+  color: white;
+  font-size: var(--agent-panel-font-size-xs);
+  font-weight: 600;
+}
+
+.agent-panel__plan-step-text {
+  flex: 1;
+  padding-top: var(--agent-panel-spacing-xs);
+  line-height: 1.5;
+}
+
+/* Thinking Section */
+.agent-panel__thinking {
+  padding: var(--agent-panel-spacing-md);
+  background-color: var(--agent-panel-bg-secondary);
+  border-radius: var(--agent-panel-radius-md);
+  border-left: 4px solid var(--agent-panel-status-executing);
+}
+
+.agent-panel__thinking-title {
+  font-size: var(--agent-panel-font-size-sm);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--agent-panel-text-secondary);
+  margin: 0 0 var(--agent-panel-spacing-sm) 0;
+  display: flex;
+  align-items: center;
+  gap: var(--agent-panel-spacing-sm);
+}
+
+.agent-panel__thinking-animation {
+  display: inline-flex;
+  gap: 2px;
+  align-items: center;
+}
+
+.agent-panel__thinking-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: var(--agent-panel-status-executing);
+  animation: agent-panel-thinking-pulse 1.4s infinite;
+}
+
+.agent-panel__thinking-dot:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.agent-panel__thinking-dot:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+.agent-panel__thinking-content {
+  font-size: var(--agent-panel-font-size-sm);
+  color: var(--agent-panel-text-primary);
+  line-height: 1.6;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+  background-color: var(--agent-panel-bg-primary);
+  padding: var(--agent-panel-spacing-md);
+  border-radius: var(--agent-panel-radius-sm);
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+/* Tools Section */
+.agent-panel__tools {
+  display: flex;
+  flex-direction: column;
+  gap: var(--agent-panel-spacing-md);
+}
+
+.agent-panel__tools-title {
+  font-size: var(--agent-panel-font-size-sm);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--agent-panel-text-secondary);
+  margin: 0;
+}
+
+/* Approvals Section */
+.agent-panel__approvals {
+  display: flex;
+  flex-direction: column;
+  gap: var(--agent-panel-spacing-md);
+}
+
+.agent-panel__approvals-title {
+  font-size: var(--agent-panel-font-size-sm);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--agent-panel-text-secondary);
+  margin: 0;
+}
+
+/* Timeline Section */
+.agent-panel__timeline {
+  display: flex;
+  flex-direction: column;
+  gap: var(--agent-panel-spacing-md);
+  padding: var(--agent-panel-spacing-md);
+  background-color: var(--agent-panel-bg-secondary);
+  border-radius: var(--agent-panel-radius-md);
+}
+
+.agent-panel__timeline-title {
+  font-size: var(--agent-panel-font-size-sm);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--agent-panel-text-secondary);
+  margin: 0;
+}
+
+.agent-panel__timeline-items {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.agent-panel__timeline-item {
+  display: flex;
+  gap: var(--agent-panel-spacing-md);
+  padding: var(--agent-panel-spacing-md) 0;
+  border-bottom: 1px solid var(--agent-panel-border);
+  position: relative;
+}
+
+.agent-panel__timeline-item:last-child {
+  border-bottom: none;
+}
+
+.agent-panel__timeline-item::before {
+  content: '';
+  position: absolute;
+  left: 4px;
+  top: 0;
+  width: 2px;
+  height: 100%;
+  background-color: var(--agent-panel-border);
+}
+
+.agent-panel__timeline-item:first-child::before {
+  top: 50%;
+}
+
+.agent-panel__timeline-item:last-child::before {
+  height: 50%;
+}
+
+.agent-panel__timeline-marker {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  min-width: 24px;
+  border-radius: 50%;
+  border: 2px solid var(--agent-panel-border);
+  background-color: var(--agent-panel-bg-primary);
+  flex-shrink: 0;
+  z-index: 1;
+}
+
+.agent-panel__timeline-content {
+  flex: 1;
+  padding-top: var(--agent-panel-spacing-xs);
+}
+
+.agent-panel__timeline-time {
+  font-size: var(--agent-panel-font-size-xs);
+  color: var(--agent-panel-text-tertiary);
+  margin: 0;
+}
+
+.agent-panel__timeline-text {
+  font-size: var(--agent-panel-font-size-sm);
+  color: var(--agent-panel-text-primary);
+  margin: var(--agent-panel-spacing-xs) 0 0 0;
+  line-height: 1.5;
+}
+
+/* Footer Section */
+.agent-panel__footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--agent-panel-spacing-lg);
+  border-top: 1px solid var(--agent-panel-border);
+  gap: var(--agent-panel-spacing-md);
+}
+
+.agent-panel__footer-actions {
+  display: flex;
+  gap: var(--agent-panel-spacing-sm);
+}
+
+/* ============================================================================
+   Status Indicators
+   ============================================================================ */
+
+/* Idle Status */
+.agent-panel__status--idle .agent-panel__status-indicator {
+  background-color: var(--agent-panel-status-idle);
+}
+
+/* Planning Status */
+.agent-panel__status--planning .agent-panel__status-indicator {
+  background-color: var(--agent-panel-status-planning);
+  animation: agent-panel-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Waiting Approval Status */
+.agent-panel__status--waiting-approval .agent-panel__status-indicator {
+  background-color: var(--agent-panel-status-waiting-approval);
+  animation: agent-panel-pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Executing Status */
+.agent-panel__status--executing .agent-panel__status-indicator {
+  background-color: var(--agent-panel-status-executing);
+  animation: agent-panel-pulse 1.2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Paused Status */
+.agent-panel__status--paused .agent-panel__status-indicator {
+  background-color: var(--agent-panel-status-paused);
+  animation: agent-panel-blink 1s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Complete Status */
+.agent-panel__status--complete .agent-panel__status-indicator {
+  background-color: var(--agent-panel-status-complete);
+}
+
+/* Error Status */
+.agent-panel__status--error .agent-panel__status-indicator {
+  background-color: var(--agent-panel-status-error);
+  animation: agent-panel-shake 0.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Cancelled Status */
+.agent-panel__status--cancelled .agent-panel__status-indicator {
+  background-color: var(--agent-panel-status-cancelled);
+}
+
+/* ============================================================================
+   Step Progress Visualization
+   ============================================================================ */
+
+.agent-panel__progress {
+  display: flex;
+  flex-direction: column;
+  gap: var(--agent-panel-spacing-sm);
+  padding: var(--agent-panel-spacing-md);
+  background-color: var(--agent-panel-bg-secondary);
+  border-radius: var(--agent-panel-radius-md);
+}
+
+.agent-panel__progress-title {
+  font-size: var(--agent-panel-font-size-sm);
+  font-weight: 600;
+  color: var(--agent-panel-text-secondary);
+  margin: 0;
+}
+
+.agent-panel__progress-bar {
+  width: 100%;
+  height: 6px;
+  background-color: var(--agent-panel-bg-primary);
+  border-radius: var(--agent-panel-radius-md);
+  overflow: hidden;
+}
+
+.agent-panel__progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--agent-panel-status-executing), var(--agent-panel-status-complete));
+  border-radius: var(--agent-panel-radius-md);
+  transition: width var(--agent-panel-transition-slow);
+}
+
+.agent-panel__progress-steps {
+  display: flex;
+  gap: var(--agent-panel-spacing-sm);
+  align-items: center;
+  justify-content: space-between;
+}
+
+.agent-panel__progress-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+  gap: var(--agent-panel-spacing-xs);
+}
+
+.agent-panel__progress-step-indicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-color: var(--agent-panel-bg-primary);
+  border: 2px solid var(--agent-panel-border);
+  font-size: var(--agent-panel-font-size-xs);
+  font-weight: 600;
+  color: var(--agent-panel-text-secondary);
+  transition: all var(--agent-panel-transition-fast);
+}
+
+.agent-panel__progress-step--active .agent-panel__progress-step-indicator {
+  background-color: var(--agent-panel-status-executing);
+  border-color: var(--agent-panel-status-executing);
+  color: white;
+}
+
+.agent-panel__progress-step--complete .agent-panel__progress-step-indicator {
+  background-color: var(--agent-panel-status-complete);
+  border-color: var(--agent-panel-status-complete);
+  color: white;
+}
+
+.agent-panel__progress-step-label {
+  font-size: var(--agent-panel-font-size-xs);
+  color: var(--agent-panel-text-secondary);
+  text-align: center;
+  line-height: 1.3;
+  max-width: 80px;
+}
+
+/* ============================================================================
+   Tool Call Styles
+   ============================================================================ */
+
+.agent-panel__tool {
+  display: flex;
+  flex-direction: column;
+  gap: var(--agent-panel-spacing-sm);
+  padding: var(--agent-panel-spacing-md);
+  background-color: var(--agent-panel-bg-secondary);
+  border-radius: var(--agent-panel-radius-md);
+  border-left: 4px solid var(--agent-panel-status-executing);
+  transition: all var(--agent-panel-transition-fast);
+}
+
+.agent-panel__tool--pending {
+  border-left-color: var(--agent-panel-status-waiting-approval);
+}
+
+.agent-panel__tool--executing {
+  border-left-color: var(--agent-panel-status-executing);
+}
+
+.agent-panel__tool--success {
+  border-left-color: var(--agent-panel-status-complete);
+}
+
+.agent-panel__tool--error {
+  border-left-color: var(--agent-panel-status-error);
+}
+
+.agent-panel__tool-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--agent-panel-spacing-md);
+}
+
+.agent-panel__tool-name {
+  font-size: var(--agent-panel-font-size-sm);
+  font-weight: 600;
+  margin: 0;
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+}
+
+.agent-panel__tool-status {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--agent-panel-spacing-xs);
+  padding: 0 var(--agent-panel-spacing-sm);
+  height: 24px;
+  border-radius: var(--agent-panel-radius-sm);
+  font-size: var(--agent-panel-font-size-xs);
+  font-weight: 500;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.agent-panel__tool-status--pending {
+  background-color: rgba(139, 92, 246, 0.1);
+  color: var(--agent-panel-status-waiting-approval);
+}
+
+.agent-panel__tool-status--executing {
+  background-color: rgba(59, 130, 246, 0.1);
+  color: var(--agent-panel-status-executing);
+  animation: agent-panel-pulse 1.2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.agent-panel__tool-status--success {
+  background-color: rgba(16, 185, 129, 0.1);
+  color: var(--agent-panel-status-complete);
+}
+
+.agent-panel__tool-status--error {
+  background-color: rgba(239, 68, 68, 0.1);
+  color: var(--agent-panel-status-error);
+}
+
+.agent-panel__tool-input {
+  display: flex;
+  flex-direction: column;
+  gap: var(--agent-panel-spacing-xs);
+}
+
+.agent-panel__tool-input-label {
+  font-size: var(--agent-panel-font-size-xs);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--agent-panel-text-secondary);
+  margin: 0;
+}
+
+.agent-panel__tool-input-value {
+  font-size: var(--agent-panel-font-size-sm);
+  color: var(--agent-panel-text-primary);
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+  background-color: var(--agent-panel-bg-primary);
+  padding: var(--agent-panel-spacing-sm);
+  border-radius: var(--agent-panel-radius-sm);
+  overflow-x: auto;
+  word-break: break-all;
+}
+
+.agent-panel__tool-output {
+  display: flex;
+  flex-direction: column;
+  gap: var(--agent-panel-spacing-xs);
+}
+
+.agent-panel__tool-output-label {
+  font-size: var(--agent-panel-font-size-xs);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--agent-panel-text-secondary);
+  margin: 0;
+}
+
+.agent-panel__tool-output-value {
+  font-size: var(--agent-panel-font-size-sm);
+  color: var(--agent-panel-text-primary);
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+  background-color: var(--agent-panel-bg-primary);
+  padding: var(--agent-panel-spacing-sm);
+  border-radius: var(--agent-panel-radius-sm);
+  overflow-x: auto;
+  word-break: break-all;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+/* ============================================================================
+   Approval Card Styles
+   ============================================================================ */
+
+.agent-panel__approval {
+  display: flex;
+  flex-direction: column;
+  gap: var(--agent-panel-spacing-md);
+  padding: var(--agent-panel-spacing-lg);
+  background-color: var(--agent-panel-bg-secondary);
+  border-radius: var(--agent-panel-radius-md);
+  border: 2px solid var(--agent-panel-status-waiting-approval);
+  border-left: 4px solid var(--agent-panel-status-waiting-approval);
+}
+
+.agent-panel__approval-header {
+  display: flex;
+  align-items: center;
+  gap: var(--agent-panel-spacing-md);
+}
+
+.agent-panel__approval-icon {
+  width: 32px;
+  height: 32px;
+  min-width: 32px;
+  border-radius: 50%;
+  background-color: rgba(139, 92, 246, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--agent-panel-status-waiting-approval);
+  font-size: var(--agent-panel-font-size-lg);
+}
+
+.agent-panel__approval-title {
+  font-size: var(--agent-panel-font-size-sm);
+  font-weight: 600;
+  margin: 0;
+}
+
+.agent-panel__approval-description {
+  font-size: var(--agent-panel-font-size-sm);
+  color: var(--agent-panel-text-secondary);
+  line-height: 1.6;
+  margin: 0;
+}
+
+.agent-panel__approval-details {
+  display: flex;
+  flex-direction: column;
+  gap: var(--agent-panel-spacing-sm);
+  padding: var(--agent-panel-spacing-md);
+  background-color: var(--agent-panel-bg-primary);
+  border-radius: var(--agent-panel-radius-md);
+}
+
+.agent-panel__approval-detail-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: var(--agent-panel-spacing-md);
+}
+
+.agent-panel__approval-detail-label {
+  font-size: var(--agent-panel-font-size-sm);
+  font-weight: 500;
+  color: var(--agent-panel-text-secondary);
+  margin: 0;
+}
+
+.agent-panel__approval-detail-value {
+  font-size: var(--agent-panel-font-size-sm);
+  color: var(--agent-panel-text-primary);
+  font-weight: 500;
+  text-align: right;
+  margin: 0;
+}
+
+.agent-panel__approval-actions {
+  display: flex;
+  gap: var(--agent-panel-spacing-md);
+  padding-top: var(--agent-panel-spacing-md);
+  border-top: 1px solid var(--agent-panel-border);
+}
+
+.agent-panel__approval-btn {
+  flex: 1;
+  padding: var(--agent-panel-spacing-md);
+  border: 1px solid transparent;
+  border-radius: var(--agent-panel-radius-md);
+  font-size: var(--agent-panel-font-size-sm);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--agent-panel-transition-fast);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-family: var(--agent-panel-font-family);
+}
+
+.agent-panel__approval-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.agent-panel__approval-btn--accept {
+  background-color: var(--agent-panel-action-success);
+  color: white;
+  border-color: var(--agent-panel-action-success);
+}
+
+.agent-panel__approval-btn--accept:hover:not(:disabled) {
+  background-color: #059669;
+  box-shadow: var(--agent-panel-shadow-md);
+  transform: translateY(-1px);
+}
+
+.agent-panel__approval-btn--reject {
+  background-color: transparent;
+  color: var(--agent-panel-action-danger);
+  border-color: var(--agent-panel-action-danger);
+}
+
+.agent-panel__approval-btn--reject:hover:not(:disabled) {
+  background-color: rgba(239, 68, 68, 0.1);
+  box-shadow: var(--agent-panel-shadow-md);
+  transform: translateY(-1px);
+}
+
+/* ============================================================================
+   Timeline Visualization
+   ============================================================================ */
+
+.agent-panel__timeline-container {
+  position: relative;
+  padding-left: var(--agent-panel-spacing-lg);
+}
+
+.agent-panel__timeline-container::before {
+  content: '';
+  position: absolute;
+  left: 9px;
+  top: 0;
+  width: 2px;
+  height: 100%;
+  background-color: var(--agent-panel-border);
+}
+
+.agent-panel__timeline-event {
+  position: relative;
+  margin-bottom: var(--agent-panel-spacing-lg);
+}
+
+.agent-panel__timeline-event::before {
+  content: '';
+  position: absolute;
+  left: -31px;
+  top: 2px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 3px solid var(--agent-panel-border);
+  background-color: var(--agent-panel-bg-primary);
+  transition: all var(--agent-panel-transition-fast);
+}
+
+.agent-panel__timeline-event--idle::before {
+  border-color: var(--agent-panel-status-idle);
+  background-color: var(--agent-panel-status-idle);
+}
+
+.agent-panel__timeline-event--planning::before {
+  border-color: var(--agent-panel-status-planning);
+  background-color: var(--agent-panel-status-planning);
+}
+
+.agent-panel__timeline-event--executing::before {
+  border-color: var(--agent-panel-status-executing);
+  background-color: var(--agent-panel-status-executing);
+  box-shadow: 0 0 0 8px rgba(59, 130, 246, 0.1);
+}
+
+.agent-panel__timeline-event--complete::before {
+  border-color: var(--agent-panel-status-complete);
+  background-color: var(--agent-panel-status-complete);
+}
+
+.agent-panel__timeline-event--error::before {
+  border-color: var(--agent-panel-status-error);
+  background-color: var(--agent-panel-status-error);
+}
+
+.agent-panel__timeline-event-timestamp {
+  font-size: var(--agent-panel-font-size-xs);
+  color: var(--agent-panel-text-tertiary);
+  margin: 0 0 var(--agent-panel-spacing-xs) 0;
+}
+
+.agent-panel__timeline-event-title {
+  font-size: var(--agent-panel-font-size-sm);
+  font-weight: 600;
+  color: var(--agent-panel-text-primary);
+  margin: 0 0 var(--agent-panel-spacing-xs) 0;
+}
+
+.agent-panel__timeline-event-message {
+  font-size: var(--agent-panel-font-size-sm);
+  color: var(--agent-panel-text-secondary);
+  margin: 0;
+}
+
+/* ============================================================================
+   Buttons and Interactive Elements
+   ============================================================================ */
+
+.agent-panel__btn {
+  padding: var(--agent-panel-spacing-sm) var(--agent-panel-spacing-md);
+  border: 1px solid transparent;
+  border-radius: var(--agent-panel-radius-md);
+  font-size: var(--agent-panel-font-size-sm);
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--agent-panel-transition-fast);
+  font-family: var(--agent-panel-font-family);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--agent-panel-spacing-xs);
+}
+
+.agent-panel__btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.agent-panel__btn--primary {
+  background-color: var(--agent-panel-action-primary);
+  color: white;
+  border-color: var(--agent-panel-action-primary);
+}
+
+.agent-panel__btn--primary:hover:not(:disabled) {
+  background-color: #2563eb;
+  box-shadow: var(--agent-panel-shadow-md);
+  transform: translateY(-1px);
+}
+
+.agent-panel__btn--secondary {
+  background-color: var(--agent-panel-bg-secondary);
+  color: var(--agent-panel-text-primary);
+  border-color: var(--agent-panel-border);
+}
+
+.agent-panel__btn--secondary:hover:not(:disabled) {
+  background-color: var(--agent-panel-bg-tertiary);
+  box-shadow: var(--agent-panel-shadow-md);
+  transform: translateY(-1px);
+}
+
+.agent-panel__btn--danger {
+  background-color: transparent;
+  color: var(--agent-panel-action-danger);
+  border-color: var(--agent-panel-action-danger);
+}
+
+.agent-panel__btn--danger:hover:not(:disabled) {
+  background-color: rgba(239, 68, 68, 0.1);
+  box-shadow: var(--agent-panel-shadow-md);
+  transform: translateY(-1px);
+}
+
+.agent-panel__btn--sm {
+  padding: var(--agent-panel-spacing-xs) var(--agent-panel-spacing-sm);
+  font-size: var(--agent-panel-font-size-xs);
+}
+
+.agent-panel__btn--lg {
+  padding: var(--agent-panel-spacing-md) var(--agent-panel-spacing-lg);
+  font-size: var(--agent-panel-font-size-md);
+}
+
+/* ============================================================================
+   Animations
+   ============================================================================ */
+
+@keyframes agent-panel-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+@keyframes agent-panel-blink {
+  0%,
+  49% {
+    opacity: 1;
+  }
+  50%,
+  100% {
+    opacity: 0.3;
+  }
+}
+
+@keyframes agent-panel-shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  10%,
+  30%,
+  50%,
+  70%,
+  90% {
+    transform: translateX(-2px);
+  }
+  20%,
+  40%,
+  60%,
+  80% {
+    transform: translateX(2px);
+  }
+}
+
+@keyframes agent-panel-thinking-pulse {
+  0%,
+  60%,
+  100% {
+    opacity: 0.3;
+  }
+  30% {
+    opacity: 1;
+  }
+}
+
+@keyframes agent-panel-slide-in {
+  from {
+    opacity: 0;
+    transform: translateX(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes agent-panel-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes agent-panel-scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* ============================================================================
+   Responsive Design
+   ============================================================================ */
+
+@media (max-width: 768px) {
+  .agent-panel {
+    border-radius: var(--agent-panel-radius-md);
+  }
+
+  .agent-panel--sidebar {
+    max-width: 100%;
+    border-radius: var(--agent-panel-radius-md);
+    border-right: 1px solid var(--agent-panel-border);
+  }
+
+  .agent-panel--modal {
+    width: calc(100vw - 2 * var(--agent-panel-spacing-lg));
+    max-width: none;
+  }
+
+  .agent-panel__content {
+    padding: var(--agent-panel-spacing-md);
+    gap: var(--agent-panel-spacing-sm);
+  }
+
+  .agent-panel__header {
+    padding: var(--agent-panel-spacing-md);
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .agent-panel__header-title {
+    font-size: var(--agent-panel-font-size-md);
+  }
+
+  .agent-panel__footer {
+    padding: var(--agent-panel-spacing-md);
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .agent-panel__footer-actions {
+    width: 100%;
+  }
+
+  .agent-panel__approval-actions {
+    flex-direction: column;
+  }
+
+  .agent-panel__approval-btn {
+    width: 100%;
+  }
+
+  .agent-panel__progress-steps {
+    flex-wrap: wrap;
+  }
+
+  .agent-panel__plan-step {
+    padding: var(--agent-panel-spacing-sm);
+  }
+
+  .agent-panel__tool {
+    padding: var(--agent-panel-spacing-sm);
+  }
+
+  .agent-panel__approval {
+    padding: var(--agent-panel-spacing-md);
+  }
+
+  .agent-panel__status {
+    flex-wrap: wrap;
+  }
+}
+
+@media (max-width: 480px) {
+  .agent-panel__content {
+    padding: var(--agent-panel-spacing-sm);
+    gap: var(--agent-panel-spacing-xs);
+  }
+
+  .agent-panel__header {
+    padding: var(--agent-panel-spacing-sm);
+  }
+
+  .agent-panel__header-title {
+    font-size: var(--agent-panel-font-size-md);
+  }
+
+  .agent-panel__footer {
+    padding: var(--agent-panel-spacing-sm);
+  }
+
+  .agent-panel__progress-step-label {
+    font-size: var(--agent-panel-font-size-xs);
+    max-width: 60px;
+  }
+
+  .agent-panel__tool-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .agent-panel__tool-status {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .agent-panel__timeline-container {
+    padding-left: var(--agent-panel-spacing-md);
+  }
+
+  .agent-panel__timeline-event::before {
+    left: -19px;
+    width: 12px;
+    height: 12px;
+  }
+
+  .agent-panel__approval-detail-item {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .agent-panel__approval-detail-value {
+    text-align: left;
+  }
+}
+
+/* ============================================================================
+   Accessibility
+   ============================================================================ */
+
+.agent-panel__btn:focus-visible,
+.agent-panel__approval-btn:focus-visible {
+  outline: 2px solid var(--agent-panel-action-primary);
+  outline-offset: 2px;
+}
+
+.agent-panel__btn:active,
+.agent-panel__approval-btn:active {
+  transform: scale(0.98);
+}
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  .agent-panel,
+  .agent-panel__status-indicator,
+  .agent-panel__btn,
+  .agent-panel__approval-btn,
+  .agent-panel__progress-fill,
+  .agent-panel__progress-step-indicator,
+  .agent-panel__tool,
+  .agent-panel__timeline-event::before {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  .agent-panel__thinking-dot {
+    animation: none;
+    opacity: 0.7;
+  }
+}
+
+/* Focus Visible for Keyboard Navigation */
+.agent-panel__btn:focus-within,
+.agent-panel__approval-btn:focus-within {
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+/* High Contrast Mode */
+@media (prefers-contrast: more) {
+  .agent-panel {
+    border-width: 2px;
+  }
+
+  .agent-panel__status-indicator {
+    border: 1px solid currentColor;
+  }
+
+  .agent-panel__btn,
+  .agent-panel__approval-btn {
+    border-width: 2px;
+  }
+}

@@ -10,6 +10,7 @@ import { cn } from '@clarity-chat/primitives'
 import {
   EASING_FRAMER,
   DURATION_SECONDS as durations,
+  ANIMATION_PRESETS,
 } from '../animations/constants'
 import {
   getMotionSafeValue,
@@ -302,9 +303,7 @@ function KeyboardShortcutsHelp({
     <AnimatePresence>
       {/* Backdrop */}
       <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
+        {...ANIMATION_PRESETS.fadeIn}
         transition={{
           duration: getMotionSafeDuration(prefersReducedMotion, durations.normal),
         }}
@@ -315,17 +314,11 @@ function KeyboardShortcutsHelp({
 
       {/* Modal */}
       <motion.div
-        initial={{
-          opacity: 0,
-          scale: getMotionSafeScale(prefersReducedMotion, 0.95),
-          y: getMotionSafeValue(prefersReducedMotion, 20, 0),
-        }}
-        animate={{ opacity: 1, scale: 1, y: 0 }}
-        exit={{
-          opacity: 0,
-          scale: getMotionSafeScale(prefersReducedMotion, 0.95),
-          y: getMotionSafeValue(prefersReducedMotion, 20, 0),
-        }}
+        {...(prefersReducedMotion ? {} : {
+          ...ANIMATION_PRESETS.slideUp,
+          initial: { ...ANIMATION_PRESETS.slideUp.initial, scale: 0.95 },
+          exit: { ...ANIMATION_PRESETS.slideUp.exit, scale: 0.95 },
+        })}
         transition={{
           duration: getMotionSafeDuration(prefersReducedMotion, durations.normal),
           ease: EASING_FRAMER.sharp,
@@ -340,11 +333,7 @@ function KeyboardShortcutsHelp({
           <div className="flex flex-col gap-3 p-5 border-b border-border bg-muted/30">
             <div className="flex items-center justify-between">
               <motion.div
-                initial={{
-                  opacity: 0,
-                  x: getMotionSafeValue(prefersReducedMotion, -10, 0),
-                }}
-                animate={{ opacity: 1, x: 0 }}
+                {...(prefersReducedMotion ? {} : ANIMATION_PRESETS.slideRight)}
                 transition={{
                   delay: getMotionSafeDuration(prefersReducedMotion, 0.1),
                   duration: getMotionSafeDuration(prefersReducedMotion, durations.normal),
@@ -405,11 +394,7 @@ function KeyboardShortcutsHelp({
 
             {/* Search Bar */}
             <motion.div
-              initial={{
-                opacity: 0,
-                y: getMotionSafeValue(prefersReducedMotion, -10, 0),
-              }}
-              animate={{ opacity: 1, y: 0 }}
+              {...(prefersReducedMotion ? {} : ANIMATION_PRESETS.slideDown)}
               transition={{
                 delay: getMotionSafeDuration(prefersReducedMotion, 0.15),
                 duration: getMotionSafeDuration(prefersReducedMotion, durations.normal),
@@ -446,15 +431,7 @@ function KeyboardShortcutsHelp({
               />
               {searchQuery && (
                 <motion.button
-                  initial={{
-                    opacity: 0,
-                    scale: getMotionSafeScale(prefersReducedMotion, 0.8),
-                  }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{
-                    opacity: 0,
-                    scale: getMotionSafeScale(prefersReducedMotion, 0.8),
-                  }}
+                  {...(prefersReducedMotion ? {} : ANIMATION_PRESETS.pop)}
                   transition={{
                     duration: getMotionSafeDuration(prefersReducedMotion, durations.fast),
                   }}
@@ -484,11 +461,7 @@ function KeyboardShortcutsHelp({
           <div className="p-5 overflow-y-auto max-h-[calc(85vh-200px)]">
             {Object.keys(groupedShortcuts).length === 0 ? (
               <motion.div
-                initial={{
-                  opacity: 0,
-                  y: getMotionSafeValue(prefersReducedMotion, 10, 0),
-                }}
-                animate={{ opacity: 1, y: 0 }}
+                {...(prefersReducedMotion ? {} : ANIMATION_PRESETS.slideUp)}
                 transition={{
                   duration: getMotionSafeDuration(prefersReducedMotion, durations.normal),
                 }}
@@ -517,11 +490,7 @@ function KeyboardShortcutsHelp({
                   ([category, categoryShortcuts], categoryIndex) => (
                     <motion.div
                       key={category}
-                      initial={{
-                        opacity: 0,
-                        y: getMotionSafeValue(prefersReducedMotion, 10, 0),
-                      }}
-                      animate={{ opacity: 1, y: 0 }}
+                      {...(prefersReducedMotion ? {} : ANIMATION_PRESETS.slideUp)}
                       transition={{
                         delay: getMotionSafeDuration(
                           prefersReducedMotion,
@@ -540,11 +509,7 @@ function KeyboardShortcutsHelp({
                         {categoryShortcuts.map((shortcut, index) => (
                           <motion.div
                             key={shortcut.id}
-                            initial={{
-                              opacity: 0,
-                              x: getMotionSafeValue(prefersReducedMotion, -10, 0),
-                            }}
-                            animate={{ opacity: 1, x: 0 }}
+                            {...(prefersReducedMotion ? {} : ANIMATION_PRESETS.slideRight)}
                             transition={{
                               delay: getMotionSafeDuration(
                                 prefersReducedMotion,
@@ -607,8 +572,7 @@ function KeyboardShortcutsHelp({
 
           {/* Footer */}
           <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
+            {...(prefersReducedMotion ? {} : ANIMATION_PRESETS.fadeIn)}
             transition={{
               delay: getMotionSafeDuration(prefersReducedMotion, 0.2),
               duration: getMotionSafeDuration(prefersReducedMotion, durations.normal),

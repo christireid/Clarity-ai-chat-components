@@ -4,7 +4,7 @@
  * This demonstrates the simplest way to use Clarity Chat - just one component!
  */
 
-import { ClarityChat } from '../components/chat/clarity-chat'
+import { ClarityChat } from '../components/chat/ClarityChat'
 import '@clarity-chat/react/dist/styles/index.css'
 
 /**
@@ -65,16 +65,24 @@ export function FullFeaturedExample() {
         sessionTitle="Full Featured Chat"
         showMessageCount
         onMessageCopy={(id, content) => {
-          console.log('Message copied:', id, content)
+          if (process.env.NODE_ENV === 'development') {
+            console.log('Message copied:', id, content)
+          }
         }}
         onMessageFeedback={(id, type) => {
-          console.log('Feedback:', id, type)
+          if (process.env.NODE_ENV === 'development') {
+            console.log('Feedback:', id, type)
+          }
         }}
         onExport={() => {
-          console.log('Export conversation')
+          if (process.env.NODE_ENV === 'development') {
+            console.log('Export conversation')
+          }
         }}
         onClear={() => {
-          console.log('Clear conversation')
+          if (process.env.NODE_ENV === 'development') {
+            console.log('Clear conversation')
+          }
         }}
         memory={{
           enabled: true,

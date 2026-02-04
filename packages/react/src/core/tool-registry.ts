@@ -15,8 +15,8 @@
  * @module core/tool-registry
  */
 
-import type { ToolDefinition, IToolRegistry } from '../types/tool-definition'
 import { validateToolDefinition } from '../types/tool-definition'
+import type { IToolRegistry, ToolDefinition } from '../types/tool-definition'
 import { validateToolImplementationStrict } from './tool-implementation-validator'
 
 // =============================================================================
@@ -124,10 +124,12 @@ export class ToolRegistry implements IToolRegistry {
     // Check if tool already exists
     const existing = this.tools.get(tool.name)
     if (existing && !options.silent) {
-      console.warn(
-        `[ToolRegistry] Overwriting existing tool "${tool.name}". ` +
-          `Use unregister() first if this is intentional, or pass { silent: true } to suppress this warning.`
-      )
+      if (process.env.NODE_ENV === 'development') {
+        console.warn(
+          `[ToolRegistry] Overwriting existing tool "${tool.name}". ` +
+            `Use unregister() first if this is intentional, or pass { silent: true } to suppress this warning.`
+        )
+      }
     }
 
     // Register/update tool
@@ -376,7 +378,9 @@ export class ToolRegistry implements IToolRegistry {
         `Maximum listener count (${this.maxListeners}) exceeded for ToolRegistry. ` +
           'This may indicate a memory leak. Ensure listeners are properly unsubscribed.'
       )
-      console.error(error)
+      if (process.env.NODE_ENV === 'development') {
+        console.error(error)
+      }
       throw error
     }
 
@@ -386,10 +390,12 @@ export class ToolRegistry implements IToolRegistry {
       this.listeners.length >= this.maxListeners * 0.8 &&
       !this.hasWarnedMaxListeners
     ) {
-      console.warn(
-        `[ToolRegistry] Approaching maximum listener count: ${this.listeners.length}/${this.maxListeners}. ` +
-          'Ensure listeners are properly cleaned up to avoid memory leaks.'
-      )
+      if (process.env.NODE_ENV === 'development') {
+        console.warn(
+          `[ToolRegistry] Approaching maximum listener count: ${this.listeners.length}/${this.maxListeners}. ` +
+            'Ensure listeners are properly cleaned up to avoid memory leaks.'
+        )
+      }
       this.hasWarnedMaxListeners = true
     }
 
@@ -438,7 +444,9 @@ export class ToolRegistry implements IToolRegistry {
       try {
         listener(event)
       } catch (error) {
-        console.error('Error in registry listener:', error)
+        if (process.env.NODE_ENV === 'development') {
+          console.error('Error in registry listener:', error)
+        }
       }
     }
   }

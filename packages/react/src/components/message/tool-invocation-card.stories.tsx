@@ -3,7 +3,7 @@
  */
 
 import type { Meta, StoryObj } from '@storybook/react'
-import { ToolInvocationCard } from './tool-invocation-card'
+import { ToolInvocationCard } from './ToolInvocationCard'
 
 const meta: Meta<typeof ToolInvocationCard> = {
   title: 'Components/ToolInvocationCard',
@@ -43,12 +43,12 @@ import { ToolInvocationCard } from '@clarity-chat/react'
   onReject={(tool) => console.log('Rejected:', tool)}
 />
 \`\`\`
-        `
-      }
+        `,
+      },
     },
-    layout: 'padded'
+    layout: 'padded',
   },
-  tags: ['autodocs']
+  tags: ['autodocs'],
 }
 
 export default meta
@@ -59,8 +59,9 @@ const exampleTool = {
   type: 'function' as const,
   function: {
     name: 'web_search',
-    arguments: '{"query": "latest AI developments", "limit": 5, "date_range": "last_week"}'
-  }
+    arguments:
+      '{"query": "latest AI developments", "limit": 5, "date_range": "last_week"}',
+  },
 }
 
 export const Pending: Story = {
@@ -69,43 +70,43 @@ export const Pending: Story = {
     status: 'pending',
     requiresApproval: true,
     onApprove: (tool) => console.log('Approved:', tool),
-    onReject: (tool) => console.log('Rejected:', tool)
+    onReject: (tool) => console.log('Rejected:', tool),
   },
   parameters: {
     docs: {
       description: {
-        story: 'Tool awaiting user approval'
-      }
-    }
-  }
+        story: 'Tool awaiting user approval',
+      },
+    },
+  },
 }
 
 export const Approved: Story = {
   args: {
     toolCall: exampleTool,
-    status: 'approved'
+    status: 'approved',
   },
   parameters: {
     docs: {
       description: {
-        story: 'Tool has been approved'
-      }
-    }
-  }
+        story: 'Tool has been approved',
+      },
+    },
+  },
 }
 
 export const Executing: Story = {
   args: {
     toolCall: exampleTool,
-    status: 'executing'
+    status: 'executing',
   },
   parameters: {
     docs: {
       description: {
-        story: 'Tool is currently executing (spinner animation)'
-      }
-    }
-  }
+        story: 'Tool is currently executing (spinner animation)',
+      },
+    },
+  },
 }
 
 export const Success: Story = {
@@ -116,34 +117,34 @@ export const Success: Story = {
       results: [
         { title: 'OpenAI releases GPT-5', url: 'https://example.com/1' },
         { title: 'Google announces Gemini 2.0', url: 'https://example.com/2' },
-        { title: 'Anthropic unveils Claude 4', url: 'https://example.com/3' }
+        { title: 'Anthropic unveils Claude 4', url: 'https://example.com/3' },
       ],
       total: 3,
-      query_time: '0.45s'
+      query_time: '0.45s',
     },
-    expandableResult: true
+    expandableResult: true,
   },
   parameters: {
     docs: {
       description: {
-        story: 'Successful execution with result (click to expand)'
-      }
-    }
-  }
+        story: 'Successful execution with result (click to expand)',
+      },
+    },
+  },
 }
 
 export const SuccessExpanded: Story = {
   args: {
     ...Success.args,
-    expandableResult: false
+    expandableResult: false,
   },
   parameters: {
     docs: {
       description: {
-        story: 'Result always visible (not expandable)'
-      }
-    }
-  }
+        story: 'Result always visible (not expandable)',
+      },
+    },
+  },
 }
 
 export const Error: Story = {
@@ -151,29 +152,29 @@ export const Error: Story = {
     toolCall: exampleTool,
     status: 'error',
     error: 'Network timeout: Unable to reach search API after 30 seconds',
-    onRetry: (tool) => console.log('Retrying:', tool)
+    onRetry: (tool) => console.log('Retrying:', tool),
   },
   parameters: {
     docs: {
       description: {
-        story: 'Failed execution with error and retry button'
-      }
-    }
-  }
+        story: 'Failed execution with error and retry button',
+      },
+    },
+  },
 }
 
 export const Rejected: Story = {
   args: {
     toolCall: exampleTool,
-    status: 'rejected'
+    status: 'rejected',
   },
   parameters: {
     docs: {
       description: {
-        story: 'Tool was rejected by user'
-      }
-    }
-  }
+        story: 'Tool was rejected by user',
+      },
+    },
+  },
 }
 
 export const DatabaseQuery: Story = {
@@ -183,26 +184,27 @@ export const DatabaseQuery: Story = {
       type: 'function',
       function: {
         name: 'query_database',
-        arguments: '{"table": "users", "filter": {"active": true, "role": "admin"}, "limit": 50, "order_by": "created_at DESC"}'
-      }
+        arguments:
+          '{"table": "users", "filter": {"active": true, "role": "admin"}, "limit": 50, "order_by": "created_at DESC"}',
+      },
     },
     status: 'success',
     result: {
       rows: [
         { id: 1, name: 'Alice Johnson', role: 'admin', active: true },
-        { id: 2, name: 'Bob Smith', role: 'admin', active: true }
+        { id: 2, name: 'Bob Smith', role: 'admin', active: true },
       ],
       count: 2,
-      query_time: '0.023s'
-    }
+      query_time: '0.023s',
+    },
   },
   parameters: {
     docs: {
       description: {
-        story: 'Database query tool with complex arguments'
-      }
-    }
-  }
+        story: 'Database query tool with complex arguments',
+      },
+    },
+  },
 }
 
 export const FileOperation: Story = {
@@ -212,20 +214,21 @@ export const FileOperation: Story = {
       type: 'function',
       function: {
         name: 'read_file',
-        arguments: '{"path": "/workspace/docs/README.md", "encoding": "utf-8"}'
-      }
+        arguments: '{"path": "/workspace/docs/README.md", "encoding": "utf-8"}',
+      },
     },
     status: 'success',
-    result: '# Project Title\n\nThis is the README file content...\n\n## Getting Started\n\nInstall dependencies:\n```bash\nnpm install\n```',
-    expandableResult: true
+    result:
+      '# Project Title\n\nThis is the README file content...\n\n## Getting Started\n\nInstall dependencies:\n```bash\nnpm install\n```',
+    expandableResult: true,
   },
   parameters: {
     docs: {
       description: {
-        story: 'File read operation with text result'
-      }
-    }
-  }
+        story: 'File read operation with text result',
+      },
+    },
+  },
 }
 
 export const APICall: Story = {
@@ -235,8 +238,9 @@ export const APICall: Story = {
       type: 'function',
       function: {
         name: 'fetch_weather',
-        arguments: '{"city": "San Francisco", "units": "fahrenheit", "forecast_days": 7}'
-      }
+        arguments:
+          '{"city": "San Francisco", "units": "fahrenheit", "forecast_days": 7}',
+      },
     },
     status: 'success',
     result: {
@@ -245,49 +249,49 @@ export const APICall: Story = {
         temp: 65,
         condition: 'Partly Cloudy',
         humidity: 72,
-        wind_mph: 12
+        wind_mph: 12,
       },
       forecast: [
         { day: 'Mon', high: 68, low: 55, condition: 'Sunny' },
-        { day: 'Tue', high: 66, low: 54, condition: 'Cloudy' }
-      ]
-    }
+        { day: 'Tue', high: 66, low: 54, condition: 'Cloudy' },
+      ],
+    },
   },
   parameters: {
     docs: {
       description: {
-        story: 'External API call with structured data'
-      }
-    }
-  }
+        story: 'External API call with structured data',
+      },
+    },
+  },
 }
 
 export const WithoutFormatting: Story = {
   args: {
     toolCall: exampleTool,
     status: 'pending',
-    formatArguments: false
+    formatArguments: false,
   },
   parameters: {
     docs: {
       description: {
-        story: 'Raw arguments without JSON formatting'
-      }
-    }
-  }
+        story: 'Raw arguments without JSON formatting',
+      },
+    },
+  },
 }
 
 export const NoApprovalRequired: Story = {
   args: {
     toolCall: exampleTool,
     status: 'executing',
-    requiresApproval: false
+    requiresApproval: false,
   },
   parameters: {
     docs: {
       description: {
-        story: 'Auto-approved tools (no buttons shown)'
-      }
-    }
-  }
+        story: 'Auto-approved tools (no buttons shown)',
+      },
+    },
+  },
 }

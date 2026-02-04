@@ -1,4 +1,4 @@
-import { TokenCounter } from '@clarity-chat/react/components/token-counter';
+import { TokenCounter } from '@clarity-chat/react/components/TokenCounter';
 /**
  * **TokenCounter Component**
  *

@@ -5,9 +5,9 @@
  * history, and settings.
  */
 
-export { ContextCard } from './context-card'
-export { ContextManager } from './context-manager'
-export { ContextVisualizer } from './context-visualizer'
+export { ContextCard } from './ContextCard'
+export { ContextManager } from './ContextManager'
+export { ContextVisualizer } from './ContextVisualizer'
 export {
   HistoryManager,
   HistoryMessageRow,
@@ -15,7 +15,7 @@ export {
   HistoryToolbar,
   type HistoryMessage,
   type HistoryManagerProps,
-} from './history-manager'
-export { MemoryInspector } from './memory-inspector'
-export { ProjectSidebar } from './project-sidebar'
-export { SettingsPanel } from './settings-panel'
+} from './HistoryManager'
+export { MemoryInspector } from './MemoryInspector'
+export { ProjectSidebar } from './ProjectSidebar'
+export { SettingsPanel } from './SettingsPanel'

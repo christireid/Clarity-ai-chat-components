@@ -1,0 +1,1084 @@
+---
+title: Network Optimization Guide
+description: Advanced strategies for optimizing network performance in AI chat applications
+---
+
+# Network Optimization Guide
+
+Comprehensive strategies for reducing latency, bandwidth usage, and improving perceived performance in AI chat applications.
+
+## Overview
+
+Network optimization is critical for AI chat applications where multiple API calls, real-time updates, and streaming responses can create significant overhead. This guide covers proven strategies to minimize network impact while maintaining responsiveness.
+
+## Request Batching Strategies
+
+### Basic Request Batcher
+
+Combine multiple requests into a single API call to reduce network overhead.
+
+```typescript
+// utils/request-batcher.ts
+interface BatchRequest<T> {
+  id: string;
+  data: T;
+  resolve: (value: any) => void;
+  reject: (error: Error) => void;
+}
+
+interface BatcherConfig {
+  maxBatchSize: number;
+  maxWaitTime: number;
+  endpoint: string;
+}
+
+export class RequestBatcher<T> {
+  private queue: BatchRequest<T>[] = [];
+  private timer: NodeJS.Timeout | null = null;
+  private config: BatcherConfig;
+
+  constructor(config: BatcherConfig) {
+    this.config = config;
+  }
+
+  async add(data: T): Promise<any> {
+    return new Promise((resolve, reject) => {
+      const request: BatchRequest<T> = {
+        id: crypto.randomUUID(),
+        data,
+        resolve,
+        reject,
+      };
+
+      this.queue.push(request);
+
+      // Flush if batch is full
+      if (this.queue.length >= this.config.maxBatchSize) {
+        this.flush();
+      } else if (!this.timer) {
+        // Start timer for partial batches
+        this.timer = setTimeout(() => {
+          this.flush();
+        }, this.config.maxWaitTime);
+      }
+    });
+  }
+
+  private async flush(): Promise<void> {
+    if (this.timer) {
+      clearTimeout(this.timer);
+      this.timer = null;
+    }
+
+    if (this.queue.length === 0) return;
+
+    const batch = this.queue.splice(0, this.config.maxBatchSize);
+    const batchData = batch.map((req) => ({
+      id: req.id,
+      data: req.data,
+    }));
+
+    try {
+      const response = await fetch(this.config.endpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ requests: batchData }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Batch request failed: ${response.status}`);
+      }
+
+      const results = await response.json();
+
+      // Resolve individual promises
+      batch.forEach((req) => {
+        const result = results.find((r: any) => r.id === req.id);
+        if (result?.error) {
+          req.reject(new Error(result.error));
+        } else {
+          req.resolve(result?.data);
+        }
+      });
+    } catch (error) {
+      // Reject all requests in batch
+      batch.forEach((req) => {
+        req.reject(error as Error);
+      });
+    }
+  }
+
+  async drain(): Promise<void> {
+    await this.flush();
+  }
+}
+```
+
+### React Hook for Batched Requests
+
+```typescript
+// hooks/useBatchedRequest.ts
+import { useRef, useCallback } from 'react';
+import { RequestBatcher } from '../utils/request-batcher';
+
+interface UseBatchedRequestOptions {
+  endpoint: string;
+  maxBatchSize?: number;
+  maxWaitTime?: number;
+}
+
+export function useBatchedRequest<T, R>(
+  options: UseBatchedRequestOptions
+) {
+  const batcherRef = useRef<RequestBatcher<T>>();
+
+  if (!batcherRef.current) {
+    batcherRef.current = new RequestBatcher<T>({
+      endpoint: options.endpoint,
+      maxBatchSize: options.maxBatchSize || 10,
+      maxWaitTime: options.maxWaitTime || 50,
+    });
+  }
+
+  const sendRequest = useCallback(
+    async (data: T): Promise<R> => {
+      return batcherRef.current!.add(data);
+    },
+    [options.endpoint]
+  );
+
+  return { sendRequest };
+}
+```
+
+### Usage Example
+
+```typescript
+// components/MessageList.tsx
+import { useBatchedRequest } from '@/hooks/useBatchedRequest';
+
+interface TokenCountRequest {
+  messageId: string;
+  text: string;
+}
+
+export function MessageList({ messages }: { messages: Message[] }) {
+  const { sendRequest } = useBatchedRequest<
+    TokenCountRequest,
+    { count: number }
+  >({
+    endpoint: '/api/batch/token-count',
+    maxBatchSize: 20,
+    maxWaitTime: 100,
+  });
+
+  const handleTokenCount = async (messageId: string, text: string) => {
+    try {
+      const result = await sendRequest({ messageId, text });
+      console.log(`Tokens: ${result.count}`);
+    } catch (error) {
+      console.error('Token count failed:', error);
+    }
+  };
+
+  return (
+    <div>
+      {messages.map((msg) => (
+        <Message
+          key={msg.id}
+          message={msg}
+          onAnalyze={() => handleTokenCount(msg.id, msg.content)}
+        />
+      ))}
+    </div>
+  );
+}
+```
+
+## Caching with HTTP Headers
+
+### Smart Cache Strategy
+
+Implement intelligent caching based on content type and mutability.
+
+```typescript
+// utils/cache-strategy.ts
+export interface CacheConfig {
+  maxAge: number;
+  staleWhileRevalidate?: number;
+  cacheControl?: string;
+  etag?: boolean;
+}
+
+export const CacheStrategies = {
+  // Static assets (fonts, images)
+  immutable: {
+    maxAge: 31536000, // 1 year
+    cacheControl: 'public, immutable',
+  } as CacheConfig,
+
+  // API responses that change frequently
+  shortLived: {
+    maxAge: 60, // 1 minute
+    staleWhileRevalidate: 300, // 5 minutes
+    cacheControl: 'public, must-revalidate',
+    etag: true,
+  } as CacheConfig,
+
+  // User-specific data
+  private: {
+    maxAge: 300, // 5 minutes
+    cacheControl: 'private, must-revalidate',
+    etag: true,
+  } as CacheConfig,
+
+  // Model responses (cacheable but verify)
+  aiResponse: {
+    maxAge: 3600, // 1 hour
+    staleWhileRevalidate: 86400, // 1 day
+    cacheControl: 'public, must-revalidate',
+    etag: true,
+  } as CacheConfig,
+
+  // No cache for sensitive operations
+  noCache: {
+    maxAge: 0,
+    cacheControl: 'no-store, no-cache, must-revalidate',
+  } as CacheConfig,
+};
+
+export function getCacheHeaders(strategy: CacheConfig): Headers {
+  const headers = new Headers();
+
+  if (strategy.cacheControl) {
+    let cacheControl = strategy.cacheControl;
+
+    if (strategy.maxAge > 0) {
+      cacheControl += `, max-age=${strategy.maxAge}`;
+    }
+
+    if (strategy.staleWhileRevalidate) {
+      cacheControl += `, stale-while-revalidate=${strategy.staleWhileRevalidate}`;
+    }
+
+    headers.set('Cache-Control', cacheControl);
+  }
+
+  if (strategy.etag) {
+    headers.set('Vary', 'Accept-Encoding');
+  }
+
+  return headers;
+}
+```
+
+### API Route with Caching
+
+```typescript
+// app/api/models/route.ts
+import { NextResponse } from 'next/server';
+import { CacheStrategies, getCacheHeaders } from '@/utils/cache-strategy';
+import crypto from 'crypto';
+
+export async function GET(request: Request) {
+  const models = await fetchAvailableModels();
+
+  // Generate ETag based on content
+  const etag = crypto
+    .createHash('md5')
+    .update(JSON.stringify(models))
+    .digest('hex');
+
+  // Check if client has current version
+  const clientETag = request.headers.get('if-none-match');
+  if (clientETag === etag) {
+    return new NextResponse(null, { status: 304 });
+  }
+
+  const headers = getCacheHeaders(CacheStrategies.aiResponse);
+  headers.set('ETag', etag);
+  headers.set('Content-Type', 'application/json');
+
+  return new NextResponse(JSON.stringify(models), {
+    status: 200,
+    headers,
+  });
+}
+```
+
+### Client-Side Cache Manager
+
+```typescript
+// utils/cache-manager.ts
+interface CacheEntry<T> {
+  data: T;
+  timestamp: number;
+  etag?: string;
+}
+
+export class CacheManager {
+  private cache = new Map<string, CacheEntry<any>>();
+  private pendingRequests = new Map<string, Promise<any>>();
+
+  async fetch<T>(
+    key: string,
+    fetcher: () => Promise<T>,
+    options: {
+      maxAge?: number;
+      etag?: string;
+    } = {}
+  ): Promise<T> {
+    const cached = this.cache.get(key);
+    const now = Date.now();
+
+    // Return cached if valid
+    if (cached && options.maxAge) {
+      const age = now - cached.timestamp;
+      if (age < options.maxAge * 1000) {
+        return cached.data;
+      }
+    }
+
+    // Deduplicate in-flight requests
+    const pending = this.pendingRequests.get(key);
+    if (pending) {
+      return pending;
+    }
+
+    // Fetch new data
+    const promise = fetcher().then((data) => {
+      this.cache.set(key, {
+        data,
+        timestamp: now,
+        etag: options.etag,
+      });
+      this.pendingRequests.delete(key);
+      return data;
+    });
+
+    this.pendingRequests.set(key, promise);
+    return promise;
+  }
+
+  invalidate(keyPattern?: string | RegExp): void {
+    if (!keyPattern) {
+      this.cache.clear();
+      return;
+    }
+
+    const pattern = typeof keyPattern === 'string'
+      ? new RegExp(keyPattern)
+      : keyPattern;
+
+    for (const key of this.cache.keys()) {
+      if (pattern.test(key)) {
+        this.cache.delete(key);
+      }
+    }
+  }
+
+  get<T>(key: string): T | undefined {
+    return this.cache.get(key)?.data;
+  }
+}
+
+// Singleton instance
+export const cacheManager = new CacheManager();
+```
+
+### React Hook with Cache
+
+```typescript
+// hooks/useCachedFetch.ts
+import { useState, useEffect } from 'react';
+import { cacheManager } from '@/utils/cache-manager';
+
+interface UseCachedFetchOptions {
+  maxAge?: number;
+  enabled?: boolean;
+}
+
+export function useCachedFetch<T>(
+  key: string,
+  fetcher: () => Promise<T>,
+  options: UseCachedFetchOptions = {}
+) {
+  const [data, setData] = useState<T | undefined>(
+    () => cacheManager.get<T>(key)
+  );
+  const [loading, setLoading] = useState(!data);
+  const [error, setError] = useState<Error | null>(null);
+
+  useEffect(() => {
+    if (options.enabled === false) return;
+
+    let cancelled = false;
+
+    cacheManager
+      .fetch(key, fetcher, { maxAge: options.maxAge })
+      .then((result) => {
+        if (!cancelled) {
+          setData(result);
+          setError(null);
+        }
+      })
+      .catch((err) => {
+        if (!cancelled) {
+          setError(err);
+        }
+      })
+      .finally(() => {
+        if (!cancelled) {
+          setLoading(false);
+        }
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [key, options.enabled, options.maxAge]);
+
+  const invalidate = () => {
+    cacheManager.invalidate(key);
+    setLoading(true);
+  };
+
+  return { data, loading, error, invalidate };
+}
+```
+
+## Compression
+
+### Server-Side Compression
+
+```typescript
+// middleware.ts
+import { NextResponse } from 'next/server';
+import type { NextRequest } from 'next/server';
+
+export function middleware(request: NextRequest) {
+  const response = NextResponse.next();
+
+  // Get accepted encodings
+  const acceptEncoding = request.headers.get('accept-encoding') || '';
+
+  // Prefer Brotli over gzip
+  if (acceptEncoding.includes('br')) {
+    response.headers.set('Content-Encoding', 'br');
+  } else if (acceptEncoding.includes('gzip')) {
+    response.headers.set('Content-Encoding', 'gzip');
+  }
+
+  // Add Vary header for proper caching
+  response.headers.set('Vary', 'Accept-Encoding');
+
+  return response;
+}
+
+export const config = {
+  matcher: '/api/:path*',
+};
+```
+
+### Streaming Response Compression
+
+```typescript
+// app/api/chat/stream/route.ts
+import { NextRequest } from 'next/server';
+import { createGzip } from 'zlib';
+import { Readable } from 'stream';
+
+export async function POST(request: NextRequest) {
+  const acceptEncoding = request.headers.get('accept-encoding') || '';
+  const useCompression = acceptEncoding.includes('gzip');
+
+  // Create streaming response
+  const encoder = new TextEncoder();
+  const stream = new ReadableStream({
+    async start(controller) {
+      for await (const chunk of generateChatResponse()) {
+        controller.enqueue(encoder.encode(chunk));
+      }
+      controller.close();
+    },
+  });
+
+  const headers = new Headers({
+    'Content-Type': 'text/event-stream',
+    'Cache-Control': 'no-cache',
+    Connection: 'keep-alive',
+  });
+
+  if (useCompression) {
+    headers.set('Content-Encoding', 'gzip');
+  }
+
+  return new Response(stream, { headers });
+}
+```
+
+### Payload Compression Utility
+
+```typescript
+// utils/compression.ts
+export async function compressPayload(
+  data: any,
+  threshold = 1024
+): Promise<{ data: any; compressed: boolean }> {
+  const json = JSON.stringify(data);
+
+  // Only compress if payload exceeds threshold
+  if (json.length < threshold) {
+    return { data, compressed: false };
+  }
+
+  // Use CompressionStream API (browser)
+  if (typeof CompressionStream !== 'undefined') {
+    const stream = new Blob([json])
+      .stream()
+      .pipeThrough(new CompressionStream('gzip'));
+
+    const compressed = await new Response(stream).blob();
+    return {
+      data: await compressed.arrayBuffer(),
+      compressed: true,
+    };
+  }
+
+  return { data, compressed: false };
+}
+
+export async function decompressPayload(
+  data: ArrayBuffer
+): Promise<any> {
+  if (typeof DecompressionStream !== 'undefined') {
+    const stream = new Blob([data])
+      .stream()
+      .pipeThrough(new DecompressionStream('gzip'));
+
+    const decompressed = await new Response(stream).text();
+    return JSON.parse(decompressed);
+  }
+
+  throw new Error('DecompressionStream not supported');
+}
+```
+
+## Connection Pooling
+
+### HTTP Agent Configuration
+
+```typescript
+// utils/http-agent.ts
+import http from 'http';
+import https from 'https';
+
+// Create HTTP agents with connection pooling
+export const httpAgent = new http.Agent({
+  keepAlive: true,
+  keepAliveMsecs: 30000,
+  maxSockets: 50,
+  maxFreeSockets: 10,
+  timeout: 60000,
+  scheduling: 'fifo',
+});
+
+export const httpsAgent = new https.Agent({
+  keepAlive: true,
+  keepAliveMsecs: 30000,
+  maxSockets: 50,
+  maxFreeSockets: 10,
+  timeout: 60000,
+  scheduling: 'fifo',
+  rejectUnauthorized: true,
+});
+```
+
+### Fetch with Connection Pooling
+
+```typescript
+// utils/fetch-pool.ts
+import { httpAgent, httpsAgent } from './http-agent';
+
+export async function fetchWithPool(
+  url: string,
+  options: RequestInit = {}
+): Promise<Response> {
+  const isHttps = url.startsWith('https');
+
+  return fetch(url, {
+    ...options,
+    // Node.js specific - use custom agents
+    ...(typeof process !== 'undefined' && {
+      // @ts-ignore - Node.js specific
+      agent: isHttps ? httpsAgent : httpAgent,
+    }),
+  });
+}
+```
+
+### Connection Pool Monitor
+
+```typescript
+// utils/pool-monitor.ts
+interface PoolStats {
+  active: number;
+  idle: number;
+  pending: number;
+}
+
+export class ConnectionPoolMonitor {
+  private stats: PoolStats = {
+    active: 0,
+    idle: 0,
+    pending: 0,
+  };
+
+  track(agent: any): void {
+    // Get socket stats from agent
+    this.stats = {
+      active: Object.keys(agent.sockets || {}).length,
+      idle: Object.keys(agent.freeSockets || {}).length,
+      pending: Object.keys(agent.requests || {}).length,
+    };
+  }
+
+  getStats(): PoolStats {
+    return { ...this.stats };
+  }
+
+  isHealthy(): boolean {
+    return (
+      this.stats.pending < 100 &&
+      this.stats.active < 45
+    );
+  }
+}
+
+export const poolMonitor = new ConnectionPoolMonitor();
+```
+
+## Request Deduplication
+
+### Deduplication Manager
+
+```typescript
+// utils/deduplication.ts
+interface RequestKey {
+  url: string;
+  method: string;
+  body?: string;
+}
+
+export class RequestDeduplicator {
+  private inFlight = new Map<string, Promise<Response>>();
+
+  private getKey(request: RequestKey): string {
+    return JSON.stringify({
+      url: request.url,
+      method: request.method,
+      body: request.body,
+    });
+  }
+
+  async fetch(
+    url: string,
+    options: RequestInit = {}
+  ): Promise<Response> {
+    const key = this.getKey({
+      url,
+      method: options.method || 'GET',
+      body: options.body?.toString(),
+    });
+
+    // Return existing promise if request is in-flight
+    const existing = this.inFlight.get(key);
+    if (existing) {
+      console.log(`Deduplicating request: ${url}`);
+      return existing.then((res) => res.clone());
+    }
+
+    // Create new request
+    const promise = fetch(url, options).finally(() => {
+      this.inFlight.delete(key);
+    });
+
+    this.inFlight.set(key, promise);
+    return promise;
+  }
+
+  clear(): void {
+    this.inFlight.clear();
+  }
+
+  getInflightCount(): number {
+    return this.inFlight.size;
+  }
+}
+
+export const deduplicator = new RequestDeduplicator();
+```
+
+### React Hook with Deduplication
+
+```typescript
+// hooks/useDedupedFetch.ts
+import { useState, useEffect, useCallback } from 'react';
+import { deduplicator } from '@/utils/deduplication';
+
+export function useDedupedFetch<T>(url: string, options?: RequestInit) {
+  const [data, setData] = useState<T | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<Error | null>(null);
+
+  const fetch = useCallback(async () => {
+    try {
+      setLoading(true);
+      const response = await deduplicator.fetch(url, options);
+      const json = await response.json();
+      setData(json);
+      setError(null);
+    } catch (err) {
+      setError(err as Error);
+    } finally {
+      setLoading(false);
+    }
+  }, [url, JSON.stringify(options)]);
+
+  useEffect(() => {
+    fetch();
+  }, [fetch]);
+
+  return { data, loading, error, refetch: fetch };
+}
+```
+
+## Optimistic Updates
+
+### Optimistic Update Manager
+
+```typescript
+// utils/optimistic-updates.ts
+interface OptimisticUpdate<T> {
+  id: string;
+  timestamp: number;
+  optimisticData: T;
+  rollbackData: T;
+  status: 'pending' | 'confirmed' | 'failed';
+}
+
+export class OptimisticUpdateManager<T> {
+  private updates = new Map<string, OptimisticUpdate<T>>();
+  private listeners = new Set<(data: T[]) => void>();
+
+  constructor(private getCurrentData: () => T[]) {}
+
+  apply(
+    id: string,
+    updater: (current: T[]) => T[]
+  ): void {
+    const current = this.getCurrentData();
+    const optimisticData = updater(current);
+
+    this.updates.set(id, {
+      id,
+      timestamp: Date.now(),
+      optimisticData: optimisticData as any,
+      rollbackData: current as any,
+      status: 'pending',
+    });
+
+    this.notifyListeners();
+  }
+
+  confirm(id: string): void {
+    const update = this.updates.get(id);
+    if (update) {
+      update.status = 'confirmed';
+      this.updates.delete(id);
+      this.notifyListeners();
+    }
+  }
+
+  rollback(id: string): void {
+    const update = this.updates.get(id);
+    if (update) {
+      update.status = 'failed';
+      this.notifyListeners();
+      this.updates.delete(id);
+    }
+  }
+
+  getData(): T[] {
+    const pending = Array.from(this.updates.values())
+      .filter((u) => u.status === 'pending')
+      .sort((a, b) => a.timestamp - b.timestamp);
+
+    if (pending.length === 0) {
+      return this.getCurrentData();
+    }
+
+    // Apply pending updates in order
+    return pending[pending.length - 1].optimisticData as T[];
+  }
+
+  subscribe(listener: (data: T[]) => void): () => void {
+    this.listeners.add(listener);
+    return () => this.listeners.delete(listener);
+  }
+
+  private notifyListeners(): void {
+    const data = this.getData();
+    this.listeners.forEach((listener) => listener(data));
+  }
+}
+```
+
+### React Hook for Optimistic Updates
+
+```typescript
+// hooks/useOptimisticUpdate.ts
+import { useState, useEffect, useCallback } from 'react';
+import { OptimisticUpdateManager } from '@/utils/optimistic-updates';
+
+export function useOptimisticUpdate<T>(
+  initialData: T[],
+  updateFn: (data: T[], optimisticData: T) => Promise<T>
+) {
+  const [manager] = useState(
+    () => new OptimisticUpdateManager<T>(() => data)
+  );
+  const [data, setData] = useState(initialData);
+
+  useEffect(() => {
+    return manager.subscribe(setData);
+  }, [manager]);
+
+  const update = useCallback(
+    async (optimisticData: T) => {
+      const id = crypto.randomUUID();
+
+      // Apply optimistic update
+      manager.apply(id, (current) => [...current, optimisticData]);
+
+      try {
+        // Perform actual update
+        const result = await updateFn(data, optimisticData);
+        manager.confirm(id);
+        return result;
+      } catch (error) {
+        // Rollback on failure
+        manager.rollback(id);
+        throw error;
+      }
+    },
+    [manager, data, updateFn]
+  );
+
+  return { data, update };
+}
+```
+
+### Usage Example
+
+```typescript
+// components/ChatInterface.tsx
+import { useOptimisticUpdate } from '@/hooks/useOptimisticUpdate';
+
+interface Message {
+  id: string;
+  content: string;
+  timestamp: number;
+}
+
+export function ChatInterface() {
+  const { data: messages, update } = useOptimisticUpdate<Message>(
+    [],
+    async (current, optimistic) => {
+      const response = await fetch('/api/messages', {
+        method: 'POST',
+        body: JSON.stringify(optimistic),
+      });
+      return response.json();
+    }
+  );
+
+  const sendMessage = async (content: string) => {
+    const optimisticMessage: Message = {
+      id: crypto.randomUUID(),
+      content,
+      timestamp: Date.now(),
+    };
+
+    try {
+      await update(optimisticMessage);
+    } catch (error) {
+      console.error('Failed to send message:', error);
+      // UI automatically rolled back
+    }
+  };
+
+  return (
+    <div>
+      <MessageList messages={messages} />
+      <MessageInput onSend={sendMessage} />
+    </div>
+  );
+}
+```
+
+## Performance Monitoring
+
+### Network Performance Tracker
+
+```typescript
+// utils/network-monitor.ts
+interface NetworkMetrics {
+  requestCount: number;
+  bytesTransferred: number;
+  averageLatency: number;
+  cacheHitRate: number;
+  batchEfficiency: number;
+}
+
+export class NetworkMonitor {
+  private metrics: NetworkMetrics = {
+    requestCount: 0,
+    bytesTransferred: 0,
+    averageLatency: 0,
+    cacheHitRate: 0,
+    batchEfficiency: 0,
+  };
+
+  private latencies: number[] = [];
+  private cacheHits = 0;
+  private cacheMisses = 0;
+  private batchedRequests = 0;
+  private totalRequests = 0;
+
+  trackRequest(size: number, latency: number, fromCache: boolean): void {
+    this.metrics.requestCount++;
+    this.metrics.bytesTransferred += size;
+    this.latencies.push(latency);
+    this.totalRequests++;
+
+    if (fromCache) {
+      this.cacheHits++;
+    } else {
+      this.cacheMisses++;
+    }
+
+    this.updateMetrics();
+  }
+
+  trackBatch(batchSize: number): void {
+    this.batchedRequests += batchSize;
+    this.updateMetrics();
+  }
+
+  private updateMetrics(): void {
+    // Calculate average latency
+    if (this.latencies.length > 0) {
+      const sum = this.latencies.reduce((a, b) => a + b, 0);
+      this.metrics.averageLatency = sum / this.latencies.length;
+    }
+
+    // Calculate cache hit rate
+    const total = this.cacheHits + this.cacheMisses;
+    if (total > 0) {
+      this.metrics.cacheHitRate = this.cacheHits / total;
+    }
+
+    // Calculate batch efficiency
+    if (this.totalRequests > 0) {
+      this.metrics.batchEfficiency =
+        this.batchedRequests / this.totalRequests;
+    }
+  }
+
+  getMetrics(): NetworkMetrics {
+    return { ...this.metrics };
+  }
+
+  reset(): void {
+    this.metrics = {
+      requestCount: 0,
+      bytesTransferred: 0,
+      averageLatency: 0,
+      cacheHitRate: 0,
+      batchEfficiency: 0,
+    };
+    this.latencies = [];
+    this.cacheHits = 0;
+    this.cacheMisses = 0;
+    this.batchedRequests = 0;
+    this.totalRequests = 0;
+  }
+}
+
+export const networkMonitor = new NetworkMonitor();
+```
+
+## Best Practices
+
+### 1. Request Batching
+
+- Batch similar requests within 50-100ms window
+- Limit batch size to prevent timeouts
+- Use for token counting, analytics, metadata fetching
+- Don't batch user-critical operations
+
+### 2. Caching Strategy
+
+- Cache static responses for 1 hour minimum
+- Use ETags for conditional requests
+- Implement stale-while-revalidate for better UX
+- Cache AI responses with proper invalidation
+
+### 3. Compression
+
+- Enable Brotli for modern browsers
+- Fallback to gzip for compatibility
+- Compress responses larger than 1KB
+- Use streaming compression for large payloads
+
+### 4. Connection Pooling
+
+- Reuse connections with keep-alive
+- Configure appropriate pool sizes (50 max, 10 idle)
+- Monitor pool saturation
+- Use separate pools for different services
+
+### 5. Request Deduplication
+
+- Deduplicate identical in-flight requests
+- Use for model list fetching, configuration
+- Clear cache on navigation or timeout
+- Log deduplication rate for monitoring
+
+### 6. Optimistic Updates
+
+- Apply optimistic updates for better perceived performance
+- Always implement rollback mechanism
+- Show loading state for confirmation
+- Use for message sending, preference updates
+
+## Performance Checklist
+
+- [ ] Request batching implemented for analytics
+- [ ] Cache headers configured per endpoint
+- [ ] Compression enabled (Brotli/gzip)
+- [ ] Connection pooling configured
+- [ ] Request deduplication for repeated calls
+- [ ] Optimistic updates for user actions
+- [ ] Network monitoring in place
+- [ ] Cache invalidation strategy defined
+- [ ] Error handling for network failures
+- [ ] Performance budgets established
+
+## Related Resources
+
+- [Performance Budgets](/guides/performance/budgets)
+- [API Design Guidelines](/guides/api-design)
+- [Caching Strategies](/guides/caching)
+- [Monitoring and Observability](/guides/monitoring)

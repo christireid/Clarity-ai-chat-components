@@ -1,41 +1,25 @@
 /**
  * Clarity Memory - Core Utility Functions
- * 
+ *
  * Basic utility functions.
  */
 
-
-
-/**
- * Check if a value is a non-empty string
- */
-export function isNonEmptyString(value: unknown): value is string {
-  return typeof value === 'string' && value.trim().length > 0
-}
-
-/**
- * Check if a value is a valid number
- */
-export function isValidNumber(value: unknown): value is number {
-  return typeof value === 'number' && !Number.isNaN(value) && Number.isFinite(value)
-}
-
 /**
  * Clamp a number between min and max
+ * @deprecated Import from @clarity-chat/utils instead
  */
-export function clamp(value: number, min: number, max: number): number {
-  return Math.min(Math.max(value, min), max)
-}
+export { clamp } from '@clarity-chat/utils'
 
 /**
  * Deep merge two objects
+ * @deprecated Import from @clarity-chat/react/internal instead
  */
 export function deepMerge<T extends Record<string, unknown>>(
   target: T,
   source: Partial<T>
 ): T {
   const result = { ...target }
-  
+
   for (const key in source) {
     if (source[key] !== undefined) {
       if (
@@ -55,61 +39,27 @@ export function deepMerge<T extends Record<string, unknown>>(
       }
     }
   }
-  
+
   return result
 }
 
 /**
  * Generate a random ID
+ * @deprecated Import from @clarity-chat/utils instead
  */
-export function generateId(): string {
-  return `${Date.now()}-${Math.random().toString(36).substring(2, 9)}`
-}
+export { generateId } from '@clarity-chat/utils'
 
 /**
  * Sleep for a given number of milliseconds
+ * @deprecated Import from @clarity-chat/utils/async instead
  */
-export function sleep(ms: number): Promise<void> {
-  return new Promise((resolve) => setTimeout(resolve, ms))
-}
+export { sleep } from '@clarity-chat/utils/async'
 
 /**
  * Retry a function with exponential backoff
+ * @deprecated Import from @clarity-chat/utils/async instead
  */
-export async function retry<T>(
-  fn: () => Promise<T>,
-  options: {
-    maxAttempts?: number
-    initialDelay?: number
-    maxDelay?: number
-    factor?: number
-  } = {}
-): Promise<T> {
-  const {
-    maxAttempts = 3,
-    initialDelay = 1000,
-    maxDelay = 10000,
-    factor = 2,
-  } = options
-
-  let lastError: Error | undefined
-  let delay = initialDelay
-
-  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
-    try {
-      return await fn()
-    } catch (error) {
-      lastError = error instanceof Error ? error : new Error(String(error))
-      
-      if (attempt < maxAttempts) {
-        await sleep(delay)
-        delay = Math.min(delay * factor, maxDelay)
-      }
-    }
-  }
-
-  throw lastError || new Error('Retry failed')
-}
+export { retry } from '@clarity-chat/utils/async'
 
 /**
  * Debounce a function
@@ -195,18 +145,14 @@ export function truncateToTokens(text: string, maxTokens: number): string {
   return text.substring(0, maxChars).trim()
 }
 
-
-
 /**
  * Check if code is running in browser
+ * @deprecated Import from @clarity-chat/utils/env instead
  */
-export function isBrowser(): boolean {
-  return typeof window !== 'undefined' && typeof window.document !== 'undefined'
-}
+export { isBrowser } from '@clarity-chat/utils/env'
 
 /**
  * Check if code is running in Node.js
+ * @deprecated Import from @clarity-chat/utils/env instead
  */
-export function isNode(): boolean {
-  return typeof process !== 'undefined' && process.versions != null && process.versions.node != null
-}
+export { isNode } from '@clarity-chat/utils/env'

@@ -4,21 +4,22 @@
  * Generic UI primitives and utilities used across the library.
  */
 
-export * from './animated-dots'
-export * from './animated-list'
-export { BatteryIndicator } from './battery-indicator'
-export * from './collapsible-section'
+export * from './AnimatedDots'
+export * from './AnimatedList'
+export { BatteryIndicator } from './BatteryIndicator'
+export * from './CollapsibleSection'
+// Re-export DashboardErrorBoundary from canonical location
 export {
   DashboardErrorBoundary,
   useDashboardErrorHandler,
   type DashboardErrorBoundaryProps,
-} from './dashboard-error-boundary'
+} from '@clarity-chat/error-handling'
 export {
   DashboardProgress,
   CircularProgress,
   type DashboardProgressProps,
   type CircularProgressProps,
-} from './dashboard-progress'
+} from './DashboardProgress'
 // Dashboard skeleton components
 export {
   AnalyticsDashboardSkeleton,
@@ -37,7 +38,7 @@ export {
   type DashboardEmptyStateProps,
   type DashboardStateTransitionProps,
   type LoadingAnnouncerProps,
-} from './dashboard-skeleton'
+} from './DashboardSkeleton'
 export { Draggable, DropZone } from './draggable'
 export {
   EmptyState,
@@ -46,10 +47,10 @@ export {
   NoConversationsState,
   ErrorState,
   SuccessState,
-} from './empty-state'
-export * from './feedback-animation'
+} from './EmptyState'
+export * from './FeedbackAnimation'
 export * from './icons'
-export * from './interactive-card'
+export * from './InteractiveCard'
 export {
   LinkPreview,
   LinkPreviewSkeleton,
@@ -76,8 +77,17 @@ export {
   type UseLinkPreviewReturn,
   type MetadataFetcherConfig,
   type EmbedType,
-} from './link-preview'
-export * from './progress'
+} from './link-preview/'
+// Export Progress but exclude StreamingProgress and CircularProgress to avoid conflicts
+export {
+  Progress,
+  type ProgressProps,
+  UploadProgress,
+  type UploadProgressProps,
+  SkeletonProgress,
+  // StreamingProgress is excluded - use the one from components/ai instead
+  // CircularProgress is excluded - already exported from DashboardProgress
+} from './progress'
 export * from './ripple'
 export * from './skeleton'
 // Export toast module excluding 'toast' object to avoid conflict with sonner-toast

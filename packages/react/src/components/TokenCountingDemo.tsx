@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react'
 import { TokenCounter } from '@clarity-chat/token-optimization'
 import { smartCountTokens } from './smart-fallback'
-import { tokenAnalyticsMonitor } from './token-analytics'
+import { tokenAnalyticsMonitor } from '../utils/tokenization/token-analytics'
 
 export interface TokenDemoProps {
   defaultText?: string
@@ -117,7 +117,9 @@ export const TokenCountingDemo: React.FC<TokenDemoProps> = ({
           type: 'input',
         })
       } catch (error) {
-        console.warn('Token counting error:', error)
+        if (process.env.NODE_ENV === 'development') {
+          console.warn('Token counting error:', error)
+        }
         setTokenCount(0)
       } finally {
         setIsCounting(false)

@@ -8,7 +8,7 @@
  */
 
 import * as React from 'react'
-import { cn } from '../../../../utils/cn'
+import { cn } from '@clarity-chat/primitives'
 
 export interface ErrorFallbackProps {
   /** The error that was caught */
@@ -58,7 +58,7 @@ export function ErrorFallback({
           <summary className="text-xs text-muted-foreground cursor-pointer hover:text-foreground">
             Show technical details
           </summary>
-          <pre className="mt-2 p-3 text-xs bg-muted rounded-lg overflow-auto max-h-32 text-foreground">
+          <pre className="mt-2 p-3 text-xs bg-muted rounded-lg overflow-auto scrollbar-hide max-h-32 text-foreground">
             {error.stack || error.toString()}
           </pre>
         </details>

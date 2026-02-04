@@ -70,15 +70,15 @@ export {
   compareModels,
 } from './model-profiles'
 
-// Compression Chain
-export {
-  type CompressionStrategy,
-  type CompressionOptions,
-  type CompressionResult,
-  type CompressionLog,
-  compressContext,
-  extractKeyPoints,
-} from './compression-chain'
+// Compression Chain - TODO: Re-enable when compression-chain.ts is added back
+// export {
+//   type CompressionStrategy,
+//   type CompressionOptions,
+//   type CompressionResult,
+//   type CompressionLog,
+//   compressContext,
+//   extractKeyPoints,
+// } from './compression-chain'
 
 // Strategy Router
 export {

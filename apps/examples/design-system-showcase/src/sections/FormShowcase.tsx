@@ -1,6 +1,6 @@
 /**
  * Form Showcase
- * 
+ *
  * Demonstrates form inputs, textareas, and form patterns
  */
 
@@ -51,10 +51,7 @@ export function FormShowcase() {
         <div className="space-y-4 max-w-md">
           <div className="space-y-2">
             <label className="text-sm font-medium">Message</label>
-            <Textarea 
-              placeholder="Type your message here..."
-              rows={4}
-            />
+            <Textarea placeholder="Type your message here..." rows={4} />
           </div>
         </div>
       </section>
@@ -136,7 +133,9 @@ export function FormShowcase() {
                 <Checkbox
                   id="agree"
                   checked={agreed}
-                  onChange={(e) => setAgreed(e.target.checked)}
+                  onChange={(e) =>
+                    setAgreed((e.target as HTMLInputElement).checked)
+                  }
                 />
                 <label
                   htmlFor="agree"
@@ -148,7 +147,9 @@ export function FormShowcase() {
             </div>
 
             <div className="flex items-center justify-end gap-2">
-              <Button variant="outline" type="button">Cancel</Button>
+              <Button variant="outline" type="button">
+                Cancel
+              </Button>
               <Button type="submit">Send Message</Button>
             </div>
           </form>
@@ -165,22 +166,26 @@ export function FormShowcase() {
           </div>
           <div className="space-y-2">
             <label className="text-sm font-medium">Focus State</label>
-            <Input 
+            <Input
               placeholder="ring-[3px] ring-ring/50"
               className="ring-[3px] ring-ring/50 ring-offset-1"
             />
           </div>
           <div className="space-y-2">
-            <label className="text-sm font-medium text-destructive">Error State</label>
-            <Input 
+            <label className="text-sm font-medium text-destructive">
+              Error State
+            </label>
+            <Input
               placeholder="ring-destructive/50"
               className="ring-destructive/50"
             />
             <p className="text-sm text-destructive">This field is required</p>
           </div>
           <div className="space-y-2">
-            <label className="text-sm font-medium text-green-600">Success State</label>
-            <Input 
+            <label className="text-sm font-medium text-green-600">
+              Success State
+            </label>
+            <Input
               placeholder="ring-green-500/50"
               className="ring-green-500/50"
               defaultValue="Valid input"

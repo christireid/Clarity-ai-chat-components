@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest'
-import { processStream } from '../streaming-helpers'
+import { processStream } from '../streaming/streaming-helpers'
 
 function streamFromChunks(chunks: string[]): ReadableStream<Uint8Array> {
   const encoder = new TextEncoder()

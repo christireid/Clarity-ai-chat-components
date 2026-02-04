@@ -1,158 +1,426 @@
-# Clarity Chat
+# Clarity Chat Components
 
-> Enterprise-grade React component library for building beautiful, accessible AI chat interfaces. Features 190+ production-ready components, 95+ custom hooks, 15 themes, and comprehensive token optimization. Built with TypeScript, React 19, and Tailwind CSS.
+> Clarity Chat is a production-ready React component library for building AI chat interfaces with 200+ components, 95+ hooks, streaming support, RAG, memory management, and enterprise features. Built with TypeScript, React 19, and Tailwind CSS.
 
-Clarity Chat is the most complete open-source solution for building AI chat interfaces in React. It provides everything you need from basic chat windows to enterprise features like SSO, multi-tenancy, and advanced analytics.
+Clarity Chat provides everything you need to build AI chat applications - from simple chatbots to enterprise-grade conversational AI with memory, RAG, tool calling, and multi-tenancy support.
 
-## Quick Start
+---
 
-- [Installation](https://clarity-chat.dev/learn/installation): Install via npm: `npm install @clarity-chat/react`
-- [Quick Start Guide](https://clarity-chat.dev/learn/quick-start): Build your first chat interface in 5 minutes
-- [Interactive Playground](https://clarity-chat.dev/playground): Try components live in the browser
+## Quick Navigation
 
-## Core Concepts
+### Getting Started
+- /get-started/quick-start - Get a working chat interface in 5 minutes
+- /get-started/installation - Framework-specific installation (Next.js, Vite, Remix)
+- /get-started/tutorial - Build your first chatbot step-by-step (30 minutes)
+- /playground - Interactive playground - try components without setup
+- /get-started/why-clarity - Why choose Clarity over other solutions
 
-- [Component System](https://clarity-chat.dev/learn/concepts/components): Understanding Clarity's composable component architecture
-- [React Hooks](https://clarity-chat.dev/learn/concepts/hooks): 70+ hooks for chat functionality, streaming, and state management
-- [Theming System](https://clarity-chat.dev/learn/concepts/theming): 15 pre-built themes with full customization support
-- [Animations](https://clarity-chat.dev/learn/concepts/animations): 150+ micro-interactions with Framer Motion
-- [Architecture](https://clarity-chat.dev/learn/architecture): Three-tier API design philosophy
+### Core Concepts
+- /get-started/concepts - Understanding Clarity's architecture
+- /reference/components - 200+ production-ready components
+- /reference/hooks - 95+ hooks for chat functionality and state management
+- /get-started/concepts/theming - 15 pre-built themes with full customization
+- /get-started/concepts/animations - 150+ micro-interactions with Framer Motion
 
-## Main Components
+---
 
-- [ClarityChat](https://clarity-chat.dev/reference/components/clarity-chat): All-in-one chat component with built-in features
-- [ChatWindow](https://clarity-chat.dev/reference/components/chat-window): Container component for chat interfaces
-- [MessageList](https://clarity-chat.dev/reference/components/message-list): Display messages with virtualization support
-- [ChatInput](https://clarity-chat.dev/reference/components/chat-input): User input with attachments and voice support
-- [StreamingMessage](https://clarity-chat.dev/reference/components/streaming-message): Real-time streaming response display
-- [ThinkingIndicator](https://clarity-chat.dev/reference/components/thinking-indicator): AI processing state indicator
-- [TokenCounter](https://clarity-chat.dev/reference/components/token-counter): Track token usage in real-time
+## Core Components
+
+### Foundation Components
+- /reference/components/clarity-chat - All-in-one chat component (recommended starting point)
+- /reference/components/clarity-chat-app - Unified App API - streaming chat in 3 lines
+- /reference/components/clarity-chat-presets - Pre-configured variants (CustomerSupport, CodeAssistant, Enterprise)
+- /reference/components/chat-window - Container for messages with scroll management
+- /reference/components/message - Individual message display with markdown and code support
+- /reference/components/message-list - Virtualized message list for performance
+- /reference/components/chat-input - User input with suggestions, attachments, voice support
+
+### Streaming Components
+- /reference/components/streaming-message - Real-time streaming response display
+- /reference/components/virtualized-message-list - High-performance list for large conversations
+- /reference/components/streaming-text-renderer - Character-by-character text animation
+- /reference/components/stream-block - Block-level streaming content container
+- /reference/components/stream-cancellation - Cancel ongoing stream requests
+- /reference/components/streaming-progress - Comprehensive streaming progress visualization
+
+### AI-Specific Components
+- /reference/components/chain-of-thought - Step-by-step reasoning visualization
+- /reference/components/thinking-bar - Processing status with progress tracking
+- /reference/components/tool-execution-card - Display tool/function call execution
+- /reference/components/text-shimmer - Animated text loading placeholder
+- /reference/components/source-citation - Display AI response sources with confidence scores
+- /reference/components/prompt-container - Prompt input wrapper with suggestions
+- /reference/components/suggestion-cards - Interactive suggestion grid
+- /reference/components/model-selector - Model selection dropdown
+
+### Interactive Components
+- /reference/components/command-palette - Keyboard-driven command menu (Cmd+K)
+- /reference/components/context-menu - Right-click context actions
+- /reference/components/draggable - Drag and drop functionality
+- /reference/components/voice-input - Speech-to-text integration
+- /reference/components/file-upload - Document and image uploads
+- /reference/components/retry-button - Retry failed message generation
+
+### Token Optimization Components
+- /reference/components/token-optimization - Complete token optimization system
+- /reference/components/token-optimization-dashboard - Full dashboard for token management
+- /reference/components/token-optimization-panel - Token optimization controls
+- /reference/components/token-optimization-badge - Inline token usage indicator
+- /reference/components/token-cost-preview - Real-time cost estimation
+- /reference/components/token-counter - Simple token count display
+
+### Dashboard Components
+- /reference/components/usage-dashboard - API usage analytics
+- /reference/components/performance-dashboard - Response time and latency metrics
+- /reference/components/conversation-analytics-dashboard - Conversation metrics and insights
+
+### Enterprise Components
+- /reference/components/auth-tenant-dashboard - Multi-tenant authentication management
+- /reference/components/api-token-manager - API key management interface
+- /reference/components/sso-config-wizard - SSO setup wizard
+
+### Memory & Context Components
+- /reference/components/memory-provider - Context provider for conversation memory
+- /reference/components/context-manager - Context window management
+
+---
 
 ## Core Hooks
 
-- [useClarityChat](https://clarity-chat.dev/reference/hooks/use-clarity-chat): Primary hook for chat state and operations with memory integration
-- [useStreamingSSE](https://clarity-chat.dev/reference/hooks/use-streaming-sse): Server-Sent Events streaming
-- [useStreamingWebSocket](https://clarity-chat.dev/reference/hooks/use-streaming-websocket): WebSocket streaming with auto-reconnection
-- [useTokenTracker](https://clarity-chat.dev/reference/hooks/use-token-tracker): Monitor token consumption
-- [useTokenOptimization](https://clarity-chat.dev/reference/hooks/use-token-optimization): Optimize context window usage
-- [useVoiceInput](https://clarity-chat.dev/reference/hooks/use-voice-input): Voice-to-text input
-- [useChatHandlers](https://clarity-chat.dev/reference/hooks/use-chat-handlers): Pre-configured handlers for ChatWindow
+### Primary Hooks
+- /reference/hooks/use-clarity-chat-app - Unified App API hook (recommended)
+- /reference/hooks/use-clarity-chat - Primary chat hook with memory integration
+- /reference/hooks/use-clarity-chat-with-tools - Chat with tool/function calling support
+- /reference/hooks/use-chat-handlers - Pre-configured event handlers
+- /reference/hooks/use-messages - Message state management
 
-## AI Components
+### Performance Hooks
+- /reference/hooks/use-token-optimization - Unified token optimization hook
+- /reference/hooks/use-token-count - Real-time token counting
+- /reference/hooks/use-token-tracker - Real-time token consumption tracking
+- /reference/hooks/use-model-router - Dynamic model selection based on task
+- /reference/hooks/use-smart-cache - Intelligent response caching
 
-- [ChainOfThought](https://clarity-chat.dev/reference/components/chain-of-thought): Step-by-step reasoning visualization with collapsible sections
-- [ThinkingBar](https://clarity-chat.dev/reference/components/thinking-bar): Processing status indicator with progress tracking
-- [ToolExecutionCard](https://clarity-chat.dev/reference/components/tool-execution-card): Display tool/function call execution status
-- [StreamingProgress](https://clarity-chat.dev/reference/components/streaming-progress): Real-time streaming progress with token tracking
-- [TextShimmer](https://clarity-chat.dev/reference/components/text-shimmer): Animated text loading placeholder
-- [SourceCitation](https://clarity-chat.dev/reference/components/source-citation): Display AI response sources with favicons and confidence scores
-- [PromptContainer](https://clarity-chat.dev/reference/components/prompt-container): Comprehensive prompt input wrapper with suggestions and attachments
-- [SuggestionCards](https://clarity-chat.dev/reference/components/suggestion-cards): Interactive suggestion grid with filtering and search
+### Streaming Hooks
+- /reference/hooks/use-streaming-sse - Server-Sent Events streaming
+- /reference/hooks/use-streaming-websocket - WebSocket streaming with reconnection
+- /reference/hooks/use-streamable-ui - React Server Components streaming
 
-## UI Components
+### Memory & Context Hooks
+- /reference/hooks/use-memory-context - Access conversation memory context
+- /reference/hooks/use-indexed-db - Browser IndexedDB for offline storage
+- /reference/hooks/use-embeddings - Generate and manage text embeddings
 
-- [Button](https://clarity-chat.dev/reference/components/button): Accessible button with variants
-- [Avatar](https://clarity-chat.dev/reference/components/avatar): User and AI avatars
-- [Badge](https://clarity-chat.dev/reference/components/badge): Status and info badges
-- [Toast](https://clarity-chat.dev/reference/components/toast): Notification system
-- [Tooltip](https://clarity-chat.dev/reference/components/tooltip): Contextual tooltips
-- [Skeleton](https://clarity-chat.dev/reference/components/skeleton): Loading state placeholders
-- [Progress](https://clarity-chat.dev/reference/components/progress): Progress indicators
+### Enterprise AI Hooks
+- /reference/hooks/use-rag-pipeline - Retrieval-augmented generation pipeline
+- /reference/hooks/use-agent - AI agent with tool execution
+- /reference/hooks/use-vector-store - Vector database operations
 
-## Advanced Features
+### Utility Hooks
+- /reference/hooks/selector - Interactive guide to choose the right hook
+- /reference/hooks/compare - Side-by-side hook comparison
+- /reference/hooks/graph - Visual hook dependency graph
 
-- [VoiceInput](https://clarity-chat.dev/reference/components/voice-input): Speech-to-text integration
-- [FileUpload](https://clarity-chat.dev/reference/components/file-upload): Document and image uploads
-- [MarkdownRenderer](https://clarity-chat.dev/reference/components/markdown-renderer-enhanced): Rich markdown with syntax-highlighted code blocks and math support
-- [CommandPalette](https://clarity-chat.dev/reference/components/command-palette): Keyboard-driven command menu
-- [ConversationTimeline](https://clarity-chat.dev/reference/components/conversation-timeline): Visual conversation history
-- [MemoryInspector](https://clarity-chat.dev/reference/components/memory-inspector): Debug context and memory
-
-## Token Optimization
-
-- [Token Optimization Guide](https://clarity-chat.dev/guides/token-optimization): Reduce API costs by up to 70%
-- [TokenOptimizationDashboard](https://clarity-chat.dev/reference/components/token-optimization-dashboard): Visual optimization controls
-- [ContextVisualizer](https://clarity-chat.dev/reference/components/context-visualizer): See what's in your context window
+---
 
 ## Guides
 
-- [Streaming](https://clarity-chat.dev/guides/streaming): Implement real-time streaming responses
-- [State Management](https://clarity-chat.dev/guides/state-management): Manage chat state effectively
-- [Performance](https://clarity-chat.dev/learn/guides/performance): Optimize for large conversations
-- [Accessibility](https://clarity-chat.dev/learn/guides/accessibility): WCAG AAA compliance
-- [Styling](https://clarity-chat.dev/learn/guides/styling): Customizing component styles
-- [TypeScript](https://clarity-chat.dev/learn/guides/typescript): TypeScript best practices
-- [Testing](https://clarity-chat.dev/learn/guides/testing): Testing your chat components
+### Basic Guides
+- /guides/components - Working with components
+- /guides/hooks - Using hooks effectively
+- /guides/theming - Customizing themes
+- /guides/customization - Advanced customization
+- /guides/messages - Message handling
 
-## Examples
+### Intermediate Guides
+- /guides/streaming - Implement real-time streaming responses
+- /guides/memory - Add conversation memory and context persistence
+- /guides/error-handling - Handle errors gracefully with fallbacks
+- /guides/file-upload - Support document and image uploads
+- /guides/state-management - Manage complex chat state
+- /guides/accessibility - Build WCAG-compliant interfaces
+- /guides/performance - Optimize for speed and efficiency
 
-- [Simple Chat](https://clarity-chat.dev/examples/simple-chat): Basic chat implementation
-- [Streaming Chat](https://clarity-chat.dev/examples/streaming): Real-time streaming demo
-- [Themed Chat](https://clarity-chat.dev/examples/themed-chat): Custom theme showcase
-- [Code Assistant](https://clarity-chat.dev/examples/code-assistant): Developer-focused chat
-- [Customer Support](https://clarity-chat.dev/examples/ecommerce-assistant): E-commerce chatbot
-- [AI Agents Workflow](https://clarity-chat.dev/examples/ai-agents-workflow): Multi-agent implementation
+### Advanced Guides
+- /guides/rag - Retrieval-Augmented Generation implementation
+- /guides/agents - Build AI agents with tool execution
+- /guides/tools - Integrate custom tools and functions
+- /guides/token-optimization - Reduce API costs by up to 70%
+- /guides/prompt-caching - Cache prompts for faster responses
+- /guides/model-adapters - Support multiple LLM providers
+- /guides/observability - Monitoring and debugging
+- /guides/vector-stores - Vector database integration
+
+### Enterprise Guides
+- /guides/rbac - Role-based access control setup
+- /guides/multi-tenancy - Multi-tenant architecture
+- /guides/sso-configuration - Single sign-on setup
+- /guides/audit-logging - Compliance audit trails
+- /guides/security - Security best practices
+
+---
+
+## Token Optimization Documentation
+
+### Getting Started with Token Optimization
+- /guides/token-optimization - Complete guide to token optimization
+- /guides/token-optimization/algorithms - Compression algorithms explained
+- /guides/token-optimization/caching-strategies - Caching strategies for cost reduction
+- /guides/token-optimization/smart-routing - Smart model routing
+- /guides/token-optimization/best-practices - Best practices and patterns
+
+### Token Optimization Cookbooks
+- /cookbook/achieving-50-percent-reduction - Achieving 50-70% cost reduction
+- /cookbook/provider-caching-setup - Provider-native caching setup
+- /cookbook/smart-model-routing - Smart model routing examples
+- /cookbook/token-optimization/combined-optimization - Combined optimization strategies
+- /cookbook/token-optimization/compression-comparison - Compression algorithm comparison
+
+### Token Optimization Components & Hooks
+- /reference/components/token-optimization - Token optimization system overview
+- /reference/hooks/use-token-optimization - Unified optimization hook
+- /reference/hooks/use-token-count - Token counting
+- /reference/hooks/use-model-router - Model routing
+
+---
 
 ## Cookbook Recipes
 
-- [OpenAI Streaming](https://clarity-chat.dev/cookbook/openai-streaming-chat): Integrate with OpenAI API
-- [RAG Document Chat](https://clarity-chat.dev/cookbook/rag-document-chat): Build retrieval-augmented chat
-- [Agent with Tools](https://clarity-chat.dev/cookbook/agent-with-tools): Create tool-using agents
-- [Custom Theming](https://clarity-chat.dev/cookbook/custom-theming): Design your own theme
-- [Memory Integration](https://clarity-chat.dev/cookbook/memory-integration): Add conversation memory
-- [Error Handling](https://clarity-chat.dev/cookbook/error-handling): Handle errors gracefully
-- [Authentication](https://clarity-chat.dev/cookbook/authentication): Add user authentication
-- [Offline First](https://clarity-chat.dev/cookbook/offline-first-chat): Build offline-capable chat
-- [Voice Chat](https://clarity-chat.dev/cookbook/voice-chat): Add voice input/output
-- [Multi-Agent Orchestration](https://clarity-chat.dev/cookbook/multi-agent-orchestration): Coordinate multiple AI agents
+### Quick Start Recipes
+- /cookbook/quick-start-3-lines - Minimal setup in 3 lines of code
+- /cookbook/react-integration - React integration patterns
+- /cookbook/nodejs-backend-integration - Node.js backend integration
+- /cookbook/streaming-setup - Configure streaming responses
+- /cookbook/memory-integration - Add conversation memory
+- /cookbook/error-handling - Implement error boundaries
 
-## Integrations
+### Advanced Recipes
+- /cookbook/streaming-with-memory - Combine streaming and memory
+- /cookbook/rag-document-chat - Build document Q&A
+- /cookbook/voice-input-integration - Add speech-to-text
+- /cookbook/file-upload-handling - File handling patterns
 
-- [Next.js](https://clarity-chat.dev/integrations/nextjs): Server components and App Router
-- [Vite](https://clarity-chat.dev/integrations/vite): Fast development setup
-- [Remix](https://clarity-chat.dev/integrations/remix): Full-stack integration
+### Production Recipes
+- /cookbook/authentication - Add user authentication
+- /cookbook/production-monitoring - Monitor in production
+- /cookbook/enterprise-production-pipeline - Enterprise production pipeline
+
+---
+
+## Examples
+
+### Featured Examples
+- /examples/tool-calling-showcase - Advanced tool calling demo
+- /examples/enhanced-rag - Enhanced RAG system demonstration
+- /examples/rag-comparison - RAG implementation comparison
+
+### Basic Examples
+- /examples/simple-chat - Minimal chat implementation
+- /examples/themed-chat - Custom theme example
+- /examples/custom-styling - CSS customization
+
+### Advanced Examples
+- /examples/token-optimization - Token optimization demo
+- /examples/code-assistant - Code assistant example
+- /examples/customer-support-bot - Customer support chatbot
+
+---
+
+## Interactive Demos
+
+- /demos - Browse all interactive demos
+- /demos/zero-to-chat - Build chat from scratch
+- /demos/streaming-states - Visualize streaming states
+- /demos/token-visualizer - See token usage in real-time
+- /demos/memory-context - Memory system demo
+- /demos/savings-dashboard - Token savings dashboard
+
+---
 
 ## API Reference
 
-- [Components API](https://clarity-chat.dev/reference/components): All component props and types
-- [Hooks API](https://clarity-chat.dev/reference/hooks): Hook signatures and return types
-- [Utilities](https://clarity-chat.dev/reference/api/utilities): Helper functions and utilities
-- [Type Definitions](https://clarity-chat.dev/reference/api/types): TypeScript type reference
+### Quick Reference
+- /reference/quick-reference - One-page API overview
+- /reference/cheat-sheet - Printable cheat sheet
 
-## Optional
+### Type Definitions
+- /reference/api/types - TypeScript type definitions
+- /reference/api/configuration - Global configuration options
 
-- [Enterprise Features](https://clarity-chat.dev/enterprise): SSO, RBAC, multi-tenancy, audit logs
-- [Migration from Vercel AI SDK](https://clarity-chat.dev/learn/migration/from-vercel-ai-sdk): Step-by-step migration guide
-- [Deployment - Vercel](https://clarity-chat.dev/learn/deployment/vercel): Deploy to Vercel with zero configuration
-- [Deployment - AWS](https://clarity-chat.dev/learn/deployment/aws): Deploy to AWS with Lambda, ECS, or EC2
-- [Deployment - Docker](https://clarity-chat.dev/learn/deployment/docker): Deploy with Docker and docker-compose
-- [Troubleshooting](https://clarity-chat.dev/learn/troubleshooting): Common issues and solutions
-- [CLI Tools](https://clarity-chat.dev/tools/cli): Command-line utilities
-- [Testing Toolkit](https://clarity-chat.dev/tools/testing): Testing utilities and mocks
+### Utilities
+- /reference/utilities - Helper functions and utilities
+- /reference/utilities/create-memory-store - Create conversation memory store
+- /reference/utilities/quick-start-helpers - Quick start helper functions
+- /reference/utilities/testing-helpers - Testing utilities
+- /reference/utilities/migration-helpers - Migration utilities
+
+---
+
+## Packages
+
+### @clarity-chat/react
+Main React component library with all components and hooks.
+
+### @clarity-chat/memory
+- clarityMemory - Zero-config memory factory
+- MemoryService - Core memory service
+- ConsentManager - GDPR/CCPA compliance
+- AuditLogger - Audit logging
+- LLMSummarizer - LLM-based summarization
+- DecayManager - Memory decay/forgetting
+
+### @clarity-chat/token-optimization
+- AccurateTokenCounter - Accurate token counting
+- ModelRouter - Model routing
+- TieredCache - Multi-tier caching
+- LLMLinguaCompressor - LLMLingua compression
+- ProviderCachingFormatter - Provider-native caching
+- QualityGate - Quality validation
+- CostAwareOptimizer - Cost optimization
+
+---
+
+## Deployment
+
+- /get-started/deployment/vercel - Zero-config Vercel deployment
+- /get-started/deployment/aws - AWS Lambda, ECS, or EC2 deployment
+- /get-started/deployment/docker - Docker and docker-compose setup
+
+---
+
+## Migration
+
+- /get-started/migration/from-vercel-ai-sdk - Step-by-step migration guide
+- /cookbook/toon-migration-guide - TOON migration guide
+
+---
+
+## Help & Troubleshooting
+
+- /get-started/faq - Frequently asked questions
+- /get-started/troubleshooting - Common issues and solutions
+- /help/microphone-setup - Microphone setup guide
+
+---
 
 ## AI-Optimized APIs
 
 Programmatic access to Clarity Chat documentation for AI systems and RAG applications:
 
-- [Components API](https://clarity-chat.dev/api/ai/components): JSON endpoint with all component documentation
-- [Hooks API](https://clarity-chat.dev/api/ai/hooks): JSON endpoint with all hook documentation
-- [Search API](https://clarity-chat.dev/api/ai/search): Full-text search across all documentation
-- [Health API](https://clarity-chat.dev/api/ai/health): API health and status monitoring
-- [OpenAPI Spec](https://clarity-chat.dev/openapi.json): Full OpenAPI 3.0 specification
+- /api/ai/components - JSON endpoint with all component documentation
+- /api/ai/hooks - JSON endpoint with all hook documentation
+- /api/ai/search - Full-text search across all documentation
+- /api/ai/health - API health and status monitoring
+- /openapi.json - Full OpenAPI 3.0 specification
 
-### MCP Server
+### Model Context Protocol (MCP) Server
 
-Model Context Protocol server for Claude Code and other AI tools:
+Available MCP tools for Claude Code and other AI tools:
+- list_components - List all components with basic info
+- get_component - Get detailed component documentation
+- list_hooks - List all hooks with basic info
+- get_hook - Get detailed hook documentation
+- search_docs - Search all documentation
+- health_check - Check API health
 
+MCP Server Configuration:
 ```json
 {
   "mcpServers": {
     "clarity-chat": {
       "command": "npx",
-      "args": ["tsx", "apps/docs/mcp-server/index.ts"]
+      "args": ["tsx", "apps/streamlined-docs/mcp-server/index.ts"]
     }
   }
 }
 ```
 
-Available MCP tools: `list_components`, `get_component`, `list_hooks`, `get_hook`, `search_docs`, `health_check`
+---
+
+## Library Information
+
+- **Version**: 2.0.0
+- **License**: MIT
+- **Repository**: https://github.com/clarity-ai/clarity-chat-components
+- **Documentation**: https://clarity-chat.dev
+- **NPM Package**: @clarity-chat/react
+- **React Version**: 18+ / 19
+- **TypeScript Version**: 5.0+
+- **Node.js Version**: 18+
+
+---
+
+## Installation
+
+```bash
+# npm
+npm install @clarity-chat/react
+
+# pnpm
+pnpm add @clarity-chat/react
+
+# yarn
+yarn add @clarity-chat/react
+```
+
+**Peer Dependencies:**
+- React 18+ or React 19
+- Tailwind CSS 3.4+
+
+**Optional Packages:**
+```bash
+npm install @clarity-chat/memory @clarity-chat/token-optimization
+```
+
+---
+
+## Quick Start Example
+
+```tsx
+import { ClarityChatApp } from '@clarity-chat/react'
+
+function App() {
+  return <ClarityChatApp api="/api/chat" />
+}
+```
+
+With memory enabled:
+```tsx
+<ClarityChatApp
+  api="/api/chat"
+  features={{ memory: true }}
+/>
+```
+
+Enterprise preset:
+```tsx
+<ClarityChatApp
+  api="/api/chat"
+  preset="enterprise"
+/>
+```
+
+---
+
+## Contributing
+
+- /contributing - Contributing guidelines
+
+---
+
+## About
+
+- /about - About Clarity Chat
+- /about/performance - Performance benchmarks
+- /license - License information
+- /changelog - Version history and updates
+
+---
+
+This documentation is optimized for AI consumption with:
+- Explicit cross-references with full context
+- Independent, standalone sections
+- No relative references ("see above")
+- Clear section boundaries
+- Semantic HTML structure
+- JSON-LD schema metadata

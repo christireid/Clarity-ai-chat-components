@@ -1,0 +1,35 @@
+{
+  "name": "{{EXAMPLE_NAME}}",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "{{EXAMPLE_DESCRIPTION}}",
+  "scripts": {
+    "dev": "echo 'Template: use ./scripts/create-example.sh to generate a new example' && exit 1",
+    "build": "echo 'Template: skipping build (use ./scripts/create-example.sh to generate example)' && exit 0",
+    "start": "echo 'Template: use ./scripts/create-example.sh to generate a new example' && exit 1",
+    "lint": "echo 'Template: skipping lint' && exit 0",
+    "test": "echo 'Template: skipping test' && exit 0",
+    "test:watch": "echo 'Template: skipping test:watch' && exit 0"
+  },
+  "dependencies": {
+    "@clarity-chat/react": "workspace:*",
+    "framer-motion": "^12.23.25",
+    "lucide-react": "^0.552.0",
+    "next": "^16.1.1",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "zod": "^3.24.0"
+  },
+  "devDependencies": {
+    "@types/node": "^24.10.3",
+    "@types/react": "^19.2.3",
+    "@types/react-dom": "^19.2.2",
+    "@vitejs/plugin-react": "^5.1.2",
+    "autoprefixer": "^10.4.20",
+    "postcss": "^8.5.1",
+    "tailwindcss": "^3.4.17",
+    "typescript": "^5.9.3",
+    "vitest": "^4.0.16"
+  }
+}

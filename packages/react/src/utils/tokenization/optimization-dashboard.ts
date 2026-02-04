@@ -9,7 +9,7 @@
  * - Historical analytics and trend analysis
  */
 
-import { TokenCounter } from '@clarity-chat/token-optimization'
+import { AccurateTokenCounter } from '@clarity-chat/token-optimization'
 
 // Dashboard metrics and visualizations
 export interface DashboardMetrics {
@@ -209,8 +209,9 @@ export class TokenOptimizationMonitor {
     qualityScore: number,
     latency: number
   ): Promise<void> {
-    const originalTokens = await TokenCounter.count(originalText)
-    const optimizedTokens = await TokenCounter.count(optimizedText)
+    const counter = new AccurateTokenCounter({ model: modelName })
+    const originalTokens = counter.count(originalText)
+    const optimizedTokens = counter.count(optimizedText)
     const tokensSaved = originalTokens - optimizedTokens
     const compressionRatio = optimizedTokens / originalTokens
 

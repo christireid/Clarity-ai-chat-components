@@ -24,16 +24,16 @@ export default defineConfig({
       vmThreads: {
         // Single thread mode significantly reduces memory overhead
         singleThread: true,
-        // Memory limits per worker
-        memoryLimit: '512MB',
+        // Increased memory limit to handle 233 test files (was 512MB, caused OOM)
+        memoryLimit: '2048MB',
       },
     },
     // Reduce parallelism to avoid memory issues
     maxConcurrency: 1,
     // Increase test timeout for slower execution
     testTimeout: 20000,
-    // Enable isolation to avoid cumulative memory growth across the suite
-    isolate: true,
+    // Disable isolation to reduce memory overhead - tests must clean up properly
+    isolate: false,
     // Include all test directories
     include: [
       'src/**/__tests__/**/*.test.{ts,tsx}',
@@ -48,7 +48,16 @@ export default defineConfig({
     // Benchmark configuration
     benchmark: {
       include: ['src/**/__benchmarks__/**/*.bench.{ts,tsx}'],
-      exclude: ['node_modules', 'dist'],
+      exclude: [
+        'node_modules',
+        'dist',
+        // Exclude benchmarks that depend on @clarity-chat/dev-tools (not yet implemented)
+        'src/__benchmarks__/concurrent-streams.bench.tsx',
+        'src/__benchmarks__/layout-thrashing.bench.tsx',
+        'src/__benchmarks__/long-message-list.bench.tsx',
+        'src/__benchmarks__/streaming.bench.tsx',
+        'src/__benchmarks__/virtualization.bench.tsx',
+      ],
       // Benchmark options
       outputFile: './benchmark-results.json',
     },

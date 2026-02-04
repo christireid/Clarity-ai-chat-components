@@ -1,4 +1,4 @@
-import { API, FileInfo, Options } from 'jscodeshift'
+import type { API, FileInfo, Options } from 'jscodeshift'
 
 /**
  * Markdown Renderers Migration Codemod
@@ -11,7 +11,11 @@ import { API, FileInfo, Options } from 'jscodeshift'
  * - Import updates
  */
 
-export function migrateMarkdownRenderers(file: FileInfo, api: API, options: Options) {
+export function migrateMarkdownRenderers(
+  file: FileInfo,
+  api: API,
+  _options: Options
+) {
   const j = api.jscodeshift
   const root = j(file.source)
 
@@ -64,7 +68,9 @@ export function migrateMarkdownRenderers(file: FileInfo, api: API, options: Opti
     })
     .forEach((path) => {
       // Replace component name
-      path.node.openingElement.name.name = 'EnhancedMarkdownRenderer'
+      if (path.node.openingElement.name.type === 'JSXIdentifier') {
+        path.node.openingElement.name.name = 'EnhancedMarkdownRenderer'
+      }
 
       // Update props if needed (old API used individual boolean props, new uses config object)
       const attributes = path.node.openingElement.attributes || []
@@ -83,7 +89,7 @@ export function migrateMarkdownRenderers(file: FileInfo, api: API, options: Opti
         // Convert old props to config object
         let configProps: Record<string, any> = {}
 
-        attributes.forEach((attr, index) => {
+        attributes.forEach((attr, _index) => {
           if (
             attr.type === 'JSXAttribute' &&
             attr.name.type === 'JSXIdentifier'
@@ -92,11 +98,11 @@ export function migrateMarkdownRenderers(file: FileInfo, api: API, options: Opti
             const propValue = attr.value
 
             if (propName === 'enableHighlight') {
-              configProps.enableSyntaxHighlight = propValue
+              configProps['enableSyntaxHighlight'] = propValue
             } else if (propName === 'enableGFM') {
-              configProps.enableGFM = propValue
+              configProps['enableGFM'] = propValue
             } else if (propName === 'enableMath') {
-              configProps.enableKaTeX = propValue
+              configProps['enableKaTeX'] = propValue
             }
           }
         })
@@ -148,7 +154,9 @@ export function migrateMarkdownRenderers(file: FileInfo, api: API, options: Opti
     .forEach((path) => {
       // Replace with EnhancedMarkdownRenderer or remove if not needed
       // For now, replace with EnhancedMarkdownRenderer
-      path.node.openingElement.name.name = 'EnhancedMarkdownRenderer'
+      if (path.node.openingElement.name.type === 'JSXIdentifier') {
+        path.node.openingElement.name.name = 'EnhancedMarkdownRenderer'
+      }
 
       // Copy content prop if it exists
       hasChanges = true

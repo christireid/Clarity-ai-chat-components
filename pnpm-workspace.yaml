@@ -1,5 +1,7 @@
 packages:
   - 'packages/*'
   - 'apps/*'
+  - '!apps/marketing-site'  # Disabled due to Turbopack bug in Next.js 16.1.5
   - 'apps/examples/*'
+  - '!apps/examples/conversational-analytics'  # Disabled - build errors
   - 'tools/*'

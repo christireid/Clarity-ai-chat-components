@@ -5,14 +5,19 @@ import { Sparkles, Code2, Play, Zap } from 'lucide-react'
 
 export const metadata = {
   title: 'Interactive Demos | Clarity Chat',
-  description: 'Explore interactive component demonstrations with live controls and code examples.',
+  description:
+    'Explore interactive component demonstrations with live controls and code examples.',
 }
+
+// ISR Configuration: Demo pages are static showcases, revalidate every 3 hours
+export const revalidate = 10800
 
 // Example component for preview
 function ExampleButton({ variant = 'primary', children = 'Click me!' }: any) {
   const variants = {
     primary: 'bg-gradient-to-r from-brand-500 to-purple-500 text-white',
-    secondary: 'bg-white dark:bg-neutral-900 text-neutral-900 dark:text-white border border-neutral-200 dark:border-neutral-800',
+    secondary:
+      'bg-white dark:bg-neutral-900 text-neutral-900 dark:text-white border border-neutral-200 dark:border-neutral-800',
     ghost: 'text-brand-500 hover:bg-brand-50 dark:hover:bg-brand-950',
   }
 
@@ -55,13 +60,14 @@ export default function DemosPage() {
               Interactive Examples
             </span>
           </div>
-          
+
           <KineticText className="text-4xl sm:text-5xl font-bold mb-4">
             Try Components Live
           </KineticText>
-          
+
           <p className="text-lg text-neutral-600 dark:text-neutral-400 max-w-2xl mx-auto">
-            Interact with components, toggle between preview and code, and see responsive behavior in real-time.
+            Interact with components, toggle between preview and code, and see
+            responsive behavior in real-time.
           </p>
         </div>
       </ScrollReveal>
@@ -74,7 +80,7 @@ export default function DemosPage() {
               <Code2 className="w-6 h-6 text-brand-500" />
               Button Component
             </h2>
-            
+
             <InteractivePreview
               title="Button Variants"
               description="A button component with multiple style variants"
@@ -106,7 +112,7 @@ export default function DemosPage() {
               <Zap className="w-6 h-6 text-purple-500" />
               Card Component
             </h2>
-            
+
             <InteractivePreview
               title="Glassmorphism Card"
               description="A modern card with glassmorphism effects"
@@ -134,7 +140,8 @@ export default function DemosPage() {
                     </div>
                   </div>
                   <p className="text-neutral-600 dark:text-neutral-400 mb-4">
-                    This card uses glassmorphism effects with backdrop blur and semi-transparent backgrounds.
+                    This card uses glassmorphism effects with backdrop blur and
+                    semi-transparent backgrounds.
                   </p>
                   <button className="px-4 py-2 bg-brand-500 text-white rounded-lg text-sm font-medium hover:bg-brand-600 transition-colors">
                     Learn More
@@ -152,7 +159,7 @@ export default function DemosPage() {
               <Play className="w-6 h-6 text-pink-500" />
               Video Tutorials
             </h2>
-            
+
             <div className="grid md:grid-cols-2 gap-6">
               <VideoEmbed
                 src="https://www.youtube.com/watch?v=dQw4w9WgXcQ"
@@ -172,9 +179,12 @@ export default function DemosPage() {
         <ScrollReveal direction="up" delay={0.2}>
           <section className="bg-gradient-to-br from-brand-500/5 via-purple-500/5 to-pink-500/5 rounded-2xl p-8 sm:p-12">
             <div className="text-center mb-12">
-              <h2 className="text-3xl font-bold mb-4">Why Interactive Demos?</h2>
+              <h2 className="text-3xl font-bold mb-4">
+                Why Interactive Demos?
+              </h2>
               <p className="text-neutral-600 dark:text-neutral-400 max-w-2xl mx-auto">
-                See components in action before implementing them in your project.
+                See components in action before implementing them in your
+                project.
               </p>
             </div>
 

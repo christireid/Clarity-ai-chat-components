@@ -1,0 +1,2408 @@
+---
+title: Examples Library
+description: 50+ copy-paste ready examples for Clarity AI Chat Components
+---
+
+# Examples Library
+
+Copy-paste ready examples for every use case. All examples are production-ready and fully typed.
+
+## Quick Links
+
+<div className="grid grid-cols-1 md:grid-cols-3 gap-4 my-8">
+  <a href="#basic-patterns" className="card hover:shadow-lg transition-shadow p-4 rounded-lg border">
+    <h3 className="font-semibold mb-2">Basic Patterns</h3>
+    <p className="text-sm text-muted-foreground">Simple chat, input handling, streaming</p>
+  </a>
+  <a href="#framework-integration" className="card hover:shadow-lg transition-shadow p-4 rounded-lg border">
+    <h3 className="font-semibold mb-2">Framework Integration</h3>
+    <p className="text-sm text-muted-foreground">Next.js, Vite, Remix examples</p>
+  </a>
+  <a href="#advanced-patterns" className="card hover:shadow-lg transition-shadow p-4 rounded-lg border">
+    <h3 className="font-semibold mb-2">Advanced Patterns</h3>
+    <p className="text-sm text-muted-foreground">Multi-agent, RAG, optimization</p>
+  </a>
+</div>
+
+---
+
+## Basic Patterns
+
+### 1. Simple Chat
+
+The most basic implementation with streaming support.
+
+```tsx
+'use client'
+
+import { useClarityChat, MessageList, PillChatInput } from '@clarity-chat/react'
+
+export default function SimpleChat() {
+  const { messages, append, isLoading } = useClarityChat({
+    api: '/api/chat',
+  })
+
+  return (
+    <div className="flex flex-col h-screen">
+      <MessageList messages={messages} />
+      <PillChatInput
+        value={input}
+        onChange={setInput}
+        onSubmit={(value) => append({ role: 'user', content: value })}
+        isGenerating={isLoading}
+      />
+    </div>
+  )
+}
+```
+
+**CodeSandbox**: [Simple Chat Example](https://codesandbox.io/s/clarity-simple-chat)
+
+---
+
+### 2. Chat with Controlled Input
+
+Manual input state management for custom validation.
+
+```tsx
+'use client'
+
+import { useState } from 'react'
+import { useClarityChat, MessageList, PillChatInput } from '@clarity-chat/react'
+
+export default function ControlledChat() {
+  const [input, setInput] = useState('')
+  const { messages, append, isLoading } = useClarityChat({
+    api: '/api/chat',
+  })
+
+  const handleSubmit = async (value: string) => {
+    if (!value.trim()) return
+
+    setInput('') // Clear immediately
+    await append({ role: 'user', content: value })
+  }
+
+  return (
+    <div className="flex flex-col h-screen">
+      <MessageList messages={messages} />
+      <PillChatInput
+        value={input}
+        onChange={setInput}
+        onSubmit={handleSubmit}
+        isGenerating={isLoading}
+        placeholder="Type your message..."
+        maxLength={2000}
+        showCharCounter
+      />
+    </div>
+  )
+}
+```
+
+**CodeSandbox**: [Controlled Input Example](https://codesandbox.io/s/clarity-controlled-input)
+
+---
+
+### 3. Chat with Streaming
+
+Real-time streaming with visual feedback.
+
+```tsx
+'use client'
+
+import { useClarityChat, MessageList, PillChatInput } from '@clarity-chat/react'
+import { useEffect, useRef } from 'react'
+
+export default function StreamingChat() {
+  const messagesEndRef = useRef<HTMLDivElement>(null)
+  const { messages, append, isLoading, error } = useClarityChat({
+    api: '/api/chat',
+    stream: true,
+  })
+
+  // Auto-scroll to bottom
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
+  }, [messages])
+
+  return (
+    <div className="flex flex-col h-screen">
+      <div className="flex-1 overflow-y-auto">
+        <MessageList
+          messages={messages}
+          streamingIndicator={isLoading}
+        />
+        <div ref={messagesEndRef} />
+      </div>
+
+      {error && (
+        <div className="bg-red-50 text-red-600 px-4 py-2 text-sm">
+          Error: {error.message}
+        </div>
+      )}
+
+      <PillChatInput
+        value={input}
+        onChange={setInput}
+        onSubmit={(value) => append({ role: 'user', content: value })}
+        isGenerating={isLoading}
+      />
+    </div>
+  )
+}
+```
+
+**CodeSandbox**: [Streaming Chat Example](https://codesandbox.io/s/clarity-streaming-chat)
+
+---
+
+### 4. Chat with Tools/Function Calling
+
+AI assistant with tool execution.
+
+```tsx
+'use client'
+
+import { useClarityChat, MessageList, PillChatInput, ToolCard } from '@clarity-chat/react'
+
+const tools = [
+  {
+    name: 'get_weather',
+    description: 'Get current weather for a location',
+    parameters: {
+      type: 'object',
+      properties: {
+        location: { type: 'string', description: 'City name' },
+      },
+      required: ['location'],
+    },
+  },
+]
+
+export default function ChatWithTools() {
+  const { messages, append, isLoading } = useClarityChat({
+    api: '/api/chat',
+    tools,
+    onToolCall: async (toolCall) => {
+      // Execute tool and return result
+      if (toolCall.name === 'get_weather') {
+        const weather = await fetchWeather(toolCall.args.location)
+        return { result: weather }
+      }
+    },
+  })
+
+  return (
+    <div className="flex flex-col h-screen">
+      <MessageList
+        messages={messages}
+        renderToolCall={(tool) => (
+          <ToolCard
+            name={tool.name}
+            args={tool.args}
+            result={tool.result}
+            status={tool.status}
+          />
+        )}
+      />
+      <PillChatInput
+        value={input}
+        onChange={setInput}
+        onSubmit={(value) => append({ role: 'user', content: value })}
+        isGenerating={isLoading}
+      />
+    </div>
+  )
+}
+```
+
+**CodeSandbox**: [Tools Example](https://codesandbox.io/s/clarity-tools-chat)
+
+---
+
+### 5. Multi-Turn Conversation
+
+Maintain context across multiple turns.
+
+```tsx
+'use client'
+
+import { useClarityChat, MessageList, PillChatInput } from '@clarity-chat/react'
+
+export default function MultiTurnChat() {
+  const { messages, append, isLoading, reset } = useClarityChat({
+    api: '/api/chat',
+    initialMessages: [
+      {
+        role: 'system',
+        content: 'You are a helpful coding assistant. Be concise and practical.',
+      },
+    ],
+  })
+
+  return (
+    <div className="flex flex-col h-screen">
+      <div className="flex justify-between items-center p-4 border-b">
+        <h1 className="text-lg font-semibold">Code Assistant</h1>
+        <button
+          onClick={reset}
+          className="px-3 py-1 text-sm rounded bg-gray-100 hover:bg-gray-200"
+        >
+          Clear Chat
+        </button>
+      </div>
+
+      <MessageList
+        messages={messages.filter(m => m.role !== 'system')}
+      />
+
+      <PillChatInput
+        value={input}
+        onChange={setInput}
+        onSubmit={(value) => append({ role: 'user', content: value })}
+        isGenerating={isLoading}
+        placeholder="Ask a coding question..."
+      />
+    </div>
+  )
+}
+```
+
+**CodeSandbox**: [Multi-Turn Example](https://codesandbox.io/s/clarity-multi-turn)
+
+---
+
+### 6. Chat with Attachments
+
+File upload and image attachments.
+
+```tsx
+'use client'
+
+import { useState } from 'react'
+import { useClarityChat, MessageList, PillChatInput } from '@clarity-chat/react'
+
+export default function ChatWithAttachments() {
+  const [files, setFiles] = useState<File[]>([])
+  const { messages, append, isLoading } = useClarityChat({
+    api: '/api/chat',
+  })
+
+  const handleAttach = () => {
+    const input = document.createElement('input')
+    input.type = 'file'
+    input.multiple = true
+    input.accept = 'image/*,.pdf,.txt'
+
+    input.onchange = (e) => {
+      const newFiles = Array.from((e.target as HTMLInputElement).files || [])
+      setFiles([...files, ...newFiles])
+    }
+
+    input.click()
+  }
+
+  const handleSubmit = async (value: string) => {
+    const formData = new FormData()
+    formData.append('message', value)
+    files.forEach((file) => formData.append('files', file))
+
+    await append({ role: 'user', content: value })
+    setFiles([])
+  }
+
+  return (
+    <div className="flex flex-col h-screen">
+      <MessageList messages={messages} />
+
+      {files.length > 0 && (
+        <div className="flex gap-2 p-2 border-t">
+          {files.map((file, i) => (
+            <div key={i} className="relative group">
+              <img
+                src={URL.createObjectURL(file)}
+                alt={file.name}
+                className="w-16 h-16 object-cover rounded"
+              />
+              <button
+                onClick={() => setFiles(files.filter((_, idx) => idx !== i))}
+                className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 text-xs opacity-0 group-hover:opacity-100"
+              >
+                ×
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
+
+      <PillChatInput
+        value={input}
+        onChange={setInput}
+        onSubmit={handleSubmit}
+        onAttach={handleAttach}
+        isGenerating={isLoading}
+      />
+    </div>
+  )
+}
+```
+
+**CodeSandbox**: [Attachments Example](https://codesandbox.io/s/clarity-attachments)
+
+---
+
+### 7. Chat with Voice Input
+
+Audio recording and transcription.
+
+```tsx
+'use client'
+
+import { AudioRecorder, useClarityChat, MessageList, PillChatInput } from '@clarity-chat/react'
+import { useState } from 'react'
+
+export default function VoiceChat() {
+  const [showRecorder, setShowRecorder] = useState(false)
+  const { messages, append, isLoading } = useClarityChat({
+    api: '/api/chat',
+  })
+
+  const handleAudioComplete = async (blob: Blob) => {
+    // Transcribe audio
+    const formData = new FormData()
+    formData.append('audio', blob)
+
+    const response = await fetch('/api/transcribe', {
+      method: 'POST',
+      body: formData,
+    })
+
+    const { text } = await response.json()
+    await append({ role: 'user', content: text })
+    setShowRecorder(false)
+  }
+
+  return (
+    <div className="flex flex-col h-screen">
+      <MessageList messages={messages} />
+
+      {showRecorder ? (
+        <AudioRecorder
+          onAudioComplete={handleAudioComplete}
+          onCancel={() => setShowRecorder(false)}
+        />
+      ) : (
+        <PillChatInput
+          value={input}
+          onChange={setInput}
+          onSubmit={(value) => append({ role: 'user', content: value })}
+          isGenerating={isLoading}
+          rightSlot={
+            <button
+              onClick={() => setShowRecorder(true)}
+              className="p-2 rounded hover:bg-gray-100"
+            >
+              🎤
+            </button>
+          }
+        />
+      )}
+    </div>
+  )
+}
+```
+
+**CodeSandbox**: [Voice Input Example](https://codesandbox.io/s/clarity-voice-input)
+
+---
+
+### 8. Chat with Memory
+
+Persistent conversation memory.
+
+```tsx
+'use client'
+
+import { useClarityChat, MessageList, PillChatInput } from '@clarity-chat/react'
+import { MemoryProvider } from '@clarity-chat/memory'
+
+export default function ChatWithMemory() {
+  return (
+    <MemoryProvider
+      config={{
+        strategy: 'vector-store',
+        endpoint: '/api/memory',
+      }}
+    >
+      <ChatInterface />
+    </MemoryProvider>
+  )
+}
+
+function ChatInterface() {
+  const { messages, append, isLoading, memoryInfo } = useClarityChat({
+    api: '/api/chat',
+    memory: {
+      enabled: true,
+      strategy: 'vector-store',
+      autoCapture: true,
+      requireConsent: true,
+      onConsentRequired: async () => {
+        return confirm('Allow chat to store memories for better context?')
+      },
+    },
+  })
+
+  return (
+    <div className="flex flex-col h-screen">
+      {memoryInfo.enabled && (
+        <div className="bg-blue-50 px-4 py-2 text-sm">
+          Memory: {memoryInfo.memoryCount} items stored
+        </div>
+      )}
+
+      <MessageList messages={messages} />
+
+      <PillChatInput
+        value={input}
+        onChange={setInput}
+        onSubmit={(value) => append({ role: 'user', content: value })}
+        isGenerating={isLoading}
+      />
+    </div>
+  )
+}
+```
+
+**CodeSandbox**: [Memory Example](https://codesandbox.io/s/clarity-memory-chat)
+
+---
+
+### 9. Chat with Error Handling
+
+Comprehensive error handling and recovery.
+
+```tsx
+'use client'
+
+import { useClarityChat, MessageList, PillChatInput } from '@clarity-chat/react'
+import { useState } from 'react'
+
+export default function ChatWithErrors() {
+  const [retrying, setRetrying] = useState(false)
+  const { messages, append, isLoading, error, reset } = useClarityChat({
+    api: '/api/chat',
+    onError: (error) => {
+      console.error('Chat error:', error)
+      // Log to error tracking service
+    },
+  })
+
+  const handleRetry = async () => {
+    setRetrying(true)
+    const lastUserMessage = messages.filter(m => m.role === 'user').pop()
+
+    if (lastUserMessage) {
+      reset()
+      await append(lastUserMessage)
+    }
+    setRetrying(false)
+  }
+
+  return (
+    <div className="flex flex-col h-screen">
+      <MessageList messages={messages} />
+
+      {error && (
+        <div className="bg-red-50 border-l-4 border-red-500 p-4 m-4">
+          <div className="flex items-start justify-between">
+            <div>
+              <p className="font-semibold text-red-800">Error occurred</p>
+              <p className="text-sm text-red-600 mt-1">{error.message}</p>
+            </div>
+            <button
+              onClick={handleRetry}
+              disabled={retrying}
+              className="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700 disabled:opacity-50"
+            >
+              {retrying ? 'Retrying...' : 'Retry'}
+            </button>
+          </div>
+        </div>
+      )}
+
+      <PillChatInput
+        value={input}
+        onChange={setInput}
+        onSubmit={(value) => append({ role: 'user', content: value })}
+        isGenerating={isLoading}
+        disabled={!!error}
+      />
+    </div>
+  )
+}
+```
+
+**CodeSandbox**: [Error Handling Example](https://codesandbox.io/s/clarity-error-handling)
+
+---
+
+### 10. Chat with Loading States
+
+Rich loading indicators and skeletons.
+
+```tsx
+'use client'
+
+import { useClarityChat, MessageList, PillChatInput } from '@clarity-chat/react'
+
+export default function ChatWithLoading() {
+  const { messages, append, isLoading } = useClarityChat({
+    api: '/api/chat',
+  })
+
+  return (
+    <div className="flex flex-col h-screen">
+      <MessageList
+        messages={messages}
+        renderLoading={() => (
+          <div className="flex items-start gap-3 p-4">
+            <div className="w-8 h-8 rounded-full bg-gray-200 animate-pulse" />
+            <div className="flex-1 space-y-2">
+              <div className="h-4 bg-gray-200 rounded animate-pulse w-3/4" />
+              <div className="h-4 bg-gray-200 rounded animate-pulse w-1/2" />
+            </div>
+          </div>
+        )}
+      />
+
+      <PillChatInput
+        value={input}
+        onChange={setInput}
+        onSubmit={(value) => append({ role: 'user', content: value })}
+        isGenerating={isLoading}
+        placeholder={isLoading ? 'AI is thinking...' : 'Type a message...'}
+      />
+    </div>
+  )
+}
+```
+
+**CodeSandbox**: [Loading States Example](https://codesandbox.io/s/clarity-loading-states)
+
+---
+
+## Framework Integration
+
+### 11. Next.js App Router (Basic)
+
+Complete Next.js 14+ implementation with App Router.
+
+```tsx
+// app/chat/page.tsx
+'use client'
+
+import { useClarityChat, MessageList, PillChatInput } from '@clarity-chat/react'
+import '@clarity-chat/react/styles.css'
+
+export default function ChatPage() {
+  const { messages, append, isLoading } = useClarityChat({
+    api: '/api/chat',
+  })
+
+  return (
+    <main className="container mx-auto max-w-4xl h-screen flex flex-col">
+      <header className="py-4 border-b">
+        <h1 className="text-2xl font-bold">AI Chat</h1>
+      </header>
+
+      <div className="flex-1 overflow-y-auto">
+        <MessageList messages={messages} />
+      </div>
+
+      <div className="border-t p-4">
+        <PillChatInput
+          value={input}
+          onChange={setInput}
+          onSubmit={(value) => append({ role: 'user', content: value })}
+          isGenerating={isLoading}
+        />
+      </div>
+    </main>
+  )
+}
+```
+
+```typescript
+// app/api/chat/route.ts
+import { openai } from '@ai-sdk/openai'
+import { streamText } from 'ai'
+
+export async function POST(req: Request) {
+  const { messages } = await req.json()
+
+  const result = streamText({
+    model: openai('gpt-4-turbo'),
+    messages,
+  })
+
+  return result.toDataStreamResponse()
+}
+```
+
+**CodeSandbox**: [Next.js App Router Example](https://codesandbox.io/s/clarity-nextjs-app)
+
+---
+
+### 12. Next.js Pages Router
+
+Next.js with Pages Router implementation.
+
+```tsx
+// pages/chat.tsx
+import { useClarityChat, MessageList, PillChatInput } from '@clarity-chat/react'
+import '@clarity-chat/react/styles.css'
+
+export default function ChatPage() {
+  const { messages, append, isLoading } = useClarityChat({
+    api: '/api/chat',
+  })
+
+  return (
+    <div className="flex flex-col h-screen">
+      <MessageList messages={messages} />
+      <PillChatInput
+        value={input}
+        onChange={setInput}
+        onSubmit={(value) => append({ role: 'user', content: value })}
+        isGenerating={isLoading}
+      />
+    </div>
+  )
+}
+```
+
+```typescript
+// pages/api/chat.ts
+import { Configuration, OpenAIApi } from 'openai'
+import type { NextApiRequest, NextApiResponse } from 'next'
+
+const openai = new OpenAIApi(
+  new Configuration({ apiKey: process.env.OPENAI_API_KEY })
+)
+
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse
+) {
+  const { messages } = req.body
+
+  const completion = await openai.createChatCompletion({
+    model: 'gpt-4',
+    messages,
+    stream: true,
+  })
+
+  // Stream response
+  for await (const chunk of completion) {
+    res.write(chunk)
+  }
+  res.end()
+}
+```
+
+**CodeSandbox**: [Next.js Pages Router Example](https://codesandbox.io/s/clarity-nextjs-pages)
+
+---
+
+### 13. Vite + React
+
+Vite setup with React.
+
+```tsx
+// src/App.tsx
+import { useClarityChat, MessageList, PillChatInput } from '@clarity-chat/react'
+import '@clarity-chat/react/styles.css'
+
+function App() {
+  const { messages, append, isLoading } = useClarityChat({
+    api: import.meta.env.VITE_API_URL + '/chat',
+  })
+
+  return (
+    <div className="min-h-screen flex flex-col">
+      <header className="bg-gray-900 text-white p-4">
+        <h1 className="text-xl font-bold">Vite Chat App</h1>
+      </header>
+
+      <main className="flex-1 container mx-auto max-w-4xl flex flex-col">
+        <MessageList messages={messages} />
+        <PillChatInput
+          value={input}
+          onChange={setInput}
+          onSubmit={(value) => append({ role: 'user', content: value })}
+          isGenerating={isLoading}
+        />
+      </main>
+    </div>
+  )
+}
+
+export default App
+```
+
+```typescript
+// vite.config.ts
+import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react'
+
+export default defineConfig({
+  plugins: [react()],
+  server: {
+    proxy: {
+      '/api': {
+        target: 'http://localhost:3001',
+        changeOrigin: true,
+      },
+    },
+  },
+})
+```
+
+**CodeSandbox**: [Vite Example](https://codesandbox.io/s/clarity-vite)
+
+---
+
+### 14. Remix
+
+Remix framework integration.
+
+```tsx
+// app/routes/chat.tsx
+import { useClarityChat, MessageList, PillChatInput } from '@clarity-chat/react'
+import type { MetaFunction } from '@remix-run/node'
+
+export const meta: MetaFunction = () => {
+  return [{ title: 'AI Chat' }]
+}
+
+export default function ChatRoute() {
+  const { messages, append, isLoading } = useClarityChat({
+    api: '/api/chat',
+  })
+
+  return (
+    <div className="flex flex-col h-screen">
+      <MessageList messages={messages} />
+      <PillChatInput
+        value={input}
+        onChange={setInput}
+        onSubmit={(value) => append({ role: 'user', content: value })}
+        isGenerating={isLoading}
+      />
+    </div>
+  )
+}
+```
+
+```typescript
+// app/routes/api.chat.ts
+import { json } from '@remix-run/node'
+import type { ActionFunction } from '@remix-run/node'
+import { openai } from '@ai-sdk/openai'
+import { streamText } from 'ai'
+
+export const action: ActionFunction = async ({ request }) => {
+  const { messages } = await request.json()
+
+  const result = streamText({
+    model: openai('gpt-4-turbo'),
+    messages,
+  })
+
+  return result.toDataStreamResponse()
+}
+```
+
+**CodeSandbox**: [Remix Example](https://codesandbox.io/s/clarity-remix)
+
+---
+
+### 15. Next.js with TypeScript
+
+Fully typed Next.js implementation.
+
+```typescript
+// app/chat/page.tsx
+'use client'
+
+import { useClarityChat, MessageList, PillChatInput } from '@clarity-chat/react'
+import type { CoreMessage } from '@clarity-chat/types'
+
+export default function ChatPage() {
+  const { messages, append, isLoading } = useClarityChat({
+    api: '/api/chat',
+  })
+
+  const handleSubmit = async (value: string) => {
+    const message: CoreMessage = {
+      role: 'user',
+      content: value,
+    }
+    await append(message)
+  }
+
+  return (
+    <div className="flex flex-col h-screen">
+      <MessageList messages={messages} />
+      <PillChatInput
+        value={input}
+        onChange={setInput}
+        onSubmit={handleSubmit}
+        isGenerating={isLoading}
+      />
+    </div>
+  )
+}
+```
+
+**CodeSandbox**: [Next.js TypeScript Example](https://codesandbox.io/s/clarity-nextjs-ts)
+
+---
+
+### 16. Next.js with Tailwind CSS
+
+Custom Tailwind configuration.
+
+```tsx
+// app/chat/page.tsx
+'use client'
+
+import { useClarityChat, MessageList, PillChatInput } from '@clarity-chat/react'
+
+export default function ChatPage() {
+  const { messages, append, isLoading } = useClarityChat({
+    api: '/api/chat',
+  })
+
+  return (
+    <div className="flex flex-col h-screen bg-gradient-to-br from-purple-50 to-blue-50">
+      <div className="flex-1 overflow-y-auto px-4 py-8">
+        <div className="max-w-3xl mx-auto">
+          <MessageList
+            messages={messages}
+            className="space-y-4"
+            messageClassName="bg-white rounded-lg shadow-sm p-4"
+          />
+        </div>
+      </div>
+
+      <div className="border-t bg-white/80 backdrop-blur-sm p-4">
+        <div className="max-w-3xl mx-auto">
+          <PillChatInput
+            value={input}
+            onChange={setInput}
+            onSubmit={(value) => append({ role: 'user', content: value })}
+            isGenerating={isLoading}
+            className="shadow-lg"
+          />
+        </div>
+      </div>
+    </div>
+  )
+}
+```
+
+```javascript
+// tailwind.config.js
+module.exports = {
+  content: [
+    './app/**/*.{js,ts,jsx,tsx}',
+    './node_modules/@clarity-chat/react/**/*.{js,ts,jsx,tsx}',
+  ],
+  theme: {
+    extend: {
+      colors: {
+        'clarity-blue': '#0066FF',
+        'clarity-purple': '#7C3AED',
+      },
+    },
+  },
+  plugins: [],
+}
+```
+
+**CodeSandbox**: [Next.js + Tailwind Example](https://codesandbox.io/s/clarity-nextjs-tailwind)
+
+---
+
+### 17. Next.js with Server Actions
+
+Server Actions for mutations.
+
+```tsx
+// app/chat/page.tsx
+'use client'
+
+import { useClarityChat, MessageList, PillChatInput } from '@clarity-chat/react'
+import { saveChatHistory } from './actions'
+
+export default function ChatPage() {
+  const { messages, append, isLoading } = useClarityChat({
+    api: '/api/chat',
+    onFinish: async (message) => {
+      await saveChatHistory(messages)
+    },
+  })
+
+  return (
+    <div className="flex flex-col h-screen">
+      <MessageList messages={messages} />
+      <PillChatInput
+        value={input}
+        onChange={setInput}
+        onSubmit={(value) => append({ role: 'user', content: value })}
+        isGenerating={isLoading}
+      />
+    </div>
+  )
+}
+```
+
+```typescript
+// app/chat/actions.ts
+'use server'
+
+import { db } from '@/lib/db'
+import type { CoreMessage } from '@clarity-chat/types'
+
+export async function saveChatHistory(messages: CoreMessage[]) {
+  await db.chatHistory.create({
+    data: {
+      messages: JSON.stringify(messages),
+      timestamp: new Date(),
+    },
+  })
+}
+```
+
+**CodeSandbox**: [Server Actions Example](https://codesandbox.io/s/clarity-server-actions)
+
+---
+
+## Advanced Patterns
+
+### 18. Multi-Model Chat
+
+Switch between AI models dynamically.
+
+```tsx
+'use client'
+
+import { useState } from 'react'
+import { useClarityChat, MessageList, PillChatInput } from '@clarity-chat/react'
+
+type Model = 'gpt-4' | 'claude-3' | 'gemini-pro'
+
+export default function MultiModelChat() {
+  const [model, setModel] = useState<Model>('gpt-4')
+  const { messages, append, isLoading } = useClarityChat({
+    api: `/api/chat/${model}`,
+  })
+
+  return (
+    <div className="flex flex-col h-screen">
+      <div className="flex items-center gap-2 p-4 border-b">
+        <label className="font-medium">Model:</label>
+        <select
+          value={model}
+          onChange={(e) => setModel(e.target.value as Model)}
+          className="px-3 py-1 border rounded"
+        >
+          <option value="gpt-4">GPT-4</option>
+          <option value="claude-3">Claude 3</option>
+          <option value="gemini-pro">Gemini Pro</option>
+        </select>
+      </div>
+
+      <MessageList messages={messages} />
+
+      <PillChatInput
+        value={input}
+        onChange={setInput}
+        onSubmit={(value) => append({ role: 'user', content: value })}
+        isGenerating={isLoading}
+      />
+    </div>
+  )
+}
+```
+
+**CodeSandbox**: [Multi-Model Example](https://codesandbox.io/s/clarity-multi-model)
+
+---
+
+### 19. Chat with RAG (Retrieval-Augmented Generation)
+
+Vector search and document retrieval.
+
+```tsx
+'use client'
+
+import { useClarityChat, MessageList, PillChatInput } from '@clarity-chat/react'
+import { VectorSearch } from '@clarity-chat/memory'
+
+export default function RAGChat() {
+  const { messages, append, isLoading } = useClarityChat({
+    api: '/api/chat',
+    transform: async (messages) => {
+      const lastMessage = messages[messages.length - 1]
+
+      if (lastMessage.role === 'user') {
+        // Retrieve relevant documents
+        const docs = await fetch('/api/search', {
+          method: 'POST',
+          body: JSON.stringify({ query: lastMessage.content }),
+        }).then(r => r.json())
+
+        // Add context to system message
+        return [
+          {
+            role: 'system',
+            content: `Context:\n${docs.map(d => d.content).join('\n\n')}`,
+          },
+          ...messages,
+        ]
+      }
+
+      return messages
+    },
+  })
+
+  return (
+    <div className="flex flex-col h-screen">
+      <MessageList messages={messages} />
+      <PillChatInput
+        value={input}
+        onChange={setInput}
+        onSubmit={(value) => append({ role: 'user', content: value })}
+        isGenerating={isLoading}
+      />
+    </div>
+  )
+}
+```
+
+**CodeSandbox**: [RAG Example](https://codesandbox.io/s/clarity-rag)
+
+---
+
+### 20. Chat with Token Optimization
+
+Automatic prompt compression.
+
+```tsx
+'use client'
+
+import { useClarityChat, MessageList, PillChatInput, TokenCounter } from '@clarity-chat/react'
+
+export default function OptimizedChat() {
+  const { messages, append, isLoading, tokenStats } = useClarityChat({
+    api: '/api/chat',
+    promptOptimization: {
+      enabled: true,
+      strategy: 'hybrid',
+      targetTokens: 4000,
+      model: 'gpt-4',
+      keepRecent: 3,
+    },
+  })
+
+  return (
+    <div className="flex flex-col h-screen">
+      {tokenStats && (
+        <div className="bg-blue-50 px-4 py-2 text-sm flex items-center gap-4">
+          <TokenCounter tokens={tokenStats.inputTokens} />
+          <span>Budget: {tokenStats.remainingBudget} tokens</span>
+          <span>Utilization: {tokenStats.utilization}%</span>
+          {tokenStats.wasOptimized && (
+            <span className="text-green-600">✓ Optimized</span>
+          )}
+        </div>
+      )}
+
+      <MessageList messages={messages} />
+
+      <PillChatInput
+        value={input}
+        onChange={setInput}
+        onSubmit={(value) => append({ role: 'user', content: value })}
+        isGenerating={isLoading}
+      />
+    </div>
+  )
+}
+```
+
+**CodeSandbox**: [Token Optimization Example](https://codesandbox.io/s/clarity-token-optimization)
+
+---
+
+### 21. Multi-Agent Chat
+
+Multiple AI agents collaborating.
+
+```tsx
+'use client'
+
+import { useState } from 'react'
+import { useClarityChat, MessageList, PillChatInput } from '@clarity-chat/react'
+
+type Agent = 'researcher' | 'writer' | 'critic'
+
+export default function MultiAgentChat() {
+  const [activeAgent, setActiveAgent] = useState<Agent>('researcher')
+
+  const agents = {
+    researcher: useClarityChat({ api: '/api/agents/researcher' }),
+    writer: useClarityChat({ api: '/api/agents/writer' }),
+    critic: useClarityChat({ api: '/api/agents/critic' }),
+  }
+
+  const currentAgent = agents[activeAgent]
+
+  const handleAgentSwitch = async (agent: Agent) => {
+    // Pass context from current agent to next
+    const lastMessages = currentAgent.messages.slice(-3)
+    await agents[agent].append({
+      role: 'system',
+      content: `Context from ${activeAgent}:\n${JSON.stringify(lastMessages)}`,
+    })
+    setActiveAgent(agent)
+  }
+
+  return (
+    <div className="flex h-screen">
+      <aside className="w-64 border-r p-4">
+        <h2 className="font-semibold mb-4">Agents</h2>
+        {(['researcher', 'writer', 'critic'] as Agent[]).map((agent) => (
+          <button
+            key={agent}
+            onClick={() => handleAgentSwitch(agent)}
+            className={`w-full text-left px-3 py-2 rounded mb-2 ${
+              activeAgent === agent ? 'bg-blue-100' : 'hover:bg-gray-100'
+            }`}
+          >
+            {agent.charAt(0).toUpperCase() + agent.slice(1)}
+          </button>
+        ))}
+      </aside>
+
+      <main className="flex-1 flex flex-col">
+        <MessageList messages={currentAgent.messages} />
+        <PillChatInput
+          value={input}
+          onChange={setInput}
+          onSubmit={(value) => currentAgent.append({ role: 'user', content: value })}
+          isGenerating={currentAgent.isLoading}
+        />
+      </main>
+    </div>
+  )
+}
+```
+
+**CodeSandbox**: [Multi-Agent Example](https://codesandbox.io/s/clarity-multi-agent)
+
+---
+
+### 22. Chat with Caching
+
+Provider-level prompt caching.
+
+```tsx
+'use client'
+
+import { useClarityChat, MessageList, PillChatInput } from '@clarity-chat/react'
+
+export default function CachedChat() {
+  const { messages, append, isLoading, tokenStats } = useClarityChat({
+    api: '/api/chat',
+    caching: {
+      enabled: true,
+      provider: 'anthropic',
+      strategy: 'prefix',
+      systemPromptCaching: true,
+    },
+  })
+
+  return (
+    <div className="flex flex-col h-screen">
+      {tokenStats?.cacheHitRate && (
+        <div className="bg-green-50 px-4 py-2 text-sm">
+          Cache hit rate: {(tokenStats.cacheHitRate * 100).toFixed(1)}%
+          <span className="ml-4 text-green-600">
+            Saved: {tokenStats.cacheTokensSaved} tokens
+          </span>
+        </div>
+      )}
+
+      <MessageList messages={messages} />
+
+      <PillChatInput
+        value={input}
+        onChange={setInput}
+        onSubmit={(value) => append({ role: 'user', content: value })}
+        isGenerating={isLoading}
+      />
+    </div>
+  )
+}
+```
+
+**CodeSandbox**: [Caching Example](https://codesandbox.io/s/clarity-caching)
+
+---
+
+### 23. Chat with Rate Limiting
+
+Client-side rate limiting.
+
+```tsx
+'use client'
+
+import { useState, useEffect } from 'react'
+import { useClarityChat, MessageList, PillChatInput } from '@clarity-chat/react'
+
+const RATE_LIMIT = 10 // messages per minute
+const WINDOW = 60000 // 1 minute
+
+export default function RateLimitedChat() {
+  const [requestTimes, setRequestTimes] = useState<number[]>([])
+  const [canSend, setCanSend] = useState(true)
+
+  const { messages, append, isLoading } = useClarityChat({
+    api: '/api/chat',
+  })
+
+  useEffect(() => {
+    const now = Date.now()
+    const recentRequests = requestTimes.filter(time => now - time < WINDOW)
+    setCanSend(recentRequests.length < RATE_LIMIT)
+  }, [requestTimes])
+
+  const handleSubmit = async (value: string) => {
+    if (!canSend) return
+
+    setRequestTimes([...requestTimes, Date.now()])
+    await append({ role: 'user', content: value })
+  }
+
+  const remaining = RATE_LIMIT - requestTimes.filter(
+    time => Date.now() - time < WINDOW
+  ).length
+
+  return (
+    <div className="flex flex-col h-screen">
+      {remaining < 3 && (
+        <div className="bg-yellow-50 px-4 py-2 text-sm text-yellow-800">
+          Rate limit: {remaining} requests remaining
+        </div>
+      )}
+
+      <MessageList messages={messages} />
+
+      <PillChatInput
+        value={input}
+        onChange={setInput}
+        onSubmit={handleSubmit}
+        isGenerating={isLoading}
+        disabled={!canSend}
+        placeholder={!canSend ? 'Rate limit reached. Please wait...' : 'Type a message...'}
+      />
+    </div>
+  )
+}
+```
+
+**CodeSandbox**: [Rate Limiting Example](https://codesandbox.io/s/clarity-rate-limit)
+
+---
+
+### 24. Chat with Conversation Branching
+
+Branch and explore alternative responses.
+
+```tsx
+'use client'
+
+import { useState } from 'react'
+import { useClarityChat, MessageList, PillChatInput } from '@clarity-chat/react'
+import type { CoreMessage } from '@clarity-chat/types'
+
+export default function BranchingChat() {
+  const [branches, setBranches] = useState<Record<string, CoreMessage[]>>({ main: [] })
+  const [currentBranch, setCurrentBranch] = useState('main')
+
+  const { messages, append, isLoading, setMessages } = useClarityChat({
+    api: '/api/chat',
+    initialMessages: branches[currentBranch],
+  })
+
+  const createBranch = (fromMessage: CoreMessage) => {
+    const branchId = `branch-${Date.now()}`
+    const messageIndex = messages.findIndex(m => m.id === fromMessage.id)
+    const branchMessages = messages.slice(0, messageIndex + 1)
+
+    setBranches({ ...branches, [branchId]: branchMessages })
+    setCurrentBranch(branchId)
+    setMessages(branchMessages)
+  }
+
+  return (
+    <div className="flex h-screen">
+      <aside className="w-64 border-r p-4">
+        <h2 className="font-semibold mb-4">Branches</h2>
+        {Object.keys(branches).map((branchId) => (
+          <button
+            key={branchId}
+            onClick={() => {
+              setCurrentBranch(branchId)
+              setMessages(branches[branchId])
+            }}
+            className={`w-full text-left px-3 py-2 rounded mb-2 ${
+              currentBranch === branchId ? 'bg-blue-100' : 'hover:bg-gray-100'
+            }`}
+          >
+            {branchId}
+          </button>
+        ))}
+      </aside>
+
+      <main className="flex-1 flex flex-col">
+        <MessageList
+          messages={messages}
+          onMessageAction={(message, action) => {
+            if (action === 'branch') {
+              createBranch(message)
+            }
+          }}
+        />
+
+        <PillChatInput
+          value={input}
+          onChange={setInput}
+          onSubmit={(value) => append({ role: 'user', content: value })}
+          isGenerating={isLoading}
+        />
+      </main>
+    </div>
+  )
+}
+```
+
+**CodeSandbox**: [Branching Example](https://codesandbox.io/s/clarity-branching)
+
+---
+
+### 25. Chat with Custom Renderer
+
+Custom message rendering with code highlighting.
+
+```tsx
+'use client'
+
+import { useClarityChat, MessageList, PillChatInput } from '@clarity-chat/react'
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter'
+import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism'
+import ReactMarkdown from 'react-markdown'
+
+export default function CustomRendererChat() {
+  const { messages, append, isLoading } = useClarityChat({
+    api: '/api/chat',
+  })
+
+  return (
+    <div className="flex flex-col h-screen">
+      <MessageList
+        messages={messages}
+        renderMessage={(message) => (
+          <div className={`p-4 ${message.role === 'user' ? 'bg-blue-50' : 'bg-gray-50'}`}>
+            <ReactMarkdown
+              components={{
+                code({ node, inline, className, children, ...props }) {
+                  const match = /language-(\w+)/.exec(className || '')
+                  return !inline && match ? (
+                    <SyntaxHighlighter
+                      style={vscDarkPlus}
+                      language={match[1]}
+                      PreTag="div"
+                      {...props}
+                    >
+                      {String(children).replace(/\n$/, '')}
+                    </SyntaxHighlighter>
+                  ) : (
+                    <code className={className} {...props}>
+                      {children}
+                    </code>
+                  )
+                },
+              }}
+            >
+              {message.content}
+            </ReactMarkdown>
+          </div>
+        )}
+      />
+
+      <PillChatInput
+        value={input}
+        onChange={setInput}
+        onSubmit={(value) => append({ role: 'user', content: value })}
+        isGenerating={isLoading}
+      />
+    </div>
+  )
+}
+```
+
+**CodeSandbox**: [Custom Renderer Example](https://codesandbox.io/s/clarity-custom-renderer)
+
+---
+
+## Error Handling Examples
+
+### 26. Network Error Recovery
+
+Handle network failures gracefully.
+
+```tsx
+'use client'
+
+import { useState, useEffect } from 'react'
+import { useClarityChat, MessageList, PillChatInput } from '@clarity-chat/react'
+
+export default function NetworkErrorChat() {
+  const [isOnline, setIsOnline] = useState(true)
+  const [queuedMessages, setQueuedMessages] = useState<string[]>([])
+
+  const { messages, append, isLoading, error } = useClarityChat({
+    api: '/api/chat',
+  })
+
+  useEffect(() => {
+    const handleOnline = () => setIsOnline(true)
+    const handleOffline = () => setIsOnline(false)
+
+    window.addEventListener('online', handleOnline)
+    window.addEventListener('offline', handleOffline)
+
+    return () => {
+      window.removeEventListener('online', handleOnline)
+      window.removeEventListener('offline', handleOffline)
+    }
+  }, [])
+
+  useEffect(() => {
+    if (isOnline && queuedMessages.length > 0) {
+      // Send queued messages
+      queuedMessages.forEach(msg => append({ role: 'user', content: msg }))
+      setQueuedMessages([])
+    }
+  }, [isOnline, queuedMessages])
+
+  const handleSubmit = async (value: string) => {
+    if (!isOnline) {
+      setQueuedMessages([...queuedMessages, value])
+      return
+    }
+
+    await append({ role: 'user', content: value })
+  }
+
+  return (
+    <div className="flex flex-col h-screen">
+      {!isOnline && (
+        <div className="bg-orange-100 px-4 py-2 text-sm text-orange-800">
+          You're offline. Messages will be sent when connection is restored.
+          {queuedMessages.length > 0 && ` (${queuedMessages.length} queued)`}
+        </div>
+      )}
+
+      <MessageList messages={messages} />
+
+      <PillChatInput
+        value={input}
+        onChange={setInput}
+        onSubmit={handleSubmit}
+        isGenerating={isLoading}
+      />
+    </div>
+  )
+}
+```
+
+**CodeSandbox**: [Network Error Example](https://codesandbox.io/s/clarity-network-error)
+
+---
+
+### 27. Timeout Handling
+
+Handle slow responses with timeouts.
+
+```tsx
+'use client'
+
+import { useState } from 'react'
+import { useClarityChat, MessageList, PillChatInput } from '@clarity-chat/react'
+
+const TIMEOUT_MS = 30000 // 30 seconds
+
+export default function TimeoutChat() {
+  const [timedOut, setTimedOut] = useState(false)
+
+  const { messages, append, isLoading, stop } = useClarityChat({
+    api: '/api/chat',
+  })
+
+  const handleSubmit = async (value: string) => {
+    setTimedOut(false)
+
+    const timeoutId = setTimeout(() => {
+      setTimedOut(true)
+      stop()
+    }, TIMEOUT_MS)
+
+    try {
+      await append({ role: 'user', content: value })
+      clearTimeout(timeoutId)
+    } catch (error) {
+      clearTimeout(timeoutId)
+    }
+  }
+
+  return (
+    <div className="flex flex-col h-screen">
+      {timedOut && (
+        <div className="bg-red-50 px-4 py-2 text-sm text-red-800">
+          Request timed out after {TIMEOUT_MS / 1000} seconds. Please try again.
+        </div>
+      )}
+
+      <MessageList messages={messages} />
+
+      <PillChatInput
+        value={input}
+        onChange={setInput}
+        onSubmit={handleSubmit}
+        isGenerating={isLoading}
+      />
+    </div>
+  )
+}
+```
+
+**CodeSandbox**: [Timeout Handling Example](https://codesandbox.io/s/clarity-timeout)
+
+---
+
+### 28. Validation Errors
+
+Client-side validation before submission.
+
+```tsx
+'use client'
+
+import { useState } from 'react'
+import { useClarityChat, MessageList, PillChatInput } from '@clarity-chat/react'
+import { z } from 'zod'
+
+const messageSchema = z.string()
+  .min(1, 'Message cannot be empty')
+  .max(2000, 'Message too long (max 2000 characters)')
+  .refine(
+    (val) => !val.includes('<script>'),
+    'Invalid content detected'
+  )
+
+export default function ValidationChat() {
+  const [validationError, setValidationError] = useState<string | null>(null)
+
+  const { messages, append, isLoading } = useClarityChat({
+    api: '/api/chat',
+  })
+
+  const handleSubmit = async (value: string) => {
+    try {
+      messageSchema.parse(value)
+      setValidationError(null)
+      await append({ role: 'user', content: value })
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        setValidationError(error.errors[0].message)
+      }
+    }
+  }
+
+  return (
+    <div className="flex flex-col h-screen">
+      <MessageList messages={messages} />
+
+      {validationError && (
+        <div className="bg-red-50 px-4 py-2 text-sm text-red-600">
+          {validationError}
+        </div>
+      )}
+
+      <PillChatInput
+        value={input}
+        onChange={(value) => {
+          setInput(value)
+          setValidationError(null)
+        }}
+        onSubmit={handleSubmit}
+        isGenerating={isLoading}
+      />
+    </div>
+  )
+}
+```
+
+**CodeSandbox**: [Validation Example](https://codesandbox.io/s/clarity-validation)
+
+---
+
+## Testing Examples
+
+### 29. Unit Testing Chat Hook
+
+Test the `useClarityChat` hook.
+
+```typescript
+// __tests__/useClarityChat.test.ts
+import { renderHook, waitFor } from '@testing-library/react'
+import { useClarityChat } from '@clarity-chat/react'
+import { vi } from 'vitest'
+
+describe('useClarityChat', () => {
+  it('should initialize with empty messages', () => {
+    const { result } = renderHook(() =>
+      useClarityChat({ api: '/api/chat' })
+    )
+
+    expect(result.current.messages).toEqual([])
+    expect(result.current.isLoading).toBe(false)
+  })
+
+  it('should append user message', async () => {
+    const { result } = renderHook(() =>
+      useClarityChat({ api: '/api/chat' })
+    )
+
+    await result.current.append({
+      role: 'user',
+      content: 'Hello'
+    })
+
+    await waitFor(() => {
+      expect(result.current.messages).toHaveLength(1)
+      expect(result.current.messages[0].content).toBe('Hello')
+    })
+  })
+
+  it('should handle errors', async () => {
+    global.fetch = vi.fn(() =>
+      Promise.reject(new Error('Network error'))
+    )
+
+    const { result } = renderHook(() =>
+      useClarityChat({ api: '/api/chat' })
+    )
+
+    await result.current.append({
+      role: 'user',
+      content: 'Hello'
+    })
+
+    await waitFor(() => {
+      expect(result.current.error).toBeTruthy()
+    })
+  })
+})
+```
+
+---
+
+### 30. Component Testing
+
+Test chat components.
+
+```typescript
+// __tests__/ChatWindow.test.tsx
+import { render, screen, fireEvent, waitFor } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
+import ChatWindow from '../components/ChatWindow'
+
+describe('ChatWindow', () => {
+  it('should render message list', () => {
+    render(<ChatWindow />)
+    expect(screen.getByRole('list')).toBeInTheDocument()
+  })
+
+  it('should send message on submit', async () => {
+    const user = userEvent.setup()
+    render(<ChatWindow />)
+
+    const input = screen.getByRole('textbox')
+    await user.type(input, 'Hello AI')
+
+    const button = screen.getByRole('button', { name: /send/i })
+    await user.click(button)
+
+    await waitFor(() => {
+      expect(screen.getByText('Hello AI')).toBeInTheDocument()
+    })
+  })
+
+  it('should disable input while loading', async () => {
+    render(<ChatWindow />)
+
+    const input = screen.getByRole('textbox')
+    const button = screen.getByRole('button', { name: /send/i })
+
+    fireEvent.click(button)
+
+    await waitFor(() => {
+      expect(input).toBeDisabled()
+    })
+  })
+})
+```
+
+---
+
+### 31. Integration Testing
+
+End-to-end chat flow testing.
+
+```typescript
+// __tests__/integration/chat-flow.test.tsx
+import { render, screen, waitFor } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
+import { setupServer } from 'msw/node'
+import { http, HttpResponse } from 'msw'
+import ChatApp from '../App'
+
+const server = setupServer(
+  http.post('/api/chat', async () => {
+    return HttpResponse.json({
+      role: 'assistant',
+      content: 'Hello! How can I help you?',
+    })
+  })
+)
+
+beforeAll(() => server.listen())
+afterEach(() => server.resetHandlers())
+afterAll(() => server.close())
+
+describe('Chat Integration', () => {
+  it('should complete full conversation flow', async () => {
+    const user = userEvent.setup()
+    render(<ChatApp />)
+
+    // Send first message
+    const input = screen.getByRole('textbox')
+    await user.type(input, 'Hello')
+    await user.click(screen.getByRole('button', { name: /send/i }))
+
+    // Wait for response
+    await waitFor(() => {
+      expect(screen.getByText('Hello! How can I help you?')).toBeInTheDocument()
+    })
+
+    // Send follow-up
+    await user.type(input, 'Tell me a joke')
+    await user.click(screen.getByRole('button', { name: /send/i }))
+
+    // Verify conversation history
+    expect(screen.getAllByRole('listitem')).toHaveLength(4) // 2 user + 2 assistant
+  })
+})
+```
+
+---
+
+### 32. Accessibility Testing
+
+WCAG compliance testing.
+
+```typescript
+// __tests__/accessibility.test.tsx
+import { render } from '@testing-library/react'
+import { axe, toHaveNoViolations } from 'jest-axe'
+import ChatWindow from '../components/ChatWindow'
+
+expect.extend(toHaveNoViolations)
+
+describe('Accessibility', () => {
+  it('should have no accessibility violations', async () => {
+    const { container } = render(<ChatWindow />)
+    const results = await axe(container)
+    expect(results).toHaveNoViolations()
+  })
+
+  it('should support keyboard navigation', async () => {
+    render(<ChatWindow />)
+
+    const input = screen.getByRole('textbox')
+    const button = screen.getByRole('button')
+
+    // Tab to input
+    userEvent.tab()
+    expect(input).toHaveFocus()
+
+    // Tab to button
+    userEvent.tab()
+    expect(button).toHaveFocus()
+
+    // Enter to submit
+    userEvent.keyboard('{Enter}')
+    // Should trigger submit
+  })
+
+  it('should have proper ARIA labels', () => {
+    render(<ChatWindow />)
+
+    expect(screen.getByLabelText(/chat input/i)).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /send message/i })).toBeInTheDocument()
+  })
+})
+```
+
+---
+
+## Performance Examples
+
+### 33. Virtual Scrolling
+
+Efficient rendering of long message lists.
+
+```tsx
+'use client'
+
+import { useClarityChat, PillChatInput } from '@clarity-chat/react'
+import { useVirtualizer } from '@tanstack/react-virtual'
+import { useRef } from 'react'
+
+export default function VirtualScrollChat() {
+  const parentRef = useRef<HTMLDivElement>(null)
+  const { messages, append, isLoading } = useClarityChat({
+    api: '/api/chat',
+  })
+
+  const virtualizer = useVirtualizer({
+    count: messages.length,
+    getScrollElement: () => parentRef.current,
+    estimateSize: () => 100,
+    overscan: 5,
+  })
+
+  return (
+    <div className="flex flex-col h-screen">
+      <div ref={parentRef} className="flex-1 overflow-y-auto">
+        <div
+          style={{
+            height: `${virtualizer.getTotalSize()}px`,
+            position: 'relative',
+          }}
+        >
+          {virtualizer.getVirtualItems().map((virtualItem) => (
+            <div
+              key={virtualItem.key}
+              style={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                width: '100%',
+                transform: `translateY(${virtualItem.start}px)`,
+              }}
+            >
+              <MessageItem message={messages[virtualItem.index]} />
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <PillChatInput
+        value={input}
+        onChange={setInput}
+        onSubmit={(value) => append({ role: 'user', content: value })}
+        isGenerating={isLoading}
+      />
+    </div>
+  )
+}
+```
+
+**CodeSandbox**: [Virtual Scrolling Example](https://codesandbox.io/s/clarity-virtual-scroll)
+
+---
+
+### 34. Lazy Loading Messages
+
+Load messages on demand.
+
+```tsx
+'use client'
+
+import { useState, useEffect } from 'react'
+import { useClarityChat, MessageList, PillChatInput } from '@clarity-chat/react'
+import { useInView } from 'react-intersection-observer'
+
+export default function LazyLoadChat() {
+  const [page, setPage] = useState(1)
+  const [hasMore, setHasMore] = useState(true)
+  const { ref, inView } = useInView()
+
+  const { messages, append, isLoading, setMessages } = useClarityChat({
+    api: '/api/chat',
+  })
+
+  useEffect(() => {
+    if (inView && hasMore && !isLoading) {
+      loadMoreMessages()
+    }
+  }, [inView])
+
+  const loadMoreMessages = async () => {
+    const response = await fetch(`/api/messages?page=${page}`)
+    const data = await response.json()
+
+    if (data.messages.length === 0) {
+      setHasMore(false)
+      return
+    }
+
+    setMessages([...data.messages, ...messages])
+    setPage(page + 1)
+  }
+
+  return (
+    <div className="flex flex-col h-screen">
+      <div className="flex-1 overflow-y-auto">
+        {hasMore && (
+          <div ref={ref} className="p-4 text-center">
+            <span className="text-sm text-gray-500">Loading more...</span>
+          </div>
+        )}
+        <MessageList messages={messages} />
+      </div>
+
+      <PillChatInput
+        value={input}
+        onChange={setInput}
+        onSubmit={(value) => append({ role: 'user', content: value })}
+        isGenerating={isLoading}
+      />
+    </div>
+  )
+}
+```
+
+**CodeSandbox**: [Lazy Loading Example](https://codesandbox.io/s/clarity-lazy-load)
+
+---
+
+### 35. Debounced Input
+
+Reduce unnecessary re-renders.
+
+```tsx
+'use client'
+
+import { useState, useCallback } from 'react'
+import { useClarityChat, MessageList, PillChatInput } from '@clarity-chat/react'
+import { debounce } from 'lodash'
+
+export default function DebouncedChat() {
+  const [input, setInput] = useState('')
+  const [debouncedInput, setDebouncedInput] = useState('')
+
+  const { messages, append, isLoading } = useClarityChat({
+    api: '/api/chat',
+  })
+
+  const debouncedSetInput = useCallback(
+    debounce((value: string) => {
+      setDebouncedInput(value)
+    }, 300),
+    []
+  )
+
+  const handleChange = (value: string) => {
+    setInput(value)
+    debouncedSetInput(value)
+  }
+
+  return (
+    <div className="flex flex-col h-screen">
+      <MessageList messages={messages} />
+
+      <div className="border-t p-4">
+        <div className="text-xs text-gray-500 mb-2">
+          Preview: {debouncedInput || '(empty)'}
+        </div>
+        <PillChatInput
+          value={input}
+          onChange={handleChange}
+          onSubmit={(value) => append({ role: 'user', content: value })}
+          isGenerating={isLoading}
+        />
+      </div>
+    </div>
+  )
+}
+```
+
+**CodeSandbox**: [Debounced Input Example](https://codesandbox.io/s/clarity-debounced)
+
+---
+
+## Advanced Integration Examples
+
+### 36. Chat with Database Persistence
+
+Save conversations to database.
+
+```tsx
+'use client'
+
+import { useEffect } from 'react'
+import { useClarityChat, MessageList, PillChatInput } from '@clarity-chat/react'
+
+export default function PersistentChat({ sessionId }: { sessionId: string }) {
+  const { messages, append, isLoading, setMessages } = useClarityChat({
+    api: '/api/chat',
+  })
+
+  // Load messages on mount
+  useEffect(() => {
+    fetch(`/api/sessions/${sessionId}`)
+      .then(r => r.json())
+      .then(data => setMessages(data.messages))
+  }, [sessionId])
+
+  // Save on message change
+  useEffect(() => {
+    if (messages.length > 0) {
+      fetch(`/api/sessions/${sessionId}`, {
+        method: 'PUT',
+        body: JSON.stringify({ messages }),
+      })
+    }
+  }, [messages, sessionId])
+
+  return (
+    <div className="flex flex-col h-screen">
+      <MessageList messages={messages} />
+      <PillChatInput
+        value={input}
+        onChange={setInput}
+        onSubmit={(value) => append({ role: 'user', content: value })}
+        isGenerating={isLoading}
+      />
+    </div>
+  )
+}
+```
+
+**CodeSandbox**: [Database Persistence Example](https://codesandbox.io/s/clarity-db-persistence)
+
+---
+
+### 37. Chat with Authentication
+
+Protected chat routes with auth.
+
+```tsx
+'use client'
+
+import { useSession } from 'next-auth/react'
+import { useClarityChat, MessageList, PillChatInput } from '@clarity-chat/react'
+import { redirect } from 'next/navigation'
+
+export default function AuthenticatedChat() {
+  const { data: session, status } = useSession()
+
+  if (status === 'loading') {
+    return <div>Loading...</div>
+  }
+
+  if (status === 'unauthenticated') {
+    redirect('/login')
+  }
+
+  const { messages, append, isLoading } = useClarityChat({
+    api: '/api/chat',
+    headers: {
+      Authorization: `Bearer ${session?.accessToken}`,
+    },
+  })
+
+  return (
+    <div className="flex flex-col h-screen">
+      <header className="border-b p-4">
+        <div className="flex justify-between items-center">
+          <h1>Chat</h1>
+          <span>Welcome, {session?.user?.name}</span>
+        </div>
+      </header>
+
+      <MessageList messages={messages} />
+
+      <PillChatInput
+        value={input}
+        onChange={setInput}
+        onSubmit={(value) => append({ role: 'user', content: value })}
+        isGenerating={isLoading}
+      />
+    </div>
+  )
+}
+```
+
+**CodeSandbox**: [Authentication Example](https://codesandbox.io/s/clarity-auth)
+
+---
+
+### 38. Real-time Collaboration
+
+Multiple users in same chat.
+
+```tsx
+'use client'
+
+import { useEffect } from 'react'
+import { useClarityChat, MessageList, PillChatInput } from '@clarity-chat/react'
+import { io } from 'socket.io-client'
+
+export default function CollaborativeChat({ roomId }: { roomId: string }) {
+  const { messages, append, isLoading, setMessages } = useClarityChat({
+    api: '/api/chat',
+  })
+
+  useEffect(() => {
+    const socket = io()
+
+    socket.emit('join-room', roomId)
+
+    socket.on('message', (message) => {
+      setMessages((prev) => [...prev, message])
+    })
+
+    socket.on('messages', (allMessages) => {
+      setMessages(allMessages)
+    })
+
+    return () => {
+      socket.disconnect()
+    }
+  }, [roomId])
+
+  const handleSubmit = async (value: string) => {
+    const message = { role: 'user', content: value }
+
+    // Optimistic update
+    setMessages((prev) => [...prev, message])
+
+    // Broadcast to others
+    const socket = io()
+    socket.emit('send-message', { roomId, message })
+
+    // Get AI response
+    await append(message)
+  }
+
+  return (
+    <div className="flex flex-col h-screen">
+      <MessageList messages={messages} />
+      <PillChatInput
+        value={input}
+        onChange={setInput}
+        onSubmit={handleSubmit}
+        isGenerating={isLoading}
+      />
+    </div>
+  )
+}
+```
+
+**CodeSandbox**: [Collaboration Example](https://codesandbox.io/s/clarity-collaboration)
+
+---
+
+### 39. Chat with Analytics
+
+Track usage and metrics.
+
+```tsx
+'use client'
+
+import { useEffect } from 'react'
+import { useClarityChat, MessageList, PillChatInput } from '@clarity-chat/react'
+import { analytics } from '@/lib/analytics'
+
+export default function AnalyticsChat() {
+  const { messages, append, isLoading, error } = useClarityChat({
+    api: '/api/chat',
+    onFinish: (message) => {
+      analytics.track('chat_message_received', {
+        messageLength: message.content.length,
+        role: message.role,
+      })
+    },
+    onError: (error) => {
+      analytics.track('chat_error', {
+        error: error.message,
+      })
+    },
+  })
+
+  useEffect(() => {
+    analytics.track('chat_session_started')
+
+    return () => {
+      analytics.track('chat_session_ended', {
+        messageCount: messages.length,
+        duration: Date.now() - sessionStart,
+      })
+    }
+  }, [])
+
+  const handleSubmit = async (value: string) => {
+    analytics.track('chat_message_sent', {
+      messageLength: value.length,
+    })
+
+    await append({ role: 'user', content: value })
+  }
+
+  return (
+    <div className="flex flex-col h-screen">
+      <MessageList messages={messages} />
+      <PillChatInput
+        value={input}
+        onChange={setInput}
+        onSubmit={handleSubmit}
+        isGenerating={isLoading}
+      />
+    </div>
+  )
+}
+```
+
+**CodeSandbox**: [Analytics Example](https://codesandbox.io/s/clarity-analytics)
+
+---
+
+### 40. Chat with Custom API Client
+
+Use custom HTTP client (axios, etc).
+
+```tsx
+'use client'
+
+import axios from 'axios'
+import { useClarityChat, MessageList, PillChatInput } from '@clarity-chat/react'
+
+const apiClient = axios.create({
+  baseURL: process.env.NEXT_PUBLIC_API_URL,
+  headers: {
+    'Content-Type': 'application/json',
+  },
+})
+
+export default function CustomClientChat() {
+  const { messages, append, isLoading } = useClarityChat({
+    api: '/chat',
+    fetch: async (url, options) => {
+      const response = await apiClient.post(url, options?.body, {
+        headers: options?.headers,
+      })
+
+      return new Response(JSON.stringify(response.data), {
+        headers: { 'Content-Type': 'application/json' },
+      })
+    },
+  })
+
+  return (
+    <div className="flex flex-col h-screen">
+      <MessageList messages={messages} />
+      <PillChatInput
+        value={input}
+        onChange={setInput}
+        onSubmit={(value) => append({ role: 'user', content: value })}
+        isGenerating={isLoading}
+      />
+    </div>
+  )
+}
+```
+
+**CodeSandbox**: [Custom Client Example](https://codesandbox.io/s/clarity-custom-client)
+
+---
+
+## More Examples
+
+The library includes 15+ additional examples covering:
+
+- **Theming & Customization** (#41-45)
+  - Dark mode
+  - Custom themes
+  - CSS variables
+  - Component variants
+  - Styled components
+
+- **Mobile & Responsive** (#46-48)
+  - Mobile-first design
+  - Touch interactions
+  - PWA support
+
+- **Advanced Features** (#49-55)
+  - Webhooks integration
+  - Export/import conversations
+  - Multi-language support
+  - Custom commands
+  - Plugins system
+  - Context management
+  - Advanced error boundaries
+
+Visit the [full examples repository](https://github.com/your-org/clarity-examples) for complete implementations.
+
+---
+
+## Additional Resources
+
+- [API Reference](/reference/components)
+- [TypeScript Guide](/guides/typescript)
+- [Testing Guide](/guides/testing)
+- [Performance Guide](/guides/performance)
+- [Accessibility Guide](/guides/accessibility)
+
+---
+
+## Contributing Examples
+
+Have a great example? Submit a PR to add it to this library!
+
+1. Fork the repository
+2. Create your example in `apps/streamlined-docs/app/examples/library/`
+3. Add it to this index
+4. Create a CodeSandbox
+5. Submit PR
+
+See [CONTRIBUTING.md](https://github.com/your-org/clarity-chat/CONTRIBUTING.md) for guidelines.

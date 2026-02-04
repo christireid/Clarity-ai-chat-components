@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { render, screen } from '@testing-library/react'
-import { TypingIndicator } from '../typing-indicator'
+import { TypingIndicator } from '../TypingIndicator'
 
 // Mock useReducedMotion hook
 vi.mock('../../hooks/use-reduced-motion', () => ({

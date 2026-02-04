@@ -27,6 +27,7 @@ export function useTrackMount(
 
   React.useEffect(() => {
     track(eventName, properties)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 }
 
@@ -52,6 +53,7 @@ export function useTrackUnmount(
       const props = typeof properties === 'function' ? properties() : properties
       track(eventName, props)
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 }
 
@@ -264,7 +266,9 @@ export function useTrackTiming() {
     (timerName: string, properties?: Record<string, any>) => {
       const startTime = timers.current[timerName]
       if (startTime === undefined) {
-        console.warn(`Timer "${timerName}" was not started`)
+        if (process.env.NODE_ENV === 'development') {
+          console.warn(`Timer "${timerName}" was not started`)
+        }
         return
       }
 
@@ -393,13 +397,15 @@ export function useTrackTimeOnPage(
   const startTime = React.useRef(Date.now())
 
   React.useEffect(() => {
+    const start = startTime.current
     return () => {
-      const timeSpent = Date.now() - startTime.current
+      const timeSpent = Date.now() - start
       track(eventName, {
         time_spent_ms: timeSpent,
         time_spent_seconds: Math.round(timeSpent / 1000),
         ...properties,
       })
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 }

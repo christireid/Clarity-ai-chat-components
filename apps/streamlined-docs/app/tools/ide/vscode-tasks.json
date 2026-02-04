@@ -1,0 +1,175 @@
+{
+  "// ============================================================================": "",
+  "// CLARITY AI CHAT COMPONENTS - VSCODE TASKS": "",
+  "// ============================================================================": "",
+  "// Save this file to: .vscode/tasks.json": "",
+  "// ============================================================================": "",
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Dev Server",
+      "type": "shell",
+      "command": "pnpm dev",
+      "isBackground": true,
+      "problemMatcher": {
+        "pattern": {
+          "regexp": "."
+        },
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": "ready started server on",
+          "endsPattern": "Compiled|Failed to compile"
+        }
+      },
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "dedicated"
+      }
+    },
+    {
+      "label": "Build",
+      "type": "shell",
+      "command": "pnpm build",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "problemMatcher": ["$tsc"],
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared"
+      }
+    },
+    {
+      "label": "Build Packages Only",
+      "type": "shell",
+      "command": "pnpm build:packages",
+      "group": "build",
+      "problemMatcher": ["$tsc"]
+    },
+    {
+      "label": "Test",
+      "type": "shell",
+      "command": "pnpm test",
+      "group": {
+        "kind": "test",
+        "isDefault": true
+      },
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared"
+      }
+    },
+    {
+      "label": "Test Watch",
+      "type": "shell",
+      "command": "pnpm test:watch",
+      "isBackground": true,
+      "problemMatcher": {
+        "pattern": {
+          "regexp": "."
+        },
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": "Waiting for file changes",
+          "endsPattern": "Test Files|Test Suites"
+        }
+      }
+    },
+    {
+      "label": "Test Coverage",
+      "type": "shell",
+      "command": "pnpm test:coverage",
+      "group": "test"
+    },
+    {
+      "label": "Test E2E",
+      "type": "shell",
+      "command": "pnpm test:e2e",
+      "group": "test"
+    },
+    {
+      "label": "Test E2E UI",
+      "type": "shell",
+      "command": "pnpm test:e2e:ui",
+      "group": "test",
+      "isBackground": true
+    },
+    {
+      "label": "Lint",
+      "type": "shell",
+      "command": "pnpm lint",
+      "problemMatcher": ["$eslint-stylish"]
+    },
+    {
+      "label": "Lint Fix",
+      "type": "shell",
+      "command": "pnpm lint:fix",
+      "problemMatcher": ["$eslint-stylish"]
+    },
+    {
+      "label": "Type Check",
+      "type": "shell",
+      "command": "pnpm typecheck",
+      "problemMatcher": ["$tsc-watch"],
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared"
+      }
+    },
+    {
+      "label": "Format",
+      "type": "shell",
+      "command": "pnpm format"
+    },
+    {
+      "label": "Format Check",
+      "type": "shell",
+      "command": "pnpm format:check"
+    },
+    {
+      "label": "Clean",
+      "type": "shell",
+      "command": "pnpm clean"
+    },
+    {
+      "label": "Full Check",
+      "type": "shell",
+      "command": "pnpm check",
+      "group": "build",
+      "problemMatcher": ["$tsc", "$eslint-stylish"]
+    },
+    {
+      "label": "Generate Component",
+      "type": "shell",
+      "command": "pnpm generate:component",
+      "problemMatcher": []
+    },
+    {
+      "label": "Generate Hook",
+      "type": "shell",
+      "command": "pnpm generate:hook",
+      "problemMatcher": []
+    },
+    {
+      "label": "Bundle Analysis",
+      "type": "shell",
+      "command": "ANALYZE=true pnpm build",
+      "problemMatcher": []
+    },
+    {
+      "label": "Install Dependencies",
+      "type": "shell",
+      "command": "pnpm install",
+      "problemMatcher": []
+    }
+  ]
+}

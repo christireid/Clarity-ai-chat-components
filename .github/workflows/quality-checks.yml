@@ -1,0 +1,836 @@
+name: Quality Checks
+
+on:
+  pull_request:
+    branches: [main, develop]
+  push:
+    branches: [main]
+
+jobs:
+  # PHASE 2: Detect affected packages for smart CI optimization
+  detect-changes:
+    name: Detect Affected Packages
+    runs-on: ubuntu-latest
+    outputs:
+      affected_packages: ${{ steps.detect.outputs.affected_packages }}
+      affected_apps: ${{ steps.detect.outputs.affected_apps }}
+      turbo_filter: ${{ steps.detect.outputs.turbo_filter }}
+      test_all: ${{ steps.detect.outputs.test_all }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Detect affected packages
+        id: detect
+        run: |
+          chmod +x .github/scripts/detect-affected-packages.sh
+
+          if [ "${{ github.event_name }}" == "pull_request" ]; then
+            # For PRs, compare against base branch
+            ./.github/scripts/detect-affected-packages.sh "origin/${{ github.base_ref }}" "HEAD"
+          else
+            # For pushes to main, compare against previous commit
+            ./.github/scripts/detect-affected-packages.sh "HEAD^" "HEAD"
+          fi
+
+      - name: Comment affected packages on PR
+        if: github.event_name == 'pull_request' && steps.detect.outputs.test_all != 'true'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const packages = '${{ steps.detect.outputs.affected_packages }}'.split(' ').filter(p => p);
+            const apps = '${{ steps.detect.outputs.affected_apps }}'.split(' ').filter(a => a);
+
+            if (packages.length === 0 && apps.length === 0) {
+              await github.rest.issues.createComment({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: `## ⚡ Smart CI Optimization
+
+                **No code packages affected** - Running minimal checks only
+
+                This PR only modifies documentation or configuration files.
+                Estimated CI time savings: **~80%** 🚀
+                `
+              });
+            } else {
+              const total = packages.length + apps.length;
+              const savings = total <= 3 ? '~50%' : total <= 6 ? '~30%' : '~10%';
+
+              await github.rest.issues.createComment({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: `## ⚡ Smart CI Optimization
+
+                **Affected packages (${total}):**
+                ${packages.length > 0 ? '- Packages: ' + packages.join(', ') : ''}
+                ${apps.length > 0 ? '- Apps: ' + apps.join(', ') : ''}
+
+                Running tests only for affected packages.
+                Estimated CI time savings: **${savings}** 🚀
+                `
+              });
+            }
+
+  duplicate-detection:
+    name: Code Duplicate Detection
+    runs-on: ubuntu-latest
+    needs: detect-changes
+    # Skip if no code packages affected
+    if: needs.detect-changes.outputs.test_all == 'true' || needs.detect-changes.outputs.affected_packages != ''
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'pnpm'
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: 8
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+        env:
+          # Enable Turbo caching
+          TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+          TURBO_TEAM: ${{ secrets.TURBO_TEAM }}
+
+      - name: Run duplicate detection
+        id: duplicates
+        run: |
+          echo "Running jscpd duplicate detection..."
+
+          # Run jscpd and capture output
+          pnpm exec jscpd \
+            --min-lines 10 \
+            --min-tokens 100 \
+            --threshold 0 \
+            --reporters "json,console" \
+            --output ".jscpd-report" \
+            --ignore "**/*.test.ts,**/*.test.tsx,**/*.spec.ts,**/*.spec.tsx,**/node_modules/**,**/dist/**,**/.next/**,**/build/**" \
+            --format "typescript,javascript,tsx,jsx" \
+            "packages/react/src" \
+            "apps/streamlined-docs" || true
+
+          # Check if duplicates were found
+          if [ -f ".jscpd-report/jscpd-report.json" ]; then
+            DUPLICATE_COUNT=$(node -e "
+              const fs = require('fs');
+              const report = JSON.parse(fs.readFileSync('.jscpd-report/jscpd-report.json', 'utf8'));
+              const duplicates = report.statistics?.duplicates || {};
+              const files = Object.keys(duplicates).length;
+              console.log(files);
+            ")
+
+            echo "duplicate_count=$DUPLICATE_COUNT" >> $GITHUB_OUTPUT
+
+            if [ "$DUPLICATE_COUNT" -gt 0 ]; then
+              echo "⚠️ Found $DUPLICATE_COUNT files with duplicated code"
+              echo "Review the report for details"
+              exit 1
+            else
+              echo "✅ No significant code duplicates detected"
+            fi
+          else
+            echo "✅ No duplicates found"
+          fi
+
+      - name: Upload duplicate detection report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: duplicate-detection-report
+          path: .jscpd-report/
+          retention-days: 30
+
+      - name: Comment on PR with duplicate detection results
+        if: github.event_name == 'pull_request' && steps.duplicates.outputs.duplicate_count > 0
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const duplicateCount = '${{ steps.duplicates.outputs.duplicate_count }}';
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `## ⚠️ Code Duplicate Detection
+
+              Found **${duplicateCount}** files with duplicated code.
+
+              **Action Required:**
+              - Review the duplicate detection report in the workflow artifacts
+              - Consider refactoring duplicated code into shared utilities
+              - If duplicates are intentional, document why in PR description
+
+              **Quality Impact:** This may affect the API/DX Audit score.
+              `
+            });
+
+  audit-score:
+    name: API/DX Audit Score
+    runs-on: ubuntu-latest
+    needs: detect-changes
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Calculate audit score
+        id: score
+        run: |
+          echo "Calculating API/DX Audit Score..."
+
+          # Count completed phases and quick wins
+          PHASE_1_COMPLETE=$(grep -c "✅ PHASE 1 COMPLETE" .api-dx-audit/*.md 2>/dev/null || echo "0")
+          PHASE_2_COMPLETE=$(grep -c "✅ PHASE 2 COMPLETE" .api-dx-audit/*.md 2>/dev/null || echo "0")
+          PHASE_3_COMPLETE=$(grep -c "✅ PHASE 3 COMPLETE" .api-dx-audit/*.md 2>/dev/null || echo "0")
+
+          QUICK_WIN_1=$(grep -c "Quick Win #1.*✅ Complete" .api-dx-audit/QUICK_WINS.md 2>/dev/null || echo "0")
+          QUICK_WIN_2=$(grep -c "Quick Win #2.*✅ Complete" .api-dx-audit/QUICK_WINS.md 2>/dev/null || echo "0")
+
+          # Calculate base score
+          BASE_SCORE=35
+          PHASE_1_POINTS=$((PHASE_1_COMPLETE * 20))
+          PHASE_2_POINTS=$((PHASE_2_COMPLETE * 10))
+          PHASE_3_POINTS=$((PHASE_3_COMPLETE * 5))
+          QUICK_WIN_POINTS=$((QUICK_WIN_1 + QUICK_WIN_2))
+
+          TOTAL_SCORE=$((BASE_SCORE + PHASE_1_POINTS + PHASE_2_POINTS + PHASE_3_POINTS + QUICK_WIN_POINTS))
+
+          echo "score=$TOTAL_SCORE" >> $GITHUB_OUTPUT
+          echo "phase_1=$PHASE_1_COMPLETE" >> $GITHUB_OUTPUT
+          echo "phase_2=$PHASE_2_COMPLETE" >> $GITHUB_OUTPUT
+          echo "phase_3=$PHASE_3_COMPLETE" >> $GITHUB_OUTPUT
+          echo "quick_wins=$QUICK_WIN_POINTS" >> $GITHUB_OUTPUT
+
+          # Score interpretation
+          if [ $TOTAL_SCORE -ge 90 ]; then
+            echo "grade=🏆 Excellent" >> $GITHUB_OUTPUT
+          elif [ $TOTAL_SCORE -ge 80 ]; then
+            echo "grade=🎯 Good" >> $GITHUB_OUTPUT
+          elif [ $TOTAL_SCORE -ge 70 ]; then
+            echo "grade=⚠️ Needs Improvement" >> $GITHUB_OUTPUT
+          else
+            echo "grade=❌ Poor" >> $GITHUB_OUTPUT
+          fi
+
+          echo "📊 Current API/DX Audit Score: $TOTAL_SCORE/100"
+
+      - name: Create score badge
+        run: |
+          SCORE="${{ steps.score.outputs.score }}"
+
+          # Determine badge color
+          if [ $SCORE -ge 90 ]; then
+            COLOR="brightgreen"
+          elif [ $SCORE -ge 80 ]; then
+            COLOR="green"
+          elif [ $SCORE -ge 70 ]; then
+            COLOR="yellow"
+          elif [ $SCORE -ge 60 ]; then
+            COLOR="orange"
+          else
+            COLOR="red"
+          fi
+
+          echo "Badge: ![Audit Score](https://img.shields.io/badge/Audit%20Score-${SCORE}%2F100-${COLOR})"
+
+      - name: Comment on PR with audit score
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const score = '${{ steps.score.outputs.score }}';
+            const grade = '${{ steps.score.outputs.grade }}';
+            const phase1 = '${{ steps.score.outputs.phase_1 }}';
+            const phase2 = '${{ steps.score.outputs.phase_2 }}';
+            const phase3 = '${{ steps.score.outputs.phase_3 }}';
+            const quickWins = '${{ steps.score.outputs.quick_wins }}';
+
+            const scoreInt = parseInt(score);
+            let color = 'red';
+            if (scoreInt >= 90) color = 'brightgreen';
+            else if (scoreInt >= 80) color = 'green';
+            else if (scoreInt >= 70) color = 'yellow';
+            else if (scoreInt >= 60) color = 'orange';
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `## 📊 API/DX Audit Score
+
+              ![Audit Score](https://img.shields.io/badge/Audit%20Score-${score}%2F100-${color})
+
+              **Overall Grade:** ${grade}
+
+              ### Progress Breakdown
+
+              | Component | Status |
+              |-----------|--------|
+              | Phase 1: Build Stabilization | ${phase1 === '1' ? '✅ Complete (+20)' : '❌ Incomplete'} |
+              | Phase 2: Verification Gates | ${phase2 === '1' ? '✅ Complete (+10)' : '❌ Incomplete'} |
+              | Phase 3: Incremental Consolidation | ${phase3 === '1' ? '✅ Complete (+5)' : '❌ Incomplete'} |
+              | Quick Wins | ${quickWins > 0 ? `✅ ${quickWins} completed (+${quickWins})` : '❌ None'} |
+
+              **Target Score:** 90/100
+              **Remaining:** ${90 - scoreInt} points
+
+              ---
+
+              *This score is automatically calculated from `.api-dx-audit/` documentation.*
+              `
+            });
+
+  lint-and-format:
+    name: Lint and Format Check
+    runs-on: ubuntu-latest
+    needs: detect-changes
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'pnpm'
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: 8
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+        env:
+          TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+          TURBO_TEAM: ${{ secrets.TURBO_TEAM }}
+
+      - name: Run ESLint (affected packages only)
+        if: needs.detect-changes.outputs.test_all != 'true'
+        run: |
+          FILTER="${{ needs.detect-changes.outputs.turbo_filter }}"
+          if [ -n "$FILTER" ]; then
+            pnpm turbo run lint $FILTER
+          else
+            echo "⚡ No packages affected - skipping lint"
+          fi
+        env:
+          TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+          TURBO_TEAM: ${{ secrets.TURBO_TEAM }}
+
+      - name: Run ESLint (all packages)
+        if: needs.detect-changes.outputs.test_all == 'true'
+        run: pnpm lint
+        env:
+          TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+          TURBO_TEAM: ${{ secrets.TURBO_TEAM }}
+
+      - name: Run Prettier check
+        run: pnpm format:check
+
+      - name: TypeScript type check (affected packages only)
+        if: needs.detect-changes.outputs.test_all != 'true'
+        run: |
+          FILTER="${{ needs.detect-changes.outputs.turbo_filter }}"
+          if [ -n "$FILTER" ]; then
+            pnpm turbo run typecheck $FILTER
+          else
+            echo "⚡ No packages affected - skipping typecheck"
+          fi
+        env:
+          TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+          TURBO_TEAM: ${{ secrets.TURBO_TEAM }}
+
+      - name: TypeScript type check (all packages)
+        if: needs.detect-changes.outputs.test_all == 'true'
+        run: pnpm typecheck
+        env:
+          TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+          TURBO_TEAM: ${{ secrets.TURBO_TEAM }}
+
+  security-scan:
+    name: Security Vulnerability Scan
+    runs-on: ubuntu-latest
+    needs: detect-changes
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'pnpm'
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: 8
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+        env:
+          TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+          TURBO_TEAM: ${{ secrets.TURBO_TEAM }}
+
+      - name: Run pnpm audit
+        id: audit
+        continue-on-error: true
+        run: |
+          echo "Running pnpm audit..."
+          pnpm audit --audit-level=moderate --json > audit-report.json || true
+
+          # Parse audit results
+          VULNERABILITIES=$(node -e "
+            const fs = require('fs');
+            try {
+              const report = JSON.parse(fs.readFileSync('audit-report.json', 'utf8'));
+              const advisories = report.advisories || {};
+              const critical = Object.values(advisories).filter(a => a.severity === 'critical').length;
+              const high = Object.values(advisories).filter(a => a.severity === 'high').length;
+              const moderate = Object.values(advisories).filter(a => a.severity === 'moderate').length;
+              console.log(JSON.stringify({ critical, high, moderate }));
+            } catch (e) {
+              console.log(JSON.stringify({ critical: 0, high: 0, moderate: 0 }));
+            }
+          ")
+
+          echo "vulnerabilities=$VULNERABILITIES" >> $GITHUB_OUTPUT
+
+          CRITICAL=$(echo $VULNERABILITIES | node -e "const data = JSON.parse(require('fs').readFileSync(0, 'utf-8')); console.log(data.critical)")
+          HIGH=$(echo $VULNERABILITIES | node -e "const data = JSON.parse(require('fs').readFileSync(0, 'utf-8')); console.log(data.high)")
+
+          if [ "$CRITICAL" -gt 0 ] || [ "$HIGH" -gt 0 ]; then
+            echo "⚠️ Found $CRITICAL critical and $HIGH high severity vulnerabilities"
+            exit 1
+          else
+            echo "✅ No critical or high severity vulnerabilities found"
+          fi
+
+      - name: Upload audit report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: security-audit-report
+          path: audit-report.json
+          retention-days: 7
+
+      - name: Comment on PR with security findings
+        if: github.event_name == 'pull_request' && failure()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            let critical = 0, high = 0, moderate = 0;
+
+            try {
+              const report = JSON.parse(fs.readFileSync('audit-report.json', 'utf8'));
+              const advisories = report.advisories || {};
+              critical = Object.values(advisories).filter(a => a.severity === 'critical').length;
+              high = Object.values(advisories).filter(a => a.severity === 'high').length;
+              moderate = Object.values(advisories).filter(a => a.severity === 'moderate').length;
+            } catch (e) {
+              console.error('Failed to parse audit report:', e);
+            }
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `## 🔒 Security Scan Failed
+
+            Found **${critical} critical**, **${high} high**, and **${moderate} moderate** severity vulnerabilities.
+
+            **Action Required:**
+            1. Run \`pnpm audit\` locally to see details
+            2. Update vulnerable dependencies: \`pnpm update\`
+            3. For critical/high vulnerabilities, prioritize fixes immediately
+            4. If no fix available, consider using alternative packages or applying patches
+
+            <details>
+            <summary>View detailed audit report</summary>
+
+            Download the full security audit report from the workflow artifacts.
+
+            </details>
+            `
+            });
+
+  codeql-analysis:
+    name: CodeQL Security Analysis
+    runs-on: ubuntu-latest
+    needs: detect-changes
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: javascript-typescript
+          queries: security-and-quality
+
+      - name: Autobuild
+        uses: github/codeql-action/autobuild@v3
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v3
+        with:
+          category: '/language:javascript-typescript'
+
+  bundle-size-check:
+    name: Bundle Size Check
+    runs-on: ubuntu-latest
+    needs: detect-changes
+    # Only run if packages are affected
+    if: needs.detect-changes.outputs.test_all == 'true' || needs.detect-changes.outputs.affected_packages != ''
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'pnpm'
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: 8
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+        env:
+          TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+          TURBO_TEAM: ${{ secrets.TURBO_TEAM }}
+
+      - name: Build packages (affected only)
+        if: needs.detect-changes.outputs.test_all != 'true'
+        run: |
+          FILTER="${{ needs.detect-changes.outputs.turbo_filter }}"
+          if [ -n "$FILTER" ]; then
+            pnpm turbo run build $FILTER
+          else
+            pnpm build:packages
+          fi
+        env:
+          TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+          TURBO_TEAM: ${{ secrets.TURBO_TEAM }}
+
+      - name: Build packages (all)
+        if: needs.detect-changes.outputs.test_all == 'true'
+        run: pnpm build
+        env:
+          TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+          TURBO_TEAM: ${{ secrets.TURBO_TEAM }}
+
+      - name: Check bundle size
+        id: bundle-size
+        run: |
+          echo "Checking bundle sizes..."
+
+          # Find main bundle files
+          if [ -d "packages/react/dist" ]; then
+            REACT_SIZE=$(du -sb packages/react/dist | cut -f1)
+            REACT_SIZE_KB=$((REACT_SIZE / 1024))
+            echo "react_size_kb=$REACT_SIZE_KB" >> $GITHUB_OUTPUT
+
+            # Set threshold (500KB = 512000 bytes)
+            THRESHOLD_KB=500
+            if [ $REACT_SIZE_KB -gt $THRESHOLD_KB ]; then
+              echo "⚠️ React package bundle size: ${REACT_SIZE_KB}KB (exceeds ${THRESHOLD_KB}KB threshold)"
+              exit 1
+            else
+              echo "✅ React package bundle size: ${REACT_SIZE_KB}KB (within ${THRESHOLD_KB}KB threshold)"
+            fi
+          else
+            echo "✅ No bundle size check needed (dist folder not found)"
+          fi
+
+      - name: Comment on PR with bundle size
+        if: github.event_name == 'pull_request' && failure()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const sizeKB = '${{ steps.bundle-size.outputs.react_size_kb }}';
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `## 📦 Bundle Size Check Failed
+
+            React package bundle size: **${sizeKB}KB** (exceeds 500KB threshold)
+
+            **Action Required:**
+            1. Analyze bundle composition: \`pnpm run build:analyze\`
+            2. Consider code splitting for large dependencies
+            3. Remove unused imports and dependencies
+            4. Use dynamic imports for heavy components
+
+            <details>
+            <summary>Bundle size optimization tips</summary>
+
+            - Use \`import { specific } from 'library'\` instead of \`import * as lib\`
+            - Lazy load heavy components with React.lazy()
+            - Remove unused dependencies from package.json
+            - Use smaller alternatives (e.g., date-fns instead of moment.js)
+
+            </details>
+            `
+            });
+
+  performance-testing:
+    name: Performance Testing
+    runs-on: ubuntu-latest
+    needs: detect-changes
+    # Only run on PRs and if apps are affected
+    if: github.event_name == 'pull_request' && (needs.detect-changes.outputs.test_all == 'true' || needs.detect-changes.outputs.affected_apps != '')
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'pnpm'
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: 8
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+        env:
+          TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+          TURBO_TEAM: ${{ secrets.TURBO_TEAM }}
+
+      - name: Build streamlined-docs
+        run: |
+          cd apps/streamlined-docs
+          pnpm build
+
+      - name: Start dev server
+        run: |
+          cd apps/streamlined-docs
+          pnpm start &
+          echo $! > server.pid
+
+          # Wait for server to be ready
+          timeout 60 bash -c 'until curl -f http://localhost:3000 > /dev/null 2>&1; do sleep 2; done'
+
+      - name: Install Lighthouse CI
+        run: npm install -g @lhci/cli@0.13.x
+
+      - name: Run Lighthouse CI
+        id: lighthouse
+        continue-on-error: true
+        run: |
+          lhci autorun --config=.lighthouserc.json || echo "Lighthouse CI failed"
+
+      - name: Stop dev server
+        if: always()
+        run: |
+          if [ -f apps/streamlined-docs/server.pid ]; then
+            kill $(cat apps/streamlined-docs/server.pid) || true
+            rm apps/streamlined-docs/server.pid
+          fi
+
+      - name: Upload Lighthouse results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lighthouse-results
+          path: .lighthouseci
+          retention-days: 7
+
+      - name: Comment Lighthouse scores on PR
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+
+            let performanceScore = 'N/A';
+            let lcp = 'N/A';
+            let fid = 'N/A';
+            let cls = 'N/A';
+
+            try {
+              if (fs.existsSync('.lighthouseci/manifest.json')) {
+                const manifest = JSON.parse(fs.readFileSync('.lighthouseci/manifest.json', 'utf8'));
+                if (manifest && manifest.length > 0) {
+                  const summary = manifest[0].summary;
+                  performanceScore = Math.round((summary.performance || 0) * 100);
+                  lcp = Math.round(summary['largest-contentful-paint'] || 0);
+                  fid = Math.round(summary.interactive || 0);
+                  cls = (summary['cumulative-layout-shift'] || 0).toFixed(3);
+                }
+              }
+            } catch (e) {
+              console.error('Failed to parse Lighthouse results:', e);
+            }
+
+            const emoji = performanceScore >= 90 ? '🟢' : performanceScore >= 50 ? '🟡' : '🔴';
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `## ${emoji} Lighthouse Performance Report
+
+            **Overall Score**: ${performanceScore}/100
+
+            ### Core Web Vitals
+            - **LCP** (Largest Contentful Paint): ${lcp}ms ${lcp < 2500 ? '✅' : '❌'}
+            - **FID** (First Input Delay): ${fid}ms ${fid < 100 ? '✅' : '❌'}
+            - **CLS** (Cumulative Layout Shift): ${cls} ${cls < 0.1 ? '✅' : '❌'}
+
+            <details>
+            <summary>About Core Web Vitals</summary>
+
+            - **LCP**: Measures loading performance (target: <2.5s)
+            - **FID**: Measures interactivity (target: <100ms)
+            - **CLS**: Measures visual stability (target: <0.1)
+
+            [Learn more about Core Web Vitals](https://web.dev/vitals/)
+
+            </details>
+            `
+            });
+
+  quality-gate:
+    name: Quality Gate
+    runs-on: ubuntu-latest
+    needs:
+      [
+        detect-changes,
+        duplicate-detection,
+        audit-score,
+        lint-and-format,
+        security-scan,
+        codeql-analysis,
+        bundle-size-check,
+      ]
+    if: always()
+
+    steps:
+      - name: Check quality gate status
+        run: |
+          echo "Quality gate checks completed"
+          echo ""
+          echo "📊 Job Results:"
+          echo "  detect-changes: ${{ needs.detect-changes.result }}"
+          echo "  duplicate-detection: ${{ needs.duplicate-detection.result }}"
+          echo "  audit-score: ${{ needs.audit-score.result }}"
+          echo "  lint-and-format: ${{ needs.lint-and-format.result }}"
+          echo "  security-scan: ${{ needs.security-scan.result }}"
+          echo "  codeql-analysis: ${{ needs.codeql-analysis.result }}"
+          echo "  bundle-size-check: ${{ needs.bundle-size-check.result }}"
+          echo ""
+
+          # Helper function to check if job passed or was skipped
+          check_job() {
+            local job_name=$1
+            local job_result=$2
+
+            if [ "$job_result" == "success" ] || [ "$job_result" == "skipped" ]; then
+              echo "✅ $job_name: $job_result"
+              return 0
+            else
+              echo "❌ $job_name: $job_result"
+              return 1
+            fi
+          }
+
+          FAILED=0
+
+          # Check critical jobs (these must pass if they run)
+          check_job "Change detection" "${{ needs.detect-changes.result }}" || FAILED=1
+          check_job "Duplicate detection" "${{ needs.duplicate-detection.result }}" || FAILED=1
+          check_job "Lint and format" "${{ needs.lint-and-format.result }}" || FAILED=1
+          check_job "Security scan" "${{ needs.security-scan.result }}" || FAILED=1
+          check_job "Bundle size check" "${{ needs.bundle-size-check.result }}" || FAILED=1
+
+          # CodeQL and audit score are informational (don't block)
+          if [ "${{ needs.codeql-analysis.result }}" != "success" ] && [ "${{ needs.codeql-analysis.result }}" != "skipped" ]; then
+            echo "⚠️ CodeQL analysis had issues (non-blocking)"
+          fi
+
+          if [ "${{ needs.audit-score.result }}" != "success" ] && [ "${{ needs.audit-score.result }}" != "skipped" ]; then
+            echo "⚠️ Audit score calculation had issues (non-blocking)"
+          fi
+
+          echo ""
+          if [ $FAILED -eq 0 ]; then
+            echo "✅ All quality gates passed"
+          else
+            echo "❌ Quality gate failed - see details above"
+            exit 1
+          fi
+
+      - name: Send Slack notification on failure
+        if: failure() && github.ref == 'refs/heads/main'
+        uses: slackapi/slack-github-action@v1.26.0
+        with:
+          payload: |
+            {
+              "text": "🚨 Quality Gate Failed on Main Branch",
+              "blocks": [
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "*Quality Gate Failed on Main Branch* 🚨\n\nRepository: ${{ github.repository }}\nBranch: ${{ github.ref_name }}\nCommit: <${{ github.event.head_commit.url }}|${{ github.sha }}>\nAuthor: ${{ github.actor }}"
+                  }
+                },
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View Workflow Run>"
+                  }
+                }
+              ]
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK

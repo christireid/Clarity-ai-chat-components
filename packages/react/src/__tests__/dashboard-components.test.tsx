@@ -20,9 +20,9 @@ import {
 } from '@testing-library/react'
 import * as React from 'react'
 
-import { AnalyticsDashboard } from '../components/analytics-dashboard'
-import { TokenOptimizationDashboard } from '../components/token-optimization-dashboard'
-import { PerformanceDashboard } from '../components/performance-dashboard'
+import { AnalyticsDashboard } from '../components/AnalyticsDashboard'
+import { TokenOptimizationDashboard } from '../components/TokenOptimizationDashboard'
+import { PerformanceDashboard } from '../components/PerformanceDashboard'
 import {
   DashboardErrorBoundary,
   useDashboardErrorHandler,

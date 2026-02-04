@@ -1,7 +1,7 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import App from './App'
-import '@clarity-chat/react/dist/styles/index.css'
+import '@clarity-chat/react/styles.css'
 import './index.css'
 
 ReactDOM.createRoot(document.getElementById('root')!).render(

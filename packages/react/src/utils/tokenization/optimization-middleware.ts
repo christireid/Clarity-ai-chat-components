@@ -10,17 +10,15 @@
  * - Performance tracking and analytics
  */
 
-import { TokenCounter } from '@clarity-chat/token-optimization'
+import {
+  AccurateTokenCounter,
+  compressAdaptively,
+  type CompressionStrategyType,
+} from '@clarity-chat/token-optimization'
 import {
   adaptiveOptimizer,
   optimizeTokensAdaptively,
 } from './adaptive-optimizer'
-import {
-  advancedCompressor,
-  compressWithAdvanced,
-  type AdvancedCompressionStrategy,
-} from './advanced-compression'
-import { semanticCache, getCachedTokenCount } from './intelligent-caching'
 
 export type MiddlewareMode =
   | 'automatic'
@@ -245,7 +243,8 @@ export class TokenOptimizationMiddleware {
     context: OptimizationContext,
     config: MiddlewareConfig
   ): Promise<MiddlewareResult> {
-    const originalTokens = await TokenCounter.count(text)
+    const counter = new AccurateTokenCounter({ model })
+    const originalTokens = counter.count(text)
 
     // Apply compression based on content analysis
     const compressionStrategy = this.selectCompressionStrategy(text, context)
@@ -255,14 +254,9 @@ export class TokenOptimizationMiddleware {
       context
     )
 
-    const compressedText = await compressWithAdvanced(
-      text,
-      compressionStrategy,
-      compressionRatio,
-      config.qualityThreshold || 0.8
-    )
+    const compressedText = await compressAdaptively(text, compressionRatio)
 
-    const compressedTokens = await TokenCounter.count(compressedText)
+    const compressedTokens = counter.count(compressedText)
     const reductionRatio = 1 - compressedTokens / originalTokens
     const estimatedQuality = this.estimateQuality(text, compressedText)
     const estimatedCost = this.estimateCost(compressedTokens, model)
@@ -298,20 +292,16 @@ export class TokenOptimizationMiddleware {
     context: OptimizationContext,
     config: MiddlewareConfig
   ): Promise<MiddlewareResult> {
-    const originalTokens = await TokenCounter.count(text)
+    const counter = new AccurateTokenCounter({ model })
+    const originalTokens = counter.count(text)
 
     // Apply manual compression with specified parameters
     const compressionRatio = config.compressionRatio || 0.3
     const qualityThreshold = config.qualityThreshold || 0.8
 
-    const compressedText = await compressWithAdvanced(
-      text,
-      'adaptive',
-      compressionRatio,
-      qualityThreshold
-    )
+    const compressedText = await compressAdaptively(text, compressionRatio)
 
-    const compressedTokens = await TokenCounter.count(compressedText)
+    const compressedTokens = counter.count(compressedText)
     const reductionRatio = 1 - compressedTokens / originalTokens
     const estimatedQuality = this.estimateQuality(text, compressedText)
     const estimatedCost = this.estimateCost(compressedTokens, model)
@@ -383,7 +373,8 @@ export class TokenOptimizationMiddleware {
     context: OptimizationContext,
     config: MiddlewareConfig
   ): Promise<MiddlewareResult> {
-    const originalTokens = await TokenCounter.count(text)
+    const counter = new AccurateTokenCounter({ model })
+    const originalTokens = counter.count(text)
     const budgetTokens = config.budgetTokens
     const budgetCost = config.budgetCost
 
@@ -400,14 +391,9 @@ export class TokenOptimizationMiddleware {
 
     const compressionRatio = targetTokens / originalTokens
 
-    const compressedText = await compressWithAdvanced(
-      text,
-      'adaptive',
-      compressionRatio,
-      config.qualityThreshold || 0.7 // Lower quality for budget
-    )
+    const compressedText = await compressAdaptively(text, compressionRatio)
 
-    const compressedTokens = await TokenCounter.count(compressedText)
+    const compressedTokens = counter.count(compressedText)
     const reductionRatio = 1 - compressedTokens / originalTokens
     const estimatedQuality = this.estimateQuality(text, compressedText)
     const estimatedCost = this.estimateCost(compressedTokens, model)
@@ -447,11 +433,11 @@ export class TokenOptimizationMiddleware {
   private selectCompressionStrategy(
     text: string,
     context: OptimizationContext
-  ): AdvancedCompressionStrategy {
-    if (context.contextType === 'code') return 'structural'
-    if (context.complexity === 'high') return 'semantic_pruning'
+  ): CompressionStrategyType {
+    if (context.contextType === 'code') return 'extractive'
+    if (context.complexity === 'high') return 'llmlingua'
     if (text.length > 5000) return 'llmlingua'
-    return 'adaptive'
+    return 'hybrid'
   }
 
   /**
@@ -594,7 +580,9 @@ export class TokenOptimizationMiddleware {
     error: unknown,
     startTime: number
   ): MiddlewareResult {
-    console.warn('Token optimization failed:', error)
+    if (process.env.NODE_ENV === 'development') {
+      console.warn('Token optimization failed:', error)
+    }
 
     if (this.config.enableFallback) {
       return {

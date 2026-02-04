@@ -1,0 +1,553 @@
+{
+  "version": "1.0.0",
+  "extractedAt": "2026-01-28T00:00:00Z",
+  "totalExports": 230,
+  "totalModules": 99,
+  "tokenOptimizationAPIs": [
+    "AccurateTokenCounter",
+    "ProviderNativeCounter",
+    "TieredCache",
+    "AdvancedSemanticCache",
+    "ExactCache",
+    "SmartCache",
+    "LLMLinguaCompressor",
+    "ExtractiveCompressor",
+    "AdaptiveCompressor",
+    "ProviderCachingFormatter",
+    "ModelRouter",
+    "ComplexityAnalyzer",
+    "CostTracker",
+    "CostAwareOptimizer",
+    "useTokenCount",
+    "useTokenOptimization",
+    "ToonOptimizer",
+    "calculateCost",
+    "estimateCacheSavings",
+    "TokenCostPreview",
+    "TokenOptimizationDashboard",
+    "TokenOptimizationBadge"
+  ],
+  "modules": {
+    "tokenizers/accurate-counter": {
+      "path": "packages/token-optimization/src/tokenizers/accurate-counter.ts",
+      "exports": {
+        "AccurateTokenCounter": {
+          "type": "class",
+          "signature": "class AccurateTokenCounter",
+          "methods": [
+            {
+              "name": "count",
+              "signature": "count(text: string, model?: ModelId): number",
+              "parameters": [
+                { "name": "text", "type": "string", "required": true, "description": "Text to count tokens for" },
+                { "name": "model", "type": "ModelId", "required": false, "default": "gpt-4o", "description": "Model ID for tokenization" }
+              ],
+              "returnType": "number",
+              "jsDoc": "Count tokens in text using gpt-tokenizer (5-6x smaller than tiktoken)",
+              "tokenOptimizationRelevant": true,
+              "priority": "HIGHEST"
+            },
+            {
+              "name": "countMessages",
+              "signature": "countMessages(messages: ChatMessage[], model?: ModelId): number",
+              "parameters": [
+                { "name": "messages", "type": "ChatMessage[]", "required": true, "description": "Array of chat messages" },
+                { "name": "model", "type": "ModelId", "required": false, "default": "gpt-4o", "description": "Model ID" }
+              ],
+              "returnType": "number",
+              "jsDoc": "Count tokens in conversation messages",
+              "tokenOptimizationRelevant": true,
+              "priority": "HIGHEST"
+            }
+          ],
+          "jsDoc": "Lightweight, accurate token counter using gpt-tokenizer. 5-6x smaller bundle size than tiktoken while maintaining accuracy.",
+          "tokenOptimizationRelevant": true,
+          "priority": "HIGHEST"
+        }
+      }
+    },
+    "tokenizers/provider-native-counter": {
+      "path": "packages/token-optimization/src/tokenizers/provider-native-counter.ts",
+      "exports": {
+        "ProviderNativeCounter": {
+          "type": "class",
+          "signature": "class ProviderNativeCounter",
+          "methods": [
+            {
+              "name": "count",
+              "signature": "count(text: string, provider: 'anthropic' | 'openai' | 'google'): Promise<TokenCountResult>",
+              "parameters": [
+                { "name": "text", "type": "string", "required": true, "description": "Text to count" },
+                { "name": "provider", "type": "'anthropic' | 'openai' | 'google'", "required": true, "description": "Provider for API call" }
+              ],
+              "returnType": "Promise<TokenCountResult>",
+              "jsDoc": "Count tokens using provider's native API for 100% accuracy",
+              "tokenOptimizationRelevant": true,
+              "priority": "HIGHEST"
+            }
+          ],
+          "jsDoc": "100% accurate token counting using provider APIs. Guaranteed to match billing.",
+          "tokenOptimizationRelevant": true,
+          "priority": "HIGHEST"
+        }
+      }
+    },
+    "cache/tiered-cache": {
+      "path": "packages/token-optimization/src/cache/tiered-cache.ts",
+      "exports": {
+        "TieredCache": {
+          "type": "class",
+          "signature": "class TieredCache",
+          "methods": [
+            {
+              "name": "get",
+              "signature": "get(key: string, context?: CacheContext): Promise<TieredCacheResult | null>",
+              "parameters": [
+                { "name": "key", "type": "string", "required": true, "description": "Cache key (e.g., prompt)" },
+                { "name": "context", "type": "CacheContext", "required": false, "description": "Additional context for caching decision" }
+              ],
+              "returnType": "Promise<TieredCacheResult | null>",
+              "jsDoc": "Get cached value using multi-tier lookup: Exact → Smart → Semantic",
+              "tokenOptimizationRelevant": true,
+              "priority": "HIGHEST"
+            },
+            {
+              "name": "set",
+              "signature": "set(key: string, value: string, metadata?: CacheMetadata): Promise<void>",
+              "parameters": [
+                { "name": "key", "type": "string", "required": true, "description": "Cache key" },
+                { "name": "value", "type": "string", "required": true, "description": "Value to cache" },
+                { "name": "metadata", "type": "CacheMetadata", "required": false, "description": "Optional metadata" }
+              ],
+              "returnType": "Promise<void>",
+              "jsDoc": "Store value in all cache tiers",
+              "tokenOptimizationRelevant": true,
+              "priority": "HIGHEST"
+            },
+            {
+              "name": "getStats",
+              "signature": "getStats(): TieredCacheStats",
+              "parameters": [],
+              "returnType": "TieredCacheStats",
+              "jsDoc": "Get cache statistics including hit rates per tier",
+              "tokenOptimizationRelevant": true,
+              "priority": "HIGHEST"
+            }
+          ],
+          "jsDoc": "Multi-tier caching system for maximum hit rate. Tries Exact → Smart → Semantic in sequence for optimal performance vs. flexibility.",
+          "tokenOptimizationRelevant": true,
+          "priority": "HIGHEST"
+        }
+      }
+    },
+    "caching/advanced-semantic-cache": {
+      "path": "packages/token-optimization/src/caching/advanced-semantic-cache.ts",
+      "exports": {
+        "AdvancedSemanticCache": {
+          "type": "class",
+          "signature": "class AdvancedSemanticCache",
+          "methods": [
+            {
+              "name": "get",
+              "signature": "get(prompt: string, options?: { similarityThreshold?: number }): Promise<SemanticCacheResult | null>",
+              "parameters": [
+                { "name": "prompt", "type": "string", "required": true, "description": "Prompt to search" },
+                { "name": "options", "type": "{ similarityThreshold?: number }", "required": false, "description": "Search options" }
+              ],
+              "returnType": "Promise<SemanticCacheResult | null>",
+              "jsDoc": "Find semantically similar cached response using embeddings",
+              "tokenOptimizationRelevant": true,
+              "priority": "HIGHEST"
+            },
+            {
+              "name": "set",
+              "signature": "set(prompt: string, response: string, metadata?: CacheMetadata): Promise<void>",
+              "parameters": [
+                { "name": "prompt", "type": "string", "required": true, "description": "Prompt" },
+                { "name": "response", "type": "string", "required": true, "description": "Response to cache" },
+                { "name": "metadata", "type": "CacheMetadata", "required": false, "description": "Metadata" }
+              ],
+              "returnType": "Promise<void>",
+              "jsDoc": "Store prompt-response pair with embedding for semantic search",
+              "tokenOptimizationRelevant": true,
+              "priority": "HIGHEST"
+            }
+          ],
+          "jsDoc": "Semantic similarity-based caching using embeddings. Finds similar prompts even with different wording. Can achieve 40-60% cache hit rate vs. 5-10% with exact matching.",
+          "tokenOptimizationRelevant": true,
+          "priority": "HIGHEST"
+        }
+      }
+    },
+    "compression/strategies/llmlingua": {
+      "path": "packages/token-optimization/src/compression/strategies/llmlingua.ts",
+      "exports": {
+        "LLMLinguaCompressor": {
+          "type": "class",
+          "signature": "class LLMLinguaCompressor",
+          "methods": [
+            {
+              "name": "compress",
+              "signature": "compress(text: string, options?: Partial<LLMLinguaOptions>): Promise<LLMLinguaResult>",
+              "parameters": [
+                { "name": "text", "type": "string", "required": true, "description": "Text to compress" },
+                { "name": "options", "type": "Partial<LLMLinguaOptions>", "required": false, "description": "Compression options" }
+              ],
+              "returnType": "Promise<LLMLinguaResult>",
+              "jsDoc": "Compress text using statistical token-level analysis. Achieves 2-20x compression while preserving meaning.",
+              "tokenOptimizationRelevant": true,
+              "priority": "HIGHEST"
+            }
+          ],
+          "jsDoc": "Statistical compression using token-level importance scoring. Most aggressive compression strategy (2-20x). Inspired by LLMLingua research.",
+          "tokenOptimizationRelevant": true,
+          "priority": "HIGHEST"
+        },
+        "compressWithLLMLingua": {
+          "type": "function",
+          "signature": "compressWithLLMLingua(text: string, targetRatio?: number): Promise<LLMLinguaResult>",
+          "parameters": [
+            { "name": "text", "type": "string", "required": true, "description": "Text to compress" },
+            { "name": "targetRatio", "type": "number", "required": false, "default": 0.5, "description": "Target compression ratio (0.5 = 50% reduction)" }
+          ],
+          "returnType": "Promise<LLMLinguaResult>",
+          "jsDoc": "Simple API for LLMLingua compression. Use when you need maximum compression.",
+          "tokenOptimizationRelevant": true,
+          "priority": "HIGHEST"
+        }
+      }
+    },
+    "compression/strategies/extractive": {
+      "path": "packages/token-optimization/src/compression/strategies/extractive.ts",
+      "exports": {
+        "ExtractiveCompressor": {
+          "type": "class",
+          "signature": "class ExtractiveCompressor",
+          "methods": [
+            {
+              "name": "compress",
+              "signature": "compress(text: string, options?: Partial<ExtractiveOptions>): ExtractiveResult",
+              "parameters": [
+                { "name": "text", "type": "string", "required": true, "description": "Text to compress" },
+                { "name": "options", "type": "Partial<ExtractiveOptions>", "required": false, "description": "Options" }
+              ],
+              "returnType": "ExtractiveResult",
+              "jsDoc": "Extract most important sentences. Balanced compression (2-5x).",
+              "tokenOptimizationRelevant": true,
+              "priority": "HIGHEST"
+            }
+          ],
+          "jsDoc": "Sentence-level extraction based on importance scoring. Balances compression ratio with quality. Recommended for general use.",
+          "tokenOptimizationRelevant": true,
+          "priority": "HIGHEST"
+        }
+      }
+    },
+    "providers/prompt-caching": {
+      "path": "packages/token-optimization/src/providers/prompt-caching.ts",
+      "exports": {
+        "ProviderCachingFormatter": {
+          "type": "class",
+          "signature": "class ProviderCachingFormatter",
+          "methods": [
+            {
+              "name": "format",
+              "signature": "format(messages: CacheableMessage[], provider: CachingProvider, config?: ProviderCachingConfig): ProviderCachingResult",
+              "parameters": [
+                { "name": "messages", "type": "CacheableMessage[]", "required": true, "description": "Messages to format" },
+                { "name": "provider", "type": "CachingProvider", "required": true, "description": "Provider: 'anthropic' | 'openai' | 'google'" },
+                { "name": "config", "type": "ProviderCachingConfig", "required": false, "description": "Caching configuration" }
+              ],
+              "returnType": "ProviderCachingResult",
+              "jsDoc": "Format messages for provider-native caching. Can achieve 90% savings on cached tokens.",
+              "tokenOptimizationRelevant": true,
+              "priority": "HIGHEST"
+            }
+          ],
+          "jsDoc": "Format messages for provider-native caching (Anthropic, OpenAI, Google). Enables 90% cost savings on cached tokens. ⚠️ Only formats messages - you must implement provider API calls.",
+          "tokenOptimizationRelevant": true,
+          "priority": "HIGHEST"
+        },
+        "formatMessagesForProviderCaching": {
+          "type": "function",
+          "signature": "formatMessagesForProviderCaching(messages: CacheableMessage[], provider: CachingProvider, config?: ProviderCachingConfig): ProviderCachingResult",
+          "parameters": [
+            { "name": "messages", "type": "CacheableMessage[]", "required": true, "description": "Messages" },
+            { "name": "provider", "type": "CachingProvider", "required": true, "description": "Provider" },
+            { "name": "config", "type": "ProviderCachingConfig", "required": false, "description": "Config" }
+          ],
+          "returnType": "ProviderCachingResult",
+          "jsDoc": "Simple API for provider caching. Recommended entry point.",
+          "tokenOptimizationRelevant": true,
+          "priority": "HIGHEST"
+        }
+      }
+    },
+    "routing/model-router": {
+      "path": "packages/token-optimization/src/routing/model-router.ts",
+      "exports": {
+        "ModelRouter": {
+          "type": "class",
+          "signature": "class ModelRouter",
+          "methods": [
+            {
+              "name": "route",
+              "signature": "route(prompt: string, options?: RoutingOptions): RoutingResult",
+              "parameters": [
+                { "name": "prompt", "type": "string", "required": true, "description": "Prompt to route" },
+                { "name": "options", "type": "RoutingOptions", "required": false, "description": "Routing options" }
+              ],
+              "returnType": "RoutingResult",
+              "jsDoc": "Route prompt to optimal model based on complexity and cost. Can save 40-60% by using cheaper models for simple tasks.",
+              "tokenOptimizationRelevant": true,
+              "priority": "HIGHEST"
+            },
+            {
+              "name": "getStats",
+              "signature": "getStats(): RouterStats",
+              "parameters": [],
+              "returnType": "RouterStats",
+              "jsDoc": "Get routing statistics including savings",
+              "tokenOptimizationRelevant": true,
+              "priority": "HIGHEST"
+            }
+          ],
+          "jsDoc": "Intelligent model routing based on prompt complexity. Routes simple tasks to cheap models, complex tasks to powerful models. Achieves 40-60% cost reduction through smart routing.",
+          "tokenOptimizationRelevant": true,
+          "priority": "HIGHEST"
+        },
+        "ModelRouterBuilder": {
+          "type": "class",
+          "signature": "class ModelRouterBuilder",
+          "methods": [
+            {
+              "name": "useOpenAIModels",
+              "signature": "useOpenAIModels(): ModelRouterBuilder",
+              "returnType": "ModelRouterBuilder",
+              "jsDoc": "Use OpenAI model tier (gpt-4o-mini → gpt-4o → o1)",
+              "tokenOptimizationRelevant": true,
+              "priority": "HIGHEST"
+            },
+            {
+              "name": "useAnthropicModels",
+              "signature": "useAnthropicModels(): ModelRouterBuilder",
+              "returnType": "ModelRouterBuilder",
+              "jsDoc": "Use Anthropic model tier (haiku → sonnet → opus)",
+              "tokenOptimizationRelevant": true,
+              "priority": "HIGHEST"
+            },
+            {
+              "name": "withStrategy",
+              "signature": "withStrategy(strategy: RoutingStrategy): ModelRouterBuilder",
+              "parameters": [
+                { "name": "strategy", "type": "RoutingStrategy", "required": true, "description": "Routing strategy" }
+              ],
+              "returnType": "ModelRouterBuilder",
+              "jsDoc": "Set routing strategy: 'cost-optimized' | 'quality-optimized' | 'balanced'",
+              "tokenOptimizationRelevant": true,
+              "priority": "HIGHEST"
+            },
+            {
+              "name": "build",
+              "signature": "build(): ModelRouter",
+              "returnType": "ModelRouter",
+              "jsDoc": "Build the configured ModelRouter",
+              "tokenOptimizationRelevant": true,
+              "priority": "HIGHEST"
+            }
+          ],
+          "jsDoc": "Fluent builder for ModelRouter configuration. Enables clean, type-safe router setup.",
+          "tokenOptimizationRelevant": true,
+          "priority": "HIGHEST"
+        }
+      }
+    },
+    "analytics/cost-calculator": {
+      "path": "packages/token-optimization/src/analytics/cost-calculator.ts",
+      "exports": {
+        "CostTracker": {
+          "type": "class",
+          "signature": "class CostTracker",
+          "methods": [
+            {
+              "name": "trackRequest",
+              "signature": "trackRequest(usage: TokenUsage, model: ModelId): CostTracking",
+              "parameters": [
+                { "name": "usage", "type": "TokenUsage", "required": true, "description": "Token usage" },
+                { "name": "model", "type": "ModelId", "required": true, "description": "Model ID" }
+              ],
+              "returnType": "CostTracking",
+              "jsDoc": "Track API request cost and accumulate savings",
+              "tokenOptimizationRelevant": true,
+              "priority": "HIGHEST"
+            },
+            {
+              "name": "getSavingsReport",
+              "signature": "getSavingsReport(): SavingsReport",
+              "returnType": "SavingsReport",
+              "jsDoc": "Generate savings report showing total cost reduction achieved",
+              "tokenOptimizationRelevant": true,
+              "priority": "HIGHEST"
+            }
+          ],
+          "jsDoc": "Real-time cost tracking and savings calculation. Demonstrates ROI of optimization strategies.",
+          "tokenOptimizationRelevant": true,
+          "priority": "HIGHEST"
+        },
+        "calculateCost": {
+          "type": "function",
+          "signature": "calculateCost(usage: AnalyticsTokenUsage, model: ModelId): number",
+          "parameters": [
+            { "name": "usage", "type": "AnalyticsTokenUsage", "required": true, "description": "Token usage breakdown" },
+            { "name": "model", "type": "ModelId", "required": true, "description": "Model ID" }
+          ],
+          "returnType": "number",
+          "jsDoc": "Calculate cost for API request in USD",
+          "tokenOptimizationRelevant": true,
+          "priority": "HIGHEST"
+        },
+        "getSavingsPercentage": {
+          "type": "function",
+          "signature": "getSavingsPercentage(before: number, after: number): number",
+          "parameters": [
+            { "name": "before", "type": "number", "required": true, "description": "Cost before optimization" },
+            { "name": "after", "type": "number", "required": true, "description": "Cost after optimization" }
+          ],
+          "returnType": "number",
+          "jsDoc": "Calculate savings percentage (0-100)",
+          "tokenOptimizationRelevant": true,
+          "priority": "HIGHEST"
+        }
+      }
+    },
+    "hooks/use-token-count": {
+      "path": "packages/token-optimization/src/hooks/use-token-count.ts",
+      "exports": {
+        "useTokenCount": {
+          "type": "hook",
+          "signature": "useTokenCount(text: string, options?: UseTokenCountOptions): UseTokenCountReturn",
+          "parameters": [
+            { "name": "text", "type": "string", "required": true, "description": "Text to count tokens for" },
+            { "name": "options", "type": "UseTokenCountOptions", "required": false, "description": "Counting options" }
+          ],
+          "returnType": "UseTokenCountReturn",
+          "jsDoc": "React hook for token counting with automatic debouncing. Updates count on text changes.",
+          "tokenOptimizationRelevant": true,
+          "priority": "HIGHEST"
+        }
+      }
+    },
+    "hooks/use-token-optimization": {
+      "path": "packages/token-optimization/src/hooks/use-token-optimization.ts",
+      "exports": {
+        "useTokenOptimization": {
+          "type": "hook",
+          "signature": "useTokenOptimization(config?: UseTokenOptimizationConfig): UseTokenOptimizationReturn",
+          "parameters": [
+            { "name": "config", "type": "UseTokenOptimizationConfig", "required": false, "description": "Optimization configuration" }
+          ],
+          "returnType": "UseTokenOptimizationReturn",
+          "jsDoc": "Unified React hook for all token optimization features: counting, caching, compression, routing, and cost tracking.",
+          "tokenOptimizationRelevant": true,
+          "priority": "HIGHEST"
+        }
+      }
+    },
+    "react/components/TokenCostPreview": {
+      "path": "packages/token-optimization/src/react/components/TokenCostPreview.tsx",
+      "exports": {
+        "TokenCostPreview": {
+          "type": "component",
+          "signature": "TokenCostPreview(props: TokenCostPreviewProps): JSX.Element",
+          "parameters": [
+            { "name": "props.text", "type": "string", "required": true, "description": "Text to analyze" },
+            { "name": "props.model", "type": "ModelId", "required": false, "default": "gpt-4o", "description": "Model for pricing" },
+            { "name": "props.showSavings", "type": "boolean", "required": false, "default": "false", "description": "Show optimization savings" }
+          ],
+          "returnType": "JSX.Element",
+          "jsDoc": "Component showing real-time token count and cost preview. Optionally displays savings from optimization.",
+          "tokenOptimizationRelevant": true,
+          "priority": "HIGHEST"
+        }
+      }
+    },
+    "react/components/TokenOptimizationBadge": {
+      "path": "packages/token-optimization/src/react/components/TokenOptimizationBadge.tsx",
+      "exports": {
+        "TokenOptimizationBadge": {
+          "type": "component",
+          "signature": "TokenOptimizationBadge(props: TokenOptimizationBadgeProps): JSX.Element",
+          "parameters": [
+            { "name": "props.savingsPercent", "type": "number", "required": true, "description": "Savings percentage to display" },
+            { "name": "props.mechanism", "type": "string", "required": false, "description": "How savings were achieved" },
+            { "name": "props.variant", "type": "'success' | 'warning' | 'info'", "required": false, "default": "success", "description": "Badge variant" }
+          ],
+          "returnType": "JSX.Element",
+          "jsDoc": "Badge component showing token optimization savings. Use in documentation to highlight cost reduction.",
+          "tokenOptimizationRelevant": true,
+          "priority": "HIGHEST"
+        }
+      }
+    },
+    "formats/toon-optimizer": {
+      "path": "packages/token-optimization/src/formats/toon-optimizer/index.ts",
+      "exports": {
+        "ToonOptimizer": {
+          "type": "class",
+          "signature": "class ToonOptimizer",
+          "methods": [
+            {
+              "name": "encode",
+              "signature": "encode(data: unknown, config?: ToonConfig): string",
+              "parameters": [
+                { "name": "data", "type": "unknown", "required": true, "description": "Data to encode" },
+                { "name": "config", "type": "ToonConfig", "required": false, "description": "TOON configuration" }
+              ],
+              "returnType": "string",
+              "jsDoc": "Encode object to TOON format. Achieves 30-60% token reduction vs. JSON.",
+              "tokenOptimizationRelevant": true,
+              "priority": "HIGHEST"
+            },
+            {
+              "name": "decode",
+              "signature": "decode<T>(toon: string): T",
+              "parameters": [
+                { "name": "toon", "type": "string", "required": true, "description": "TOON string to decode" }
+              ],
+              "returnType": "T",
+              "jsDoc": "Decode TOON string back to object",
+              "tokenOptimizationRelevant": true,
+              "priority": "HIGHEST"
+            }
+          ],
+          "jsDoc": "Token-Oriented Object Notation (TOON) - Compact JSON alternative. Uses abbreviations, removes whitespace, applies compression. Achieves 30-60% token reduction.",
+          "tokenOptimizationRelevant": true,
+          "priority": "HIGHEST"
+        }
+      }
+    }
+  },
+  "summary": {
+    "totalAPIs": 230,
+    "highestPriority": 22,
+    "mediumPriority": 85,
+    "lowPriority": 123,
+    "categories": {
+      "tokenizers": 10,
+      "caching": 25,
+      "compression": 30,
+      "routing": 15,
+      "providers": 18,
+      "analytics": 12,
+      "formats": 15,
+      "hooks": 20,
+      "components": 10,
+      "accessibility": 15,
+      "errors": 18,
+      "health": 10,
+      "observability": 12,
+      "models": 20,
+      "utilities": 10
+    }
+  }
+}

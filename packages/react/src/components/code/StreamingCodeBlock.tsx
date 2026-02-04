@@ -3,7 +3,7 @@
 import { logger } from '@clarity-chat/utils/logger'
 
 import * as React from 'react'
-import { cn } from '../../utils/cn'
+import { cn } from '@clarity-chat/primitives'
 import { normalizeLanguage, escapeHtml } from './utils'
 import { sanitizeCodeHtml } from '../../utils/security/sanitize-html'
 import { CODE_THEMES, type CodeThemeName, DEFAULT_DARK_THEME } from './themes'
@@ -62,6 +62,12 @@ export interface StreamingCodeBlockProps {
  * - Streaming cursor indicator
  * - Disabled copy during streaming
  * - Final highlight pass when stream completes
+ *
+ * @requires shiki - Syntax highlighting engine (optional peer dependency)
+ * @installation npm install shiki
+ * @bundleImpact ~200KB when shiki is installed (lazy-loaded on demand)
+ * @fallback Basic plain text rendering without syntax highlighting
+ * @docs https://clarity-chat.dev/docs/peer-dependencies
  *
  * @example
  * ```tsx
@@ -224,7 +230,7 @@ export const StreamingCodeBlock = React.memo<StreamingCodeBlockProps>(
         <div
           ref={contentRef}
           className={cn(
-            'p-4 overflow-auto',
+            'p-4 overflow-auto scrollbar-hide',
             'text-sm leading-relaxed font-mono',
             'font-fira-code font-ligatures',
             isHighlighting && 'opacity-80'

@@ -215,35 +215,6 @@ export class RateLimitError extends ClarityChatError {
 }
 
 /**
- * Validation errors - invalid input data
- * @deprecated Use EnhancedValidationError from './validation-error' for new code
- */
-export class ValidationError extends ClarityChatError {
-  public readonly field?: string
-  public readonly value?: unknown
-  public readonly expected?: string
-
-  constructor(
-    message: string,
-    options?: {
-      code?: string
-      solution?: string
-      docs?: string
-      context?: Record<string, unknown>
-      field?: string
-      value?: unknown
-      expected?: string
-    }
-  ) {
-    super(message, options)
-    this.name = 'ValidationError'
-    this.field = options?.field
-    this.value = options?.value
-    this.expected = options?.expected
-  }
-}
-
-/**
  * Stream errors - streaming connection issues
  * @deprecated Use StreamingError from './streaming-error' for new code
  */

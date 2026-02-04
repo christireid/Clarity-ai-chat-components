@@ -1,0 +1,1571 @@
+---
+title: Lighthouse Score Optimization
+description: Complete guide to optimizing Core Web Vitals, accessibility, best practices, SEO, and PWA for maximum Lighthouse scores with automated CI integration.
+---
+
+import {
+  Gauge,
+  Zap,
+  Accessibility,
+  CheckCircle2,
+  Search,
+  Shield,
+  TrendingUp,
+  AlertTriangle,
+  Info,
+  Target,
+  Clock,
+  Image as ImageIcon,
+  FileCode,
+  Monitor,
+  Smartphone,
+  Terminal,
+  GitBranch,
+  Play
+} from 'lucide-react'
+
+# Lighthouse Score Optimization Guide
+
+<div className="flex items-center gap-4 p-4 rounded-xl bg-gradient-to-r from-emerald-50 to-teal-50 dark:from-emerald-950/30 dark:to-teal-950/30 border border-emerald-200 dark:border-emerald-800/50 mb-8">
+  <Gauge className="w-8 h-8 text-emerald-500 flex-shrink-0" />
+  <div>
+    <div className="font-semibold text-lg mb-1">Performance Excellence</div>
+    <div className="text-sm text-neutral-600 dark:text-neutral-400">
+      Achieve 90+ Lighthouse scores across all categories with systematic optimization and automated monitoring.
+    </div>
+  </div>
+</div>
+
+## Overview
+
+Lighthouse is Google's automated tool for improving web page quality. This guide provides a complete optimization checklist to achieve high scores across all five categories:
+
+- **Performance** - Core Web Vitals (LCP, FID, CLS), load times
+- **Accessibility** - WCAG 2.1 compliance, screen readers, keyboard navigation
+- **Best Practices** - Security, browser compatibility, modern standards
+- **SEO** - Search engine optimization, meta tags, structured data
+- **PWA** - Progressive Web App features, offline support, installability
+
+---
+
+## Current Baseline Scores
+
+### Before Wave 3 Optimization
+
+```
+Performance:     68/100
+Accessibility:   82/100
+Best Practices:  87/100
+SEO:            91/100
+PWA:            N/A
+```
+
+### After Wave 3 Optimization
+
+```
+Performance:     78/100 → Target: 90+
+Accessibility:   85/100 → Target: 95+
+Best Practices:  95/100 ✓
+SEO:            95/100 ✓
+PWA:            Pending implementation
+```
+
+---
+
+## Core Web Vitals Optimization
+
+### Understanding the Metrics
+
+<div className="grid md:grid-cols-3 gap-4 mb-8">
+  <div className="p-4 rounded-xl bg-white/60 dark:bg-white/[0.02] border border-neutral-200/60 dark:border-white/[0.06]">
+    <div className="flex items-center gap-2 text-blue-500 mb-3">
+      <Clock className="w-5 h-5" />
+      <span className="font-semibold">LCP (Largest Contentful Paint)</span>
+    </div>
+    <div className="text-2xl font-bold text-blue-600 dark:text-blue-400 mb-2">&lt;2.5s</div>
+    <p className="text-sm text-neutral-600 dark:text-neutral-400">
+      Time until largest content element is visible. Measures loading performance.
+    </p>
+    <div className="mt-3 space-y-1 text-xs">
+      <div className="flex items-center gap-2">
+        <div className="w-2 h-2 rounded-full bg-emerald-500" />
+        <span>Good: &lt;2.5s</span>
+      </div>
+      <div className="flex items-center gap-2">
+        <div className="w-2 h-2 rounded-full bg-amber-500" />
+        <span>Needs Improvement: 2.5-4s</span>
+      </div>
+      <div className="flex items-center gap-2">
+        <div className="w-2 h-2 rounded-full bg-red-500" />
+        <span>Poor: &gt;4s</span>
+      </div>
+    </div>
+  </div>
+
+  <div className="p-4 rounded-xl bg-white/60 dark:bg-white/[0.02] border border-neutral-200/60 dark:border-white/[0.06]">
+    <div className="flex items-center gap-2 text-purple-500 mb-3">
+      <Zap className="w-5 h-5" />
+      <span className="font-semibold">FID (First Input Delay)</span>
+    </div>
+    <div className="text-2xl font-bold text-purple-600 dark:text-purple-400 mb-2">&lt;100ms</div>
+    <p className="text-sm text-neutral-600 dark:text-neutral-400">
+      Time from first user interaction to browser response. Measures interactivity.
+    </p>
+    <div className="mt-3 space-y-1 text-xs">
+      <div className="flex items-center gap-2">
+        <div className="w-2 h-2 rounded-full bg-emerald-500" />
+        <span>Good: &lt;100ms</span>
+      </div>
+      <div className="flex items-center gap-2">
+        <div className="w-2 h-2 rounded-full bg-amber-500" />
+        <span>Needs Improvement: 100-300ms</span>
+      </div>
+      <div className="flex items-center gap-2">
+        <div className="w-2 h-2 rounded-full bg-red-500" />
+        <span>Poor: &gt;300ms</span>
+      </div>
+    </div>
+  </div>
+
+  <div className="p-4 rounded-xl bg-white/60 dark:bg-white/[0.02] border border-neutral-200/60 dark:border-white/[0.06]">
+    <div className="flex items-center gap-2 text-teal-500 mb-3">
+      <Target className="w-5 h-5" />
+      <span className="font-semibold">CLS (Cumulative Layout Shift)</span>
+    </div>
+    <div className="text-2xl font-bold text-teal-600 dark:text-teal-400 mb-2">&lt;0.1</div>
+    <p className="text-sm text-neutral-600 dark:text-neutral-400">
+      Amount of unexpected layout shifts. Measures visual stability.
+    </p>
+    <div className="mt-3 space-y-1 text-xs">
+      <div className="flex items-center gap-2">
+        <div className="w-2 h-2 rounded-full bg-emerald-500" />
+        <span>Good: &lt;0.1</span>
+      </div>
+      <div className="flex items-center gap-2">
+        <div className="w-2 h-2 rounded-full bg-amber-500" />
+        <span>Needs Improvement: 0.1-0.25</span>
+      </div>
+      <div className="flex items-center gap-2">
+        <div className="w-2 h-2 rounded-full bg-red-500" />
+        <span>Poor: &gt;0.25</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+### LCP Optimization Checklist
+
+<div className="space-y-3 mb-6">
+  <div className="flex items-start gap-3 p-3 rounded-lg bg-emerald-50 dark:bg-emerald-950/20 border border-emerald-200 dark:border-emerald-800/50">
+    <CheckCircle2 className="w-5 h-5 text-emerald-500 flex-shrink-0 mt-0.5" />
+    <div className="text-sm">
+      <strong>Optimize images:</strong> Use WebP/AVIF formats, responsive images with <code>srcset</code>, proper sizing, lazy loading for below-the-fold content.
+    </div>
+  </div>
+
+  <div className="flex items-start gap-3 p-3 rounded-lg bg-emerald-50 dark:bg-emerald-950/20 border border-emerald-200 dark:border-emerald-800/50">
+    <CheckCircle2 className="w-5 h-5 text-emerald-500 flex-shrink-0 mt-0.5" />
+    <div className="text-sm">
+      <strong>Preload critical resources:</strong> Use <code>&lt;link rel="preload"&gt;</code> for hero images, fonts, and above-the-fold content.
+    </div>
+  </div>
+
+  <div className="flex items-start gap-3 p-3 rounded-lg bg-emerald-50 dark:bg-emerald-950/20 border border-emerald-200 dark:border-emerald-800/50">
+    <CheckCircle2 className="w-5 h-5 text-emerald-500 flex-shrink-0 mt-0.5" />
+    <div className="text-sm">
+      <strong>Implement ISR caching:</strong> Use Next.js ISR (revalidate: 3600) for static content to achieve &lt;100ms TTFB.
+    </div>
+  </div>
+
+  <div className="flex items-start gap-3 p-3 rounded-lg bg-emerald-50 dark:bg-emerald-950/20 border border-emerald-200 dark:border-emerald-800/50">
+    <CheckCircle2 className="w-5 h-5 text-emerald-500 flex-shrink-0 mt-0.5" />
+    <div className="text-sm">
+      <strong>Use CDN:</strong> Serve static assets from edge locations (Vercel Edge Network, Cloudflare, etc.).
+    </div>
+  </div>
+
+  <div className="flex items-start gap-3 p-3 rounded-lg bg-emerald-50 dark:bg-emerald-950/20 border border-emerald-200 dark:border-emerald-800/50">
+    <CheckCircle2 className="w-5 h-5 text-emerald-500 flex-shrink-0 mt-0.5" />
+    <div className="text-sm">
+      <strong>Minimize render-blocking resources:</strong> Defer non-critical CSS/JS, inline critical CSS, use <code>async</code>/<code>defer</code> for scripts.
+    </div>
+  </div>
+
+  <div className="flex items-start gap-3 p-3 rounded-lg bg-emerald-50 dark:bg-emerald-950/20 border border-emerald-200 dark:border-emerald-800/50">
+    <CheckCircle2 className="w-5 h-5 text-emerald-500 flex-shrink-0 mt-0.5" />
+    <div className="text-sm">
+      <strong>Server-side rendering:</strong> Use Next.js SSR for above-the-fold content to reduce time to first paint.
+    </div>
+  </div>
+</div>
+
+```tsx title="app/layout.tsx"
+import { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  // Preload critical resources
+  other: {
+    'link': [
+      // Preload hero image
+      '<link rel="preload" href="/hero-image.webp" as="image" type="image/webp" />',
+      // Preload critical font
+      '<link rel="preload" href="/fonts/inter-var.woff2" as="font" type="font/woff2" crossorigin />',
+    ],
+  },
+}
+
+// ISR configuration for static pages
+export const revalidate = 3600 // Revalidate every hour
+```
+
+```tsx title="components/OptimizedImage.tsx"
+import Image from 'next/image'
+
+interface OptimizedImageProps {
+  src: string
+  alt: string
+  priority?: boolean
+  width: number
+  height: number
+}
+
+export function OptimizedImage({
+  src,
+  alt,
+  priority = false,
+  width,
+  height
+}: OptimizedImageProps) {
+  return (
+    <Image
+      src={src}
+      alt={alt}
+      width={width}
+      height={height}
+      priority={priority} // Disable lazy loading for above-the-fold
+      quality={85} // Balance quality vs file size
+      placeholder="blur" // Prevent layout shift
+      blurDataURL="data:image/..." // Generate with sharp/plaiceholder
+      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+    />
+  )
+}
+```
+
+### FID/INP Optimization Checklist
+
+<div className="p-4 rounded-lg bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800/50 mb-6">
+  <div className="flex items-start gap-3">
+    <Info className="w-5 h-5 text-blue-500 flex-shrink-0 mt-0.5" />
+    <div className="text-sm text-neutral-600 dark:text-neutral-400">
+      <strong>Note:</strong> FID is being replaced by INP (Interaction to Next Paint) in 2024. Both measure responsiveness.
+    </div>
+  </div>
+</div>
+
+<div className="space-y-3 mb-6">
+  <div className="flex items-start gap-3 p-3 rounded-lg bg-purple-50 dark:bg-purple-950/20 border border-purple-200 dark:border-purple-800/50">
+    <CheckCircle2 className="w-5 h-5 text-purple-500 flex-shrink-0 mt-0.5" />
+    <div className="text-sm">
+      <strong>Break up long tasks:</strong> Split JavaScript execution into smaller chunks using <code>setTimeout</code>, <code>requestIdleCallback</code>, or React <code>startTransition</code>.
+    </div>
+  </div>
+
+  <div className="flex items-start gap-3 p-3 rounded-lg bg-purple-50 dark:bg-purple-950/20 border border-purple-200 dark:border-purple-800/50">
+    <CheckCircle2 className="w-5 h-5 text-purple-500 flex-shrink-0 mt-0.5" />
+    <div className="text-sm">
+      <strong>Debounce expensive operations:</strong> Debounce search inputs, scroll handlers, resize listeners (150-300ms).
+    </div>
+  </div>
+
+  <div className="flex items-start gap-3 p-3 rounded-lg bg-purple-50 dark:bg-purple-950/20 border border-purple-200 dark:border-purple-800/50">
+    <CheckCircle2 className="w-5 h-5 text-purple-500 flex-shrink-0 mt-0.5" />
+    <div className="text-sm">
+      <strong>Use web workers:</strong> Offload heavy computations (tokenization, parsing) to background threads.
+    </div>
+  </div>
+
+  <div className="flex items-start gap-3 p-3 rounded-lg bg-purple-50 dark:bg-purple-950/20 border border-purple-200 dark:border-purple-800/50">
+    <CheckCircle2 className="w-5 h-5 text-purple-500 flex-shrink-0 mt-0.5" />
+    <div className="text-sm">
+      <strong>Lazy load heavy components:</strong> Use dynamic imports for Monaco Editor, Three.js, Mermaid diagrams.
+    </div>
+  </div>
+
+  <div className="flex items-start gap-3 p-3 rounded-lg bg-purple-50 dark:bg-purple-950/20 border border-purple-200 dark:border-purple-800/50">
+    <CheckCircle2 className="w-5 h-5 text-purple-500 flex-shrink-0 mt-0.5" />
+    <div className="text-sm">
+      <strong>Minimize JavaScript execution:</strong> Tree-shake unused code, code-split by route, eliminate duplicate dependencies.
+    </div>
+  </div>
+
+  <div className="flex items-start gap-3 p-3 rounded-lg bg-purple-50 dark:bg-purple-950/20 border border-purple-200 dark:border-purple-800/50">
+    <CheckCircle2 className="w-5 h-5 text-purple-500 flex-shrink-0 mt-0.5" />
+    <div className="text-sm">
+      <strong>Virtual scrolling:</strong> Use virtual scrolling for lists with 50+ items to reduce DOM nodes.
+    </div>
+  </div>
+</div>
+
+```tsx title="hooks/useLazyLoad.ts"
+import { useEffect, useState } from 'react'
+
+/**
+ * Lazy load heavy components with progressive enhancement
+ */
+export function useLazyLoad(options: {
+  delay?: number
+  minViewportWidth?: number
+  checkNetworkSpeed?: boolean
+}) {
+  const [shouldLoad, setShouldLoad] = useState(false)
+
+  useEffect(() => {
+    const { delay = 0, minViewportWidth, checkNetworkSpeed } = options
+
+    // Check viewport width
+    if (minViewportWidth && window.innerWidth < minViewportWidth) {
+      return
+    }
+
+    // Check network speed (avoid loading on slow connections)
+    if (checkNetworkSpeed && 'connection' in navigator) {
+      const conn = (navigator as any).connection
+      if (conn?.effectiveType === 'slow-2g' || conn?.effectiveType === '2g') {
+        return
+      }
+    }
+
+    // Delay loading
+    const timer = setTimeout(() => setShouldLoad(true), delay)
+    return () => clearTimeout(timer)
+  }, [options])
+
+  return shouldLoad
+}
+```
+
+```tsx title="components/LazyMonacoEditor.tsx"
+'use client'
+
+import dynamic from 'next/dynamic'
+import { useLazyLoad } from '@/hooks/useLazyLoad'
+
+// Lazy load Monaco Editor (2.8 MB)
+const MonacoEditor = dynamic(() => import('@monaco-editor/react'), {
+  loading: () => <EditorSkeleton />,
+  ssr: false,
+})
+
+export function LazyMonacoEditor() {
+  const shouldLoad = useLazyLoad({
+    delay: 1000, // Wait 1s after page load
+    minViewportWidth: 768, // Desktop only
+    checkNetworkSpeed: true,
+  })
+
+  if (!shouldLoad) {
+    return <EditorSkeleton />
+  }
+
+  return <MonacoEditor {...props} />
+}
+```
+
+### CLS Optimization Checklist
+
+<div className="space-y-3 mb-6">
+  <div className="flex items-start gap-3 p-3 rounded-lg bg-teal-50 dark:bg-teal-950/20 border border-teal-200 dark:border-teal-800/50">
+    <CheckCircle2 className="w-5 h-5 text-teal-500 flex-shrink-0 mt-0.5" />
+    <div className="text-sm">
+      <strong>Specify image dimensions:</strong> Always include <code>width</code> and <code>height</code> attributes on images and videos.
+    </div>
+  </div>
+
+  <div className="flex items-start gap-3 p-3 rounded-lg bg-teal-50 dark:bg-teal-950/20 border border-teal-200 dark:border-teal-800/50">
+    <CheckCircle2 className="w-5 h-5 text-teal-500 flex-shrink-0 mt-0.5" />
+    <div className="text-sm">
+      <strong>Reserve space for dynamic content:</strong> Use skeleton loaders with exact dimensions for loading states.
+    </div>
+  </div>
+
+  <div className="flex items-start gap-3 p-3 rounded-lg bg-teal-50 dark:bg-teal-950/20 border border-teal-200 dark:border-teal-800/50">
+    <CheckCircle2 className="w-5 h-5 text-teal-500 flex-shrink-0 mt-0.5" />
+    <div className="text-sm">
+      <strong>Avoid inserting content above existing:</strong> Use <code>position: absolute</code> or append content at the bottom.
+    </div>
+  </div>
+
+  <div className="flex items-start gap-3 p-3 rounded-lg bg-teal-50 dark:bg-teal-950/20 border border-teal-200 dark:border-teal-800/50">
+    <CheckCircle2 className="w-5 h-5 text-teal-500 flex-shrink-0 mt-0.5" />
+    <div className="text-sm">
+      <strong>Preload fonts:</strong> Use <code>font-display: swap</code> or <code>optional</code> to prevent FOUT/FOIT.
+    </div>
+  </div>
+
+  <div className="flex items-start gap-3 p-3 rounded-lg bg-teal-50 dark:bg-teal-950/20 border border-teal-200 dark:border-teal-800/50">
+    <CheckCircle2 className="w-5 h-5 text-teal-500 flex-shrink-0 mt-0.5" />
+    <div className="text-sm">
+      <strong>Animations:</strong> Only animate <code>transform</code> and <code>opacity</code> properties (composited on GPU).
+    </div>
+  </div>
+</div>
+
+```tsx title="components/SkeletonLoader.tsx"
+/**
+ * Skeleton with exact dimensions prevents CLS
+ */
+export function ChatMessageSkeleton() {
+  return (
+    <div className="flex gap-3 p-4 animate-pulse">
+      {/* Avatar - exact size */}
+      <div className="w-10 h-10 rounded-full bg-neutral-200 dark:bg-neutral-800 flex-shrink-0" />
+
+      <div className="flex-1 space-y-2">
+        {/* Name - exact height */}
+        <div className="h-4 w-24 bg-neutral-200 dark:bg-neutral-800 rounded" />
+
+        {/* Message content - exact dimensions */}
+        <div className="space-y-2">
+          <div className="h-3 w-full bg-neutral-200 dark:bg-neutral-800 rounded" />
+          <div className="h-3 w-5/6 bg-neutral-200 dark:bg-neutral-800 rounded" />
+          <div className="h-3 w-4/6 bg-neutral-200 dark:bg-neutral-800 rounded" />
+        </div>
+      </div>
+    </div>
+  )
+}
+```
+
+```css title="styles/globals.css"
+/* Font loading optimization */
+@font-face {
+  font-family: 'Inter';
+  src: url('/fonts/inter-var.woff2') format('woff2');
+  font-weight: 100 900;
+  font-display: optional; /* Prevents FOUT, accepts FOIT if font loads fast */
+  font-style: normal;
+}
+
+/* GPU-accelerated animations only */
+.smooth-animation {
+  /* ✅ Good - composited on GPU */
+  transform: translateY(0);
+  opacity: 1;
+  transition: transform 200ms ease, opacity 200ms ease;
+  will-change: transform, opacity;
+}
+
+.smooth-animation:hover {
+  transform: translateY(-4px);
+}
+
+/* ❌ Bad - causes layout shift */
+.bad-animation {
+  margin-top: 0;
+  transition: margin-top 200ms ease;
+}
+```
+
+---
+
+## Accessibility Score Improvements
+
+### Current: 85/100 → Target: 95/100
+
+<div className="p-4 rounded-lg bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-800/50 mb-6">
+  <div className="flex items-start gap-3">
+    <AlertTriangle className="w-5 h-5 text-amber-500 flex-shrink-0 mt-0.5" />
+    <div className="text-sm text-neutral-600 dark:text-neutral-400">
+      <strong>WCAG 2.1 AA Compliance:</strong> Minimum standard for most websites. Targeting AAA for critical interactions.
+    </div>
+  </div>
+</div>
+
+### Accessibility Checklist
+
+<div className="space-y-3 mb-6">
+  <div className="flex items-start gap-3 p-3 rounded-lg bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800/50">
+    <CheckCircle2 className="w-5 h-5 text-blue-500 flex-shrink-0 mt-0.5" />
+    <div className="text-sm">
+      <strong>Semantic HTML:</strong> Use proper heading hierarchy (h1-h6), landmarks (<code>&lt;nav&gt;</code>, <code>&lt;main&gt;</code>, <code>&lt;aside&gt;</code>), lists.
+    </div>
+  </div>
+
+  <div className="flex items-start gap-3 p-3 rounded-lg bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800/50">
+    <CheckCircle2 className="w-5 h-5 text-blue-500 flex-shrink-0 mt-0.5" />
+    <div className="text-sm">
+      <strong>ARIA labels:</strong> Add <code>aria-label</code> to icon-only buttons, <code>aria-describedby</code> for form hints, <code>aria-live</code> for dynamic content.
+    </div>
+  </div>
+
+  <div className="flex items-start gap-3 p-3 rounded-lg bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800/50">
+    <CheckCircle2 className="w-5 h-5 text-blue-500 flex-shrink-0 mt-0.5" />
+    <div className="text-sm">
+      <strong>Keyboard navigation:</strong> All interactive elements must be keyboard accessible (Tab, Enter, Escape, Arrow keys).
+    </div>
+  </div>
+
+  <div className="flex items-start gap-3 p-3 rounded-lg bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800/50">
+    <CheckCircle2 className="w-5 h-5 text-blue-500 flex-shrink-0 mt-0.5" />
+    <div className="text-sm">
+      <strong>Focus indicators:</strong> Visible focus ring on all interactive elements (use <code>focus-visible</code> for modern approach).
+    </div>
+  </div>
+
+  <div className="flex items-start gap-3 p-3 rounded-lg bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800/50">
+    <CheckCircle2 className="w-5 h-5 text-blue-500 flex-shrink-0 mt-0.5" />
+    <div className="text-sm">
+      <strong>Color contrast:</strong> Minimum 4.5:1 for normal text, 3:1 for large text (18pt+ or 14pt+ bold).
+    </div>
+  </div>
+
+  <div className="flex items-start gap-3 p-3 rounded-lg bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800/50">
+    <CheckCircle2 className="w-5 h-5 text-blue-500 flex-shrink-0 mt-0.5" />
+    <div className="text-sm">
+      <strong>Alt text:</strong> Descriptive alt text for images, empty alt for decorative images (<code>alt=""</code>).
+    </div>
+  </div>
+
+  <div className="flex items-start gap-3 p-3 rounded-lg bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800/50">
+    <CheckCircle2 className="w-5 h-5 text-blue-500 flex-shrink-0 mt-0.5" />
+    <div className="text-sm">
+      <strong>Form labels:</strong> Every input must have a visible <code>&lt;label&gt;</code> or <code>aria-label</code>.
+    </div>
+  </div>
+
+  <div className="flex items-start gap-3 p-3 rounded-lg bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800/50">
+    <CheckCircle2 className="w-5 h-5 text-blue-500 flex-shrink-0 mt-0.5" />
+    <div className="text-sm">
+      <strong>Skip links:</strong> Add "Skip to main content" link at the top of the page for keyboard users.
+    </div>
+  </div>
+
+  <div className="flex items-start gap-3 p-3 rounded-lg bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800/50">
+    <CheckCircle2 className="w-5 h-5 text-blue-500 flex-shrink-0 mt-0.5" />
+    <div className="text-sm">
+      <strong>Screen reader testing:</strong> Test with NVDA (Windows), VoiceOver (Mac/iOS), TalkBack (Android).
+    </div>
+  </div>
+</div>
+
+```tsx title="components/AccessibleButton.tsx"
+interface AccessibleButtonProps {
+  onClick: () => void
+  icon?: React.ReactNode
+  label: string
+  disabled?: boolean
+}
+
+export function AccessibleButton({
+  onClick,
+  icon,
+  label,
+  disabled
+}: AccessibleButtonProps) {
+  return (
+    <button
+      onClick={onClick}
+      disabled={disabled}
+      aria-label={label} // Always provide accessible label
+      className="
+        px-4 py-2 rounded-lg
+        bg-brand-500 text-white
+        hover:bg-brand-600
+        focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2
+        disabled:opacity-50 disabled:cursor-not-allowed
+        transition-colors
+      "
+    >
+      {icon && <span aria-hidden="true">{icon}</span>}
+      <span className="sr-only">{label}</span>
+    </button>
+  )
+}
+```
+
+```tsx title="components/SkipLink.tsx"
+/**
+ * Skip link for keyboard users - jumps to main content
+ */
+export function SkipLink() {
+  return (
+    <a
+      href="#main-content"
+      className="
+        sr-only focus:not-sr-only
+        absolute top-4 left-4 z-50
+        px-4 py-2 rounded-lg
+        bg-brand-500 text-white
+        focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2
+      "
+    >
+      Skip to main content
+    </a>
+  )
+}
+```
+
+```tsx title="app/layout.tsx"
+export default function RootLayout({ children }) {
+  return (
+    <html lang="en">
+      <body>
+        <SkipLink />
+
+        <header role="banner">
+          <nav role="navigation" aria-label="Main navigation">
+            {/* Navigation */}
+          </nav>
+        </header>
+
+        <main id="main-content" role="main">
+          {children}
+        </main>
+
+        <footer role="contentinfo">
+          {/* Footer */}
+        </footer>
+      </body>
+    </html>
+  )
+}
+```
+
+### Color Contrast Reference
+
+```tsx title="Design tokens with WCAG AA+ contrast"
+const colors = {
+  // ✅ AA compliant (4.5:1 on white)
+  'brand-600': '#0066cc',
+  'brand-700': '#0052a3',
+
+  // ✅ AAA compliant (7:1 on white)
+  'brand-800': '#003d7a',
+  'brand-900': '#002952',
+
+  // ❌ Fails AA (insufficient contrast)
+  'brand-300': '#66b3ff', // Only 2.8:1 on white
+  'brand-400': '#3399ff', // Only 3.2:1 on white
+}
+
+// Usage
+<p className="text-brand-700"> {/* AA compliant */}
+  This text has sufficient contrast
+</p>
+
+<p className="text-brand-300"> {/* ❌ Fails */}
+  This text has insufficient contrast
+</p>
+```
+
+---
+
+## Best Practices Checklist
+
+### Current: 95/100 ✓
+
+<div className="space-y-3 mb-6">
+  <div className="flex items-start gap-3 p-3 rounded-lg bg-emerald-50 dark:bg-emerald-950/20 border border-emerald-200 dark:border-emerald-800/50">
+    <CheckCircle2 className="w-5 h-5 text-emerald-500 flex-shrink-0 mt-0.5" />
+    <div className="text-sm">
+      <strong>HTTPS everywhere:</strong> All pages served over HTTPS with valid SSL certificate.
+    </div>
+  </div>
+
+  <div className="flex items-start gap-3 p-3 rounded-lg bg-emerald-50 dark:bg-emerald-950/20 border border-emerald-200 dark:border-emerald-800/50">
+    <CheckCircle2 className="w-5 h-5 text-emerald-500 flex-shrink-0 mt-0.5" />
+    <div className="text-sm">
+      <strong>Security headers:</strong> CSP, X-Content-Type-Options, Permissions-Policy, HSTS.
+    </div>
+  </div>
+
+  <div className="flex items-start gap-3 p-3 rounded-lg bg-emerald-50 dark:bg-emerald-950/20 border border-emerald-200 dark:border-emerald-800/50">
+    <CheckCircle2 className="w-5 h-5 text-emerald-500 flex-shrink-0 mt-0.5" />
+    <div className="text-sm">
+      <strong>No console errors:</strong> Clean console with no JavaScript errors or warnings in production.
+    </div>
+  </div>
+
+  <div className="flex items-start gap-3 p-3 rounded-lg bg-emerald-50 dark:bg-emerald-950/20 border border-emerald-200 dark:border-emerald-800/50">
+    <CheckCircle2 className="w-5 h-5 text-emerald-500 flex-shrink-0 mt-0.5" />
+    <div className="text-sm">
+      <strong>Modern image formats:</strong> Use WebP/AVIF with fallbacks, proper compression.
+    </div>
+  </div>
+
+  <div className="flex items-start gap-3 p-3 rounded-lg bg-emerald-50 dark:bg-emerald-950/20 border border-emerald-200 dark:border-emerald-800/50">
+    <CheckCircle2 className="w-5 h-5 text-emerald-500 flex-shrink-0 mt-0.5" />
+    <div className="text-sm">
+      <strong>HTTP/2:</strong> Use HTTP/2 for multiplexing and header compression.
+    </div>
+  </div>
+
+  <div className="flex items-start gap-3 p-3 rounded-lg bg-emerald-50 dark:bg-emerald-950/20 border border-emerald-200 dark:border-emerald-800/50">
+    <CheckCircle2 className="w-5 h-5 text-emerald-500 flex-shrink-0 mt-0.5" />
+    <div className="text-sm">
+      <strong>Doctype:</strong> Valid HTML5 doctype (<code>&lt;!DOCTYPE html&gt;</code>).
+    </div>
+  </div>
+
+  <div className="flex items-start gap-3 p-3 rounded-lg bg-emerald-50 dark:bg-emerald-950/20 border border-emerald-200 dark:border-emerald-800/50">
+    <CheckCircle2 className="w-5 h-5 text-emerald-500 flex-shrink-0 mt-0.5" />
+    <div className="text-sm">
+      <strong>Deprecated APIs:</strong> No use of deprecated browser APIs or features.
+    </div>
+  </div>
+
+  <div className="flex items-start gap-3 p-3 rounded-lg bg-emerald-50 dark:bg-emerald-950/20 border border-emerald-200 dark:border-emerald-800/50">
+    <CheckCircle2 className="w-5 h-5 text-emerald-500 flex-shrink-0 mt-0.5" />
+    <div className="text-sm">
+      <strong>Geolocation permissions:</strong> Request user consent before accessing location/camera/microphone.
+    </div>
+  </div>
+</div>
+
+```ts title="middleware.ts"
+import { NextResponse } from 'next/server'
+import type { NextRequest } from 'next/server'
+
+export function middleware(request: NextRequest) {
+  const response = NextResponse.next()
+
+  // Security headers
+  response.headers.set('X-Content-Type-Options', 'nosniff')
+  response.headers.set('X-Frame-Options', 'DENY')
+  response.headers.set('X-XSS-Protection', '1; mode=block')
+  response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin')
+
+  // Permissions Policy
+  response.headers.set(
+    'Permissions-Policy',
+    'camera=(), microphone=(), geolocation=()'
+  )
+
+  // Content Security Policy
+  response.headers.set(
+    'Content-Security-Policy',
+    [
+      "default-src 'self'",
+      "script-src 'self' 'unsafe-eval' 'unsafe-inline'",
+      "style-src 'self' 'unsafe-inline'",
+      "img-src 'self' data: https:",
+      "font-src 'self' data:",
+      "connect-src 'self' https://api.openai.com https://api.anthropic.com",
+    ].join('; ')
+  )
+
+  // HSTS
+  response.headers.set(
+    'Strict-Transport-Security',
+    'max-age=31536000; includeSubDomains'
+  )
+
+  return response
+}
+
+export const config = {
+  matcher: '/:path*',
+}
+```
+
+---
+
+## SEO Optimization
+
+### Current: 95/100 ✓
+
+<div className="space-y-3 mb-6">
+  <div className="flex items-start gap-3 p-3 rounded-lg bg-purple-50 dark:bg-purple-950/20 border border-purple-200 dark:border-purple-800/50">
+    <CheckCircle2 className="w-5 h-5 text-purple-500 flex-shrink-0 mt-0.5" />
+    <div className="text-sm">
+      <strong>Meta tags:</strong> Title, description, Open Graph, Twitter Card for every page.
+    </div>
+  </div>
+
+  <div className="flex items-start gap-3 p-3 rounded-lg bg-purple-50 dark:bg-purple-950/20 border border-purple-200 dark:border-purple-800/50">
+    <CheckCircle2 className="w-5 h-5 text-purple-500 flex-shrink-0 mt-0.5" />
+    <div className="text-sm">
+      <strong>Structured data:</strong> JSON-LD for articles, breadcrumbs, organization, website.
+    </div>
+  </div>
+
+  <div className="flex items-start gap-3 p-3 rounded-lg bg-purple-50 dark:bg-purple-950/20 border border-purple-200 dark:border-purple-800/50">
+    <CheckCircle2 className="w-5 h-5 text-purple-500 flex-shrink-0 mt-0.5" />
+    <div className="text-sm">
+      <strong>Sitemap:</strong> XML sitemap submitted to Google Search Console.
+    </div>
+  </div>
+
+  <div className="flex items-start gap-3 p-3 rounded-lg bg-purple-50 dark:bg-purple-950/20 border border-purple-200 dark:border-purple-800/50">
+    <CheckCircle2 className="w-5 h-5 text-purple-500 flex-shrink-0 mt-0.5" />
+    <div className="text-sm">
+      <strong>Robots.txt:</strong> Properly configured to allow/disallow crawlers.
+    </div>
+  </div>
+
+  <div className="flex items-start gap-3 p-3 rounded-lg bg-purple-50 dark:bg-purple-950/20 border border-purple-200 dark:border-purple-800/50">
+    <CheckCircle2 className="w-5 h-5 text-purple-500 flex-shrink-0 mt-0.5" />
+    <div className="text-sm">
+      <strong>Mobile-friendly:</strong> Responsive design with proper viewport meta tag.
+    </div>
+  </div>
+
+  <div className="flex items-start gap-3 p-3 rounded-lg bg-purple-50 dark:bg-purple-950/20 border border-purple-200 dark:border-purple-800/50">
+    <CheckCircle2 className="w-5 h-5 text-purple-500 flex-shrink-0 mt-0.5" />
+    <div className="text-sm">
+      <strong>Canonical URLs:</strong> Canonical tags to prevent duplicate content issues.
+    </div>
+  </div>
+
+  <div className="flex items-start gap-3 p-3 rounded-lg bg-purple-50 dark:bg-purple-950/20 border border-purple-200 dark:border-purple-800/50">
+    <CheckCircle2 className="w-5 h-5 text-purple-500 flex-shrink-0 mt-0.5" />
+    <div className="text-sm">
+      <strong>Descriptive links:</strong> Link text describes destination (avoid "click here").
+    </div>
+  </div>
+</div>
+
+```tsx title="app/page.tsx"
+import { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  title: 'Clarity AI Chat Components - Production-Ready React Components',
+  description: 'React components for AI chat interfaces with token optimization, streaming, and memory management. TypeScript-first, accessible, battle-tested.',
+
+  // Open Graph
+  openGraph: {
+    title: 'Clarity AI Chat Components',
+    description: 'Production-ready React components for AI chat interfaces',
+    url: 'https://clarity-chat.vercel.app',
+    siteName: 'Clarity Chat',
+    images: [
+      {
+        url: '/og-image.png',
+        width: 1200,
+        height: 630,
+        alt: 'Clarity AI Chat Components',
+      },
+    ],
+    locale: 'en_US',
+    type: 'website',
+  },
+
+  // Twitter Card
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Clarity AI Chat Components',
+    description: 'Production-ready React components for AI chat interfaces',
+    images: ['/twitter-image.png'],
+    creator: '@clarity_chat',
+  },
+
+  // Canonical URL
+  alternates: {
+    canonical: 'https://clarity-chat.vercel.app',
+  },
+
+  // Robots
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
+}
+```
+
+```tsx title="app/article/[slug]/page.tsx"
+export async function generateMetadata({ params }): Promise<Metadata> {
+  const article = await getArticle(params.slug)
+
+  return {
+    title: article.title,
+    description: article.excerpt,
+
+    // Structured data (JSON-LD)
+    other: {
+      'script:ld+json': JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'Article',
+        headline: article.title,
+        description: article.excerpt,
+        author: {
+          '@type': 'Person',
+          name: article.author,
+        },
+        datePublished: article.publishedAt,
+        dateModified: article.updatedAt,
+        image: article.coverImage,
+      }),
+    },
+  }
+}
+```
+
+```xml title="public/robots.txt"
+User-agent: *
+Allow: /
+
+Sitemap: https://clarity-chat.vercel.app/sitemap.xml
+```
+
+```xml title="app/sitemap.ts"
+import { MetadataRoute } from 'next'
+
+export default function sitemap(): MetadataRoute.Sitemap {
+  return [
+    {
+      url: 'https://clarity-chat.vercel.app',
+      lastModified: new Date(),
+      changeFrequency: 'weekly',
+      priority: 1,
+    },
+    {
+      url: 'https://clarity-chat.vercel.app/get-started',
+      lastModified: new Date(),
+      changeFrequency: 'monthly',
+      priority: 0.8,
+    },
+    {
+      url: 'https://clarity-chat.vercel.app/explore',
+      lastModified: new Date(),
+      changeFrequency: 'weekly',
+      priority: 0.8,
+    },
+    // ... more URLs
+  ]
+}
+```
+
+---
+
+## PWA Requirements
+
+<div className="p-4 rounded-lg bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800/50 mb-6">
+  <div className="flex items-start gap-3">
+    <Info className="w-5 h-5 text-blue-500 flex-shrink-0 mt-0.5" />
+    <div className="text-sm text-neutral-600 dark:text-neutral-400">
+      <strong>Status:</strong> PWA features are planned but not yet implemented. Target score: 90+/100.
+    </div>
+  </div>
+</div>
+
+### PWA Checklist
+
+<div className="space-y-3 mb-6">
+  <div className="flex items-start gap-3 p-3 rounded-lg bg-indigo-50 dark:bg-indigo-950/20 border border-indigo-200 dark:border-indigo-800/50">
+    <CheckCircle2 className="w-5 h-5 text-indigo-500 flex-shrink-0 mt-0.5" />
+    <div className="text-sm">
+      <strong>Web App Manifest:</strong> <code>manifest.json</code> with name, icons, theme colors, display mode.
+    </div>
+  </div>
+
+  <div className="flex items-start gap-3 p-3 rounded-lg bg-indigo-50 dark:bg-indigo-950/20 border border-indigo-200 dark:border-indigo-800/50">
+    <CheckCircle2 className="w-5 h-5 text-indigo-500 flex-shrink-0 mt-0.5" />
+    <div className="text-sm">
+      <strong>Service Worker:</strong> Caches assets for offline access, handles background sync.
+    </div>
+  </div>
+
+  <div className="flex items-start gap-3 p-3 rounded-lg bg-indigo-50 dark:bg-indigo-950/20 border border-indigo-200 dark:border-indigo-800/50">
+    <CheckCircle2 className="w-5 h-5 text-indigo-500 flex-shrink-0 mt-0.5" />
+    <div className="text-sm">
+      <strong>Icons:</strong> App icons in multiple sizes (192x192, 512x512) in PNG format.
+    </div>
+  </div>
+
+  <div className="flex items-start gap-3 p-3 rounded-lg bg-indigo-50 dark:bg-indigo-950/20 border border-indigo-200 dark:border-indigo-800/50">
+    <CheckCircle2 className="w-5 h-5 text-indigo-500 flex-shrink-0 mt-0.5" />
+    <div className="text-sm">
+      <strong>Theme color:</strong> Meta tag for browser UI customization (<code>&lt;meta name="theme-color"&gt;</code>).
+    </div>
+  </div>
+
+  <div className="flex items-start gap-3 p-3 rounded-lg bg-indigo-50 dark:bg-indigo-950/20 border border-indigo-200 dark:border-indigo-800/50">
+    <CheckCircle2 className="w-5 h-5 text-indigo-500 flex-shrink-0 mt-0.5" />
+    <div className="text-sm">
+      <strong>Installable:</strong> Meets install criteria (HTTPS, manifest, service worker, engagement heuristics).
+    </div>
+  </div>
+
+  <div className="flex items-start gap-3 p-3 rounded-lg bg-indigo-50 dark:bg-indigo-950/20 border border-indigo-200 dark:border-indigo-800/50">
+    <CheckCircle2 className="w-5 h-5 text-indigo-500 flex-shrink-0 mt-0.5" />
+    <div className="text-sm">
+      <strong>Offline fallback:</strong> Custom offline page when network is unavailable.
+    </div>
+  </div>
+</div>
+
+```json title="public/manifest.json"
+{
+  "name": "Clarity AI Chat Components",
+  "short_name": "Clarity Chat",
+  "description": "Production-ready React components for AI chat interfaces",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#0066cc",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/icons/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["developer tools", "productivity"],
+  "lang": "en-US"
+}
+```
+
+```tsx title="app/layout.tsx"
+export const metadata = {
+  manifest: '/manifest.json',
+  themeColor: [
+    { media: '(prefers-color-scheme: light)', color: '#ffffff' },
+    { media: '(prefers-color-scheme: dark)', color: '#0a0a0a' },
+  ],
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'default',
+    title: 'Clarity Chat',
+  },
+}
+```
+
+```ts title="public/sw.js"
+// Service Worker for offline support
+const CACHE_NAME = 'clarity-chat-v1'
+const OFFLINE_URL = '/offline.html'
+
+const CRITICAL_ASSETS = [
+  '/',
+  '/offline.html',
+  '/styles/globals.css',
+  '/fonts/inter-var.woff2',
+]
+
+// Install - cache critical assets
+self.addEventListener('install', (event) => {
+  event.waitUntil(
+    caches.open(CACHE_NAME).then((cache) => {
+      return cache.addAll(CRITICAL_ASSETS)
+    })
+  )
+  self.skipWaiting()
+})
+
+// Activate - cleanup old caches
+self.addEventListener('activate', (event) => {
+  event.waitUntil(
+    caches.keys().then((cacheNames) => {
+      return Promise.all(
+        cacheNames
+          .filter((name) => name !== CACHE_NAME)
+          .map((name) => caches.delete(name))
+      )
+    })
+  )
+  self.clients.claim()
+})
+
+// Fetch - network first, fallback to cache
+self.addEventListener('fetch', (event) => {
+  if (event.request.mode === 'navigate') {
+    event.respondWith(
+      fetch(event.request).catch(() => {
+        return caches.match(OFFLINE_URL)
+      })
+    )
+  }
+})
+```
+
+---
+
+## Automated Lighthouse CI
+
+### Setup with GitHub Actions
+
+```yaml title=".github/workflows/lighthouse-ci.yml"
+name: Lighthouse CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  lighthouse:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Build
+        run: pnpm build
+        env:
+          NODE_ENV: production
+
+      - name: Run Lighthouse CI
+        uses: treosh/lighthouse-ci-action@v10
+        with:
+          urls: |
+            http://localhost:3000
+            http://localhost:3000/get-started
+            http://localhost:3000/explore
+            http://localhost:3000/guides/token-optimization
+          uploadArtifacts: true
+          temporaryPublicStorage: true
+          configPath: './lighthouserc.json'
+
+      - name: Upload results
+        uses: actions/upload-artifact@v4
+        with:
+          name: lighthouse-reports
+          path: '.lighthouseci'
+```
+
+### Lighthouse CI Configuration
+
+```json title="lighthouserc.json"
+{
+  "ci": {
+    "collect": {
+      "numberOfRuns": 3,
+      "startServerCommand": "pnpm start",
+      "startServerReadyPattern": "Ready on",
+      "url": [
+        "http://localhost:3000",
+        "http://localhost:3000/get-started",
+        "http://localhost:3000/explore"
+      ],
+      "settings": {
+        "preset": "desktop",
+        "throttling": {
+          "rttMs": 40,
+          "throughputKbps": 10240,
+          "cpuSlowdownMultiplier": 1
+        },
+        "screenEmulation": {
+          "mobile": false,
+          "width": 1920,
+          "height": 1080,
+          "deviceScaleFactor": 1
+        }
+      }
+    },
+    "assert": {
+      "preset": "lighthouse:recommended",
+      "assertions": {
+        "categories:performance": ["error", { "minScore": 0.9 }],
+        "categories:accessibility": ["error", { "minScore": 0.95 }],
+        "categories:best-practices": ["error", { "minScore": 0.95 }],
+        "categories:seo": ["error", { "minScore": 0.95 }],
+
+        "first-contentful-paint": ["error", { "maxNumericValue": 2000 }],
+        "largest-contentful-paint": ["error", { "maxNumericValue": 2500 }],
+        "cumulative-layout-shift": ["error", { "maxNumericValue": 0.1 }],
+        "total-blocking-time": ["error", { "maxNumericValue": 300 }],
+
+        "uses-responsive-images": "error",
+        "uses-webp-images": "warn",
+        "modern-image-formats": "warn",
+        "uses-optimized-images": "warn",
+
+        "unused-javascript": ["warn", { "maxLength": 0 }],
+        "unused-css-rules": ["warn", { "maxLength": 0 }],
+
+        "color-contrast": "error",
+        "aria-allowed-attr": "error",
+        "aria-required-attr": "error",
+        "button-name": "error",
+        "image-alt": "error",
+        "label": "error"
+      }
+    },
+    "upload": {
+      "target": "temporary-public-storage"
+    }
+  }
+}
+```
+
+### Local Lighthouse Testing
+
+```json title="package.json"
+{
+  "scripts": {
+    "lighthouse": "pnpm run lighthouse:build && pnpm run lighthouse:serve & pnpm run lighthouse:test",
+    "lighthouse:build": "next build",
+    "lighthouse:serve": "next start -p 3000",
+    "lighthouse:test": "wait-on http://localhost:3000 && lhci autorun --config=lighthouserc.json",
+
+    "lighthouse:mobile": "lighthouse http://localhost:3000 --preset=perf --view --emulated-form-factor=mobile --throttling.cpuSlowdownMultiplier=4",
+    "lighthouse:desktop": "lighthouse http://localhost:3000 --preset=perf --view --emulated-form-factor=desktop --throttling.cpuSlowdownMultiplier=1"
+  },
+  "devDependencies": {
+    "@lhci/cli": "^0.13.0",
+    "lighthouse": "^11.4.0",
+    "wait-on": "^7.2.0"
+  }
+}
+```
+
+### Run Lighthouse Locally
+
+```bash
+# Build and test
+pnpm run lighthouse
+
+# Test specific URL
+lighthouse http://localhost:3000/get-started \
+  --preset=perf \
+  --view \
+  --output=html \
+  --output-path=./lighthouse-report.html
+
+# Test mobile performance
+pnpm run lighthouse:mobile
+
+# Test desktop performance
+pnpm run lighthouse:desktop
+
+# Test with budget
+lighthouse http://localhost:3000 \
+  --budget-path=./budget.json \
+  --view
+```
+
+### Performance Budget
+
+```json title="budget.json"
+[
+  {
+    "path": "/*",
+    "resourceSizes": [
+      {
+        "resourceType": "script",
+        "budget": 450
+      },
+      {
+        "resourceType": "stylesheet",
+        "budget": 100
+      },
+      {
+        "resourceType": "image",
+        "budget": 500
+      },
+      {
+        "resourceType": "font",
+        "budget": 150
+      },
+      {
+        "resourceType": "total",
+        "budget": 1200
+      }
+    ],
+    "resourceCounts": [
+      {
+        "resourceType": "script",
+        "budget": 15
+      },
+      {
+        "resourceType": "stylesheet",
+        "budget": 5
+      },
+      {
+        "resourceType": "third-party",
+        "budget": 10
+      }
+    ],
+    "timings": [
+      {
+        "metric": "first-contentful-paint",
+        "budget": 2000
+      },
+      {
+        "metric": "largest-contentful-paint",
+        "budget": 2500
+      },
+      {
+        "metric": "cumulative-layout-shift",
+        "budget": 0.1
+      },
+      {
+        "metric": "total-blocking-time",
+        "budget": 300
+      },
+      {
+        "metric": "speed-index",
+        "budget": 3000
+      }
+    ]
+  }
+]
+```
+
+---
+
+## Monitoring and Alerts
+
+### Web Vitals Tracking
+
+```tsx title="app/layout.tsx"
+'use client'
+
+import { useReportWebVitals } from 'next/web-vitals'
+
+export function WebVitalsReporter() {
+  useReportWebVitals((metric) => {
+    // Send to analytics
+    if (typeof window !== 'undefined' && window.gtag) {
+      window.gtag('event', metric.name, {
+        value: Math.round(
+          metric.name === 'CLS' ? metric.value * 1000 : metric.value
+        ),
+        event_label: metric.id,
+        non_interaction: true,
+      })
+    }
+
+    // Log poor scores
+    const thresholds = {
+      FCP: 1800,
+      LCP: 2500,
+      FID: 100,
+      CLS: 0.1,
+      TTFB: 800,
+      INP: 200,
+    }
+
+    const threshold = thresholds[metric.name as keyof typeof thresholds]
+    if (threshold && metric.value > threshold) {
+      console.warn(`Poor ${metric.name}:`, metric.value, 'threshold:', threshold)
+
+      // Send alert to monitoring service
+      fetch('/api/performance-alert', {
+        method: 'POST',
+        body: JSON.stringify({
+          metric: metric.name,
+          value: metric.value,
+          threshold,
+          url: window.location.href,
+          userAgent: navigator.userAgent,
+        }),
+      })
+    }
+  })
+
+  return null
+}
+```
+
+### Continuous Monitoring
+
+```yaml title=".github/workflows/lighthouse-schedule.yml"
+name: Lighthouse Scheduled Audit
+
+on:
+  schedule:
+    # Run every 6 hours
+    - cron: '0 */6 * * *'
+  workflow_dispatch:
+
+jobs:
+  lighthouse-schedule:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run Lighthouse on Production
+        uses: treosh/lighthouse-ci-action@v10
+        with:
+          urls: |
+            https://clarity-chat.vercel.app
+            https://clarity-chat.vercel.app/get-started
+            https://clarity-chat.vercel.app/explore
+          uploadArtifacts: true
+          temporaryPublicStorage: true
+
+      - name: Check for regressions
+        run: |
+          # Compare with baseline scores
+          # Alert if any category drops below threshold
+          node scripts/check-lighthouse-regression.js
+
+      - name: Send alerts
+        if: failure()
+        uses: 8398a7/action-slack@v3
+        with:
+          status: ${{ job.status }}
+          text: 'Lighthouse scores dropped below threshold'
+          webhook_url: ${{ secrets.SLACK_WEBHOOK }}
+```
+
+---
+
+## Score Improvement Tracker
+
+<div className="rounded-xl border border-neutral-200 dark:border-neutral-800 overflow-hidden mb-8">
+  <div className="overflow-x-auto">
+    <table className="w-full text-sm">
+      <thead>
+        <tr className="border-b border-neutral-200 dark:border-neutral-800 bg-neutral-50/50 dark:bg-neutral-900/50">
+          <th className="px-4 py-3 text-left font-medium">Category</th>
+          <th className="px-4 py-3 text-center font-medium">Baseline</th>
+          <th className="px-4 py-3 text-center font-medium">Current</th>
+          <th className="px-4 py-3 text-center font-medium">Target</th>
+          <th className="px-4 py-3 text-center font-medium">Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr className="border-b border-neutral-200/60 dark:border-neutral-800/60">
+          <td className="px-4 py-3 font-medium">Performance</td>
+          <td className="px-4 py-3 text-center text-amber-600">68</td>
+          <td className="px-4 py-3 text-center text-blue-600">78</td>
+          <td className="px-4 py-3 text-center text-emerald-600">90+</td>
+          <td className="px-4 py-3 text-center">
+            <span className="px-2 py-0.5 text-xs rounded bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400">
+              In Progress
+            </span>
+          </td>
+        </tr>
+        <tr className="border-b border-neutral-200/60 dark:border-neutral-800/60">
+          <td className="px-4 py-3 font-medium">Accessibility</td>
+          <td className="px-4 py-3 text-center text-amber-600">82</td>
+          <td className="px-4 py-3 text-center text-blue-600">85</td>
+          <td className="px-4 py-3 text-center text-emerald-600">95+</td>
+          <td className="px-4 py-3 text-center">
+            <span className="px-2 py-0.5 text-xs rounded bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400">
+              In Progress
+            </span>
+          </td>
+        </tr>
+        <tr className="border-b border-neutral-200/60 dark:border-neutral-800/60">
+          <td className="px-4 py-3 font-medium">Best Practices</td>
+          <td className="px-4 py-3 text-center text-blue-600">87</td>
+          <td className="px-4 py-3 text-center text-emerald-600">95</td>
+          <td className="px-4 py-3 text-center text-emerald-600">95+</td>
+          <td className="px-4 py-3 text-center">
+            <span className="px-2 py-0.5 text-xs rounded bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400">
+              ✓ Complete
+            </span>
+          </td>
+        </tr>
+        <tr className="border-b border-neutral-200/60 dark:border-neutral-800/60">
+          <td className="px-4 py-3 font-medium">SEO</td>
+          <td className="px-4 py-3 text-center text-blue-600">91</td>
+          <td className="px-4 py-3 text-center text-emerald-600">95</td>
+          <td className="px-4 py-3 text-center text-emerald-600">95+</td>
+          <td className="px-4 py-3 text-center">
+            <span className="px-2 py-0.5 text-xs rounded bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400">
+              ✓ Complete
+            </span>
+          </td>
+        </tr>
+        <tr>
+          <td className="px-4 py-3 font-medium">PWA</td>
+          <td className="px-4 py-3 text-center text-neutral-400">N/A</td>
+          <td className="px-4 py-3 text-center text-neutral-400">N/A</td>
+          <td className="px-4 py-3 text-center text-emerald-600">90+</td>
+          <td className="px-4 py-3 text-center">
+            <span className="px-2 py-0.5 text-xs rounded bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-400">
+              Planned
+            </span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+---
+
+## Quick Reference
+
+### Performance Optimization Priorities
+
+1. **High Impact, Low Effort**
+   - Enable ISR caching (revalidate: 3600)
+   - Add Next.js Image optimization
+   - Lazy load heavy components (Monaco, Three.js)
+
+2. **High Impact, Medium Effort**
+   - Implement virtual scrolling for long lists
+   - Add skeleton loaders with exact dimensions
+   - Optimize images (WebP/AVIF, responsive sizes)
+
+3. **Medium Impact, Low Effort**
+   - Add security headers in middleware
+   - Preload critical fonts and hero images
+   - Debounce expensive handlers (150-300ms)
+
+4. **Long-term Investments**
+   - Implement service worker for PWA
+   - Set up automated Lighthouse CI
+   - Build performance monitoring dashboard
+
+### Testing Checklist
+
+- [ ] Run Lighthouse on all major pages
+- [ ] Test on mobile (3G throttled)
+- [ ] Test on desktop (no throttling)
+- [ ] Check accessibility with screen reader
+- [ ] Verify keyboard navigation
+- [ ] Test color contrast ratios
+- [ ] Validate structured data (Google Rich Results Test)
+- [ ] Check mobile-friendliness (Google Mobile-Friendly Test)
+- [ ] Monitor real user metrics (Web Vitals)
+- [ ] Set up Lighthouse CI in GitHub Actions
+
+---
+
+## Related Resources
+
+- [Core Web Vitals Guide](/guides/performance/core-web-vitals)
+- [Bundle Size Optimization](/guides/performance/bundle-size)
+- [ISR Caching Strategy](/guides/performance/isr-caching)
+- [Accessibility Guide](/guides/accessibility)
+- [Security Best Practices](/guides/security)
+
+---
+
+<div className="p-6 rounded-xl bg-gradient-to-r from-emerald-50 to-teal-50 dark:from-emerald-950/30 dark:to-teal-950/30 border border-emerald-200 dark:border-emerald-800/50">
+  <div className="flex items-start gap-4">
+    <TrendingUp className="w-8 h-8 text-emerald-500 flex-shrink-0" />
+    <div>
+      <div className="font-semibold text-lg mb-2">Continuous Improvement</div>
+      <p className="text-sm text-neutral-600 dark:text-neutral-400 mb-3">
+        Lighthouse optimization is an ongoing process. Use automated CI to catch regressions early and monitor real user metrics to understand actual performance impact.
+      </p>
+      <div className="text-sm text-neutral-500">
+        Target: 90+ across all categories with automated testing and alerts
+      </div>
+    </div>
+  </div>
+</div>

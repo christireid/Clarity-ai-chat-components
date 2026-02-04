@@ -7,6 +7,9 @@
  * @packageDocumentation
  */
 
+// Re-export escapeHtml from the canonical security module
+export { escapeHtml } from '../../utils/security/sanitize-html'
+
 /**
  * Parse line range string into a Set of line numbers
  *
@@ -45,21 +48,6 @@ export function parseLineRanges(rangeString?: string): Set<number> {
   }
 
   return result
-}
-
-/**
- * Escape HTML special characters
- *
- * @param text - Raw text to escape
- * @returns HTML-safe string
- */
-export function escapeHtml(text: string): string {
-  return text
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#039;')
 }
 
 /**
@@ -407,7 +395,10 @@ export function extractCodeBlocks(
 ): Array<{ code: string; language: string }> {
   const blocks = parseCodeBlocks(text)
   return blocks
-    .filter((block): block is ParsedCodeBlock & { type: 'code' } => block.type === 'code')
+    .filter(
+      (block): block is ParsedCodeBlock & { type: 'code' } =>
+        block.type === 'code'
+    )
     .map((block) => ({
       code: block.content,
       language: block.language || 'text',

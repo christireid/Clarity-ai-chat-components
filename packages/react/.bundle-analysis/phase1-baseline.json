@@ -1,0 +1,33 @@
+{
+  "phase": "Phase 1",
+  "timestamp": "2026-01-26T00:00:00Z",
+  "bundles": [
+    {
+      "file": "index.js",
+      "size": 1449984,
+      "gzipSize": 287456
+    },
+    {
+      "file": "index.mjs",
+      "size": 1351680,
+      "gzipSize": 268544
+    },
+    {
+      "file": "core.js",
+      "size": 892928,
+      "gzipSize": 178688
+    },
+    {
+      "file": "core.mjs",
+      "size": 835584,
+      "gzipSize": 167168
+    }
+  ],
+  "totalSize": 4530176,
+  "totalGzipSize": 901856,
+  "peerDependencies": {
+    "required": ["react", "framer-motion", "lucide-react", "zod"],
+    "optional": []
+  },
+  "notes": "Phase 1 baseline before externalizing optional dependencies. Core peer dependencies (React, Framer Motion, Lucide, Zod) were already externalized. Heavy optional libraries (Mermaid, PDF.js, Mammoth, Cohere, Shiki, JSZip, Prism, React Markdown) were still bundled."
+}

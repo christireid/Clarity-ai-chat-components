@@ -335,20 +335,32 @@ export class InputSanitizer {
   /**
    * Validate and sanitize number
    */
-  static sanitizeNumber(input: any): number {
-    const num = Number(input)
-    return isNaN(num) ? 0 : Math.max(0, Math.min(num, 1000000)) // Cap at 1M
+  static sanitizeNumber(input: unknown): number {
+    if (typeof input === 'number' && !isNaN(input)) {
+      return Math.max(0, Math.min(input, 1000000)) // Cap at 1M
+    }
+    if (typeof input === 'string') {
+      const num = parseFloat(input)
+      if (!isNaN(num)) {
+        return Math.max(0, Math.min(num, 1000000))
+      }
+    }
+    return 0
   }
 
   /**
    * Sanitize boolean
    */
-  static sanitizeBoolean(input: any): boolean {
+  static sanitizeBoolean(input: unknown): boolean {
     if (typeof input === 'boolean') return input
     if (typeof input === 'string') {
-      return input.toLowerCase() === 'true'
+      const lower = input.toLowerCase()
+      return lower === 'true' || lower === '1'
     }
-    return Boolean(input)
+    if (typeof input === 'number') {
+      return input !== 0
+    }
+    return false
   }
 }
 

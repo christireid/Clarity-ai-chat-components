@@ -7,7 +7,7 @@
  * @module accessibility/hooks
  */
 
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import {
   announce,
   announceTokenUsage,
@@ -362,7 +362,10 @@ export function useTokenKeyboardShortcuts(
     keyBindings = {},
   } = options
 
-  const bindings = { ...DEFAULT_KEY_BINDINGS, ...keyBindings }
+  const bindings = useMemo(
+    () => ({ ...DEFAULT_KEY_BINDINGS, ...keyBindings }),
+    [keyBindings]
+  )
 
   useEffect(() => {
     if (!enabled) return

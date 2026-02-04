@@ -1,6 +1,6 @@
 /**
  * Memory & Context Domain Exports
- * 
+ *
  * Top-level: Simple memory access
  * Mid-level: Memory operations
  * Low-level: Core services and utilities
@@ -28,8 +28,11 @@ export {
   useMemoryOptimization,
 } from '../memory/memory-provider'
 
-// Memory types
+// Memory types (local React-specific types)
 export * from '../memory/types'
+
+// Memory types (canonical from @clarity-chat/memory)
+export type { MemoryServiceConfig } from '@clarity-chat/memory'
 
 // ============================================================================
 // LOW-LEVEL: Core Services and Utilities
@@ -40,7 +43,5 @@ export { MemoryService } from '@clarity-chat/memory'
 export {
   TokenCounter as MemoryTokenCounter,
   TokenBudgetManager,
-  MemoryCompressor,
-  SemanticChunker,
   ContextOptimizer,
-} from '../memory/token-optimizer'
+} from '@clarity-chat/memory'

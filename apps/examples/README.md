@@ -1,49 +1,53 @@
 # Clarity Chat Examples
 
-> **40+ Production-Ready Examples** - Copy, customize, and ship.
+> **29 Production-Ready Examples** - Copy, customize, and ship in minutes.
 
-Every example is a complete, working application you can deploy in minutes.
+Every example is a complete, working application with **all peer dependencies pre-configured**. Just run `pnpm install && pnpm dev`!
 
 [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/christireid/Clarity-ai-chat-components/tree/main/apps/examples)
 
 ---
 
-## 3 Minutes to Production
+## ⚡ Quick Start
 
-```tsx
-import { ClarityChatApp } from '@clarity-chat/react'
-import '@clarity-chat/react/styles.css'
+All examples now run out of the box with **zero configuration**:
 
-export default function App() {
-  return <ClarityChatApp api="/api/chat" />
-}
+```bash
+# Pick any example
+cd apps/examples/basic-chat
+
+# Install (includes all peer dependencies)
+pnpm install
+
+# Run immediately
+pnpm dev
 ```
 
-**That's it!** Now add features with one line:
-
-```tsx
-// Add memory
-<ClarityChatApp api="/api/chat" features={{ memory: true }} />
-
-// Add token optimization (60-90% cost reduction)
-<ClarityChatApp api="/api/chat" features={{ tokenOptimization: true }} />
-
-// Use a preset
-<ClarityChatApp api="/api/chat" preset="enterprise" />
-```
-
-**Available presets:** `simple` | `pro` | `memory` | `rag` | `tools` | `enterprise`
+**No manual dependency installation needed!** All peer dependencies are pre-configured.
 
 ---
 
-## Run an Example
+## 📦 What's New - January 2026
 
-```bash
-# Pick an example and run it
-cd apps/examples/minimal-chat
-npm install
-npm run dev
-```
+✅ **Complete Peer Dependencies** - All 29 examples now include all required dependencies
+✅ **Bundle Size Documentation** - Know exactly what you're shipping (257KB - 1.1MB)
+✅ **Comprehensive READMEs** - Installation, features, configuration in every example
+✅ **Zero Configuration** - Run any example immediately after `pnpm install`
+
+**See [GETTING-STARTED.md](./GETTING-STARTED.md) for the complete guide.**
+
+---
+
+## 🎯 Choose by Bundle Size
+
+| Size Range | Examples | Best For |
+|------------|----------|----------|
+| **Small** (250-300KB) | 13 examples | Production apps, minimal bundle |
+| **Medium** (300-500KB) | 10 examples | Balanced features & performance |
+| **Large** (500KB-1MB) | 4 examples | Full-featured applications |
+| **Enterprise** (1MB+) | 2 examples | Complete RAG pipelines |
+
+**Details:** See [bundle sizes](#-examples-by-bundle-size) below.
 
 ---
 
@@ -99,15 +103,62 @@ apps/examples/comprehensive-chat-demo
 
 ---
 
+## 📦 Examples by Bundle Size
+
+All examples include estimated production bundle sizes (gzipped):
+
+### Small (250-300KB) - 13 Examples
+Perfect for production apps needing minimal bundle size.
+
+| Example | Size | Framework | Features |
+|---------|------|-----------|----------|
+| [minimal-chat](./minimal-chat) | 257KB | Vite | Basic functionality |
+| [theme-builder](./theme-builder) | 257KB | Vite | Theme customization |
+| [basic-chat](./basic-chat) | 262KB | Vite | Token counting |
+| [customized-chat](./customized-chat) | 262KB | Vite | Custom styling |
+| [streaming-chat](./streaming-chat) | 282KB | Next.js | Streaming responses |
+| [customer-support](./customer-support) | 282KB | Next.js | Supabase persistence |
+| [ecommerce-assistant](./ecommerce-assistant) | 282KB | Next.js | Product recommendations |
+
+### Medium (300-500KB) - 10 Examples
+Best balance of features and performance.
+
+| Example | Size | Framework | Features |
+|---------|------|-----------|----------|
+| [ai-assistant](./ai-assistant) | 287KB | Vite | Full-featured assistant |
+| [code-assistant](./code-assistant) | 352KB | Next.js | Code generation |
+| [advanced-chat-features](./advanced-chat-features) | 357KB | Vite | Advanced features |
+| [ai-research-platform](./ai-research-platform) | 402KB | Next.js | Multi-agent RAG |
+
+### Large (500KB+) - 4 Examples
+Full-featured with advanced capabilities.
+
+| Example | Size | Framework | Features |
+|---------|------|-----------|----------|
+| [design-system-showcase](./design-system-showcase) | 544KB | Vite | Complete design system |
+| [component-demo](./component-demo) | 619KB | Vite | All components |
+
+### Enterprise (1MB+) - 2 Examples
+Complete RAG pipelines with document processing.
+
+| Example | Size | Framework | Features |
+|---------|------|-----------|----------|
+| [enterprise-rag](./enterprise-rag) | 1.1MB | Next.js | Full RAG + PDF/DOCX |
+| [rag-workbench-demo](./rag-workbench-demo) | 1.1MB | Next.js | RAG experimentation |
+
+**Average bundle size**: 385KB (342KB excluding RAG examples)
+
+---
+
 ## 🚀 Getting Started
 
 ### Beginner Examples
 
-| Example                              | Description                        | Complexity |
-| ------------------------------------ | ---------------------------------- | ---------- |
-| [minimal-chat](./minimal-chat)       | **ONE LINE of code** - start here! | ⭐ Easiest |
-| [basic-chat](./basic-chat)           | Chat with message operations       | ⭐         |
-| [customized-chat](./customized-chat) | Custom styling and callbacks       | ⭐         |
+| Example                              | Size | Description                        | Complexity |
+| ------------------------------------ | ---- | ---------------------------------- | ---------- |
+| [minimal-chat](./minimal-chat)       | 257KB | **ONE LINE of code** - start here! | ⭐ Easiest |
+| [basic-chat](./basic-chat)           | 262KB | Chat with message operations       | ⭐         |
+| [customized-chat](./customized-chat) | 262KB | Custom styling and callbacks       | ⭐         |
 
 ### Prerequisites
 

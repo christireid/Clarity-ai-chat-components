@@ -11,11 +11,11 @@ import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 
 // Import refactored components
-import { KeyboardHint } from '../keyboard-hint'
-import { ThemeSwitcher } from '../theme-switcher'
-import { DashboardProgress } from '../ui/dashboard-progress'
-import { InteractiveCard, InteractiveButton } from '../interactive-card'
-import { AdvancedChatInput } from '../advanced-chat-input'
+import { KeyboardHint } from '../KeyboardHint'
+import { ThemeSwitcher } from '../ThemeSwitcher'
+import { DashboardProgress } from '../ui/DashboardProgress'
+import { InteractiveCard, InteractiveButton } from '../InteractiveCard'
+import { AdvancedChatInput } from '../AdvancedChatInput'
 
 // Note: Some components require complex setup (portals, providers) and are
 // tested separately in their own test files.

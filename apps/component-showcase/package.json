@@ -1,0 +1,50 @@
+{
+  "name": "@clarity-chat/component-showcase",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Comprehensive showcase of all Clarity Chat components organized by category",
+  "scripts": {
+    "dev": "next dev -p 3100",
+    "build": "next build",
+    "start": "next start -p 3100",
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@clarity-chat/error-handling": "workspace:*",
+    "@clarity-chat/license": "workspace:*",
+    "@clarity-chat/memory": "workspace:*",
+    "@clarity-chat/primitives": "workspace:*",
+    "@clarity-chat/react": "workspace:*",
+    "@clarity-chat/token-optimization": "workspace:*",
+    "@clarity-chat/types": "workspace:*",
+    "@clarity-chat/utils": "workspace:*",
+    "@emotion/is-prop-valid": "^1.2.2",
+    "cohere-ai": "^7.0.0",
+    "flowtoken": "^1.0.40",
+    "framer-motion": "^12.23.25",
+    "jszip": "^3.10.0",
+    "lucide-react": "^0.500.0",
+    "mammoth": "^1.8.0",
+    "mermaid": "^11.0.0",
+    "next": "^15.0.0",
+    "pdfjs-dist": "^4.0.0",
+    "prismjs": "^1.30.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "react-markdown": "^10.1.0",
+    "rehype-highlight": "^7.0.2",
+    "remark-gfm": "^4.0.1",
+    "shiki": "^3.0.0",
+    "zod": "^3.24.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "autoprefixer": "^10.4.20",
+    "postcss": "^8.4.49",
+    "tailwindcss": "^3.4.16",
+    "typescript": "^5.9.0"
+  }
+}

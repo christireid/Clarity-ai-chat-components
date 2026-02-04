@@ -16,7 +16,7 @@ import {
   createFallbackMetadata,
   type LinkMetadata,
   type EmbedType,
-} from '../link-preview'
+} from '../ui/link-preview'
 import { renderHook } from '@testing-library/react'
 
 // Mock matchMedia

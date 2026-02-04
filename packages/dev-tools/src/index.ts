@@ -34,7 +34,24 @@ export * from './test'
 export * from './validate'
 
 // Performance utilities
+// Export all from performance module (includes both Node.js and browser profiling)
 export * from './performance'
+
+// Specific browser profiling exports for convenience
+export type {
+  PerformanceProfiler,
+  MemorySnapshot,
+  RenderTiming,
+  LayoutMetrics,
+  FPSMetrics,
+  PerformanceReport,
+} from './performance/browser/profiler'
+
+export type {
+  NetworkProfile,
+  ViewportSize,
+  DeviceSimulationOptions,
+} from './performance/browser/device-simulation'
 
 // Model comparison utilities
 export * from './compare'

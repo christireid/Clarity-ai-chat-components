@@ -1,5 +1,5 @@
 import { useState, useCallback, useRef, useEffect } from 'react'
-import { TokenCounter } from '@clarity-chat/token-optimization'
+import { AccurateTokenCounter } from '@clarity-chat/token-optimization'
 import { getTokenizerStats, clearTokenCache } from './accurate-counter'
 
 /**
@@ -134,12 +134,13 @@ export function useTokenPerformance() {
    */
   const measureTokenCount = useCallback(
     async (text: string, iterations: number = 100) => {
+      const counter = new AccurateTokenCounter({ model: 'gpt-4' })
       const results: Array<{ duration: number; count: number }> = []
 
       for (let i = 0; i < iterations; i++) {
         const benchmark = await benchmarkOperation(
           async () => {
-            return TokenCounter.count(text)
+            return counter.count(text)
           },
           { updateMetrics: false }
         )

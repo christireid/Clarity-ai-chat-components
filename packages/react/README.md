@@ -4,6 +4,10 @@
 
 [![npm version](https://img.shields.io/npm/v/@clarity-chat/react)](https://www.npmjs.com/package/@clarity-chat/react)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![Peer Dependencies](https://img.shields.io/badge/peer_dependencies-15_total-blue)](#peer-dependencies)
+[![Required vs Optional](https://img.shields.io/badge/peer_deps-4_required_%7C_11_optional-success)](#peer-dependencies)
+[![Bundle Savings](https://img.shields.io/badge/bundle_savings-up_to_1.5MB-brightgreen)](#bundle-size-breakdown)
+[![Core Bundle](https://img.shields.io/badge/core_minimal-~30KB-orange)](#bundle-size)
 
 ---
 
@@ -12,6 +16,237 @@
 ```bash
 npm install @clarity-chat/react
 ```
+
+## Peer Dependencies
+
+### Required
+
+These dependencies are required for all installations:
+
+```bash
+# Core React runtime (required)
+npm install react react-dom
+
+# Icons and animations (required)
+npm install lucide-react framer-motion
+
+# Core utilities (required)
+npm install zod react-markdown remark-gfm rehype-highlight
+```
+
+| Package            | Version            | Size   | Purpose            |
+| ------------------ | ------------------ | ------ | ------------------ |
+| `react`            | ^18.0.0 or ^19.0.0 | ~130KB | Core framework     |
+| `react-dom`        | ^18.0.0 or ^19.0.0 | ~130KB | DOM rendering      |
+| `lucide-react`     | ^0.500.0           | ~20KB  | Icon library       |
+| `framer-motion`    | ^12.23.25          | ~90KB  | Animations         |
+| `zod`              | ^3.24.0            | ~50KB  | Runtime validation |
+| `react-markdown`   | ^10.0.0            | ~45KB  | Markdown rendering |
+| `remark-gfm`       | ^4.0.0             | ~20KB  | GitHub markdown    |
+| `rehype-highlight` | ^7.0.0             | ~20KB  | Code highlighting  |
+
+**Total base size:** ~505KB (minified + gzipped)
+
+### Optional Features
+
+Install only the dependencies you need for specific features:
+
+#### Syntax Highlighting
+
+```bash
+npm install shiki
+```
+
+Enables code syntax highlighting in messages. Without it:
+
+- Code blocks render as plain text with basic styling
+- Saves ~150KB from bundle
+- Use when: Code sharing is a primary feature
+
+#### RAG Document Processing
+
+```bash
+# PDF support
+npm install pdfjs-dist
+
+# DOCX support
+npm install mammoth
+
+# Export conversations as ZIP
+npm install jszip
+```
+
+| Package      | Size   | Feature                | Alternative             |
+| ------------ | ------ | ---------------------- | ----------------------- |
+| `pdfjs-dist` | ~800KB | PDF document parsing   | Server-side processing  |
+| `mammoth`    | ~100KB | DOCX document parsing  | Server-side processing  |
+| `jszip`      | ~110KB | Export as ZIP archives | Individual file exports |
+
+**Bundle impact:** 800-1000KB for full RAG features
+
+#### Advanced Features
+
+```bash
+# Mermaid diagram rendering
+npm install mermaid
+
+# Advanced tokenization (more accurate than default)
+npm install flowtoken
+
+# Reranking for RAG (semantic search improvement)
+npm install cohere-ai
+```
+
+| Package     | Size   | Feature                 | Savings without it |
+| ----------- | ------ | ----------------------- | ------------------ |
+| `mermaid`   | ~400KB | Diagram rendering       | ~400KB             |
+| `flowtoken` | ~50KB  | Precise token counting  | ~50KB              |
+| `cohere-ai` | ~80KB  | Search result reranking | ~80KB              |
+
+### Bundle Size Breakdown
+
+| Configuration         | Size      | Use Case                     |
+| --------------------- | --------- | ---------------------------- |
+| Core only             | ~370KB    | Basic chat                   |
+| + Syntax highlighting | ~520KB    | Developer tools              |
+| + RAG (no docs)       | ~370KB    | Vector search only           |
+| + Full RAG            | ~1.4MB    | Document processing          |
+| + All features        | ~1.9MB    | Enterprise with all features |
+| `core-minimal` bundle | **~30KB** | Headless, bring your own UI  |
+
+**Optimization tip:** Use dynamic imports for heavy features:
+
+```tsx
+// Lazy load PDF support
+const PDFLoader = lazy(() => import('./pdf-loader'))
+
+// Only load when needed
+if (file.type === 'application/pdf') {
+  const { parsePDF } = await import('./pdf-parser')
+}
+```
+
+### Troubleshooting
+
+#### Peer dependency warnings
+
+```
+npm WARN peer dependency missing: shiki@^3.0.0
+```
+
+**Solution:** These warnings are safe to ignore if you're not using the feature. To silence them:
+
+```bash
+# Install as dev dependency (won't be bundled)
+npm install -D shiki
+
+# Or use --legacy-peer-deps
+npm install --legacy-peer-deps
+```
+
+#### Version conflicts
+
+```
+Error: Cannot find module 'framer-motion'
+```
+
+**Solution:** Ensure peer dependencies match the required versions:
+
+```bash
+# Check installed versions
+npm list react react-dom framer-motion lucide-react
+
+# Update to compatible versions
+npm install react@latest react-dom@latest framer-motion@latest
+```
+
+#### Bundle size issues
+
+If your bundle is too large:
+
+1. **Use core-minimal** for maximum tree-shaking:
+
+   ```tsx
+   import { ClarityChatApp } from '@clarity-chat/react/core-minimal'
+   ```
+
+2. **Lazy load features:**
+
+   ```tsx
+   const RAGFeatures = lazy(() => import('./rag-features'))
+   ```
+
+3. **Disable unused features:**
+   ```tsx
+   <ClarityChatApp
+     api="/api/chat"
+     features={{
+       rag: false, // Excludes document loaders
+       diagrams: false, // Excludes mermaid
+     }}
+   />
+   ```
+
+#### React 19 compatibility
+
+All components are fully compatible with React 19. If you see warnings:
+
+```bash
+# Ensure you're on latest versions
+npm install react@19 react-dom@19 @clarity-chat/react@latest
+```
+
+#### Missing icons
+
+```
+Error: lucide-react icons not rendering
+```
+
+**Solution:** lucide-react is a required peer dependency:
+
+```bash
+npm install lucide-react@latest
+```
+
+#### TypeScript errors
+
+```
+Cannot find type definitions for 'framer-motion'
+```
+
+**Solution:** Install type definitions:
+
+```bash
+npm install -D @types/react @types/react-dom
+```
+
+Note: framer-motion, lucide-react, and shiki include their own types.
+
+## Feature Flags (Bundle Size Optimization)
+
+You can **explicitly disable** optional features to reduce bundle size, even when peer dependencies are installed:
+
+```bash
+# .env or .env.local
+CLARITY_DISABLE_SYNTAX_HIGHLIGHTING=true  # Save ~200KB
+CLARITY_DISABLE_MARKDOWN=true             # Save ~95KB
+CLARITY_DISABLE_EXPORTS=true              # Save ~110KB
+```
+
+**Why use feature flags?**
+- Reduce bundle size by up to **405KB**
+- Faster initial page loads
+- Control which features ship to production
+- Skip features you don't need
+
+**What happens when disabled:**
+- `CLARITY_DISABLE_SYNTAX_HIGHLIGHTING`: Code blocks render as plain text (still readable)
+- `CLARITY_DISABLE_MARKDOWN`: Messages use plain text formatting (basic structure preserved)
+- `CLARITY_DISABLE_EXPORTS`: Batch exports disabled (single exports still work)
+
+See [Feature Flags Documentation](./src/utils/config/FEATURE-FLAGS.md) for complete guide.
+
+---
 
 ## Quick Start (3 Minutes)
 
@@ -157,7 +392,6 @@ import {
 
 ```tsx
 import { ChatPrimitive } from '@clarity-chat/react'
-
 ;<ChatPrimitive.Root>
   <ChatPrimitive.Messages>
     {messages.map((msg) => (

@@ -62,7 +62,11 @@ export interface AuditEventMetadata {
   /** Purpose of processing (GDPR Article 30) */
   purpose?: string
   /** Legal basis (consent, legitimate interest, etc.) */
-  legalBasis?: 'consent' | 'legitimate_interest' | 'contract' | 'legal_obligation'
+  legalBasis?:
+    | 'consent'
+    | 'legitimate_interest'
+    | 'contract'
+    | 'legal_obligation'
   /** Consent purposes involved */
   consentPurposes?: string[]
   /** Result of operation (success/failure) */
@@ -289,7 +293,9 @@ export class AuditLogger {
           updatedAt: logEntry.timestamp,
         })
       } catch (error) {
-        console.error('[AuditLogger] Failed to persist log entry:', error)
+        if (process.env.NODE_ENV === 'development') {
+          console.error('[AuditLogger] Failed to persist log entry:', error)
+        }
         // Don't throw - audit logging should never break the main flow
       }
     }
@@ -299,7 +305,12 @@ export class AuditLogger {
       try {
         await Promise.resolve(this.config.onLog(logEntry))
       } catch (error) {
-        console.error('[AuditLogger] External logging callback failed:', error)
+        if (process.env.NODE_ENV === 'development') {
+          console.error(
+            '[AuditLogger] External logging callback failed:',
+            error
+          )
+        }
       }
     }
 
@@ -320,33 +331,33 @@ export class AuditLogger {
 
     // Apply filters
     if (query.userId) {
-      logs = logs.filter(log => log.metadata.userId === query.userId)
+      logs = logs.filter((log) => log.metadata.userId === query.userId)
     }
 
     if (query.eventType) {
       const eventTypes = Array.isArray(query.eventType)
         ? query.eventType
         : [query.eventType]
-      logs = logs.filter(log => eventTypes.includes(log.eventType))
+      logs = logs.filter((log) => eventTypes.includes(log.eventType))
     }
 
     if (query.severity) {
       const severities = Array.isArray(query.severity)
         ? query.severity
         : [query.severity]
-      logs = logs.filter(log => severities.includes(log.severity))
+      logs = logs.filter((log) => severities.includes(log.severity))
     }
 
     if (query.startTime) {
-      logs = logs.filter(log => log.timestamp >= query.startTime!)
+      logs = logs.filter((log) => log.timestamp >= query.startTime!)
     }
 
     if (query.endTime) {
-      logs = logs.filter(log => log.timestamp <= query.endTime!)
+      logs = logs.filter((log) => log.timestamp <= query.endTime!)
     }
 
     if (query.metadata) {
-      logs = logs.filter(log => {
+      logs = logs.filter((log) => {
         for (const [key, value] of Object.entries(query.metadata!)) {
           if (log.metadata[key] !== value) {
             return false
@@ -380,24 +391,30 @@ export class AuditLogger {
     const logs = this.inMemoryLogs
 
     // Count by event type
-    const byEventType = logs.reduce((acc, log) => {
-      acc[log.eventType] = (acc[log.eventType] || 0) + 1
-      return acc
-    }, {} as Record<AuditEventType, number>)
+    const byEventType = logs.reduce(
+      (acc, log) => {
+        acc[log.eventType] = (acc[log.eventType] || 0) + 1
+        return acc
+      },
+      {} as Record<AuditEventType, number>
+    )
 
     // Count by severity
-    const bySeverity = logs.reduce((acc, log) => {
-      acc[log.severity] = (acc[log.severity] || 0) + 1
-      return acc
-    }, {} as Record<AuditEventSeverity, number>)
+    const bySeverity = logs.reduce(
+      (acc, log) => {
+        acc[log.severity] = (acc[log.severity] || 0) + 1
+        return acc
+      },
+      {} as Record<AuditEventSeverity, number>
+    )
 
     // Unique users
     const uniqueUsers = new Set(
-      logs.map(log => log.metadata.userId).filter(Boolean)
+      logs.map((log) => log.metadata.userId).filter(Boolean)
     ).size
 
     // Time range
-    const timestamps = logs.map(log => log.timestamp.getTime())
+    const timestamps = logs.map((log) => log.timestamp.getTime())
     const timeRange = {
       earliest: new Date(Math.min(...timestamps)),
       latest: new Date(Math.max(...timestamps)),
@@ -405,7 +422,7 @@ export class AuditLogger {
 
     // Recent high-severity events
     const recentHighSeverity = logs
-      .filter(log => log.severity === 'error' || log.severity === 'critical')
+      .filter((log) => log.severity === 'error' || log.severity === 'critical')
       .sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime())
       .slice(0, 10)
 
@@ -449,7 +466,7 @@ export class AuditLogger {
 
     // Keep only logs within retention period
     this.inMemoryLogs = this.inMemoryLogs.filter(
-      log => log.timestamp >= cutoffTime
+      (log) => log.timestamp >= cutoffTime
     )
 
     const removedCount = beforeCount - this.inMemoryLogs.length
@@ -477,7 +494,11 @@ export class AuditLogger {
    */
   async clear(): Promise<void> {
     this.inMemoryLogs = []
-    console.warn('[AuditLogger] All audit logs cleared - use only in testing!')
+    if (process.env.NODE_ENV === 'development') {
+      console.warn(
+        '[AuditLogger] All audit logs cleared - use only in testing!'
+      )
+    }
   }
 
   /**
@@ -503,7 +524,7 @@ export class AuditLogger {
       'result',
     ]
 
-    const rows = this.inMemoryLogs.map(log => [
+    const rows = this.inMemoryLogs.map((log) => [
       log.id,
       log.timestamp.toISOString(),
       log.eventType,
@@ -516,7 +537,7 @@ export class AuditLogger {
 
     return [
       headers.join(','),
-      ...rows.map(row => row.map(cell => `"${cell}"`).join(',')),
+      ...rows.map((row) => row.map((cell) => `"${cell}"`).join(',')),
     ].join('\n')
   }
 

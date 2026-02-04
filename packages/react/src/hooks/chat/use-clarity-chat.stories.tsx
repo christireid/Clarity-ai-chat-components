@@ -7,7 +7,7 @@
 import type { Meta, StoryObj } from '@storybook/react'
 import React, { useMemo } from 'react'
 import { useClarityChat, coreMessagesToMessages } from './use-clarity-chat'
-import { ChatWindow } from '../../components/chat/chat-window'
+import { ChatWindow } from '../../components/chat/ChatWindow'
 import {
   Card,
   CardContent,
@@ -304,10 +304,10 @@ export const AdvancedFeatures: Story = {
           </div>
 
           <Card>
-            <CardHeader>
+            <CardHeader className="">
               <h4 className="font-semibold">Configuration</h4>
             </CardHeader>
-            <CardContent>
+            <CardContent className="">
               <div className="space-y-2 text-sm">
                 <div>
                   <strong>Memory:</strong>{' '}

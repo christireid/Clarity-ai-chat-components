@@ -1,6 +1,6 @@
 /**
  * Hook to generate command palette items for message operations
- * 
+ *
  * This hook provides a convenient way to add message operation commands
  * to the CommandPalette component, including keyboard shortcuts and
  * proper integration with useMessageOperations.
@@ -9,70 +9,70 @@
 'use client'
 
 import { useMemo } from 'react'
-import type { CommandItem } from '../components/command-palette'
+import type { CommandItem } from '../components/CommandPalette'
 
 export interface MessageOperationCommandsOptions {
   /**
    * Currently selected message ID (if any)
    */
   selectedMessageId?: string | null
-  
+
   /**
    * Whether the selected message is a user message
    */
   isUserMessage?: boolean
-  
+
   /**
    * Whether the selected message is an assistant message
    */
   isAssistantMessage?: boolean
-  
+
   /**
    * Callback for editing a message
    */
   onEdit?: (messageId: string) => void
-  
+
   /**
    * Callback for regenerating a message
    */
   onRegenerate?: (messageId: string) => void
-  
+
   /**
    * Callback for deleting a message
    */
   onDelete?: (messageId: string) => void
-  
+
   /**
    * Undo function from useMessageOperations
    */
   undo?: () => void
-  
+
   /**
    * Redo function from useMessageOperations
    */
   redo?: () => void
-  
+
   /**
    * Whether undo is available
    */
   canUndo?: boolean
-  
+
   /**
    * Whether redo is available
    */
   canRedo?: boolean
-  
+
   /**
    * Additional custom commands to include
    */
   additionalCommands?: CommandItem[]
-  
+
   /**
    * Whether to include message operation commands
    * @default true
    */
   includeMessageOperations?: boolean
-  
+
   /**
    * Whether to include undo/redo commands
    * @default true
@@ -82,7 +82,7 @@ export interface MessageOperationCommandsOptions {
 
 /**
  * Generate command palette items for message operations
- * 
+ *
  * @example
  * ```tsx
  * const commands = useCommandPaletteCommands({
@@ -97,7 +97,7 @@ export interface MessageOperationCommandsOptions {
  *   canUndo,
  *   canRedo,
  * })
- * 
+ *
  * <CommandPalette items={commands} open={open} onClose={onClose} />
  * ```
  */

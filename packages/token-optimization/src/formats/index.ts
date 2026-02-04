@@ -44,7 +44,7 @@ export {
   encodeToon,
   decodeToon,
   validateToon,
-} from './toon-optimizer'
+} from './toon-optimizer/index'
 
 export type {
   ToonConfig,
@@ -54,7 +54,7 @@ export type {
   ValidationError,
   SavingsEstimate as ToonSavingsEstimate,
   SavingsInfo,
-} from './toon-optimizer'
+} from './toon-optimizer/index'
 
 // Markdown optimization exports
 export {

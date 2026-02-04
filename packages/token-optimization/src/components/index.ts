@@ -7,7 +7,7 @@
  * @module components
  */
 
-export { TokenBudgetBar, useTokenBudget } from './token-budget-bar'
+export { TokenBudgetBar, useTokenBudget } from './TokenBudgetBar'
 
 export type {
   TokenBudgetBarStatus,

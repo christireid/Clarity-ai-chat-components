@@ -29,7 +29,7 @@ export {
   type ClarityChatErrorInfo,
   type ClarityPromptOptimizationOptions,
   type ClarityChatTokenStats,
-} from './use-clarity-chat'
+} from '../use-clarity-chat'
 
 export {
   useClarityObject,

@@ -380,9 +380,7 @@ function DocsAssistantInner({ className }: DocsAssistantProps) {
   return (
     <>
       {/* Chat Button - only render when dialog is closed to avoid overlap */}
-      {!isOpen && (
-        <ChatButton onClick={() => setIsOpen(true)} isOpen={false} />
-      )}
+      {!isOpen && <ChatButton onClick={() => setIsOpen(true)} isOpen={false} />}
 
       {/* Chat Window */}
       <AnimatePresence>
@@ -393,6 +391,7 @@ function DocsAssistantInner({ className }: DocsAssistantProps) {
             initial="initial"
             animate="animate"
             exit="exit"
+            viewport={{ once: true }}
             transition={{
               duration: prefersReducedMotion ? 0.1 : 0.25,
               ease: [0.25, 0.1, 0.25, 1],
@@ -422,8 +421,10 @@ function DocsAssistantInner({ className }: DocsAssistantProps) {
               className="absolute inset-0 rounded-xl sm:rounded-2xl pointer-events-none z-50"
               style={{
                 padding: '1px',
-                background: 'linear-gradient(135deg, rgba(99,102,241,0.4) 0%, rgba(139,92,246,0.25) 50%, rgba(244,114,182,0.35) 100%)',
-                WebkitMask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
+                background:
+                  'linear-gradient(135deg, rgba(99,102,241,0.4) 0%, rgba(139,92,246,0.25) 50%, rgba(244,114,182,0.35) 100%)',
+                WebkitMask:
+                  'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
                 WebkitMaskComposite: 'xor',
                 maskComposite: 'exclude',
               }}
@@ -517,6 +518,7 @@ function DocsAssistantInner({ className }: DocsAssistantProps) {
                   initial={{ height: 0, opacity: 0 }}
                   animate={{ height: 'auto', opacity: 1 }}
                   exit={{ height: 0, opacity: 0 }}
+                  viewport={{ once: true }}
                   transition={{ duration: durations.normal, ease: 'easeOut' }}
                   className="absolute top-14 left-4 right-4 z-10 bg-background/95 backdrop-blur-sm rounded-lg border border-border/40 shadow-lg overflow-hidden"
                 >
@@ -571,7 +573,9 @@ function DocsAssistantInner({ className }: DocsAssistantProps) {
                       : 'Powered by Clarity Chat'
                 }
                 error={apiError}
-                onDismissError={() => {/* apiError will be cleared on successful fetch */}}
+                onDismissError={() => {
+                  /* apiError will be cleared on successful fetch */
+                }}
                 showMessageCount
                 onExport={
                   messages.length > 0 ? handleOpenExportDialog : undefined
@@ -679,6 +683,7 @@ function DocsAssistantInner({ className }: DocsAssistantProps) {
                   initial={{ height: 0, opacity: 0 }}
                   animate={{ height: 'auto', opacity: 1 }}
                   exit={{ height: 0, opacity: 0 }}
+                  viewport={{ once: true }}
                   transition={{ duration: durations.normal, ease: 'easeOut' }}
                   className="border-t border-border/40 bg-muted/30 overflow-hidden"
                 >
@@ -761,7 +766,11 @@ function getUserFriendlyErrorMessage(error: Error): {
   const errorMsg = error.message.toLowerCase()
 
   // Network/connectivity errors
-  if (errorMsg.includes('network') || errorMsg.includes('fetch') || errorMsg.includes('failed to fetch')) {
+  if (
+    errorMsg.includes('network') ||
+    errorMsg.includes('fetch') ||
+    errorMsg.includes('failed to fetch')
+  ) {
     return {
       title: 'Connection Error',
       message: 'Unable to connect to the AI service.',
@@ -770,11 +779,16 @@ function getUserFriendlyErrorMessage(error: Error): {
   }
 
   // API key errors
-  if (errorMsg.includes('api key') || errorMsg.includes('unauthorized') || errorMsg.includes('401')) {
+  if (
+    errorMsg.includes('api key') ||
+    errorMsg.includes('unauthorized') ||
+    errorMsg.includes('401')
+  ) {
     return {
       title: 'Configuration Error',
       message: 'The AI service is not properly configured.',
-      suggestion: 'Add a valid API key to .env.local (ANTHROPIC_API_KEY, OPENAI_API_KEY, or GEMINI_API_KEY).',
+      suggestion:
+        'Add a valid API key to .env.local (ANTHROPIC_API_KEY, OPENAI_API_KEY, or GEMINI_API_KEY).',
     }
   }
 
@@ -788,7 +802,11 @@ function getUserFriendlyErrorMessage(error: Error): {
   }
 
   // Server errors
-  if (errorMsg.includes('500') || errorMsg.includes('502') || errorMsg.includes('503')) {
+  if (
+    errorMsg.includes('500') ||
+    errorMsg.includes('502') ||
+    errorMsg.includes('503')
+  ) {
     return {
       title: 'Service Unavailable',
       message: 'The AI service is temporarily unavailable.',
@@ -800,7 +818,8 @@ function getUserFriendlyErrorMessage(error: Error): {
   return {
     title: 'Documentation Assistant Error',
     message: error.message || 'An unexpected error occurred.',
-    suggestion: 'Try refreshing the page or contact support if the issue persists.',
+    suggestion:
+      'Try refreshing the page or contact support if the issue persists.',
   }
 }
 
@@ -814,22 +833,17 @@ export function DocsAssistant({ className }: DocsAssistantProps) {
   return (
     <ErrorBoundary
       fallback={(error: Error, resetError: () => void) => {
-        const { title, message, suggestion } = getUserFriendlyErrorMessage(error)
+        const { title, message, suggestion } =
+          getUserFriendlyErrorMessage(error)
 
         return (
           <div className="fixed bottom-4 right-4 p-4 bg-destructive/10 border border-destructive/20 rounded-lg shadow-lg max-w-sm z-[100]">
             <div className="flex items-start gap-3">
               <AlertCircle className="w-5 h-5 text-destructive flex-shrink-0 mt-0.5" />
               <div className="space-y-2">
-                <h3 className="font-semibold text-foreground">
-                  {title}
-                </h3>
-                <p className="text-sm text-muted-foreground">
-                  {message}
-                </p>
-                <p className="text-xs text-muted-foreground/80">
-                  {suggestion}
-                </p>
+                <h3 className="font-semibold text-foreground">{title}</h3>
+                <p className="text-sm text-muted-foreground">{message}</p>
+                <p className="text-xs text-muted-foreground/80">{suggestion}</p>
                 <div className="flex gap-2 pt-1">
                   <button
                     onClick={resetError}
@@ -849,7 +863,10 @@ export function DocsAssistant({ className }: DocsAssistantProps) {
           </div>
         )
       }}
-      onError={(error: Error, errorInfo: { componentStack?: string | null }) => {
+      onError={(
+        error: Error,
+        errorInfo: { componentStack?: string | null }
+      ) => {
         console.error('[DocsAssistant] Error:', error, errorInfo)
       }}
       onReset={() => {

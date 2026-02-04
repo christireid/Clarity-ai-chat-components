@@ -7,7 +7,9 @@ export interface UseChatEditorOptions {
   /** The chat instance from useClarityChat or useChatEnhanced */
   chat: {
     messages: CoreMessage[]
-    setMessages: (messages: CoreMessage[] | ((messages: CoreMessage[]) => CoreMessage[])) => void
+    setMessages: (
+      messages: CoreMessage[] | ((messages: CoreMessage[]) => CoreMessage[])
+    ) => void
     append: (
       message: Pick<CoreMessage, 'role' | 'content'>,
       options?: { data?: Record<string, unknown> }
@@ -110,7 +112,9 @@ export function useChatEditor({
       try {
         setEditingMessageId(null)
         const originalMessages = chat.messages
-        const messageIndex = originalMessages.findIndex((m) => m.id === messageId)
+        const messageIndex = originalMessages.findIndex(
+          (m) => m.id === messageId
+        )
 
         if (messageIndex === -1) {
           toast?.error('Message not found')
@@ -126,7 +130,7 @@ export function useChatEditor({
 
           setIsRegenerating(true)
           toast?.info('Regenerating response...')
-          
+
           try {
             // Re-append the edited message which triggers generation
             await chat.append({ role: 'user', content: trimmedContent })
@@ -150,7 +154,9 @@ export function useChatEditor({
       } catch (error) {
         setIsRegenerating(false)
         if (error instanceof Error && error.name !== 'AbortError') {
-          console.error('Failed to update message:', error)
+          if (process.env['NODE_ENV'] === 'development') {
+            console.error('Failed to update message:', error)
+          }
           toast?.error('Failed to update message. Please try again.')
         }
       }
@@ -167,7 +173,9 @@ export function useChatEditor({
 
       const originalMessages = chat.messages
       try {
-        const messageIndex = originalMessages.findIndex((m) => m.id === messageId)
+        const messageIndex = originalMessages.findIndex(
+          (m) => m.id === messageId
+        )
         if (messageIndex === -1) {
           toast?.error('Cannot regenerate: message not found')
           return
@@ -195,7 +203,10 @@ export function useChatEditor({
         toast?.info('Regenerating response...')
 
         try {
-          await chat.append({ role: 'user', content: userMessage.content as string })
+          await chat.append({
+            role: 'user',
+            content: userMessage.content as string,
+          })
           onRegenerate?.(messageId)
         } catch (error) {
           chat.setMessages(originalMessages)
@@ -206,7 +217,9 @@ export function useChatEditor({
       } catch (error) {
         setIsRegenerating(false)
         if (error instanceof Error && error.name !== 'AbortError') {
-          console.error('Failed to regenerate message:', error)
+          if (process.env['NODE_ENV'] === 'development') {
+            console.error('Failed to regenerate message:', error)
+          }
           toast?.error('Failed to regenerate response. Please try again.')
         }
       }
@@ -228,7 +241,7 @@ export function useChatEditor({
       chat.setMessages((prevMessages) =>
         prevMessages.filter((m) => m.id !== messageId)
       )
-      
+
       toast?.info('Message deleted')
       onDelete?.(messageId)
     },

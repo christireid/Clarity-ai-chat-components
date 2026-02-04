@@ -7,11 +7,17 @@
  * For more comprehensive examples, see /docs/examples/
  */
 
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import { useMemoryService } from '../react' // Use updated hooks
 import type { MemoryItem } from '../types'
 
-export function ChatApp({ userId, threadId }: { userId: string; threadId: string }) {
+export function ChatApp({
+  userId,
+  threadId,
+}: {
+  userId: string
+  threadId: string
+}) {
   const memory = useMemoryService() // Updated hook
   const [message, setMessage] = useState('')
   const [messages, setMessages] = useState<MemoryItem[]>([])
@@ -19,11 +25,7 @@ export function ChatApp({ userId, threadId }: { userId: string; threadId: string
   const [error, setError] = useState<string | null>(null)
 
   // Load thread messages on mount
-  useEffect(() => {
-    loadMessages()
-  }, [threadId])
-
-  async function loadMessages() {
+  const loadMessages = useCallback(async () => {
     try {
       setLoading(true)
       setError(null)
@@ -41,11 +43,17 @@ export function ChatApp({ userId, threadId }: { userId: string; threadId: string
       setMessages(threadMessages)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to load messages')
-      console.error('Error loading messages:', err)
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Error loading messages:', err)
+      }
     } finally {
       setLoading(false)
     }
-  }
+  }, [memory, threadId])
+
+  useEffect(() => {
+    loadMessages()
+  }, [loadMessages])
 
   async function handleSend() {
     if (!message.trim()) return
@@ -67,7 +75,7 @@ export function ChatApp({ userId, threadId }: { userId: string; threadId: string
       })
 
       // Simulate AI response (replace with actual LLM call)
-      const aiResponse = \`Echo: \${userMessage}\`
+      const aiResponse = `Echo: ${userMessage}`
 
       // Store AI response
       await memory.add(aiResponse, {
@@ -87,7 +95,9 @@ export function ChatApp({ userId, threadId }: { userId: string; threadId: string
       // Revert optimistic update
       setMessage(userMessage)
       setError(err instanceof Error ? err.message : 'Failed to send message')
-      console.error('Error sending message:', err)
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Error sending message:', err)
+      }
     }
   }
 
@@ -96,24 +106,42 @@ export function ChatApp({ userId, threadId }: { userId: string; threadId: string
   }
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '600px', padding: '20px' }}>
+    <div
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        height: '600px',
+        padding: '20px',
+      }}
+    >
       <h2>Chat (Thread: {threadId})</h2>
 
       {error && (
-        <div style={{ background: '#fee', padding: '10px', marginBottom: '10px', borderRadius: '4px' }}>
+        <div
+          style={{
+            background: '#fee',
+            padding: '10px',
+            marginBottom: '10px',
+            borderRadius: '4px',
+          }}
+        >
           <strong>Error:</strong> {error}
-          <button onClick={() => setError(null)} style={{ marginLeft: '10px' }}>Dismiss</button>
+          <button onClick={() => setError(null)} style={{ marginLeft: '10px' }}>
+            Dismiss
+          </button>
         </div>
       )}
 
-      <div style={{
-        flex: 1,
-        border: '1px solid #ddd',
-        padding: '10px',
-        marginBottom: '10px',
-        overflowY: 'auto',
-        borderRadius: '4px'
-      }}>
+      <div
+        style={{
+          flex: 1,
+          border: '1px solid #ddd',
+          padding: '10px',
+          marginBottom: '10px',
+          overflowY: 'auto',
+          borderRadius: '4px',
+        }}
+      >
         {messages.map((msg) => (
           <div
             key={msg.id}
@@ -121,10 +149,14 @@ export function ChatApp({ userId, threadId }: { userId: string; threadId: string
               marginBottom: '15px',
               padding: '8px',
               background: msg.metadata.role === 'user' ? '#e3f2fd' : '#f5f5f5',
-              borderRadius: '4px'
+              borderRadius: '4px',
             }}
           >
-            <strong style={{ color: msg.metadata.role === 'user' ? '#1976d2' : '#388e3c' }}>
+            <strong
+              style={{
+                color: msg.metadata.role === 'user' ? '#1976d2' : '#388e3c',
+              }}
+            >
               {msg.metadata.role === 'user' ? 'You' : 'AI'}:
             </strong>{' '}
             {msg.content}
@@ -148,7 +180,7 @@ export function ChatApp({ userId, threadId }: { userId: string; threadId: string
             flex: 1,
             padding: '8px',
             border: '1px solid #ddd',
-            borderRadius: '4px'
+            borderRadius: '4px',
           }}
         />
         <button
@@ -160,7 +192,7 @@ export function ChatApp({ userId, threadId }: { userId: string; threadId: string
             color: 'white',
             border: 'none',
             borderRadius: '4px',
-            cursor: loading || !message.trim() ? 'not-allowed' : 'pointer'
+            cursor: loading || !message.trim() ? 'not-allowed' : 'pointer',
           }}
         >
           {loading ? 'Sending...' : 'Send'}
@@ -176,10 +208,5 @@ export function ChatApp({ userId, threadId }: { userId: string; threadId: string
 
 // Export a demo wrapper for easy testing
 export function ChatAppDemo() {
-  return (
-    <ChatApp
-      userId="demo_user_123"
-      threadId="demo_thread_456"
-    />
-  )
+  return <ChatApp userId="demo_user_123" threadId="demo_thread_456" />
 }

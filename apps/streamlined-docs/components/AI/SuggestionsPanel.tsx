@@ -65,6 +65,7 @@ export function SuggestionsPanel({
             key={suggestion.id}
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
             onClick={() => onSelectSuggestion?.(suggestion)}
@@ -153,6 +154,7 @@ function SuggestionCard({
       initial={{ opacity: 0, x: -20 }}
       animate={{ opacity: 1, x: 0 }}
       exit={{ opacity: 0, x: 20 }}
+      viewport={{ once: true }}
       transition={{ delay: index * 0.05 }}
       whileHover={{ scale: 1.01 }}
       whileTap={{ scale: 0.99 }}
@@ -237,6 +239,7 @@ export function SuggestionChips({
           key={suggestion.id}
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1 }}
+          viewport={{ once: true }}
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
           onClick={() => onSelectSuggestion?.(suggestion)}
@@ -279,6 +282,7 @@ export function FloatingSuggestions({
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: 20 }}
+      viewport={{ once: true }}
       className={cn(
         'fixed bottom-4 right-4 z-50',
         'max-w-sm',

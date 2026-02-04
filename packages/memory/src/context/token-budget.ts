@@ -4,15 +4,8 @@
  * Manages token allocation and budgeting for context building
  */
 
+import { clamp } from '@clarity-chat/utils'
 import type { TokenBudgetConfig, TokenBreakdown } from '../types'
-
-/**
- * Clamp a number to a range, handling NaN/Infinity
- */
-function clamp(value: number, min: number, max: number): number {
-  if (!Number.isFinite(value)) return min
-  return Math.max(min, Math.min(max, value))
-}
 
 /**
  * Ensure a number is non-negative and finite
@@ -33,16 +26,31 @@ export class TokenBudgetManager {
    * Get token allocation breakdown
    */
   getAllocation(options?: { maxTokens?: number }): TokenBreakdown {
-    const maxTokens = Math.max(1, options?.maxTokens || this.config.maxContextWindow || 1)
+    const maxTokens = Math.max(
+      1,
+      options?.maxTokens || this.config.maxContextWindow || 1
+    )
     const allocation = this.config.allocation
 
     return {
-      systemPrompt: Math.floor(maxTokens * safeNonNegative(allocation.systemPrompt)),
-      userPreferences: Math.floor(maxTokens * safeNonNegative(allocation.userPreferences)),
-      recentContext: Math.floor(maxTokens * safeNonNegative(allocation.recentContext)),
-      semanticMemory: Math.floor(maxTokens * safeNonNegative(allocation.semanticMemory)),
-      episodicMemory: Math.floor(maxTokens * safeNonNegative(allocation.episodicMemory)),
-      responseReserve: Math.floor(maxTokens * safeNonNegative(allocation.responseReserve)),
+      systemPrompt: Math.floor(
+        maxTokens * safeNonNegative(allocation.systemPrompt)
+      ),
+      userPreferences: Math.floor(
+        maxTokens * safeNonNegative(allocation.userPreferences)
+      ),
+      recentContext: Math.floor(
+        maxTokens * safeNonNegative(allocation.recentContext)
+      ),
+      semanticMemory: Math.floor(
+        maxTokens * safeNonNegative(allocation.semanticMemory)
+      ),
+      episodicMemory: Math.floor(
+        maxTokens * safeNonNegative(allocation.episodicMemory)
+      ),
+      responseReserve: Math.floor(
+        maxTokens * safeNonNegative(allocation.responseReserve)
+      ),
       summary: Math.floor(maxTokens * 0.05), // Fixed 5% for summary
       total: maxTokens,
     }
@@ -88,7 +96,9 @@ export class TokenBudgetManager {
     // Adjust based on memory richness
     if (memoryRichness < 0.3) {
       // Low memory richness, reduce memory allocation
-      const reduction = Math.floor(safeNonNegative(adjusted.semanticMemory) * 0.2)
+      const reduction = Math.floor(
+        safeNonNegative(adjusted.semanticMemory) * 0.2
+      )
       adjusted.semanticMemory -= reduction
       adjusted.recentContext += reduction
     } else if (memoryRichness > 0.7) {

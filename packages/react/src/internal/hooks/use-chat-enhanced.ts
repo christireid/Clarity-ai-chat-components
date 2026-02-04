@@ -49,10 +49,8 @@ import {
 // Re-export MessageRole for modules that import from this file
 export type { MessageRole }
 
-// Simple ID generator (inline to avoid primitives utils export issue)
-function generateId(): string {
-  return `${Date.now()}-${Math.random().toString(36).substring(2, 9)}`
-}
+// Import ID generator from canonical utils package
+import { generateId } from '@clarity-chat/utils'
 
 /**
  * Core message content type - supports text and multi-modal content
@@ -497,7 +495,11 @@ export function useChat(options: UseChatOptions = {}): UseChatReturn {
               rafRef.current = requestAnimationFrame(() => {
                 rafRef.current = null
                 // Double-check connection is still active
-                if (!mountedRef.current || connectionIdRef.current !== currentConnectionId) return
+                if (
+                  !mountedRef.current ||
+                  connectionIdRef.current !== currentConnectionId
+                )
+                  return
 
                 setMessages((prev) =>
                   prev.map((msg) =>
@@ -615,7 +617,10 @@ export function useChat(options: UseChatOptions = {}): UseChatReturn {
           readerRef.current = null
 
           // Finalize message (only if this stream is still active)
-          if (mountedRef.current && connectionIdRef.current === currentConnectionId) {
+          if (
+            mountedRef.current &&
+            connectionIdRef.current === currentConnectionId
+          ) {
             const finalMessage: CoreMessage = {
               ...currentMessage,
               content: accumulatedContent,
@@ -664,7 +669,10 @@ export function useChat(options: UseChatOptions = {}): UseChatReturn {
           }
 
           // Only cleanup if this is still the active connection
-          if (mountedRef.current && connectionIdRef.current === currentConnectionId) {
+          if (
+            mountedRef.current &&
+            connectionIdRef.current === currentConnectionId
+          ) {
             setIsLoading(false)
             abortControllerRef.current = null
             currentAssistantMessageRef.current = null
@@ -748,19 +756,26 @@ export function useChat(options: UseChatOptions = {}): UseChatReturn {
 
       // Check if already loading
       if (isLoading) {
-        const error = new Error('Please wait for the current response to complete')
+        const error = new Error(
+          'Please wait for the current response to complete'
+        )
         onError?.(error)
         return
       }
 
       // FIX: Issue #21 - Credentials validation
       // Ensure credentials are sent with cross-origin requests if mode is 'include'
-      if (api && api.startsWith('http') && !api.includes(window.location.origin) && credentials === 'include') {
+      if (
+        api &&
+        api.startsWith('http') &&
+        !api.includes(window.location.origin) &&
+        credentials === 'include'
+      ) {
         // Just a warning in dev mode, but good practice to verify
         if (process.env.NODE_ENV !== 'production') {
           console.warn(
             '[useChat] Cross-origin request with credentials: include. ' +
-            'Ensure your server sets Access-Control-Allow-Credentials: true'
+              'Ensure your server sets Access-Control-Allow-Credentials: true'
           )
         }
       }
@@ -778,7 +793,7 @@ export function useChat(options: UseChatOptions = {}): UseChatReturn {
           // Error already handled in append
         })
     },
-    [input, isLoading, append, onError]
+    [input, isLoading, append, onError, api, credentials]
   )
 
   // Cleanup on unmount

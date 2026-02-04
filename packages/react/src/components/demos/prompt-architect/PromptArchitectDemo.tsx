@@ -27,7 +27,8 @@
  */
 
 import * as React from 'react'
-import { cn } from '../../../utils/cn'
+import { cn } from '@clarity-chat/primitives'
+import { sleep } from '@clarity-chat/utils'
 import { usePromptArchitect } from './hooks/usePromptArchitect'
 import { PromptEditor } from './components/PromptEditor'
 import { VariableForm } from './components/VariableForm'
@@ -81,13 +82,6 @@ function isRetryableError(status: number): boolean {
     status === 503 ||
     status === 504
   )
-}
-
-/**
- * Sleep for a specified duration
- */
-function sleep(ms: number): Promise<void> {
-  return new Promise((resolve) => setTimeout(resolve, ms))
 }
 
 /**
@@ -187,9 +181,11 @@ async function callGeminiAPI(
         // Check if we should retry
         if (isRetryableError(response.status) && attempt < maxRetries) {
           const delay = baseDelay * Math.pow(2, attempt) // Exponential backoff
-          console.warn(
-            `[PromptArchitect] API error (${response.status}), retrying in ${delay}ms (attempt ${attempt + 1}/${maxRetries})`
-          )
+          if (process.env.NODE_ENV === 'development') {
+            console.warn(
+              `[PromptArchitect] API error (${response.status}), retrying in ${delay}ms (attempt ${attempt + 1}/${maxRetries})`
+            )
+          }
           await sleep(delay)
           continue
         }
@@ -259,9 +255,11 @@ async function callGeminiAPI(
         attempt < maxRetries
       ) {
         const delay = baseDelay * Math.pow(2, attempt)
-        console.warn(
-          `[PromptArchitect] Network error, retrying in ${delay}ms (attempt ${attempt + 1}/${maxRetries})`
-        )
+        if (process.env.NODE_ENV === 'development') {
+          console.warn(
+            `[PromptArchitect] Network error, retrying in ${delay}ms (attempt ${attempt + 1}/${maxRetries})`
+          )
+        }
         await sleep(delay)
         continue
       }
@@ -365,7 +363,7 @@ export function PromptArchitectDemo({
 
     window.addEventListener('keydown', handleKeyDown)
     return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [isRunning, previewMessages.length, saveVersion])
+  }, [isRunning, previewMessages.length, saveVersion, state.versions.length])
 
   // Run prompt
   const handleRunPrompt = React.useCallback(async () => {
@@ -540,7 +538,7 @@ To enable live AI responses, provide a Gemini API key.`
           </div>
 
           {/* Editors */}
-          <div className="flex-1 overflow-auto p-3 sm:p-4 space-y-4 sm:space-y-6">
+          <div className="flex-1 overflow-auto scrollbar-hide p-3 sm:p-4 space-y-4 sm:space-y-6">
             <PromptEditor
               label="System Prompt"
               value={state.systemPrompt}

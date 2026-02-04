@@ -61,13 +61,6 @@
 export { Button, buttonVariants } from './components/ui/button-enhanced'
 export type { ButtonProps, ButtonState } from './components/ui/button-enhanced'
 
-// Also export pure shadcn Button for those who want it
-export {
-  Button as ShadcnButton,
-  buttonVariants as shadcnButtonVariants,
-} from './components/ui/button'
-export type { ButtonProps as ShadcnButtonProps } from './components/ui/button'
-
 // Dialog
 export {
   Dialog,
@@ -141,6 +134,7 @@ export {
   Popover,
   PopoverTrigger,
   PopoverContent,
+  PopoverAnchor,
 } from './components/ui/popover'
 
 // Also export with Shadcn prefix for backward compatibility
@@ -261,9 +255,99 @@ export {
   SelectScrollDownButton,
 } from './components/select'
 
-export { ScrollArea } from './components/scroll-area'
-
 export { Separator } from './components/ui/separator'
+
+// Table components
+export {
+  Table,
+  TableHeader,
+  TableBody,
+  TableFooter,
+  TableHead,
+  TableRow,
+  TableCell,
+  TableCaption,
+} from './components/ui/table'
+
+// AlertDialog components
+export {
+  AlertDialog,
+  AlertDialogPortal,
+  AlertDialogOverlay,
+  AlertDialogTrigger,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogFooter,
+  AlertDialogTitle,
+  AlertDialogDescription,
+  AlertDialogAction,
+  AlertDialogCancel,
+} from './components/ui/alert-dialog'
+
+// Calendar
+export { Calendar } from './components/ui/calendar'
+export type { CalendarProps } from './components/ui/calendar'
+
+// Collapsible
+export {
+  Collapsible,
+  CollapsibleTrigger,
+  CollapsibleContent,
+} from './components/ui/collapsible'
+
+// ContextMenu
+export {
+  ContextMenu,
+  ContextMenuTrigger,
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuCheckboxItem,
+  ContextMenuRadioItem,
+  ContextMenuLabel,
+  ContextMenuSeparator,
+  ContextMenuShortcut,
+  ContextMenuGroup,
+  ContextMenuPortal,
+  ContextMenuSub,
+  ContextMenuSubContent,
+  ContextMenuSubTrigger,
+  ContextMenuRadioGroup,
+} from './components/ui/context-menu'
+
+// HoverCard
+export {
+  HoverCard,
+  HoverCardTrigger,
+  HoverCardContent,
+} from './components/ui/hover-card'
+
+// Progress
+export { Progress } from './components/ui/progress'
+
+// RadioGroup
+export { RadioGroup, RadioGroupItem } from './components/ui/radio-group'
+
+// Skeleton
+export { Skeleton } from './components/ui/skeleton'
+
+// Slider
+export { Slider } from './components/ui/slider'
+
+// Command (already exists, just adding export)
+export {
+  Command,
+  CommandDialog,
+  CommandInput,
+  CommandList,
+  CommandEmpty,
+  CommandGroup,
+  CommandItem,
+  CommandShortcut,
+  CommandSeparator,
+} from './components/ui/command'
+
+// ScrollBar (from scroll-area)
+export { ScrollArea, ScrollBar } from './components/scroll-area'
 
 export { Textarea } from './components/textarea'
 export type { TextareaProps } from './components/textarea'

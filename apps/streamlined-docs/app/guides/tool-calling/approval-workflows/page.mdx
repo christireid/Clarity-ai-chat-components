@@ -1,0 +1,1592 @@
+---
+title: Approval Workflow Customization Guide
+description: Complete guide to implementing and customizing approval workflows for tool calling, including built-in options, custom implementations, UI components, permissions, conditional rules, and audit logging
+---
+
+# Approval Workflow Customization Guide
+
+Build secure, human-in-the-loop approval workflows for tool calling. This guide covers everything from basic approval patterns to advanced permission systems with audit logging.
+
+## Overview
+
+### What are Approval Workflows?
+
+Approval workflows require explicit user consent before AI agents execute sensitive tools. This prevents unauthorized actions and ensures users maintain control over what the AI can do.
+
+**Key Benefits:**
+
+- **Security**: Prevent unauthorized or malicious tool execution
+- **Transparency**: Users see exactly what tools will do before execution
+- **Compliance**: Meet regulatory requirements for human oversight
+- **Trust**: Users feel in control of AI actions
+- **Auditability**: Track all approvals and rejections for compliance
+
+**Common Use Cases:**
+
+- Database modifications (UPDATE, DELETE operations)
+- External API calls (sending emails, making payments)
+- File system operations (create, modify, delete files)
+- Code execution (running user-provided code)
+- Privileged actions (admin operations, configuration changes)
+
+### Security-First Design
+
+Clarity Chat enforces approval requirements in production:
+
+```typescript
+const orchestrator = new ToolOrchestrator({
+  autoApprove: true,  // ✅ OK in development
+})
+
+// In production (NODE_ENV=production):
+// ❌ Error: SECURITY ERROR: autoApprove cannot be enabled in production.
+// Tools must require explicit user approval.
+```
+
+---
+
+## Quick Start
+
+### Basic Manual Approval
+
+Simplest approval pattern with `ToolApprovalDialog`:
+
+```typescript
+'use client'
+
+import { useState, useEffect } from 'react'
+import { ToolOrchestrator, ToolApprovalDialog } from '@clarity-chat/react'
+import type { ToolCallRecord } from '@clarity-chat/react'
+
+export function ChatWithApproval() {
+  const [orchestrator] = useState(() => new ToolOrchestrator({
+    autoApprove: false,  // Require manual approval
+    tools: [weatherTool, databaseTool, emailTool],
+  }))
+
+  const [pendingTool, setPendingTool] = useState<ToolCallRecord | null>(null)
+
+  // Listen for approval requests
+  useEffect(() => {
+    const unsubscribe = orchestrator.lifecycle.on('tool_pending_approval', (event) => {
+      setPendingTool(event.call)
+    })
+    return unsubscribe
+  }, [orchestrator])
+
+  // Handle approval
+  const handleApprove = async (callId: string) => {
+    orchestrator.approveTool(callId, 'user@example.com')
+    await orchestrator.executeApprovedTool(callId)
+    setPendingTool(null)
+  }
+
+  // Handle rejection
+  const handleReject = (callId: string, reason: string) => {
+    orchestrator.rejectTool(callId, reason, 'user@example.com')
+    setPendingTool(null)
+  }
+
+  return (
+    <div>
+      <ChatInterface orchestrator={orchestrator} />
+
+      {/* Pre-built approval dialog */}
+      {pendingTool && (
+        <ToolApprovalDialog
+          toolCall={pendingTool}
+          toolDefinition={orchestrator.getTool(pendingTool.toolName)}
+          onApprove={handleApprove}
+          onReject={handleReject}
+          showArguments={true}
+          showDescription={true}
+          showRiskLevel={true}
+        />
+      )}
+    </div>
+  )
+}
+```
+
+---
+
+## Built-in Approval Options
+
+### 1. Tool-Level Approval Settings
+
+Control approval at the tool definition level:
+
+```typescript
+import type { ToolDefinition } from '@clarity-chat/react'
+
+// Safe tool: No approval needed
+const calculatorTool: ToolDefinition = {
+  name: 'calculator',
+  description: 'Perform mathematical calculations',
+  parameters: { /* ... */ },
+  handler: async ({ expression }) => {
+    return { result: safeEval(expression) }
+  },
+  requiresApproval: false,  // ✅ Auto-approve (safe operation)
+}
+
+// Dangerous tool: Always require approval
+const deleteDatabaseTool: ToolDefinition = {
+  name: 'delete_records',
+  description: 'Delete records from database',
+  parameters: { /* ... */ },
+  handler: async ({ table, condition }) => {
+    return await db.delete(table, condition)
+  },
+  requiresApproval: true,  // ✅ Require approval (destructive)
+}
+
+// External API tool: Approval recommended
+const sendEmailTool: ToolDefinition = {
+  name: 'send_email',
+  description: 'Send email to recipient',
+  parameters: { /* ... */ },
+  handler: async ({ to, subject, body }) => {
+    return await emailService.send({ to, subject, body })
+  },
+  requiresApproval: true,  // ✅ Require approval (external action)
+}
+```
+
+### 2. Orchestrator-Level Defaults
+
+Set global approval behavior:
+
+```typescript
+// Development: Auto-approve all tools
+const devOrchestrator = new ToolOrchestrator({
+  autoApprove: true,  // ⚠️ Development only!
+  tools: [...tools],
+})
+
+// Production: Manual approval required
+const prodOrchestrator = new ToolOrchestrator({
+  autoApprove: false,  // ✅ Production default
+  tools: [...tools],
+})
+
+// Hybrid: Auto-approve safe tools only
+const hybridOrchestrator = new ToolOrchestrator({
+  autoApprove: false,
+  tools: [
+    { ...calculatorTool, requiresApproval: false },  // Auto-approve
+    { ...emailTool, requiresApproval: true },        // Manual approval
+  ],
+})
+```
+
+### 3. Risk-Based Approval
+
+Automatically determine approval based on risk level:
+
+```typescript
+import { determineRiskLevel } from '@clarity-chat/react'
+
+function shouldRequireApproval(tool: ToolDefinition, args: any): boolean {
+  const riskLevel = determineRiskLevel({ toolName: tool.name, args }, tool)
+
+  switch (riskLevel) {
+    case 'low':
+      return false  // Auto-approve safe operations
+    case 'medium':
+      return true   // Require approval for medium risk
+    case 'high':
+      return true   // Always require approval for high risk
+    default:
+      return true   // Default to safe (require approval)
+  }
+}
+
+// Usage
+const orchestrator = new ToolOrchestrator({
+  autoApprove: false,
+  tools: tools.map(tool => ({
+    ...tool,
+    requiresApproval: shouldRequireApproval(tool, {}),
+  })),
+})
+```
+
+---
+
+## Custom Approval Implementation
+
+### 1. Custom Approval UI
+
+Build your own approval interface:
+
+```typescript
+'use client'
+
+import { useState } from 'react'
+import type { ToolCallRecord, ToolDefinition } from '@clarity-chat/react'
+
+interface CustomApprovalProps {
+  toolCall: ToolCallRecord
+  toolDefinition: ToolDefinition
+  onApprove: (callId: string, metadata?: any) => void
+  onReject: (callId: string, reason: string, metadata?: any) => void
+}
+
+export function CustomApprovalModal({
+  toolCall,
+  toolDefinition,
+  onApprove,
+  onReject,
+}: CustomApprovalProps) {
+  const [reason, setReason] = useState('')
+  const [additionalContext, setAdditionalContext] = useState('')
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+      <div className="w-full max-w-2xl rounded-xl bg-white p-6 shadow-xl dark:bg-gray-900">
+        {/* Header */}
+        <div className="mb-4 flex items-center justify-between">
+          <h2 className="text-xl font-bold">Approve Tool Execution?</h2>
+          <span className="rounded-full bg-yellow-100 px-3 py-1 text-xs font-semibold text-yellow-800">
+            Requires Approval
+          </span>
+        </div>
+
+        {/* Tool Information */}
+        <div className="mb-6 space-y-4">
+          <div>
+            <h3 className="mb-1 text-sm font-medium text-gray-500">Tool</h3>
+            <p className="font-mono text-lg">{toolCall.toolName}</p>
+          </div>
+
+          <div>
+            <h3 className="mb-1 text-sm font-medium text-gray-500">Description</h3>
+            <p className="text-sm text-gray-700 dark:text-gray-300">
+              {toolDefinition.description}
+            </p>
+          </div>
+
+          <div>
+            <h3 className="mb-1 text-sm font-medium text-gray-500">Arguments</h3>
+            <pre className="overflow-x-auto rounded-lg bg-gray-100 p-3 text-sm dark:bg-gray-800">
+              {JSON.stringify(toolCall.args, null, 2)}
+            </pre>
+          </div>
+
+          {/* Risk Assessment */}
+          <div className="rounded-lg border-l-4 border-yellow-500 bg-yellow-50 p-4 dark:bg-yellow-900/20">
+            <h4 className="mb-2 font-semibold text-yellow-800 dark:text-yellow-400">
+              Risk Assessment
+            </h4>
+            <ul className="space-y-1 text-sm text-yellow-700 dark:text-yellow-300">
+              <li>• This tool will make external API calls</li>
+              <li>• Operation is not reversible</li>
+              <li>• May incur costs or rate limits</li>
+            </ul>
+          </div>
+
+          {/* Additional Context */}
+          <div>
+            <label className="mb-1 block text-sm font-medium text-gray-500">
+              Add Context (Optional)
+            </label>
+            <textarea
+              value={additionalContext}
+              onChange={(e) => setAdditionalContext(e.target.value)}
+              placeholder="Add notes about this approval decision..."
+              className="w-full rounded-lg border border-gray-300 p-2 text-sm dark:border-gray-700 dark:bg-gray-800"
+              rows={3}
+            />
+          </div>
+        </div>
+
+        {/* Actions */}
+        <div className="flex gap-3">
+          <button
+            onClick={() => onApprove(toolCall.id, { context: additionalContext })}
+            className="flex-1 rounded-lg bg-green-500 px-4 py-3 font-medium text-white hover:bg-green-600"
+          >
+            ✓ Approve
+          </button>
+          <button
+            onClick={() => {
+              const rejectionReason = reason || 'User declined'
+              onReject(toolCall.id, rejectionReason, { context: additionalContext })
+            }}
+            className="flex-1 rounded-lg bg-red-500 px-4 py-3 font-medium text-white hover:bg-red-600"
+          >
+            ✗ Reject
+          </button>
+        </div>
+
+        {/* Rejection Reason */}
+        {reason && (
+          <div className="mt-3">
+            <input
+              type="text"
+              value={reason}
+              onChange={(e) => setReason(e.target.value)}
+              placeholder="Reason for rejection (optional)"
+              className="w-full rounded-lg border border-gray-300 p-2 text-sm dark:border-gray-700 dark:bg-gray-800"
+            />
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}
+```
+
+### 2. Multi-Step Approval
+
+Implement multi-step approval for high-risk operations:
+
+```typescript
+import { useState } from 'react'
+
+interface ApprovalStep {
+  id: string
+  title: string
+  description: string
+  type: 'confirmation' | 'input' | 'review'
+  required: boolean
+}
+
+export function MultiStepApproval({
+  toolCall,
+  toolDefinition,
+  onApprove,
+  onReject,
+}: CustomApprovalProps) {
+  const [currentStep, setCurrentStep] = useState(0)
+  const [confirmations, setConfirmations] = useState<Record<string, boolean>>({})
+  const [inputValues, setInputValues] = useState<Record<string, string>>({})
+
+  const steps: ApprovalStep[] = [
+    {
+      id: 'review',
+      title: 'Review Tool Details',
+      description: 'Review what this tool will do',
+      type: 'review',
+      required: true,
+    },
+    {
+      id: 'confirm-risk',
+      title: 'Acknowledge Risks',
+      description: 'I understand this operation cannot be undone',
+      type: 'confirmation',
+      required: true,
+    },
+    {
+      id: 'confirm-cost',
+      title: 'Confirm Costs',
+      description: 'I acknowledge this may incur API costs',
+      type: 'confirmation',
+      required: true,
+    },
+    {
+      id: 'reason',
+      title: 'Provide Reason',
+      description: 'Why are you approving this operation?',
+      type: 'input',
+      required: true,
+    },
+  ]
+
+  const canProceed = () => {
+    const step = steps[currentStep]
+    if (!step) return false
+
+    if (step.type === 'confirmation') {
+      return confirmations[step.id] === true
+    }
+
+    if (step.type === 'input') {
+      return (inputValues[step.id] || '').trim().length > 0
+    }
+
+    return true
+  }
+
+  const handleNext = () => {
+    if (currentStep < steps.length - 1) {
+      setCurrentStep(currentStep + 1)
+    } else {
+      // All steps completed, approve
+      onApprove(toolCall.id, {
+        confirmations,
+        inputValues,
+        stepsCompleted: steps.length,
+      })
+    }
+  }
+
+  const step = steps[currentStep]
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+      <div className="w-full max-w-2xl rounded-xl bg-white p-6 shadow-xl dark:bg-gray-900">
+        {/* Progress */}
+        <div className="mb-6">
+          <div className="mb-2 flex items-center justify-between text-sm">
+            <span className="font-medium">
+              Step {currentStep + 1} of {steps.length}
+            </span>
+            <span className="text-gray-500">
+              {Math.round(((currentStep + 1) / steps.length) * 100)}% Complete
+            </span>
+          </div>
+          <div className="h-2 overflow-hidden rounded-full bg-gray-200">
+            <div
+              className="h-full bg-blue-500 transition-all duration-300"
+              style={{ width: `${((currentStep + 1) / steps.length) * 100}%` }}
+            />
+          </div>
+        </div>
+
+        {/* Step Content */}
+        <div className="mb-6">
+          <h3 className="mb-2 text-lg font-bold">{step.title}</h3>
+          <p className="mb-4 text-sm text-gray-600 dark:text-gray-400">
+            {step.description}
+          </p>
+
+          {step.type === 'review' && (
+            <div className="rounded-lg border border-gray-200 p-4 dark:border-gray-700">
+              <div className="mb-3">
+                <h4 className="mb-1 text-sm font-medium text-gray-500">Tool</h4>
+                <p className="font-mono">{toolCall.toolName}</p>
+              </div>
+              <div className="mb-3">
+                <h4 className="mb-1 text-sm font-medium text-gray-500">Arguments</h4>
+                <pre className="overflow-x-auto rounded bg-gray-100 p-2 text-xs dark:bg-gray-800">
+                  {JSON.stringify(toolCall.args, null, 2)}
+                </pre>
+              </div>
+              <div>
+                <h4 className="mb-1 text-sm font-medium text-gray-500">Description</h4>
+                <p className="text-sm text-gray-700 dark:text-gray-300">
+                  {toolDefinition.description}
+                </p>
+              </div>
+            </div>
+          )}
+
+          {step.type === 'confirmation' && (
+            <label className="flex cursor-pointer items-center gap-3 rounded-lg border border-gray-200 p-4 hover:bg-gray-50 dark:border-gray-700 dark:hover:bg-gray-800">
+              <input
+                type="checkbox"
+                checked={confirmations[step.id] || false}
+                onChange={(e) =>
+                  setConfirmations({ ...confirmations, [step.id]: e.target.checked })
+                }
+                className="h-5 w-5"
+              />
+              <span className="font-medium">{step.description}</span>
+            </label>
+          )}
+
+          {step.type === 'input' && (
+            <textarea
+              value={inputValues[step.id] || ''}
+              onChange={(e) =>
+                setInputValues({ ...inputValues, [step.id]: e.target.value })
+              }
+              placeholder="Enter your reason..."
+              className="w-full rounded-lg border border-gray-300 p-3 dark:border-gray-700 dark:bg-gray-800"
+              rows={4}
+            />
+          )}
+        </div>
+
+        {/* Actions */}
+        <div className="flex gap-3">
+          {currentStep > 0 && (
+            <button
+              onClick={() => setCurrentStep(currentStep - 1)}
+              className="rounded-lg border border-gray-300 px-4 py-2 font-medium hover:bg-gray-50 dark:border-gray-700 dark:hover:bg-gray-800"
+            >
+              Back
+            </button>
+          )}
+          <button
+            onClick={handleNext}
+            disabled={!canProceed()}
+            className="flex-1 rounded-lg bg-blue-500 px-4 py-2 font-medium text-white hover:bg-blue-600 disabled:opacity-50"
+          >
+            {currentStep < steps.length - 1 ? 'Next' : 'Approve'}
+          </button>
+          <button
+            onClick={() => onReject(toolCall.id, 'User cancelled approval process')}
+            className="rounded-lg border border-red-300 px-4 py-2 font-medium text-red-600 hover:bg-red-50 dark:border-red-700 dark:text-red-400 dark:hover:bg-red-900/20"
+          >
+            Cancel
+          </button>
+        </div>
+      </div>
+    </div>
+  )
+}
+```
+
+### 3. Approval Queue Management
+
+Handle multiple pending approvals:
+
+```typescript
+'use client'
+
+import { useState, useEffect } from 'react'
+import type { ToolCallRecord } from '@clarity-chat/react'
+
+export function ApprovalQueue({ orchestrator }: { orchestrator: ToolOrchestrator }) {
+  const [queue, setQueue] = useState<ToolCallRecord[]>([])
+  const [currentIndex, setCurrentIndex] = useState(0)
+
+  useEffect(() => {
+    const unsubscribe = orchestrator.lifecycle.on('tool_pending_approval', (event) => {
+      setQueue((prev) => [...prev, event.call])
+    })
+    return unsubscribe
+  }, [orchestrator])
+
+  const handleApprove = async (callId: string) => {
+    orchestrator.approveTool(callId, 'user')
+    await orchestrator.executeApprovedTool(callId)
+    removeFromQueue(callId)
+  }
+
+  const handleReject = (callId: string, reason: string) => {
+    orchestrator.rejectTool(callId, reason, 'user')
+    removeFromQueue(callId)
+  }
+
+  const handleApproveAll = async () => {
+    for (const call of queue) {
+      orchestrator.approveTool(call.id, 'user')
+      await orchestrator.executeApprovedTool(call.id)
+    }
+    setQueue([])
+    setCurrentIndex(0)
+  }
+
+  const handleRejectAll = () => {
+    for (const call of queue) {
+      orchestrator.rejectTool(call.id, 'User rejected all pending tools', 'user')
+    }
+    setQueue([])
+    setCurrentIndex(0)
+  }
+
+  const removeFromQueue = (callId: string) => {
+    setQueue((prev) => {
+      const filtered = prev.filter((c) => c.id !== callId)
+      if (currentIndex >= filtered.length && filtered.length > 0) {
+        setCurrentIndex(filtered.length - 1)
+      }
+      return filtered
+    })
+  }
+
+  if (queue.length === 0) {
+    return null
+  }
+
+  const currentTool = queue[currentIndex]
+
+  return (
+    <div className="fixed bottom-4 right-4 w-96 rounded-xl border border-gray-200 bg-white p-4 shadow-lg dark:border-gray-700 dark:bg-gray-900">
+      {/* Queue Header */}
+      <div className="mb-3 flex items-center justify-between">
+        <h3 className="font-semibold">Pending Approvals</h3>
+        <span className="rounded-full bg-yellow-100 px-2 py-1 text-xs font-semibold text-yellow-800">
+          {queue.length} pending
+        </span>
+      </div>
+
+      {/* Current Tool */}
+      {currentTool && (
+        <div className="mb-3 rounded-lg border border-gray-200 p-3 dark:border-gray-700">
+          <div className="mb-2 flex items-center justify-between">
+            <span className="font-mono text-sm">{currentTool.toolName}</span>
+            <span className="text-xs text-gray-500">
+              {currentIndex + 1} of {queue.length}
+            </span>
+          </div>
+          <pre className="overflow-x-auto rounded bg-gray-100 p-2 text-xs dark:bg-gray-800">
+            {JSON.stringify(currentTool.args, null, 2)}
+          </pre>
+        </div>
+      )}
+
+      {/* Navigation */}
+      {queue.length > 1 && (
+        <div className="mb-3 flex gap-2">
+          <button
+            onClick={() => setCurrentIndex(Math.max(0, currentIndex - 1))}
+            disabled={currentIndex === 0}
+            className="flex-1 rounded bg-gray-100 py-1 text-sm disabled:opacity-50 dark:bg-gray-800"
+          >
+            Previous
+          </button>
+          <button
+            onClick={() => setCurrentIndex(Math.min(queue.length - 1, currentIndex + 1))}
+            disabled={currentIndex === queue.length - 1}
+            className="flex-1 rounded bg-gray-100 py-1 text-sm disabled:opacity-50 dark:bg-gray-800"
+          >
+            Next
+          </button>
+        </div>
+      )}
+
+      {/* Actions */}
+      <div className="space-y-2">
+        <div className="flex gap-2">
+          <button
+            onClick={() => handleApprove(currentTool.id)}
+            className="flex-1 rounded bg-green-500 py-2 text-sm font-medium text-white hover:bg-green-600"
+          >
+            Approve
+          </button>
+          <button
+            onClick={() => handleReject(currentTool.id, 'User declined')}
+            className="flex-1 rounded bg-red-500 py-2 text-sm font-medium text-white hover:bg-red-600"
+          >
+            Reject
+          </button>
+        </div>
+
+        {queue.length > 1 && (
+          <div className="flex gap-2">
+            <button
+              onClick={handleApproveAll}
+              className="flex-1 rounded border border-green-300 py-1 text-sm font-medium text-green-600 hover:bg-green-50 dark:border-green-700 dark:text-green-400"
+            >
+              Approve All
+            </button>
+            <button
+              onClick={handleRejectAll}
+              className="flex-1 rounded border border-red-300 py-1 text-sm font-medium text-red-600 hover:bg-red-50 dark:border-red-700 dark:text-red-400"
+            >
+              Reject All
+            </button>
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}
+```
+
+---
+
+## User Permission Integration
+
+### 1. Role-Based Approval
+
+Integrate with user roles and permissions:
+
+```typescript
+interface UserPermissions {
+  userId: string
+  role: 'viewer' | 'editor' | 'admin'
+  canApproveTools: boolean
+  canApproveHighRisk: boolean
+  approvedToolCategories: string[]
+}
+
+function canUserApproveTool(
+  user: UserPermissions,
+  tool: ToolDefinition,
+  riskLevel: 'low' | 'medium' | 'high'
+): { allowed: boolean; reason?: string } {
+  // Check if user can approve any tools
+  if (!user.canApproveTools) {
+    return { allowed: false, reason: 'User does not have approval permissions' }
+  }
+
+  // Check high-risk permission
+  if (riskLevel === 'high' && !user.canApproveHighRisk) {
+    return { allowed: false, reason: 'User cannot approve high-risk tools' }
+  }
+
+  // Check tool category permissions
+  if (tool.category && !user.approvedToolCategories.includes(tool.category)) {
+    return {
+      allowed: false,
+      reason: `User cannot approve tools in category: ${tool.category}`,
+    }
+  }
+
+  return { allowed: true }
+}
+
+// Usage in approval flow
+export function PermissionAwareApproval({
+  user,
+  toolCall,
+  toolDefinition,
+  onApprove,
+  onReject,
+}: Props) {
+  const riskLevel = determineRiskLevel(toolCall, toolDefinition)
+  const permission = canUserApproveTool(user, toolDefinition, riskLevel)
+
+  if (!permission.allowed) {
+    return (
+      <div className="rounded-lg border border-red-300 bg-red-50 p-4">
+        <p className="font-semibold text-red-800">Permission Denied</p>
+        <p className="text-sm text-red-600">{permission.reason}</p>
+        <button
+          onClick={() => onReject(toolCall.id, permission.reason!)}
+          className="mt-3 rounded bg-red-600 px-4 py-2 text-white"
+        >
+          Acknowledge
+        </button>
+      </div>
+    )
+  }
+
+  return <CustomApprovalModal {...props} />
+}
+```
+
+### 2. Multi-User Approval
+
+Require approval from multiple users for sensitive operations:
+
+```typescript
+interface ApprovalRecord {
+  callId: string
+  toolName: string
+  requiredApprovers: number
+  approvals: Array<{ userId: string; timestamp: Date; reason?: string }>
+  rejections: Array<{ userId: string; timestamp: Date; reason: string }>
+}
+
+export function MultiUserApprovalManager() {
+  const [pendingApprovals, setPendingApprovals] = useState<Map<string, ApprovalRecord>>(
+    new Map()
+  )
+
+  const handleApprove = (callId: string, userId: string, reason?: string) => {
+    setPendingApprovals((prev) => {
+      const updated = new Map(prev)
+      const record = updated.get(callId)
+
+      if (!record) return prev
+
+      record.approvals.push({ userId, timestamp: new Date(), reason })
+
+      // Check if we have enough approvals
+      if (record.approvals.length >= record.requiredApprovers) {
+        // Execute tool
+        executeApprovedTool(callId)
+        updated.delete(callId)
+      } else {
+        updated.set(callId, record)
+      }
+
+      return updated
+    })
+  }
+
+  const handleReject = (callId: string, userId: string, reason: string) => {
+    setPendingApprovals((prev) => {
+      const updated = new Map(prev)
+      const record = updated.get(callId)
+
+      if (!record) return prev
+
+      record.rejections.push({ userId, timestamp: new Date(), reason })
+
+      // Single rejection cancels the approval
+      rejectTool(callId, reason)
+      updated.delete(callId)
+
+      return updated
+    })
+  }
+
+  return (
+    <div>
+      {Array.from(pendingApprovals.values()).map((record) => (
+        <div key={record.callId} className="rounded-lg border p-4">
+          <h3 className="font-semibold">{record.toolName}</h3>
+          <p className="text-sm text-gray-600">
+            Approvals: {record.approvals.length} / {record.requiredApprovers}
+          </p>
+
+          {/* Show who has approved */}
+          <div className="mt-2">
+            {record.approvals.map((approval, i) => (
+              <div key={i} className="text-sm">
+                ✓ {approval.userId} approved
+              </div>
+            ))}
+          </div>
+
+          <div className="mt-3 flex gap-2">
+            <button
+              onClick={() => handleApprove(record.callId, currentUserId)}
+              className="rounded bg-green-500 px-4 py-2 text-white"
+            >
+              Approve
+            </button>
+            <button
+              onClick={() => handleReject(record.callId, currentUserId, 'User declined')}
+              className="rounded bg-red-500 px-4 py-2 text-white"
+            >
+              Reject
+            </button>
+          </div>
+        </div>
+      ))}
+    </div>
+  )
+}
+```
+
+---
+
+## Conditional Approval Rules
+
+### 1. Time-Based Rules
+
+Auto-approve tools during specific time windows:
+
+```typescript
+interface TimeBasedRule {
+  toolName: string
+  allowedHours: { start: number; end: number } // 0-23
+  allowedDays: number[] // 0-6 (Sunday-Saturday)
+  timezone: string
+}
+
+function checkTimeBasedRule(rule: TimeBasedRule): boolean {
+  const now = new Date()
+  const hour = now.getHours()
+  const day = now.getDay()
+
+  // Check if current hour is within allowed range
+  const hourAllowed = hour >= rule.allowedHours.start && hour < rule.allowedHours.end
+
+  // Check if current day is allowed
+  const dayAllowed = rule.allowedDays.includes(day)
+
+  return hourAllowed && dayAllowed
+}
+
+// Usage
+const rules: TimeBasedRule[] = [
+  {
+    toolName: 'send_email',
+    allowedHours: { start: 9, end: 17 }, // Business hours
+    allowedDays: [1, 2, 3, 4, 5], // Monday-Friday
+    timezone: 'America/Los_Angeles',
+  },
+]
+
+function shouldAutoApprove(toolCall: ToolCallRecord): boolean {
+  const rule = rules.find((r) => r.toolName === toolCall.toolName)
+  return rule ? checkTimeBasedRule(rule) : false
+}
+```
+
+### 2. Context-Based Rules
+
+Approve based on conversation context:
+
+```typescript
+interface ContextRule {
+  toolName: string
+  requiredContext: {
+    userIntentConfirmed?: boolean
+    dataValidated?: boolean
+    risksAcknowledged?: boolean
+  }
+}
+
+function checkContextRule(
+  rule: ContextRule,
+  conversationContext: any
+): { allowed: boolean; missingContext: string[] } {
+  const missing: string[] = []
+
+  if (rule.requiredContext.userIntentConfirmed && !conversationContext.intentConfirmed) {
+    missing.push('User intent not confirmed')
+  }
+
+  if (rule.requiredContext.dataValidated && !conversationContext.dataValidated) {
+    missing.push('Data not validated')
+  }
+
+  if (rule.requiredContext.risksAcknowledged && !conversationContext.risksAcknowledged) {
+    missing.push('Risks not acknowledged')
+  }
+
+  return {
+    allowed: missing.length === 0,
+    missingContext: missing,
+  }
+}
+```
+
+### 3. Data-Based Rules
+
+Auto-approve based on argument values:
+
+```typescript
+interface DataRule {
+  toolName: string
+  conditions: Array<{
+    field: string
+    operator: '==' | '!=' | '<' | '>' | '<=' | '>=' | 'in' | 'not_in'
+    value: any
+  }>
+}
+
+function checkDataRule(rule: DataRule, args: any): boolean {
+  return rule.conditions.every((condition) => {
+    const fieldValue = args[condition.field]
+
+    switch (condition.operator) {
+      case '==':
+        return fieldValue === condition.value
+      case '!=':
+        return fieldValue !== condition.value
+      case '<':
+        return fieldValue < condition.value
+      case '>':
+        return fieldValue > condition.value
+      case '<=':
+        return fieldValue <= condition.value
+      case '>=':
+        return fieldValue >= condition.value
+      case 'in':
+        return Array.isArray(condition.value) && condition.value.includes(fieldValue)
+      case 'not_in':
+        return Array.isArray(condition.value) && !condition.value.includes(fieldValue)
+      default:
+        return false
+    }
+  })
+}
+
+// Example: Auto-approve database queries with small limits
+const dataRules: DataRule[] = [
+  {
+    toolName: 'query_database',
+    conditions: [
+      { field: 'limit', operator: '<=', value: 100 },
+      { field: 'operation', operator: '==', value: 'SELECT' },
+    ],
+  },
+]
+```
+
+### 4. Combined Rule Engine
+
+Combine multiple rule types:
+
+```typescript
+interface ApprovalRule {
+  id: string
+  name: string
+  toolName: string
+  priority: number
+  conditions: {
+    time?: TimeBasedRule
+    context?: ContextRule
+    data?: DataRule
+    user?: { roles: string[]; permissions: string[] }
+  }
+  action: 'auto_approve' | 'require_approval' | 'reject'
+}
+
+function evaluateRules(
+  rules: ApprovalRule[],
+  toolCall: ToolCallRecord,
+  user: UserPermissions,
+  context: any
+): { action: string; matchedRule?: ApprovalRule; reason?: string } {
+  // Sort by priority (higher first)
+  const sortedRules = [...rules].sort((a, b) => b.priority - a.priority)
+
+  for (const rule of sortedRules) {
+    if (rule.toolName !== toolCall.toolName) continue
+
+    let matches = true
+
+    // Check time-based condition
+    if (rule.conditions.time && !checkTimeBasedRule(rule.conditions.time)) {
+      matches = false
+    }
+
+    // Check context-based condition
+    if (rule.conditions.context) {
+      const contextCheck = checkContextRule(rule.conditions.context, context)
+      if (!contextCheck.allowed) {
+        matches = false
+      }
+    }
+
+    // Check data-based condition
+    if (rule.conditions.data && !checkDataRule(rule.conditions.data, toolCall.args)) {
+      matches = false
+    }
+
+    // Check user permissions
+    if (rule.conditions.user) {
+      const hasRole = rule.conditions.user.roles.includes(user.role)
+      if (!hasRole) {
+        matches = false
+      }
+    }
+
+    if (matches) {
+      return {
+        action: rule.action,
+        matchedRule: rule,
+        reason: `Matched rule: ${rule.name}`,
+      }
+    }
+  }
+
+  // Default: require approval
+  return { action: 'require_approval', reason: 'No matching rules, default to manual approval' }
+}
+```
+
+---
+
+## Audit Logging
+
+### 1. Basic Audit Trail
+
+Track all approval decisions:
+
+```typescript
+interface AuditLogEntry {
+  id: string
+  timestamp: Date
+  toolName: string
+  toolCallId: string
+  args: any
+  decision: 'approved' | 'rejected' | 'auto_approved'
+  approver: string
+  reason?: string
+  metadata?: any
+}
+
+export class ApprovalAuditLogger {
+  private logs: AuditLogEntry[] = []
+
+  logApproval(entry: Omit<AuditLogEntry, 'id' | 'timestamp'>): void {
+    const auditEntry: AuditLogEntry = {
+      id: crypto.randomUUID(),
+      timestamp: new Date(),
+      ...entry,
+    }
+
+    this.logs.push(auditEntry)
+
+    // Also send to backend for persistence
+    this.persistToBackend(auditEntry)
+
+    console.log('[AUDIT]', auditEntry)
+  }
+
+  private async persistToBackend(entry: AuditLogEntry): Promise<void> {
+    try {
+      await fetch('/api/audit-log', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(entry),
+      })
+    } catch (error) {
+      console.error('[AUDIT] Failed to persist log:', error)
+    }
+  }
+
+  getLogs(filters?: {
+    toolName?: string
+    approver?: string
+    decision?: string
+    since?: Date
+  }): AuditLogEntry[] {
+    let filtered = this.logs
+
+    if (filters?.toolName) {
+      filtered = filtered.filter((log) => log.toolName === filters.toolName)
+    }
+
+    if (filters?.approver) {
+      filtered = filtered.filter((log) => log.approver === filters.approver)
+    }
+
+    if (filters?.decision) {
+      filtered = filtered.filter((log) => log.decision === filters.decision)
+    }
+
+    if (filters?.since) {
+      filtered = filtered.filter((log) => log.timestamp >= filters.since!)
+    }
+
+    return filtered
+  }
+
+  exportLogs(format: 'json' | 'csv'): string {
+    if (format === 'json') {
+      return JSON.stringify(this.logs, null, 2)
+    }
+
+    // CSV export
+    const headers = ['ID', 'Timestamp', 'Tool', 'Decision', 'Approver', 'Reason']
+    const rows = this.logs.map((log) => [
+      log.id,
+      log.timestamp.toISOString(),
+      log.toolName,
+      log.decision,
+      log.approver,
+      log.reason || '',
+    ])
+
+    return [headers, ...rows].map((row) => row.join(',')).join('\n')
+  }
+}
+
+// Usage
+const auditLogger = new ApprovalAuditLogger()
+
+orchestrator.lifecycle.on('tool_approved', (event) => {
+  auditLogger.logApproval({
+    toolName: event.call.toolName,
+    toolCallId: event.call.id,
+    args: event.call.args,
+    decision: 'approved',
+    approver: event.approvedBy || 'system',
+    reason: 'User approved via UI',
+  })
+})
+
+orchestrator.lifecycle.on('tool_rejected', (event) => {
+  auditLogger.logApproval({
+    toolName: event.call.toolName,
+    toolCallId: event.call.id,
+    args: event.call.args,
+    decision: 'rejected',
+    approver: event.rejectedBy || 'system',
+    reason: event.call.rejectionReason,
+  })
+})
+```
+
+### 2. Compliance Reporting
+
+Generate compliance reports:
+
+```typescript
+interface ComplianceReport {
+  period: { start: Date; end: Date }
+  totalApprovals: number
+  totalRejections: number
+  autoApprovedCount: number
+  approvalsByTool: Record<string, number>
+  approvalsByUser: Record<string, number>
+  averageApprovalTime: number
+  complianceRate: number
+}
+
+export class ComplianceReporter {
+  constructor(private auditLogger: ApprovalAuditLogger) {}
+
+  generateReport(start: Date, end: Date): ComplianceReport {
+    const logs = this.auditLogger.getLogs({ since: start }).filter((log) => log.timestamp <= end)
+
+    const approvals = logs.filter((l) => l.decision === 'approved' || l.decision === 'auto_approved')
+    const rejections = logs.filter((l) => l.decision === 'rejected')
+    const autoApproved = logs.filter((l) => l.decision === 'auto_approved')
+
+    const approvalsByTool: Record<string, number> = {}
+    const approvalsByUser: Record<string, number> = {}
+
+    logs.forEach((log) => {
+      approvalsByTool[log.toolName] = (approvalsByTool[log.toolName] || 0) + 1
+      approvalsByUser[log.approver] = (approvalsByUser[log.approver] || 0) + 1
+    })
+
+    return {
+      period: { start, end },
+      totalApprovals: approvals.length,
+      totalRejections: rejections.length,
+      autoApprovedCount: autoApproved.length,
+      approvalsByTool,
+      approvalsByUser,
+      averageApprovalTime: 0, // Calculate from timestamps if tracked
+      complianceRate: logs.length > 0 ? (approvals.length / logs.length) * 100 : 0,
+    }
+  }
+
+  exportReport(report: ComplianceReport, format: 'pdf' | 'html' | 'json'): string {
+    // Implementation depends on format
+    if (format === 'json') {
+      return JSON.stringify(report, null, 2)
+    }
+
+    if (format === 'html') {
+      return `
+        <html>
+          <head><title>Compliance Report</title></head>
+          <body>
+            <h1>Tool Approval Compliance Report</h1>
+            <p>Period: ${report.period.start.toLocaleDateString()} - ${report.period.end.toLocaleDateString()}</p>
+            <h2>Summary</h2>
+            <ul>
+              <li>Total Approvals: ${report.totalApprovals}</li>
+              <li>Total Rejections: ${report.totalRejections}</li>
+              <li>Auto-Approved: ${report.autoApprovedCount}</li>
+              <li>Compliance Rate: ${report.complianceRate.toFixed(2)}%</li>
+            </ul>
+            <!-- More details -->
+          </body>
+        </html>
+      `
+    }
+
+    return ''
+  }
+}
+```
+
+---
+
+## Code Examples for Common Patterns
+
+### Pattern 1: Simple Approval Dialog
+
+```typescript
+// Minimal approval implementation
+const [pendingTool, setPendingTool] = useState<ToolCallRecord | null>(null)
+
+useEffect(() => {
+  return orchestrator.lifecycle.on('tool_pending_approval', (e) => setPendingTool(e.call))
+}, [])
+
+return pendingTool && (
+  <ToolApprovalDialog
+    toolCall={pendingTool}
+    toolDefinition={orchestrator.getTool(pendingTool.toolName)}
+    onApprove={(id) => {
+      orchestrator.approveTool(id, 'user')
+      orchestrator.executeApprovedTool(id)
+      setPendingTool(null)
+    }}
+    onReject={(id, reason) => {
+      orchestrator.rejectTool(id, reason, 'user')
+      setPendingTool(null)
+    }}
+  />
+)
+```
+
+### Pattern 2: Batch Approval
+
+```typescript
+// Approve multiple tools at once
+async function approveBatch(calls: ToolCallRecord[]) {
+  for (const call of calls) {
+    orchestrator.approveTool(call.id, 'user')
+  }
+
+  // Execute all approved tools in parallel
+  await Promise.all(calls.map((call) => orchestrator.executeApprovedTool(call.id)))
+}
+```
+
+### Pattern 3: Conditional Auto-Approve
+
+```typescript
+// Auto-approve safe tools, require approval for risky ones
+orchestrator.lifecycle.on('tool_pending_approval', async (event) => {
+  const { call, tool } = event
+
+  // Auto-approve calculators and read-only operations
+  if (tool.name === 'calculator' || tool.name.startsWith('get_')) {
+    orchestrator.approveTool(call.id, 'system')
+    await orchestrator.executeApprovedTool(call.id)
+    return
+  }
+
+  // Require manual approval for everything else
+  setPendingApprovals((prev) => [...prev, call])
+})
+```
+
+### Pattern 4: Approval with Timeout
+
+```typescript
+// Auto-reject if not approved within timeout
+const APPROVAL_TIMEOUT = 60000 // 60 seconds
+
+orchestrator.lifecycle.on('tool_pending_approval', (event) => {
+  const { call } = event
+
+  // Set timeout
+  const timeoutId = setTimeout(() => {
+    if (call.status === 'pending_approval') {
+      orchestrator.rejectTool(call.id, 'Approval timeout exceeded', 'system')
+    }
+  }, APPROVAL_TIMEOUT)
+
+  // Clear timeout if approved/rejected
+  const cleanupApproved = orchestrator.lifecycle.on('tool_approved', (e) => {
+    if (e.call.id === call.id) clearTimeout(timeoutId)
+  })
+
+  const cleanupRejected = orchestrator.lifecycle.on('tool_rejected', (e) => {
+    if (e.call.id === call.id) clearTimeout(timeoutId)
+  })
+})
+```
+
+---
+
+## Best Practices
+
+### 1. Security Best Practices
+
+**Always require approval in production:**
+
+```typescript
+// ✅ Good: Production-safe defaults
+const orchestrator = new ToolOrchestrator({
+  autoApprove: false,
+  defaultTimeout: 30000,
+  tools: [...tools],
+})
+
+// ❌ Bad: Dangerous in production
+const orchestrator = new ToolOrchestrator({
+  autoApprove: true, // Will throw error in production
+})
+```
+
+**Validate user permissions:**
+
+```typescript
+// ✅ Good: Check permissions before approval
+function handleApprove(callId: string) {
+  const permission = canUserApproveTool(currentUser, tool, riskLevel)
+
+  if (!permission.allowed) {
+    showError(permission.reason)
+    return
+  }
+
+  orchestrator.approveTool(callId, currentUser.id)
+}
+```
+
+**Log all approval decisions:**
+
+```typescript
+// ✅ Good: Comprehensive audit trail
+orchestrator.lifecycle.on('tool_approved', (event) => {
+  auditLogger.log({
+    action: 'tool_approved',
+    toolName: event.call.toolName,
+    args: event.call.args,
+    approver: event.approvedBy,
+    timestamp: new Date(),
+  })
+})
+```
+
+### 2. UX Best Practices
+
+**Show clear risk indicators:**
+
+```typescript
+// ✅ Good: Visual risk indicators
+<div className={cn(
+  'rounded-lg border-2 p-4',
+  riskLevel === 'high' && 'border-red-500 bg-red-50',
+  riskLevel === 'medium' && 'border-yellow-500 bg-yellow-50',
+  riskLevel === 'low' && 'border-green-500 bg-green-50'
+)}>
+  <span className="font-semibold">{tool.name}</span>
+  <span className="text-xs uppercase">{riskLevel} Risk</span>
+</div>
+```
+
+**Provide context for decisions:**
+
+```typescript
+// ✅ Good: Help users make informed decisions
+<div className="approval-context">
+  <h4>What will this do?</h4>
+  <p>{tool.description}</p>
+
+  <h4>Risks:</h4>
+  <ul>
+    <li>This action cannot be undone</li>
+    <li>May incur API costs</li>
+    <li>Will access external services</li>
+  </ul>
+
+  <h4>Arguments:</h4>
+  <pre>{JSON.stringify(args, null, 2)}</pre>
+</div>
+```
+
+**Allow undo for reversible operations:**
+
+```typescript
+// ✅ Good: Undo support
+interface UndoableOperation {
+  toolCallId: string
+  undoHandler: () => Promise<void>
+}
+
+const recentOperations: UndoableOperation[] = []
+
+function handleApprove(callId: string, undoHandler?: () => Promise<void>) {
+  orchestrator.approveTool(callId, 'user')
+
+  if (undoHandler) {
+    recentOperations.push({ toolCallId: callId, undoHandler })
+  }
+}
+```
+
+### 3. Performance Best Practices
+
+**Debounce approval requests:**
+
+```typescript
+// ✅ Good: Prevent UI spam
+const debouncedApprovalRequest = debounce((call: ToolCallRecord) => {
+  setPendingApprovals((prev) => [...prev, call])
+}, 300)
+
+orchestrator.lifecycle.on('tool_pending_approval', (event) => {
+  debouncedApprovalRequest(event.call)
+})
+```
+
+**Batch similar approvals:**
+
+```typescript
+// ✅ Good: Group similar approvals
+function groupApprovalsByTool(calls: ToolCallRecord[]): Map<string, ToolCallRecord[]> {
+  const groups = new Map<string, ToolCallRecord[]>()
+
+  calls.forEach((call) => {
+    const existing = groups.get(call.toolName) || []
+    groups.set(call.toolName, [...existing, call])
+  })
+
+  return groups
+}
+```
+
+**Cleanup expired approvals:**
+
+```typescript
+// ✅ Good: Remove stale approvals
+useEffect(() => {
+  const interval = setInterval(() => {
+    setPendingApprovals((prev) =>
+      prev.filter((call) => {
+        const age = Date.now() - call.createdAt.getTime()
+        return age < APPROVAL_TIMEOUT
+      })
+    )
+  }, 60000) // Check every minute
+
+  return () => clearInterval(interval)
+}, [])
+```
+
+---
+
+## Troubleshooting
+
+### Issue: Approvals not triggering
+
+**Symptoms:** `tool_pending_approval` event not firing
+
+**Solutions:**
+
+```typescript
+// Check 1: Ensure tool requires approval
+const tool: ToolDefinition = {
+  name: 'my_tool',
+  requiresApproval: true, // ✅ Must be true
+  // ...
+}
+
+// Check 2: Ensure orchestrator is not auto-approving
+const orchestrator = new ToolOrchestrator({
+  autoApprove: false, // ✅ Must be false
+})
+
+// Check 3: Listen for events correctly
+useEffect(() => {
+  const unsubscribe = orchestrator.lifecycle.on('tool_pending_approval', handler)
+  return unsubscribe // ✅ Important: cleanup
+}, [orchestrator])
+```
+
+### Issue: Multiple approval dialogs appearing
+
+**Symptoms:** Same tool approval shown multiple times
+
+**Solutions:**
+
+```typescript
+// Solution: Use Map to deduplicate
+const [pendingToolsMap, setPendingToolsMap] = useState<Map<string, ToolCallRecord>>(new Map())
+
+orchestrator.lifecycle.on('tool_pending_approval', (event) => {
+  setPendingToolsMap((prev) => {
+    const updated = new Map(prev)
+    updated.set(event.call.id, event.call)
+    return updated
+  })
+})
+```
+
+### Issue: Approved tool not executing
+
+**Symptoms:** Tool approved but `tool_executing` never fires
+
+**Solutions:**
+
+```typescript
+// Ensure you call executeApprovedTool after approving
+const handleApprove = async (callId: string) => {
+  orchestrator.approveTool(callId, 'user')
+  await orchestrator.executeApprovedTool(callId) // ✅ Must call this
+}
+```
+
+---
+
+## Next Steps
+
+- [Tool Calling Guide](/guides/tools) - Core tool calling concepts
+- [Tool Security Best Practices](/guides/tool-calling/security) - Secure tool implementations
+- [Tool Registry API](/reference/tools/registry) - Tool management APIs
+- [Audit Logging Guide](/guides/production-monitoring) - Production monitoring patterns
+
+---
+
+## Additional Resources
+
+- [ToolOrchestrator API](/reference/tools/orchestrator)
+- [ToolApprovalDialog Component](/reference/components/tool-approval-dialog)
+- [Tool Lifecycle Events](/reference/tools/lifecycle)
+- [OWASP LLM Top 10](https://owasp.org/www-project-top-10-for-large-language-model-applications/)

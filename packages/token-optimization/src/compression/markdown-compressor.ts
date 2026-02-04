@@ -7,7 +7,7 @@
  * @module markdown-compressor
  */
 
-import { ToonOptimizer } from '../formats/toon-optimizer'
+import { ToonOptimizer } from '../formats/toon-optimizer/index'
 
 /**
  * Compression level presets

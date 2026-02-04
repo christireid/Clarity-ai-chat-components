@@ -7,7 +7,7 @@
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { render, screen, waitFor } from '@testing-library/react'
-import { StreamingMessage } from '../streaming-message'
+import { StreamingMessage } from '../StreamingMessage'
 import type { ToolCall, Citation } from '../../../adapters/types'
 
 // Mock requestAnimationFrame and cancelAnimationFrame for testing
@@ -59,7 +59,8 @@ describe('StreamingMessage Animation Regression', () => {
         const timestamp = performance.now()
         timestamps.push(timestamp)
 
-        if (callCount < 10) { // Limit calls for test
+        if (callCount < 10) {
+          // Limit calls for test
           setTimeout(() => cb(timestamp), 16)
         }
 
@@ -75,9 +76,12 @@ describe('StreamingMessage Animation Regression', () => {
       )
 
       // Wait for animation frames
-      await waitFor(() => {
-        expect(callCount).toBeGreaterThan(5)
-      }, { timeout: 200 })
+      await waitFor(
+        () => {
+          expect(callCount).toBeGreaterThan(5)
+        },
+        { timeout: 200 }
+      )
 
       // Check timing consistency (allowing some variance)
       if (timestamps.length > 2) {
@@ -86,7 +90,8 @@ describe('StreamingMessage Animation Regression', () => {
           intervals.push(timestamps[i] - timestamps[i - 1])
         }
 
-        const avgInterval = intervals.reduce((a, b) => a + b, 0) / intervals.length
+        const avgInterval =
+          intervals.reduce((a, b) => a + b, 0) / intervals.length
 
         // Should be close to 16.67ms (60fps)
         expect(avgInterval).toBeGreaterThan(10) // Not too fast
@@ -128,9 +133,12 @@ describe('StreamingMessage Animation Regression', () => {
       )
 
       // Wait for content to be revealed
-      await waitFor(() => {
-        expect(screen.getByText(content)).toBeInTheDocument()
-      }, { timeout: expectedDuration + 500 })
+      await waitFor(
+        () => {
+          expect(screen.getByText(content)).toBeInTheDocument()
+        },
+        { timeout: expectedDuration + 500 }
+      )
 
       // Should complete within expected time range
       expect(mockRAF).toHaveBeenCalled()
@@ -270,7 +278,7 @@ describe('StreamingMessage Animation Regression', () => {
       let renderCount = 0
 
       const originalRender = StreamingMessage.prototype.render
-      StreamingMessage.prototype.render = function() {
+      StreamingMessage.prototype.render = function () {
         renderCount++
         return originalRender.call(this)
       }

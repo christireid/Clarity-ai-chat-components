@@ -94,7 +94,7 @@ export function useVectorStore({
       setError(error)
       storeRef.current = null
     }
-  }, [configKey])
+  }, [config, provider])
 
   React.useEffect(() => {
     createStoreInstance()

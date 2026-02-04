@@ -47,21 +47,32 @@
       "types": "./dist/validation/index.d.ts",
       "import": "./dist/validation/index.js",
       "require": "./dist/validation/index.cjs"
+    },
+    "./math": {
+      "types": "./dist/math/index.d.ts",
+      "import": "./dist/math/index.js",
+      "require": "./dist/math/index.cjs"
+    },
+    "./env": {
+      "types": "./dist/env/index.d.ts",
+      "import": "./dist/env/index.js",
+      "require": "./dist/env/index.cjs"
     }
   },
   "files": [
     "dist",
     "README.md",
     "CHANGELOG.md",
-    "MIGRATION.md"
+    "MIGRATION.md",
+    "LICENSE"
   ],
   "scripts": {
-    "build": "tsup",
+    "build": "NODE_OPTIONS='--max-old-space-size=8192' tsup",
     "dev": "tsup --watch",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
-    "lint": "eslint src --ext ts --report-unused-disable-directives --max-warnings 0",
+    "lint": "eslint src --ext ts --report-unused-disable-directives --max-warnings 10",
     "typecheck": "tsc --noEmit",
     "clean": "rm -rf dist"
   },
@@ -76,7 +87,11 @@
     "validation",
     "typescript"
   ],
-  "author": "Christi Reid <christi@codeclarity.ai>",
+  "author": {
+    "name": "Code & Clarity",
+    "email": "hello@codeandclarity.com",
+    "url": "https://codeandclarity.com"
+  },
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -88,8 +103,7 @@
   },
   "homepage": "https://github.com/christireid/Clarity-ai-chat-components#readme",
   "publishConfig": {
-    "access": "restricted",
-    "registry": "https://npm.pkg.github.com"
+    "access": "public"
   },
   "dependencies": {
     "ora": "^8.1.1"

@@ -4,8 +4,18 @@
  * Extracts text from Microsoft Word (.docx) files, preserving structure,
  * headings, lists, and tables. Works in both browser and Node.js.
  *
+ * @requires jszip - ZIP file parsing for .docx format (optional peer dependency)
+ * @installation npm install jszip
+ * @bundleImpact ~100KB (JSZip library)
+ * @fallback Returns error document with installation instructions if jszip is not installed
+ * @docs https://clarity-chat.dev/docs/document-loaders#docx-setup
+ *
  * @example
  * ```tsx
+ * // 1. Install jszip
+ * // npm install jszip
+ *
+ * // 2. Use loader
  * const loader = new DOCXLoader()
  * const docs = await loader.load(docxFile)
  *
@@ -16,9 +26,53 @@
  *   includeHeaders: true
  * })
  * ```
+ *
+ * @see https://clarity-chat.dev/docs/document-loaders#docx-loader
  */
 
 import type { Document, DocumentLoader, DocumentLoadOptions } from './types'
+
+// Lazy-loaded dependencies
+let JSZip: any = null
+let jsZipLoadError: Error | null = null
+
+/**
+ * Attempt to load JSZip as a peer dependency
+ */
+async function loadJSZip(): Promise<any> {
+  if (JSZip !== null) return JSZip
+  if (jsZipLoadError !== null) throw jsZipLoadError
+
+  try {
+    // Try dynamic import for Node.js/bundler environments
+    const module = await import('jszip')
+    // Handle both ESM default exports and CommonJS
+    JSZip = (module as any).default || module
+    return JSZip
+  } catch (error) {
+    // Try global object for browser environments
+    if (typeof window !== 'undefined' && (window as any).JSZip) {
+      JSZip = (window as any).JSZip
+      return JSZip
+    }
+
+    // Cache the error to avoid repeated attempts
+    jsZipLoadError = new Error(
+      'JSZip is required for DOCX parsing but was not found.\n\n' +
+        'To fix this, install jszip:\n' +
+        '  npm install jszip\n' +
+        '  # or\n' +
+        '  pnpm add jszip\n' +
+        '  # or\n' +
+        '  yarn add jszip\n\n' +
+        'For browser usage, import and expose globally:\n' +
+        '  import JSZip from "jszip"\n' +
+        '  window.JSZip = JSZip\n\n' +
+        'Documentation: https://clarity-ai-chat.vercel.app/docs/document-loaders#docx-setup'
+    )
+    throw jsZipLoadError
+  }
+}
 
 export interface DOCXLoadOptions extends DocumentLoadOptions {
   /** Preserve text formatting (bold, italic, etc.) */
@@ -47,6 +101,25 @@ export class DOCXLoader implements DocumentLoader {
     options?: DOCXLoadOptions
   ): Promise<Document[]> {
     try {
+      // Pre-check for JSZip availability to provide early, clear errors
+      try {
+        await loadJSZip()
+      } catch (error) {
+        const errorMessage =
+          error instanceof Error ? error.message : 'Unknown error'
+        return [
+          {
+            content: '[DOCX loader unavailable - missing dependency]',
+            metadata: {
+              source: source instanceof File ? source.name : 'docx',
+              type: this.supportedTypes[0],
+              error: errorMessage,
+              requiresInstall: 'jszip',
+            },
+          },
+        ]
+      }
+
       const arrayBuffer = await this.loadDocxData(source)
       const content = await this.parseDocx(arrayBuffer, options)
 
@@ -133,23 +206,26 @@ export class DOCXLoader implements DocumentLoader {
   }
 
   /**
-   * Parse DOCX file using mammoth
+   * Parse DOCX file using mammoth (optional) or fallback to basic parsing
    *
-   * Note: This requires 'mammoth' package to be installed.
-   * For browser usage, you can use the browser version of mammoth.
+   * Note: For best results, install 'mammoth' package (optional).
+   * Otherwise, uses basic XML parsing with JSZip (required).
    */
   private async parseDocx(
     arrayBuffer: ArrayBuffer,
     options?: DOCXLoadOptions
   ): Promise<string> {
-    // Check if mammoth is available
+    // Check if mammoth is available for enhanced parsing
     if (typeof window !== 'undefined' && !(window as any).mammoth) {
       // Try to load from global if available
-      console.warn(
-        'DOCXLoader: mammoth library not found. Please install:\n' +
-          'npm install mammoth\n' +
-          'Then import: import mammoth from "mammoth"'
-      )
+      if (process.env.NODE_ENV === 'development') {
+        console.info(
+          'DOCXLoader: Using basic parsing. For better results, install mammoth:\n' +
+            '  npm install mammoth\n' +
+            '  # Then import: import mammoth from "mammoth"\n' +
+            'Documentation: https://clarity-ai-chat.vercel.app/docs/document-loaders#docx-setup'
+        )
+      }
       // Fallback to basic extraction using JSZip
       return this.fallbackParse(arrayBuffer, options)
     }
@@ -173,12 +249,16 @@ export class DOCXLoader implements DocumentLoader {
 
       // Report any warnings
       if (result.messages && result.messages.length > 0) {
-        console.warn('DOCX parsing warnings:', result.messages)
+        if (process.env.NODE_ENV === 'development') {
+          console.warn('DOCX parsing warnings:', result.messages)
+        }
       }
 
       return content
     } catch (error) {
-      console.error('Mammoth parsing failed, trying fallback:', error)
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Mammoth parsing failed, trying fallback:', error)
+      }
       return this.fallbackParse(arrayBuffer, options)
     }
   }
@@ -186,19 +266,20 @@ export class DOCXLoader implements DocumentLoader {
   /**
    * Fallback parser using basic ZIP extraction
    * Extracts text from document.xml in the DOCX archive
+   * Requires JSZip peer dependency
    */
   private async fallbackParse(
     arrayBuffer: ArrayBuffer,
-    options?: DOCXLoadOptions
+    _options?: DOCXLoadOptions
   ): Promise<string> {
     try {
-      // Check if JSZip is available
-      if (typeof window === 'undefined' || !(window as any).JSZip) {
-        throw new Error('JSZip not available for fallback parsing')
+      // Ensure JSZip is loaded
+      const JSZipModule = await loadJSZip()
+      if (!JSZipModule) {
+        throw new Error('JSZip could not be loaded')
       }
 
-      const JSZip = (window as any).JSZip
-      const zip = new JSZip()
+      const zip = new JSZipModule()
       await zip.loadAsync(arrayBuffer)
 
       // Get document.xml
@@ -207,14 +288,17 @@ export class DOCXLoader implements DocumentLoader {
         throw new Error('Could not find document.xml in DOCX')
       }
 
-      // Extract text from XML (very basic)
+      // Extract text from XML (basic extraction)
       const textContent = this.extractTextFromXml(documentXml)
+
+      if (!textContent || textContent.trim().length === 0) {
+        throw new Error('No text content could be extracted from DOCX')
+      }
 
       return textContent
     } catch (error) {
-      throw new Error(
-        `Fallback DOCX parsing failed: ${error instanceof Error ? error.message : 'Unknown error'}`
-      )
+      const message = error instanceof Error ? error.message : 'Unknown error'
+      throw new Error(`Fallback DOCX parsing failed: ${message}`)
     }
   }
 
@@ -287,7 +371,6 @@ export class DOCXLoader implements DocumentLoader {
   private async loadMammoth(): Promise<any> {
     try {
       // Try to dynamically import mammoth (optional peer dependency)
-      // @ts-expect-error - mammoth is an optional peer dependency
       return await import('mammoth')
     } catch {
       throw new Error('Mammoth library could not be loaded')
@@ -296,34 +379,50 @@ export class DOCXLoader implements DocumentLoader {
 }
 
 /**
- * Setup instructions for mammoth
+ * Setup instructions for DOCX Loader
+ *
+ * REQUIRED: JSZip (peer dependency)
+ * ```bash
+ * npm install jszip
+ * # or
+ * pnpm add jszip
+ * # or
+ * yarn add jszip
+ * ```
  *
  * Browser usage:
- * 1. Install: npm install mammoth
- * 2. Import in your app:
+ * ```tsx
+ * import JSZip from 'jszip'
+ * window.JSZip = JSZip  // Expose globally if using CDN
+ * ```
  *
+ * OPTIONAL: Mammoth (for better formatting)
+ * For enhanced DOCX parsing with preserved formatting:
+ * ```bash
+ * npm install mammoth
+ * ```
+ *
+ * Browser with mammoth:
  * ```tsx
  * import mammoth from 'mammoth'
- *
- * // Make available globally (if using global access)
- * (window as any).mammoth = mammoth
+ * window.mammoth = mammoth
  * ```
  *
  * Node.js usage:
  * ```tsx
- * import mammoth from 'mammoth'
- * import { DOCXLoader } from './docx-loader'
+ * import { DOCXLoader } from '@clarity-ai/react'
  *
- * // Mammoth will be loaded automatically
  * const loader = new DOCXLoader()
- * const docs = await loader.load(fileBuffer)
+ * const docs = await loader.load(fileBuffer, {
+ *   preserveFormatting: true,
+ *   outputMarkdown: true,
+ *   splitBySections: true
+ * })
  * ```
  *
- * Alternative: For a lighter solution, use jszip + basic XML parsing:
- * ```tsx
- * npm install jszip
+ * Graceful degradation:
+ * - Without mammoth: Basic text extraction (still requires jszip)
+ * - Without jszip: Clear error message with installation instructions
  *
- * import JSZip from 'jszip'
- * (window as any).JSZip = JSZip
- * ```
+ * @see https://clarity-ai-chat.vercel.app/docs/document-loaders#docx-setup
  */

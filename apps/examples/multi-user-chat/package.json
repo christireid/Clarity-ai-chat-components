@@ -11,18 +11,22 @@
     "typecheck": "tsc"
   },
   "dependencies": {
-    "@clarity-chat/react": "workspace:*",
     "@clarity-chat/primitives": "workspace:*",
+    "@clarity-chat/react": "workspace:*",
     "@clarity-chat/types": "workspace:*",
     "@remix-run/node": "^2.15.1",
     "@remix-run/react": "^2.15.1",
     "@remix-run/serve": "^2.15.1",
     "express": "^4.21.2",
+    "framer-motion": "^12.23.25",
     "isbot": "^5.1.17",
+    "jszip": "^3.10.0",
+    "lucide-react": "^0.500.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "socket.io": "^4.7.2",
-    "socket.io-client": "^4.7.2"
+    "socket.io-client": "^4.7.2",
+    "zod": "^3.24.0"
   },
   "devDependencies": {
     "@remix-run/dev": "^2.16.4",

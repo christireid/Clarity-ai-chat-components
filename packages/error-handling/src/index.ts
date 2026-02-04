@@ -27,10 +27,6 @@ export * from './errors/factory'
 // Components
 // =============================================================================
 
-// Original ErrorBoundary (class component)
-export { ErrorBoundary } from './components/ErrorBoundary'
-export type { ErrorBoundaryProps } from './components/ErrorBoundary'
-
 // Enhanced ErrorBoundary (using react-error-boundary)
 export {
   EnhancedErrorBoundary,
@@ -44,6 +40,21 @@ export type {
 // Chat-specific ErrorBoundary
 export { ChatErrorBoundary } from './components/ChatErrorBoundary'
 export type { ChatErrorBoundaryProps } from './components/ChatErrorBoundary'
+
+// Specialized ErrorBoundaries
+export {
+  DashboardErrorBoundary,
+  useDashboardErrorHandler,
+  MediaErrorBoundary,
+  InlineErrorBoundary,
+  PanelErrorBoundary,
+  PreviewErrorBoundary,
+} from './components/SpecializedErrorBoundaries'
+export type {
+  DashboardErrorBoundaryProps,
+  PanelErrorBoundaryProps,
+  PreviewErrorBoundaryProps,
+} from './components/SpecializedErrorBoundaries'
 
 // =============================================================================
 // Hooks

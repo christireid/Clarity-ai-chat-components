@@ -1,5 +1,9 @@
 # @clarity-chat/memory
 
+> **⚠️ IMPORTANT: Token counting APIs have moved**
+>
+> Token counting utilities (`TokenCounter`, `countTokens`, `SemanticChunker`) have been consolidated to `@clarity-chat/token-optimization`. See the [@clarity-chat/token-optimization](../token-optimization/README.md) package for details.
+
 > **Zero-config AI memory system** - Drop-in memory management for any LLM application
 
 Framework-agnostic AI memory and context management. Works with **any JavaScript/TypeScript application** - React, Node.js, serverless, browser, or any AI SDK.
@@ -37,18 +41,18 @@ import { clarityMemory } from '@clarity-chat/memory'
 const mem = clarityMemory()
 
 // Add memories
-await mem.add("User prefers TypeScript", {
+await mem.add('User prefers TypeScript', {
   type: 'semantic',
-  importance: 0.9
+  importance: 0.9,
 })
 
 // Search memories
-const results = await mem.search("user preferences")
+const results = await mem.search('user preferences')
 
 // Get optimized context for LLM
 const context = await mem.context({
   maxTokens: 1000,
-  query: "user preferences"
+  query: 'user preferences',
 })
 
 console.log(context.text) // Ready to send to LLM
@@ -62,11 +66,11 @@ import { clarityMemory } from '@clarity-chat/memory'
 const mem = clarityMemory({
   vectorStore: {
     type: 'file',
-    path: './memories.json'
-  }
+    path: './memories.json',
+  },
 })
 
-await mem.add("User prefers dark mode")
+await mem.add('User prefers dark mode')
 // Automatically persisted to file
 ```
 
@@ -78,11 +82,11 @@ import { clarityMemory } from '@clarity-chat/memory'
 const mem = clarityMemory({
   vectorStore: {
     type: 'indexeddb',
-    dbName: 'my-app-memory'
-  }
+    dbName: 'my-app-memory',
+  },
 })
 
-await mem.add("User prefers mobile view")
+await mem.add('User prefers mobile view')
 // Persisted in browser IndexedDB
 ```
 
@@ -92,17 +96,18 @@ await mem.add("User prefers mobile view")
 
 ```typescript
 // Simple
-const id = await mem.add("User loves React")
+const id = await mem.add('User loves React')
 
 // With options
-const id = await mem.add("User prefers TypeScript", {
-  type: 'semantic',        // 'episodic' | 'semantic' | 'profile'
-  importance: 0.9,         // 0-1, default 0.5
-  tags: ['preferences'],    // Optional tags
-  metadata: {              // Custom metadata
+const id = await mem.add('User prefers TypeScript', {
+  type: 'semantic', // 'episodic' | 'semantic' | 'profile'
+  importance: 0.9, // 0-1, default 0.5
+  tags: ['preferences'], // Optional tags
+  metadata: {
+    // Custom metadata
     userId: 'user-123',
-    category: 'ui'
-  }
+    category: 'ui',
+  },
 })
 ```
 
@@ -110,21 +115,21 @@ const id = await mem.add("User prefers TypeScript", {
 
 ```typescript
 // Simple search
-const results = await mem.search("user preferences")
+const results = await mem.search('user preferences')
 
 // Advanced search
-const results = await mem.search("TypeScript", {
+const results = await mem.search('TypeScript', {
   limit: 10,
   minScore: 0.7,
   types: ['semantic'],
   tags: ['preferences'],
   filters: {
-    userId: 'user-123'
-  }
+    userId: 'user-123',
+  },
 })
 
 // Results include score and memory
-results.forEach(result => {
+results.forEach((result) => {
   console.log(result.score, result.memory.content)
 })
 ```
@@ -135,17 +140,17 @@ results.forEach(result => {
 // Get optimized context bundle
 const bundle = await mem.context({
   maxTokens: 1000,
-  query: "user preferences",
+  query: 'user preferences',
   types: ['semantic', 'profile'],
-  prioritizeRecent: true
+  prioritizeRecent: true,
 })
 
 // Use in LLM call
 const response = await openai.chat.completions.create({
   messages: [
     { role: 'system', content: bundle.text },
-    { role: 'user', content: userMessage }
-  ]
+    { role: 'user', content: userMessage },
+  ],
 })
 ```
 
@@ -155,7 +160,7 @@ const response = await openai.chat.completions.create({
 // Update memory
 await mem.update(memoryId, {
   importance: 0.95,
-  content: "Updated content"
+  content: 'Updated content',
 })
 
 // Promote memory (increase importance)
@@ -169,8 +174,8 @@ const memory = await mem.get(memoryId)
 
 // Batch operations
 const ids = await mem.addBatch([
-  { content: "Memory 1" },
-  { content: "Memory 2", options: { type: 'semantic' } }
+  { content: 'Memory 1' },
+  { content: 'Memory 2', options: { type: 'semantic' } },
 ])
 ```
 
@@ -179,14 +184,14 @@ const ids = await mem.addBatch([
 ```typescript
 // Get statistics
 const stats = await mem.getStats()
-console.log(stats.total)        // Total memories
-console.log(stats.byType)       // Counts by type
-console.log(stats.totalTokens)  // Total tokens
+console.log(stats.total) // Total memories
+console.log(stats.byType) // Counts by type
+console.log(stats.totalTokens) // Total tokens
 
 // Inspect state
 const state = await mem.inspect()
-console.log(state.memories)     // All memories
-console.log(state.config)       // Current config
+console.log(state.memories) // All memories
+console.log(state.config) // Current config
 ```
 
 ## 🎯 Use Cases
@@ -197,7 +202,9 @@ console.log(state.config)       // Current config
 import { clarityMemory } from '@clarity-chat/memory'
 import OpenAI from 'openai'
 
-const mem = clarityMemory({ vectorStore: { type: 'file', path: './chat-memory.json' } })
+const mem = clarityMemory({
+  vectorStore: { type: 'file', path: './chat-memory.json' },
+})
 const openai = new OpenAI()
 
 async function chat(userId: string, message: string) {
@@ -205,23 +212,23 @@ async function chat(userId: string, message: string) {
   const context = await mem.context({
     maxTokens: 1000,
     query: message,
-    filters: { userId }
+    filters: { userId },
   })
-  
+
   // Call LLM
   const response = await openai.chat.completions.create({
     messages: [
       { role: 'system', content: `Context: ${context.text}` },
-      { role: 'user', content: message }
-    ]
+      { role: 'user', content: message },
+    ],
   })
-  
+
   // Store interaction
   await mem.add(message, {
     type: 'episodic',
-    metadata: { userId }
+    metadata: { userId },
   })
-  
+
   return response.choices[0].message.content
 }
 ```
@@ -230,16 +237,16 @@ async function chat(userId: string, message: string) {
 
 ```typescript
 // Store preferences
-await mem.add("User prefers dark mode", {
+await mem.add('User prefers dark mode', {
   type: 'semantic',
   importance: 0.9,
-  tags: ['preferences', 'ui']
+  tags: ['preferences', 'ui'],
 })
 
 // Retrieve preferences
-const prefs = await mem.search("preferences", {
+const prefs = await mem.search('preferences', {
   types: ['semantic'],
-  tags: ['preferences']
+  tags: ['preferences'],
 })
 ```
 
@@ -247,16 +254,16 @@ const prefs = await mem.search("preferences", {
 
 ```typescript
 // Store knowledge
-await mem.add("API endpoint: POST /api/users", {
+await mem.add('API endpoint: POST /api/users', {
   type: 'semantic',
   importance: 1.0,
-  tags: ['api', 'docs']
+  tags: ['api', 'docs'],
 })
 
 // Query knowledge
-const docs = await mem.search("how to create user", {
+const docs = await mem.search('how to create user', {
   types: ['semantic'],
-  tags: ['api']
+  tags: ['api'],
 })
 ```
 
@@ -268,10 +275,10 @@ import { clarityMemory } from '@clarity-chat/memory'
 const mem = clarityMemory({
   // Storage backend
   vectorStore: {
-    type: 'file',           // 'in-memory' | 'file' | 'indexeddb'
-    path: './memories.json' // For file store
+    type: 'file', // 'in-memory' | 'file' | 'indexeddb'
+    path: './memories.json', // For file store
   },
-  
+
   // Embedding provider (optional - for semantic search)
   embeddingProvider: {
     embed: async (text) => {
@@ -279,9 +286,9 @@ const mem = clarityMemory({
       return embeddingVector
     },
     model: 'text-embedding-ada-002',
-    dimensions: 1536
+    dimensions: 1536,
   },
-  
+
   // Token budget (optional)
   tokenBudget: {
     maxContextWindow: 4096,
@@ -291,12 +298,12 @@ const mem = clarityMemory({
       recentContext: 1200,
       semanticMemory: 1000,
       episodicMemory: 600,
-      responseReserve: 200
-    }
+      responseReserve: 200,
+    },
   },
-  
+
   // Debug mode
-  debug: true
+  debug: true,
 })
 ```
 
@@ -347,22 +354,19 @@ const mem = clarityMemory()
 export async function POST(req: Request) {
   const { messages } = await req.json()
   const lastMessage = messages[messages.length - 1]
-  
+
   // Get context
   const context = await mem.context({
     maxTokens: 1000,
-    query: lastMessage.content
+    query: lastMessage.content,
   })
-  
+
   // Stream response
   const result = await streamText({
     model: openai('gpt-4'),
-    messages: [
-      { role: 'system', content: context.text },
-      ...messages
-    ]
+    messages: [{ role: 'system', content: context.text }, ...messages],
   })
-  
+
   return result.toDataStreamResponse()
 }
 ```
@@ -378,12 +382,12 @@ const llm = new ChatOpenAI()
 
 async function chat(message: string) {
   const context = await mem.context({ maxTokens: 1000, query: message })
-  
+
   const response = await llm.invoke([
     ['system', context.text],
-    ['human', message]
+    ['human', message],
   ])
-  
+
   await mem.add(message, { type: 'episodic' })
   return response.content
 }
@@ -394,10 +398,12 @@ async function chat(message: string) {
 - [Getting Started Guide](../../docs/getting-started.md)
 - [Cookbook](../../docs/cookbook/) - Copy-paste ready patterns
 - [Troubleshooting](../../docs/TROUBLESHOOTING.md) - Common issues and solutions
-- [API Reference](./API.md) - Complete API documentation
-- [Storage Backends](./docs/storage.md) - Storage configuration
-- [Memory Types](./docs/memory-types.md) - Understanding memory types
-- [Token Optimization](./docs/token-optimization.md) - Cost optimization strategies
+- [Memory Architecture](./docs/ARCHITECTURE.md) - System architecture and design
+- [Memory Types](./docs/MEMORY_TYPES.md) - Understanding memory types
+- [Migration Guide](./docs/MIGRATION.md) - Upgrading from older versions
+- [React Hooks](./docs/REACT_HOOKS.md) - React integration patterns
+- [Memory Scopes](./docs/SCOPES.md) - Scope management
+- [Token Optimization](../token-optimization/README.md) - Cost optimization strategies
 
 ## 🧪 Development
 

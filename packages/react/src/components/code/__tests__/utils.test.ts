@@ -64,7 +64,7 @@ describe('escapeHtml', () => {
   })
 
   it('escapes single quotes', () => {
-    expect(escapeHtml("'test'")).toBe('&#039;test&#039;')
+    expect(escapeHtml("'test'")).toBe('&#39;test&#39;')
   })
 
   it('escapes multiple special characters', () => {

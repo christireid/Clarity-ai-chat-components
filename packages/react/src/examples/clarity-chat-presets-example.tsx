@@ -4,7 +4,7 @@
  * Shows how to use pre-configured chat setups for common use cases.
  */
 
-import { ClarityChatPresets } from '../components/chat/clarity-chat-presets'
+import { ClarityChatPresets } from '../components/chat/ClarityChatPresets'
 import '@clarity-chat/react/styles.css'
 
 /**

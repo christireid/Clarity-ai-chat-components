@@ -8,13 +8,14 @@ import {
   ANIMATION_DURATION,
   EASING_FRAMER,
   duration,
+  ANIMATION_PRESETS,
 } from '../../animations/constants'
-import { LazyMarkdownRenderer } from './markdown-renderer'
-import { MessageActions } from './message-actions'
-import { MessageMetadata } from './message-metadata'
-import { EditableMessageContent } from './editable-message-content'
-import { ErrorMessage, type ErrorDetails } from '../feedback/error-message'
-import { MessageHeader } from './message-header'
+import { EnhancedMarkdownRenderer } from '../ai/EnhancedMarkdownRenderer'
+import { MessageActions } from './MessageActions'
+import { MessageMetadata } from './MessageMetadata'
+import { EditableMessageContent } from './EditableMessageContent'
+import { ErrorMessage, type ErrorDetails } from '../feedback/ErrorMessage'
+import { MessageHeader } from './MessageHeader'
 import { formatRelativeTime } from '../../internal/helpers'
 
 export interface MessageProps {
@@ -223,13 +224,7 @@ export function Message({
       role="article"
       aria-label={ariaLabel}
       aria-describedby={contentId}
-      initial={{
-        opacity: 0,
-        x: isUser ? 20 : -20, // Slide from appropriate side
-        y: 10,
-      }}
-      animate={{ opacity: 1, x: 0, y: 0 }}
-      exit={{ opacity: 0, scale: 0.95 }}
+      {...(isUser ? ANIMATION_PRESETS.slideLeft : ANIMATION_PRESETS.slideRight)}
       transition={{
         duration: ANIMATION_DURATION.normal / 1000,
         ease: EASING_FRAMER.out,
@@ -333,9 +328,14 @@ export function Message({
               </p>
             )
           ) : (
-            <LazyMarkdownRenderer
+            <EnhancedMarkdownRenderer
               content={message.content}
               isStreaming={isStreaming}
+              config={{
+                enableSyntaxHighlight: true,
+                enableCopyButton: true,
+                enableLazyRendering: true,
+              }}
             />
           )}
         </div>

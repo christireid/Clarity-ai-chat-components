@@ -2,9 +2,12 @@
  * ID Generation Utilities
  *
  * Centralized utilities for generating unique identifiers across the tool calling system.
+ * Built on top of the canonical @clarity-chat/utils ID generation.
  *
  * @module id-generator
  */
+
+import { generateId } from '@clarity-chat/utils'
 
 /**
  * Generates a unique tool call ID with timestamp and random component
@@ -22,9 +25,7 @@
  * ```
  */
 export function generateToolCallId(prefix: string = 'call'): string {
-  const timestamp = Date.now()
-  const random = Math.random().toString(36).substring(2, 9)
-  return `${prefix}_${timestamp}_${random}`
+  return generateId(prefix)
 }
 
 /**
@@ -39,7 +40,7 @@ export function generateToolCallId(prefix: string = 'call'): string {
  * ```
  */
 export function generateSessionId(): string {
-  return generateToolCallId('session')
+  return generateId('session')
 }
 
 /**

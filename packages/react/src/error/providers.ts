@@ -50,7 +50,9 @@ interface RollbarLike {
     codeVersion?: string
     payload?: { person?: { id: string; email?: string } }
   }) => void
-  [key: string]: ((arg: Error | string, custom?: Record<string, unknown>) => void) | unknown
+  [key: string]:
+    | ((arg: Error | string, custom?: Record<string, unknown>) => void)
+    | unknown
 }
 
 /** Bugsnag SDK mock interface */
@@ -72,21 +74,22 @@ interface BugsnagLike {
   leaveBreadcrumb: (message: string, metadata?: Record<string, unknown>) => void
 }
 
-function isDev(): boolean {
-  return (
-    typeof process !== 'undefined' && process.env?.NODE_ENV !== 'production'
-  )
-}
+// Import environment detection from canonical source
+import { isDev } from '@clarity-chat/utils/env'
 
 function safeDevLog(...args: unknown[]): void {
   if (!isDev()) return
   // Keep dev-only logs minimal and never include secrets.
-  console.debug(...args)
+  if (process.env.NODE_ENV === 'development') {
+    console.debug(...args)
+  }
 }
 
 function safeDevError(...args: unknown[]): void {
   if (!isDev()) return
-  console.error(...args)
+  if (process.env.NODE_ENV === 'development') {
+    console.error(...args)
+  }
 }
 
 function hasLocalStorage(): boolean {
@@ -396,7 +399,11 @@ export function createBugsnagProvider(config: BugsnagConfig): ErrorProvider {
     ) => {
       if (!Bugsnag) return
       const name = userData?.['name']
-      Bugsnag.setUser(userId, email, typeof name === 'string' ? name : undefined)
+      Bugsnag.setUser(
+        userId,
+        email,
+        typeof name === 'string' ? name : undefined
+      )
       if (userData) {
         Bugsnag.addMetadata('user', userData)
       }
@@ -481,47 +488,53 @@ export function createConsoleErrorProvider(): ErrorProvider {
     name: 'console',
 
     reportError: (report: ErrorReport) => {
-      const style = `
-        color: white;
-        background: ${
-          report.severity === 'fatal' || report.severity === 'error'
-            ? '#dc2626'
-            : report.severity === 'warning'
-              ? '#f59e0b'
-              : '#3b82f6'
-        };
-        padding: 2px 6px;
-        border-radius: 3px;
-        font-weight: bold;
-      `
+      if (process.env.NODE_ENV === 'development') {
+        const style = `
+          color: white;
+          background: ${
+            report.severity === 'fatal' || report.severity === 'error'
+              ? '#dc2626'
+              : report.severity === 'warning'
+                ? '#f59e0b'
+                : '#3b82f6'
+          };
+          padding: 2px 6px;
+          border-radius: 3px;
+          font-weight: bold;
+        `
 
-      console.debug(`%c${report.severity.toUpperCase()}`, style, report.message)
+        console.debug(
+          `%c${report.severity.toUpperCase()}`,
+          style,
+          report.message
+        )
 
-      if (report.stack) {
-        console.error('Stack:', report.stack)
+        if (report.stack) {
+          console.error('Stack:', report.stack)
+        }
+
+        if (report.componentStack) {
+          console.error('Component Stack:', report.componentStack)
+        }
+
+        if (report.context) {
+          console.debug('Context:', report.context)
+        }
+
+        if (report.environment) {
+          console.debug('Environment:', report.environment)
+        }
+
+        if (report.tags) {
+          console.debug('Tags:', report.tags)
+        }
+
+        if (report.userFeedback) {
+          console.debug('User Feedback:', report.userFeedback)
+        }
+
+        console.debug()
       }
-
-      if (report.componentStack) {
-        console.error('Component Stack:', report.componentStack)
-      }
-
-      if (report.context) {
-        console.debug('Context:', report.context)
-      }
-
-      if (report.environment) {
-        console.debug('Environment:', report.environment)
-      }
-
-      if (report.tags) {
-        console.debug('Tags:', report.tags)
-      }
-
-      if (report.userFeedback) {
-        console.debug('User Feedback:', report.userFeedback)
-      }
-
-      console.debug()
     },
 
     setUser: (
@@ -529,19 +542,25 @@ export function createConsoleErrorProvider(): ErrorProvider {
       email?: string,
       userData?: Record<string, unknown>
     ) => {
-      console.debug('[Error Reporter] Set user:', {
-        userId,
-        email,
-        ...userData,
-      })
+      if (process.env.NODE_ENV === 'development') {
+        console.debug('[Error Reporter] Set user:', {
+          userId,
+          email,
+          ...userData,
+        })
+      }
     },
 
     setContext: (context: Record<string, unknown>) => {
-      console.debug('[Error Reporter] Set context:', context)
+      if (process.env.NODE_ENV === 'development') {
+        console.debug('[Error Reporter] Set context:', context)
+      }
     },
 
     addBreadcrumb: (message: string, data?: Record<string, unknown>) => {
-      console.debug('[Error Reporter] Breadcrumb:', message, data)
+      if (process.env.NODE_ENV === 'development') {
+        console.debug('[Error Reporter] Breadcrumb:', message, data)
+      }
     },
   }
 }

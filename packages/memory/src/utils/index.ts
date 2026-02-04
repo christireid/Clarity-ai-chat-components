@@ -5,13 +5,13 @@
 export * from './environment'
 export * from './validation'
 export * from './health-check'
-export * from './cache'
-export * from './retry'
+// Cache utilities moved to @clarity-chat/utils
+// Retry utilities moved to @clarity-chat/utils
 export * from './rate-limiter'
 export * from './batch'
-export * from './performance'
+// Performance utilities moved to @clarity-chat/utils/performance-unified
 export * from './token-counter'
 // Note: validation-helpers not exported to avoid conflicts with validation.ts
-export * from './logger'
+// Logger removed - use @clarity-chat/utils/logger instead
 export * from './decay-manager'
 export * from './context-optimizer'

@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest'
-import { calculatorTool, builtInTools, ToolRegistry } from '../tools'
+import { calculatorTool, builtInTools } from '../tools'
+import { ToolRegistry } from '../../core/tool-registry'
 
 describe('calculatorTool', () => {
   describe('basic operations', () => {
@@ -41,7 +42,9 @@ describe('calculatorTool', () => {
     })
 
     it('should handle nested parentheses', async () => {
-      const result = await calculatorTool.execute({ expression: '((2 + 3) * (4 - 1))' })
+      const result = await calculatorTool.execute({
+        expression: '((2 + 3) * (4 - 1))',
+      })
       expect(result).toEqual({ result: 15, expression: '((2 + 3) * (4 - 1))' })
     })
   })
@@ -58,8 +61,9 @@ describe('calculatorTool', () => {
     })
 
     it('should reject multiple decimal points in one number', async () => {
-      await expect(calculatorTool.execute({ expression: '1.2.3 + 1' }))
-        .rejects.toThrow('Invalid number: multiple decimal points')
+      await expect(
+        calculatorTool.execute({ expression: '1.2.3 + 1' })
+      ).rejects.toThrow('Invalid number: multiple decimal points')
     })
   })
 
@@ -94,47 +98,55 @@ describe('calculatorTool', () => {
 
   describe('error handling', () => {
     it('should throw on division by zero', async () => {
-      await expect(calculatorTool.execute({ expression: '1 / 0' }))
-        .rejects.toThrow('Division by zero')
+      await expect(
+        calculatorTool.execute({ expression: '1 / 0' })
+      ).rejects.toThrow('Division by zero')
     })
 
     it('should throw on invalid characters', async () => {
-      await expect(calculatorTool.execute({ expression: '2 + a' }))
-        .rejects.toThrow('Invalid character')
+      await expect(
+        calculatorTool.execute({ expression: '2 + a' })
+      ).rejects.toThrow('Invalid character')
     })
 
     it('should throw on missing closing parenthesis', async () => {
-      await expect(calculatorTool.execute({ expression: '(2 + 3' }))
-        .rejects.toThrow('Missing closing parenthesis')
+      await expect(
+        calculatorTool.execute({ expression: '(2 + 3' })
+      ).rejects.toThrow('Missing closing parenthesis')
     })
 
     it('should throw on unexpected tokens', async () => {
-      await expect(calculatorTool.execute({ expression: '2 3' }))
-        .rejects.toThrow('Unexpected token')
+      await expect(
+        calculatorTool.execute({ expression: '2 3' })
+      ).rejects.toThrow('Unexpected token')
     })
 
     it('should throw on empty expression', async () => {
-      await expect(calculatorTool.execute({ expression: '' }))
-        .rejects.toThrow('Unexpected end of expression')
+      await expect(calculatorTool.execute({ expression: '' })).rejects.toThrow(
+        'Unexpected end of expression'
+      )
     })
 
     it('should throw on non-string expression', async () => {
-      await expect(calculatorTool.execute({ expression: 123 as unknown as string }))
-        .rejects.toThrow('Expression must be a string')
+      await expect(
+        calculatorTool.execute({ expression: 123 as unknown as string })
+      ).rejects.toThrow('Expression must be a string')
     })
   })
 
   describe('DoS protection', () => {
     it('should reject expressions over 1000 characters', async () => {
       const longExpression = '1' + '+1'.repeat(500)
-      await expect(calculatorTool.execute({ expression: longExpression }))
-        .rejects.toThrow('Expression too long')
+      await expect(
+        calculatorTool.execute({ expression: longExpression })
+      ).rejects.toThrow('Expression too long')
     })
 
     it('should reject deeply nested expressions', async () => {
       const deeplyNested = '('.repeat(101) + '1' + ')'.repeat(101)
-      await expect(calculatorTool.execute({ expression: deeplyNested }))
-        .rejects.toThrow('Expression too deeply nested')
+      await expect(
+        calculatorTool.execute({ expression: deeplyNested })
+      ).rejects.toThrow('Expression too deeply nested')
     })
   })
 
@@ -155,8 +167,13 @@ describe('calculatorTool', () => {
     })
 
     it('should handle large numbers', async () => {
-      const result = await calculatorTool.execute({ expression: '999999 * 999999' })
-      expect(result).toEqual({ result: 999998000001, expression: '999999 * 999999' })
+      const result = await calculatorTool.execute({
+        expression: '999999 * 999999',
+      })
+      expect(result).toEqual({
+        result: 999998000001,
+        expression: '999999 * 999999',
+      })
     })
   })
 })
@@ -170,34 +187,39 @@ describe('ToolRegistry', () => {
   })
 
   it('should initialize with tools', () => {
-    const registry = new ToolRegistry([calculatorTool])
+    const registry = new ToolRegistry()
+    registry.register(calculatorTool)
 
     expect(registry.get('calculator')).toBe(calculatorTool)
   })
 
   it('should return all tools', () => {
-    const registry = new ToolRegistry(builtInTools)
+    const registry = new ToolRegistry()
+    registry.registerMany(builtInTools)
 
     const allTools = registry.getAll()
     expect(allTools.length).toBe(builtInTools.length)
   })
 
   it('should filter by category', () => {
-    const registry = new ToolRegistry(builtInTools)
+    const registry = new ToolRegistry()
+    registry.registerMany(builtInTools)
 
     const utilityTools = registry.getByCategory('utility')
-    expect(utilityTools.every(t => t.category === 'utility')).toBe(true)
+    expect(utilityTools.every((t) => t.category === 'utility')).toBe(true)
   })
 
   it('should filter by tag', () => {
-    const registry = new ToolRegistry(builtInTools)
+    const registry = new ToolRegistry()
+    registry.registerMany(builtInTools)
 
     const mathTools = registry.getByTag('math')
-    expect(mathTools.every(t => t.tags?.includes('math'))).toBe(true)
+    expect(mathTools.every((t) => t.tags?.includes('math'))).toBe(true)
   })
 
   it('should search tools', () => {
-    const registry = new ToolRegistry(builtInTools)
+    const registry = new ToolRegistry()
+    registry.registerMany(builtInTools)
 
     const results = registry.search('calculator')
     expect(results.length).toBeGreaterThan(0)
@@ -205,7 +227,8 @@ describe('ToolRegistry', () => {
   })
 
   it('should unregister tools', () => {
-    const registry = new ToolRegistry([calculatorTool])
+    const registry = new ToolRegistry()
+    registry.register(calculatorTool)
 
     const removed = registry.unregister('calculator')
     expect(removed).toBe(true)

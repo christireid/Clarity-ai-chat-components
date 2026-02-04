@@ -6,10 +6,36 @@
 
 import { Code2, Lightbulb, MessageSquare, Sparkles } from 'lucide-react'
 import type { PromptSuggestion } from '@clarity-chat/react'
-import {
-  createSlideVariant,
-  createFadeVariant,
-} from '@clarity-chat/react'
+import type { Variants } from 'framer-motion'
+
+// Animation variant helpers (local implementations)
+function createFadeVariant(
+  speed: 'fast' | 'normal' | 'slow',
+  direction: 'in' | 'out'
+): Variants {
+  const duration = speed === 'fast' ? 0.15 : speed === 'normal' ? 0.3 : 0.5
+  return {
+    initial: { opacity: direction === 'in' ? 0 : 1 },
+    animate: { opacity: direction === 'in' ? 1 : 0, transition: { duration } },
+    exit: { opacity: 0, transition: { duration } },
+  }
+}
+
+function createSlideVariant(
+  direction: 'up' | 'down' | 'left' | 'right',
+  distance: number,
+  speed: 'fast' | 'normal' | 'slow' = 'normal'
+): Variants {
+  const duration = speed === 'fast' ? 0.15 : speed === 'normal' ? 0.3 : 0.5
+  const axis = direction === 'up' || direction === 'down' ? 'y' : 'x'
+  const value = (direction === 'up' || direction === 'left' ? -1 : 1) * distance
+
+  return {
+    initial: { [axis]: value, opacity: 0 },
+    animate: { [axis]: 0, opacity: 1, transition: { duration } },
+    exit: { [axis]: value, opacity: 0, transition: { duration } },
+  }
+}
 
 // ============================================================================
 // Storage Keys

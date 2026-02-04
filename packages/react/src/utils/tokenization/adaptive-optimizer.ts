@@ -12,11 +12,10 @@
  * @module
  */
 
-import { TokenCounter } from '@clarity-chat/token-optimization'
 import {
-  AdvancedCompressionOrchestrator,
-  compressWithAdvanced,
-} from './advanced-compression'
+  AccurateTokenCounter,
+  AdaptiveCompressor,
+} from '@clarity-chat/token-optimization'
 
 // Enhanced model characteristics with token efficiency data
 export interface ModelEfficiencyProfile {
@@ -205,16 +204,16 @@ const MODEL_EFFICIENCY_PROFILES: Record<string, ModelEfficiencyProfile> = {
  * Adaptive Token Optimizer that learns from context and performance
  */
 export class AdaptiveTokenOptimizer {
-  private tokenCounter: TokenCounter
-  private compressionOrchestrator: AdvancedCompressionOrchestrator
+  private tokenCounter: AccurateTokenCounter
+  private compressionOrchestrator: AdaptiveCompressor
   private performanceHistory: Map<string, PerformanceHistoryEntry[]>
   private contextProfiles: Map<string, ContextProfile>
   private conversationStates: Map<string, ConversationState>
   private learningRate: number
 
   constructor(learningRate = 0.01) {
-    this.tokenCounter = new TokenCounter()
-    this.compressionOrchestrator = new AdvancedCompressionOrchestrator()
+    this.tokenCounter = new AccurateTokenCounter({ model: 'gpt-4' })
+    this.compressionOrchestrator = new AdaptiveCompressor({})
     this.performanceHistory = new Map()
     this.contextProfiles = new Map()
     this.conversationStates = new Map()
@@ -233,7 +232,8 @@ export class AdaptiveTokenOptimizer {
     const startTime = performance.now()
 
     // Analyze context and content
-    const contextProfile = await this.analyzeContext(text)
+    const counter = new AccurateTokenCounter({ model })
+    const contextProfile = await this.analyzeContext(text, counter)
     const modelProfile =
       MODEL_EFFICIENCY_PROFILES[model] || this.createDefaultModelProfile(model)
     const conversationState = conversationId
@@ -281,7 +281,7 @@ export class AdaptiveTokenOptimizer {
 
     return {
       optimizedText: optimizedResult.compressedText,
-      originalTokens: await TokenCounter.count(text),
+      originalTokens: counter.count(text),
       optimizedTokens: optimizedResult.compressedTokens,
       reductionRatio: optimizedResult.compressionRatio,
       estimatedQuality: optimizedResult.estimatedQuality,
@@ -302,11 +302,13 @@ export class AdaptiveTokenOptimizer {
   /**
    * Analyze content and create context profile
    */
-  private async analyzeContext(text: string): Promise<ContextProfile> {
+  private async analyzeContext(
+    text: string,
+    counter: AccurateTokenCounter
+  ): Promise<ContextProfile> {
     const words = text.split(/\s+/).length
     const characters = text.length
-    const tokenDensity =
-      (await TokenCounter.count(text)) / Math.max(characters, 1)
+    const tokenDensity = counter.count(text) / Math.max(characters, 1)
 
     const domain = this.detectDomain(text)
     const complexity = this.assessComplexity(text)
@@ -447,12 +449,18 @@ export class AdaptiveTokenOptimizer {
       adaptive: true,
     }
 
-    const compressedText = await compressWithAdvanced(
+    const compressionResult = await this.compressionOrchestrator.compress(
       text,
-      strategy.compressionStrategy as 'llmlingua' | 'selective_context' | 'semantic_pruning' | 'structural' | 'adaptive' | undefined,
-      compressionConfig.compressionRatio,
-      compressionConfig.qualityThreshold
+      {
+        targetRatio: compressionConfig.compressionRatio,
+        minQuality: compressionConfig.qualityThreshold,
+        llmlinguaOptions: {
+          preserveCode: compressionConfig.preserveCode,
+          preserveInstructions: true,
+        },
+      }
     )
+    const compressedText = compressionResult.compressed
 
     return {
       compressedText,
@@ -476,8 +484,9 @@ export class AdaptiveTokenOptimizer {
     costSavings: number
     performanceScore: number
   }> {
-    const originalTokens = await TokenCounter.count(originalText)
-    const optimizedTokens = await TokenCounter.count(optimizedText)
+    const counter = new AccurateTokenCounter({ model: 'gpt-4' })
+    const originalTokens = counter.count(originalText)
+    const optimizedTokens = counter.count(optimizedText)
 
     const inputCost = (originalTokens / 1000) * modelProfile.costPerInputToken
     const optimizedInputCost =
@@ -597,16 +606,23 @@ export class AdaptiveTokenOptimizer {
       { name: 'aggressive', compressionRatio: 0.6, qualityThreshold: 0.7 },
     ]
 
+    const counter = new AccurateTokenCounter({ model: 'gpt-4' })
     const alternatives = await Promise.all(
       strategies.map(async (strategy) => {
-        const compressedText = await compressWithAdvanced(
+        const compressionResult = await this.compressionOrchestrator.compress(
           text,
-          'adaptive',
-          strategy.compressionRatio,
-          strategy.qualityThreshold
+          {
+            targetRatio: strategy.compressionRatio,
+            minQuality: strategy.qualityThreshold,
+            llmlinguaOptions: {
+              preserveCode: true,
+              preserveInstructions: true,
+            },
+          }
         )
+        const compressedText = compressionResult.compressed
 
-        const tokens = await TokenCounter.count(compressedText)
+        const tokens = counter.count(compressedText)
         const cost = (tokens / 1000) * modelProfile.costPerInputToken
 
         return {
@@ -730,7 +746,10 @@ export class AdaptiveTokenOptimizer {
     this.conversationStates.set(conversationId, updatedState)
   }
 
-  getPerformanceAnalytics(model?: string, domain?: string): {
+  getPerformanceAnalytics(
+    model?: string,
+    domain?: string
+  ): {
     totalOptimizations: number
     averageReduction: number
     averageQuality: number
@@ -805,7 +824,10 @@ export function updateConversationState(
   adaptiveOptimizer.updateConversationState(conversationId, update)
 }
 
-export function getAdaptiveAnalytics(model?: string, domain?: string): {
+export function getAdaptiveAnalytics(
+  model?: string,
+  domain?: string
+): {
   totalOptimizations: number
   averageReduction: number
   averageQuality: number

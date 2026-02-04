@@ -8,7 +8,7 @@
 
 import * as React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { cn } from '@clarity-chat/primitives'
+import { cn, useReducedMotion } from '@clarity-chat/primitives'
 import {
   CheckCircleIcon,
   XCircleIcon,
@@ -16,8 +16,7 @@ import {
   AlertCircleIcon,
   CloseIcon,
 } from './icons'
-import { ANIMATION_DURATION } from '../../animations'
-import { useReducedMotion } from '@clarity-chat/primitives'
+import { ANIMATION_DURATION, ANIMATION_PRESETS } from '../../animations'
 import {
   getMotionSafeDuration,
   getMotionSafeValue,
@@ -109,11 +108,13 @@ export function ToastItem({
     <motion.div
       layout
       initial={{
-        opacity: 0,
-        y: getMotionSafeValue(prefersReducedMotion, -20, 0),
+        ...ANIMATION_PRESETS.slideDown.initial,
         scale: getMotionSafeValue(prefersReducedMotion, 0.95, 1),
       }}
-      animate={{ opacity: 1, y: 0, scale: 1 }}
+      animate={{
+        ...ANIMATION_PRESETS.slideDown.animate,
+        scale: 1,
+      }}
       exit={{
         opacity: 0,
         x: getMotionSafeValue(prefersReducedMotion, 100, 0),
@@ -256,9 +257,10 @@ export function ToastProvider({
 
   // Cleanup timeouts on unmount
   React.useEffect(() => {
+    const timeouts = timeoutRefs.current
     return () => {
-      timeoutRefs.current.forEach((timeout) => clearTimeout(timeout))
-      timeoutRefs.current.clear()
+      timeouts.forEach((timeout) => clearTimeout(timeout))
+      timeouts.clear()
     }
   }, [])
 
@@ -402,15 +404,23 @@ export function useToast(): ToastContextValue {
  */
 export const toast = {
   success: (description: string, title?: string) => {
-    console.log('[Toast Success]', title ? `${title}:` : '', description)
+    if (process.env.NODE_ENV === 'development') {
+      console.log('[Toast Success]', title ? `${title}:` : '', description)
+    }
   },
   error: (description: string, title?: string) => {
-    console.error('[Toast Error]', title ? `${title}:` : '', description)
+    if (process.env.NODE_ENV === 'development') {
+      console.error('[Toast Error]', title ? `${title}:` : '', description)
+    }
   },
   info: (description: string, title?: string) => {
-    console.info('[Toast Info]', title ? `${title}:` : '', description)
+    if (process.env.NODE_ENV === 'development') {
+      console.info('[Toast Info]', title ? `${title}:` : '', description)
+    }
   },
   warning: (description: string, title?: string) => {
-    console.warn('[Toast Warning]', title ? `${title}:` : '', description)
+    if (process.env.NODE_ENV === 'development') {
+      console.warn('[Toast Warning]', title ? `${title}:` : '', description)
+    }
   },
 }

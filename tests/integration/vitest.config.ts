@@ -27,6 +27,10 @@ export default defineConfig({
       '@clarity-chat/testing-utils': path.resolve(__dirname, '../../packages/testing-utils/src'),
       '@clarity-chat/memory': path.resolve(__dirname, '../../packages/memory/src'),
       '@clarity-chat/error-handling': path.resolve(__dirname, '../../packages/error-handling/src'),
+      'react': path.resolve(__dirname, '../../node_modules/react'),
+      'react-dom': path.resolve(__dirname, '../../node_modules/react-dom'),
+      'react/jsx-runtime': path.resolve(__dirname, '../../node_modules/react/jsx-runtime'),
+      'react/jsx-dev-runtime': path.resolve(__dirname, '../../node_modules/react/jsx-dev-runtime'),
     },
   },
 })

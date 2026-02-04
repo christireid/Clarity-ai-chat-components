@@ -1,0 +1,58 @@
+MIT License
+
+Copyright (c) 2024 Code & Clarity (Christi Reid)
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+---
+
+NOTICE: This MIT License applies ONLY to the FREE/CORE components of Clarity Chat.
+
+Premium features, enterprise components, and advanced functionality require
+a separate commercial license. See LICENSE-PRO.md and LICENSE-ENTERPRISE.md
+for commercial licensing terms.
+
+Free/Core Components Include:
+- @clarity-chat/primitives (all components)
+- @clarity-chat/types (all type definitions)
+- Basic components from @clarity-chat/react:
+  * Button, Input, Textarea, Card, Avatar, Badge
+  * Message, MessageList, ChatInput, ChatWindow (basic)
+  * Basic themes (default, dark, minimal)
+  * Core hooks (use-chat, use-debounce, use-clipboard)
+  * Basic utilities
+
+Premium/Commercial Components Require License:
+- Advanced AI features (sentiment analysis, content moderation, PII detection)
+- Advanced components (VoiceInput, FileUpload, CommandPalette, ContextMenu)
+- Premium themes (ocean, glassmorphism, sunset, forest, corporate, neon)
+- Enterprise components (SSOConfigWizard, AuthTenantDashboard, ApiTokenManager)
+- Analytics integrations (GA4, Mixpanel, PostHog, Amplitude)
+- Error tracking integrations (Sentry, Rollbar, Bugsnag)
+- Advanced hooks (use-performance, use-optimistic-message, use-error-recovery)
+- AI provider adapters (OpenAI, Anthropic, Azure, etc.)
+- Vector stores and RAG features
+- Agent orchestration features
+
+For commercial use of premium features, please visit:
+https://clarity-chat.dev/pricing
+
+For enterprise inquiries:
+support@codeclarity.ai
+

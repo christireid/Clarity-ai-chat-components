@@ -8,7 +8,11 @@ import {
   type CacheStats as TokenOptCacheStats,
   type CacheContext,
 } from '@clarity-chat/token-optimization'
-import type { UseSemanticCacheConfig, UseSemanticCacheReturn, CacheStats } from './types'
+import type {
+  UseSemanticCacheConfig,
+  UseSemanticCacheReturn,
+  CacheStats,
+} from './types'
 
 /**
  * useSemanticCache - Semantic similarity-based response caching
@@ -102,6 +106,22 @@ export function useSemanticCache<T = string>(
     config.similarityThreshold ?? 0.85
   )
 
+  /**
+   * Update stats from cache
+   */
+  const updateStatsFromCache = React.useCallback(() => {
+    if (!cacheRef.current) return
+
+    const cacheStats = cacheRef.current.getStats()
+    setStats({
+      totalEntries: cacheStats.totalEntries,
+      hitRate: cacheStats.averageHitRate,
+      totalTokensSaved: 0, // Calculated per operation
+      totalCostSaved: 0, // Calculated per operation
+      avgSearchTimeMs: 0, // Calculated per operation
+    })
+  }, [])
+
   // Initialize cache using existing AdvancedSemanticCache from token-optimization
   React.useEffect(() => {
     const cacheConfig: SemanticCacheConfig = {
@@ -119,34 +139,23 @@ export function useSemanticCache<T = string>(
     setIsReady(true)
     updateStatsFromCache()
 
+    // Copy ref.current to local variables for cleanup
+    const currentCache = cacheRef.current
+    const currentResponseMap = responseMapRef.current
+
     return () => {
-      if (cacheRef.current) {
-        cacheRef.current.clear()
+      if (currentCache) {
+        currentCache.clear()
       }
-      responseMapRef.current.clear()
+      currentResponseMap.clear()
     }
   }, [
     config.embeddingModel,
     config.similarityThreshold,
     config.maxCacheSize,
     config.ttlMs,
+    updateStatsFromCache,
   ])
-
-  /**
-   * Update stats from cache
-   */
-  const updateStatsFromCache = React.useCallback(() => {
-    if (!cacheRef.current) return
-
-    const cacheStats = cacheRef.current.getStats()
-    setStats({
-      totalEntries: cacheStats.totalEntries,
-      hitRate: cacheStats.averageHitRate,
-      totalTokensSaved: 0, // Calculated per operation
-      totalCostSaved: 0, // Calculated per operation
-      avgSearchTimeMs: 0, // Calculated per operation
-    })
-  }, [])
 
   /**
    * Search cache for similar prompt
@@ -171,7 +180,10 @@ export function useSemanticCache<T = string>(
           timestamp: new Date(),
         }
 
-        const result: SemanticCacheResult = await cacheRef.current.get(prompt, context)
+        const result: SemanticCacheResult = await cacheRef.current.get(
+          prompt,
+          context
+        )
 
         updateStatsFromCache()
 
@@ -215,7 +227,8 @@ export function useSemanticCache<T = string>(
         return ''
       }
 
-      const content = typeof response === 'string' ? response : JSON.stringify(response)
+      const content =
+        typeof response === 'string' ? response : JSON.stringify(response)
       const id = `cache_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
 
       await cacheRef.current.set(prompt, content, {
@@ -235,10 +248,13 @@ export function useSemanticCache<T = string>(
   /**
    * Invalidate by ID
    */
-  const invalidate = React.useCallback(async (id: string): Promise<void> => {
-    responseMapRef.current.delete(id)
-    updateStatsFromCache()
-  }, [updateStatsFromCache])
+  const invalidate = React.useCallback(
+    async (id: string): Promise<void> => {
+      responseMapRef.current.delete(id)
+      updateStatsFromCache()
+    },
+    [updateStatsFromCache]
+  )
 
   /**
    * Invalidate similar prompts
@@ -247,7 +263,9 @@ export function useSemanticCache<T = string>(
     async (prompt: string, threshold?: number): Promise<number> => {
       // Note: AdvancedSemanticCache doesn't support selective invalidation
       // Would need to extend the base class for this functionality
-      console.warn('Prompt-based invalidation requires cache extension')
+      if (process.env['NODE_ENV'] === 'development') {
+        console.warn('Prompt-based invalidation requires cache extension')
+      }
       return 0
     },
     []
@@ -261,12 +279,15 @@ export function useSemanticCache<T = string>(
       if (!cacheRef.current) return
 
       for (const entry of entries) {
-        const content = typeof entry.response === 'string'
-          ? entry.response
-          : JSON.stringify(entry.response)
+        const content =
+          typeof entry.response === 'string'
+            ? entry.response
+            : JSON.stringify(entry.response)
         const id = `cache_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
 
-        await cacheRef.current.set(entry.prompt, content, { qualityScore: 0.95 })
+        await cacheRef.current.set(entry.prompt, content, {
+          qualityScore: 0.95,
+        })
         responseMapRef.current.set(id, entry.response)
       }
 
@@ -303,12 +324,15 @@ export function useSemanticCache<T = string>(
       if (!cacheRef.current) return
 
       for (const entry of entries) {
-        const content = typeof entry.response === 'string'
-          ? entry.response
-          : JSON.stringify(entry.response)
+        const content =
+          typeof entry.response === 'string'
+            ? entry.response
+            : JSON.stringify(entry.response)
         const id = `cache_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
 
-        await cacheRef.current.set(entry.prompt, content, { qualityScore: 0.95 })
+        await cacheRef.current.set(entry.prompt, content, {
+          qualityScore: 0.95,
+        })
         responseMapRef.current.set(id, entry.response)
       }
 

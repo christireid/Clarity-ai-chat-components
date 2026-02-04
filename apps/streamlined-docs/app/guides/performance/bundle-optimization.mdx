@@ -1,0 +1,1069 @@
+---
+title: Bundle Size Optimization
+description: Comprehensive strategies for reducing JavaScript bundle sizes through code splitting, lazy loading, tree shaking, and dependency management.
+category: Performance
+tags: [bundle-optimization, code-splitting, lazy-loading, tree-shaking, performance]
+lastUpdated: 2026-01-28
+---
+
+# Bundle Size Optimization
+
+Reduce JavaScript bundle sizes by 40-60% through strategic code splitting, lazy loading, and dependency optimization.
+
+## Overview
+
+Bundle size directly impacts load time, Time to Interactive (TTI), and user experience. This guide provides proven strategies to minimize bundle sizes while maintaining functionality.
+
+### Performance Impact
+
+```typescript
+// Typical bundle size impact on load time
+const bundleSizeImpact = {
+  // 3G connection (1.6 Mbps)
+  '100KB': '0.5s',    // Excellent
+  '300KB': '1.5s',    // Good
+  '500KB': '2.5s',    // Fair
+  '1MB':   '5.0s',    // Poor
+  '2MB':   '10.0s',   // Critical
+};
+
+// Target budgets
+const performanceBudgets = {
+  initial: '200KB',     // Initial page load
+  route: '100KB',       // Per route chunk
+  component: '50KB',    // Per lazy component
+  vendor: '150KB',      // Third-party libraries
+};
+```
+
+## Code Splitting Strategies
+
+### Route-Based Code Splitting
+
+Split code at route boundaries for optimal initial load performance.
+
+```typescript
+// apps/examples/code-assistant/src/routes.tsx
+import { lazy, Suspense } from 'react';
+import { Route, Routes } from 'react-router-dom';
+import LoadingSpinner from './components/LoadingSpinner';
+
+// Lazy load route components
+const Home = lazy(() => import('./pages/Home'));
+const Chat = lazy(() => import('./pages/Chat'));
+const Settings = lazy(() => import('./pages/Settings'));
+const Analytics = lazy(() => import('./pages/Analytics'));
+
+// Heavy dependencies loaded only when needed
+const TokenOptimization = lazy(() =>
+  import('./pages/TokenOptimization')
+);
+
+const AudioRecorder = lazy(() =>
+  import('./pages/AudioRecorder')
+);
+
+export function AppRoutes() {
+  return (
+    <Suspense fallback={<LoadingSpinner />}>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/chat" element={<Chat />} />
+        <Route path="/settings" element={<Settings />} />
+        <Route path="/analytics" element={<Analytics />} />
+        <Route path="/tokens" element={<TokenOptimization />} />
+        <Route path="/audio" element={<AudioRecorder />} />
+      </Routes>
+    </Suspense>
+  );
+}
+```
+
+### Component-Level Code Splitting
+
+Lazy load heavy or conditionally rendered components.
+
+```typescript
+// packages/react/src/components/ChatInterface.tsx
+import { lazy, Suspense, useState } from 'react';
+
+// Always loaded - critical path
+import { MessageList } from './MessageList';
+import { ChatInput } from './ChatInput';
+
+// Lazy loaded - optional features
+const AudioRecorder = lazy(() =>
+  import('./input/AudioRecorder').then(m => ({ default: m.AudioRecorder }))
+);
+
+const CommandPalette = lazy(() =>
+  import('./navigation/CommandPalette').then(m => ({ default: m.CommandPalette }))
+);
+
+const TokenOptimizer = lazy(() =>
+  import('./token/TokenOptimizer').then(m => ({ default: m.TokenOptimizer }))
+);
+
+export function ChatInterface() {
+  const [showAudio, setShowAudio] = useState(false);
+  const [showPalette, setShowPalette] = useState(false);
+  const [showTokens, setShowTokens] = useState(false);
+
+  return (
+    <div className="chat-interface">
+      <MessageList />
+      <ChatInput onVoiceClick={() => setShowAudio(true)} />
+
+      {/* Only load when user activates feature */}
+      {showAudio && (
+        <Suspense fallback={<div>Loading audio...</div>}>
+          <AudioRecorder />
+        </Suspense>
+      )}
+
+      {showPalette && (
+        <Suspense fallback={null}>
+          <CommandPalette />
+        </Suspense>
+      )}
+
+      {showTokens && (
+        <Suspense fallback={<div>Loading optimizer...</div>}>
+          <TokenOptimizer />
+        </Suspense>
+      )}
+    </div>
+  );
+}
+```
+
+### Dynamic Import Patterns
+
+Advanced lazy loading with preloading and prefetching.
+
+```typescript
+// packages/react/src/utils/lazy-loading.ts
+
+/**
+ * Lazy load with preload support
+ */
+export function lazyWithPreload<T extends React.ComponentType<any>>(
+  factory: () => Promise<{ default: T }>
+) {
+  const LazyComponent = lazy(factory);
+
+  // Add preload method
+  (LazyComponent as any).preload = factory;
+
+  return LazyComponent as typeof LazyComponent & { preload: typeof factory };
+}
+
+// Usage example
+const HeavyChart = lazyWithPreload(() =>
+  import('./components/HeavyChart')
+);
+
+function Dashboard() {
+  // Preload on hover
+  const handleMouseEnter = () => {
+    HeavyChart.preload();
+  };
+
+  return (
+    <div onMouseEnter={handleMouseEnter}>
+      <Suspense fallback={<ChartSkeleton />}>
+        <HeavyChart />
+      </Suspense>
+    </div>
+  );
+}
+```
+
+```typescript
+// packages/react/src/utils/prefetch.ts
+
+/**
+ * Prefetch chunks during idle time
+ */
+export function prefetchRoutes(routes: string[]) {
+  if ('requestIdleCallback' in window) {
+    requestIdleCallback(() => {
+      routes.forEach(route => {
+        const link = document.createElement('link');
+        link.rel = 'prefetch';
+        link.href = route;
+        document.head.appendChild(link);
+      });
+    });
+  }
+}
+
+// Usage in app initialization
+prefetchRoutes([
+  '/chunks/chat.js',
+  '/chunks/settings.js',
+  '/chunks/analytics.js',
+]);
+```
+
+## Tree Shaking Configuration
+
+### Webpack Configuration
+
+```javascript
+// webpack.config.js
+module.exports = {
+  mode: 'production',
+  optimization: {
+    usedExports: true,
+    minimize: true,
+    sideEffects: false,
+
+    // Split vendor and app code
+    splitChunks: {
+      chunks: 'all',
+      cacheGroups: {
+        // React + React DOM
+        react: {
+          test: /[\\/]node_modules[\\/](react|react-dom)[\\/]/,
+          name: 'vendor-react',
+          priority: 10,
+        },
+
+        // AI SDK
+        ai: {
+          test: /[\\/]node_modules[\\/]@ai-sdk[\\/]/,
+          name: 'vendor-ai',
+          priority: 9,
+        },
+
+        // Other vendors
+        vendors: {
+          test: /[\\/]node_modules[\\/]/,
+          name: 'vendor-commons',
+          priority: 8,
+        },
+
+        // Shared components
+        common: {
+          minChunks: 2,
+          name: 'common',
+          priority: 7,
+          reuseExistingChunk: true,
+        },
+      },
+    },
+  },
+
+  module: {
+    rules: [
+      {
+        test: /\.(js|jsx|ts|tsx)$/,
+        exclude: /node_modules/,
+        use: {
+          loader: 'babel-loader',
+          options: {
+            presets: [
+              ['@babel/preset-env', {
+                modules: false, // Enable tree shaking
+                useBuiltIns: 'usage',
+                corejs: 3,
+              }],
+              '@babel/preset-react',
+              '@babel/preset-typescript',
+            ],
+          },
+        },
+      },
+    ],
+  },
+};
+```
+
+### Vite Configuration
+
+```typescript
+// vite.config.ts
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
+
+export default defineConfig({
+  plugins: [react()],
+
+  build: {
+    // Enable tree shaking
+    minify: 'terser',
+    terserOptions: {
+      compress: {
+        drop_console: true,
+        drop_debugger: true,
+        pure_funcs: ['console.log', 'console.info'],
+      },
+    },
+
+    // Optimize chunk sizes
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          // React core
+          'react-vendor': ['react', 'react-dom'],
+
+          // AI SDK
+          'ai-vendor': ['@ai-sdk/react', '@ai-sdk/provider'],
+
+          // Heavy components
+          'audio-features': [
+            './src/components/input/AudioRecorder',
+          ],
+          'token-features': [
+            './src/components/token/TokenOptimizer',
+          ],
+          'command-features': [
+            './src/components/navigation/CommandPalette',
+          ],
+        },
+      },
+    },
+
+    // Chunk size warnings
+    chunkSizeWarningLimit: 500,
+  },
+
+  // Optimize dependencies
+  optimizeDeps: {
+    include: [
+      'react',
+      'react-dom',
+      '@ai-sdk/react',
+    ],
+    exclude: [
+      'heavy-optional-dependency',
+    ],
+  },
+});
+```
+
+### Package.json Side Effects
+
+```json
+{
+  "name": "@clarity-ai/react",
+  "version": "2.0.0",
+  "sideEffects": [
+    "*.css",
+    "*.scss",
+    "./src/polyfills.ts"
+  ],
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs",
+      "types": "./dist/index.d.ts"
+    },
+    "./styles": {
+      "import": "./dist/styles.css"
+    },
+    "./audio": {
+      "import": "./dist/components/audio.js",
+      "types": "./dist/components/audio.d.ts"
+    },
+    "./token": {
+      "import": "./dist/components/token.js",
+      "types": "./dist/components/token.d.ts"
+    }
+  }
+}
+```
+
+## Bundle Analysis
+
+### Source Map Explorer
+
+```bash
+# Install analyzer
+npm install -D source-map-explorer
+
+# Build with source maps
+npm run build -- --sourcemap
+
+# Analyze bundle
+npx source-map-explorer 'dist/**/*.js'
+```
+
+```json
+// package.json scripts
+{
+  "scripts": {
+    "build": "vite build",
+    "build:analyze": "vite build --sourcemap && source-map-explorer 'dist/**/*.js'",
+    "analyze:webpack": "webpack-bundle-analyzer dist/stats.json"
+  }
+}
+```
+
+### Webpack Bundle Analyzer
+
+```javascript
+// webpack.config.js
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
+
+module.exports = {
+  plugins: [
+    process.env.ANALYZE && new BundleAnalyzerPlugin({
+      analyzerMode: 'static',
+      reportFilename: 'bundle-report.html',
+      openAnalyzer: true,
+    }),
+  ].filter(Boolean),
+};
+```
+
+### Bundle Analysis Results Visualization
+
+```
+Bundle Composition (Before Optimization)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Total: 1.2MB
+
+Vendor Libraries (720KB - 60%)
+├── react + react-dom (142KB) ████████
+├── @ai-sdk/react (89KB) █████
+├── lodash (71KB) ████
+├── moment (68KB) ████
+├── chart.js (165KB) █████████
+└── other vendors (185KB) ██████████
+
+App Code (380KB - 32%)
+├── components (210KB) ███████████
+├── utils (95KB) █████
+├── hooks (45KB) ███
+└── styles (30KB) ██
+
+Assets (100KB - 8%)
+└── fonts, images ████
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Bundle Composition (After Optimization)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Total: 485KB (-59.6%)
+
+Initial Bundle (180KB)
+├── react + react-dom (142KB) ████████████████
+├── core app (38KB) ████
+
+Route Chunks (195KB)
+├── chat.chunk.js (75KB) ████████
+├── settings.chunk.js (42KB) ████
+├── analytics.chunk.js (78KB) ████████
+
+Feature Chunks (110KB)
+├── audio.chunk.js (48KB) █████
+├── token.chunk.js (35KB) ████
+└── command.chunk.js (27KB) ███
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Improvement: 715KB saved (59.6% reduction)
+```
+
+## Removing Unused Dependencies
+
+### Dependency Audit
+
+```typescript
+// scripts/analyze-dependencies.ts
+import { execSync } from 'child_process';
+import fs from 'fs';
+
+interface DependencyUsage {
+  name: string;
+  version: string;
+  size: number;
+  used: boolean;
+  files: string[];
+}
+
+async function analyzeDependencies() {
+  const packageJson = JSON.parse(
+    fs.readFileSync('package.json', 'utf-8')
+  );
+
+  const dependencies = {
+    ...packageJson.dependencies,
+    ...packageJson.devDependencies,
+  };
+
+  const usage: DependencyUsage[] = [];
+
+  for (const [name] of Object.entries(dependencies)) {
+    // Check if imported anywhere
+    const searchResult = execSync(
+      `grep -r "from '${name}'" src/`,
+      { encoding: 'utf-8', stdio: 'pipe' }
+    ).toString();
+
+    const used = searchResult.trim().length > 0;
+    const files = used ? searchResult.split('\n').map(l => l.split(':')[0]) : [];
+
+    // Get package size
+    const size = parseInt(
+      execSync(`du -sk node_modules/${name}`, { encoding: 'utf-8' })
+        .split('\t')[0]
+    );
+
+    usage.push({
+      name,
+      version: dependencies[name],
+      size,
+      used,
+      files: [...new Set(files)],
+    });
+  }
+
+  // Report unused
+  const unused = usage.filter(d => !d.used);
+  const unusedSize = unused.reduce((sum, d) => sum + d.size, 0);
+
+  console.log('\nUnused Dependencies:');
+  console.log('━'.repeat(50));
+  unused.forEach(dep => {
+    console.log(`${dep.name}@${dep.version} (${dep.size}KB)`);
+  });
+  console.log(`\nTotal unused size: ${unusedSize}KB`);
+
+  return usage;
+}
+
+analyzeDependencies();
+```
+
+### Replace Heavy Dependencies
+
+```typescript
+// Before: Using lodash (71KB)
+import _ from 'lodash';
+
+const unique = _.uniq(items);
+const grouped = _.groupBy(items, 'category');
+
+// After: Native alternatives (0KB)
+const unique = [...new Set(items)];
+const grouped = items.reduce((acc, item) => {
+  (acc[item.category] = acc[item.category] || []).push(item);
+  return acc;
+}, {});
+```
+
+```typescript
+// Before: Using moment (68KB)
+import moment from 'moment';
+
+const formatted = moment(date).format('YYYY-MM-DD');
+const relative = moment(date).fromNow();
+
+// After: Using date-fns (small, tree-shakeable)
+import { format, formatDistanceToNow } from 'date-fns';
+
+const formatted = format(date, 'yyyy-MM-dd');
+const relative = formatDistanceToNow(date, { addSuffix: true });
+```
+
+```typescript
+// Before: Full chart.js library (165KB)
+import { Chart } from 'chart.js';
+
+// After: Import only needed components (45KB)
+import {
+  Chart,
+  LineController,
+  LineElement,
+  PointElement,
+  LinearScale,
+  Title,
+} from 'chart.js';
+
+Chart.register(
+  LineController,
+  LineElement,
+  PointElement,
+  LinearScale,
+  Title
+);
+```
+
+## Bundle Size Budgets
+
+### Performance Budget Configuration
+
+```javascript
+// webpack.config.js
+module.exports = {
+  performance: {
+    maxEntrypointSize: 200000,  // 200KB
+    maxAssetSize: 100000,        // 100KB
+    hints: 'error',
+
+    assetFilter: function(assetFilename) {
+      return assetFilename.endsWith('.js');
+    },
+  },
+};
+```
+
+```typescript
+// vite.config.ts
+export default defineConfig({
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          // Enforce budget by splitting
+          if (id.includes('node_modules')) {
+            return 'vendor';
+          }
+        },
+      },
+    },
+
+    // Warn on size
+    chunkSizeWarningLimit: 500,
+  },
+});
+```
+
+### Bundle Size Tracking
+
+```typescript
+// scripts/check-bundle-size.ts
+import fs from 'fs';
+import path from 'path';
+import { gzipSync } from 'zlib';
+
+interface BundleSize {
+  file: string;
+  raw: number;
+  gzip: number;
+  budget: number;
+  status: 'pass' | 'warn' | 'fail';
+}
+
+const budgets = {
+  'index.js': 200 * 1024,        // 200KB
+  'vendor.js': 150 * 1024,       // 150KB
+  'chat.chunk.js': 100 * 1024,   // 100KB
+  'audio.chunk.js': 50 * 1024,   // 50KB
+};
+
+function checkBundleSizes(distDir: string): BundleSize[] {
+  const results: BundleSize[] = [];
+
+  Object.entries(budgets).forEach(([filename, budget]) => {
+    const filepath = path.join(distDir, filename);
+
+    if (!fs.existsSync(filepath)) {
+      console.warn(`File not found: ${filename}`);
+      return;
+    }
+
+    const content = fs.readFileSync(filepath);
+    const raw = content.length;
+    const gzip = gzipSync(content).length;
+
+    let status: 'pass' | 'warn' | 'fail' = 'pass';
+    if (gzip > budget) {
+      status = 'fail';
+    } else if (gzip > budget * 0.9) {
+      status = 'warn';
+    }
+
+    results.push({
+      file: filename,
+      raw,
+      gzip,
+      budget,
+      status,
+    });
+  });
+
+  return results;
+}
+
+function formatSize(bytes: number): string {
+  return `${(bytes / 1024).toFixed(2)}KB`;
+}
+
+function printReport(results: BundleSize[]) {
+  console.log('\nBundle Size Report');
+  console.log('━'.repeat(70));
+  console.log('File                    Raw        Gzip      Budget    Status');
+  console.log('━'.repeat(70));
+
+  results.forEach(r => {
+    const status = r.status === 'pass' ? '✓' :
+                   r.status === 'warn' ? '⚠' : '✗';
+    const percentage = ((r.gzip / r.budget) * 100).toFixed(1);
+
+    console.log(
+      `${r.file.padEnd(20)} ${formatSize(r.raw).padStart(10)} ` +
+      `${formatSize(r.gzip).padStart(10)} ` +
+      `${formatSize(r.budget).padStart(10)} ` +
+      `${status} ${percentage}%`
+    );
+  });
+
+  const failed = results.filter(r => r.status === 'fail');
+  if (failed.length > 0) {
+    console.log('\n❌ Bundle size check failed!');
+    process.exit(1);
+  } else {
+    console.log('\n✅ All bundles within budget');
+  }
+}
+
+const results = checkBundleSizes('dist');
+printReport(results);
+```
+
+### CI Integration
+
+```yaml
+# .github/workflows/bundle-size.yml
+name: Bundle Size Check
+
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  check-bundle-size:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build production bundle
+        run: npm run build
+
+      - name: Check bundle sizes
+        run: npm run check:bundle-size
+
+      - name: Upload bundle analysis
+        uses: actions/upload-artifact@v3
+        with:
+          name: bundle-analysis
+          path: dist/bundle-report.html
+
+      - name: Comment PR with bundle size
+        uses: andresz1/size-limit-action@v1
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          skip_step: install
+```
+
+```json
+// package.json
+{
+  "scripts": {
+    "build": "vite build",
+    "check:bundle-size": "tsx scripts/check-bundle-size.ts",
+    "analyze": "npm run build && source-map-explorer 'dist/**/*.js'",
+    "size-limit": "size-limit"
+  },
+  "size-limit": [
+    {
+      "path": "dist/index.js",
+      "limit": "200 KB",
+      "gzip": true
+    },
+    {
+      "path": "dist/vendor.js",
+      "limit": "150 KB",
+      "gzip": true
+    }
+  ]
+}
+```
+
+## Optimization Checklist
+
+### Phase 1: Analysis (Week 1)
+
+- [ ] Install bundle analyzer tools
+  - [ ] source-map-explorer
+  - [ ] webpack-bundle-analyzer or vite-bundle-visualizer
+  - [ ] size-limit for CI
+
+- [ ] Generate baseline bundle report
+  - [ ] Document current bundle sizes
+  - [ ] Identify largest dependencies
+  - [ ] Map dependency usage across codebase
+
+- [ ] Set performance budgets
+  - [ ] Initial bundle: 200KB (gzip)
+  - [ ] Route chunks: 100KB each
+  - [ ] Component chunks: 50KB each
+  - [ ] Vendor bundles: 150KB total
+
+### Phase 2: Quick Wins (Week 2)
+
+- [ ] Enable tree shaking
+  - [ ] Configure bundler for production mode
+  - [ ] Add sideEffects field to package.json
+  - [ ] Verify dead code elimination
+
+- [ ] Replace heavy dependencies
+  - [ ] Replace moment with date-fns: Save ~50KB
+  - [ ] Replace lodash with native: Save ~60KB
+  - [ ] Use modular chart library: Save ~100KB
+
+- [ ] Remove unused dependencies
+  - [ ] Run dependency audit script
+  - [ ] Remove unused packages
+  - [ ] Update package.json
+
+### Phase 3: Code Splitting (Week 3)
+
+- [ ] Implement route-based splitting
+  - [ ] Convert all routes to lazy imports
+  - [ ] Add loading fallbacks
+  - [ ] Test navigation performance
+
+- [ ] Split heavy components
+  - [ ] AudioRecorder (lazy load on demand)
+  - [ ] CommandPalette (lazy load on demand)
+  - [ ] TokenOptimizer (lazy load on demand)
+  - [ ] Analytics charts (lazy load on demand)
+
+- [ ] Configure chunk splitting
+  - [ ] Separate vendor bundles
+  - [ ] Create shared commons chunk
+  - [ ] Optimize chunk sizes (target 50-100KB)
+
+### Phase 4: Advanced Optimization (Week 4)
+
+- [ ] Implement dynamic imports
+  - [ ] Add preload hints for critical paths
+  - [ ] Add prefetch for likely routes
+  - [ ] Implement progressive loading
+
+- [ ] Optimize dependencies
+  - [ ] Use ES modules where available
+  - [ ] Import only needed submodules
+  - [ ] Consider CDN for large libraries
+
+- [ ] Configure compression
+  - [ ] Enable gzip/brotli on server
+  - [ ] Pre-compress static assets
+  - [ ] Set up cache headers
+
+### Phase 5: Monitoring (Ongoing)
+
+- [ ] Set up CI checks
+  - [ ] Add bundle size check to CI pipeline
+  - [ ] Block PRs exceeding budgets
+  - [ ] Generate size comparison reports
+
+- [ ] Track metrics
+  - [ ] Monitor bundle sizes over time
+  - [ ] Track loading performance
+  - [ ] Measure user impact (TTI, FCP)
+
+- [ ] Regular maintenance
+  - [ ] Monthly dependency audit
+  - [ ] Quarterly bundle analysis
+  - [ ] Update budgets as needed
+
+## Real-World Results
+
+### Case Study: Clarity AI Chat Components
+
+```
+Initial State (v1.0)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Main bundle:     1.2MB (480KB gzip)
+Initial load:    3.8s (3G)
+Time to Interactive: 5.2s
+
+Optimized State (v2.0)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Main bundle:     180KB (72KB gzip)
+Initial load:    1.1s (3G)
+Time to Interactive: 1.8s
+
+Improvements
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Bundle size:     -85% reduction
+Load time:       -71% faster
+TTI:            -65% faster
+```
+
+### Optimization Breakdown
+
+```typescript
+const optimizations = [
+  {
+    action: 'Replaced moment.js with date-fns',
+    saved: '52KB gzip',
+    effort: 'Low',
+  },
+  {
+    action: 'Removed lodash, used native methods',
+    saved: '68KB gzip',
+    effort: 'Medium',
+  },
+  {
+    action: 'Lazy loaded AudioRecorder component',
+    saved: '45KB gzip',
+    effort: 'Low',
+  },
+  {
+    action: 'Lazy loaded CommandPalette',
+    saved: '28KB gzip',
+    effort: 'Low',
+  },
+  {
+    action: 'Lazy loaded TokenOptimizer',
+    saved: '35KB gzip',
+    effort: 'Low',
+  },
+  {
+    action: 'Split vendor bundles',
+    saved: '120KB initial load',
+    effort: 'Medium',
+  },
+  {
+    action: 'Tree shaking configuration',
+    saved: '60KB gzip',
+    effort: 'Low',
+  },
+];
+
+const totalSaved = optimizations.reduce((sum, opt) => {
+  const kb = parseInt(opt.saved);
+  return sum + (isNaN(kb) ? 0 : kb);
+}, 0);
+
+console.log(`Total saved: ${totalSaved}KB gzip`);
+// Output: Total saved: 408KB gzip
+```
+
+## Best Practices
+
+### DO
+
+1. **Measure first, optimize second**
+   - Establish baseline metrics
+   - Identify biggest opportunities
+   - Track improvements
+
+2. **Set realistic budgets**
+   - Based on target users and networks
+   - Include buffer for growth
+   - Review quarterly
+
+3. **Lazy load aggressively**
+   - Route-based splitting
+   - Component-based splitting
+   - Feature-based splitting
+
+4. **Use modern formats**
+   - ES modules for tree shaking
+   - Dynamic imports for code splitting
+   - Compression (gzip/brotli)
+
+5. **Monitor continuously**
+   - CI bundle size checks
+   - Performance monitoring
+   - User metrics tracking
+
+### DON'T
+
+1. **Don't bundle everything**
+   - Avoid importing entire libraries
+   - Don't include unused features
+   - Don't inline large assets
+
+2. **Don't skip analysis**
+   - Don't guess at optimization impact
+   - Don't optimize without measuring
+   - Don't ignore CI warnings
+
+3. **Don't sacrifice UX**
+   - Don't over-split (loading states)
+   - Don't break critical paths
+   - Don't lazy load above fold content
+
+4. **Don't ignore dependencies**
+   - Don't add heavy deps without review
+   - Don't keep unused dependencies
+   - Don't use full builds when subsets exist
+
+## Tools and Resources
+
+### Analysis Tools
+
+```bash
+# Bundle visualization
+npm install -D source-map-explorer
+npm install -D webpack-bundle-analyzer
+npm install -D vite-bundle-visualizer
+
+# Size tracking
+npm install -D size-limit @size-limit/preset-app
+
+# Dependency analysis
+npm install -D depcheck
+npm install -D bundle-buddy
+```
+
+### Monitoring Services
+
+- **Bundlephobia**: Check npm package sizes before installing
+- **Bundle Wizard**: Webpack bundle analysis
+- **Lighthouse CI**: Automated performance testing
+- **SpeedCurve**: Real user monitoring
+
+### Documentation
+
+- [Webpack Code Splitting](https://webpack.js.org/guides/code-splitting/)
+- [Vite Code Splitting](https://vitejs.dev/guide/features.html#code-splitting)
+- [React.lazy Documentation](https://react.dev/reference/react/lazy)
+- [Web.dev Bundle Size Optimization](https://web.dev/reduce-javascript-payloads-with-code-splitting/)
+
+## Next Steps
+
+1. **Run initial analysis**
+   - Install analysis tools
+   - Generate bundle report
+   - Identify optimization opportunities
+
+2. **Set up budgets**
+   - Define performance targets
+   - Configure CI checks
+   - Document baseline metrics
+
+3. **Implement optimizations**
+   - Start with quick wins (dependency replacement)
+   - Add code splitting
+   - Configure tree shaking
+
+4. **Monitor and iterate**
+   - Track bundle sizes in CI
+   - Monitor user performance
+   - Continuously optimize
+
+## Related Guides
+
+- [Performance Monitoring](/guides/performance/monitoring)
+- [Loading Performance](/guides/performance/loading)
+- [Asset Optimization](/guides/performance/assets)
+- [Caching Strategies](/guides/performance/caching)

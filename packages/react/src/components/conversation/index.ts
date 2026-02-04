@@ -5,12 +5,12 @@
  * including timelines, branching, and sharing.
  */
 
-export { ConversationList } from './conversation-list'
-export { ConversationTimeline } from './conversation-timeline'
-export { ConversationBranchVisualizer } from './conversation-branch-visualizer'
+export { ConversationList } from './ConversationList'
+export { ConversationTimeline } from './ConversationTimeline'
+export { ConversationBranchVisualizer } from './ConversationBranchVisualizer'
 export {
   ConversationSharing,
   ShareAnalyticsDashboard,
   useConversationSharing,
-} from './conversation-sharing'
-export { ConversationSummarizer } from './conversation-summarizer'
+} from './ConversationSharing'
+export { ConversationSummarizer } from './ConversationSummarizer'

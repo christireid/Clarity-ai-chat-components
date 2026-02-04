@@ -6,10 +6,10 @@
 
 import { useMemo, useCallback } from 'react'
 import type { CoreMessage } from '../../hooks/chat/use-chat-enhanced'
-import type { PromptRecipe } from '../core/recipe'
-import type { ToonNode } from '../core/toon'
 import { buildMessagesFromRecipe } from '../core/recipe'
+import type { PromptRecipe } from '../core/recipe'
 import { toonToMessages } from '../core/toon'
+import type { ToonNode } from '../core/toon'
 import { estimatePromptTokens } from '../core/tokenizer'
 
 /**

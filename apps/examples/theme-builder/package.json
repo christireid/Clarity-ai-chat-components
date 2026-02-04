@@ -11,9 +11,12 @@
   "dependencies": {
     "@clarity-chat/primitives": "workspace:*",
     "@clarity-chat/react": "workspace:*",
+    "framer-motion": "^12.23.25",
+    "lucide-react": "^0.500.0",
     "react": "^19.2.0",
+    "react-colorful": "^5.6.1",
     "react-dom": "^19.2.0",
-    "react-colorful": "^5.6.1"
+    "zod": "^3.24.0"
   },
   "devDependencies": {
     "@types/react": "^19.0.0",

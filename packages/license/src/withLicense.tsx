@@ -97,7 +97,7 @@ export function withLicense<P extends object>(
         }
       }
       return baseStatus
-    }, [baseStatus, requiredPlan])
+    }, [baseStatus])
 
     // Show console warning once per component type (with TTL to prevent memory leaks)
     React.useEffect(() => {

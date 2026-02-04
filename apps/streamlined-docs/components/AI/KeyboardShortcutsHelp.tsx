@@ -122,6 +122,7 @@ export function KeyboardShortcutsHelp({
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
+            viewport={{ once: true }}
             className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100]"
             onClick={onClose}
             aria-hidden="true"
@@ -132,6 +133,7 @@ export function KeyboardShortcutsHelp({
             initial={{ opacity: 0, scale: 0.95, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
+            viewport={{ once: true }}
             transition={{
               duration: durations.normal,
               ease: [0.25, 0.1, 0.25, 1],
@@ -198,6 +200,7 @@ export function KeyboardShortcutsHelp({
                             key={index}
                             initial={{ opacity: 0, x: -10 }}
                             animate={{ opacity: 1, x: 0 }}
+                            viewport={{ once: true }}
                             transition={{ delay: index * 0.05 }}
                             className={cn(
                               'flex items-center justify-between',

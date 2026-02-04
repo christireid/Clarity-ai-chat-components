@@ -187,7 +187,7 @@ export function DevToolsDashboard({
 
       // Number shortcuts (1-5)
       if (e.key >= '1' && e.key <= '5') {
-        const index = parseInt(e.key) - 1
+        const index = parseInt(e.key, 10) - 1
         if (tabs[index]) {
           e.preventDefault()
           handleTabChange(tabs[index].id)

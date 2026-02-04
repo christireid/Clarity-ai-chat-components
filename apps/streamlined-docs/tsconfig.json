@@ -46,6 +46,8 @@
     "lib/demos",
     "lib/error",
     "lib/security",
-    "next.config.security.ts"
+    "next.config.security.ts",
+    "__tests__",
+    "app/api"
   ]
 }

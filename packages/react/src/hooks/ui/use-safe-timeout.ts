@@ -78,9 +78,10 @@ export function useSafeTimeout(): UseSafeTimeoutReturn {
 
   // Cleanup all timeouts on unmount
   useEffect(() => {
+    const currentIds = timeoutIds.current
     return () => {
-      timeoutIds.current.forEach(clearTimeout)
-      timeoutIds.current.clear()
+      currentIds.forEach(clearTimeout)
+      currentIds.clear()
     }
   }, [])
 
@@ -157,9 +158,10 @@ export function useSafeInterval(): UseSafeIntervalReturn {
 
   // Cleanup all intervals on unmount
   useEffect(() => {
+    const currentIds = intervalIds.current
     return () => {
-      intervalIds.current.forEach(clearInterval)
-      intervalIds.current.clear()
+      currentIds.forEach(clearInterval)
+      currentIds.clear()
     }
   }, [])
 
@@ -237,9 +239,10 @@ export function useSafeAnimationFrame(): UseSafeAnimationFrameReturn {
 
   // Cleanup all frames on unmount
   useEffect(() => {
+    const currentIds = frameIds.current
     return () => {
-      frameIds.current.forEach(cancelAnimationFrame)
-      frameIds.current.clear()
+      currentIds.forEach(cancelAnimationFrame)
+      currentIds.clear()
     }
   }, [])
 

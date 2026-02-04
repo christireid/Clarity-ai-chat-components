@@ -34,7 +34,7 @@ export function WeatherToolResult({
 }>) {
   return (
     <Card className="border-blue-200 bg-gradient-to-br from-blue-50 to-blue-100/50">
-      <CardHeader>
+      <CardHeader className="">
         <CardTitle className="text-base flex items-center gap-2">
           {data.icon || '🌤️'} Weather in {data.location}
         </CardTitle>
@@ -81,7 +81,7 @@ export function SearchToolResult({
 }>) {
   return (
     <Card className="border-green-200 bg-green-50/50">
-      <CardHeader>
+      <CardHeader className="">
         <CardTitle className="text-base flex items-center gap-2">
           🔍 Search Results
         </CardTitle>
@@ -136,7 +136,7 @@ export function CalculatorToolResult({
 }>) {
   return (
     <Card className="border-purple-200 bg-purple-50/50">
-      <CardHeader>
+      <CardHeader className="">
         <CardTitle className="text-base flex items-center gap-2">
           🧮 Calculation Result
         </CardTitle>
@@ -186,7 +186,7 @@ export function DatabaseQueryToolResult({
 
   return (
     <Card className="border-orange-200 bg-orange-50/50">
-      <CardHeader>
+      <CardHeader className="">
         <CardTitle className="text-base flex items-center gap-2">
           🗄️ Database Query Results
         </CardTitle>
@@ -194,7 +194,7 @@ export function DatabaseQueryToolResult({
           {data.rowCount} row{data.rowCount !== 1 ? 's' : ''} returned
         </div>
       </CardHeader>
-      <CardContent>
+      <CardContent className="">
         {data.rows.length === 0 ? (
           <div className="text-sm text-muted-foreground">No rows returned</div>
         ) : (
@@ -252,7 +252,7 @@ export function APICallToolResult({
     <Card
       className={`border-${isSuccess ? 'green' : 'red'}-200 bg-${isSuccess ? 'green' : 'red'}-50/50`}
     >
-      <CardHeader>
+      <CardHeader className="">
         <CardTitle className="text-base flex items-center gap-2">
           🌐 API Response
         </CardTitle>
@@ -307,7 +307,7 @@ export function CodeExecutionToolResult({
     <Card
       className={`border-${data.error ? 'red' : 'blue'}-200 bg-${data.error ? 'red' : 'blue'}-50/50`}
     >
-      <CardHeader>
+      <CardHeader className="">
         <CardTitle className="text-base flex items-center gap-2">
           💻 Code Execution
         </CardTitle>

@@ -30,14 +30,17 @@
     }
   },
   "files": [
-    "dist"
+    "dist",
+    "README.md",
+    "CHANGELOG.md",
+    "LICENSE"
   ],
   "scripts": {
-    "build": "tsup",
+    "build": "NODE_OPTIONS='--max-old-space-size=8192' tsup",
     "dev": "tsup --watch",
     "test": "vitest",
     "test:coverage": "vitest --coverage",
-    "lint": "eslint src",
+    "lint": "eslint src --ext ts,tsx --ignore-pattern '*.js' --ignore-pattern '*.d.ts'",
     "typecheck": "tsc --noEmit",
     "size": "npx bundlephobia-cli ./dist/index.js",
     "doc:check": "tsx scripts/check-doc-sync.ts",
@@ -50,18 +53,15 @@
   },
   "dependencies": {
     "@clarity-chat/primitives": "workspace:*",
+    "@clarity-chat/utils": "workspace:*",
     "fflate": "^0.8.2",
     "gpt-tokenizer": "^2.8.0",
     "llm-splitter": "^0.2.0",
-    "lru-cache": "^10.0.0",
     "lz-string": "^1.5.0",
     "msgpackr": "^1.11.0",
     "validator": "^13.12.0"
   },
   "devDependencies": {
-    "@storybook/addon-a11y": "^8.6.15",
-    "@storybook/addon-essentials": "^8.6.14",
-    "@storybook/addon-interactions": "^8.6.14",
     "@storybook/react": "^8.6.15",
     "@storybook/react-vite": "^8.6.15",
     "@storybook/test": "^8.6.15",
@@ -71,14 +71,10 @@
     "@types/react": "^19.0.8",
     "@types/validator": "^13.12.0",
     "@vitest/coverage-v8": "^4.0.0",
-    "autoprefixer": "^10.4.23",
     "framer-motion": "^12.27.5",
     "jsdom": "^26.0.0",
-    "postcss": "^8.5.6",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "storybook": "^8.6.15",
-    "tailwindcss": "^3.4.18",
     "tsup": "^8.5.1",
     "typescript": "^5.9.3",
     "vitest": "^4.0.16"
@@ -133,5 +129,8 @@
   "homepage": "https://github.com/clarity-ai/token-optimization#readme",
   "bugs": {
     "url": "https://github.com/clarity-ai/token-optimization/issues"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }

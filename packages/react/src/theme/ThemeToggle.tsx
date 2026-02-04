@@ -10,14 +10,16 @@
 
 import * as React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { cn } from '@clarity-chat/primitives'
+import { cn, useReducedMotion } from '@clarity-chat/primitives'
 import { useTheme } from './use-theme'
-import { useReducedMotion } from '@clarity-chat/primitives'
 import {
   getMotionSafeDuration,
   getMotionSafeValue,
 } from '../animations/motion-safe'
-import { DURATION_SECONDS as durations } from '../animations/constants'
+import {
+  DURATION_SECONDS as durations,
+  ANIMATION_PRESETS,
+} from '../animations/constants'
 
 /**
  * Props for ThemeToggle component
@@ -108,19 +110,15 @@ export function ThemeToggle({
       <AnimatePresence mode="wait" initial={false}>
         <motion.div
           key={mode}
+          {...ANIMATION_PRESETS.scaleRotate}
           initial={{
+            ...ANIMATION_PRESETS.scaleRotate.initial,
             rotate: getMotionSafeValue(prefersReducedMotion, -90, 0),
-            opacity: 0,
             scale: getMotionSafeValue(prefersReducedMotion, 0.5, 1),
           }}
-          animate={{
-            rotate: 0,
-            opacity: 1,
-            scale: 1,
-          }}
           exit={{
+            ...ANIMATION_PRESETS.scaleRotate.exit,
             rotate: getMotionSafeValue(prefersReducedMotion, 90, 0),
-            opacity: 0,
             scale: getMotionSafeValue(prefersReducedMotion, 0.5, 1),
           }}
           transition={{
@@ -172,9 +170,7 @@ export function ThemeToggle({
       {/* Loading indicator */}
       {isTransitioning && (
         <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
+          {...ANIMATION_PRESETS.fadeIn}
           className="absolute inset-0 flex items-center justify-center bg-background/50 backdrop-blur-sm rounded-lg"
         >
           <motion.div

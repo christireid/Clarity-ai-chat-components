@@ -33,7 +33,7 @@ export { clarityMemory, clarityMemoryHelpers } from './factory'
 export * from './types'
 
 // Memory service (framework-agnostic)
-export { MemoryService } from './memory-service'
+export { MemoryService } from './memory-service/core'
 
 // Consent management (GDPR/CCPA compliance)
 export {
@@ -91,7 +91,6 @@ export type {
   QualityGateConfig,
   CostAwareConfig,
   SemanticCacheConfig,
-  DynamicCompressionConfig,
 } from '@clarity-chat/token-optimization'
 
 // LLM-based summarization (80-90% token reduction)
@@ -138,6 +137,21 @@ export {
   type DecayResult,
   type DecayCurve,
 } from './utils/decay-manager'
+
+// Token optimization utilities (internal)
+export { TokenCounter } from './utils/token-counter'
+export type {
+  ModelFamily,
+  ContentType,
+  TokenCountResult,
+} from './utils/token-counter'
+
+export { TokenBudgetManager } from './context/token-budget'
+export { ContextOptimizer } from './utils/context-optimizer'
+export type {
+  TokenBudgetAllocation,
+  CompressedMemory as CompressedMemoryResult,
+} from './utils/context-optimizer'
 
 // Re-export key interfaces for convenience
 export type {

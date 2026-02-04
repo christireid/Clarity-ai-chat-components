@@ -3,7 +3,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import {
   useDebouncedStreamingAnnouncements,
   useStreamingFocusPreservation,
-} from '../accessibility-helpers'
+} from '../accessibility-streaming'
 
 describe('Streaming Accessibility Features', () => {
   beforeEach(() => {

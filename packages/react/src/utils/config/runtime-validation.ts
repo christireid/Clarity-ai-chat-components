@@ -8,6 +8,18 @@
 import type { Tool } from '../../agents/types'
 
 /**
+ * Valid model prefixes
+ */
+const VALID_MODEL_PREFIXES = [
+  'gpt-',
+  'claude-',
+  'gemini-',
+  'llama-',
+  'mistral-',
+  'command-',
+]
+
+/**
  * Validate a model identifier
  * @throws Error if model is invalid
  */
@@ -18,6 +30,17 @@ export function validateModel(model: string): void {
 
   if (model.trim().length === 0) {
     throw new Error('Model cannot be an empty string')
+  }
+
+  // Check for known model prefixes in development
+  const isValidPrefix = VALID_MODEL_PREFIXES.some((prefix) =>
+    model.toLowerCase().startsWith(prefix)
+  )
+
+  if (!isValidPrefix && process.env['NODE_ENV'] === 'development') {
+    console.warn(
+      `[validateModel] Unknown model prefix: ${model}. Expected one of: ${VALID_MODEL_PREFIXES.join(', ')}`
+    )
   }
 }
 
@@ -32,7 +55,11 @@ export function validateTools(tools: Tool[]): void {
 
   for (const tool of tools) {
     if (!tool.name || typeof tool.name !== 'string') {
-      throw new Error('Each tool must have a name string')
+      throw new Error('Each tool must have a valid name')
+    }
+
+    if (!tool.description || typeof tool.description !== 'string') {
+      throw new Error(`Tool "${tool.name}" must have a description`)
     }
 
     if (typeof tool.execute !== 'function') {
@@ -325,10 +352,12 @@ export function validateVirtualizationProps(
     })
 
     if (overscan > 50) {
-      console.warn(
-        `[${componentName}] Large "overscan" value (${overscan}) may impact performance. ` +
-        `Recommended: 2-10 items`
-      )
+      if (process.env.NODE_ENV === 'development') {
+        console.warn(
+          `[${componentName}] Large "overscan" value (${overscan}) may impact performance. ` +
+            `Recommended: 2-10 items`
+        )
+      }
     }
   }
 
@@ -349,10 +378,12 @@ export function validateVirtualizationProps(
     })
 
     if (maxMessages < 100) {
-      console.warn(
-        `[${componentName}] Small "maxMessages" value (${maxMessages}) may cause ` +
-        `frequent message pruning. Recommended: 100-1000 messages`
-      )
+      if (process.env.NODE_ENV === 'development') {
+        console.warn(
+          `[${componentName}] Small "maxMessages" value (${maxMessages}) may cause ` +
+            `frequent message pruning. Recommended: 100-1000 messages`
+        )
+      }
     }
   }
 }
@@ -402,15 +433,20 @@ export function validateStreamingProps(
     })
 
     if (maxSteps > 100) {
-      console.warn(
-        `[${componentName}] Large "maxSteps" value (${maxSteps}) may cause long waits. ` +
-        `Consider limiting to 10-20 steps`
-      )
+      if (process.env.NODE_ENV === 'development') {
+        console.warn(
+          `[${componentName}] Large "maxSteps" value (${maxSteps}) may cause long waits. ` +
+            `Consider limiting to 10-20 steps`
+        )
+      }
     }
   }
 
   // Validate keepLastMessageOnError
-  if (keepLastMessageOnError !== undefined && typeof keepLastMessageOnError !== 'boolean') {
+  if (
+    keepLastMessageOnError !== undefined &&
+    typeof keepLastMessageOnError !== 'boolean'
+  ) {
     throw new Error(
       `[${componentName}] "keepLastMessageOnError" must be a boolean. Received: ${typeof keepLastMessageOnError}`
     )
@@ -442,10 +478,7 @@ export function validateCallbacks(
  * @param componentName - The component name for error context
  * @throws Error if messages is invalid
  */
-export function validateMessages(
-  messages: any,
-  componentName: string
-): void {
+export function validateMessages(messages: any, componentName: string): void {
   if (!Array.isArray(messages)) {
     throw new Error(
       `[${componentName}] "messages" must be an array. Received: ${typeof messages}`
@@ -471,14 +504,12 @@ export function validateMessages(
     if (!validRoles.includes(message.role)) {
       throw new Error(
         `[${componentName}] messages[${i}].role must be one of: ${validRoles.join(', ')}. ` +
-        `Received: "${message.role}"`
+          `Received: "${message.role}"`
       )
     }
 
     if (message.content === undefined) {
-      throw new Error(
-        `[${componentName}] messages[${i}].content is required`
-      )
+      throw new Error(`[${componentName}] messages[${i}].content is required`)
     }
   }
 }

@@ -1,0 +1,784 @@
+/**
+ * Clarity Chat - Global Styles & Design System
+ *
+ * This file serves as the foundational CSS for the entire clarity-chat library.
+ * It defines design tokens, base styles, utilities, and theme support that all
+ * components build upon.
+ */
+
+/* ============================================================================
+   CSS CUSTOM PROPERTIES (Design Tokens)
+   ============================================================================ */
+
+:root {
+  /* Color Palette - Primary */
+  --cc-primary-50: #f0f9ff;
+  --cc-primary-100: #e0f2fe;
+  --cc-primary-200: #bae6fd;
+  --cc-primary-300: #7dd3fc;
+  --cc-primary-400: #38bdf8;
+  --cc-primary-500: #0ea5e9;
+  --cc-primary-600: #0284c7;
+  --cc-primary-700: #0369a1;
+  --cc-primary-800: #075985;
+  --cc-primary-900: #0c3d66;
+  --cc-primary: var(--cc-primary-600);
+  --cc-primary-light: var(--cc-primary-50);
+  --cc-primary-dark: var(--cc-primary-900);
+
+  /* Color Palette - Secondary */
+  --cc-secondary-50: #f5f3ff;
+  --cc-secondary-100: #ede9fe;
+  --cc-secondary-200: #ddd6fe;
+  --cc-secondary-300: #c4b5fd;
+  --cc-secondary-400: #a78bfa;
+  --cc-secondary-500: #8b5cf6;
+  --cc-secondary-600: #7c3aed;
+  --cc-secondary-700: #6d28d9;
+  --cc-secondary-800: #5b21b6;
+  --cc-secondary-900: #3f0f5c;
+  --cc-secondary: var(--cc-secondary-600);
+  --cc-secondary-light: var(--cc-secondary-50);
+  --cc-secondary-dark: var(--cc-secondary-900);
+
+  /* Color Palette - Success */
+  --cc-success-50: #f0fdf4;
+  --cc-success-100: #dcfce7;
+  --cc-success-200: #bbf7d0;
+  --cc-success-300: #86efac;
+  --cc-success-400: #4ade80;
+  --cc-success-500: #22c55e;
+  --cc-success-600: #16a34a;
+  --cc-success-700: #15803d;
+  --cc-success-800: #166534;
+  --cc-success-900: #145231;
+  --cc-success: var(--cc-success-600);
+  --cc-success-light: var(--cc-success-50);
+  --cc-success-dark: var(--cc-success-900);
+
+  /* Color Palette - Warning */
+  --cc-warning-50: #fefce8;
+  --cc-warning-100: #fef3c7;
+  --cc-warning-200: #fde68a;
+  --cc-warning-300: #fcd34d;
+  --cc-warning-400: #fbbf24;
+  --cc-warning-500: #f59e0b;
+  --cc-warning-600: #d97706;
+  --cc-warning-700: #b45309;
+  --cc-warning-800: #92400e;
+  --cc-warning-900: #78350f;
+  --cc-warning: var(--cc-warning-600);
+  --cc-warning-light: var(--cc-warning-50);
+  --cc-warning-dark: var(--cc-warning-900);
+
+  /* Color Palette - Error */
+  --cc-error-50: #fef2f2;
+  --cc-error-100: #fee2e2;
+  --cc-error-200: #fecaca;
+  --cc-error-300: #fca5a5;
+  --cc-error-400: #f87171;
+  --cc-error-500: #ef4444;
+  --cc-error-600: #dc2626;
+  --cc-error-700: #b91c1c;
+  --cc-error-800: #991b1b;
+  --cc-error-900: #7f1d1d;
+  --cc-error: var(--cc-error-600);
+  --cc-error-light: var(--cc-error-50);
+  --cc-error-dark: var(--cc-error-900);
+
+  /* Color Palette - Info */
+  --cc-info-50: #f0f9ff;
+  --cc-info-100: #e0f2fe;
+  --cc-info-200: #bae6fd;
+  --cc-info-300: #7dd3fc;
+  --cc-info-400: #38bdf8;
+  --cc-info-500: #0ea5e9;
+  --cc-info-600: #0284c7;
+  --cc-info-700: #0369a1;
+  --cc-info-800: #075985;
+  --cc-info-900: #0c3d66;
+  --cc-info: var(--cc-info-600);
+  --cc-info-light: var(--cc-info-50);
+  --cc-info-dark: var(--cc-info-900);
+
+  /* Neutral Colors - Grayscale */
+  --cc-gray-50: #f9fafb;
+  --cc-gray-100: #f3f4f6;
+  --cc-gray-200: #e5e7eb;
+  --cc-gray-300: #d1d5db;
+  --cc-gray-400: #9ca3af;
+  --cc-gray-500: #6b7280;
+  --cc-gray-600: #4b5563;
+  --cc-gray-700: #374151;
+  --cc-gray-800: #1f2937;
+  --cc-gray-900: #111827;
+
+  /* Semantic neutral colors */
+  --cc-background: var(--cc-gray-50);
+  --cc-surface: #ffffff;
+  --cc-surface-variant: var(--cc-gray-100);
+  --cc-text-primary: var(--cc-gray-900);
+  --cc-text-secondary: var(--cc-gray-600);
+  --cc-text-tertiary: var(--cc-gray-500);
+  --cc-border: var(--cc-gray-200);
+  --cc-border-light: var(--cc-gray-100);
+  --cc-border-dark: var(--cc-gray-300);
+  --cc-divider: var(--cc-gray-200);
+
+  /* Typography */
+  --cc-font-family-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  --cc-font-family-mono: 'SFMono-Regular', 'Consolas', 'Liberation Mono', 'Menlo', monospace;
+  --cc-font-family-base: var(--cc-font-family-sans);
+
+  /* Font Sizes */
+  --cc-font-size-xs: 0.75rem;      /* 12px */
+  --cc-font-size-sm: 0.875rem;     /* 14px */
+  --cc-font-size-base: 1rem;       /* 16px */
+  --cc-font-size-lg: 1.125rem;     /* 18px */
+  --cc-font-size-xl: 1.25rem;      /* 20px */
+  --cc-font-size-2xl: 1.5rem;      /* 24px */
+  --cc-font-size-3xl: 1.875rem;    /* 30px */
+  --cc-font-size-4xl: 2.25rem;     /* 36px */
+
+  /* Font Weights */
+  --cc-font-weight-light: 300;
+  --cc-font-weight-normal: 400;
+  --cc-font-weight-medium: 500;
+  --cc-font-weight-semibold: 600;
+  --cc-font-weight-bold: 700;
+
+  /* Line Heights */
+  --cc-line-height-tight: 1.25;
+  --cc-line-height-normal: 1.5;
+  --cc-line-height-relaxed: 1.75;
+  --cc-line-height-loose: 2;
+
+  /* Letter Spacing */
+  --cc-letter-spacing-tight: -0.02em;
+  --cc-letter-spacing-normal: 0em;
+  --cc-letter-spacing-wide: 0.05em;
+
+  /* Spacing Scale (4px base unit) */
+  --cc-space-0: 0;
+  --cc-space-1: 0.25rem;    /* 4px */
+  --cc-space-2: 0.5rem;     /* 8px */
+  --cc-space-3: 0.75rem;    /* 12px */
+  --cc-space-4: 1rem;       /* 16px */
+  --cc-space-5: 1.25rem;    /* 20px */
+  --cc-space-6: 1.5rem;     /* 24px */
+  --cc-space-7: 1.75rem;    /* 28px */
+  --cc-space-8: 2rem;       /* 32px */
+  --cc-space-9: 2.25rem;    /* 36px */
+  --cc-space-10: 2.5rem;    /* 40px */
+  --cc-space-11: 2.75rem;   /* 44px */
+  --cc-space-12: 3rem;      /* 48px */
+  --cc-space-16: 4rem;      /* 64px */
+  --cc-space-20: 5rem;      /* 80px */
+  --cc-space-24: 6rem;      /* 96px */
+
+  /* Border Radius Scale */
+  --cc-radius-none: 0;
+  --cc-radius-sm: 0.25rem;   /* 4px */
+  --cc-radius-base: 0.5rem;  /* 8px */
+  --cc-radius-md: 0.75rem;   /* 12px */
+  --cc-radius-lg: 1rem;      /* 16px */
+  --cc-radius-xl: 1.5rem;    /* 24px */
+  --cc-radius-2xl: 2rem;     /* 32px */
+  --cc-radius-full: 9999px;
+
+  /* Box Shadows */
+  --cc-shadow-none: none;
+  --cc-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --cc-shadow-base: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+  --cc-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --cc-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --cc-shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  --cc-shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  --cc-shadow-inner: inset 0 2px 4px 0 rgba(0, 0, 0, 0.05);
+  --cc-shadow-focus: 0 0 0 3px rgba(14, 165, 233, 0.1), 0 0 0 5px rgba(14, 165, 233, 0.5);
+
+  /* Z-Index Scale */
+  --cc-z-base: 0;
+  --cc-z-dropdown: 10;
+  --cc-z-sticky: 20;
+  --cc-z-fixed: 30;
+  --cc-z-modal-backdrop: 40;
+  --cc-z-modal: 50;
+  --cc-z-popover: 60;
+  --cc-z-tooltip: 70;
+  --cc-z-notification: 80;
+
+  /* Transitions & Animations */
+  --cc-duration-75: 75ms;
+  --cc-duration-100: 100ms;
+  --cc-duration-150: 150ms;
+  --cc-duration-200: 200ms;
+  --cc-duration-300: 300ms;
+  --cc-duration-500: 500ms;
+  --cc-duration-700: 700ms;
+  --cc-duration-1000: 1000ms;
+
+  --cc-easing-linear: linear;
+  --cc-easing-in: cubic-bezier(0.4, 0, 1, 1);
+  --cc-easing-out: cubic-bezier(0, 0, 0.2, 1);
+  --cc-easing-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+  --cc-easing-ease-in-cubic: cubic-bezier(0.32, 0, 0.67, 0);
+  --cc-easing-ease-out-cubic: cubic-bezier(0.33, 1, 0.68, 1);
+  --cc-easing-ease-in-out-cubic: cubic-bezier(0.65, 0, 0.35, 1);
+
+  /* Breakpoints */
+  --cc-breakpoint-xs: 0;
+  --cc-breakpoint-sm: 640px;
+  --cc-breakpoint-md: 768px;
+  --cc-breakpoint-lg: 1024px;
+  --cc-breakpoint-xl: 1280px;
+  --cc-breakpoint-2xl: 1536px;
+}
+
+/* ============================================================================
+   DARK MODE THEME
+   ============================================================================ */
+
+.dark,
+[data-theme="dark"] {
+  /* Dark mode semantic colors */
+  --cc-background: var(--cc-gray-950, #0a0a0a);
+  --cc-surface: var(--cc-gray-900);
+  --cc-surface-variant: var(--cc-gray-800);
+  --cc-text-primary: var(--cc-gray-50);
+  --cc-text-secondary: var(--cc-gray-400);
+  --cc-text-tertiary: var(--cc-gray-500);
+  --cc-border: var(--cc-gray-700);
+  --cc-border-light: var(--cc-gray-800);
+  --cc-border-dark: var(--cc-gray-600);
+  --cc-divider: var(--cc-gray-700);
+}
+
+.dark {
+  --cc-gray-950: #09090b;
+}
+
+/* ============================================================================
+   BASE RESET & FOUNDATIONAL STYLES
+   ============================================================================ */
+
+html {
+  color-scheme: light dark;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: var(--cc-font-family-base);
+  font-size: var(--cc-font-size-base);
+  line-height: var(--cc-line-height-normal);
+  color: var(--cc-text-primary);
+  background-color: var(--cc-background);
+  transition: background-color var(--cc-duration-200) var(--cc-easing-out),
+              color var(--cc-duration-200) var(--cc-easing-out);
+}
+
+/* Remove default margins and paddings */
+h1, h2, h3, h4, h5, h6,
+p, ul, ol, dl, blockquote,
+pre, table, figure {
+  margin: 0;
+  padding: 0;
+}
+
+/* Normalize list styles */
+ul, ol {
+  list-style: none;
+}
+
+/* Normalize button and link styles */
+button, input, select, textarea {
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
+  color: inherit;
+}
+
+button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+}
+
+a {
+  color: var(--cc-primary);
+  text-decoration: none;
+  transition: color var(--cc-duration-150) var(--cc-easing-out);
+}
+
+a:hover {
+  color: var(--cc-primary-700);
+}
+
+/* ============================================================================
+   COMPONENT-SPECIFIC BASE STYLES
+   ============================================================================ */
+
+/* Chat container base styles */
+.clarity-chat-provider {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+  background-color: var(--cc-background);
+  color: var(--cc-text-primary);
+  font-family: var(--cc-font-family-base);
+}
+
+/* Chat messages container */
+.clarity-chat-messages {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--cc-space-4);
+  gap: var(--cc-space-4);
+}
+
+/* Chat message */
+.clarity-chat-message {
+  display: flex;
+  gap: var(--cc-space-3);
+  animation: slideIn var(--cc-duration-300) var(--cc-easing-out);
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(0.5rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Chat message bubble */
+.clarity-chat-bubble {
+  padding: var(--cc-space-3) var(--cc-space-4);
+  border-radius: var(--cc-radius-lg);
+  line-height: var(--cc-line-height-relaxed);
+  word-wrap: break-word;
+  white-space: pre-wrap;
+}
+
+/* User message bubble */
+.clarity-chat-message.user .clarity-chat-bubble {
+  background-color: var(--cc-primary);
+  color: #ffffff;
+  border-bottom-right-radius: var(--cc-radius-sm);
+  margin-left: auto;
+  max-width: 75%;
+}
+
+/* AI message bubble */
+.clarity-chat-message.ai .clarity-chat-bubble {
+  background-color: var(--cc-surface-variant);
+  color: var(--cc-text-primary);
+  border-bottom-left-radius: var(--cc-radius-sm);
+  max-width: 75%;
+}
+
+/* Chat input area */
+.clarity-chat-input-area {
+  display: flex;
+  flex-direction: column;
+  gap: var(--cc-space-3);
+  padding: var(--cc-space-4);
+  border-top: 1px solid var(--cc-border);
+  background-color: var(--cc-surface);
+}
+
+/* Chat input wrapper */
+.clarity-chat-input-wrapper {
+  display: flex;
+  gap: var(--cc-space-2);
+  align-items: flex-end;
+}
+
+/* Chat input field */
+.clarity-chat-input {
+  flex: 1;
+  padding: var(--cc-space-3) var(--cc-space-4);
+  border: 1px solid var(--cc-border);
+  border-radius: var(--cc-radius-lg);
+  background-color: var(--cc-surface);
+  color: var(--cc-text-primary);
+  font-family: var(--cc-font-family-base);
+  font-size: var(--cc-font-size-base);
+  line-height: var(--cc-line-height-normal);
+  resize: none;
+  transition: border-color var(--cc-duration-150) var(--cc-easing-out),
+              box-shadow var(--cc-duration-150) var(--cc-easing-out);
+  max-height: 120px;
+  min-height: 40px;
+}
+
+.clarity-chat-input:focus {
+  outline: none;
+  border-color: var(--cc-primary);
+  box-shadow: var(--cc-shadow-focus);
+}
+
+.clarity-chat-input:disabled {
+  background-color: var(--cc-surface-variant);
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+/* ============================================================================
+   UTILITY CLASSES
+   ============================================================================ */
+
+/* Display utilities */
+.cc-block { display: block; }
+.cc-inline-block { display: inline-block; }
+.cc-inline { display: inline; }
+.cc-flex { display: flex; }
+.cc-inline-flex { display: inline-flex; }
+.cc-grid { display: grid; }
+.cc-hidden { display: none; }
+
+/* Flex utilities */
+.cc-flex-row { flex-direction: row; }
+.cc-flex-col { flex-direction: column; }
+.cc-flex-wrap { flex-wrap: wrap; }
+.cc-flex-nowrap { flex-wrap: nowrap; }
+.cc-items-start { align-items: flex-start; }
+.cc-items-center { align-items: center; }
+.cc-items-end { align-items: flex-end; }
+.cc-justify-start { justify-content: flex-start; }
+.cc-justify-center { justify-content: center; }
+.cc-justify-end { justify-content: flex-end; }
+.cc-justify-between { justify-content: space-between; }
+.cc-gap-1 { gap: var(--cc-space-1); }
+.cc-gap-2 { gap: var(--cc-space-2); }
+.cc-gap-3 { gap: var(--cc-space-3); }
+.cc-gap-4 { gap: var(--cc-space-4); }
+
+/* Spacing utilities */
+.cc-p-0 { padding: var(--cc-space-0); }
+.cc-p-1 { padding: var(--cc-space-1); }
+.cc-p-2 { padding: var(--cc-space-2); }
+.cc-p-3 { padding: var(--cc-space-3); }
+.cc-p-4 { padding: var(--cc-space-4); }
+.cc-p-6 { padding: var(--cc-space-6); }
+.cc-p-8 { padding: var(--cc-space-8); }
+
+.cc-m-0 { margin: var(--cc-space-0); }
+.cc-m-1 { margin: var(--cc-space-1); }
+.cc-m-2 { margin: var(--cc-space-2); }
+.cc-m-3 { margin: var(--cc-space-3); }
+.cc-m-4 { margin: var(--cc-space-4); }
+.cc-m-6 { margin: var(--cc-space-6); }
+.cc-m-8 { margin: var(--cc-space-8); }
+
+.cc-px-2 { padding-left: var(--cc-space-2); padding-right: var(--cc-space-2); }
+.cc-px-4 { padding-left: var(--cc-space-4); padding-right: var(--cc-space-4); }
+.cc-py-2 { padding-top: var(--cc-space-2); padding-bottom: var(--cc-space-2); }
+.cc-py-4 { padding-top: var(--cc-space-4); padding-bottom: var(--cc-space-4); }
+
+/* Typography utilities */
+.cc-text-xs { font-size: var(--cc-font-size-xs); }
+.cc-text-sm { font-size: var(--cc-font-size-sm); }
+.cc-text-base { font-size: var(--cc-font-size-base); }
+.cc-text-lg { font-size: var(--cc-font-size-lg); }
+.cc-text-xl { font-size: var(--cc-font-size-xl); }
+.cc-text-2xl { font-size: var(--cc-font-size-2xl); }
+
+.cc-font-light { font-weight: var(--cc-font-weight-light); }
+.cc-font-normal { font-weight: var(--cc-font-weight-normal); }
+.cc-font-medium { font-weight: var(--cc-font-weight-medium); }
+.cc-font-semibold { font-weight: var(--cc-font-weight-semibold); }
+.cc-font-bold { font-weight: var(--cc-font-weight-bold); }
+
+.cc-leading-tight { line-height: var(--cc-line-height-tight); }
+.cc-leading-normal { line-height: var(--cc-line-height-normal); }
+.cc-leading-relaxed { line-height: var(--cc-line-height-relaxed); }
+
+/* Color utilities */
+.cc-text-primary { color: var(--cc-text-primary); }
+.cc-text-secondary { color: var(--cc-text-secondary); }
+.cc-text-tertiary { color: var(--cc-text-tertiary); }
+
+.cc-bg-primary { background-color: var(--cc-primary); }
+.cc-bg-primary-light { background-color: var(--cc-primary-light); }
+.cc-bg-secondary { background-color: var(--cc-secondary); }
+.cc-bg-success { background-color: var(--cc-success); }
+.cc-bg-warning { background-color: var(--cc-warning); }
+.cc-bg-error { background-color: var(--cc-error); }
+.cc-bg-info { background-color: var(--cc-info); }
+
+.cc-border-primary { border-color: var(--cc-primary); }
+.cc-border-secondary { border-color: var(--cc-secondary); }
+.cc-border-success { border-color: var(--cc-success); }
+.cc-border-warning { border-color: var(--cc-warning); }
+.cc-border-error { border-color: var(--cc-error); }
+
+/* Border utilities */
+.cc-border { border: 1px solid var(--cc-border); }
+.cc-border-t { border-top: 1px solid var(--cc-border); }
+.cc-border-r { border-right: 1px solid var(--cc-border); }
+.cc-border-b { border-bottom: 1px solid var(--cc-border); }
+.cc-border-l { border-left: 1px solid var(--cc-border); }
+
+.cc-rounded { border-radius: var(--cc-radius-base); }
+.cc-rounded-sm { border-radius: var(--cc-radius-sm); }
+.cc-rounded-md { border-radius: var(--cc-radius-md); }
+.cc-rounded-lg { border-radius: var(--cc-radius-lg); }
+.cc-rounded-xl { border-radius: var(--cc-radius-xl); }
+.cc-rounded-full { border-radius: var(--cc-radius-full); }
+
+/* Shadow utilities */
+.cc-shadow-sm { box-shadow: var(--cc-shadow-sm); }
+.cc-shadow { box-shadow: var(--cc-shadow-base); }
+.cc-shadow-md { box-shadow: var(--cc-shadow-md); }
+.cc-shadow-lg { box-shadow: var(--cc-shadow-lg); }
+.cc-shadow-xl { box-shadow: var(--cc-shadow-xl); }
+
+/* Size utilities */
+.cc-w-full { width: 100%; }
+.cc-h-full { height: 100%; }
+.cc-max-w-xs { max-width: 20rem; }
+.cc-max-w-sm { max-width: 24rem; }
+.cc-max-w-md { max-width: 28rem; }
+.cc-max-w-lg { max-width: 32rem; }
+.cc-max-w-xl { max-width: 36rem; }
+
+/* Opacity utilities */
+.cc-opacity-50 { opacity: 0.5; }
+.cc-opacity-75 { opacity: 0.75; }
+.cc-opacity-100 { opacity: 1; }
+
+/* Transition utilities */
+.cc-transition { transition: all var(--cc-duration-200) var(--cc-easing-out); }
+.cc-transition-colors { transition: background-color, border-color, color var(--cc-duration-200) var(--cc-easing-out); }
+
+/* ============================================================================
+   AI & AGENT STATUS STYLES
+   ============================================================================ */
+
+/* AI status indicators */
+.cc-ai-status {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--cc-space-2);
+  font-size: var(--cc-font-size-sm);
+  font-weight: var(--cc-font-weight-medium);
+}
+
+/* Thinking state */
+.cc-ai-status.thinking {
+  color: var(--cc-info);
+}
+
+.cc-ai-status.thinking::before {
+  content: '';
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: var(--cc-radius-full);
+  background-color: var(--cc-info);
+  animation: pulse var(--cc-duration-2000) var(--cc-easing-out) infinite;
+}
+
+/* Success state */
+.cc-ai-status.success {
+  color: var(--cc-success);
+}
+
+.cc-ai-status.success::before {
+  content: '✓';
+  display: inline-block;
+  font-weight: var(--cc-font-weight-bold);
+}
+
+/* Error state */
+.cc-ai-status.error {
+  color: var(--cc-error);
+}
+
+.cc-ai-status.error::before {
+  content: '!';
+  display: inline-block;
+  font-weight: var(--cc-font-weight-bold);
+}
+
+/* Loading state */
+.cc-ai-status.loading {
+  color: var(--cc-warning);
+}
+
+.cc-ai-status.loading::before {
+  content: '';
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border: 2px solid var(--cc-warning);
+  border-right-color: transparent;
+  border-radius: var(--cc-radius-full);
+  animation: spin var(--cc-duration-1000) linear infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ============================================================================
+   ACCESSIBILITY & FOCUS STATES
+   ============================================================================ */
+
+/* Focus visible for keyboard navigation */
+*:focus-visible {
+  outline: 2px solid var(--cc-primary);
+  outline-offset: 2px;
+}
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  outline: 2px solid var(--cc-primary);
+  outline-offset: 2px;
+}
+
+/* Skip to main content link */
+.cc-skip-to-main {
+  position: absolute;
+  top: -40px;
+  left: 0;
+  background-color: var(--cc-primary);
+  color: white;
+  padding: var(--cc-space-3) var(--cc-space-4);
+  text-decoration: none;
+  z-index: var(--cc-z-modal);
+}
+
+.cc-skip-to-main:focus {
+  top: 0;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: more) {
+  :root {
+    --cc-border-width: 2px;
+  }
+
+  .clarity-chat-input,
+  .clarity-chat-bubble {
+    border-width: 2px;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  .clarity-chat-message {
+    animation: none;
+  }
+}
+
+/* ============================================================================
+   RESPONSIVE UTILITIES
+   ============================================================================ */
+
+/* Small devices */
+@media (max-width: 640px) {
+  .clarity-chat-message.user .clarity-chat-bubble,
+  .clarity-chat-message.ai .clarity-chat-bubble {
+    max-width: 90%;
+  }
+
+  .cc-hidden-sm {
+    display: none;
+  }
+}
+
+/* Medium devices */
+@media (min-width: 768px) {
+  .cc-hidden-md {
+    display: none;
+  }
+
+  .cc-block-md {
+    display: block;
+  }
+}
+
+/* Large devices */
+@media (min-width: 1024px) {
+  .cc-hidden-lg {
+    display: none;
+  }
+
+  .cc-block-lg {
+    display: block;
+  }
+}
+
+/* ============================================================================
+   SCROLLBAR CUSTOMIZATION
+   ============================================================================ */
+
+.clarity-chat-messages::-webkit-scrollbar {
+  width: 8px;
+}
+
+.clarity-chat-messages::-webkit-scrollbar-track {
+  background-color: transparent;
+}
+
+.clarity-chat-messages::-webkit-scrollbar-thumb {
+  background-color: var(--cc-border);
+  border-radius: var(--cc-radius-full);
+  transition: background-color var(--cc-duration-150) var(--cc-easing-out);
+}
+
+.clarity-chat-messages::-webkit-scrollbar-thumb:hover {
+  background-color: var(--cc-text-tertiary);
+}
+
+/* Firefox scrollbar */
+.clarity-chat-messages {
+  scrollbar-color: var(--cc-border) transparent;
+  scrollbar-width: thin;
+}
+
+/* ============================================================================
+   PRINT STYLES
+   ============================================================================ */
+
+@media print {
+  .clarity-chat-input-area,
+  .clarity-chat-provider {
+    display: none;
+  }
+
+  .clarity-chat-message {
+    page-break-inside: avoid;
+  }
+}

@@ -36,54 +36,51 @@ export * from './public-api'
 
 // Re-export components from internal that aren't in public-api
 // Note: Some items are excluded to avoid duplicate export conflicts
-export { AdvancedChatInput } from './components/input/advanced-chat-input'
-export { ChatLayout } from './components/chat/chat-layout'
+export { AdvancedChatInput } from './components/input/AdvancedChatInput'
+export { ChatLayout } from './components/chat/ChatLayout'
 export { Message } from './components/message/message'
-export { MessageMetadata } from './components/message/message-metadata'
-export { StreamBlock } from './components/message/stream-block'
-export { ToolInvocationCard } from './components/message/tool-invocation-card'
-export { ClarityToolResult } from './components/message/clarity-tool-result'
-export { CopyButton } from './components/message/copy-button'
-export { FileUpload } from './components/input/file-upload'
-export { ModelSelector } from './components/ai/model-selector'
-export { ContextCard } from './components/context/context-card'
-export { ContextManager } from './components/context/context-manager'
-export { ProjectSidebar } from './components/context/project-sidebar'
+export { MessageMetadata } from './components/message/MessageMetadata'
+export { StreamBlock } from './components/message/StreamBlock'
+export { ToolInvocationCard } from './components/message/ToolInvocationCard'
+export { ClarityToolResult } from './components/message/ClarityToolResult'
+export { CopyButton } from './components/message/CopyButton'
+export { FileUpload } from './components/input/FileUpload'
+export { ModelSelector } from './components/ai/ModelSelector'
+export { ContextCard } from './components/context/ContextCard'
+export { ContextManager } from './components/context/ContextManager'
+export { ProjectSidebar } from './components/context/ProjectSidebar'
 // PromptLibrary - not yet implemented
-export { SettingsPanel } from './components/context/settings-panel'
-export { UsageDashboard } from './components/dashboards/usage-dashboard'
-export { KnowledgeBaseViewer } from './components/ai/knowledge-base-viewer'
-export { BatchExportDialog } from './components/media/batch-export-dialog'
-export { StreamCancellation } from './components/message/stream-cancellation'
-export { EnhancedCodeBlock } from './components/ai/enhanced-code-block'
-export { StreamingTextRenderer } from './components/message/streaming-text-renderer'
-export { PersonaPanel } from './components/ai/persona-panel'
-export { ConversationTimeline } from './components/conversation/conversation-timeline'
-export { MemoryInspector } from './components/context/memory-inspector'
-export { SafetyStatusCard } from './components/ai/safety-status-card'
-export { AuditLogViewer } from './components/ai/audit-log-viewer'
-export { DocumentViewer } from './components/media/document-viewer'
-export { ResponseQualityMeter } from './components/dashboards/response-quality-meter'
-export { MultiModalPreview } from './components/media/multi-modal-preview'
-export { AgentRunFeed } from './components/ai/agent-run-feed'
-export { SessionSummaryCard } from './components/ai/session-summary-card'
-export { WorkflowSuggestionList } from './components/ai/workflow-suggestion-list'
-export { AnalyticsDashboard } from './components/dashboards/analytics-dashboard'
-export { RetryButton } from './components/feedback/retry-button'
+export { SettingsPanel } from './components/context/SettingsPanel'
+export { UsageDashboard } from './components/dashboards/UsageDashboard'
+export { StreamCancellation } from './components/message/StreamCancellation'
+export { EnhancedCodeBlock } from './components/ai/EnhancedCodeBlock'
+export { StreamingTextRenderer } from './components/message/StreamingTextRenderer'
+export { ConversationTimeline } from './components/conversation/ConversationTimeline'
+export { MemoryInspector } from './components/context/MemoryInspector'
+export { SafetyStatusCard } from './components/ai/SafetyStatusCard'
+export { AuditLogViewer } from './components/ai/AuditLogViewer'
+export { DocumentViewer } from './components/media/DocumentViewer'
+export { ResponseQualityMeter } from './components/dashboards/ResponseQualityMeter'
+export { MultiModalPreview } from './components/media/MultiModalPreview'
+export { AgentRunFeed } from './components/ai/AgentRunFeed'
+export { SessionSummaryCard } from './components/ai/SessionSummaryCard'
+export { WorkflowSuggestionList } from './components/ai/WorkflowSuggestionList'
+export { AnalyticsDashboard } from './components/dashboards/AnalyticsDashboard'
+export { RetryButton } from './components/feedback/RetryButton'
 export {
   ConsoleAlertHandler,
   useConsoleAlerts,
-} from './components/feedback/console-alert-handler'
+} from './components/feedback/ConsoleAlertHandler'
 export type {
   ConsoleAlert,
   ConsoleAlertHandlerProps,
-} from './components/feedback/console-alert-handler'
+} from './components/feedback/ConsoleAlertHandler'
 export { TokenOptimizationPanel } from './components/token/TokenOptimizationPanel'
 export { TokenOptimizationBadge } from './components/token/TokenOptimizationBadge'
 export {
   TokenBudgetBar,
   TokenBudgetIndicator,
-} from './components/token/token-budget-bar'
+} from './components/token/TokenBudgetBar'
 export { TokenOptimizationDashboard } from './components/token/TokenOptimizationDashboard'
 export {
   TokenCostPreview,
@@ -98,14 +95,14 @@ export {
   type TokenUsage,
   type ModelPricing,
   type TokenUsageMeterProps,
-} from './components/token/token-usage-meter'
-export { ContextVisualizer } from './components/context/context-visualizer'
-export { ConversationList } from './components/conversation/conversation-list'
-export { ConversationBranchVisualizer } from './components/conversation/conversation-branch-visualizer'
+} from './components/token/TokenUsageMeter'
+export { ContextVisualizer } from './components/context/ContextVisualizer'
+export { ConversationList } from './components/conversation/ConversationList'
+export { ConversationBranchVisualizer } from './components/conversation/ConversationBranchVisualizer'
 export { Tabs, TabsList, TabsTrigger, TabsContent } from './components/ui/tabs'
-export { VirtualizedMessageList } from './components/chat/virtualized-message-list'
-export { MessageList } from './components/message/message-list'
-export { VoiceInput } from './components/input/voice-input'
+export { VirtualizedMessageList } from './components/chat/VirtualizedMessageList'
+export { MessageList } from './components/message/MessageList'
+export { VoiceInput } from './components/input/VoiceInput'
 export * from './components/ui/link-preview'
 
 // Re-export hooks from internal domains
@@ -156,8 +153,34 @@ export * from './hooks/theme'
 // export * from './theme'
 
 // Re-export components from additional domains
-export * from './components/ui'
-export * from './components/ai'
+// Note: EmptyChatState is already exported from public-api, so we exclude it here
+export {
+  EmptyState,
+  type EmptyStateProps,
+  NoSearchResultsState,
+  NoConversationsState,
+  NoFilesState,
+  ErrorState,
+  SuccessState,
+  InfoState,
+  LoadingState,
+  LoadingStateWithTimeout,
+  OfflineState,
+} from './components/ui/EmptyState'
+// Export all other ui components
+// Note: Spinner, LoadingIndicator, TypingIndicator don't exist in ./components/ui
+export * from './components/ui/AnimatedDots'
+export * from './components/ui/BatteryIndicator'
+export * from './components/ui/DashboardSkeleton'
+export * from './components/ui/FeedbackAnimation'
+export * from './components/ui/InteractiveCard'
+export * from './components/ui/SonnerToast'
+export * from './components/ui/draggable'
+// Note: error-fallback and progress don't exist in ./components/ui
+// Progress components are exported from public-api to avoid conflicts
+export * from './components/ui/skeleton-enhanced'
+// Note: './components/ai' exports are handled explicitly in './public-api' to avoid conflicts
+// export * from './components/ai'
 export * from './components/context'
 // Note: Using explicit exports from './components/code' to avoid conflict with
 // getDarkThemes/getLightThemes exported from './theme'
@@ -183,7 +206,6 @@ export {
   type CodeThemeDefinition,
   type CodeThemeName,
   parseLineRanges,
-  escapeHtml,
   normalizeLanguage,
   detectLanguage,
   getLanguageDisplayName,
@@ -207,13 +229,13 @@ export { ContextMenu } from './components/navigation'
 export * from './components/theme-components'
 export * from './components/input'
 // Export only working prompt components (excluding problematic ones with TypeScript issues)
-export { FollowUpSuggestions } from './components/prompt/follow-up-suggestions'
-export { PromptSuggestions } from './components/prompt/prompt-suggestions'
+export { FollowUpSuggestions } from './components/prompt/FollowUpSuggestions'
+export { PromptSuggestions } from './components/prompt/PromptSuggestions'
 export type {
   PromptSuggestionsProps,
   PromptSuggestion,
   PromptSuggestionType,
-} from './components/prompt/prompt-suggestions'
+} from './components/prompt/PromptSuggestions'
 // PromptSuggestionsEnhanced - not yet implemented
 
 // Re-export accessibility utilities
@@ -223,7 +245,9 @@ export type {
 
 // Re-export types that are commonly needed
 export type { CoreMessage } from './hooks/chat/use-chat-enhanced'
-export * from './types/chat-types'
+// Note: Commented out to avoid MessageRole conflict with public-api
+// If you need chat types, import from public-api instead: import type { MessageRole } from '@clarity-chat/react'
+// export * from './types/chat-types'
 export * from './utils/tools'
 export * from './utils/streaming'
 export { convertCoreMessagesToMessages } from './utils/message/message-conversion'
@@ -234,6 +258,7 @@ export {
   formatEvaluateResult,
   sanitizeCodeHtml,
   escapeHtmlEntities,
+  escapeHtml,
   createSafeCodeHtml,
   detectDangerousHtml,
   sanitizeSQL,
@@ -256,10 +281,10 @@ export {
 export type { MessageAttachment, SavedPrompt } from '@clarity-chat/types'
 
 // Re-export input types
-export type { InputSuggestion } from './components/input/advanced-chat-input'
+export type { InputSuggestion } from './components/input/AdvancedChatInput'
 
 // Re-export additional types for docs pages
-export type { AgentRunStep } from './components/ai/agent-run-feed'
+export type { AgentRunStep } from './components/ai/AgentRunFeed'
 export type { ModelInfo, ToolCall } from './adapters/types'
 
 // ============================================================================
@@ -292,10 +317,12 @@ export {
   deepClone,
   deepMerge,
   clamp,
-  sleep,
-  retry,
+  // Note: retry is not exported from ./internal/index
   formatBytes,
 } from './internal/index'
+
+// Re-export sleep from utils for backward compatibility
+export { sleep } from '@clarity-chat/utils/async'
 
 // ============================================================================
 // AI CHAT HOOKS (Advanced)
@@ -374,7 +401,6 @@ export * from './webhooks'
 // Note: useInteractionTracking is already exported via public-api
 // export * from './components/dashboards' - conflicts with public-api
 export * from './components/ai-ops'
-export * from './components/ab-testing'
 export * from './components/pro'
 
 // ============================================================================

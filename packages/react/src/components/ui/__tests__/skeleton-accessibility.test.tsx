@@ -22,12 +22,12 @@ import {
   AdvancedSkeleton,
 } from '../skeleton-enhanced'
 
-import { useOptimalAnimation, useResponsiveSize } from '../skeleton-advanced'
+import { useOptimalAnimation, useResponsiveSize } from '../SkeletonAdvanced'
 
+import { useReducedMotion } from '@clarity-chat/primitives'
 import {
   prefersReducedMotion,
   getAccessibleAnimation,
-  useReducedMotion,
 } from '../../../animations/zero-dependency'
 
 // Mock matchMedia for accessibility testing

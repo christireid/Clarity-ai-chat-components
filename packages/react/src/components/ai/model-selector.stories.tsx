@@ -3,7 +3,7 @@
  */
 
 import type { Meta, StoryObj } from '@storybook/react'
-import { ModelSelector } from './model-selector'
+import { ModelSelector } from './ModelSelector'
 import { allModels } from '../adapters'
 
 const meta: Meta<typeof ModelSelector> = {
@@ -43,38 +43,38 @@ function App() {
   )
 }
 \`\`\`
-        `
-      }
+        `,
+      },
     },
-    layout: 'centered'
+    layout: 'centered',
   },
   tags: ['autodocs'],
   argTypes: {
     models: {
       control: false,
-      description: 'Array of available models'
+      description: 'Array of available models',
     },
     value: {
       control: 'text',
-      description: 'Currently selected model ID'
+      description: 'Currently selected model ID',
     },
     onChange: {
       action: 'onChange',
-      description: 'Callback when model is selected'
+      description: 'Callback when model is selected',
     },
     showMetrics: {
       control: 'boolean',
-      description: 'Show speed/cost/quality badges'
+      description: 'Show speed/cost/quality badges',
     },
     showDescription: {
       control: 'boolean',
-      description: 'Show model descriptions'
+      description: 'Show model descriptions',
     },
     disabled: {
       control: 'boolean',
-      description: 'Disable the selector'
-    }
-  }
+      description: 'Disable the selector',
+    },
+  },
 }
 
 export default meta
@@ -86,107 +86,107 @@ export const Default: Story = {
     value: 'gpt-4-turbo',
     showMetrics: true,
     showDescription: true,
-    disabled: false
-  }
+    disabled: false,
+  },
 }
 
 export const WithoutMetrics: Story = {
   args: {
     ...Default.args,
-    showMetrics: false
+    showMetrics: false,
   },
   parameters: {
     docs: {
       description: {
-        story: 'Hide speed/cost/quality badges for a cleaner look'
-      }
-    }
-  }
+        story: 'Hide speed/cost/quality badges for a cleaner look',
+      },
+    },
+  },
 }
 
 export const WithoutDescriptions: Story = {
   args: {
     ...Default.args,
-    showDescription: false
+    showDescription: false,
   },
   parameters: {
     docs: {
       description: {
-        story: 'Compact mode without model descriptions'
-      }
-    }
-  }
+        story: 'Compact mode without model descriptions',
+      },
+    },
+  },
 }
 
 export const Disabled: Story = {
   args: {
     ...Default.args,
-    disabled: true
+    disabled: true,
   },
   parameters: {
     docs: {
       description: {
-        story: 'Disabled state prevents interaction'
-      }
-    }
-  }
+        story: 'Disabled state prevents interaction',
+      },
+    },
+  },
 }
 
 export const OpenAIOnly: Story = {
   args: {
     ...Default.args,
-    models: allModels.filter(m => m.provider === 'openai'),
-    value: 'gpt-3.5-turbo'
+    models: allModels.filter((m) => m.provider === 'openai'),
+    value: 'gpt-3.5-turbo',
   },
   parameters: {
     docs: {
       description: {
-        story: 'Filter to show only OpenAI models'
-      }
-    }
-  }
+        story: 'Filter to show only OpenAI models',
+      },
+    },
+  },
 }
 
 export const AnthropicOnly: Story = {
   args: {
     ...Default.args,
-    models: allModels.filter(m => m.provider === 'anthropic'),
-    value: 'claude-3-sonnet-20240229'
+    models: allModels.filter((m) => m.provider === 'anthropic'),
+    value: 'claude-3-sonnet-20240229',
   },
   parameters: {
     docs: {
       description: {
-        story: 'Filter to show only Anthropic Claude models'
-      }
-    }
-  }
+        story: 'Filter to show only Anthropic Claude models',
+      },
+    },
+  },
 }
 
 export const GoogleOnly: Story = {
   args: {
     ...Default.args,
-    models: allModels.filter(m => m.provider === 'google'),
-    value: 'gemini-1.5-flash'
+    models: allModels.filter((m) => m.provider === 'google'),
+    value: 'gemini-1.5-flash',
   },
   parameters: {
     docs: {
       description: {
-        story: 'Filter to show only Google Gemini models'
-      }
-    }
-  }
+        story: 'Filter to show only Google Gemini models',
+      },
+    },
+  },
 }
 
 export const CustomWidth: Story = {
   args: {
     ...Default.args,
-    className: 'w-96'
+    className: 'w-96',
   },
   parameters: {
     docs: {
       description: {
-        story: 'Use className prop to control width'
-      }
-    }
-  }
+        story: 'Use className prop to control width',
+      },
+    },
+  },
 }

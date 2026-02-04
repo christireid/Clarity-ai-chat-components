@@ -10,7 +10,7 @@
 import { AdvancedContextCache } from './caching/advanced-cache'
 import { BasicCompressionEngine } from './compression/basic-engine'
 import { SimpleModelRouter } from './routing/simple-router'
-import { AdvancedTokenCounter } from './tokenizers/advanced-counter'
+import { AccurateTokenCounter } from './tokenizers/accurate-counter'
 import { toBase64 } from './utils/crypto'
 import {
   ProviderCachingFormatter,
@@ -107,7 +107,7 @@ export class UnifiedTokenOptimizer {
   private cache: AdvancedContextCache
   private compressor: BasicCompressionEngine
   private router: SimpleModelRouter
-  private counter: AdvancedTokenCounter
+  private counter: AccurateTokenCounter
   private providerCaching?: ProviderCachingFormatter
   private stats: OptimizationStats
 
@@ -119,13 +119,10 @@ export class UnifiedTokenOptimizer {
       enableFallback: true,
     })
     this.router = new SimpleModelRouter()
-    this.counter = new AdvancedTokenCounter({
-      defaultModel: 'generic',
-      enableCache: true,
-      cacheTimeout: 3600000,
-      enableContentDetection: true,
+    this.counter = new AccurateTokenCounter({
+      model: 'gpt-4',
+      enableCaching: true,
       enableMonitoring: false,
-      confidenceThreshold: 0.8,
     })
 
     // Initialize provider caching if config provided
@@ -158,7 +155,10 @@ export class UnifiedTokenOptimizer {
     const { content, requirements, constraints, context } = request
 
     // Count original tokens
-    const originalTokens = await this.counter.countWithConfidence(content)
+    const originalTokens = {
+      count: this.counter.count(content),
+      confidence: 1.0,
+    }
 
     let optimizedContent = content
     let techniquesApplied: string[] = []
@@ -201,7 +201,8 @@ export class UnifiedTokenOptimizer {
         ]
 
         // Format messages for provider caching
-        const providerResult = await this.providerCaching.formatMessagesForCaching(messages)
+        const providerResult =
+          await this.providerCaching.formatMessagesForCaching(messages)
 
         if (providerResult.cached) {
           providerCacheHit = true
@@ -223,7 +224,9 @@ export class UnifiedTokenOptimizer {
           // For now, keep content as-is since the caching happens at API layer
         }
       } catch (error) {
-        console.warn('Provider caching failed:', error)
+        if (process.env.NODE_ENV === 'development') {
+          console.warn('Provider caching failed:', error)
+        }
         // Continue with optimization even if provider caching fails
       }
     }
@@ -250,13 +253,17 @@ export class UnifiedTokenOptimizer {
         modelUsed = routingDecision.modelId
         techniquesApplied.push('model_routing')
       } catch (error) {
-        console.warn('Model routing failed:', error)
+        if (process.env.NODE_ENV === 'development') {
+          console.warn('Model routing failed:', error)
+        }
       }
     }
 
     // Count optimized tokens
-    const optimizedTokens =
-      await this.counter.countWithConfidence(optimizedContent)
+    const optimizedTokens = {
+      count: this.counter.count(optimizedContent),
+      confidence: 1.0,
+    }
 
     // Calculate cost reduction
     const costReduction = this.calculateCostReduction(

@@ -13,7 +13,7 @@
  * @module memory-summarize
  */
 
-import { SimpleTokenCounter } from '../../tokenizers/simple-counter'
+import { AccurateTokenCounter } from '../../tokenizers/accurate-counter'
 
 /**
  * Memory item interface for compression (standalone, no memory package dependency)
@@ -109,7 +109,7 @@ export interface MemorySummarizeOptions {
  */
 export class MemorySummarizeStrategy {
   private readonly summarizer?: LLMSummarizer | Summarizer
-  private readonly tokenCounter: SimpleTokenCounter
+  private readonly tokenCounter: AccurateTokenCounter
   private readonly options: Required<MemorySummarizeOptions>
 
   /**
@@ -123,7 +123,7 @@ export class MemorySummarizeStrategy {
     options: MemorySummarizeOptions = {}
   ) {
     this.summarizer = summarizer
-    this.tokenCounter = new SimpleTokenCounter()
+    this.tokenCounter = new AccurateTokenCounter({ model: 'gpt-4' })
     this.options = {
       minContentLength: options.minContentLength ?? 300,
       debug: options.debug ?? false,

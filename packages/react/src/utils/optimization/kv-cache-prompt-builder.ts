@@ -16,7 +16,7 @@
  */
 
 import { estimateTokens } from '../tokenization/estimator'
-import type { ModelName } from './tokenization/accurate-counter'
+import type { ModelName } from '../tokenization/accurate-counter'
 
 /**
  * Priority levels for prompt segments

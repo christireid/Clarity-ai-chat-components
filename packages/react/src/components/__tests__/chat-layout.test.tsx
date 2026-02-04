@@ -3,7 +3,7 @@
  */
 import { describe, it, expect } from 'vitest'
 import { render, screen } from '@testing-library/react'
-import { ChatLayout } from '../chat-layout'
+import { ChatLayout } from '../ChatLayout'
 
 describe('ChatLayout', () => {
   describe('Basic rendering', () => {
@@ -237,7 +237,9 @@ describe('ChatLayout', () => {
       )
 
       const elements = container.querySelectorAll('[data-testid]')
-      const order = Array.from(elements).map((el) => el.getAttribute('data-testid'))
+      const order = Array.from(elements).map((el) =>
+        el.getAttribute('data-testid')
+      )
 
       // Header should come first, then sidebar/main, then footer
       expect(order[0]).toBe('header')
@@ -271,7 +273,9 @@ describe('ChatLayout', () => {
 
       expect(screen.getByRole('heading', { name: 'Title' })).toBeInTheDocument()
       expect(screen.getByText('Paragraph')).toBeInTheDocument()
-      expect(screen.getByRole('button', { name: 'Click me' })).toBeInTheDocument()
+      expect(
+        screen.getByRole('button', { name: 'Click me' })
+      ).toBeInTheDocument()
     })
   })
 

@@ -22,7 +22,7 @@ import {
   AnalyticsProvider,
   createGoogleAnalyticsProvider,
 } from '@clarity-chat/react'
-import '@clarity-chat/react/dist/styles/index.css'
+import '@clarity-chat/react/styles.css'
 
 // Sidebar component showing memory context
 function MemorySidebar() {

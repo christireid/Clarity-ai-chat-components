@@ -7,7 +7,7 @@
     "clarity-codemods": "./dist/index.js"
   },
   "scripts": {
-    "build": "tsup",
+    "build": "NODE_OPTIONS='--max-old-space-size=8192' tsup",
     "dev": "tsup --watch",
     "test": "vitest run",
     "test:watch": "vitest",

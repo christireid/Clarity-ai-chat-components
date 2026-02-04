@@ -13,7 +13,7 @@
  * @module memory-extract
  */
 
-import { SimpleTokenCounter } from '../../tokenizers/simple-counter'
+import { AccurateTokenCounter } from '../../tokenizers/accurate-counter'
 
 /**
  * Memory item interface for compression (standalone, no memory package dependency)
@@ -72,7 +72,7 @@ export interface MemoryExtractOptions {
  * ```
  */
 export class MemoryExtractStrategy {
-  private readonly tokenCounter: SimpleTokenCounter
+  private readonly tokenCounter: AccurateTokenCounter
   private readonly options: Required<MemoryExtractOptions>
 
   /**
@@ -81,7 +81,7 @@ export class MemoryExtractStrategy {
    * @param options - Configuration options
    */
   constructor(options: MemoryExtractOptions = {}) {
-    this.tokenCounter = new SimpleTokenCounter()
+    this.tokenCounter = new AccurateTokenCounter({ model: 'gpt-4' })
     this.options = {
       minContentLength: options.minContentLength ?? 200,
       topKeywords: options.topKeywords ?? 10,

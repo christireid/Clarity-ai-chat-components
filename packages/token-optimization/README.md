@@ -516,18 +516,37 @@ import type {
 
 ## Bundle Size
 
-Tree-shakeable subpath exports:
+Tree-shakeable subpath exports for optimal bundle size:
 
 ```typescript
-// Full package (~400KB minified, tree-shakeable)
-import { useTokenCount } from '@clarity-chat/token-optimization'
+// Lightweight (~40KB) - Fast estimation, no tokenizers
+import { countTokens, useTokenCount } from '@clarity-chat/token-optimization'
+
+// Heavy features (~220KB gpt-tokenizer dependency) - Import only when needed:
+
+// Accurate token counting
+import { AccurateTokenCounter } from '@clarity-chat/token-optimization/tokenizers'
+
+// Text chunking with precise token counting
+import { TextChunker } from '@clarity-chat/token-optimization/chunking'
+
+// TOON format optimization
+import { ToonOptimizer } from '@clarity-chat/token-optimization/toon'
+
+// Feature-specific imports:
 
 // Just React hooks (~50KB)
 import { useTokenCount } from '@clarity-chat/token-optimization/react'
 
 // Just compression (~30KB)
 import { compressWithLLMLingua } from '@clarity-chat/token-optimization/compression'
+
+// Just caching (~20KB)
+import { createCache } from '@clarity-chat/token-optimization/cache'
 ```
+
+**Bundle Savings**: The main bundle excludes the heavy `gpt-tokenizer` (~220KB). Import from
+`/tokenizers`, `/chunking`, or `/toon` only when you need precise token counting.
 
 ## Development & Testing
 

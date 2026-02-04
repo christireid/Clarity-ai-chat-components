@@ -18,11 +18,11 @@
  * - ui/           Generic UI primitives
  * - ai/           AI-specific features
  * - prompt/       Prompt suggestions
+ * - prompt-composer/ Progressive prompt system with token optimization
  * - context/      Context and memory management
  * - code/         Code display components
  * - enterprise/   Enterprise features
  * - ai-ops/       AI operations components
- * - ab-testing/   A/B testing components
  */
 
 // Message Components
@@ -61,6 +61,9 @@ export * from './ui'
 // AI Components
 export * from './ai'
 
+// PromptComposer Components
+export * from './prompt-composer'
+
 // Context Components
 export * from './context'
 
@@ -70,8 +73,8 @@ export * from './code'
 // AI-Ops Components
 export * from './ai-ops'
 
-// A/B Testing Sub-components
-export * from './ab-testing'
-
 // Pro Components
 export * from './pro'
+
+// Comparison Components
+export { BeforeAfterComparison, type BeforeAfterComparisonProps, type BeforeMetrics, type AfterMetrics, type StrategyContribution, type ComparisonType } from './BeforeAfterComparison'

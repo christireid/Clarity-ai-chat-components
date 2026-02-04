@@ -1,1 +1,13 @@
 scripts/
+# Compiled output - TypeScript compiles .tsx to .js
+components/**/*.js
+components/**/*.js.map
+components/**/*.d.ts
+components/**/*.d.ts.map
+lib/**/*.js
+lib/**/*.js.map
+lib/**/*.d.ts
+lib/**/*.d.ts.map
+# Next.js build output
+.next/
+out/

@@ -16,6 +16,8 @@
     "agentkeepalive": "^4.5.0",
     "form-data-encoder": "^4.0.2",
     "formdata-node": "^6.0.3",
+    "framer-motion": "^12.23.25",
+    "jszip": "^3.10.0",
     "lucide-react": "^0.552.0",
     "next": "^16.0.9",
     "openai": "^4.78.1",

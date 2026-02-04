@@ -44,9 +44,15 @@ const initRedis = async () => {
     const redis = await import('redis')
     createClient = redis.createClient as CreateClientFn
   } catch {
-    console.warn(
-      '[REDIS SECURITY STORE] Redis not available, using in-memory fallback'
-    )
+    if (process.env.NODE_ENV === 'development') {
+      if (process.env.NODE_ENV === 'development') {
+        if (process.env.NODE_ENV === 'development') {
+          console.warn(
+            '[REDIS SECURITY STORE] Redis not available, using in-memory fallback'
+          )
+        }
+      }
+    }
   }
 }
 initRedis()
@@ -83,16 +89,26 @@ export class RedisSecurityStore {
     if (config.enabled && createClient) {
       this.initializeRedis()
     } else {
-      console.log('[REDIS SECURITY STORE] Using in-memory fallback')
+      if (process.env.NODE_ENV === 'development') {
+        if (process.env.NODE_ENV === 'development') {
+          console.log('[REDIS SECURITY STORE] Using in-memory fallback')
+        }
+      }
       this.isConnected = false
     }
   }
 
   private async initializeRedis(): Promise<void> {
     if (!createClient) {
-      console.log(
-        '[REDIS SECURITY STORE] Redis client not available, using in-memory fallback'
-      )
+      if (process.env.NODE_ENV === 'development') {
+        if (process.env.NODE_ENV === 'development') {
+          if (process.env.NODE_ENV === 'development') {
+            console.log(
+              '[REDIS SECURITY STORE] Redis client not available, using in-memory fallback'
+            )
+          }
+        }
+      }
       this.isConnected = false
       return
     }
@@ -106,19 +122,31 @@ export class RedisSecurityStore {
       })
 
       this.client.on('error', (err: unknown) => {
-        console.error('[REDIS SECURITY STORE] Error:', err)
+        if (process.env.NODE_ENV === 'development') {
+          if (process.env.NODE_ENV === 'development') {
+            console.error('[REDIS SECURITY STORE] Error:', err)
+          }
+        }
         this.isConnected = false
       })
 
       this.client.on('connect', () => {
-        console.log('[REDIS SECURITY STORE] Connected to Redis')
+        if (process.env.NODE_ENV === 'development') {
+          if (process.env.NODE_ENV === 'development') {
+            console.log('[REDIS SECURITY STORE] Connected to Redis')
+          }
+        }
         this.isConnected = true
       })
 
       await this.client.connect()
       this.setupCleanup()
     } catch (error) {
-      console.error('[REDIS SECURITY STORE] Failed to initialize:', error)
+      if (process.env.NODE_ENV === 'development') {
+        if (process.env.NODE_ENV === 'development') {
+          console.error('[REDIS SECURITY STORE] Failed to initialize:', error)
+        }
+      }
       this.isConnected = false
     }
   }
@@ -135,10 +163,16 @@ export class RedisSecurityStore {
 
         await this.setSecurityData(key, data)
       } catch (error) {
-        console.error(
-          '[REDIS SECURITY STORE] Failed to store rate limit requests:',
-          error
-        )
+        if (process.env.NODE_ENV === 'development') {
+          if (process.env.NODE_ENV === 'development') {
+            if (process.env.NODE_ENV === 'development') {
+              console.error(
+                '[REDIS SECURITY STORE] Failed to store rate limit requests:',
+                error
+              )
+            }
+          }
+        }
       }
     } else {
       // Fallback to in-memory storage
@@ -157,10 +191,16 @@ export class RedisSecurityStore {
       const data = await this.getSecurityData(key)
       return data.rateLimitRequests
     } catch (error) {
-      console.error(
-        '[REDIS SECURITY STORE] Failed to get rate limit requests:',
-        error
-      )
+      if (process.env.NODE_ENV === 'development') {
+        if (process.env.NODE_ENV === 'development') {
+          if (process.env.NODE_ENV === 'development') {
+            console.error(
+              '[REDIS SECURITY STORE] Failed to get rate limit requests:',
+              error
+            )
+          }
+        }
+      }
       return []
     }
   }
@@ -181,10 +221,16 @@ export class RedisSecurityStore {
 
       await this.setSecurityData(key, data)
     } catch (error) {
-      console.error(
-        '[REDIS SECURITY STORE] Failed to store threat intelligence:',
-        error
-      )
+      if (process.env.NODE_ENV === 'development') {
+        if (process.env.NODE_ENV === 'development') {
+          if (process.env.NODE_ENV === 'development') {
+            console.error(
+              '[REDIS SECURITY STORE] Failed to store threat intelligence:',
+              error
+            )
+          }
+        }
+      }
     }
   }
 
@@ -198,10 +244,16 @@ export class RedisSecurityStore {
       const data = await this.getSecurityData(key)
       return data.threatIntelligence
     } catch (error) {
-      console.error(
-        '[REDIS SECURITY STORE] Failed to get threat intelligence:',
-        error
-      )
+      if (process.env.NODE_ENV === 'development') {
+        if (process.env.NODE_ENV === 'development') {
+          if (process.env.NODE_ENV === 'development') {
+            console.error(
+              '[REDIS SECURITY STORE] Failed to get threat intelligence:',
+              error
+            )
+          }
+        }
+      }
       return []
     }
   }
@@ -219,10 +271,16 @@ export class RedisSecurityStore {
 
       await this.setSecurityData(key, data)
     } catch (error) {
-      console.error(
-        '[REDIS SECURITY STORE] Failed to add to quarantine:',
-        error
-      )
+      if (process.env.NODE_ENV === 'development') {
+        if (process.env.NODE_ENV === 'development') {
+          if (process.env.NODE_ENV === 'development') {
+            console.error(
+              '[REDIS SECURITY STORE] Failed to add to quarantine:',
+              error
+            )
+          }
+        }
+      }
     }
   }
 
@@ -236,10 +294,16 @@ export class RedisSecurityStore {
       const data = await this.getSecurityData(key)
       return data.quarantineEvents
     } catch (error) {
-      console.error(
-        '[REDIS SECURITY STORE] Failed to get quarantine events:',
-        error
-      )
+      if (process.env.NODE_ENV === 'development') {
+        if (process.env.NODE_ENV === 'development') {
+          if (process.env.NODE_ENV === 'development') {
+            console.error(
+              '[REDIS SECURITY STORE] Failed to get quarantine events:',
+              error
+            )
+          }
+        }
+      }
       return []
     }
   }
@@ -257,7 +321,14 @@ export class RedisSecurityStore {
 
       await this.setSecurityData(key, data)
     } catch (error) {
-      console.error('[REDIS SECURITY STORE] Failed to add to audit log:', error)
+      if (process.env.NODE_ENV === 'development') {
+        if (process.env.NODE_ENV === 'development') {
+          console.error(
+            '[REDIS SECURITY STORE] Failed to add to audit log:',
+            error
+          )
+        }
+      }
     }
   }
 
@@ -271,10 +342,16 @@ export class RedisSecurityStore {
       const data = await this.getSecurityData(key)
       return data.auditLog
     } catch (error) {
-      console.error(
-        '[REDIS SECURITY STORE] Failed to get audit log events:',
-        error
-      )
+      if (process.env.NODE_ENV === 'development') {
+        if (process.env.NODE_ENV === 'development') {
+          if (process.env.NODE_ENV === 'development') {
+            console.error(
+              '[REDIS SECURITY STORE] Failed to get audit log events:',
+              error
+            )
+          }
+        }
+      }
       return []
     }
   }
@@ -310,10 +387,16 @@ export class RedisSecurityStore {
           return parsed
         }
       } catch (error) {
-        console.error(
-          '[REDIS SECURITY STORE] Failed to get security data:',
-          error
-        )
+        if (process.env.NODE_ENV === 'development') {
+          if (process.env.NODE_ENV === 'development') {
+            if (process.env.NODE_ENV === 'development') {
+              console.error(
+                '[REDIS SECURITY STORE] Failed to get security data:',
+                error
+              )
+            }
+          }
+        }
       }
     }
 
@@ -336,10 +419,16 @@ export class RedisSecurityStore {
         await this.client.setEx(redisKey, this.config.ttlSeconds, serialized)
         return
       } catch (error) {
-        console.error(
-          '[REDIS SECURITY STORE] Failed to set security data:',
-          error
-        )
+        if (process.env.NODE_ENV === 'development') {
+          if (process.env.NODE_ENV === 'development') {
+            if (process.env.NODE_ENV === 'development') {
+              console.error(
+                '[REDIS SECURITY STORE] Failed to set security data:',
+                error
+              )
+            }
+          }
+        }
       }
     }
 
@@ -391,7 +480,11 @@ export class RedisSecurityStore {
         }
       }
     } catch (error) {
-      console.error('[REDIS SECURITY STORE] Cleanup error:', error)
+      if (process.env.NODE_ENV === 'development') {
+        if (process.env.NODE_ENV === 'development') {
+          console.error('[REDIS SECURITY STORE] Cleanup error:', error)
+        }
+      }
     }
   }
 
@@ -408,9 +501,17 @@ export class RedisSecurityStore {
       try {
         await this.client.disconnect()
         this.isConnected = false
-        console.log('[REDIS SECURITY STORE] Disconnected from Redis')
+        if (process.env.NODE_ENV === 'development') {
+          if (process.env.NODE_ENV === 'development') {
+            console.log('[REDIS SECURITY STORE] Disconnected from Redis')
+          }
+        }
       } catch (error) {
-        console.error('[REDIS SECURITY STORE] Error disconnecting:', error)
+        if (process.env.NODE_ENV === 'development') {
+          if (process.env.NODE_ENV === 'development') {
+            console.error('[REDIS SECURITY STORE] Error disconnecting:', error)
+          }
+        }
       }
     }
   }

@@ -19,7 +19,7 @@
 
 import * as React from 'react'
 import { cn } from '@clarity-chat/primitives'
-import { CopyButton, type CopyButtonProps } from '../message/copy-button'
+import { CopyButton, type CopyButtonProps } from '../message/CopyButton'
 
 /**
  * CodeBlockCopyButton Component Props

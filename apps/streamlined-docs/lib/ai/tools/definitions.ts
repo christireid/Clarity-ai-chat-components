@@ -3,10 +3,14 @@
  *
  * Defines the tools available to the docs assistant for enhanced responses.
  * These tools enable the assistant to generate diagrams, look up documentation,
- * create code examples, and provide bundle size recommendations.
+ * create code examples, provide bundle size recommendations, and manage user data.
+ *
+ * **NEW** (Agent-Native Architecture): User management CRUD tools for action parity.
  */
 
 import type Anthropic from '@anthropic-ai/sdk'
+import { USER_MANAGEMENT_TOOLS } from './user-management-tools'
+import { MESSAGE_MANAGEMENT_TOOLS } from './message-management-tools'
 
 /**
  * Tool names as constants for type safety
@@ -23,8 +27,11 @@ export type ToolName = (typeof TOOL_NAMES)[keyof typeof TOOL_NAMES]
 
 /**
  * Tool definitions for Claude API
+ *
+ * Includes both documentation tools and user management tools for full action parity.
  */
 export const DOCS_ASSISTANT_TOOLS: Anthropic.Tool[] = [
+  // Documentation & Content Generation Tools
   {
     name: TOOL_NAMES.GENERATE_DIAGRAM,
     description: `Generate a Mermaid diagram to visually explain concepts, architecture, data flow, or component relationships. Use this tool when:
@@ -146,24 +153,45 @@ export const DOCS_ASSISTANT_TOOLS: Anthropic.Tool[] = [
   },
   {
     name: TOOL_NAMES.CALCULATE_BUNDLE_IMPACT,
-    description: `Calculate the bundle size impact of using specific Clarity Chat features and recommend the optimal entry point. Use this tool when:
-- User asks about bundle size or optimization
-- User wants to know which entry point to use
-- User is comparing full vs core vs core-minimal bundles
-- User wants to minimize their bundle size`,
+    description: `Analyze bundle size impact and recommend optimal entry point for Clarity Chat.
+
+**Prompt-Native Tool**: This tool structures your reasoning about bundle optimization. You should:
+
+1. Read the bundle optimization context from your system knowledge
+2. Parse the user's requirements into a feature list
+3. Reason about which entry point best fits their needs
+4. Calculate approximate bundle sizes based on documented patterns
+5. Identify lazy-loadable features for progressive enhancement
+6. Provide specific optimization recommendations
+
+Use this tool when:
+- User asks "What's the bundle size?" or "Which package should I use?"
+- User wants to optimize their bundle
+- User compares full vs core vs core-minimal
+- User asks about lazy loading strategies
+
+**Important**: Use documented size estimates and reasoning, not hardcoded lookups. Refer to bundle-optimization-context.md patterns.`,
     input_schema: {
       type: 'object' as const,
       properties: {
-        features: {
-          type: 'array',
-          items: { type: 'string' },
+        user_requirements: {
+          type: 'string',
           description:
-            'List of features the user needs (e.g., ["streaming", "memory", "theming", "rag", "analytics"])',
+            'Natural language description of what features the user needs. Examples: "I need streaming chat with dark mode", "Just basic chat for mobile", "Full enterprise features with analytics"',
+        },
+        context: {
+          type: 'string',
+          description:
+            'Optional: Additional context about the use case (mobile app, desktop app, performance constraints, user tier, etc.)',
         },
       },
-      required: ['features'],
+      required: ['user_requirements'],
     },
   },
+  // User Management Tools (Agent-Native Architecture)
+  ...USER_MANAGEMENT_TOOLS,
+  // Message Management Tools (Agent-Native Architecture)
+  ...MESSAGE_MANAGEMENT_TOOLS,
 ]
 
 /**
@@ -196,7 +224,8 @@ export interface ToolInputs {
     notes?: string
   }
   calculate_bundle_impact: {
-    features: string[]
+    user_requirements: string
+    context?: string
   }
 }
 
@@ -272,12 +301,23 @@ export interface ToolOutputs {
   calculate_bundle_impact: {
     success: true
     analysis: {
-      recommended_entry_point: string
-      estimated_size: string
-      features_included: string[]
-      features_requiring_lazy_load: string[]
-      size_breakdown: Array<{ feature: string; size: string }>
-      optimization_tips: string[]
+      user_requirements: string
+      context?: string
+      reasoning_guidance: {
+        step_1: string
+        step_2: string
+        step_3: string
+        step_4: string
+        step_5: string
+        step_6: string
+      }
+      bundle_context_reference: string
+      available_entry_points: Array<{
+        name: string
+        base_size: string
+        includes: string[]
+      }>
+      instruction: string
     }
   }
 }

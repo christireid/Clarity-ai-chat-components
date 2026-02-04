@@ -5,7 +5,7 @@
  * Uses js-tiktoken when available, falls back to estimation.
  */
 
-import { TokenCounter } from '@clarity-chat/token-optimization'
+import { AccurateTokenCounter } from '@clarity-chat/token-optimization'
 import { InputValidator } from './input-validator'
 import {
   errorHandler,
@@ -331,7 +331,8 @@ export async function countTokens(
   const { model = 'gpt-4', cache = true, preferAccurate = true } = options
 
   // Use the new TokenCounter from the token-optimization package
-  const count = TokenCounter.count(text)
+  const counter = new AccurateTokenCounter({ model, enableCaching: cache })
+  const count = counter.count(text)
 
   return {
     total: count,
@@ -381,6 +382,8 @@ export async function countConversationTokens(
     }
 
     // Use the new TokenCounter for accurate counting
+    const counter = new AccurateTokenCounter({ model: validModel })
+
     // Add overhead for message formatting
     // OpenAI format adds ~4 tokens per message
     const TOKENS_PER_MESSAGE = 4
@@ -428,7 +431,7 @@ export async function countConversationTokens(
       }
 
       const validContent = contentValidation.sanitized || ''
-      const contentCount = TokenCounter.count(validContent)
+      const contentCount = counter.count(validContent)
       totalTokens += contentCount
       totalTokens += TOKENS_PER_MESSAGE
 

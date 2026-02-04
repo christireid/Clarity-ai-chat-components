@@ -88,7 +88,7 @@ export const learnNavigation: NavItem[] = [
       { title: 'RAG', href: '/guides/rag' },
       { title: 'Agents', href: '/guides/agents' },
       { title: '🔧 Tool Calling System', href: '/guides/tools' },
-      { title: 'Token Optimization', href: '/guides/token-optimization' },
+      { title: '💰 Token Optimization', href: '/guides/token-optimization' },
       { title: 'Prompt Caching', href: '/guides/prompt-caching' },
       { title: 'Prompts', href: '/guides/prompts' },
       { title: 'Model Adapters', href: '/guides/model-adapters' },
@@ -272,6 +272,18 @@ export const referenceNavigation: NavItem[] = [
     title: 'Token Optimization',
     items: [
       {
+        title: 'Token Optimization System',
+        href: '/reference/components/token-optimization',
+      },
+      {
+        title: 'TokenCostPreview',
+        href: '/reference/components/token-cost-preview',
+      },
+      {
+        title: 'TokenCounter',
+        href: '/reference/components/token-counter',
+      },
+      {
         title: 'TokenOptimizationBadge',
         href: '/reference/components/token-optimization-badge',
       },
@@ -414,6 +426,7 @@ export const referenceNavigation: NavItem[] = [
   {
     title: 'Enterprise AI',
     items: [
+      { title: '🔍 Enhanced RAG System', href: '/reference/rag-system' },
       { title: 'useRAGPipeline', href: '/reference/hooks/use-rag-pipeline' },
       { title: 'useAgent', href: '/reference/hooks/use-agent' },
       { title: 'useVectorStore', href: '/reference/hooks/use-vector-store' },
@@ -481,6 +494,39 @@ export const referenceNavigation: NavItem[] = [
 
 export const cookbookNavigation: NavItem[] = [
   {
+    title: '💰 Token Optimization',
+    items: [
+      {
+        title: '⭐ Achieving 50-70% Cost Reduction',
+        href: '/cookbook/achieving-50-percent-reduction',
+      },
+      {
+        title: '🔄 Provider Caching Setup',
+        href: '/cookbook/provider-caching-setup',
+      },
+      {
+        title: '🎯 Smart Model Routing',
+        href: '/cookbook/smart-model-routing',
+      },
+      {
+        title: '⚛️ React Integration',
+        href: '/cookbook/react-integration',
+      },
+      {
+        title: '🖥️ Node.js Backend Integration',
+        href: '/cookbook/nodejs-backend-integration',
+      },
+      {
+        title: '🔀 TOON Migration Guide',
+        href: '/cookbook/toon-migration-guide',
+      },
+      {
+        title: '🏢 Enterprise Production Pipeline',
+        href: '/cookbook/enterprise-production-pipeline',
+      },
+    ],
+  },
+  {
     title: 'Getting Started',
     items: [
       { title: '3-Line Quick Start', href: '/cookbook/quick-start-3-lines' },
@@ -509,10 +555,10 @@ export const cookbookNavigation: NavItem[] = [
     title: 'Advanced Patterns',
     items: [
       {
-        title: 'Streaming with Memory',
+        title: '🌊 Streaming with Memory',
         href: '/cookbook/streaming-with-memory',
       },
-      { title: 'RAG Document Chat', href: '/cookbook/rag-document-chat' },
+      { title: '📚 RAG Document Chat', href: '/cookbook/rag-document-chat' },
       { title: 'Multi-Modal Chat', href: '/cookbook/multi-modal-chat' },
       { title: 'Voice Input', href: '/cookbook/voice-input' },
       {
@@ -572,6 +618,8 @@ export const examplesNavigation: NavItem[] = [
       { title: 'Real-time Updates', href: '/examples/realtime' },
       { title: 'Custom Commands', href: '/examples/custom-commands' },
       { title: 'Token Optimization', href: '/examples/token-optimization' },
+      { title: '🔍 Enhanced RAG System', href: '/examples/enhanced-rag' },
+      { title: '⚖️ RAG Comparison Demo', href: '/examples/rag-comparison' },
     ],
   },
   {

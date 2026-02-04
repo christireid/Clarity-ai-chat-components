@@ -377,11 +377,13 @@ export function getModelTokenBudget(model: string): number {
 
   // Return default with warning
   const defaultBudget = MODEL_TOKEN_BUDGETS['default'] ?? 8192
-  if (typeof console !== 'undefined') {
-    console.warn(
-      `[ClarityChatApp] Unknown model "${model}", using default token budget of ${defaultBudget}. ` +
-        `Consider setting config.tokenOptimization.budget explicitly.`
-    )
+  if (process.env.NODE_ENV === 'development') {
+    if (typeof console !== 'undefined') {
+      console.warn(
+        `[ClarityChatApp] Unknown model "${model}", using default token budget of ${defaultBudget}. ` +
+          `Consider setting config.tokenOptimization.budget explicitly.`
+      )
+    }
   }
 
   return defaultBudget

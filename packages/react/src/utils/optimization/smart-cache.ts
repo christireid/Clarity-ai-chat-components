@@ -183,7 +183,9 @@ export class SmartCache<T = any> {
       try {
         embedding = await this.options.embedFunction(query)
       } catch (error) {
-        console.warn('Failed to generate embedding:', error)
+        if (process.env.NODE_ENV === 'development') {
+          console.warn('Failed to generate embedding:', error)
+        }
       }
     }
 
@@ -234,7 +236,9 @@ export class SmartCache<T = any> {
 
       return bestMatch
     } catch (error) {
-      console.warn('Semantic matching failed:', error)
+      if (process.env.NODE_ENV === 'development') {
+        console.warn('Semantic matching failed:', error)
+      }
       return null
     }
   }

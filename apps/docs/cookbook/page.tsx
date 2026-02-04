@@ -11,8 +11,8 @@ export default function Page() {
       <div className="docs-section">
         <h1>Cookbook</h1>
         <p className="lead">
-          Common recipes and patterns for implementing Clarity Chat in real-world applications.
-          Copy-paste solutions for frequent use cases.
+          Common recipes and patterns for implementing Clarity Chat in
+          real-world applications. Copy-paste solutions for frequent use cases.
         </p>
       </div>
 
@@ -21,7 +21,8 @@ export default function Page() {
 
         <h3>Basic Chat in Next.js</h3>
         <div className="code-block">
-          <pre><code>{`// app/chat/page.tsx
+          <pre>
+            <code>{`// app/chat/page.tsx
 import { chat } from '@clarity-chat/react'
 import '@clarity-chat/react/styles.css'
 
@@ -39,12 +40,14 @@ export async function POST(request: NextRequest) {
   const response = await callYourAI(messages)
 
   return Response.json({ message: response })
-}`}</code></pre>
+}`}</code>
+          </pre>
         </div>
 
         <h3>Basic Chat in Vite + React</h3>
         <div className="code-block">
-          <pre><code>{`// src/App.tsx
+          <pre>
+            <code>{`// src/App.tsx
 import { chat } from '@clarity-chat/react'
 import '@clarity-chat/react/styles.css'
 
@@ -61,7 +64,8 @@ createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <App />
   </StrictMode>,
-)`}</code></pre>
+)`}</code>
+          </pre>
         </div>
       </div>
 
@@ -70,7 +74,8 @@ createRoot(document.getElementById('root')!).render(
 
         <h3>Custom Styling with Tailwind</h3>
         <div className="code-block">
-          <pre><code>{`import { ClarityChat } from '@clarity-chat/react'
+          <pre>
+            <code>{`import { ClarityChat } from '@clarity-chat/react'
 
 export function CustomChat() {
   return (
@@ -92,12 +97,14 @@ export function CustomChat() {
       />
     </div>
   )
-}`}</code></pre>
+}`}</code>
+          </pre>
         </div>
 
         <h3>Dark Mode Support</h3>
         <div className="code-block">
-          <pre><code>{`import { ClarityChat } from '@clarity-chat/react'
+          <pre>
+            <code>{`import { ClarityChat } from '@clarity-chat/react'
 import { useTheme } from './theme-provider'
 
 export function ThemedChat() {
@@ -116,7 +123,8 @@ export function ThemedChat() {
       }}
     />
   )
-}`}</code></pre>
+}`}</code>
+          </pre>
         </div>
       </div>
 
@@ -125,7 +133,8 @@ export function ThemedChat() {
 
         <h3>Persistent Chat History</h3>
         <div className="code-block">
-          <pre><code>{`import { useClarityChat } from '@clarity-chat/react'
+          <pre>
+            <code>{`import { useClarityChat } from '@clarity-chat/react'
 import { useEffect, useState } from 'react'
 
 export function PersistentChat() {
@@ -158,12 +167,14 @@ export function PersistentChat() {
       onSendMessage={(content) => append({ role: 'user', content })}
     />
   )
-}`}</code></pre>
+}`}</code>
+          </pre>
         </div>
 
         <h3>Context-Aware Responses</h3>
         <div className="code-block">
-          <pre><code>{`import { useClarityChat } from '@clarity-chat/react'
+          <pre>
+            <code>{`import { useClarityChat } from '@clarity-chat/react'
 
 export function ContextAwareChat() {
   const { messages, append } = useClarityChat({
@@ -199,7 +210,8 @@ export function ContextAwareChat() {
       />
     </div>
   )
-}`}</code></pre>
+}`}</code>
+          </pre>
         </div>
       </div>
 
@@ -208,7 +220,8 @@ export function ContextAwareChat() {
 
         <h3>Lazy Loading Heavy Features</h3>
         <div className="code-block">
-          <pre><code>{`import { LazyComponents, loadWhen } from '@clarity-chat/react'
+          <pre>
+            <code>{`import { LazyComponents, loadWhen } from '@clarity-chat/react'
 import { useState } from 'react'
 
 export function OptimizedChat() {
@@ -232,12 +245,14 @@ export function OptimizedChat() {
       {showAnalytics && <AnalyticsComponent />}
     </div>
   )
-}`}</code></pre>
+}`}</code>
+          </pre>
         </div>
 
         <h3>Streaming with Error Recovery</h3>
         <div className="code-block">
-          <pre><code>{`import { useClarityChat } from '@clarity-chat/react'
+          <pre>
+            <code>{`import { useClarityChat } from '@clarity-chat/react'
 
 export function ResilientStreamingChat() {
   const { messages, append, error, retry } = useClarityChat({
@@ -267,7 +282,8 @@ export function ResilientStreamingChat() {
       onSendMessage={(content) => append({ role: 'user', content })}
     />
   )
-}`}</code></pre>
+}`}</code>
+          </pre>
         </div>
       </div>
 
@@ -276,7 +292,8 @@ export function ResilientStreamingChat() {
 
         <h3>Rate Limited Chat</h3>
         <div className="code-block">
-          <pre><code>{`import { useRateLimitedChat } from '@clarity-chat/react'
+          <pre>
+            <code>{`import { useRateLimitedChat } from '@clarity-chat/react'
 
 export function RateLimitedChat() {
   const { messages, append, isRateLimited, queueSize } = useRateLimitedChat({
@@ -305,12 +322,14 @@ export function RateLimitedChat() {
       />
     </div>
   )
-}`}</code></pre>
+}`}</code>
+          </pre>
         </div>
 
         <h3>Content Sanitization</h3>
         <div className="code-block">
-          <pre><code>{`import { useClarityChat } from '@clarity-chat/react'
+          <pre>
+            <code>{`import { useClarityChat } from '@clarity-chat/react'
 import { sanitizeHTML, validatePrompt } from '@clarity-chat/security'
 
 export function SecureChat() {
@@ -340,7 +359,8 @@ export function SecureChat() {
       onSendMessage={handleSendMessage}
     />
   )
-}`}</code></pre>
+}`}</code>
+          </pre>
         </div>
       </div>
 
@@ -349,7 +369,8 @@ export function SecureChat() {
 
         <h3>Usage Tracking</h3>
         <div className="code-block">
-          <pre><code>{`import { useClarityChat } from '@clarity-chat/react'
+          <pre>
+            <code>{`import { useClarityChat } from '@clarity-chat/react'
 import { useAnalytics } from '@clarity-chat/analytics'
 
 export function AnalyticsChat() {
@@ -376,12 +397,14 @@ export function AnalyticsChat() {
       onSendMessage={(content) => append({ role: 'user', content })}
     />
   )
-}`}</code></pre>
+}`}</code>
+          </pre>
         </div>
 
         <h3>Performance Monitoring</h3>
         <div className="code-block">
-          <pre><code>{`import { useClarityChat } from '@clarity-chat/react'
+          <pre>
+            <code>{`import { useClarityChat } from '@clarity-chat/react'
 import { usePerformanceMonitor } from '@clarity-chat/performance'
 
 export function MonitoredChat() {
@@ -410,7 +433,8 @@ export function MonitoredChat() {
       onSendMessage={handleSend}
     />
   )
-}`}</code></pre>
+}`}</code>
+          </pre>
         </div>
       </div>
 
@@ -419,7 +443,8 @@ export function MonitoredChat() {
 
         <h3>Multi-user Collaboration</h3>
         <div className="code-block">
-          <pre><code>{`import { useCollaborativeChat } from '@clarity-chat/react'
+          <pre>
+            <code>{`import { useCollaborativeChat } from '@clarity-chat/react'
 
 export function CollaborativeChat({ roomId }: { roomId: string }) {
   const { messages, append, participants, isConnected } = useCollaborativeChat({
@@ -450,12 +475,14 @@ export function CollaborativeChat({ roomId }: { roomId: string }) {
       />
     </div>
   )
-}`}</code></pre>
+}`}</code>
+          </pre>
         </div>
 
         <h3>Live Data Streaming</h3>
         <div className="code-block">
-          <pre><code>{`import { useStreamingChat } from '@clarity-chat/react'
+          <pre>
+            <code>{`import { useStreamingChat } from '@clarity-chat/react'
 
 export function LiveDataChat() {
   const { messages, append, streamingData } = useStreamingChat({
@@ -483,7 +510,8 @@ export function LiveDataChat() {
       </div>
     </div>
   )
-}`}</code></pre>
+}`}</code>
+          </pre>
         </div>
       </div>
 
@@ -492,10 +520,11 @@ export function LiveDataChat() {
 
         <h3>Custom Message Renderer</h3>
         <div className="code-block">
-          <pre><code>{`import { ClarityChat, MessageRenderer } from '@clarity-chat/react'
+          <pre>
+            <code>{`import { ClarityChat, MessageRenderer } from '@clarity-chat/react'
 
 function CustomMessage({ message }: { message: CoreMessage }) {
-  if (message.role === 'assistant' && message.content.includes('\\`\\`\\`')) {
+  if (message.role === 'assistant' && message.content.includes('\`\`\`')) {
     return <CodeBlockMessage message={message} />
   }
 
@@ -513,12 +542,14 @@ export function AdvancedChat() {
       messageRenderer={CustomMessage}
     />
   )
-}`}</code></pre>
+}`}</code>
+          </pre>
         </div>
 
         <h3>Plugin System</h3>
         <div className="code-block">
-          <pre><code>{`import { useClarityChat } from '@clarity-chat/react'
+          <pre>
+            <code>{`import { useClarityChat } from '@clarity-chat/react'
 import { calculatorPlugin } from './plugins/calculator'
 import { weatherPlugin } from './plugins/weather'
 
@@ -538,7 +569,8 @@ export function PluginChat() {
       plugins={[calculatorPlugin, weatherPlugin]}
     />
   )
-}`}</code></pre>
+}`}</code>
+          </pre>
         </div>
       </div>
 
@@ -547,7 +579,8 @@ export function PluginChat() {
 
         <h3>Responsive Chat</h3>
         <div className="code-block">
-          <pre><code>{`import { ClarityChat } from '@clarity-chat/react'
+          <pre>
+            <code>{`import { ClarityChat } from '@clarity-chat/react'
 import { useMediaQuery } from './hooks/use-media-query'
 
 export function ResponsiveChat() {
@@ -565,12 +598,14 @@ export function ResponsiveChat() {
       className={isMobile ? 'mobile-chat' : 'desktop-chat'}
     />
   )
-}`}</code></pre>
+}`}</code>
+          </pre>
         </div>
 
         <h3>PWA Support</h3>
         <div className="code-block">
-          <pre><code>{`import { useClarityChat } from '@clarity-chat/react'
+          <pre>
+            <code>{`import { useClarityChat } from '@clarity-chat/react'
 import { usePWA } from './hooks/use-pwa'
 
 export function PWAChat() {
@@ -600,7 +635,8 @@ export function PWAChat() {
       />
     </div>
   )
-}`}</code></pre>
+}`}</code>
+          </pre>
         </div>
       </div>
 
@@ -609,7 +645,8 @@ export function PWAChat() {
 
         <h3>Error Handling</h3>
         <div className="code-block">
-          <pre><code>{`export function RobustChat() {
+          <pre>
+            <code>{`export function RobustChat() {
   const { messages, append, error, retry } = useClarityChat({
     api: '/api/chat',
     errorHandling: {
@@ -634,12 +671,14 @@ export function PWAChat() {
       />
     </ErrorBoundary>
   )
-}`}</code></pre>
+}`}</code>
+          </pre>
         </div>
 
         <h3>Loading States</h3>
         <div className="code-block">
-          <pre><code>{`export function SmoothChat() {
+          <pre>
+            <code>{`export function SmoothChat() {
   const { messages, append, isLoading, streaming } = useClarityChat({
     api: '/api/chat'
   })
@@ -661,7 +700,8 @@ export function PWAChat() {
       {streaming && <TypingIndicator />}
     </div>
   )
-}`}</code></pre>
+}`}</code>
+          </pre>
         </div>
       </div>
     </div>

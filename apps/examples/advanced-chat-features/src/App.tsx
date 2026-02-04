@@ -20,7 +20,7 @@ import {
   ErrorBoundary,
 } from '@clarity-chat/react'
 import { useMessageOperations } from '@clarity-chat/react'
-import '@clarity-chat/react/dist/styles/index.css'
+import '@clarity-chat/react/styles.css'
 import type { Message } from '@clarity-chat/types'
 
 function AdvancedChatApp() {

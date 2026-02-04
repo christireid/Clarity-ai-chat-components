@@ -3,103 +3,106 @@
  *
  * Resources that AI agents can read to understand the project
  */
-import { Resource } from '@modelcontextprotocol/sdk/types.js';
-import { logger } from '../utils/logger.js';
-import { NotFoundError } from '../utils/errors.js';
-import { Cache } from '../utils/cache.js';
+import { Resource as _Resource } from '@modelcontextprotocol/sdk/types.js'
+import { logger } from '../utils/logger.js'
+import { NotFoundError } from '../utils/errors.js'
+import { Cache } from '../utils/cache.js'
 // Cache static resources for 1 hour
-const resourceCache = new Cache(60 * 60 * 1000);
+const resourceCache = new Cache(60 * 60 * 1000)
 /**
  * Available resources
  */
 export const resources = [
-    {
-        uri: 'clarity://docs/getting-started',
-        name: 'Getting Started Guide',
-        description: 'Complete guide to getting started with Clarity Chat',
-        mimeType: 'text/markdown',
-    },
-    {
-        uri: 'clarity://docs/architecture',
-        name: 'Architecture Overview',
-        description: 'System architecture and design patterns',
-        mimeType: 'text/markdown',
-    },
-    {
-        uri: 'clarity://docs/api-reference',
-        name: 'API Reference',
-        description: 'Complete API reference for all AI providers',
-        mimeType: 'text/markdown',
-    },
-    {
-        uri: 'clarity://examples/list',
-        name: 'Examples List',
-        description: 'List of all available code examples',
-        mimeType: 'application/json',
-    },
-    {
-        uri: 'clarity://models/pricing',
-        name: 'Model Pricing',
-        description: 'Pricing information for all AI models',
-        mimeType: 'application/json',
-    },
-    {
-        uri: 'clarity://models/capabilities',
-        name: 'Model Capabilities',
-        description: 'Capabilities and features of each AI model',
-        mimeType: 'application/json',
-    },
-];
+  {
+    uri: 'clarity://docs/getting-started',
+    name: 'Getting Started Guide',
+    description: 'Complete guide to getting started with Clarity Chat',
+    mimeType: 'text/markdown',
+  },
+  {
+    uri: 'clarity://docs/architecture',
+    name: 'Architecture Overview',
+    description: 'System architecture and design patterns',
+    mimeType: 'text/markdown',
+  },
+  {
+    uri: 'clarity://docs/api-reference',
+    name: 'API Reference',
+    description: 'Complete API reference for all AI providers',
+    mimeType: 'text/markdown',
+  },
+  {
+    uri: 'clarity://examples/list',
+    name: 'Examples List',
+    description: 'List of all available code examples',
+    mimeType: 'application/json',
+  },
+  {
+    uri: 'clarity://models/pricing',
+    name: 'Model Pricing',
+    description: 'Pricing information for all AI models',
+    mimeType: 'application/json',
+  },
+  {
+    uri: 'clarity://models/capabilities',
+    name: 'Model Capabilities',
+    description: 'Capabilities and features of each AI model',
+    mimeType: 'application/json',
+  },
+]
 /**
  * Handle resource reads with caching
  */
 export async function handleResourceRead(uri) {
-    logger.debug('Reading resource', { uri });
-    // Check cache first
-    const cached = resourceCache.get(uri);
-    if (cached) {
-        logger.debug('Resource cache hit', { uri });
-        return cached;
+  logger.debug('Reading resource', { uri })
+  // Check cache first
+  const cached = resourceCache.get(uri)
+  if (cached) {
+    logger.debug('Resource cache hit', { uri })
+    return cached
+  }
+  let content
+  try {
+    switch (uri) {
+      case 'clarity://docs/getting-started':
+        content = getGettingStartedGuide()
+        break
+      case 'clarity://docs/architecture':
+        content = getArchitectureOverview()
+        break
+      case 'clarity://docs/api-reference':
+        content = getAPIReference()
+        break
+      case 'clarity://examples/list':
+        content = JSON.stringify(getExamplesList(), null, 2)
+        break
+      case 'clarity://models/pricing':
+        content = JSON.stringify(getModelPricing(), null, 2)
+        break
+      case 'clarity://models/capabilities':
+        content = JSON.stringify(getModelCapabilities(), null, 2)
+        break
+      default:
+        throw new NotFoundError('Resource', uri)
     }
-    let content;
-    try {
-        switch (uri) {
-            case 'clarity://docs/getting-started':
-                content = getGettingStartedGuide();
-                break;
-            case 'clarity://docs/architecture':
-                content = getArchitectureOverview();
-                break;
-            case 'clarity://docs/api-reference':
-                content = getAPIReference();
-                break;
-            case 'clarity://examples/list':
-                content = JSON.stringify(getExamplesList(), null, 2);
-                break;
-            case 'clarity://models/pricing':
-                content = JSON.stringify(getModelPricing(), null, 2);
-                break;
-            case 'clarity://models/capabilities':
-                content = JSON.stringify(getModelCapabilities(), null, 2);
-                break;
-            default:
-                throw new NotFoundError('Resource', uri);
-        }
-        // Cache the content
-        resourceCache.set(uri, content);
-        logger.debug('Resource loaded and cached', { uri });
-        return content;
-    }
-    catch (error) {
-        logger.error('Failed to read resource', error instanceof Error ? error : undefined, { uri });
-        throw error;
-    }
+    // Cache the content
+    resourceCache.set(uri, content)
+    logger.debug('Resource loaded and cached', { uri })
+    return content
+  } catch (error) {
+    logger.error(
+      'Failed to read resource',
+      error instanceof Error ? error : undefined,
+      { uri }
+    )
+    throw error
+  }
 }
 /**
  * Getting Started Guide
  */
 function getGettingStartedGuide() {
-    return `# Getting Started with Clarity Chat
+  return `# Getting Started with Clarity Chat
 
 ## Quick Start
 
@@ -159,13 +162,13 @@ console.log(answer)
 - Read [API Reference](clarity://docs/api-reference)
 - Learn about [Architecture](clarity://docs/architecture)
 - Check [Model Pricing](clarity://models/pricing)
-`;
+`
 }
 /**
  * Architecture Overview
  */
 function getArchitectureOverview() {
-    return `# Clarity Chat Architecture
+  return `# Clarity Chat Architecture
 
 ## Core Components
 
@@ -241,13 +244,13 @@ async function* streamChat(prompt: string) {
 - **OpenAI SDK** - GPT models
 - **Anthropic SDK** - Claude models
 - **Google AI SDK** - Gemini models
-`;
+`
 }
 /**
  * API Reference
  */
 function getAPIReference() {
-    return `# API Reference
+  return `# API Reference
 
 ## OpenAI
 
@@ -334,204 +337,204 @@ for await (const chunk of result.stream) {
   process.stdout.write(chunk.text())
 }
 \`\`\`
-`;
+`
 }
 /**
  * Examples List
  */
 function getExamplesList() {
-    return {
-        examples: [
-            {
-                id: 'basic-chat',
-                name: 'Basic Chat Completion',
-                description: 'Simple chat completion with OpenAI',
-                category: 'fundamentals',
-                difficulty: 'beginner',
-                providers: ['openai', 'anthropic', 'google'],
-            },
-            {
-                id: 'streaming',
-                name: 'Streaming Responses',
-                description: 'Real-time streaming chat responses',
-                category: 'fundamentals',
-                difficulty: 'beginner',
-                providers: ['openai', 'anthropic', 'google'],
-            },
-            {
-                id: 'nextjs-api',
-                name: 'Next.js API Route',
-                description: 'Server-side API endpoint with Next.js',
-                category: 'frameworks',
-                difficulty: 'intermediate',
-                providers: ['openai'],
-            },
-            {
-                id: 'react-hook',
-                name: 'React useChat Hook',
-                description: 'Custom React hook for chat functionality',
-                category: 'frontend',
-                difficulty: 'intermediate',
-                providers: ['openai'],
-            },
-            {
-                id: 'conversation',
-                name: 'Multi-turn Conversation',
-                description: 'Maintain conversation history across turns',
-                category: 'patterns',
-                difficulty: 'intermediate',
-                providers: ['openai', 'anthropic', 'google'],
-            },
-            {
-                id: 'functions',
-                name: 'Function Calling',
-                description: 'Use OpenAI function calling/tools',
-                category: 'advanced',
-                difficulty: 'advanced',
-                providers: ['openai'],
-            },
-            {
-                id: 'cost-tracking',
-                name: 'Cost Tracking',
-                description: 'Track token usage and calculate costs',
-                category: 'utilities',
-                difficulty: 'intermediate',
-                providers: ['openai', 'anthropic', 'google'],
-            },
-            {
-                id: 'rag',
-                name: 'RAG Pattern',
-                description: 'Retrieval Augmented Generation with documents',
-                category: 'advanced',
-                difficulty: 'advanced',
-                providers: ['openai', 'anthropic'],
-            },
-        ],
-        categories: [
-            'fundamentals',
-            'frameworks',
-            'frontend',
-            'patterns',
-            'utilities',
-            'advanced',
-        ],
-        totalCount: 8,
-    };
+  return {
+    examples: [
+      {
+        id: 'basic-chat',
+        name: 'Basic Chat Completion',
+        description: 'Simple chat completion with OpenAI',
+        category: 'fundamentals',
+        difficulty: 'beginner',
+        providers: ['openai', 'anthropic', 'google'],
+      },
+      {
+        id: 'streaming',
+        name: 'Streaming Responses',
+        description: 'Real-time streaming chat responses',
+        category: 'fundamentals',
+        difficulty: 'beginner',
+        providers: ['openai', 'anthropic', 'google'],
+      },
+      {
+        id: 'nextjs-api',
+        name: 'Next.js API Route',
+        description: 'Server-side API endpoint with Next.js',
+        category: 'frameworks',
+        difficulty: 'intermediate',
+        providers: ['openai'],
+      },
+      {
+        id: 'react-hook',
+        name: 'React useChat Hook',
+        description: 'Custom React hook for chat functionality',
+        category: 'frontend',
+        difficulty: 'intermediate',
+        providers: ['openai'],
+      },
+      {
+        id: 'conversation',
+        name: 'Multi-turn Conversation',
+        description: 'Maintain conversation history across turns',
+        category: 'patterns',
+        difficulty: 'intermediate',
+        providers: ['openai', 'anthropic', 'google'],
+      },
+      {
+        id: 'functions',
+        name: 'Function Calling',
+        description: 'Use OpenAI function calling/tools',
+        category: 'advanced',
+        difficulty: 'advanced',
+        providers: ['openai'],
+      },
+      {
+        id: 'cost-tracking',
+        name: 'Cost Tracking',
+        description: 'Track token usage and calculate costs',
+        category: 'utilities',
+        difficulty: 'intermediate',
+        providers: ['openai', 'anthropic', 'google'],
+      },
+      {
+        id: 'rag',
+        name: 'RAG Pattern',
+        description: 'Retrieval Augmented Generation with documents',
+        category: 'advanced',
+        difficulty: 'advanced',
+        providers: ['openai', 'anthropic'],
+      },
+    ],
+    categories: [
+      'fundamentals',
+      'frameworks',
+      'frontend',
+      'patterns',
+      'utilities',
+      'advanced',
+    ],
+    totalCount: 8,
+  }
 }
 /**
  * Model Pricing
  */
 function getModelPricing() {
-    return {
-        models: {
-            'gpt-4-turbo': {
-                provider: 'OpenAI',
-                input: 0.01,
-                output: 0.03,
-                currency: 'USD',
-                per: '1K tokens',
-            },
-            'gpt-4': {
-                provider: 'OpenAI',
-                input: 0.03,
-                output: 0.06,
-                currency: 'USD',
-                per: '1K tokens',
-            },
-            'gpt-3.5-turbo': {
-                provider: 'OpenAI',
-                input: 0.0005,
-                output: 0.0015,
-                currency: 'USD',
-                per: '1K tokens',
-            },
-            'claude-3-opus-20240229': {
-                provider: 'Anthropic',
-                input: 0.015,
-                output: 0.075,
-                currency: 'USD',
-                per: '1K tokens',
-            },
-            'claude-3-sonnet-20240229': {
-                provider: 'Anthropic',
-                input: 0.003,
-                output: 0.015,
-                currency: 'USD',
-                per: '1K tokens',
-            },
-            'claude-3-haiku-20240307': {
-                provider: 'Anthropic',
-                input: 0.00025,
-                output: 0.00125,
-                currency: 'USD',
-                per: '1K tokens',
-            },
-            'gemini-pro': {
-                provider: 'Google',
-                input: 0.00025,
-                output: 0.0005,
-                currency: 'USD',
-                per: '1K tokens',
-            },
-        },
-    };
+  return {
+    models: {
+      'gpt-4-turbo': {
+        provider: 'OpenAI',
+        input: 0.01,
+        output: 0.03,
+        currency: 'USD',
+        per: '1K tokens',
+      },
+      'gpt-4': {
+        provider: 'OpenAI',
+        input: 0.03,
+        output: 0.06,
+        currency: 'USD',
+        per: '1K tokens',
+      },
+      'gpt-3.5-turbo': {
+        provider: 'OpenAI',
+        input: 0.0005,
+        output: 0.0015,
+        currency: 'USD',
+        per: '1K tokens',
+      },
+      'claude-3-opus-20240229': {
+        provider: 'Anthropic',
+        input: 0.015,
+        output: 0.075,
+        currency: 'USD',
+        per: '1K tokens',
+      },
+      'claude-3-sonnet-20240229': {
+        provider: 'Anthropic',
+        input: 0.003,
+        output: 0.015,
+        currency: 'USD',
+        per: '1K tokens',
+      },
+      'claude-3-haiku-20240307': {
+        provider: 'Anthropic',
+        input: 0.00025,
+        output: 0.00125,
+        currency: 'USD',
+        per: '1K tokens',
+      },
+      'gemini-pro': {
+        provider: 'Google',
+        input: 0.00025,
+        output: 0.0005,
+        currency: 'USD',
+        per: '1K tokens',
+      },
+    },
+  }
 }
 /**
  * Model Capabilities
  */
 function getModelCapabilities() {
-    return {
-        models: {
-            'gpt-4-turbo': {
-                provider: 'OpenAI',
-                contextWindow: 128000,
-                capabilities: ['text', 'code', 'functions', 'json-mode', 'vision'],
-                bestFor: ['complex reasoning', 'long-form content', 'code generation'],
-                limitations: ['higher cost', 'slower than gpt-3.5'],
-            },
-            'gpt-4': {
-                provider: 'OpenAI',
-                contextWindow: 8192,
-                capabilities: ['text', 'code', 'functions'],
-                bestFor: ['complex tasks', 'creative writing', 'analysis'],
-                limitations: ['expensive', 'smaller context'],
-            },
-            'gpt-3.5-turbo': {
-                provider: 'OpenAI',
-                contextWindow: 16385,
-                capabilities: ['text', 'code', 'functions'],
-                bestFor: ['quick responses', 'simple tasks', 'cost efficiency'],
-                limitations: ['less capable than gpt-4'],
-            },
-            'claude-3-opus-20240229': {
-                provider: 'Anthropic',
-                contextWindow: 200000,
-                capabilities: ['text', 'code', 'analysis', 'vision'],
-                bestFor: ['complex analysis', 'research', 'long documents'],
-                limitations: ['expensive', 'slower'],
-            },
-            'claude-3-sonnet-20240229': {
-                provider: 'Anthropic',
-                contextWindow: 200000,
-                capabilities: ['text', 'code', 'analysis', 'vision'],
-                bestFor: ['balanced performance', 'general tasks'],
-                limitations: ['less capable than opus'],
-            },
-            'claude-3-haiku-20240307': {
-                provider: 'Anthropic',
-                contextWindow: 200000,
-                capabilities: ['text', 'analysis', 'vision'],
-                bestFor: ['speed', 'simple tasks', 'high volume'],
-                limitations: ['less capable than opus/sonnet'],
-            },
-            'gemini-pro': {
-                provider: 'Google',
-                contextWindow: 32768,
-                capabilities: ['text', 'code', 'analysis'],
-                bestFor: ['general tasks', 'cost efficiency', 'fast responses'],
-                limitations: ['smaller context', 'newer ecosystem'],
-            },
-        },
-    };
+  return {
+    models: {
+      'gpt-4-turbo': {
+        provider: 'OpenAI',
+        contextWindow: 128000,
+        capabilities: ['text', 'code', 'functions', 'json-mode', 'vision'],
+        bestFor: ['complex reasoning', 'long-form content', 'code generation'],
+        limitations: ['higher cost', 'slower than gpt-3.5'],
+      },
+      'gpt-4': {
+        provider: 'OpenAI',
+        contextWindow: 8192,
+        capabilities: ['text', 'code', 'functions'],
+        bestFor: ['complex tasks', 'creative writing', 'analysis'],
+        limitations: ['expensive', 'smaller context'],
+      },
+      'gpt-3.5-turbo': {
+        provider: 'OpenAI',
+        contextWindow: 16385,
+        capabilities: ['text', 'code', 'functions'],
+        bestFor: ['quick responses', 'simple tasks', 'cost efficiency'],
+        limitations: ['less capable than gpt-4'],
+      },
+      'claude-3-opus-20240229': {
+        provider: 'Anthropic',
+        contextWindow: 200000,
+        capabilities: ['text', 'code', 'analysis', 'vision'],
+        bestFor: ['complex analysis', 'research', 'long documents'],
+        limitations: ['expensive', 'slower'],
+      },
+      'claude-3-sonnet-20240229': {
+        provider: 'Anthropic',
+        contextWindow: 200000,
+        capabilities: ['text', 'code', 'analysis', 'vision'],
+        bestFor: ['balanced performance', 'general tasks'],
+        limitations: ['less capable than opus'],
+      },
+      'claude-3-haiku-20240307': {
+        provider: 'Anthropic',
+        contextWindow: 200000,
+        capabilities: ['text', 'analysis', 'vision'],
+        bestFor: ['speed', 'simple tasks', 'high volume'],
+        limitations: ['less capable than opus/sonnet'],
+      },
+      'gemini-pro': {
+        provider: 'Google',
+        contextWindow: 32768,
+        capabilities: ['text', 'code', 'analysis'],
+        bestFor: ['general tasks', 'cost efficiency', 'fast responses'],
+        limitations: ['smaller context', 'newer ecosystem'],
+      },
+    },
+  }
 }
 //# sourceMappingURL=index.js.map

@@ -1,0 +1,1768 @@
+---
+title: CLI Tools Reference
+description: Complete reference for all CLI tools, scripts, and automation utilities in Clarity AI Chat Components
+---
+
+# CLI Tools Reference
+
+Complete command-line reference for development, testing, building, and deployment workflows.
+
+## Quick Reference
+
+```bash
+# Setup & Installation
+pnpm install                  # Install all dependencies
+pnpm build                    # Build all packages
+pnpm dev                      # Start development mode
+
+# Code Generation
+pnpm generate:component       # Generate new component
+pnpm generate:hook           # Generate new hook
+pnpm generate:example        # Generate example app
+
+# Testing & Quality
+pnpm test                    # Run all tests
+pnpm typecheck               # Type checking
+pnpm lint                    # Lint code
+pnpm check                   # Quick pre-commit check
+
+# Build & Bundle
+pnpm build:packages          # Build packages only
+pnpm bundle-analysis         # Analyze bundle size
+pnpm size                    # Check size limits
+
+# Migration & Codemods
+npx @clarity-chat/codemods   # Run codemods
+pnpm docs:sync               # Sync documentation
+```
+
+---
+
+## Setup Scripts
+
+### Project Initialization
+
+#### `pnpm install`
+Install all workspace dependencies with pnpm.
+
+**Usage:**
+```bash
+pnpm install
+```
+
+**Features:**
+- Enforces pnpm as package manager (via `preinstall` hook)
+- Installs all workspace packages
+- Links local dependencies
+- Sets up Git hooks via Husky
+
+**Requirements:**
+- Node.js >= 20.0.0
+- pnpm >= 10.0.0
+
+**Troubleshooting:**
+```bash
+# Clear cache if installation fails
+pnpm store prune
+rm -rf node_modules
+pnpm install
+```
+
+#### `pnpm build`
+Build all packages in dependency order.
+
+**Usage:**
+```bash
+# Standard build
+pnpm build
+
+# Sequential build (for CI or memory constraints)
+pnpm build:sequential
+
+# Build packages only (skip apps)
+pnpm build:packages
+
+# Optimized production build
+pnpm build:optimized
+```
+
+**Options:**
+- `NODE_OPTIONS='--max-old-space-size=2048'` - Increased memory limit
+- `--concurrency=2` - Parallel build limit
+- `--filter='./packages/*'` - Filter to specific packages
+
+**Build Order:**
+1. `@clarity-chat/primitives` - Base utilities
+2. `@clarity-chat/types` - Type definitions
+3. `@clarity-chat/utils` - Shared utilities
+4. `@clarity-chat/memory` - Memory management
+5. `@clarity-chat/react` - React components
+6. Apps and documentation
+
+**Output:**
+- `packages/*/dist` - Package build output
+- `apps/*/.next` - Next.js build output
+- `apps/*/build` - Static build output
+
+---
+
+## Code Generators
+
+### Component Generator
+
+Generate new React components with tests and stories.
+
+**Usage:**
+```bash
+# Interactive mode
+pnpm generate:component
+
+# With flags
+pnpm generate
+```
+
+**Prompts:**
+1. Component name (PascalCase)
+2. Target package (default: `react`)
+3. Component subdirectory
+4. Include tests? (default: yes)
+5. Include Storybook story? (default: yes)
+6. Description
+
+**Generated Files:**
+```
+packages/react/src/components/{category}/{ComponentName}/
+├── ComponentName.tsx         # Main component
+├── ComponentName.test.tsx    # Unit tests
+├── ComponentName.stories.tsx # Storybook story
+└── index.ts                  # Exports
+```
+
+**Example:**
+```bash
+$ pnpm generate:component
+✔ Component name (PascalCase): MessageBubble
+✔ Which package? react
+✔ Component subdirectory: message
+✔ Include test file? yes
+✔ Include Storybook story? yes
+✔ Description: A message bubble component for chat messages
+
+✓ Created packages/react/src/components/message/MessageBubble/
+```
+
+**Template Features:**
+- TypeScript with strict typing
+- React.memo for performance
+- Accessibility attributes
+- Responsive design classes
+- Test boilerplate with @testing-library/react
+- Storybook story with controls
+
+### Hook Generator
+
+Generate custom React hooks with tests.
+
+**Usage:**
+```bash
+pnpm generate:hook
+```
+
+**Prompts:**
+1. Hook name (without `use` prefix, camelCase)
+2. Target package (default: `react`)
+3. Include tests? (default: yes)
+4. Description
+
+**Generated Files:**
+```
+packages/react/src/hooks/
+├── use{HookName}.ts
+└── __tests__/
+    └── use{HookName}.test.ts
+```
+
+**Example:**
+```bash
+$ pnpm generate:hook
+✔ Hook name (without "use" prefix): MessageScroll
+✔ Which package? react
+✔ Include test file? yes
+✔ Description: Auto-scroll to latest message
+
+✓ Created packages/react/src/hooks/useMessageScroll.ts
+✓ Created packages/react/src/hooks/__tests__/useMessageScroll.test.ts
+```
+
+### Context Generator
+
+Generate React context with provider and consumer hook.
+
+**Usage:**
+```bash
+pnpm generate:context
+```
+
+**Generated Files:**
+```
+packages/react/src/contexts/
+├── {Name}Context.tsx
+└── __tests__/
+    └── {Name}Context.test.tsx
+```
+
+**Template Includes:**
+- Context definition
+- Provider component
+- Custom hook (`use{Name}`)
+- Type-safe context access
+- Error handling for missing provider
+
+### Example App Generator
+
+Generate new example applications from template.
+
+**Usage:**
+```bash
+# Interactive mode
+pnpm generate:example --interactive
+
+# With flags
+pnpm generate:example \
+  --name "streaming-chat" \
+  --title "Streaming Chat" \
+  --description "Real-time streaming chat example"
+```
+
+**Flags:**
+- `--name` - Example slug (kebab-case)
+- `--title` - Display title
+- `--description` - Short description
+- `--subtitle` - Header subtitle (optional)
+- `--icon` - Emoji icon (default: 💬)
+- `--interactive` - Interactive prompts
+
+**Generated Structure:**
+```
+apps/examples/{name}/
+├── src/
+│   └── app/
+│       ├── page.tsx          # Main example page
+│       └── layout.tsx        # Example layout
+├── package.json              # Dependencies
+├── tsconfig.json             # TypeScript config
+├── tailwind.config.ts        # Tailwind config
+└── README.md                 # Example documentation
+```
+
+**Placeholders Replaced:**
+- `{{EXAMPLE_NAME}}` → slug name
+- `{{EXAMPLE_TITLE}}` → display title
+- `{{EXAMPLE_DESCRIPTION}}` → description
+- `{{EXAMPLE_ICON}}` → emoji icon
+- `{{EXAMPLE_COMPONENT_NAME}}` → PascalCase component name
+
+**Next Steps After Generation:**
+```bash
+cd apps/examples/{name}
+pnpm install  # (from monorepo root)
+pnpm dev
+```
+
+---
+
+## Validators
+
+### TypeScript Validator
+
+Check TypeScript types across all packages.
+
+**Usage:**
+```bash
+# Check all packages
+pnpm typecheck
+
+# Check specific package
+pnpm --filter @clarity-chat/react typecheck
+
+# Extended diagnostics
+pnpm analyze:ts-performance
+
+# Trace for debugging
+pnpm analyze:ts-trace
+```
+
+**Options:**
+- `--noEmit` - Type check without emitting files
+- `--extendedDiagnostics` - Show compilation performance
+- `--generateTrace trace` - Generate trace for debugging
+
+**Common Errors:**
+
+```typescript
+// ❌ Missing type annotation
+export function processMessage(msg) { }
+
+// ✅ Proper typing
+export function processMessage(msg: Message): ProcessedMessage { }
+
+// ❌ Implicit any
+const items = messages.map(m => m.content)
+
+// ✅ Explicit typing
+const items: string[] = messages.map((m: Message) => m.content)
+```
+
+### Linter
+
+ESLint with React, TypeScript, and accessibility rules.
+
+**Usage:**
+```bash
+# Lint all files
+pnpm lint
+
+# Auto-fix issues
+pnpm lint:fix
+
+# Check accessibility rules only
+pnpm --filter @clarity-chat/react lint:accessibility
+```
+
+**Rules Enabled:**
+- `@typescript-eslint/recommended`
+- `react/recommended`
+- `react-hooks/recommended`
+- `jsx-a11y/recommended` - Accessibility
+- `eslint-plugin-storybook`
+
+**Example Fixes:**
+```tsx
+// ❌ Missing key prop
+{messages.map(m => <div>{m.content}</div>)}
+
+// ✅ With key
+{messages.map(m => <div key={m.id}>{m.content}</div>)}
+
+// ❌ Missing alt text
+<img src={url} />
+
+// ✅ With alt
+<img src={url} alt={description} />
+```
+
+### Code Formatter
+
+Prettier for consistent code formatting.
+
+**Usage:**
+```bash
+# Format all files
+pnpm format
+
+# Check formatting (CI)
+pnpm format:check
+```
+
+**Configuration:**
+```json
+{
+  "semi": false,
+  "singleQuote": true,
+  "trailingComma": "es5",
+  "printWidth": 100,
+  "tabWidth": 2
+}
+```
+
+**Integrated with:**
+- Pre-commit hooks (Husky + lint-staged)
+- VSCode (format on save)
+- CI pipeline (format check)
+
+### Configuration Validator
+
+Validate project configuration files.
+
+**Usage:**
+```bash
+pnpm validate:config
+```
+
+**Checks:**
+- `package.json` - Valid JSON, required fields
+- `tsconfig.json` - Valid extends, compiler options
+- Workspace configuration
+- Peer dependencies
+- Export maps
+
+**Example Output:**
+```bash
+✓ package.json is valid
+✓ tsconfig.json is valid
+✓ All peer dependencies declared
+⚠ Warning: Unused workspace package detected
+```
+
+### Import Validator
+
+Validate import statements and dependencies.
+
+**Usage:**
+```bash
+pnpm validate:imports
+```
+
+**Checks:**
+- No circular dependencies
+- Correct import paths
+- No unused imports
+- No default imports where named expected
+- Proper barrel exports
+
+**Example:**
+```typescript
+// ❌ Circular dependency
+// fileA.ts
+import { functionB } from './fileB'
+
+// fileB.ts
+import { functionA } from './fileA'
+
+// ✅ Extract to shared file
+// shared.ts
+export { functionA, functionB }
+```
+
+### Bundle Validator
+
+Validate bundle size and composition.
+
+**Usage:**
+```bash
+# Check current bundle size
+pnpm size
+
+# Detailed analysis
+pnpm size:why
+
+# Generate JSON report
+pnpm size:analyze
+
+# Visualize bundle
+pnpm bundle-analysis
+```
+
+**Size Limits:**
+```json
+{
+  "@clarity-chat/react": {
+    "path": "packages/react/dist/index.js",
+    "limit": "150 KB"
+  },
+  "@clarity-chat/react/extended": {
+    "path": "packages/react/dist/extended.js",
+    "limit": "200 KB"
+  }
+}
+```
+
+**CI Integration:**
+```yaml
+- name: Check bundle size
+  run: pnpm size
+  # Fails if size exceeds limits
+```
+
+---
+
+## Migration Tools
+
+### Codemod Runner
+
+Automated code transformations for API changes.
+
+**Usage:**
+```bash
+# Interactive mode
+npx @clarity-chat/codemods
+
+# Specific codemod
+npx @clarity-chat/codemods migrate-markdown-renderers
+
+# Dry run (preview changes)
+npx @clarity-chat/codemods migrate-toast --dry-run
+
+# With path
+npx @clarity-chat/codemods migrate-reduced-motion ./src
+```
+
+**Available Codemods:**
+
+#### `migrate-markdown-renderers`
+Migrate from legacy markdown renderers to new API.
+
+**Before:**
+```tsx
+import { MarkdownRenderer } from '@clarity-chat/react'
+
+<MarkdownRenderer content={text} />
+```
+
+**After:**
+```tsx
+import { EnhancedMarkdownRenderer } from '@clarity-chat/react/extended'
+
+<EnhancedMarkdownRenderer content={text} />
+```
+
+#### `migrate-toast`
+Update toast notifications to new Sonner API.
+
+**Before:**
+```tsx
+import { toast } from '@clarity-chat/react'
+
+toast.show({ message: 'Success' })
+```
+
+**After:**
+```tsx
+import { toast } from 'sonner'
+
+toast.success('Success')
+```
+
+#### `migrate-reduced-motion`
+Update motion preferences to new API.
+
+**Before:**
+```tsx
+import { useReducedMotion } from '@clarity-chat/react'
+
+const shouldAnimate = !useReducedMotion()
+```
+
+**After:**
+```tsx
+import { useReducedMotion } from '@clarity-chat/react/extended'
+
+const prefersReducedMotion = useReducedMotion()
+```
+
+**Options:**
+- `--dry-run` - Preview changes without writing
+- `--print` - Print transformed source
+- `--verbose` - Detailed logging
+- `--parser` - Parser to use (default: tsx)
+
+### Theme Migration
+
+Migrate color system from v1 to v2 (OKLCH).
+
+**Usage:**
+```bash
+npx @clarity-chat/cli migrate-theme
+```
+
+**Transformations:**
+```css
+/* Before (RGB/HSL) */
+--color-primary: rgb(59, 130, 246);
+--color-background: hsl(0, 0%, 100%);
+
+/* After (OKLCH) */
+--color-primary: oklch(0.66 0.17 264);
+--color-background: oklch(1 0 0);
+```
+
+**Validates:**
+- Color contrast ratios (WCAG AA)
+- Theme consistency
+- CSS variable usage
+- Dark mode parity
+
+### Documentation Sync
+
+Sync component documentation to docs site.
+
+**Usage:**
+```bash
+# Full sync
+pnpm docs:sync
+
+# Dry run (preview changes)
+pnpm docs:sync:dry-run
+
+# Extract API docs only
+pnpm docs:extract-apis
+
+# Generate docs from source
+pnpm docs:generate-docs
+
+# Generate changelog
+pnpm docs:changelog
+```
+
+**What Gets Synced:**
+- Component API documentation
+- TypeScript types
+- Props tables
+- Usage examples
+- Changelog entries
+
+**Process:**
+1. Extract JSDoc comments from source
+2. Parse TypeScript types
+3. Generate MDX documentation
+4. Update docs site content
+5. Create changelog entries
+
+---
+
+## Build Tools
+
+### Bundle Analyzer
+
+Analyze bundle size and composition.
+
+**Usage:**
+```bash
+# Terminal output
+pnpm analyze
+
+# Visual tree map
+pnpm bundle-analysis
+
+# Interactive dashboard
+pnpm --filter @clarity-chat/react size:dashboard:open
+```
+
+**Reports:**
+- Bundle composition
+- Largest modules
+- Duplicate dependencies
+- Tree-shaking effectiveness
+- Import cost analysis
+
+**Output Example:**
+```
+Bundle Analysis Report
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Total Size: 142.3 KB (gzipped: 48.1 KB)
+
+Top 10 Modules:
+  1. react-window            12.4 KB
+  2. framer-motion          11.8 KB
+  3. @tanstack/react-virtual 9.2 KB
+  4. lucide-react            8.7 KB
+  5. Internal components     95.2 KB
+```
+
+### Build Optimizer
+
+Optimize build performance and output.
+
+**Usage:**
+```bash
+# Optimized build
+pnpm build:optimized
+
+# Check circular dependencies
+pnpm analyze:circular
+
+# Visualize dependency graph
+pnpm analyze:circular:graph
+
+# TypeScript performance
+pnpm analyze:ts-performance
+```
+
+**Optimizations Applied:**
+- Tree shaking
+- Code splitting
+- Minification
+- CSS optimization
+- Source map generation
+
+### Size Limit Checker
+
+Enforce bundle size limits.
+
+**Usage:**
+```bash
+# Check limits
+pnpm size
+
+# Detailed breakdown
+pnpm size:why
+
+# Track over time
+pnpm --filter @clarity-chat/react size:track
+
+# Compare branches
+pnpm --filter @clarity-chat/react size:compare
+```
+
+**Configuration:**
+```json
+[
+  {
+    "name": "Core Bundle",
+    "path": "packages/react/dist/index.js",
+    "limit": "150 KB",
+    "webpack": false
+  },
+  {
+    "name": "Extended Bundle",
+    "path": "packages/react/dist/extended.js",
+    "limit": "200 KB"
+  }
+]
+```
+
+**CI Integration:**
+```yaml
+- name: Check bundle size
+  run: pnpm size
+  # Exit code 1 if limit exceeded
+```
+
+---
+
+## Testing Tools
+
+### Test Runner
+
+Vitest for unit and integration tests.
+
+**Usage:**
+```bash
+# Run all tests
+pnpm test
+
+# Watch mode
+pnpm test:watch
+
+# Coverage report
+pnpm test:coverage
+
+# UI mode
+pnpm test:ui
+
+# Specific package
+pnpm --filter @clarity-chat/react test
+
+# Memory-constrained mode
+pnpm --filter @clarity-chat/react test:memory
+```
+
+**Flags:**
+- `--reporter=verbose` - Detailed output
+- `--coverage` - Generate coverage report
+- `--ui` - Interactive UI
+- `--run` - Single run (no watch)
+- `--watch` - Watch mode
+
+**Configuration:**
+```typescript
+// vitest.config.ts
+export default defineConfig({
+  test: {
+    globals: true,
+    environment: 'jsdom',
+    setupFiles: ['./vitest.setup.ts'],
+    coverage: {
+      provider: 'v8',
+      reporter: ['text', 'json', 'html'],
+      threshold: {
+        lines: 80,
+        functions: 80,
+        branches: 80,
+        statements: 80,
+      },
+    },
+  },
+})
+```
+
+### E2E Test Runner
+
+Playwright for end-to-end tests.
+
+**Usage:**
+```bash
+# Run E2E tests
+pnpm test:e2e
+
+# Interactive UI mode
+pnpm test:e2e:ui
+
+# Specific browser
+pnpm test:e2e --project=chromium
+
+# Headed mode (see browser)
+pnpm test:e2e --headed
+
+# Debug mode
+pnpm test:e2e --debug
+```
+
+**Test Structure:**
+```typescript
+// tests/e2e/chat-flow.spec.ts
+import { test, expect } from '@playwright/test'
+
+test('user can send message', async ({ page }) => {
+  await page.goto('http://localhost:3000')
+  await page.fill('[data-testid="chat-input"]', 'Hello')
+  await page.click('[data-testid="send-button"]')
+
+  await expect(page.locator('[data-testid="message-list"]')).toContainText('Hello')
+})
+```
+
+**Browsers:**
+- Chromium
+- Firefox
+- WebKit (Safari)
+
+### Visual Regression Tests
+
+Playwright visual comparison tests.
+
+**Usage:**
+```bash
+# Run visual tests
+pnpm test:visual
+
+# Update snapshots
+pnpm test:visual:update
+
+# Specific component
+pnpm test:visual --grep "ChatWindow"
+```
+
+**Snapshot Storage:**
+```
+tests/visual/
+├── snapshots/
+│   ├── chromium/
+│   ├── firefox/
+│   └── webkit/
+└── __screenshots__/
+```
+
+### Benchmark Runner
+
+Performance benchmarks.
+
+**Usage:**
+```bash
+# Run all benchmarks
+pnpm --filter @clarity-chat/react bench
+
+# Specific benchmark
+pnpm --filter @clarity-chat/react bench:long-list
+
+# JSON output
+pnpm --filter @clarity-chat/react bench:json
+
+# Available benchmarks
+pnpm --filter @clarity-chat/react bench:streaming
+pnpm --filter @clarity-chat/react bench:virtualization
+pnpm --filter @clarity-chat/react bench:concurrent
+pnpm --filter @clarity-chat/react bench:layout
+```
+
+**Example Output:**
+```
+Benchmark Results
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+MessageList (1000 messages)
+  Render:              42.3ms  (±2.1ms)
+  Re-render:           8.7ms   (±0.4ms)
+  Memory:              12.4MB
+
+VirtualScroller (10000 messages)
+  Render:              89.2ms  (±4.3ms)
+  Scroll performance:  60fps   (±2fps)
+  Memory:              18.9MB
+```
+
+### Coverage Reporter
+
+Test coverage analysis.
+
+**Usage:**
+```bash
+# Generate coverage
+pnpm test:coverage
+
+# View HTML report
+open coverage/index.html
+
+# Coverage by package
+pnpm --filter @clarity-chat/react test:coverage
+```
+
+**Thresholds:**
+```json
+{
+  "coverage": {
+    "threshold": {
+      "lines": 80,
+      "functions": 80,
+      "branches": 80,
+      "statements": 80
+    }
+  }
+}
+```
+
+**Report Formats:**
+- Text (terminal)
+- HTML (interactive)
+- JSON (CI integration)
+- LCOV (code coverage services)
+
+---
+
+## Documentation Tools
+
+### API Documentation Generator
+
+TypeDoc for API documentation.
+
+**Usage:**
+```bash
+# Generate docs
+pnpm docs:generate
+
+# Serve locally
+pnpm docs:serve
+
+# Full documentation build
+pnpm docs:all
+```
+
+**Output:**
+```
+packages/react/docs/api/
+├── index.html
+├── modules.html
+├── classes/
+├── interfaces/
+└── functions/
+```
+
+**Configuration:**
+```json
+{
+  "entryPoints": ["src/index.ts"],
+  "out": "docs/api",
+  "plugin": ["typedoc-plugin-markdown"],
+  "excludePrivate": true,
+  "excludeProtected": true
+}
+```
+
+### Documentation Sync
+
+Sync component docs to documentation site.
+
+**Usage:**
+```bash
+# Full sync
+pnpm docs:sync
+
+# Dry run
+pnpm docs:sync:dry-run
+```
+
+**Synced Content:**
+- Component APIs
+- Props documentation
+- Usage examples
+- Type definitions
+- Changelogs
+
+### Changelog Generator
+
+Automated changelog from changesets.
+
+**Usage:**
+```bash
+# Generate changelog
+pnpm docs:changelog
+
+# Version packages
+pnpm version-packages
+
+# Create changeset
+pnpm changeset
+```
+
+**Changeset Flow:**
+```bash
+# 1. Create changeset
+pnpm changeset
+? Which packages would you like to include? @clarity-chat/react
+? What kind of change is this? minor
+? Summary: Add new MessageBubble component
+
+# 2. Version packages
+pnpm version-packages
+
+# 3. Release
+pnpm release
+```
+
+---
+
+## Development Tools
+
+### Development Server
+
+Start development servers for all apps.
+
+**Usage:**
+```bash
+# All apps
+pnpm dev
+
+# Specific app
+pnpm dev:docs
+pnpm dev:react
+
+# Storybook
+pnpm storybook
+```
+
+**Ports:**
+- Docs: http://localhost:3000
+- Storybook: http://localhost:6006
+- Examples: http://localhost:3001+
+
+### Code Review Tools
+
+Automated code review checks.
+
+**Usage:**
+```bash
+# Full review
+pnpm review
+
+# Specific type
+pnpm review:security
+pnpm review:performance
+pnpm review:typescript
+pnpm review:tailwind
+
+# Staged files only
+pnpm review:staged
+
+# With auto-fix
+pnpm review:check:fix
+
+# JSON output
+pnpm review:check:json
+```
+
+**Review Types:**
+
+**Security Review:**
+```bash
+pnpm review:security
+```
+Checks:
+- XSS vulnerabilities
+- Unsafe DOM manipulation
+- Exposed secrets
+- Insecure dependencies
+
+**Performance Review:**
+```bash
+pnpm review:performance
+```
+Checks:
+- Missing React.memo
+- Unnecessary re-renders
+- Large bundle imports
+- Unoptimized images
+
+**TypeScript Review:**
+```bash
+pnpm review:typescript
+```
+Checks:
+- `any` usage
+- Missing type annotations
+- Unsafe type assertions
+- Implicit returns
+
+**Tailwind Review:**
+```bash
+pnpm review:tailwind
+```
+Checks:
+- Unused classes
+- Invalid class names
+- Inconsistent spacing
+- Color contrast issues
+
+### Security Auditor
+
+Comprehensive security audit.
+
+**Usage:**
+```bash
+# Terminal output
+pnpm security:audit
+
+# JSON report
+pnpm security:audit:json
+
+# Markdown report
+pnpm security:audit:markdown
+```
+
+**Checks:**
+- XSS patterns
+- SQL injection risks
+- Insecure random generation
+- Exposed API keys
+- Vulnerable dependencies
+- CSP violations
+
+**Example Output:**
+```
+Security Audit Report
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+✓ No XSS vulnerabilities detected
+✓ All inputs properly sanitized
+⚠ 2 dependencies with known vulnerabilities
+  - axios@0.21.1 (CVE-2021-3749)
+  - lodash@4.17.19 (CVE-2020-8203)
+
+Recommendation: Run `pnpm update` to fix
+```
+
+### Consistency Checker
+
+Check monorepo consistency.
+
+**Usage:**
+```bash
+pnpm check:consistency
+```
+
+**Validates:**
+- Package versions aligned
+- Shared dependencies match
+- TypeScript configs consistent
+- ESLint configs aligned
+- Prettier configs match
+
+---
+
+## Release Tools
+
+### Changesets
+
+Semantic versioning with changesets.
+
+**Usage:**
+```bash
+# Create changeset
+pnpm changeset
+
+# Version packages
+pnpm version-packages
+
+# Publish to npm
+pnpm release
+```
+
+**Changeset Types:**
+- `major` - Breaking changes (v2.0.0)
+- `minor` - New features (v1.1.0)
+- `patch` - Bug fixes (v1.0.1)
+
+**Example:**
+```bash
+$ pnpm changeset
+? Which packages would you like to include?
+  ✔ @clarity-chat/react
+  ✔ @clarity-chat/primitives
+
+? What kind of change is this for @clarity-chat/react?
+  ❯ minor
+
+? Please enter a summary for this change:
+  Add CommandPalette component with fuzzy search
+
+✓ Changeset added! 🎉
+```
+
+### Version Manager
+
+Manage package versions.
+
+**Usage:**
+```bash
+# Update versions
+pnpm version-packages
+
+# Check current versions
+pnpm --filter @clarity-chat/react version
+```
+
+**Process:**
+1. Reads all changesets
+2. Calculates new versions
+3. Updates package.json files
+4. Updates CHANGELOG.md files
+5. Removes consumed changesets
+
+### Release Publisher
+
+Publish packages to npm.
+
+**Usage:**
+```bash
+# Build and publish
+pnpm release
+```
+
+**Steps:**
+1. `turbo run build` - Build all packages
+2. `changeset publish` - Publish to npm
+3. Git tag creation
+4. GitHub release creation
+
+**Pre-publish Checks:**
+- All tests pass
+- Build succeeds
+- No uncommitted changes
+- Bundle size within limits
+
+---
+
+## Utility Scripts
+
+### Clean
+
+Remove build artifacts and dependencies.
+
+**Usage:**
+```bash
+# Clean all
+pnpm clean
+
+# Clean specific package
+pnpm --filter @clarity-chat/react clean
+```
+
+**Removes:**
+- `node_modules/`
+- `dist/`
+- `.next/`
+- `.turbo/`
+- `coverage/`
+- `storybook-static/`
+
+### Component Inventory
+
+Generate component inventory report.
+
+**Usage:**
+```bash
+pnpm generate:component-inventory
+```
+
+**Output:**
+```markdown
+# Component Inventory
+
+## Input Components (5)
+- ChatInput
+- VoiceInput
+- FileUpload
+- EmojiPicker
+- AudioRecorder
+
+## Message Components (8)
+- MessageList
+- MessageBubble
+- MessageActions
+...
+```
+
+### Theme Generator
+
+Generate theme configuration.
+
+**Usage:**
+```bash
+pnpm generate:theme
+```
+
+**Generates:**
+- CSS custom properties
+- Tailwind config
+- TypeScript types
+- Theme presets
+
+---
+
+## Git Hooks
+
+### Pre-commit
+
+Runs before every commit.
+
+**Checks:**
+1. Documentation artifacts
+2. Workflow file validation (actionlint)
+3. Lint-staged (format, lint)
+
+**Configuration:**
+```json
+// .lintstagedrc
+{
+  "*.{ts,tsx}": [
+    "eslint --fix",
+    "prettier --write"
+  ],
+  "*.{json,md,mdx}": [
+    "prettier --write"
+  ]
+}
+```
+
+**Skip Hook:**
+```bash
+# Emergency use only
+git commit --no-verify -m "message"
+```
+
+### Pre-push
+
+Runs before pushing to remote.
+
+**Checks:**
+1. Tests pass
+2. Build succeeds
+3. No TypeScript errors
+
+---
+
+## CI/CD Scripts
+
+### CI Pipeline
+
+GitHub Actions workflows.
+
+**Workflows:**
+
+**`ci.yml`** - Main CI pipeline
+```yaml
+- Install dependencies
+- Type checking
+- Lint code
+- Run tests
+- Build packages
+- Check bundle size
+```
+
+**`e2e-tests.yml`** - E2E tests
+```yaml
+- Build apps
+- Start dev server
+- Run Playwright tests
+- Upload test results
+```
+
+**`bundle-size.yml`** - Bundle size tracking
+```yaml
+- Build packages
+- Analyze bundle size
+- Compare with base branch
+- Comment on PR
+```
+
+**`docs-sync.yml`** - Documentation sync
+```yaml
+- Generate API docs
+- Sync to docs site
+- Deploy to Vercel
+```
+
+### Environment Variables
+
+**Local Development:**
+```bash
+# .env.local
+OPENAI_API_KEY=sk-...
+ANTHROPIC_API_KEY=sk-ant-...
+```
+
+**CI/CD:**
+```yaml
+env:
+  NODE_ENV: production
+  CI: true
+  NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+```
+
+---
+
+## Performance Optimization
+
+### Bundle Optimization
+
+```bash
+# Analyze bundle
+pnpm bundle-analysis
+
+# Check tree shaking
+pnpm size:why
+
+# Visualize imports
+pnpm --filter @clarity-chat/react size:visualize:open
+```
+
+### TypeScript Performance
+
+```bash
+# Check compilation time
+pnpm analyze:ts-performance
+
+# Generate trace
+pnpm analyze:ts-trace
+
+# View in chrome://tracing
+open trace/trace.json
+```
+
+### Memory Profiling
+
+```bash
+# Run with limited memory
+NODE_OPTIONS='--max-old-space-size=2048' pnpm build
+
+# Heap snapshot
+node --inspect-brk scripts/build.js
+```
+
+---
+
+## Troubleshooting
+
+### Common Issues
+
+**Build Failures:**
+```bash
+# Clear cache
+pnpm clean
+rm -rf .turbo
+pnpm install
+pnpm build
+```
+
+**Type Errors:**
+```bash
+# Rebuild type packages first
+pnpm --filter @clarity-chat/types build
+pnpm --filter @clarity-chat/primitives build
+pnpm typecheck
+```
+
+**Test Failures:**
+```bash
+# Clear test cache
+pnpm test -- --clearCache
+pnpm test
+```
+
+**Dependency Issues:**
+```bash
+# Reset lockfile
+rm pnpm-lock.yaml
+pnpm install
+```
+
+### Debug Mode
+
+Enable verbose logging:
+
+```bash
+# Debug builds
+DEBUG=* pnpm build
+
+# Debug tests
+DEBUG=* pnpm test
+
+# Turbo verbose mode
+pnpm build --verbose
+```
+
+---
+
+## Advanced Usage
+
+### Custom Scripts
+
+Add to package.json:
+
+```json
+{
+  "scripts": {
+    "custom:task": "tsx scripts/custom-task.ts"
+  }
+}
+```
+
+### Parallel Execution
+
+```bash
+# Run in parallel
+pnpm --parallel test
+
+# Filter packages
+pnpm --filter "./packages/*" build
+
+# Exclude packages
+pnpm --filter "!@clarity-chat/docs" build
+```
+
+### Workspace Commands
+
+```bash
+# Run in all workspaces
+pnpm -r test
+
+# Run in specific workspace
+pnpm --filter @clarity-chat/react test
+
+# Run in multiple workspaces
+pnpm --filter "@clarity-chat/{react,primitives}" build
+```
+
+---
+
+## Environment Setup
+
+### Required Tools
+
+- Node.js >= 20.0.0
+- pnpm >= 10.0.0
+- Git >= 2.40.0
+
+**Optional:**
+- actionlint (workflow validation)
+- madge (dependency analysis)
+
+### VSCode Extensions
+
+Recommended:
+
+```json
+{
+  "recommendations": [
+    "dbaeumer.vscode-eslint",
+    "esbenp.prettier-vscode",
+    "bradlc.vscode-tailwindcss",
+    "orta.vscode-jest"
+  ]
+}
+```
+
+### Shell Completion
+
+**Bash:**
+```bash
+echo 'source <(pnpm completion bash)' >> ~/.bashrc
+```
+
+**Zsh:**
+```bash
+echo 'source <(pnpm completion zsh)' >> ~/.zshrc
+```
+
+---
+
+## Quick Start Workflows
+
+### New Feature Development
+
+```bash
+# 1. Create feature branch
+git checkout -b feature/new-component
+
+# 2. Generate component
+pnpm generate:component
+
+# 3. Develop & test
+pnpm dev:react
+pnpm test:watch
+
+# 4. Pre-commit check
+pnpm check
+
+# 5. Commit changes
+git add .
+git commit -m "feat: add new component"
+
+# 6. Create changeset
+pnpm changeset
+```
+
+### Bug Fix Workflow
+
+```bash
+# 1. Create fix branch
+git checkout -b fix/issue-123
+
+# 2. Write failing test
+pnpm test:watch
+
+# 3. Fix bug
+# ... make changes ...
+
+# 4. Verify fix
+pnpm check:all
+
+# 5. Create changeset
+pnpm changeset
+```
+
+### Release Workflow
+
+```bash
+# 1. Version packages
+pnpm version-packages
+
+# 2. Review changelog
+cat packages/react/CHANGELOG.md
+
+# 3. Commit version changes
+git add .
+git commit -m "chore: release"
+
+# 4. Build & publish
+pnpm release
+
+# 5. Push changes
+git push --follow-tags
+```
+
+---
+
+## Best Practices
+
+### Before Committing
+
+```bash
+# Run full check
+pnpm check:all
+
+# Includes:
+# - TypeScript type checking
+# - ESLint
+# - Tests
+# - Build
+```
+
+### Before Pushing
+
+```bash
+# Ensure clean build
+pnpm clean
+pnpm install
+pnpm build
+pnpm test
+```
+
+### Before Releasing
+
+```bash
+# Full validation
+pnpm validate
+pnpm test:coverage
+pnpm size
+pnpm docs:generate
+```
+
+---
+
+## Performance Tips
+
+### Faster Builds
+
+```bash
+# Use sequential build for memory constraints
+pnpm build:sequential
+
+# Filter to changed packages only
+pnpm build --filter="[HEAD^1]"
+
+# Skip cache for fresh build
+pnpm build --force
+```
+
+### Faster Tests
+
+```bash
+# Run changed tests only
+pnpm test -- --changed
+
+# Run in band (sequential)
+pnpm test -- --run --maxWorkers=1
+
+# Skip slow tests in dev
+pnpm test -- --testPathIgnorePatterns=e2e
+```
+
+### Faster Installs
+
+```bash
+# Use frozen lockfile
+pnpm install --frozen-lockfile
+
+# Offline mode (use cache)
+pnpm install --offline
+
+# Shamefully hoist (faster, less strict)
+pnpm install --shamefully-hoist
+```
+
+---
+
+## Resources
+
+### Internal Documentation
+- [Architecture Guide](/docs/architecture)
+- [Contributing Guide](/docs/contributing)
+- [Testing Guide](/docs/testing)
+
+### External Tools
+- [pnpm Documentation](https://pnpm.io)
+- [Turbo Documentation](https://turbo.build)
+- [Vitest Documentation](https://vitest.dev)
+- [Playwright Documentation](https://playwright.dev)
+
+---
+
+## Support
+
+For issues with CLI tools:
+
+1. Check [Troubleshooting](#troubleshooting) section
+2. Search [GitHub Issues](https://github.com/christireid/Clarity-ai-chat-components/issues)
+3. Create new issue with `cli` label
+
+---
+
+Last updated: 2026-01-28

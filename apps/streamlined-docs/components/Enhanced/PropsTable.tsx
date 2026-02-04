@@ -183,6 +183,7 @@ export function PropsTable({
                       <motion.span
                         initial={{ opacity: 0, scale: 0.8 }}
                         animate={{ opacity: 1, scale: 1 }}
+                        viewport={{ once: true }}
                         whileHover={{ scale: 1.1 }}
                         transition={{
                           type: 'spring',
@@ -198,6 +199,7 @@ export function PropsTable({
                       <motion.span
                         initial={{ opacity: 0, scale: 0.8 }}
                         animate={{ opacity: 1, scale: 1 }}
+                        viewport={{ once: true }}
                         whileHover={{ scale: 1.1 }}
                         transition={{
                           type: 'spring',
@@ -223,6 +225,7 @@ export function PropsTable({
                             initial={{ scale: 0, rotate: -180 }}
                             animate={{ scale: 1, rotate: 0 }}
                             exit={{ scale: 0, rotate: 180 }}
+                            viewport={{ once: true }}
                             transition={{ duration: durations.normal }}
                           >
                             <Check className="w-3 h-3 text-green-500" />
@@ -233,6 +236,7 @@ export function PropsTable({
                             initial={{ scale: 0, rotate: 180 }}
                             animate={{ scale: 1, rotate: 0 }}
                             exit={{ scale: 0, rotate: -180 }}
+                            viewport={{ once: true }}
                             transition={{ duration: durations.normal }}
                           >
                             <Copy className="w-3 h-3 text-text-secondary" />
@@ -292,7 +296,9 @@ export function PropsTable({
                               aria-expanded={isExpanded}
                             >
                               <motion.div
+                                initial={{ rotate: 0 }}
                                 animate={{ rotate: isExpanded ? 180 : 0 }}
+                                viewport={{ once: true }}
                                 transition={{ duration: durations.normal }}
                               >
                                 <ChevronDown className="w-4 h-4 text-text-tertiary" />
@@ -308,6 +314,7 @@ export function PropsTable({
                               initial={{ opacity: 0, height: 0 }}
                               animate={{ opacity: 1, height: 'auto' }}
                               exit={{ opacity: 0, height: 0 }}
+                              viewport={{ once: true }}
                               transition={{ duration: durations.normal }}
                               className="overflow-hidden"
                             >
@@ -348,6 +355,7 @@ export function PropsTable({
                             marginBottom: 8,
                           }}
                           exit={{ opacity: 0, height: 0, marginBottom: 0 }}
+                          viewport={{ once: true }}
                           transition={{
                             duration: durations.moderate,
                             ease: [0.25, 0.1, 0.25, 1],

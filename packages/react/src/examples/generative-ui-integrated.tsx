@@ -11,7 +11,7 @@ import {
   convertCoreMessagesToMessages,
 } from '../hooks/use-clarity-chat'
 import { useAssistant, type ToolInvocation } from '../hooks/use-assistant'
-import { ChatWindow } from '../components/chat/chat-window'
+import { ChatWindow } from '../components/chat/ChatWindow'
 import {
   ClarityToolResult,
   type ToolCall,
@@ -127,13 +127,13 @@ interface WeatherData {
 function WeatherResult({ data }: { data: WeatherData }) {
   return (
     <Card className="mt-2">
-      <CardHeader>
+      <CardHeader className="">
         <div className="flex items-center justify-between">
           <h3 className="text-lg font-semibold">Weather in {data.location}</h3>
           <Badge variant="info">{data.condition}</Badge>
         </div>
       </CardHeader>
-      <CardContent>
+      <CardContent className="">
         <div className="space-y-2">
           <div className="text-3xl font-bold">
             {data.temperature}°{data.units === 'celsius' ? 'C' : 'F'}
@@ -167,7 +167,7 @@ interface FAQSearchData {
 function FAQSearchResults({ data }: { data: FAQSearchData }) {
   return (
     <Card className="mt-2">
-      <CardHeader>
+      <CardHeader className="">
         <h3 className="text-lg font-semibold">
           FAQ Results for "{data.query}"
         </h3>
@@ -175,7 +175,7 @@ function FAQSearchResults({ data }: { data: FAQSearchData }) {
           Found {data.totalResults} results
         </p>
       </CardHeader>
-      <CardContent>
+      <CardContent className="">
         <div className="space-y-4">
           {data.results.map((faq, idx) => (
             <div key={idx} className="border-l-2 border-primary pl-4">

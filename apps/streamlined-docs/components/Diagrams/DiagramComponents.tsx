@@ -1,13 +1,14 @@
 /**
  * Reusable SVG Diagram Components
- * 
+ *
  * Consistent, brand-aligned visual elements for documentation
  */
 
 'use client'
 
-import { motion } from 'framer-motion'
-import { ReactNode } from 'react'
+import { motion, useSpring, useTransform } from 'framer-motion'
+import { ReactNode, useEffect } from 'react'
+import { durations } from '@/lib/animations'
 
 // Color palette from design system
 // These colors are used for SVG diagrams which don't support CSS variables well
@@ -52,12 +53,12 @@ export function BoxNode({
   delay = 0,
 }: BoxNodeProps) {
   const Component = animate ? motion.g : 'g'
-  
+
   return (
     <Component
       initial={animate ? { opacity: 0, y: -10 } : undefined}
       animate={animate ? { opacity: 1, y: 0 } : undefined}
-      transition={animate ? { delay, duration: 0.3 } : undefined}
+      transition={animate ? { delay, duration: durations.moderate } : undefined}
     >
       <rect
         x={x}
@@ -122,12 +123,14 @@ export function Arrow({
   delay = 0,
 }: ArrowProps) {
   const Component = animated ? motion.g : 'g'
-  
+
   return (
     <Component
       initial={animated ? { opacity: 0 } : undefined}
       animate={animated ? { opacity: 1 } : undefined}
-      transition={animated ? { delay, duration: 0.3 } : undefined}
+      transition={
+        animated ? { delay, duration: durations.moderate } : undefined
+      }
     >
       <defs>
         <marker
@@ -142,7 +145,7 @@ export function Arrow({
           <path d="M0,0 L0,6 L9,3 z" fill={color} />
         </marker>
       </defs>
-      
+
       <motion.line
         x1={from.x}
         y1={from.y}
@@ -150,13 +153,18 @@ export function Arrow({
         y2={to.y}
         stroke={color}
         strokeWidth="2"
-        strokeDasharray={dashed ? "5,5" : "0"}
+        strokeDasharray={dashed ? '5,5' : '0'}
         markerEnd={`url(#arrowhead-${color.replace('#', '')})`}
         initial={animated ? { pathLength: 0 } : undefined}
         animate={animated ? { pathLength: 1 } : undefined}
-        transition={animated ? { delay: delay + 0.2, duration: 0.5, ease: 'easeOut' } : undefined}
+        transition={
+          animated
+            ? { delay: delay + 0.2, duration: durations.slow, ease: 'easeOut' }
+            : undefined
+        }
+        viewport={{ once: true }}
       />
-      
+
       {label && (
         <foreignObject
           x={(from.x + to.x) / 2 - 40}
@@ -181,13 +189,17 @@ interface IconBadgeProps {
   size?: 'sm' | 'md' | 'lg'
 }
 
-export function IconBadge({ icon, color = colors.brand, size = 'md' }: IconBadgeProps) {
+export function IconBadge({
+  icon,
+  color = colors.brand,
+  size = 'md',
+}: IconBadgeProps) {
   const sizes = {
     sm: 'w-8 h-8 text-sm',
     md: 'w-12 h-12 text-base',
     lg: 'w-16 h-16 text-lg',
   }
-  
+
   return (
     <div
       className={`${sizes[size]} rounded-xl flex items-center justify-center text-white shadow-lg`}
@@ -217,7 +229,9 @@ export function StepIndicator({
   orientation = 'horizontal',
 }: StepIndicatorProps) {
   return (
-    <div className={`flex ${orientation === 'vertical' ? 'flex-col' : 'flex-row'} gap-4`}>
+    <div
+      className={`flex ${orientation === 'vertical' ? 'flex-col' : 'flex-row'} gap-4`}
+    >
       {steps.map((step, index) => (
         <div key={step.number} className="flex items-center gap-4">
           <div className="flex items-center gap-3">
@@ -225,6 +239,7 @@ export function StepIndicator({
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
               transition={{ delay: index * 0.1, type: 'spring' }}
+              viewport={{ once: true }}
               className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm border-2 transition-all ${
                 step.complete || (currentStep && step.number <= currentStep)
                   ? 'bg-brand-500 border-brand-500 text-white'
@@ -270,7 +285,7 @@ export function FeatureGrid({ features, columns = 3 }: FeatureGridProps) {
     3: 'md:grid-cols-3',
     4: 'md:grid-cols-4',
   }
-  
+
   return (
     <div className={`grid grid-cols-1 ${gridCols[columns]} gap-6 my-8`}>
       {features.map((feature, index) => (
@@ -279,6 +294,7 @@ export function FeatureGrid({ features, columns = 3 }: FeatureGridProps) {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: index * 0.1 }}
+          viewport={{ once: true }}
           className={`p-6 rounded-xl border-2 transition-all hover:shadow-lg hover:-translate-y-1 ${
             feature.highlight
               ? 'border-brand-500 bg-brand-50 dark:bg-brand-950/20'
@@ -327,6 +343,7 @@ export function ComparisonTable({ headers, rows }: ComparisonTableProps) {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: rowIndex * 0.05 }}
+              viewport={{ once: true }}
               className="border-b border-gray-100 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors"
             >
               <td className="px-6 py-4 font-medium text-sm">{row.label}</td>
@@ -334,9 +351,13 @@ export function ComparisonTable({ headers, rows }: ComparisonTableProps) {
                 <td key={valueIndex} className="px-6 py-4 text-sm">
                   {typeof value === 'boolean' ? (
                     value ? (
-                      <span className="text-green-600 dark:text-green-400 text-lg">✓</span>
+                      <span className="text-green-600 dark:text-green-400 text-lg">
+                        ✓
+                      </span>
                     ) : (
-                      <span className="text-gray-300 dark:text-gray-600 text-lg">–</span>
+                      <span className="text-gray-300 dark:text-gray-600 text-lg">
+                        –
+                      </span>
                     )
                   ) : (
                     value
@@ -369,7 +390,12 @@ export function FlowStep({ steps, compact = false }: FlowStepProps) {
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: index * 0.15 }}
-            className={compact ? 'flex items-center gap-3' : 'flex flex-col items-center text-center'}
+            viewport={{ once: true }}
+            className={
+              compact
+                ? 'flex items-center gap-3'
+                : 'flex flex-col items-center text-center'
+            }
           >
             {step.icon && (
               <div className="p-4 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl text-white shadow-lg">
@@ -385,12 +411,16 @@ export function FlowStep({ steps, compact = false }: FlowStepProps) {
               )}
             </div>
           </motion.div>
-          
+
           {index < steps.length - 1 && (
             <motion.div
               initial={{ scaleX: 0 }}
               animate={{ scaleX: 1 }}
-              transition={{ delay: index * 0.15 + 0.2, duration: 0.3 }}
+              transition={{
+                delay: index * 0.15 + 0.2,
+                duration: durations.moderate,
+              }}
+              viewport={{ once: true }}
               className="hidden md:block"
             >
               <svg width="40" height="24" viewBox="0 0 40 24" fill="none">
@@ -415,13 +445,16 @@ interface PulsingDotProps {
   size?: 'sm' | 'md' | 'lg'
 }
 
-export function PulsingDot({ color = colors.brand, size = 'md' }: PulsingDotProps) {
+export function PulsingDot({
+  color = colors.brand,
+  size = 'md',
+}: PulsingDotProps) {
   const sizes = {
     sm: 'w-2 h-2',
     md: 'w-3 h-3',
     lg: 'w-4 h-4',
   }
-  
+
   return (
     <div className="relative inline-flex">
       <motion.div
@@ -432,10 +465,11 @@ export function PulsingDot({ color = colors.brand, size = 'md' }: PulsingDotProp
           opacity: [1, 0.8, 1],
         }}
         transition={{
-          duration: 1.5,
+          duration: durations.slower,
           repeat: Infinity,
           ease: 'easeInOut',
         }}
+        viewport={{ once: true }}
       />
       <motion.div
         className={`absolute inset-0 ${sizes[size]} rounded-full`}
@@ -445,10 +479,11 @@ export function PulsingDot({ color = colors.brand, size = 'md' }: PulsingDotProp
           opacity: [0.6, 0.3, 0],
         }}
         transition={{
-          duration: 1.5,
+          duration: durations.slower,
           repeat: Infinity,
           ease: 'easeOut',
         }}
+        viewport={{ once: true }}
       />
     </div>
   )
@@ -461,14 +496,22 @@ interface HighlightBoxProps {
   title?: string
 }
 
-export function HighlightBox({ children, color = 'brand', icon, title }: HighlightBoxProps) {
+export function HighlightBox({
+  children,
+  color = 'brand',
+  icon,
+  title,
+}: HighlightBoxProps) {
   const colorClasses = {
-    brand: 'bg-blue-50 dark:bg-blue-950/30 border-blue-200 dark:border-blue-800',
-    success: 'bg-green-50 dark:bg-green-950/30 border-green-200 dark:border-green-800',
-    warning: 'bg-yellow-50 dark:bg-yellow-950/30 border-yellow-200 dark:border-yellow-800',
+    brand:
+      'bg-blue-50 dark:bg-blue-950/30 border-blue-200 dark:border-blue-800',
+    success:
+      'bg-green-50 dark:bg-green-950/30 border-green-200 dark:border-green-800',
+    warning:
+      'bg-yellow-50 dark:bg-yellow-950/30 border-yellow-200 dark:border-yellow-800',
     error: 'bg-red-50 dark:bg-red-950/30 border-red-200 dark:border-red-800',
   }
-  
+
   return (
     <div className={`p-6 rounded-xl border-2 my-6 ${colorClasses[color]}`}>
       {(icon || title) && (
@@ -495,22 +538,31 @@ export function AnimatedCounter({
   suffix = '',
   prefix = '',
 }: AnimatedCounterProps) {
+  const spring = useSpring(0, {
+    damping: 30,
+    stiffness: 100,
+  })
+
+  const display = useTransform(spring, (current) => Math.round(current))
+
+  useEffect(() => {
+    spring.set(value)
+  }, [spring, value])
+
   return (
     <motion.span
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       className="font-bold text-4xl text-brand-600 dark:text-brand-400"
+      viewport={{ once: true }}
     >
-      <motion.span
-        initial={{ textContent: 0 } as any}
-        animate={{ textContent: value } as any}
-        transition={{ duration: duration / 1000, ease: 'easeOut' }}
-      >
-        {prefix}{value}{suffix}
+      <motion.span>
+        {prefix}
+        {display}
+        {suffix}
       </motion.span>
     </motion.span>
   )
 }
 
 export { colors }
-

@@ -7,17 +7,17 @@ import {
   TokenCounter,
   TokenBudgetManager,
   MemoryCompressor,
-  SemanticChunker,
   ContextOptimizer,
-} from '../token-optimizer'
+} from '@clarity-chat/memory'
+import { SemanticChunker } from '../../utils/memory/semantic-chunker'
 import type { TokenOptimizationConfig, MemoryItem } from '../types'
 
 const defaultConfig: TokenOptimizationConfig = {
   maxContextWindow: 4096,
   allocation: {
-    systemPrompt: 0.10,
+    systemPrompt: 0.1,
     userPreferences: 0.15,
-    recentContext: 0.30,
+    recentContext: 0.3,
     semanticMemory: 0.25,
     episodicMemory: 0.15,
     responseReserve: 0.05,
@@ -48,9 +48,12 @@ describe('TokenCounter', () => {
   })
 
   it('should truncate text to fit budget', () => {
-    const text = 'This is a long text that needs to be truncated to fit the budget. '.repeat(10)
+    const text =
+      'This is a long text that needs to be truncated to fit the budget. '.repeat(
+        10
+      )
     const truncated = TokenCounter.truncate(text, 50)
-    
+
     const tokens = TokenCounter.count(truncated)
     expect(tokens).toBeLessThanOrEqual(50)
     expect(truncated.length).toBeLessThan(text.length)
@@ -78,10 +81,10 @@ describe('TokenBudgetManager', () => {
 
   it('should calculate token allocation', () => {
     const allocation = manager.getAllocation()
-    
-    expect(allocation.systemPrompt).toBe(Math.floor(4096 * 0.10))
+
+    expect(allocation.systemPrompt).toBe(Math.floor(4096 * 0.1))
     expect(allocation.userPreferences).toBe(Math.floor(4096 * 0.15))
-    expect(allocation.recentContext).toBe(Math.floor(4096 * 0.30))
+    expect(allocation.recentContext).toBe(Math.floor(4096 * 0.3))
   })
 
   it('should adjust allocation based on context', () => {
@@ -139,7 +142,7 @@ describe('TokenBudgetManager', () => {
     ]
 
     const optimized = manager.optimizeMemories(memories, 150)
-    
+
     const totalTokens = optimized.reduce((sum, m) => sum + m.tokens, 0)
     expect(totalTokens).toBeLessThanOrEqual(150)
     expect(optimized[0].priority).toBe('high') // Should prioritize by priority
@@ -169,13 +172,15 @@ describe('MemoryCompressor', () => {
       'I am doing great, thanks!',
       'What can you help me with today?',
       'I can help you with many things.',
-    ].map(m => m.repeat(20)) // Make them long
+    ].map((m) => m.repeat(20)) // Make them long
 
     const compressed = compressor.compressConversation(messages, 100)
 
     expect(compressed.compressedTokens).toBeLessThanOrEqual(100)
     expect(compressed.compressionRatio).toBeGreaterThan(1)
-    expect(compressed.compressed.length).toBeLessThan(compressed.original.length)
+    expect(compressed.compressed.length).toBeLessThan(
+      compressed.original.length
+    )
   })
 
   it('should not compress if under budget', () => {
@@ -191,11 +196,14 @@ describe('MemoryCompressor', () => {
       id: '1',
       type: 'episodic',
       scope: 'session',
-      content: 'This is a long memory content that should be compressed. '.repeat(20),
+      content:
+        'This is a long memory content that should be compressed. '.repeat(20),
       metadata: {},
       confidence: 0.8,
       priority: 'medium',
-      tokens: TokenCounter.count('This is a long memory content that should be compressed. '.repeat(20)),
+      tokens: TokenCounter.count(
+        'This is a long memory content that should be compressed. '.repeat(20)
+      ),
       accessCount: 0,
       lastAccessed: new Date(),
       createdAt: new Date(),
@@ -307,7 +315,9 @@ describe('ContextOptimizer', () => {
     expect(result.optimized.systemPrompt).toBeTruthy()
     expect(result.optimized.userPreferences).toBeTruthy()
     expect(result.optimized.recentContext).toBeTruthy()
-    expect(result.stats.totalTokens).toBeLessThanOrEqual(defaultConfig.maxContextWindow)
+    expect(result.stats.totalTokens).toBeLessThanOrEqual(
+      defaultConfig.maxContextWindow
+    )
   })
 
   it('should provide access to components', () => {

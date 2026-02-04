@@ -17,13 +17,13 @@
 import { ToolRegistry } from './tool-registry'
 import { ToolExecutor } from './tool-executor'
 import { ToolLifecycleManager } from './tool-lifecycle'
+import type { ToolCallRecord, ToolCallStatus } from './tool-lifecycle'
 import type {
   ToolDefinition,
   ToolArguments,
   ToolResult,
   ToolExecutionContext,
 } from '../types/tool-definition'
-import type { ToolCallStatus, ToolCallRecord } from './tool-lifecycle'
 
 // =============================================================================
 // Orchestrator Configuration
@@ -150,10 +150,12 @@ export class ToolOrchestrator {
       }
 
       // Warn in non-production environments
-      console.warn(
-        '[ToolOrchestrator] SECURITY WARNING: autoApprove is enabled. Tools will execute without user consent. ' +
-          'This should only be used in trusted development/testing environments.'
-      )
+      if (process.env.NODE_ENV === 'development') {
+        console.warn(
+          '[ToolOrchestrator] SECURITY WARNING: autoApprove is enabled. Tools will execute without user consent. ' +
+            'This should only be used in trusted development/testing environments.'
+        )
+      }
     }
 
     this.registry = new ToolRegistry()

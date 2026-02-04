@@ -1,0 +1,317 @@
+# Quick Start - AI Chat in 3 Lines of Code
+
+> Get a production-ready AI chat interface running in under 3 minutes
+
+## Problem
+
+You need to add AI chat capabilities to your application, but don't want to spend days building a custom interface, managing state, handling streaming, or implementing accessibility features.
+
+## Solution
+
+Use `ClarityChatApp` - a single drop-in component that provides a complete chat interface with streaming, memory, error handling, and accessibility built-in.
+
+## Complete Code
+
+```tsx
+// app/chat/page.tsx
+import { ClarityChatApp } from '@clarity-chat/react'
+
+export default function ChatPage() {
+  return <ClarityChatApp api="/api/chat" />
+}
+```
+
+That's it! Three lines of code give you:
+
+- ✅ Streaming message display
+- ✅ Markdown rendering with syntax highlighting
+- ✅ Copy-to-clipboard functionality
+- ✅ Dark/light theme support
+- ✅ Keyboard navigation
+- ✅ Screen reader support
+- ✅ Mobile-responsive layout
+- ✅ Error recovery
+- ✅ Loading states
+
+## Backend Setup
+
+Create the API route handler:
+
+```tsx
+// app/api/chat/route.ts
+import { OpenAIStream, StreamingTextResponse } from 'ai'
+import { OpenAI } from 'openai'
+
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+})
+
+export async function POST(req: Request) {
+  const { messages } = await req.json()
+
+  const response = await openai.chat.completions.create({
+    model: 'gpt-4',
+    stream: true,
+    messages,
+  })
+
+  const stream = OpenAIStream(response)
+  return new StreamingTextResponse(stream)
+}
+```
+
+## How It Works
+
+### 1. Component Renders
+
+`ClarityChatApp` renders a complete chat interface with:
+- Message list with virtual scrolling
+- Input field with file upload support
+- Send button with loading states
+- Error boundaries for graceful failures
+
+### 2. User Sends Message
+
+When a user types and clicks send:
+1. Message appears immediately (optimistic update)
+2. POST request sent to `/api/chat`
+3. Streaming response begins
+
+### 3. Response Streams In
+
+As tokens arrive:
+1. Rendered in real-time with typewriter effect
+2. Markdown parsed incrementally
+3. Code blocks syntax-highlighted
+4. UI remains responsive
+
+### 4. Conversation Continues
+
+Each new message includes full conversation history, enabling context-aware responses.
+
+## Variations
+
+### With Custom Styling
+
+```tsx
+<ClarityChatApp
+  api="/api/chat"
+  className="h-screen max-w-4xl mx-auto"
+  theme="dark"
+/>
+```
+
+### With Initial Messages
+
+```tsx
+<ClarityChatApp
+  api="/api/chat"
+  initialMessages={[
+    {
+      id: '1',
+      role: 'assistant',
+      content: 'Hello! How can I help you today?',
+    },
+  ]}
+/>
+```
+
+### With Custom Placeholder
+
+```tsx
+<ClarityChatApp
+  api="/api/chat"
+  placeholder="Ask me anything about our product..."
+/>
+```
+
+### With Memory Enabled
+
+```tsx
+<ClarityChatApp
+  api="/api/chat"
+  memory={{
+    enabled: true,
+    maxTokens: 4000,
+  }}
+/>
+```
+
+### With File Upload
+
+```tsx
+<ClarityChatApp
+  api="/api/chat"
+  fileUpload={{
+    enabled: true,
+    accept: 'image/*,.pdf,.txt',
+    maxSize: 10 * 1024 * 1024, // 10MB
+  }}
+/>
+```
+
+### With Custom Empty State
+
+```tsx
+<ClarityChatApp
+  api="/api/chat"
+  emptyState={{
+    title: 'Welcome to Support Chat',
+    description: 'Ask me anything about our products',
+    suggestions: [
+      'How do I reset my password?',
+      'What are your shipping options?',
+      'Tell me about pricing plans',
+    ],
+  }}
+/>
+```
+
+## Common Pitfalls
+
+### Pitfall 1: Missing API Key
+
+**Problem:** App fails silently with no error message.
+
+```tsx
+// ❌ Bad - No error handling
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+})
+```
+
+**Solution:** Validate environment variables at startup.
+
+```tsx
+// ✅ Good - Fail fast with clear error
+if (!process.env.OPENAI_API_KEY) {
+  throw new Error('OPENAI_API_KEY environment variable is required')
+}
+
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+})
+```
+
+### Pitfall 2: CORS Issues
+
+**Problem:** API calls fail in production with CORS errors.
+
+**Solution:** Configure CORS headers in your API route.
+
+```tsx
+// app/api/chat/route.ts
+export async function OPTIONS(request: Request) {
+  return new Response(null, {
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'POST, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type',
+    },
+  })
+}
+```
+
+### Pitfall 3: Streaming Not Working
+
+**Problem:** Messages appear all at once instead of streaming.
+
+**Solution:** Ensure you're returning a `StreamingTextResponse`.
+
+```tsx
+// ❌ Bad - Returns everything at once
+return NextResponse.json({ message: response })
+
+// ✅ Good - Streams tokens as they arrive
+const stream = OpenAIStream(response)
+return new StreamingTextResponse(stream)
+```
+
+### Pitfall 4: Large Bundle Size
+
+**Problem:** Page loads slowly due to heavy imports.
+
+**Solution:** Use dynamic imports for the chat component.
+
+```tsx
+// app/chat/page.tsx
+import dynamic from 'next/dynamic'
+
+const ClarityChatApp = dynamic(
+  () => import('@clarity-chat/react').then((mod) => mod.ClarityChatApp),
+  { ssr: false }
+)
+
+export default function ChatPage() {
+  return <ClarityChatApp api="/api/chat" />
+}
+```
+
+### Pitfall 5: Memory Leaks in Development
+
+**Problem:** Console shows warnings about memory leaks during hot reload.
+
+**Solution:** Add cleanup in useEffect hooks (handled automatically by ClarityChatApp).
+
+## Next Steps
+
+- [Enable Streaming](../streaming-setup) - Optimize streaming performance
+- [Add Memory](../memory-integration) - Implement conversation memory
+- [Error Handling](../error-handling) - Robust error recovery
+- [OpenAI Integration](../openai-streaming-chat) - Advanced OpenAI features
+- [Custom Theming](../custom-theming) - Brand your chat interface
+
+## TypeScript Support
+
+Full TypeScript definitions included:
+
+```tsx
+import type { ClarityChatAppProps } from '@clarity-chat/react'
+
+const config: ClarityChatAppProps = {
+  api: '/api/chat',
+  initialMessages: [],
+  memory: {
+    enabled: true,
+    maxTokens: 4000,
+  },
+}
+
+export default function ChatPage() {
+  return <ClarityChatApp {...config} />
+}
+```
+
+## Performance Tips
+
+1. **Virtual Scrolling**: Automatically enabled for 50+ messages
+2. **Lazy Loading**: Code highlighting loads on demand
+3. **Debounced Input**: Typing doesn't trigger re-renders
+4. **Memoization**: Components re-render only when necessary
+
+## Browser Support
+
+- Chrome 90+
+- Firefox 88+
+- Safari 14+
+- Edge 90+
+
+## Accessibility
+
+- ✅ WCAG 2.1 AA compliant
+- ✅ Keyboard navigation (Tab, Enter, Escape)
+- ✅ Screen reader tested (NVDA, JAWS, VoiceOver)
+- ✅ Focus management
+- ✅ ARIA labels and landmarks
+
+## Bundle Size
+
+- Core component: ~45KB gzipped
+- With dependencies: ~120KB gzipped
+- Lazy-loaded features: +20KB as needed
+
+---
+
+**Time to implement:** 3 minutes
+**Difficulty:** Beginner
+**Dependencies:** `@clarity-chat/react`, AI SDK (OpenAI, Anthropic, etc.)

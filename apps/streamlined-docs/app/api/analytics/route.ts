@@ -3,11 +3,14 @@
  *
  * Provides access to usage analytics and metrics.
  * Protected endpoint - requires authentication in production.
+ * Uses Zod validation for type-safe input validation.
  */
 
 import { NextRequest, NextResponse } from 'next/server'
 import { getAnalyticsStore } from '@/lib/ai/analytics'
 import { logApiError } from '@/lib/security/secureLogger'
+import { validateRequestBody, validationErrorResponse } from '@/lib/validation'
+import { analyticsRequestSchema } from './schema'
 
 export const runtime = 'edge'
 export const dynamic = 'force-dynamic'
@@ -84,7 +87,7 @@ export async function GET(request: NextRequest) {
 }
 
 /**
- * GET /api/analytics/recent - Get recent queries
+ * POST /api/analytics - Get recent queries
  */
 export async function POST(request: NextRequest) {
   try {
@@ -99,8 +102,17 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    const body = await request.json()
-    const limit = body.limit || 50
+    // Validate request body with Zod schema
+    const validation = await validateRequestBody(
+      request,
+      analyticsRequestSchema
+    )
+
+    if (!validation.success) {
+      return validationErrorResponse(validation.error)
+    }
+
+    const { limit = 50 } = validation.data
 
     const analytics = getAnalyticsStore()
     const queries = await analytics.getRecentQueries(limit)

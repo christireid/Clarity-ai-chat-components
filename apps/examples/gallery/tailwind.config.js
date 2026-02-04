@@ -1,8 +1,5 @@
+// @ts-check
+import baseConfig from '../../../config/examples/tailwind.config.base.js'
+
 /** @type {import('tailwindcss').Config} */
-export default {
-  content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
-  theme: {
-    extend: {},
-  },
-  plugins: [],
-}
+export default baseConfig

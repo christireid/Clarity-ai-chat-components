@@ -27,11 +27,5 @@ export {
   type BudgetMonitorModel,
 } from './use-token-budget-monitor'
 
-export {
-  useTokenCounter,
-  getEncodingForModel,
-  preloadEncoding,
-  type TokenEncoding,
-  type UseTokenCounterOptions,
-  type UseTokenCounterReturn,
-} from './useTokenCounter'
+// useTokenCounter moved to @clarity-chat/token-optimization
+// Import AccurateTokenCounter from '@clarity-chat/token-optimization' instead
