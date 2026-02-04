@@ -427,14 +427,22 @@ function SuggestionChipsDemo() {
 // ============================================================================
 export default function SuggestionsPage() {
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 relative">
+      {/* Background Effects */}
+      <div className="fixed inset-0 -z-10 overflow-hidden pointer-events-none">
+        <div className="orb-cyan -top-40 -left-40 opacity-20" />
+        <div className="orb-primary bottom-40 -right-40 opacity-20" />
+      </div>
+
       <PageHeader
         title="Suggestions"
         description="Follow-ups, prompts, quick replies, and response actions"
+        icon={Lightbulb}
+        badge="7+ Components"
       />
 
       <Tabs defaultValue="followup" className="w-full">
-        <TabsList className="mb-6">
+        <TabsList className="mb-6 flex-wrap h-auto gap-2 p-1 glass-panel">
           <TabsTrigger value="followup">Follow-ups</TabsTrigger>
           <TabsTrigger value="prompts">Prompt Suggestions</TabsTrigger>
           <TabsTrigger value="replies">Quick Replies</TabsTrigger>

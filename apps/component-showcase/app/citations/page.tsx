@@ -496,14 +496,22 @@ function QuoteBlockDemo() {
 // ============================================================================
 export default function CitationsPage() {
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 relative">
+      {/* Background Effects */}
+      <div className="fixed inset-0 -z-10 overflow-hidden pointer-events-none">
+        <div className="orb-primary -top-40 -left-40 opacity-20" />
+        <div className="orb-violet bottom-40 -right-40 opacity-20" />
+      </div>
+
       <PageHeader
         title="Citations"
         description="Source references, link previews, and quotations"
+        icon={Quote}
+        badge="6+ Components"
       />
 
       <Tabs defaultValue="chips" className="w-full">
-        <TabsList className="mb-6">
+        <TabsList className="mb-6 flex-wrap h-auto gap-2 p-1 glass-panel">
           <TabsTrigger value="chips">Citation Chips</TabsTrigger>
           <TabsTrigger value="cards">Source Cards</TabsTrigger>
           <TabsTrigger value="preview">Link Preview</TabsTrigger>

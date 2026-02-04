@@ -514,14 +514,22 @@ function FileViewerDemo() {
 // ============================================================================
 export default function MediaFilesPage() {
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 relative">
+      {/* Background Effects */}
+      <div className="fixed inset-0 -z-10 overflow-hidden pointer-events-none">
+        <div className="orb-cyan -top-40 -right-40 opacity-20" />
+        <div className="orb-primary bottom-40 -left-40 opacity-20" />
+      </div>
+
       <PageHeader
         title="Media & Files"
         description="File tree, image gallery, attachments, and media players"
+        icon={FileImage}
+        badge="6+ Components"
       />
 
       <Tabs defaultValue="tree" className="w-full">
-        <TabsList className="mb-6">
+        <TabsList className="mb-6 flex-wrap h-auto gap-2 p-1 glass-panel">
           <TabsTrigger value="tree">File Tree</TabsTrigger>
           <TabsTrigger value="gallery">Image Gallery</TabsTrigger>
           <TabsTrigger value="attachments">Attachments</TabsTrigger>

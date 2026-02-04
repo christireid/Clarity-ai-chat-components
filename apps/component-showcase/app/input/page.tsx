@@ -523,14 +523,22 @@ function KeyboardShortcutsDemo() {
 // ============================================================================
 export default function InputPage() {
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 relative">
+      {/* Background Effects */}
+      <div className="fixed inset-0 -z-10 overflow-hidden pointer-events-none">
+        <div className="orb-cyan -top-40 -left-40 opacity-20" />
+        <div className="orb-primary bottom-40 -right-40 opacity-20" />
+      </div>
+
       <PageHeader
         title="Input"
         description="Advanced inputs, voice, file upload, and mentions"
+        icon={Keyboard}
+        badge="10+ Components"
       />
 
       <Tabs defaultValue="ai-textarea" className="w-full">
-        <TabsList className="mb-6 flex-wrap">
+        <TabsList className="mb-6 flex-wrap h-auto gap-2 p-1 glass-panel">
           <TabsTrigger value="ai-textarea">AI Textarea</TabsTrigger>
           <TabsTrigger value="voice">Voice Input</TabsTrigger>
           <TabsTrigger value="files">File Upload</TabsTrigger>

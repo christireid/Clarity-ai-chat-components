@@ -5883,14 +5883,22 @@ function AdapterConfigDemo() {
 // ============================================================================
 export default function FeaturesPage() {
   return (
-    <div className="space-y-12">
+    <div className="space-y-12 relative">
+      {/* Background Effects */}
+      <div className="fixed inset-0 -z-10 overflow-hidden pointer-events-none">
+        <div className="orb-violet -top-40 -left-40 opacity-20" />
+        <div className="orb-primary bottom-40 -right-40 opacity-20" />
+      </div>
+
       <PageHeader
         title="Feature Components"
         description="Advanced components for development, code editing, and AI workflows"
+        icon={Sparkles}
+        badge="60+ Components"
       />
 
       <Tabs defaultValue="code" className="w-full">
-        <TabsList className="mb-8 flex-wrap h-auto gap-2 bg-transparent p-0">
+        <TabsList className="mb-8 flex-wrap h-auto gap-2 p-1 glass-panel">
           <TabsTrigger value="code" className="rounded-lg">
             Code & Dev
           </TabsTrigger>

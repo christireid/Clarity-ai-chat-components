@@ -640,14 +640,22 @@ function ToolMetricsDemo() {
 // ============================================================================
 export default function ToolsPage() {
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 relative">
+      {/* Background Effects */}
+      <div className="fixed inset-0 -z-10 overflow-hidden pointer-events-none">
+        <div className="orb-primary -top-40 -right-40 opacity-20" />
+        <div className="orb-violet bottom-40 -left-40 opacity-20" />
+      </div>
+
       <PageHeader
         title="Tools"
         description="Tool cards, execution displays, and approval workflows"
+        icon={Wrench}
+        badge="10+ Components"
       />
 
       <Tabs defaultValue="cards" className="w-full">
-        <TabsList className="mb-6 flex-wrap h-auto gap-2">
+        <TabsList className="mb-6 flex-wrap h-auto gap-2 p-1 glass-panel">
           <TabsTrigger value="cards">Tool Cards</TabsTrigger>
           <TabsTrigger value="execution">Execution</TabsTrigger>
           <TabsTrigger value="search">Search Results</TabsTrigger>

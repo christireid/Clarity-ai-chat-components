@@ -483,14 +483,22 @@ function TestResultsDemo() {
 // ============================================================================
 export default function CodeDataPage() {
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 relative">
+      {/* Background Effects */}
+      <div className="fixed inset-0 -z-10 overflow-hidden pointer-events-none">
+        <div className="orb-primary -top-40 -left-40 opacity-20" />
+        <div className="orb-cyan bottom-40 -right-40 opacity-20" />
+      </div>
+
       <PageHeader
         title="Code & Data"
         description="Code blocks, diffs, terminal, tables, and test results"
+        icon={Code}
+        badge="8+ Components"
       />
 
       <Tabs defaultValue="code" className="w-full">
-        <TabsList className="mb-6">
+        <TabsList className="mb-6 flex-wrap h-auto gap-2 p-1 glass-panel">
           <TabsTrigger value="code">Code Block</TabsTrigger>
           <TabsTrigger value="diff">Code Diff</TabsTrigger>
           <TabsTrigger value="terminal">Terminal</TabsTrigger>

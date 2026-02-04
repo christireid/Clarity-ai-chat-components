@@ -515,14 +515,22 @@ function QuickNavigationDemo() {
 // ============================================================================
 export default function NavigationPage() {
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 relative">
+      {/* Background Effects */}
+      <div className="fixed inset-0 -z-10 overflow-hidden pointer-events-none">
+        <div className="orb-cyan -top-40 -left-40 opacity-20" />
+        <div className="orb-violet bottom-40 -right-40 opacity-20" />
+      </div>
+
       <PageHeader
         title="Navigation"
         description="Command palette, conversation lists, and navigation components"
+        icon={Navigation}
+        badge="5+ Components"
       />
 
       <Tabs defaultValue="command" className="w-full">
-        <TabsList className="mb-6">
+        <TabsList className="mb-6 flex-wrap h-auto gap-2 p-1 glass-panel">
           <TabsTrigger value="command">Command Palette</TabsTrigger>
           <TabsTrigger value="conversations">Conversations</TabsTrigger>
           <TabsTrigger value="history">History</TabsTrigger>
