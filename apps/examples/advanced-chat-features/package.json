@@ -14,17 +14,17 @@
     "flowtoken": "^1.0.0",
     "framer-motion": "^12.23.25",
     "jszip": "^3.10.0",
-    "lucide-react": "^0.500.0",
-    "react": "^19.2.0",
-    "react-dom": "^19.2.0",
+    "lucide-react": "^0.563.0",
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4",
     "react-markdown": "^10.0.0",
     "rehype-highlight": "^7.0.0",
     "remark-gfm": "^4.0.0",
     "zod": "^3.24.0"
   },
   "devDependencies": {
-    "@types/react": "^19.0.0",
-    "@types/react-dom": "^19.0.0",
+    "@types/react": "^19.2.11",
+    "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^5.1.1",
     "typescript": "^5.9.3",
     "vite": "^7.2.6"
