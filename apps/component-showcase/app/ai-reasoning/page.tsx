@@ -42,7 +42,7 @@ import {
 // ============================================================================
 function ThinkingIndicatorDemo() {
   return (
-    <Card>
+    <Card className="glass-card border-0">
       <CardHeader>
         <CardTitle className="text-lg">Thinking Indicators</CardTitle>
         <CardDescription>Show AI reasoning in progress</CardDescription>
@@ -163,7 +163,7 @@ function ChainOfThoughtDemo() {
   ]
 
   return (
-    <Card>
+    <Card className="glass-card border-0">
       <CardHeader>
         <CardTitle className="text-lg">Chain of Thought</CardTitle>
         <CardDescription>
@@ -252,7 +252,7 @@ function AgentPanelDemo() {
   ]
 
   return (
-    <Card>
+    <Card className="glass-card border-0">
       <CardHeader>
         <CardTitle className="text-lg">Agent Panel</CardTitle>
         <CardDescription>Multi-agent orchestration view</CardDescription>
@@ -343,7 +343,7 @@ function ThinkingBlockDemo() {
   const [showThinking, setShowThinking] = useState(true)
 
   return (
-    <Card>
+    <Card className="glass-card border-0">
       <CardHeader>
         <div className="flex items-center justify-between">
           <div>
@@ -405,7 +405,7 @@ function ThinkingBlockDemo() {
 // ============================================================================
 function ReasoningTreeDemo() {
   return (
-    <Card>
+    <Card className="glass-card border-0">
       <CardHeader>
         <CardTitle className="text-lg">Reasoning Tree</CardTitle>
         <CardDescription>Branching thought visualization</CardDescription>
@@ -485,25 +485,64 @@ function ReasoningTreeDemo() {
 // ============================================================================
 export default function AIReasoningPage() {
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 relative">
+      {/* Background Effects */}
+      <div className="fixed inset-0 -z-10 overflow-hidden pointer-events-none">
+        <div className="orb-violet -top-40 -left-40 opacity-30" />
+        <div className="orb-primary bottom-20 -right-40 opacity-20" />
+      </div>
+
       <PageHeader
         title="AI & Reasoning"
         description="Thinking indicators, chain of thought, and agent panels"
+        icon={Brain}
+        badge="15+ Components"
       />
 
       <Tabs defaultValue="thinking" className="w-full">
-        <TabsList className="mb-6">
-          <TabsTrigger value="thinking">Thinking Indicators</TabsTrigger>
-          <TabsTrigger value="chain">Chain of Thought</TabsTrigger>
-          <TabsTrigger value="agents">Agent Panel</TabsTrigger>
-          <TabsTrigger value="blocks">Thinking Blocks</TabsTrigger>
-          <TabsTrigger value="tree">Reasoning Tree</TabsTrigger>
+        <TabsList className="mb-6 flex-wrap h-auto gap-2 p-1 glass-panel">
+          <TabsTrigger
+            value="thinking"
+            className="rounded-lg gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+          >
+            <Brain className="h-4 w-4" />
+            Thinking Indicators
+          </TabsTrigger>
+          <TabsTrigger
+            value="chain"
+            className="rounded-lg gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+          >
+            <Layers className="h-4 w-4" />
+            Chain of Thought
+          </TabsTrigger>
+          <TabsTrigger
+            value="agents"
+            className="rounded-lg gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+          >
+            <Zap className="h-4 w-4" />
+            Agent Panel
+          </TabsTrigger>
+          <TabsTrigger
+            value="blocks"
+            className="rounded-lg gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+          >
+            <Eye className="h-4 w-4" />
+            Thinking Blocks
+          </TabsTrigger>
+          <TabsTrigger
+            value="tree"
+            className="rounded-lg gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+          >
+            <GitBranch className="h-4 w-4" />
+            Reasoning Tree
+          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="thinking">
           <ComponentSection
             title="Thinking Indicators"
             description="Various styles of AI thinking visualizations"
+            icon={Brain}
           >
             <ThinkingIndicatorDemo />
           </ComponentSection>
@@ -513,6 +552,7 @@ export default function AIReasoningPage() {
           <ComponentSection
             title="Chain of Thought"
             description="Step-by-step reasoning visualization"
+            icon={Layers}
           >
             <ChainOfThoughtDemo />
           </ComponentSection>
@@ -522,6 +562,7 @@ export default function AIReasoningPage() {
           <ComponentSection
             title="Agent Panel"
             description="Multi-agent system monitoring"
+            icon={Zap}
           >
             <AgentPanelDemo />
           </ComponentSection>
@@ -531,6 +572,7 @@ export default function AIReasoningPage() {
           <ComponentSection
             title="Thinking Blocks"
             description="Toggleable reasoning sections"
+            icon={Eye}
           >
             <ThinkingBlockDemo />
           </ComponentSection>
@@ -540,6 +582,7 @@ export default function AIReasoningPage() {
           <ComponentSection
             title="Reasoning Tree"
             description="Branching thought visualization"
+            icon={GitBranch}
           >
             <ReasoningTreeDemo />
           </ComponentSection>
