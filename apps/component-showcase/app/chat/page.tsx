@@ -431,9 +431,9 @@ Would you like me to elaborate on any of these points or perform additional anal
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
       {/* Main Chat */}
-      <Card className="lg:col-span-2 h-[700px] flex flex-col overflow-hidden">
+      <Card className="lg:col-span-2 h-[700px] flex flex-col overflow-hidden glass-card border-0">
         {/* Header */}
-        <div className="flex items-center justify-between px-4 py-3 border-b bg-muted/30">
+        <div className="flex items-center justify-between px-4 py-3 border-b border-white/10 bg-white/5">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center shadow-lg">
               <Brain className="h-5 w-5 text-white" />
@@ -742,10 +742,10 @@ Would you like me to elaborate on any of these points or perform additional anal
       {/* Right Sidebar */}
       <div className="space-y-4">
         {/* Available Tools */}
-        <Card>
+        <Card className="glass-card border-0">
           <CardHeader className="pb-3">
             <CardTitle className="text-sm flex items-center gap-2">
-              <Wrench className="h-4 w-4" />
+              <Wrench className="h-4 w-4 text-primary" />
               Available Tools
             </CardTitle>
           </CardHeader>
@@ -781,10 +781,10 @@ Would you like me to elaborate on any of these points or perform additional anal
         </Card>
 
         {/* Memory & Token Usage */}
-        <Card>
+        <Card className="glass-card border-0">
           <CardHeader className="pb-3">
             <CardTitle className="text-sm flex items-center gap-2">
-              <Database className="h-4 w-4" />
+              <Database className="h-4 w-4 text-primary" />
               Memory & Tokens
             </CardTitle>
           </CardHeader>
@@ -841,10 +841,10 @@ Would you like me to elaborate on any of these points or perform additional anal
         </Card>
 
         {/* Quick Actions */}
-        <Card>
+        <Card className="glass-card border-0">
           <CardHeader className="pb-3">
             <CardTitle className="text-sm flex items-center gap-2">
-              <Zap className="h-4 w-4" />
+              <Zap className="h-4 w-4 text-primary" />
               Quick Actions
             </CardTitle>
           </CardHeader>
@@ -2039,31 +2039,54 @@ function InlineCitationsDemo() {
 // ============================================================================
 export default function ChatPage() {
   return (
-    <div className="space-y-12">
+    <div className="space-y-12 relative">
+      {/* Background Effects */}
+      <div className="fixed inset-0 -z-10 overflow-hidden pointer-events-none">
+        <div className="orb-primary -top-40 -right-40 opacity-30" />
+        <div className="orb-violet top-1/2 -left-40 opacity-20" />
+      </div>
+
       <PageHeader
         title="Advanced Chat Components"
         description="Comprehensive showcase of all chat, agentic, code, tool-calling, and workflow components with full working functionality"
+        icon={MessageSquare}
+        badge="45+ Components"
       />
 
       <Tabs defaultValue="agentic" className="w-full">
-        <TabsList className="mb-8 flex-wrap h-auto gap-2 bg-transparent p-0">
-          <TabsTrigger value="agentic" className="rounded-lg gap-2">
+        <TabsList className="mb-8 flex-wrap h-auto gap-2 p-1 glass-panel">
+          <TabsTrigger
+            value="agentic"
+            className="rounded-lg gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+          >
             <Brain className="h-4 w-4" />
             Agentic Chat
           </TabsTrigger>
-          <TabsTrigger value="code" className="rounded-lg gap-2">
+          <TabsTrigger
+            value="code"
+            className="rounded-lg gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+          >
             <Code className="h-4 w-4" />
             Code & Files
           </TabsTrigger>
-          <TabsTrigger value="tools" className="rounded-lg gap-2">
+          <TabsTrigger
+            value="tools"
+            className="rounded-lg gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+          >
             <Wrench className="h-4 w-4" />
             Tools & Approval
           </TabsTrigger>
-          <TabsTrigger value="messages" className="rounded-lg gap-2">
+          <TabsTrigger
+            value="messages"
+            className="rounded-lg gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+          >
             <MessageSquare className="h-4 w-4" />
             Messages
           </TabsTrigger>
-          <TabsTrigger value="ui" className="rounded-lg gap-2">
+          <TabsTrigger
+            value="ui"
+            className="rounded-lg gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+          >
             <Layers className="h-4 w-4" />
             UI Components
           </TabsTrigger>
@@ -2073,6 +2096,7 @@ export default function ChatPage() {
           <ComponentSection
             title="Agentic Chat with Tool Calling"
             description="Full-featured chat with thinking, tools, citations, and token tracking"
+            icon={Brain}
           >
             <AdvancedAgenticChatDemo />
           </ComponentSection>
@@ -2083,12 +2107,14 @@ export default function ChatPage() {
             <ComponentSection
               title="Code Editor & Terminal"
               description="Syntax-highlighted code with live execution"
+              icon={Terminal}
             >
               <CodeTerminalDemo />
             </ComponentSection>
             <ComponentSection
               title="File Explorer"
               description="Navigate project structure"
+              icon={FolderOpen}
             >
               <FileTreeDemo />
             </ComponentSection>
@@ -2096,6 +2122,7 @@ export default function ChatPage() {
           <ComponentSection
             title="Chain of Thought"
             description="AI reasoning visualization"
+            icon={Brain}
           >
             <ChainOfThoughtDemo />
           </ComponentSection>
@@ -2106,12 +2133,14 @@ export default function ChatPage() {
             <ComponentSection
               title="Tool Approval"
               description="Human-in-the-loop"
+              icon={ShieldCheck}
             >
               <ApprovalCardDemo />
             </ComponentSection>
             <ComponentSection
               title="Safety & Guardrails"
               description="Content moderation"
+              icon={Shield}
             >
               <SafetyAlertsDemo />
             </ComponentSection>
@@ -2120,12 +2149,14 @@ export default function ChatPage() {
             <ComponentSection
               title="Retry Logic"
               description="Automatic retry with backoff"
+              icon={RotateCw}
             >
               <RetryLogicDemo />
             </ComponentSection>
             <ComponentSection
               title="Model Fallback"
               description="Automatic model failover"
+              icon={Layers}
             >
               <ModelFallbackDemo />
             </ComponentSection>
@@ -2137,12 +2168,14 @@ export default function ChatPage() {
             <ComponentSection
               title="Drafts & Archive"
               description="Message drafts and archiving"
+              icon={Edit3}
             >
               <MessageDraftsDemo />
             </ComponentSection>
             <ComponentSection
               title="Quick Replies"
               description="Pre-defined responses"
+              icon={Reply}
             >
               <QuickRepliesDemo />
             </ComponentSection>
@@ -2151,16 +2184,22 @@ export default function ChatPage() {
             <ComponentSection
               title="Message Search"
               description="Full-text search"
+              icon={Search}
             >
               <MessageSearchDemo />
             </ComponentSection>
-            <ComponentSection title="Sources" description="Citation sources">
+            <ComponentSection
+              title="Sources"
+              description="Citation sources"
+              icon={Link}
+            >
               <SourcesDemo />
             </ComponentSection>
           </div>
           <ComponentSection
             title="Inline Citations"
             description="Citations within text"
+            icon={FileText}
           >
             <InlineCitationsDemo />
           </ComponentSection>
@@ -2171,10 +2210,15 @@ export default function ChatPage() {
             <ComponentSection
               title="Notifications"
               description="Real-time alerts"
+              icon={Bell}
             >
               <NotificationsDemo />
             </ComponentSection>
-            <ComponentSection title="Personas" description="AI personas">
+            <ComponentSection
+              title="Personas"
+              description="AI personas"
+              icon={Users}
+            >
               <PersonasDemo />
             </ComponentSection>
           </div>
@@ -2182,14 +2226,23 @@ export default function ChatPage() {
             <ComponentSection
               title="Empty States"
               description="Empty content handling"
+              icon={Inbox}
             >
               <EmptyStateDemo />
             </ComponentSection>
-            <ComponentSection title="Error States" description="Error handling">
+            <ComponentSection
+              title="Error States"
+              description="Error handling"
+              icon={AlertCircle}
+            >
               <ErrorPageDemo />
             </ComponentSection>
           </div>
-          <ComponentSection title="Date Picker" description="Date selection">
+          <ComponentSection
+            title="Date Picker"
+            description="Date selection"
+            icon={Calendar}
+          >
             <DatePickerDemo />
           </ComponentSection>
         </TabsContent>
