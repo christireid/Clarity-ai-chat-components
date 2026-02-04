@@ -1826,14 +1826,22 @@ function LovableClone() {
 // ============================================================================
 export default function ClonesPage() {
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 relative">
+      {/* Background Effects */}
+      <div className="fixed inset-0 -z-10 overflow-hidden pointer-events-none">
+        <div className="orb-violet -top-40 -right-40 opacity-20" />
+        <div className="orb-cyan bottom-40 -left-40 opacity-20" />
+      </div>
+
       <PageHeader
         title="AI Interface Clones"
         description="Pixel-perfect recreations of popular AI chat interfaces built with Clarity Chat components. These demonstrate the flexibility and power of our component library."
+        icon={Layers}
+        badge="7 Clones"
       />
 
       <Tabs defaultValue="claude" className="w-full">
-        <TabsList className="mb-6 flex-wrap h-auto gap-2 bg-transparent p-0">
+        <TabsList className="mb-6 flex-wrap h-auto gap-2 p-1 glass-panel">
           <TabsTrigger
             value="claude"
             className="data-[state=active]:bg-[#da7756] data-[state=active]:text-white rounded-lg px-4 py-2"

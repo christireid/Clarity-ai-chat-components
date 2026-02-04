@@ -60,10 +60,17 @@ export default function PrimitivesPage() {
   const [inputValue, setInputValue] = useState('')
 
   return (
-    <div className="max-w-6xl mx-auto">
+    <div className="max-w-6xl mx-auto relative">
+      {/* Background Effects */}
+      <div className="fixed inset-0 -z-10 overflow-hidden pointer-events-none">
+        <div className="orb-cyan -top-40 -right-40 opacity-20" />
+        <div className="orb-primary bottom-40 -left-40 opacity-20" />
+      </div>
+
       <PageHeader
         title="Primitives Components"
         description="Base UI components built on Radix UI and shadcn/ui - the foundation for all other components"
+        badge="25+ Components"
       />
 
       <ComponentSection

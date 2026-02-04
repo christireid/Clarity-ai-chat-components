@@ -1387,14 +1387,22 @@ function SDKDevToolsDashboard() {
 // ============================================================================
 export default function DashboardsPage() {
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 relative">
+      {/* Background Effects */}
+      <div className="fixed inset-0 -z-10 overflow-hidden pointer-events-none">
+        <div className="orb-primary -top-40 -left-40 opacity-20" />
+        <div className="orb-violet bottom-40 -right-40 opacity-20" />
+      </div>
+
       <PageHeader
         title="Dashboards"
         description="Analytics and management interfaces for AI operations"
+        icon={BarChart3}
+        badge="5 Dashboards"
       />
 
       <Tabs defaultValue="tokens" className="w-full">
-        <TabsList className="mb-6">
+        <TabsList className="mb-6 flex-wrap h-auto gap-2 p-1 glass-panel">
           <TabsTrigger value="tokens" className="gap-2">
             <Coins className="h-4 w-4" />
             Token Optimization
