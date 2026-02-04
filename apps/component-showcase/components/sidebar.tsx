@@ -55,6 +55,111 @@ const categories: NavCategory[] = [
     componentCount: 15,
   },
   {
+    name: 'Core Chat',
+    href: '/core-chat',
+    icon: <MessagesSquare className="h-4 w-4" />,
+    description: 'Essential chat UI elements',
+    componentCount: 8,
+  },
+  {
+    name: 'Messages',
+    href: '/messages',
+    icon: <MessageSquare className="h-4 w-4" />,
+    description: 'Message display components',
+    componentCount: 12,
+  },
+  {
+    name: 'Input',
+    href: '/input',
+    icon: <Keyboard className="h-4 w-4" />,
+    description: 'Input and form components',
+    componentCount: 10,
+  },
+  {
+    name: 'AI Reasoning',
+    href: '/ai-reasoning',
+    icon: <Brain className="h-4 w-4" />,
+    description: 'AI thinking and reasoning displays',
+    componentCount: 8,
+  },
+  {
+    name: 'Tools',
+    href: '/tools',
+    icon: <Wrench className="h-4 w-4" />,
+    description: 'Tool execution components',
+    componentCount: 10,
+  },
+  {
+    name: 'Search',
+    href: '/search',
+    icon: <Search className="h-4 w-4" />,
+    description: 'Search and filter components',
+    componentCount: 6,
+  },
+  {
+    name: 'Token Management',
+    href: '/token-management',
+    icon: <Coins className="h-4 w-4" />,
+    description: 'Token tracking and usage',
+    componentCount: 5,
+  },
+  {
+    name: 'Code & Data',
+    href: '/code-data',
+    icon: <Code2 className="h-4 w-4" />,
+    description: 'Code display and data views',
+    componentCount: 8,
+  },
+  {
+    name: 'Media Files',
+    href: '/media-files',
+    icon: <FileImage className="h-4 w-4" />,
+    description: 'File and media components',
+    componentCount: 6,
+  },
+  {
+    name: 'Navigation',
+    href: '/navigation',
+    icon: <Navigation className="h-4 w-4" />,
+    description: 'Navigation and routing',
+    componentCount: 5,
+  },
+  {
+    name: 'Feedback & Status',
+    href: '/feedback-status',
+    icon: <Bell className="h-4 w-4" />,
+    description: 'Feedback and status indicators',
+    componentCount: 8,
+  },
+  {
+    name: 'Suggestions',
+    href: '/suggestions',
+    icon: <Lightbulb className="h-4 w-4" />,
+    description: 'Suggestion and prompt components',
+    componentCount: 5,
+  },
+  {
+    name: 'Theme',
+    href: '/theme',
+    icon: <Palette className="h-4 w-4" />,
+    description: 'Theme and styling options',
+    componentCount: 4,
+  },
+  {
+    name: 'Loading States',
+    href: '/loading-states',
+    icon: <Loader2 className="h-4 w-4" />,
+    description: 'Loading and skeleton components',
+    componentCount: 6,
+  },
+  {
+    name: 'Citations',
+    href: '/citations',
+    icon: <Quote className="h-4 w-4" />,
+    description: 'Citation and reference displays',
+    componentCount: 4,
+  },
+  {
     name: 'Primitives',
     href: '/primitives',
     icon: <Layers className="h-4 w-4" />,
@@ -110,12 +215,12 @@ export function Sidebar() {
   return (
     <aside
       className={cn(
-        'fixed left-0 top-0 z-40 h-screen border-r bg-card transition-all duration-300',
+        'fixed left-0 top-0 z-40 h-screen border-r bg-card transition-all duration-300 flex flex-col',
         collapsed ? 'w-16' : 'w-64'
       )}
     >
       {/* Header */}
-      <div className="flex h-16 items-center justify-between border-b px-4">
+      <div className="flex h-16 items-center justify-between border-b px-4 shrink-0">
         {!collapsed && (
           <div className="flex items-center gap-2">
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground font-bold text-sm">
@@ -144,7 +249,7 @@ export function Sidebar() {
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 overflow-y-auto p-2">
+      <nav className="flex-1 overflow-y-auto scrollbar-hidden p-2">
         <ul className="space-y-1">
           {categories.map((category) => {
             const isActive = pathname === category.href
@@ -186,7 +291,7 @@ export function Sidebar() {
       </nav>
 
       {/* Footer */}
-      <div className="border-t p-2">
+      <div className="border-t p-2 shrink-0">
         <button
           onClick={toggleTheme}
           className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm hover:bg-muted transition-colors"

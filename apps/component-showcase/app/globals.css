@@ -153,3 +153,86 @@ code {
 .focus-ring {
   @apply focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2;
 }
+
+/* Hidden scrollbar utility - scroll functionality without visible scrollbar */
+.scrollbar-hidden {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+
+.scrollbar-hidden::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
+}
+
+/* Alternative: thin scrollbar that appears on hover */
+.scrollbar-thin {
+  scrollbar-width: thin;
+  scrollbar-color: transparent transparent;
+}
+
+.scrollbar-thin:hover {
+  scrollbar-color: hsl(var(--muted-foreground) / 0.3) transparent;
+}
+
+.scrollbar-thin::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background: transparent;
+  border-radius: 9999px;
+}
+
+.scrollbar-thin:hover::-webkit-scrollbar-thumb {
+  background: hsl(var(--muted-foreground) / 0.3);
+}
+
+/* Text overflow utilities */
+.text-truncate {
+  @apply overflow-hidden text-ellipsis whitespace-nowrap;
+}
+
+.text-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.text-clamp-3 {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Prevent text overflow in flex containers */
+.min-w-0 {
+  min-width: 0;
+}
+
+/* Container overflow utilities */
+.overflow-x-auto-hidden {
+  @apply overflow-x-auto;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.overflow-x-auto-hidden::-webkit-scrollbar {
+  display: none;
+}
+
+.overflow-y-auto-hidden {
+  @apply overflow-y-auto;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.overflow-y-auto-hidden::-webkit-scrollbar {
+  display: none;
+}
