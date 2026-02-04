@@ -11,6 +11,7 @@ import {
   ANIMATION_PRESETS,
 } from '../../animations/constants'
 import { useReducedMotion } from '../../hooks/ui/use-reduced-motion'
+import { withGlass } from '../../lib/with-glass'
 
 export interface FileUploadProps {
   onUpload: (files: File[]) => Promise<MessageAttachment[]>
@@ -162,10 +163,17 @@ export function FileUpload({
     return '📎'
   }, [])
 
+  // Glass-enhanced components
+  const GlassDropZone = withGlass('div', {
+    intensity: 'medium',
+    gradient: 'green',
+    animated: 'glow',
+  })
+
   return (
     <div className={cn('space-y-4', className)}>
       {/* Drop Zone */}
-      <div
+      <GlassDropZone
         onDragEnter={handleDragEnter}
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
@@ -278,7 +286,7 @@ export function FileUpload({
             </div>
           </motion.div>
         )}
-      </div>
+      </GlassDropZone>
 
       {/* Error Message */}
       {error &&

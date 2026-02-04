@@ -222,7 +222,17 @@ export function ExportDialog({
                 prefersReducedMotion ? (
                   <label
                     key={key}
-                    className="flex items-start gap-3 p-3 rounded-lg border cursor-pointer hover:bg-muted/50 transition-colors"
+                    className={cn(
+                      'flex items-start gap-3 p-3 rounded-lg cursor-pointer',
+
+                      // Glassmorphism: Subtle intensity
+                      'backdrop-blur-sm bg-muted/60',
+                      'border border-border/[0.12]',
+
+                      // Hover state
+                      'transition-all duration-200',
+                      'hover:bg-muted/70 hover:border-border/[0.16]'
+                    )}
                   >
                     <input
                       type="checkbox"
@@ -249,7 +259,17 @@ export function ExportDialog({
                       delay: 0.3 + index * 0.05,
                     }}
                     viewport={{ once: true }}
-                    className="flex items-start gap-3 p-3 rounded-lg border cursor-pointer hover:bg-muted/50 transition-colors"
+                    className={cn(
+                      'flex items-start gap-3 p-3 rounded-lg cursor-pointer',
+
+                      // Glassmorphism: Subtle intensity
+                      'backdrop-blur-sm bg-muted/60',
+                      'border border-border/[0.12]',
+
+                      // Hover state
+                      'transition-all duration-200',
+                      'hover:bg-muted/70 hover:border-border/[0.16]'
+                    )}
                   >
                     <input
                       type="checkbox"

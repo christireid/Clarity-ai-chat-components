@@ -115,7 +115,12 @@ function Lightbox({ images, currentIndex, onClose, onPrevious, onNext }: Lightbo
 
   return (
     <motion.div
-      className="image-gallery-lightbox"
+      className={cn(
+        'image-gallery-lightbox',
+
+        // Glassmorphism: Subtle intensity for media viewers
+        'backdrop-blur-md'
+      )}
       initial={prefersReducedMotion ? {} : { opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={prefersReducedMotion ? {} : { opacity: 0 }}
@@ -168,7 +173,18 @@ function Lightbox({ images, currentIndex, onClose, onPrevious, onNext }: Lightbo
 
       {/* Image container */}
       <motion.div
-        className="image-gallery-lightbox-content"
+        className={cn(
+          'image-gallery-lightbox-content',
+
+          // Glassmorphism: Subtle intensity with light border and hover glow
+          'backdrop-blur-sm bg-background/60',
+          'border border-border/[0.12]',
+
+          // Hover glow
+          'transition-all duration-300',
+          'hover:shadow-[0_0_30px_rgba(129,140,248,0.15)]',
+          'hover:border-border/[0.16]'
+        )}
         onClick={(e) => e.stopPropagation()}
         initial={prefersReducedMotion ? {} : { scale: 0.9 }}
         animate={{ scale: 1 }}

@@ -411,15 +411,18 @@ const CodeBlockComponent = React.memo<CodeBlockProps>(function CodeBlock({
       ref={containerRef}
       className={cn(
         'code-block group relative rounded-xl overflow-hidden',
-        'border border-white/[0.08]',
-        'bg-[#011627]', // Night Owl background
+
+        // Glassmorphism: Medium intensity for code blocks
+        'backdrop-blur-md bg-[#011627]/70',
+        'border border-white/[0.12]',
 
         // Multi-layer shadow system for depth (Raycast-inspired)
         'shadow-[0_2px_4px_rgba(0,0,0,0.3),0_4px_8px_rgba(0,0,0,0.25),0_8px_16px_rgba(0,0,0,0.2)]',
 
-        // Premium hover glow effect (indigo accent)
-        'transition-shadow duration-300 ease-out',
+        // Premium hover glow effect (indigo accent) - light border
+        'transition-all duration-300 ease-out',
         'hover:shadow-[0_2px_4px_rgba(0,0,0,0.3),0_4px_8px_rgba(0,0,0,0.25),0_8px_16px_rgba(0,0,0,0.2),0_0_30px_rgba(129,140,248,0.15),0_0_60px_rgba(129,140,248,0.08)]',
+        'hover:border-white/[0.16]',
 
         themeType === 'dark' && 'dark',
         className

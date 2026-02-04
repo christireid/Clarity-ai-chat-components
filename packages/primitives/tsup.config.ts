@@ -5,6 +5,9 @@ import { join } from 'path'
 export default defineConfig({
   entry: {
     index: 'src/index.ts',
+    // Granular entry points matching package.json exports
+    'lib/glass-variants': 'src/lib/glass-variants.ts',
+    'components/icons': 'src/components/icons.tsx',
     // Granular utility entry points for optimal tree-shaking
     'utils/number': 'src/lib/utils/number.ts',
     'utils/string': 'src/lib/utils/string.ts',

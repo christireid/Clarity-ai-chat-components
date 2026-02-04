@@ -291,8 +291,19 @@ export function KnowledgeBaseViewer({
   }
 
   return (
-    <Card className={cn('h-full flex flex-col', className)}>
-      <CardHeader>
+    <Card
+      className={cn(
+        // Glassmorphism: medium intensity, purple gradient, animated gradient (AI panel)
+        'relative h-full flex flex-col overflow-hidden',
+        'border border-border/30 backdrop-blur-xl backdrop-saturate-150',
+        'bg-gradient-to-br from-purple-500/10 via-background/80 to-purple-600/5',
+        'shadow-[0_8px_32px_rgba(147,51,234,0.12)]',
+        'before:absolute before:inset-0 before:bg-gradient-to-br before:from-purple-400/5 before:via-transparent before:to-purple-600/5',
+        'before:animate-gradient-shift before:bg-[length:200%_200%] before:pointer-events-none',
+        className
+      )}
+    >
+      <CardHeader className="relative z-10">
         <div className="flex items-start justify-between">
           <div>
             <CardTitle className="flex items-center gap-2">
@@ -348,7 +359,7 @@ export function KnowledgeBaseViewer({
         />
       </CardHeader>
 
-      <CardContent className="flex-1 overflow-hidden">
+      <CardContent className="relative z-10 flex-1 overflow-hidden">
         <ScrollArea className="h-full">
           {filteredSections.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-64 text-center">

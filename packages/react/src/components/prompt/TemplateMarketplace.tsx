@@ -65,6 +65,7 @@ import {
   DURATION_SECONDS as durations,
   ANIMATION_PRESETS,
 } from '../../animations/constants'
+import { glassVariants } from '@clarity-chat/primitives/glass-variants'
 
 export interface TemplateMarketplaceProps {
   /** Current user info */
@@ -121,7 +122,16 @@ function MarketplaceTemplateCard({
       transition={{ duration: durations.normal }}
       viewport={{ once: true }}
     >
-      <Card className="group hover:shadow-lg transition-shadow">
+      <Card
+        className={cn(
+          'group',
+          glassVariants({
+            intensity: 'medium',
+            gradient: 'pink',
+            hover: 'glow',
+          })
+        )}
+      >
         <CardHeader className="pb-3">
           <div className="flex items-start justify-between">
             <div className="flex-1 min-w-0">

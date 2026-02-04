@@ -10,6 +10,7 @@ import {
   cn,
 } from '@clarity-chat/primitives'
 import type { ConversationAnalytics } from '../ConversationAnalyticsDashboard.types'
+import { glass, GLASS_PRESETS } from '../../../utils/glassmorphism'
 
 export interface SentimentCardProps {
   /** Sentiment data to display */
@@ -26,7 +27,7 @@ export interface SentimentCardProps {
  */
 export function SentimentCard({ sentiment, detailed = false }: SentimentCardProps) {
   return (
-    <Card className="shadow-sm">
+    <Card className={glass(GLASS_PRESETS.metricsPanel)}>
       <CardHeader className="">
         <CardTitle className="text-sm">Sentiment Analysis</CardTitle>
       </CardHeader>

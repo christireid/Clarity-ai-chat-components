@@ -15,6 +15,7 @@ import type { SavedPrompt, MessageAttachment } from '@clarity-chat/types'
 import { useMergedRef } from '../../hooks/ui/use-merged-ref'
 import { useReducedMotion } from '../../hooks/ui/use-reduced-motion'
 import { ANIMATION_PRESETS } from '../../animations/constants'
+import { withGlass } from '../../lib/with-glass'
 
 export interface InputSuggestion {
   id: string
@@ -418,8 +419,14 @@ export function AdvancedChatInput({
     [value, attachments.length]
   )
 
+  // Glass-enhanced components
+  const GlassContainer = withGlass('div', {
+    intensity: 'medium',
+    border: 'light',
+  })
+
   return (
-    <div className={cn('relative border-t bg-background', className)}>
+    <GlassContainer className={cn('relative border-t bg-background', className)}>
       {/* Attachments Preview */}
       {attachments.length > 0 &&
         (prefersReducedMotion ? (
@@ -427,7 +434,7 @@ export function AdvancedChatInput({
             {attachments.map((attachment) => (
               <div
                 key={attachment.id}
-                className="relative flex items-center gap-2 px-3 py-2 bg-muted rounded-lg"
+                className="relative flex items-center gap-2 px-3 py-2 glass-subtle rounded-xl"
               >
                 {attachment.type === 'image' && attachment.url && (
                   <img
@@ -467,7 +474,7 @@ export function AdvancedChatInput({
                   key={attachment.id}
                   {...ANIMATION_PRESETS.pop}
                   viewport={{ once: true }}
-                  className="relative flex items-center gap-2 px-3 py-2 bg-muted rounded-lg"
+                  className="relative flex items-center gap-2 px-3 py-2 glass-subtle rounded-xl"
                 >
                   {attachment.type === 'image' && attachment.url && (
                     <img
@@ -504,7 +511,7 @@ export function AdvancedChatInput({
         suggestions.length > 0 &&
         (prefersReducedMotion ? (
           <div
-            className="absolute bottom-full left-4 right-4 mb-2 bg-popover border border-border/60 rounded-lg shadow-2xl max-h-64 overflow-y-auto scrollbar-hide z-50 backdrop-blur-sm"
+            className="absolute bottom-full left-4 right-4 mb-2 bg-popover border border-white/10 dark:border-white/5/60 rounded-lg shadow-2xl max-h-64 overflow-y-auto scrollbar-hide z-50 backdrop-blur-sm"
             role="listbox"
             aria-label="Suggestions"
           >
@@ -560,7 +567,7 @@ export function AdvancedChatInput({
             <motion.div
               {...ANIMATION_PRESETS.slideUp}
               viewport={{ once: true }}
-              className="absolute bottom-full left-4 right-4 mb-2 bg-popover border border-border/60 rounded-lg shadow-2xl max-h-64 overflow-y-auto scrollbar-hide z-50 backdrop-blur-sm"
+              className="absolute bottom-full left-4 right-4 mb-2 bg-popover border border-white/10 dark:border-white/5/60 rounded-lg shadow-2xl max-h-64 overflow-y-auto scrollbar-hide z-50 backdrop-blur-sm"
               role="listbox"
               aria-label="Suggestions"
             >
@@ -660,6 +667,7 @@ export function AdvancedChatInput({
             autoResize
             maxRows={6}
             className={cn(isOverLimit && 'border-destructive')}
+            glassVariants={{ intensity: 'subtle', border: 'medium', hover: 'brighten' }}
           />
           {maxLength && (
             <div
@@ -684,7 +692,7 @@ export function AdvancedChatInput({
           ↑
         </Button>
       </div>
-    </div>
+    </GlassContainer>
   )
 }
 

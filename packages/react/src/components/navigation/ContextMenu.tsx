@@ -466,7 +466,7 @@ export function ContextMenu({
                 top: position.y,
                 zIndex: 'var(--z-popover)',
               }}
-              className="min-w-[200px] bg-card border border-border/50 shadow-md rounded-lg p-2 backdrop-blur-sm focus:outline-none"
+              className="min-w-[200px] backdrop-blur-md backdrop-saturate-150 bg-white/60 dark:bg-background/60 border border-glass-light dark:border-glass-dark-light shadow-md rounded-lg p-2 focus:outline-none hover:-translate-y-0.5 hover:shadow-lg transition-all duration-300"
               tabIndex={-1}
             >
               {renderMenuItems(items)}

@@ -17,6 +17,7 @@ import {
 } from '../../animations'
 import { getSpring } from '../../animations/spring-presets'
 import { Skeleton } from './skeleton'
+import { useGlassVariant } from '../../lib/with-glass'
 
 /**
  * Linear Progress Bar
@@ -45,6 +46,10 @@ export const Progress: React.FC<ProgressProps> = ({
   className,
 }) => {
   const prefersReducedMotion = useReducedMotion()
+  const glassClass = useGlassVariant({
+    intensity: 'subtle',
+    border: 'light',
+  })
   const isIndeterminate = value === undefined
   const percentage = Math.min(Math.max(value ?? 0, 0), 100)
 
@@ -81,6 +86,7 @@ export const Progress: React.FC<ProgressProps> = ({
       <div
         className={cn(
           'relative w-full overflow-hidden rounded-full bg-muted/60',
+          glassClass,
           sizeClasses[size]
         )}
       >

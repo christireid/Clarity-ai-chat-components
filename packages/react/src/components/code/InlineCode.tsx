@@ -74,13 +74,17 @@ export const InlineCode = React.memo<InlineCodeProps>(function InlineCode({
       className={cn(
         // Night Owl theming using centralized colors
         'font-mono text-sm font-medium',
-        'rounded border px-1.5 py-0.5',
-        // Use CSS custom properties for Night Owl colors
-        '[background-color:var(--night-owl-bg)] [color:var(--night-owl-fg)] [border-color:var(--night-owl-border)]',
+        'rounded px-1.5 py-0.5',
+
+        // Glassmorphism: Subtle intensity for inline code
+        'backdrop-blur-[2px]',
+        '[background-color:var(--night-owl-bg)]/50 [color:var(--night-owl-fg)]',
+        'border border-[var(--night-owl-border)]/[0.12]',
+
         // Interactive states (only when copy is enabled)
-        enableCopy && 'cursor-pointer transition-colors duration-200',
+        enableCopy && 'cursor-pointer transition-all duration-200',
         enableCopy &&
-          'hover:[background-color:var(--night-owl-bg-secondary)] hover:[border-color:var(--night-owl-border)]',
+          'hover:[background-color:var(--night-owl-bg-secondary)]/60 hover:border-[var(--night-owl-border)]/[0.16]',
         enableCopy &&
           'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500/50',
         className

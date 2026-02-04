@@ -1,14 +1,15 @@
 import * as React from 'react'
 import { cn } from '@clarity-chat/primitives'
+import { withGlass, type GlassComponentProps } from '../../lib/with-glass'
 
 export interface CardProps extends React.HTMLAttributes<HTMLDivElement> {}
 
-export const Card = React.forwardRef<HTMLDivElement, CardProps>(
+const CardBase = React.forwardRef<HTMLDivElement, CardProps>(
   ({ className, ...props }, ref) => {
     return (
       <div
         className={cn(
-          'rounded-lg border bg-card text-card-foreground shadow-sm',
+          'rounded-lg text-card-foreground',
           className
         )}
         ref={ref}
@@ -18,7 +19,13 @@ export const Card = React.forwardRef<HTMLDivElement, CardProps>(
   }
 )
 
-Card.displayName = 'Card'
+CardBase.displayName = 'CardBase'
+
+export const Card = withGlass(CardBase, {
+  intensity: 'medium',
+  border: 'light',
+  hover: 'lift',
+})
 
 export interface CardHeaderProps extends React.HTMLAttributes<HTMLDivElement> {}
 

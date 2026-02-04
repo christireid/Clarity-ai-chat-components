@@ -12,6 +12,7 @@ import {
   DURATION_SECONDS as durations,
 } from '../../../animations/constants'
 import type { QualityMetrics } from '../ConversationAnalyticsDashboard.types'
+import { glass, GLASS_PRESETS } from '../../../utils/glassmorphism'
 
 export interface QualityScoreCardProps {
   /** Quality metrics to display */
@@ -31,7 +32,7 @@ export function QualityScoreCard({
   prefersReducedMotion = false,
 }: QualityScoreCardProps) {
   return (
-    <Card className="shadow-sm">
+    <Card className={glass(GLASS_PRESETS.metricsPanel)}>
       <CardHeader className="">
         <CardTitle className="text-sm">Conversation Quality</CardTitle>
       </CardHeader>

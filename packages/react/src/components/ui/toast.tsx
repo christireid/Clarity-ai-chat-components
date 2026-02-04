@@ -21,6 +21,7 @@ import {
   getMotionSafeDuration,
   getMotionSafeValue,
 } from '../../animations/motion-safe'
+import { useGlassVariant } from '../../lib/with-glass'
 
 // ============================================================================
 // TYPES
@@ -63,6 +64,10 @@ export function ToastItem({
   onClose,
 }: ToastProps) {
   const prefersReducedMotion = useReducedMotion()
+  const glassClass = useGlassVariant({
+    intensity: 'medium',
+    border: 'light',
+  })
 
   // Memoize icon selection
   const Icon = React.useMemo(
@@ -132,6 +137,7 @@ export function ToastItem({
       className={cn(
         'relative flex gap-3.5 px-4 py-3.5 rounded-xl border border-border/40 shadow-lg backdrop-blur-xl',
         'min-w-[340px] max-w-[440px]',
+        glassClass,
         colorClasses
       )}
     >

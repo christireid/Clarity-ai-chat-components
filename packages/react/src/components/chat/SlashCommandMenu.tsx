@@ -219,9 +219,8 @@ export function SlashCommandMenu({
           }}
           className={cn(
             'absolute left-0 right-0 z-50',
-            'bg-background border border-border rounded-lg shadow-lg',
+            'glass-strong rounded-2xl shadow-lg shadow-black/5 dark:shadow-black/20',
             'max-h-[280px] overflow-y-auto scrollbar-hide',
-            'backdrop-blur-sm bg-opacity-95',
             position === 'above' ? 'bottom-full mb-2' : 'top-full mt-2',
             className
           )}
@@ -229,26 +228,28 @@ export function SlashCommandMenu({
           aria-label="Available slash commands"
         >
           {/* Header */}
-          <div className="sticky top-0 bg-background/95 backdrop-blur-sm border-b border-border px-3 py-2 flex items-center gap-2">
-            <svg
-              className="w-4 h-4 text-primary"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M13 10V3L4 14h7v7l9-11h-7z"
-              />
-            </svg>
-            <span className="text-sm font-medium text-foreground">
+          <div className="sticky top-0 glass-subtle border-b border-white/10 dark:border-white/5 px-3 py-2.5 flex items-center gap-2">
+            <div className="icon-container-sm !w-6 !h-6">
+              <svg
+                className="w-3.5 h-3.5"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M13 10V3L4 14h7v7l9-11h-7z"
+                />
+              </svg>
+            </div>
+            <span className="text-sm font-semibold text-foreground">
               Quick Commands
             </span>
             {query && (
-              <span className="text-xs text-muted-foreground ml-auto">
-                Filter: "/{query}"
+              <span className="badge-glass text-xs ml-auto">
+                /{query}
               </span>
             )}
           </div>
@@ -275,12 +276,13 @@ export function SlashCommandMenu({
                         onClick={() => isAvailable && onSelect(cmd)}
                         disabled={!isAvailable}
                         className={cn(
-                          'w-full flex items-center gap-3 px-3 py-2 rounded-md',
-                          'text-left transition-colors',
+                          'w-full flex items-center gap-3 px-3 py-2.5 rounded-xl',
+                          'text-left transition-all duration-200',
                           'focus:outline-none focus-visible:ring-2 focus-visible:ring-primary',
+                          'group relative overflow-hidden',
                           isSelected
-                            ? 'bg-primary/10 text-foreground'
-                            : 'text-muted-foreground hover:bg-muted hover:text-foreground',
+                            ? 'glass text-foreground glow-sm'
+                            : 'text-muted-foreground hover:glass-subtle hover:text-foreground',
                           !isAvailable && 'opacity-50 cursor-not-allowed'
                         )}
                         role="option"
@@ -340,20 +342,22 @@ export function SlashCommandMenu({
           </div>
 
           {/* Footer hint */}
-          <div className="sticky bottom-0 bg-background/95 backdrop-blur-sm border-t border-border px-3 py-2">
-            <p className="text-xs text-muted-foreground">
-              <kbd className="px-1.5 py-0.5 bg-muted rounded text-foreground font-mono text-xs">
+          <div className="sticky bottom-0 glass-subtle border-t border-white/10 dark:border-white/5 px-3 py-2">
+            <p className="text-xs text-muted-foreground flex items-center gap-2 flex-wrap">
+              <kbd className="badge-glass font-mono text-xs">
                 ↑↓
-              </kbd>{' '}
-              navigate •{' '}
-              <kbd className="px-1.5 py-0.5 bg-muted rounded text-foreground font-mono text-xs">
+              </kbd>
+              <span>navigate</span>
+              <span>•</span>
+              <kbd className="badge-glass font-mono text-xs">
                 Enter
-              </kbd>{' '}
-              select •{' '}
-              <kbd className="px-1.5 py-0.5 bg-muted rounded text-foreground font-mono text-xs">
+              </kbd>
+              <span>select</span>
+              <span>•</span>
+              <kbd className="badge-glass font-mono text-xs">
                 Esc
-              </kbd>{' '}
-              close
+              </kbd>
+              <span>close</span>
             </p>
           </div>
         </motion.div>

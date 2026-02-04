@@ -27,6 +27,7 @@
 import * as React from 'react'
 import { cn } from '@clarity-chat/primitives'
 import { Mic, StopCircle, Pause, Play, Radio, Clock, Volume2, Waves } from 'lucide-react'
+import { withGlass } from '../../lib/with-glass'
 
 // ============================================================================
 // Types
@@ -507,18 +508,31 @@ export function AudioRecorder({
   // Check if stop button should be disabled (minDuration not reached)
   const isStopDisabled = duration < minDuration
 
+  // Glass-enhanced components
+  const GlassContainer = withGlass('div', {
+    intensity: 'medium',
+    border: 'light',
+  })
+
+  const GlassWaveform = withGlass('div', {
+    intensity: 'subtle',
+    border: 'medium',
+  })
+
   return (
-    <div
+    <GlassContainer
       className={cn(
-        'relative w-full rounded-xl border border-border/50 bg-card overflow-hidden shadow-lg',
+        'relative w-full rounded-xl border border-white/10 dark:border-white/5/50 bg-card overflow-hidden shadow-lg',
         className
       )}
       data-theme={theme}
     >
       {/* Header */}
-      <div className="px-4 py-3 bg-muted/30 border-b border-border/50 flex items-center justify-between">
+      <div className="px-4 py-3 glass-subtle border-b border-white/10 dark:border-white/5/50 flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <Mic className="w-4 h-4 text-muted-foreground" aria-hidden="true" />
+          <div className="icon-container">
+            <Mic className="w-4 h-4 text-muted-foreground" aria-hidden="true" />
+          </div>
           <span className="text-sm font-medium">Audio Recorder</span>
         </div>
         {isRecording && !isPaused && (
@@ -538,8 +552,8 @@ export function AudioRecorder({
       <div className="p-6 space-y-6">
         {/* Waveform Visualization */}
         {showWaveform && (
-          <div
-            className="h-32 bg-muted/20 rounded-lg border border-border/50 flex items-center justify-center overflow-hidden"
+          <GlassWaveform
+            className="h-32 glass-subtle rounded-lg border border-white/10 dark:border-white/5/50 flex items-center justify-center overflow-hidden"
             data-testid="waveform-visualization"
           >
             {isRecording && !isPaused ? (
@@ -567,7 +581,7 @@ export function AudioRecorder({
                 </p>
               </div>
             )}
-          </div>
+          </GlassWaveform>
         )}
 
         {/* Duration Display */}
@@ -588,7 +602,7 @@ export function AudioRecorder({
               </span>
               <span>{Math.round(amplitude * 100)}%</span>
             </div>
-            <div className="h-2 bg-muted/30 rounded-full overflow-hidden">
+            <div className="h-2 glass-subtle rounded-full overflow-hidden">
               <div
                 className="h-full bg-gradient-to-r from-green-500 via-yellow-500 to-red-500 transition-all duration-100"
                 style={{ width: `${amplitude * 100}%` }}
@@ -672,7 +686,7 @@ export function AudioRecorder({
           {!isRecording && 'Ready to record'}
         </div>
       </div>
-    </div>
+    </GlassContainer>
   )
 }
 

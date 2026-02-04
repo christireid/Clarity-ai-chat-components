@@ -1,17 +1,19 @@
 import * as React from 'react'
 import { cn } from '@clarity-chat/primitives'
+import { withGlass, type GlassComponentProps } from '../../lib/with-glass'
 
 export interface BadgeProps extends React.HTMLAttributes<HTMLDivElement> {
-  variant?: 'default' | 'secondary' | 'destructive' | 'outline'
+  variant?: 'default' | 'secondary' | 'destructive' | 'outline' | 'glass'
 }
 
-export const Badge = React.forwardRef<HTMLDivElement, BadgeProps>(
+const BadgeBase = React.forwardRef<HTMLDivElement, BadgeProps>(
   ({ className, variant = 'default', ...props }, ref) => {
     const variantClasses = {
       default: 'bg-primary text-primary-foreground',
       secondary: 'bg-secondary text-secondary-foreground',
       destructive: 'bg-red-600 text-white',
       outline: 'border border-border text-foreground',
+      glass: '',
     }
 
     return (
@@ -28,4 +30,14 @@ export const Badge = React.forwardRef<HTMLDivElement, BadgeProps>(
   }
 )
 
-Badge.displayName = 'Badge'
+BadgeBase.displayName = 'BadgeBase'
+
+// Glass-enhanced Badge
+export const GlassBadge = withGlass(BadgeBase, {
+  intensity: 'subtle',
+  border: 'light',
+  hover: 'brighten',
+})
+
+// Export default Badge (non-glass)
+export const Badge = BadgeBase

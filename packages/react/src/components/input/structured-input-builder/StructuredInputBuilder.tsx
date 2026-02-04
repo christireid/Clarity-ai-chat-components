@@ -16,6 +16,7 @@ import type {
   TokenBreakdown,
 } from './types'
 import { defaultFormatPrompt, validateFields } from './utils'
+import { withGlass } from '../../../lib/with-glass'
 
 /**
  * Structured Input Builder Component
@@ -238,9 +239,15 @@ export function StructuredInputBuilder({
     lg: 'space-y-6',
   }
 
+  // Glass-enhanced form container
+  const GlassForm = withGlass('form', {
+    intensity: 'medium',
+    border: 'light',
+  })
+
   if (displayMode === 'compact') {
     return (
-      <form onSubmit={handleSubmit} className={cn('space-y-3', className)}>
+      <GlassForm onSubmit={handleSubmit} className={cn('space-y-3', className)}>
         <div className="grid gap-3 grid-cols-1 sm:grid-cols-2">
           {fields.map((field) => (
             <FieldInput
@@ -277,13 +284,13 @@ export function StructuredInputBuilder({
             {submitLabel}
           </button>
         )}
-      </form>
+      </GlassForm>
     )
   }
 
   if (displayMode === 'inline') {
     return (
-      <form
+      <GlassForm
         onSubmit={handleSubmit}
         className={cn('flex flex-wrap gap-3 items-end', className)}
       >
@@ -316,13 +323,13 @@ export function StructuredInputBuilder({
             {submitLabel}
           </button>
         )}
-      </form>
+      </GlassForm>
     )
   }
 
   // Default: form mode
   return (
-    <form
+    <GlassForm
       onSubmit={handleSubmit}
       className={cn(containerClasses[size], className)}
     >
@@ -434,7 +441,7 @@ export function StructuredInputBuilder({
           {submitLabel}
         </button>
       )}
-    </form>
+    </GlassForm>
   )
 }
 

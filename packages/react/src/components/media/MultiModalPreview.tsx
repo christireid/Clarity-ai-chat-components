@@ -109,7 +109,21 @@ export const MultiModalPreview: React.FC<MultiModalPreviewProps> = ({
   }
 
   return (
-    <Card className={cn('border-border/50 bg-background shadow-md', className)}>
+    <Card
+      className={cn(
+        // Glassmorphism: Subtle intensity for media viewers
+        'backdrop-blur-sm bg-background/60',
+        'border border-border/[0.12]',
+        'shadow-md',
+
+        // Hover glow effect
+        'transition-all duration-300',
+        'hover:shadow-[0_0_20px_rgba(129,140,248,0.1)]',
+        'hover:border-border/[0.16]',
+
+        className
+      )}
+    >
       <CardHeader className="space-y-3">
         <div className="flex flex-col gap-1">
           <CardTitle className="text-lg font-semibold text-foreground">
@@ -122,7 +136,7 @@ export const MultiModalPreview: React.FC<MultiModalPreviewProps> = ({
       </CardHeader>
       <CardContent className="space-y-4">
         {attachments.length === 0 && (
-          <div className="rounded-lg border border-dashed border-border/50 bg-muted p-6 text-center text-sm text-muted-foreground">
+          <div className="rounded-lg border border-dashed border-border/[0.12] backdrop-blur-sm bg-muted/60 p-6 text-center text-sm text-muted-foreground">
             No attachments were provided for this exchange.
           </div>
         )}
@@ -131,7 +145,19 @@ export const MultiModalPreview: React.FC<MultiModalPreviewProps> = ({
           {attachments.map((attachment) => (
             <li
               key={attachment.id}
-              className="flex flex-col gap-3 rounded-lg border border-border/50 bg-muted p-4 shadow-md"
+              className={cn(
+                'flex flex-col gap-3 rounded-lg p-4',
+
+                // Glassmorphism: Subtle intensity for individual items
+                'backdrop-blur-sm bg-muted/60',
+                'border border-border/[0.12]',
+                'shadow-md',
+
+                // Hover glow
+                'transition-all duration-300',
+                'hover:shadow-[0_0_15px_rgba(129,140,248,0.08)]',
+                'hover:border-border/[0.16]'
+              )}
             >
               <div className="flex flex-wrap items-start gap-4">
                 {renderThumbnail(attachment)}

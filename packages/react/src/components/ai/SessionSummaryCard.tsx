@@ -140,11 +140,19 @@ export function SessionSummaryCard({
     >
       <Card
         className={cn(
-          'shadow-md hover:shadow-[0_10px_15px_-3px_rgb(0_0_0_/_0.1),0_4px_6px_-4px_rgb(0_0_0_/_0.1)] transition-shadow duration-150 ease-out',
+          // Glassmorphism: medium intensity, purple gradient, animated gradient (AI panel)
+          'relative overflow-hidden',
+          'border border-border/30 backdrop-blur-xl backdrop-saturate-150',
+          'bg-gradient-to-br from-purple-500/10 via-background/80 to-purple-600/5',
+          'shadow-[0_8px_32px_rgba(147,51,234,0.12)]',
+          'before:absolute before:inset-0 before:bg-gradient-to-br before:from-purple-400/5 before:via-transparent before:to-purple-600/5',
+          'before:animate-gradient-shift before:bg-[length:200%_200%] before:pointer-events-none',
+          'hover:shadow-[0_12px_40px_rgba(147,51,234,0.16)]',
+          'transition-shadow duration-150 ease-out',
           className
         )}
       >
-        <CardHeader className="space-y-3">
+        <CardHeader className="relative z-10 space-y-3">
           <div className="flex flex-col gap-1">
             <CardTitle className="text-lg font-semibold text-foreground">
               {title}
@@ -177,7 +185,7 @@ export function SessionSummaryCard({
             </Button>
           )}
         </CardHeader>
-        <CardContent className="space-y-6">
+        <CardContent className="relative z-10 space-y-6">
           <section className="space-y-3">
             <header className="flex items-center gap-2">
               <span className="text-base font-semibold text-foreground">

@@ -49,7 +49,7 @@ export const SavedSearchesPanel = React.memo(function SavedSearchesPanel({
   const hasActiveSearch = currentFilters.query || activeFilterCount > 0
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-3 backdrop-blur-md backdrop-saturate-150 bg-white/60 dark:bg-background/60 border border-glass-light dark:border-glass-dark-light rounded-lg p-3 shadow-[0_8px_32px_rgba(0,0,0,0.08)] dark:shadow-[0_8px_32px_rgba(0,0,0,0.3)]">
       {/* Save current search */}
       {hasActiveSearch && (
         <div className="pb-3 border-b">

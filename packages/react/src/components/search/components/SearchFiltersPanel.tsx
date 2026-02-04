@@ -92,7 +92,7 @@ export const SearchFiltersPanel = React.memo(function SearchFiltersPanel({
   )
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 backdrop-blur-md backdrop-saturate-150 bg-white/60 dark:bg-background/60 border border-glass-light dark:border-glass-dark-light rounded-lg p-4 bg-glass-pastel-blue-medium dark:bg-glass-pastel-blue-dark-medium shadow-[0_8px_32px_rgba(0,0,0,0.08)] dark:shadow-[0_8px_32px_rgba(0,0,0,0.3)] transition-all duration-300 hover:shadow-[0_12px_40px_rgba(0,0,0,0.12)] dark:hover:shadow-[0_12px_40px_rgba(0,0,0,0.4)]">
       {/* Header */}
       <div className="flex items-center justify-between">
         <h4 className="font-semibold flex items-center gap-2">

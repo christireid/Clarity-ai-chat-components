@@ -8,6 +8,7 @@ import {
   CardTitle,
 } from '@clarity-chat/primitives'
 import type { ConversationSummary } from '../ConversationAnalyticsDashboard.types'
+import { glass, GLASS_PRESETS } from '../../../utils/glassmorphism'
 
 export interface SummaryCardProps {
   /** Summary data to display */
@@ -22,7 +23,7 @@ export interface SummaryCardProps {
  */
 export function SummaryCard({ summary }: SummaryCardProps) {
   return (
-    <Card className="shadow-sm">
+    <Card className={glass(GLASS_PRESETS.dashboardCard)}>
       <CardHeader className="">
         <CardTitle className="text-sm">Conversation Summary</CardTitle>
       </CardHeader>

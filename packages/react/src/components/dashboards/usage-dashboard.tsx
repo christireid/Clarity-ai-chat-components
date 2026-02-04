@@ -18,6 +18,7 @@ import type {
   UsageMetrics,
 } from '@clarity-chat/types'
 import { DURATION_SECONDS, EASING_FRAMER } from '../../animations/constants'
+import { glass, GLASS_PRESETS } from '../../utils/glassmorphism'
 
 export interface UsageDashboardProps {
   balance: CreditBalance
@@ -206,7 +207,8 @@ export function UsageDashboard({
                           ease: EASING_FRAMER.sharp,
                         }}
                         className={cn(
-                          'p-4 rounded-xl border border-border/40 shadow-[0_2px_8px_rgba(0,0,0,0.04)] hover:shadow-[0_4px_12px_rgba(0,0,0,0.08)] transition-shadow duration-200',
+                          'p-4',
+                          glass(GLASS_PRESETS.metricsPanel),
                           isNearLimit &&
                             'border-amber-500/50 bg-amber-50 dark:bg-amber-950/20'
                         )}
@@ -285,7 +287,10 @@ export function UsageDashboard({
                       duration: DURATION_SECONDS.normal,
                       ease: EASING_FRAMER.sharp,
                     }}
-                    className="flex items-center justify-between p-3 rounded-xl bg-muted/30 border border-border/40 hover:bg-muted/50 transition-colors duration-200"
+                    className={cn(
+                      'flex items-center justify-between p-3',
+                      glass({ intensity: 'subtle', border: 'light', hover: 'glow' })
+                    )}
                   >
                     <div className="flex-1">
                       <p className="text-sm font-semibold text-foreground">
@@ -302,7 +307,10 @@ export function UsageDashboard({
                   </motion.div>
                 ))}
 
-                <div className="flex items-center justify-between p-3 rounded-xl bg-primary/10 border border-primary/30 shadow-[0_2px_8px_rgba(0,0,0,0.06)]">
+                <div className={cn(
+                  'flex items-center justify-between p-3',
+                  glass({ ...GLASS_PRESETS.statsCard, gradient: 'blue', hover: 'none' })
+                )}>
                   <p className="text-sm font-bold">Total</p>
                   <p className="text-lg font-bold">
                     {formatCurrency(stats.costs.total)}
@@ -320,7 +328,10 @@ export function UsageDashboard({
                   duration: DURATION_SECONDS.normal,
                   ease: EASING_FRAMER.sharp,
                 }}
-                className="p-4 bg-amber-50 dark:bg-amber-950/20 border border-amber-500/30 rounded-xl shadow-[0_2px_8px_rgba(245,158,11,0.1)]"
+                className={cn(
+                  'p-4 bg-amber-50 dark:bg-amber-950/20 border-amber-500/30',
+                  glass({ intensity: 'medium', border: 'medium', hover: 'glow' })
+                )}
               >
                 <h4 className="text-sm font-semibold mb-2 flex items-center gap-2">
                   ⚠️ Approaching Limits

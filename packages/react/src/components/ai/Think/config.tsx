@@ -15,19 +15,19 @@ export const VARIANT_CONFIG: Record<ThinkVariant, {
   content: string
 }> = {
   default: {
-    container: 'reasoning-container',
-    header: 'reasoning-header',
-    content: 'reasoning-content',
+    container: 'reasoning-container relative overflow-hidden border border-border/30 backdrop-blur-xl backdrop-saturate-150 bg-gradient-to-br from-blue-500/8 via-background/85 to-blue-600/5 shadow-[0_4px_16px_rgba(59,130,246,0.08)] before:absolute before:inset-0 before:bg-gradient-to-br before:from-blue-400/3 before:via-transparent before:to-blue-600/3 before:animate-gradient-shift before:bg-[length:200%_200%] before:pointer-events-none',
+    header: 'reasoning-header relative z-10',
+    content: 'reasoning-content relative z-10',
   },
   minimal: {
-    container: 'rounded-lg overflow-hidden',
-    header: 'flex items-center gap-2 px-2 py-1.5 cursor-pointer',
-    content: 'px-2 py-2 text-sm',
+    container: 'rounded-lg overflow-hidden relative backdrop-blur-lg backdrop-saturate-150 bg-gradient-to-br from-blue-500/5 via-background/90 to-blue-600/3 shadow-[0_2px_8px_rgba(59,130,246,0.06)]',
+    header: 'flex items-center gap-2 px-2 py-1.5 cursor-pointer relative z-10',
+    content: 'px-2 py-2 text-sm relative z-10',
   },
   bordered: {
-    container: 'border rounded-xl overflow-hidden shadow-sm',
-    header: 'flex items-center justify-between px-4 py-3 bg-muted/30 cursor-pointer',
-    content: 'px-4 py-3 bg-card',
+    container: 'border rounded-xl overflow-hidden shadow-sm relative backdrop-blur-xl backdrop-saturate-150 bg-gradient-to-br from-blue-500/8 via-background/85 to-blue-600/5 border-border/30 before:absolute before:inset-0 before:bg-gradient-to-br before:from-blue-400/3 before:via-transparent before:to-blue-600/3 before:animate-gradient-shift before:bg-[length:200%_200%] before:pointer-events-none',
+    header: 'flex items-center justify-between px-4 py-3 bg-muted/20 cursor-pointer relative z-10',
+    content: 'px-4 py-3 bg-card/50 relative z-10',
   },
 }
 

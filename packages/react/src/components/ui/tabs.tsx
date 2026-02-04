@@ -2,6 +2,7 @@
 
 import * as React from 'react'
 import { cn } from '@clarity-chat/primitives'
+import { useGlassVariant } from '../../lib/with-glass'
 
 /**
  * Tabs - Simple tabs component
@@ -70,11 +71,17 @@ export function Tabs({
 }
 
 export function TabsList({ children, className }: TabsListProps) {
+  const glassClass = useGlassVariant({
+    intensity: 'subtle',
+    border: 'light',
+  })
+
   return (
     <div
       role="tablist"
       className={cn(
         'inline-flex h-10 items-center justify-center rounded-md bg-muted p-1 text-muted-foreground',
+        glassClass,
         className
       )}
     >

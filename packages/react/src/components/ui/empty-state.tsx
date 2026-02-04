@@ -36,6 +36,7 @@ import {
 } from '../../animations/motion-safe'
 import { getSpring } from '../../animations/spring-presets'
 import { DURATION_SECONDS as durations } from '../../animations/constants'
+import { useGlassVariant } from '../../lib/with-glass'
 
 export interface EmptyStateProps {
   /** Icon to display */
@@ -77,6 +78,10 @@ export function EmptyState({
   className,
 }: EmptyStateProps) {
   const prefersReducedMotion = useReducedMotion()
+  const glassClass = useGlassVariant({
+    intensity: 'subtle',
+    border: 'light',
+  })
 
   return (
     <motion.div
@@ -94,7 +99,10 @@ export function EmptyState({
           initial={{ scale: 0, rotate: -90 }}
           animate={{ scale: 1, rotate: 0 }}
           transition={getSpring('smooth', prefersReducedMotion, { delay: 0.1 })}
-          className="inline-flex items-center justify-center w-24 h-24 rounded-3xl bg-gradient-to-br from-primary/15 to-primary/5 shadow-lg ring-1 ring-primary/25"
+          className={cn(
+            'inline-flex items-center justify-center w-24 h-24 rounded-3xl bg-gradient-to-br from-primary/15 to-primary/5 shadow-lg ring-1 ring-primary/25',
+            glassClass
+          )}
         >
           {icon}
         </motion.div>

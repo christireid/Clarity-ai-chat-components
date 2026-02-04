@@ -120,8 +120,18 @@ export const EvaluationDashboard: React.FC<EvaluationDashboardProps> = ({
       )}
       aria-busy={isLoading}
     >
-      <Card className="border-border/60 bg-[hsl(var(--surface-elevated))] shadow-sm">
-        <CardHeader className="space-y-2">
+      <Card
+        className={cn(
+          // Glassmorphism: medium intensity, purple gradient, animated gradient (AI panel)
+          'relative overflow-hidden',
+          'border border-border/30 backdrop-blur-xl backdrop-saturate-150',
+          'bg-gradient-to-br from-purple-500/10 via-background/80 to-purple-600/5',
+          'shadow-[0_8px_32px_rgba(147,51,234,0.12)]',
+          'before:absolute before:inset-0 before:bg-gradient-to-br before:from-purple-400/5 before:via-transparent before:to-purple-600/5',
+          'before:animate-gradient-shift before:bg-[length:200%_200%] before:pointer-events-none'
+        )}
+      >
+        <CardHeader className="relative z-10 space-y-2">
           <div className="flex items-start justify-between gap-2">
             <div className="space-y-1">
               <CardTitle className="text-lg font-semibold text-foreground">
@@ -156,7 +166,7 @@ export const EvaluationDashboard: React.FC<EvaluationDashboardProps> = ({
             )}
           </div>
         </CardHeader>
-        <CardContent className="">
+        <CardContent className="relative z-10">
           <div
             className="grid gap-4 sm:grid-cols-2"
             role="region"
@@ -235,8 +245,18 @@ export const EvaluationDashboard: React.FC<EvaluationDashboardProps> = ({
         )}
 
         {(isLoading || hasSparklines) && (
-          <Card className="border-border/60 bg-[hsl(var(--surface-elevated))] shadow-sm">
-            <CardHeader className="space-y-2">
+          <Card
+            className={cn(
+              // Glassmorphism: medium intensity, purple gradient, animated gradient (AI panel)
+              'relative overflow-hidden',
+              'border border-border/30 backdrop-blur-xl backdrop-saturate-150',
+              'bg-gradient-to-br from-purple-500/10 via-background/80 to-purple-600/5',
+              'shadow-[0_8px_32px_rgba(147,51,234,0.12)]',
+              'before:absolute before:inset-0 before:bg-gradient-to-br before:from-purple-400/5 before:via-transparent before:to-purple-600/5',
+              'before:animate-gradient-shift before:bg-[length:200%_200%] before:pointer-events-none'
+            )}
+          >
+            <CardHeader className="relative z-10 space-y-2">
               <CardTitle className="text-lg font-semibold text-foreground">
                 Cost & latency trends
               </CardTitle>
@@ -245,7 +265,7 @@ export const EvaluationDashboard: React.FC<EvaluationDashboardProps> = ({
               </CardDescription>
             </CardHeader>
             <CardContent
-              className="space-y-4"
+              className="relative z-10 space-y-4"
               role="region"
               aria-label="Performance trends"
             >

@@ -185,8 +185,16 @@ export const StreamingCodeBlock = React.memo<StreamingCodeBlockProps>(
     return (
       <div
         className={cn(
-          'code-block streaming-code-block group relative rounded-lg border overflow-hidden',
-          'border-border bg-card',
+          'code-block streaming-code-block group relative rounded-lg overflow-hidden',
+
+          // Glassmorphism: Subtle intensity for syntax highlighters
+          'backdrop-blur-sm bg-card/60',
+          'border border-border/[0.12]',
+
+          // Hover state
+          'transition-all duration-200',
+          'hover:border-border/[0.16]',
+
           themeType === 'dark' && 'dark',
           className
         )}

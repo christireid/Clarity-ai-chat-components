@@ -49,6 +49,7 @@ import * as React from 'react'
 import { motion } from 'framer-motion'
 import { cn, useReducedMotion } from '@clarity-chat/primitives'
 import { DURATION_SECONDS, EASING_FRAMER, ANIMATION_PRESETS } from '../../animations/constants'
+import { withGlass } from '../../lib/with-glass'
 
 // =============================================================================
 // TYPES & INTERFACES
@@ -312,8 +313,13 @@ export function MessageBubble({
   // Render content with optional wrapper
   const renderedContent = renderContent ? renderContent(children) : children
 
+  const GlassMotionArticle = React.useMemo(() => withGlass(motion.article, {
+    intensity: 'subtle',
+    border: 'light',
+  }), [])
+
   return (
-    <motion.article
+    <GlassMotionArticle
       id={id}
       role="article"
       aria-label={`${role} message`}
@@ -371,7 +377,7 @@ export function MessageBubble({
           </div>
         )}
       </div>
-    </motion.article>
+    </GlassMotionArticle>
   )
 }
 

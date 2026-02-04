@@ -80,7 +80,13 @@ export function PersonaPanel({
   return (
     <Card
       className={cn(
-        'border-border/60 bg-[hsl(var(--surface-elevated))] shadow-[0_22px_48px_rgba(15,23,42,0.16)]',
+        // Glassmorphism: medium intensity, purple gradient, animated gradient
+        'relative overflow-hidden',
+        'border border-border/30 backdrop-blur-xl backdrop-saturate-150',
+        'bg-gradient-to-br from-purple-500/10 via-background/80 to-purple-600/5',
+        'shadow-[0_8px_32px_rgba(147,51,234,0.12)]',
+        'before:absolute before:inset-0 before:bg-gradient-to-br before:from-purple-400/5 before:via-transparent before:to-purple-600/5',
+        'before:animate-gradient-shift before:bg-[length:200%_200%]',
         className
       )}
     >

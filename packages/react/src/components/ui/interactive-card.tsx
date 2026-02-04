@@ -14,6 +14,7 @@ import {
   INTERACTION_VARIANTS,
   DURATION_SECONDS as durations,
 } from '../../animations'
+import { useGlassVariant } from '../../lib/with-glass'
 
 export interface InteractiveCardProps extends React.HTMLAttributes<HTMLDivElement> {
   /** Whether card is clickable */
@@ -54,6 +55,13 @@ export const InteractiveCard = React.memo(function InteractiveCard({
 }: InteractiveCardProps) {
   // Accessibility: Respect user's reduced motion preference
   const prefersReducedMotion = useReducedMotion()
+
+  // Apply glass effect if enabled in context
+  const glassClass = useGlassVariant({
+    intensity: 'medium',
+    border: 'light',
+    hover: 'lift',
+  })
 
   const [isHovered, setIsHovered] = React.useState(false)
   const [ripples, setRipples] = React.useState<
@@ -156,6 +164,7 @@ export const InteractiveCard = React.memo(function InteractiveCard({
       ref={ref}
       className={cn(
         'relative overflow-hidden rounded-lg border bg-card transition-all duration-150 ease-out shadow-xs',
+        glassClass,
         interactive &&
           'cursor-pointer hover:shadow-md',
         disabled && 'opacity-50 cursor-not-allowed',

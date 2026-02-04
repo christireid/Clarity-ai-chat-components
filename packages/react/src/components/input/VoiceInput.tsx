@@ -11,6 +11,7 @@ import {
   ANIMATION_PRESETS,
 } from '../../animations/constants'
 import { useReducedMotion } from '../../hooks/ui/use-reduced-motion'
+import { withGlass } from '../../lib/with-glass'
 
 // Animation constants for pulse rings
 const PULSE_RING_PRIMARY = {
@@ -235,6 +236,12 @@ export function VoiceInput({
     setShowTranscript(false)
   }
 
+  // Glass-enhanced components
+  const GlassTranscriptBox = withGlass('div', {
+    intensity: 'medium',
+    border: 'light',
+  })
+
   if (!voice.isSupported) {
     return (
       <div className="text-sm text-gray-500 dark:text-gray-500">
@@ -339,7 +346,7 @@ export function VoiceInput({
       {showTranscript &&
         (voice.transcript || voice.isListening) &&
         (prefersReducedMotion ? (
-          <div className="absolute bottom-full right-0 mb-2 w-[min(90vw,280px)] sm:min-w-[250px] sm:max-w-xs md:max-w-md p-4 bg-card/95 border border-border/40 shadow-xl rounded-2xl z-[var(--z-popover)] backdrop-blur-lg">
+          <GlassTranscriptBox className="absolute bottom-full right-0 mb-2 w-[min(90vw,280px)] sm:min-w-[250px] sm:max-w-xs md:max-w-md p-4 bg-card/95 border border-white/10 dark:border-white/5/40 shadow-xl rounded-2xl z-[var(--z-popover)] backdrop-blur-lg">
             {/* Header */}
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center gap-2.5">
@@ -398,7 +405,7 @@ export function VoiceInput({
             )}
 
             {/* Transcript text */}
-            <div className="mb-3 min-h-[60px] max-h-[120px] overflow-y-auto scrollbar-hide p-3 bg-muted/30 border border-border/40 rounded-xl">
+            <div className="mb-3 min-h-[60px] max-h-[120px] overflow-y-auto scrollbar-hide p-3 bg-muted/30 border border-white/10 dark:border-white/5/40 rounded-xl">
               {voice.transcript ? (
                 <p className="text-sm text-foreground">
                   {voice.finalTranscript && (
@@ -454,7 +461,7 @@ export function VoiceInput({
 
             {/* Confidence indicator */}
             {voice.confidence > 0 && (
-              <div className="mt-3 pt-3 border-t border-border/40 space-y-1.5">
+              <div className="mt-3 pt-3 border-t border-white/10 dark:border-white/5/40 space-y-1.5">
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-medium text-muted-foreground">
                     Confidence
@@ -479,9 +486,10 @@ export function VoiceInput({
                 </div>
               </div>
             )}
-          </div>
+          </GlassTranscriptBox>
         ) : (
-          <motion.div
+          <GlassTranscriptBox
+            as={motion.div}
             {...ANIMATION_PRESETS.slideUp}
             transition={{
               type: 'spring',
@@ -489,7 +497,7 @@ export function VoiceInput({
               stiffness: 300,
             }}
             viewport={{ once: true }}
-            className="absolute bottom-full right-0 mb-2 w-[min(90vw,280px)] sm:min-w-[250px] sm:max-w-xs md:max-w-md p-4 bg-card/95 border border-border/40 shadow-xl rounded-2xl z-[var(--z-popover)] backdrop-blur-lg"
+            className="absolute bottom-full right-0 mb-2 w-[min(90vw,280px)] sm:min-w-[250px] sm:max-w-xs md:max-w-md p-4 bg-card/95 border border-white/10 dark:border-white/5/40 shadow-xl rounded-2xl z-[var(--z-popover)] backdrop-blur-lg"
           >
             {/* Header */}
             <div className="flex items-center justify-between mb-3">
@@ -560,7 +568,7 @@ export function VoiceInput({
             )}
 
             {/* Transcript text */}
-            <div className="mb-3 min-h-[60px] max-h-[120px] overflow-y-auto scrollbar-hide p-3 bg-muted/30 border border-border/40 rounded-xl">
+            <div className="mb-3 min-h-[60px] max-h-[120px] overflow-y-auto scrollbar-hide p-3 bg-muted/30 border border-white/10 dark:border-white/5/40 rounded-xl">
               {voice.transcript ? (
                 <p className="text-sm text-foreground">
                   {voice.finalTranscript && (
@@ -620,7 +628,7 @@ export function VoiceInput({
 
             {/* Confidence indicator */}
             {voice.confidence > 0 && (
-              <div className="mt-3 pt-3 border-t border-border/40 space-y-1.5">
+              <div className="mt-3 pt-3 border-t border-white/10 dark:border-white/5/40 space-y-1.5">
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-medium text-muted-foreground">
                     Confidence
@@ -654,7 +662,7 @@ export function VoiceInput({
                 </div>
               </div>
             )}
-          </motion.div>
+          </GlassTranscriptBox>
         ))}
 
       {/* Tooltip */}

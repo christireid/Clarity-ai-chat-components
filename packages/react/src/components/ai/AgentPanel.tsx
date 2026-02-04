@@ -245,7 +245,7 @@ function PlanStepItem({
       animate={{ opacity: 1, x: 0 }}
       transition={{
         duration: prefersReducedMotion ? 0 : DURATION_SECONDS.fast,
-        ease: EASING_FRAMER.easeOut,
+        ease: EASING_FRAMER.out,
       }}
       onClick={() => onClick?.(step)}
       role="listitem"
@@ -280,7 +280,7 @@ function ThinkingStepItem({ thought }: { thought: ThinkingStep }) {
       animate={{ opacity: 1, y: 0 }}
       transition={{
         duration: prefersReducedMotion ? 0 : DURATION_SECONDS.fast,
-        ease: EASING_FRAMER.easeOut,
+        ease: EASING_FRAMER.out,
       }}
     >
       {thought.status === 'active' && <span className="thinking-indicator">💭</span>}
@@ -319,7 +319,7 @@ function ToolCardItem({
       animate={{ opacity: 1, scale: 1 }}
       transition={{
         duration: prefersReducedMotion ? 0 : DURATION_SECONDS.fast,
-        ease: EASING_FRAMER.easeOut,
+        ease: EASING_FRAMER.out,
       }}
       onClick={() => onClick?.(tool)}
       role="button"

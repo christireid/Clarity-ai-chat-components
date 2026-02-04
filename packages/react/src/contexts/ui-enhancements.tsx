@@ -18,14 +18,14 @@ export interface UIEnhancementsContextValue extends UIEnhancements {
 }
 
 const defaultContextValue: UIEnhancementsContextValue = {
-  quantumAnimations: false,
-  glassmorphism: false,
-  auroraGradients: false,
+  quantumAnimations: true,
+  glassmorphism: true, // Enable glassmorphism by default
+  auroraGradients: true,
   neumorphism: false,
-  voiceIntegration: false,
-  adaptiveColors: false,
-  wcagAAA: false,
-  isEnhanced: false,
+  voiceIntegration: true,
+  adaptiveColors: true,
+  wcagAAA: true,
+  isEnhanced: true,
 }
 
 export const UIEnhancementsContext =

@@ -85,6 +85,7 @@ import {
   DURATION_SECONDS as durations,
   ANIMATION_PRESETS,
 } from '../../animations/constants'
+import { glassVariants } from '@clarity-chat/primitives/glass-variants'
 
 export interface PromptLibraryProps {
   /** Initial templates to display */
@@ -200,7 +201,16 @@ function TemplateCard({
       transition={{ duration: durations.normal }}
       viewport={{ once: true }}
     >
-      <Card className="group hover:shadow-lg transition-shadow cursor-pointer">
+      <Card
+        className={cn(
+          'group cursor-pointer',
+          glassVariants({
+            intensity: 'medium',
+            gradient: 'pink',
+            hover: 'glow',
+          })
+        )}
+      >
         <CardHeader className="pb-3">
           <div className="flex items-start justify-between">
             <div className="flex-1 min-w-0">
@@ -631,7 +641,17 @@ export function PromptLibrary({
   return (
     <div className={cn('space-y-6', className)}>
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div
+        className={cn(
+          'flex items-center justify-between p-6 rounded-lg',
+          glassVariants({
+            intensity: 'medium',
+            gradient: 'purple',
+            border: 'light',
+            hover: 'lift',
+          })
+        )}
+      >
         <div>
           <h2 className="text-2xl font-bold">Prompt Library</h2>
           <p className="text-muted-foreground">

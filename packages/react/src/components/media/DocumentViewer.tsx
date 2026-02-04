@@ -63,7 +63,12 @@ export function DocumentViewer({
     return (
       <div
         className={cn(
-          'flex h-full flex-col items-center justify-center rounded-lg border border-dashed border-border/50 bg-muted/20 p-6 text-sm text-muted-foreground',
+          'flex h-full flex-col items-center justify-center rounded-lg p-6 text-sm text-muted-foreground',
+
+          // Glassmorphism: Subtle intensity for media viewers
+          'backdrop-blur-sm bg-muted/60',
+          'border border-dashed border-border/[0.12]',
+
           className
         )}
       >
@@ -81,7 +86,20 @@ export function DocumentViewer({
         className
       )}
     >
-      <header className="flex flex-wrap items-start justify-between gap-3 rounded-lg border border-border/50 bg-card/70 p-4 shadow-xs backdrop-blur-sm">
+      <header
+        className={cn(
+          'flex flex-wrap items-start justify-between gap-3 rounded-lg p-4 shadow-xs',
+
+          // Glassmorphism: Subtle intensity with hover glow
+          'backdrop-blur-sm bg-card/60',
+          'border border-border/[0.12]',
+
+          // Hover glow
+          'transition-all duration-300',
+          'hover:shadow-[0_0_20px_rgba(129,140,248,0.1)]',
+          'hover:border-border/[0.16]'
+        )}
+      >
         <div>
           <h3 className="text-base font-semibold text-foreground">
             {name ?? 'Document'}
@@ -115,7 +133,19 @@ export function DocumentViewer({
       </header>
 
       {summary ? (
-        <section className="rounded-lg border border-border/50 bg-background/60 p-4 shadow-xs">
+        <section
+          className={cn(
+            'rounded-lg p-4 shadow-xs',
+
+            // Glassmorphism: Subtle intensity
+            'backdrop-blur-sm bg-background/60',
+            'border border-border/[0.12]',
+
+            // Hover state
+            'transition-all duration-300',
+            'hover:border-border/[0.16]'
+          )}
+        >
           <h4 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
             Summary
           </h4>
@@ -125,7 +155,19 @@ export function DocumentViewer({
         </section>
       ) : null}
 
-      <section className="flex-1 overflow-y-auto scrollbar-hide rounded-lg border border-border/50 bg-background/70 p-4 shadow-inner">
+      <section
+        className={cn(
+          'flex-1 overflow-y-auto scrollbar-hide rounded-lg p-4 shadow-inner',
+
+          // Glassmorphism: Subtle intensity
+          'backdrop-blur-sm bg-background/60',
+          'border border-border/[0.12]',
+
+          // Hover state
+          'transition-all duration-300',
+          'hover:border-border/[0.16]'
+        )}
+      >
         <h4 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
           Content
         </h4>
@@ -145,7 +187,19 @@ export function DocumentViewer({
       </section>
 
       {metadata && Object.keys(metadata).length ? (
-        <section className="rounded-lg border border-border/50 bg-background/60 p-4 shadow-xs">
+        <section
+          className={cn(
+            'rounded-lg p-4 shadow-xs',
+
+            // Glassmorphism: Subtle intensity
+            'backdrop-blur-sm bg-background/60',
+            'border border-border/[0.12]',
+
+            // Hover state
+            'transition-all duration-300',
+            'hover:border-border/[0.16]'
+          )}
+        >
           <h4 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
             Metadata
           </h4>
@@ -153,7 +207,12 @@ export function DocumentViewer({
             {Object.entries(metadata).map(([key, value]) => (
               <div
                 key={key}
-                className="rounded-lg bg-muted/40 px-3 py-2 text-xs text-muted-foreground"
+                className={cn(
+                  'rounded-lg px-3 py-2 text-xs text-muted-foreground',
+
+                  // Glassmorphism: Subtle intensity
+                  'backdrop-blur-[2px] bg-muted/60'
+                )}
               >
                 <dt className="font-medium text-foreground/80">
                   {key

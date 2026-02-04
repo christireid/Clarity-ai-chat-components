@@ -247,11 +247,11 @@ export function SemanticMessageSearch({
   }, [])
 
   return (
-    <div className={cn('space-y-4', className)}>
+    <div className={cn('space-y-4 backdrop-blur-md backdrop-saturate-150 bg-white/60 dark:bg-background/60 border border-glass-light dark:border-glass-dark-light rounded-lg p-4 bg-glass-pastel-blue-medium dark:bg-glass-pastel-blue-dark-medium shadow-[0_8px_32px_rgba(0,0,0,0.08)] dark:shadow-[0_8px_32px_rgba(0,0,0,0.3)] transition-all duration-300 hover:shadow-[0_12px_40px_rgba(0,0,0,0.12)] dark:hover:shadow-[0_12px_40px_rgba(0,0,0,0.4)]', className)}>
       {/* Search Header */}
       <Card
         className={cn(
-          'shadow-sm overflow-hidden',
+          'shadow-sm overflow-hidden backdrop-blur-sm bg-transparent border-glass-light dark:border-glass-dark-light',
           compact && 'shadow-none border-0'
         )}
       >

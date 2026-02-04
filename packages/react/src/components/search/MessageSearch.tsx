@@ -330,7 +330,7 @@ export function MessageSearch({
   const noResults = searchQuery && !isPending && !hasResults
 
   return (
-    <div ref={containerRef} className={cn('relative', className)}>
+    <div ref={containerRef} className={cn('relative backdrop-blur-md backdrop-saturate-150 bg-white/60 dark:bg-background/60 border border-glass-light dark:border-glass-dark-light rounded-lg p-2 bg-glass-pastel-blue-medium dark:bg-glass-pastel-blue-dark-medium shadow-[0_8px_32px_rgba(0,0,0,0.08)] dark:shadow-[0_8px_32px_rgba(0,0,0,0.3)] transition-all duration-300 hover:shadow-[0_12px_40px_rgba(0,0,0,0.12)] dark:hover:shadow-[0_12px_40px_rgba(0,0,0,0.4)]', className)}>
       {/* Search Input Container */}
       <div className="relative group">
         {/* Search Icon with animation */}

@@ -254,10 +254,19 @@ export const SafetyReviewConsole: React.FC<SafetyReviewConsoleProps> = ({
   return (
     <>
       <Card
-        className={cn('border-border/50 bg-background shadow-md', className)}
+        className={cn(
+          // Glassmorphism: medium intensity, purple gradient, animated gradient (AI panel)
+          'relative overflow-hidden',
+          'border border-border/30 backdrop-blur-xl backdrop-saturate-150',
+          'bg-gradient-to-br from-purple-500/10 via-background/80 to-purple-600/5',
+          'shadow-[0_8px_32px_rgba(147,51,234,0.12)]',
+          'before:absolute before:inset-0 before:bg-gradient-to-br before:from-purple-400/5 before:via-transparent before:to-purple-600/5',
+          'before:animate-gradient-shift before:bg-[length:200%_200%] before:pointer-events-none',
+          className
+        )}
         aria-busy={isProcessing || isLoading}
       >
-        <CardHeader className="space-y-2">
+        <CardHeader className="relative z-10 space-y-2">
           <div className="flex items-start justify-between gap-4">
             <div className="space-y-1">
               <CardTitle className="text-lg font-semibold text-foreground">
@@ -289,7 +298,7 @@ export const SafetyReviewConsole: React.FC<SafetyReviewConsoleProps> = ({
           </div>
         </CardHeader>
 
-        <CardContent className="grid gap-6 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
+        <CardContent className="relative z-10 grid gap-6 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
           <div className="space-y-3">
             <div
               role="region"
@@ -446,7 +455,7 @@ export const SafetyReviewConsole: React.FC<SafetyReviewConsoleProps> = ({
           </aside>
         </CardContent>
 
-        <CardFooter className="flex flex-wrap items-center justify-between gap-2">
+        <CardFooter className="relative z-10 flex flex-wrap items-center justify-between gap-2">
           <div className="text-xs text-muted-foreground/70">
             {stats.total > 0
               ? `${stats.total} issue${stats.total === 1 ? '' : 's'} require${stats.total === 1 ? 's' : ''} review`

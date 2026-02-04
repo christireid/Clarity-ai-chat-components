@@ -11,6 +11,7 @@ import {
 } from '@clarity-chat/primitives'
 import { ANIMATION_PRESETS } from '../../../animations/constants'
 import type { TopicCluster } from '../ConversationAnalyticsDashboard.types'
+import { glass, GLASS_PRESETS } from '../../../utils/glassmorphism'
 
 export interface TopicsCardProps {
   /** Topics to display */
@@ -34,7 +35,7 @@ export function TopicsCard({
   }
 
   return (
-    <Card className="shadow-sm">
+    <Card className={glass(GLASS_PRESETS.dashboardCard)}>
       <CardHeader className="">
         <CardTitle className="text-sm">Topics Discussed</CardTitle>
       </CardHeader>

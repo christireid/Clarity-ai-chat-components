@@ -323,7 +323,7 @@ export function MentionInput({
         (prefersReducedMotion ? (
           <div
             ref={suggestionsRef}
-            className="absolute bottom-full mb-2 left-0 right-0 max-h-64 overflow-y-auto scrollbar-hide bg-background border rounded-lg shadow-lg z-50"
+            className="absolute bottom-full mb-2 left-0 right-0 max-h-64 overflow-y-auto scrollbar-hide glass-strong rounded-2xl shadow-lg shadow-black/5 dark:shadow-black/20 z-50"
           >
             {suggestions.map((user, index) => (
               <button
@@ -335,7 +335,7 @@ export function MentionInput({
                 )}
               >
                 {/* Avatar */}
-                <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-sm font-medium shrink-0">
+                <div className="icon-container-sm text-sm font-medium shrink-0">
                   {user.name[0].toUpperCase()}
                 </div>
 
@@ -372,7 +372,7 @@ export function MentionInput({
             {...ANIMATION_PRESETS.slideDown}
             transition={{ duration: durations.fast }}
             viewport={{ once: true }}
-            className="absolute bottom-full mb-2 left-0 right-0 max-h-64 overflow-y-auto scrollbar-hide bg-background border rounded-lg shadow-lg z-50"
+            className="absolute bottom-full mb-2 left-0 right-0 max-h-64 overflow-y-auto scrollbar-hide glass-strong rounded-2xl shadow-lg shadow-black/5 dark:shadow-black/20 z-50"
           >
             {suggestions.map((user, index) => (
               <button
@@ -384,7 +384,7 @@ export function MentionInput({
                 )}
               >
                 {/* Avatar */}
-                <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-sm font-medium shrink-0">
+                <div className="icon-container-sm text-sm font-medium shrink-0">
                   {user.name[0].toUpperCase()}
                 </div>
 
@@ -541,7 +541,7 @@ export function MentionList({
                 <CardContent className="p-4">
                   <div className="flex items-start gap-3">
                     {/* Avatar */}
-                    <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-sm font-medium shrink-0">
+                    <div className="icon-container text-sm font-medium shrink-0">
                       {mentioner.name[0].toUpperCase()}
                     </div>
 
@@ -604,7 +604,7 @@ export function MentionList({
                 <CardContent className="p-4">
                   <div className="flex items-start gap-3">
                     {/* Avatar */}
-                    <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-sm font-medium shrink-0">
+                    <div className="icon-container text-sm font-medium shrink-0">
                       {mentioner.name[0].toUpperCase()}
                     </div>
 

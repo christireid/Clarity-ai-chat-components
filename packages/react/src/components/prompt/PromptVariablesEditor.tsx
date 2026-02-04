@@ -15,6 +15,7 @@ import {
   cn,
   useReducedMotion,
 } from '@clarity-chat/primitives'
+import { glassVariants } from '@clarity-chat/primitives/glass-variants'
 import type { PromptVariable } from '../../prompts/types'
 import { getMotionSafePreset } from '../../animations'
 
@@ -265,7 +266,15 @@ export function PromptVariablesEditor({
   const prefersReducedMotion = useReducedMotion()
 
   return (
-    <Card className={cn('', className)}>
+    <Card
+      className={cn(
+        glassVariants({
+          intensity: 'medium',
+          border: 'light',
+        }),
+        className
+      )}
+    >
       <CardHeader className="pb-3">
         <div className="flex items-start justify-between">
           <div>

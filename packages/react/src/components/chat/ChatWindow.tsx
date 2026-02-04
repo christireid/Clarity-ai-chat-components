@@ -18,6 +18,7 @@ import { DefaultEmptyState } from './EmptyState'
 import { ErrorBanner } from '../ui/ErrorBanner'
 import { FollowUpSuggestions } from './FollowUpSuggestions'
 import { type PromptSuggestion } from '../prompt/PromptSuggestions'
+import { withGlass } from '../../lib/with-glass'
 
 // Grouped prop interfaces for better API organization
 export interface ChatWindowMessageActions {
@@ -491,15 +492,15 @@ export function ChatWindow({
       ? null
       : `${normalizedMessages.length} ${normalizedMessages.length === 1 ? 'message' : 'messages'}`
 
+  const GlassCard = React.useMemo(() => withGlass(Card, {
+    intensity: 'medium',
+    gradient: 'blue',
+    animated: 'gradient',
+  }), [])
+
   return (
-    <Card
+    <GlassCard
       className={cn(
-        glassVariants({
-          intensity: 'medium',
-          gradient: 'none',
-          border: 'light',
-          animated: 'none',
-        }),
         'flex h-full w-full flex-col overflow-hidden',
         'relative',
         // Responsive defaults - gracefully adapt to any container
@@ -627,7 +628,7 @@ export function ChatWindow({
           aria-label="Type your message"
         />
       </div>
-    </Card>
+    </GlassCard>
   )
 }
 

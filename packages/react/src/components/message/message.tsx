@@ -17,6 +17,7 @@ import { EditableMessageContent } from './EditableMessageContent'
 import { ErrorMessage, type ErrorDetails } from '../feedback/ErrorMessage'
 import { MessageHeader } from './MessageHeader'
 import { formatRelativeTime } from '../../internal/helpers'
+import { withGlass } from '../../lib/with-glass'
 
 export interface MessageProps {
   message: MessageType
@@ -218,8 +219,13 @@ export function Message({
   // Generate stable content ID for aria-describedby (fallback if message.id is missing)
   const contentId = message.id ? `message-content-${message.id}` : undefined
 
+  const GlassMotionDiv = React.useMemo(() => withGlass(motion.div, {
+    intensity: 'subtle',
+    hover: 'brighten',
+  }), [])
+
   return (
-    <motion.div
+    <GlassMotionDiv
       ref={ref}
       role="article"
       aria-label={ariaLabel}
@@ -245,7 +251,7 @@ export function Message({
         // Reduced padding for grouped messages
         isGrouped && !isGroupStart && !isGroupEnd ? 'px-4 py-1.5' : 'p-4',
         isUser && 'flex-row-reverse',
-        isHovered && 'bg-muted/30 shadow-[0_2px_12px_-4px_rgba(0,0,0,0.06)]',
+        isHovered && 'shadow-[0_2px_12px_-4px_rgba(0,0,0,0.06)]',
         className
       )}
     >
@@ -387,7 +393,7 @@ export function Message({
         {/* Metadata */}
         <MessageMetadata message={message} />
       </div>
-    </motion.div>
+    </GlassMotionDiv>
   )
 }
 

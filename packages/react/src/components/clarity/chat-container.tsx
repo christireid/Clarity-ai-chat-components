@@ -4,6 +4,7 @@ import * as React from 'react'
 import { cn } from '@clarity-chat/primitives'
 import { ChevronDown } from 'lucide-react'
 import { Button } from '@clarity-chat/primitives'
+import { withGlass } from '../../lib/with-glass'
 
 // ============================================================================
 // CHAT CONTAINER - Superior to Prompt-Kit with intelligent auto-scroll
@@ -131,8 +132,14 @@ export const ChatContainer = React.forwardRef<
       scrollToBottom('instant')
     }, [scrollToBottom])
 
+    const GlassContainer = React.useMemo(() => withGlass('div', {
+      intensity: 'medium',
+      gradient: 'blue',
+      animated: 'gradient',
+    }), [])
+
     return (
-      <div
+      <GlassContainer
         className={cn('relative flex flex-col h-full', className)}
         style={style}
       >
@@ -155,7 +162,7 @@ export const ChatContainer = React.forwardRef<
             position={scrollButtonPosition}
           />
         )}
-      </div>
+      </GlassContainer>
     )
   }
 )

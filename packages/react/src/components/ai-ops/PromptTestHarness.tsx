@@ -188,12 +188,18 @@ export const PromptTestHarness: React.FC<PromptTestHarnessProps> = ({
   return (
     <Card
       className={cn(
-        'border-border/60 bg-[hsl(var(--surface-elevated))] shadow-sm',
+        // Glassmorphism: medium intensity, purple gradient, animated gradient (AI panel)
+        'relative overflow-hidden',
+        'border border-border/30 backdrop-blur-xl backdrop-saturate-150',
+        'bg-gradient-to-br from-purple-500/10 via-background/80 to-purple-600/5',
+        'shadow-[0_8px_32px_rgba(147,51,234,0.12)]',
+        'before:absolute before:inset-0 before:bg-gradient-to-br before:from-purple-400/5 before:via-transparent before:to-purple-600/5',
+        'before:animate-gradient-shift before:bg-[length:200%_200%] before:pointer-events-none',
         className
       )}
       aria-busy={isLoading || isRunning}
     >
-      <CardHeader className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+      <CardHeader className="relative z-10 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div className="space-y-2">
           <CardTitle className="text-lg font-semibold text-foreground">
             Prompt regression harness
@@ -285,7 +291,7 @@ export const PromptTestHarness: React.FC<PromptTestHarnessProps> = ({
 
       {/* Progress bar when running */}
       {isRunning && (
-        <div className="px-6">
+        <div className="relative z-10 px-6">
           <div className="flex items-center justify-between text-xs text-muted-foreground/70">
             <span>
               Running tests... {passCount + failCount}/{tests.length}
@@ -308,7 +314,7 @@ export const PromptTestHarness: React.FC<PromptTestHarnessProps> = ({
         </div>
       )}
 
-      <CardContent className="overflow-x-auto">
+      <CardContent className="relative z-10 overflow-x-auto">
         <table
           className="min-w-[720px] w-full text-sm"
           role="table"
@@ -417,7 +423,7 @@ export const PromptTestHarness: React.FC<PromptTestHarnessProps> = ({
         </table>
       </CardContent>
 
-      <CardFooter className="flex flex-wrap items-center justify-between gap-2 text-xs text-muted-foreground/70">
+      <CardFooter className="relative z-10 flex flex-wrap items-center justify-between gap-2 text-xs text-muted-foreground/70">
         <div className="flex items-center gap-3">
           <span>
             {tests.length} test{tests.length === 1 ? '' : 's'}

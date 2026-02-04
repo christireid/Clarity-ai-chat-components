@@ -15,6 +15,7 @@ import {
   measureExecutionTime,
 } from '../../utils/performance-monitoring'
 import { useRenderPerformance /* , useMemoryUsage */ } from '../../utils/analytics'
+import { glass, GLASS_PRESETS } from '../../utils/glassmorphism'
 
 // Stub for useMemoryUsage - not yet implemented in analytics
 function useMemoryUsage() {
@@ -115,7 +116,7 @@ export function PerformanceDashboard({
     <div className={cn('space-y-6', className)}>
       {/* Summary Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <Card>
+        <Card className={glass(GLASS_PRESETS.metricsPanel)}>
           <CardHeader className="pb-3">
             <CardTitle className="text-sm font-medium text-muted-foreground">
               Average Render Time
@@ -131,7 +132,7 @@ export function PerformanceDashboard({
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className={glass(GLASS_PRESETS.metricsPanel)}>
           <CardHeader className="pb-3">
             <CardTitle className="text-sm font-medium text-muted-foreground">
               Slowest Component
@@ -147,7 +148,7 @@ export function PerformanceDashboard({
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className={glass(GLASS_PRESETS.metricsPanel)}>
           <CardHeader className="pb-3">
             <CardTitle className="text-sm font-medium text-muted-foreground">
               Memory Usage
@@ -198,7 +199,10 @@ export function PerformanceDashboard({
                 .map((metric, index) => (
                   <div
                     key={`${metric.timestamp}-${index}`}
-                    className="flex items-center justify-between p-3 bg-muted/50 rounded-lg"
+                    className={cn(
+                      'flex items-center justify-between p-3',
+                      glass({ intensity: 'subtle', border: 'light' })
+                    )}
                   >
                     <div className="flex items-center gap-3">
                       <Badge variant={getPerformanceColor(metric.renderTime)}>
@@ -245,7 +249,10 @@ export function PerformanceDashboard({
         </CardHeader>
         <CardContent className="space-y-4">
           {summary.averageRenderTime > 16 && (
-            <div className="p-4 bg-destructive/10 border border-destructive/20 rounded-lg">
+            <div className={cn(
+              'p-4 bg-destructive/10 border-destructive/20',
+              glass({ intensity: 'medium', border: 'medium' })
+            )}>
               <h4 className="font-semibold text-destructive mb-2">
                 ⚠️ Slow Render Performance
               </h4>
@@ -258,7 +265,10 @@ export function PerformanceDashboard({
           )}
 
           {summary.memoryUsage && summary.memoryUsage > 50 * 1024 * 1024 && (
-            <div className="p-4 bg-warning/10 border border-warning/20 rounded-lg">
+            <div className={cn(
+              'p-4 bg-warning/10 border-warning/20',
+              glass({ intensity: 'medium', border: 'medium' })
+            )}>
               <h4 className="font-semibold text-warning mb-2">
                 ⚠️ High Memory Usage
               </h4>
@@ -271,7 +281,10 @@ export function PerformanceDashboard({
           )}
 
           {summary.totalComponents > 0 && summary.averageRenderTime <= 8 && (
-            <div className="p-4 bg-success/10 border border-success/20 rounded-lg">
+            <div className={cn(
+              'p-4 bg-success/10 border-success/20',
+              glass({ intensity: 'medium', border: 'medium' })
+            )}>
               <h4 className="font-semibold text-success mb-2">
                 ✅ Excellent Performance
               </h4>

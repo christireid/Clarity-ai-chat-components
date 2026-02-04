@@ -10,6 +10,7 @@
 import * as React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { cn } from '@clarity-chat/primitives'
+import { useGlassVariant } from '../../lib/with-glass'
 
 export interface CollapsibleSectionProps {
   /** Whether the section is open */
@@ -51,6 +52,10 @@ export function CollapsibleSection({
 }: CollapsibleSectionProps) {
   const [internalOpen, setInternalOpen] = React.useState(defaultOpen)
   const isOpen = controlledOpen !== undefined ? controlledOpen : internalOpen
+  const glassClass = useGlassVariant({
+    intensity: 'medium',
+    border: 'light',
+  })
 
   const toggle = () => {
     if (disabled) return
@@ -62,7 +67,7 @@ export function CollapsibleSection({
   }
 
   return (
-    <div className={cn('border border-border/40 rounded-lg shadow-sm', className)}>
+    <div className={cn('border border-border/40 rounded-lg shadow-sm', glassClass, className)}>
       {/* Trigger */}
       <motion.button
         type="button"

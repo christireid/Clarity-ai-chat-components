@@ -309,7 +309,17 @@ export function AudioPlayer({
     return (
       <div
         className={cn(
-          'rounded-lg border border-border bg-card p-4 space-y-3',
+          'rounded-lg p-4 space-y-3',
+
+          // Glassmorphism: Subtle intensity for media viewers
+          'backdrop-blur-sm bg-card/60',
+          'border border-border/[0.12]',
+
+          // Hover glow
+          'transition-all duration-300',
+          'hover:shadow-[0_0_20px_rgba(129,140,248,0.1)]',
+          'hover:border-border/[0.16]',
+
           className
         )}
       >
@@ -423,7 +433,16 @@ export function AudioPlayer({
   return (
     <div
       className={cn(
-        'flex items-center gap-3 p-3 rounded-lg border border-border bg-muted/30',
+        'flex items-center gap-3 p-3 rounded-lg',
+
+        // Glassmorphism: Subtle intensity for media viewers
+        'backdrop-blur-sm bg-muted/60',
+        'border border-border/[0.12]',
+
+        // Hover state
+        'transition-all duration-300',
+        'hover:border-border/[0.16]',
+
         className
       )}
     >

@@ -52,6 +52,21 @@ export type { VirtualizedMessageListProps as MessageListProps } from './componen
 export { ChatInput } from './components/chat/ChatInput'
 export type { ChatInputProps } from './components/chat/ChatInput'
 
+// 4.5. Mention System - @mention and /command autocomplete
+export {
+  MentionInput,
+  MentionList,
+  useMentions,
+} from './components/input/mention-system'
+export type {
+  MentionInputProps,
+  MentionListProps,
+  MentionableUser,
+  SlashCommand,
+  CommandParameter,
+  Mention,
+} from './components/input/mention-system'
+
 // 5. Markdown Renderer - Enhanced markdown with syntax highlighting
 export { EnhancedMarkdownRenderer as MarkdownRenderer } from './components/ai/EnhancedMarkdownRenderer'
 export type { EnhancedMarkdownRendererProps as MarkdownRendererProps } from './components/ai/EnhancedMarkdownRenderer'
@@ -143,7 +158,21 @@ export type { TokenCounterProps } from './components/token/TokenCounter'
 export { NetworkStatus } from './components/feedback/NetworkStatus'
 export type { NetworkStatusProps } from './components/feedback/NetworkStatus'
 
-// 8.14. Keyboard Hooks
+// 8.14. Message Interaction Components
+export { MessageContextMenu } from './components/messages/MessageContextMenu'
+export type { MessageContextMenuProps } from './components/messages/MessageContextMenu'
+export { ReactionPicker, QuickReactionBar } from './components/messages/ReactionPicker'
+export type { ReactionPickerProps, QuickReactionBarProps } from './components/messages/ReactionPicker'
+export { ForwardDialog } from './components/messages/ForwardDialog'
+export type { ForwardDialogProps, Conversation } from './components/messages/ForwardDialog'
+export { EditMessageMode } from './components/messages/EditMessageMode'
+export type { EditMessageModeProps } from './components/messages/EditMessageMode'
+export { DeleteConfirmationDialog } from './components/messages/DeleteConfirmationDialog'
+export type { DeleteConfirmationDialogProps, DeleteOptions } from './components/messages/DeleteConfirmationDialog'
+export { ShareDialog } from './components/messages/ShareDialog'
+export type { ShareDialogProps } from './components/messages/ShareDialog'
+
+// 8.15. Keyboard Hooks
 export {
   useKeyboardShortcuts,
   type KeyboardShortcut,
@@ -326,6 +355,19 @@ export {
   type ClarityChatAdapterCapabilities,
   type VercelAIAdapterOptions,
 } from './adapters'
+
+// ============================================================================
+// GLASS UTILITIES
+// ============================================================================
+
+export {
+  withGlass,
+  useGlassVariant,
+  GlassWrapper,
+  type WithGlassOptions,
+  type GlassComponentProps,
+  type GlassWrapperProps,
+} from './lib/with-glass'
 
 // ============================================================================
 // CORE API COMPLETE

@@ -36,6 +36,7 @@ import {
   shouldShowTimeSeparator,
 } from '../../utils/message/message-grouping'
 import { ClarityError } from '../../error/clarity-error'
+import { withGlass } from '../../lib/with-glass'
 
 export interface MessageListProps {
   messages: MessageType[]
@@ -270,8 +271,13 @@ export function MessageList({
     [messages]
   )
 
+  const GlassContainer = React.useMemo(() => withGlass('div', {
+    intensity: 'subtle',
+    hover: 'brighten',
+  }), [])
+
   return (
-    <div
+    <GlassContainer
       id={id}
       className={cn('flex flex-col flex-1 min-h-0 overflow-hidden', className)}
       role={role}
@@ -500,7 +506,7 @@ export function MessageList({
           </motion.div>
         )}
       </AnimatePresence>
-    </div>
+    </GlassContainer>
   )
 }
 

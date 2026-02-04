@@ -9,6 +9,8 @@ import {
   Badge,
 } from '@clarity-chat/primitives'
 import type { KeyMoment } from '../ConversationAnalyticsDashboard.types'
+import { glass, GLASS_PRESETS } from '../../../utils/glassmorphism'
+import { cn } from '../../../utils/cn'
 
 export interface KeyMomentsCardProps {
   /** Key moments to display */
@@ -38,7 +40,7 @@ export function KeyMomentsCard({ keyMoments }: KeyMomentsCardProps) {
   }
 
   return (
-    <Card className="shadow-sm">
+    <Card className={glass(GLASS_PRESETS.dashboardCard)}>
       <CardHeader className="">
         <CardTitle className="text-sm">Key Moments</CardTitle>
       </CardHeader>
@@ -46,7 +48,10 @@ export function KeyMomentsCard({ keyMoments }: KeyMomentsCardProps) {
         {keyMoments.map((moment, index) => (
           <div
             key={index}
-            className="flex items-start gap-3 p-2 rounded-lg border"
+            className={cn(
+              'flex items-start gap-3 p-2',
+              glass({ intensity: 'subtle', border: 'light' })
+            )}
           >
             <Badge
               variant={getKeyMomentVariant(moment.type)}

@@ -8,6 +8,7 @@
 
 import * as React from 'react'
 import { cn } from '@clarity-chat/primitives'
+import { glassVariants } from '@clarity-chat/primitives/glass-variants'
 import type { ContextItem } from '../../hooks/prompt-composer/types'
 
 export interface ContextItemCardProps {
@@ -47,7 +48,11 @@ export function ContextItemCard({
   return (
     <div
       className={cn(
-        'group flex items-start gap-2 p-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg hover:border-gray-300 dark:hover:border-gray-600 transition-colors',
+        'group flex items-start gap-2 p-2 rounded-lg transition-colors',
+        glassVariants({
+          intensity: 'medium',
+          border: 'light',
+        }),
         className
       )}
     >

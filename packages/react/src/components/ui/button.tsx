@@ -1,5 +1,6 @@
 import * as React from 'react'
 import { cn } from '@clarity-chat/primitives'
+import { withGlass, type GlassComponentProps } from '../../lib/with-glass'
 
 export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?:
@@ -9,12 +10,14 @@ export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElemen
     | 'ghost'
     | 'destructive'
     | 'outline'
+    | 'accent'
+    | 'glass'
   size?: 'sm' | 'md' | 'lg'
   loading?: boolean
   icon?: React.ReactNode
 }
 
-export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
+const ButtonBase = React.forwardRef<HTMLButtonElement, ButtonProps>(
   (
     {
       className,
@@ -38,6 +41,8 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       destructive: 'bg-red-600 text-white hover:bg-red-700',
       outline:
         'border border-input bg-background hover:bg-accent hover:text-accent-foreground',
+      accent: 'gradient-accent',
+      glass: '',
     }
 
     const sizeClasses = {
@@ -66,4 +71,14 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   }
 )
 
-Button.displayName = 'Button'
+ButtonBase.displayName = 'ButtonBase'
+
+// Glass-enhanced Button
+export const GlassButton = withGlass(ButtonBase, {
+  intensity: 'medium',
+  border: 'light',
+  hover: 'brighten',
+})
+
+// Export default Button (non-glass)
+export const Button = ButtonBase

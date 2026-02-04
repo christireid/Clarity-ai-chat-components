@@ -8,6 +8,7 @@
 
 import * as React from 'react'
 import { cn } from '@clarity-chat/primitives'
+import { glassVariants } from '@clarity-chat/primitives/glass-variants'
 import { usePromptComposer } from '../../hooks/prompt-composer'
 import { TokenBudgetIndicator } from './TokenBudgetIndicator'
 import { ContextItemCard } from './ContextItemCard'
@@ -200,7 +201,14 @@ export function PromptComposer({
         <div
           className={cn(
             'space-y-3 animate-in fade-in slide-in-from-top-2 duration-200',
-            state.isExpanded && 'p-3 bg-gray-50 dark:bg-gray-900/50 rounded-lg'
+            state.isExpanded &&
+              cn(
+                'p-3 rounded-lg',
+                glassVariants({
+                  intensity: 'medium',
+                  border: 'light',
+                })
+              )
           )}
         >
           {/* Context Items */}
@@ -278,10 +286,13 @@ export function PromptComposer({
       {/* Main Input Area */}
       <div
         className={cn(
-          'relative border border-gray-200 dark:border-gray-700 rounded-lg',
-          'focus-within:border-blue-500 dark:focus-within:border-blue-500',
+          'relative rounded-lg',
           'focus-within:ring-2 focus-within:ring-blue-500/20',
           'transition-all duration-200',
+          glassVariants({
+            intensity: 'medium',
+            border: 'light',
+          }),
           state.isExpanded && 'border-gray-300 dark:border-gray-600'
         )}
       >

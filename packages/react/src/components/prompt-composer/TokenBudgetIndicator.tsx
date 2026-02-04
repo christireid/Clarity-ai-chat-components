@@ -9,6 +9,7 @@
 
 import * as React from 'react'
 import { cn } from '@clarity-chat/primitives'
+import { glassVariants } from '@clarity-chat/primitives/glass-variants'
 import { calculateTokenSavings } from '../../hooks/prompt-composer/context-utils'
 import type { ContextItem } from '../../hooks/prompt-composer/types'
 
@@ -91,7 +92,16 @@ export function TokenBudgetIndicator({
 
       {/* Token Savings Display */}
       {savings && (
-        <div className="p-3 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-800">
+        <div
+          className={cn(
+            'p-3 rounded-lg',
+            glassVariants({
+              intensity: 'medium',
+              gradient: 'green',
+              border: 'light',
+            })
+          )}
+        >
           <div className="flex items-center justify-between mb-2">
             <span className="text-sm font-medium text-green-800 dark:text-green-200">
               Token Savings

@@ -279,7 +279,11 @@ export function CommandPalette({
               aria-label={ariaLabel}
               className={cn(
                 'fixed top-[20%] left-1/2 -translate-x-1/2 w-full max-w-2xl mx-4',
-                'bg-card border shadow-[0_20px_25px_-5px_rgb(0_0_0_/_0.1),0_8px_10px_-6px_rgb(0_0_0_/_0.1)] rounded-lg z-[var(--z-modal)]',
+                'backdrop-blur-lg backdrop-saturate-200 bg-white/80 dark:bg-background/80',
+                'border-2 border-glass-strong dark:border-glass-dark-strong',
+                'shadow-[0_20px_25px_-5px_rgb(0_0_0_/_0.1),0_8px_10px_-6px_rgb(0_0_0_/_0.1)]',
+                'bg-glass-pastel-purple-strong dark:bg-glass-pastel-purple-dark-strong',
+                'glass-animated glass-glow rounded-lg z-[var(--z-modal)]',
                 'flex flex-col max-h-[60vh] overflow-hidden',
                 className
               )}

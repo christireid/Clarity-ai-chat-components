@@ -18,6 +18,7 @@ import {
   DURATION_SECONDS as durations,
   ANIMATION_PRESETS,
 } from '../../animations/constants'
+import { glass, GLASS_PRESETS } from '../../utils/glassmorphism'
 
 /**
  * Error severity levels
@@ -232,7 +233,8 @@ export function ErrorMessage({
           duration: getMotionSafeDuration(prefersReducedMotion, 0.2),
         }}
         className={cn(
-          'flex items-center gap-2.5 p-2.5 rounded-lg border shadow-sm',
+          'flex items-center gap-2.5 p-2.5',
+          glass({ ...GLASS_PRESETS.feedbackPanel, intensity: 'subtle' }),
           config.bgColor,
           config.borderColor,
           className
@@ -267,7 +269,8 @@ export function ErrorMessage({
         stiffness: 280,
       }}
       className={cn(
-        'relative p-4 rounded-lg border shadow-sm space-y-4',
+        'relative p-4 space-y-4',
+        glass(GLASS_PRESETS.feedbackPanel),
         config.bgColor,
         config.borderColor,
         className

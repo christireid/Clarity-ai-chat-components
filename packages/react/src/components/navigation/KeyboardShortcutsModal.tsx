@@ -227,8 +227,10 @@ export function KeyboardShortcutsModal({
             className={cn(
               'fixed top-[10%] left-1/2 -translate-x-1/2 z-50',
               'w-full max-w-2xl mx-4',
-              'bg-background rounded-xl border border-border/60',
+              'backdrop-blur-md backdrop-saturate-150 bg-white/60 dark:bg-background/60',
+              'rounded-xl border border-glass-light dark:border-glass-dark-light',
               'shadow-[0_25px_50px_-12px_rgba(0,0,0,0.25)]',
+              'hover:-translate-y-0.5 hover:shadow-lg transition-transform',
               'flex flex-col max-h-[80vh] overflow-hidden',
               className
             )}

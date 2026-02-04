@@ -12,6 +12,7 @@ import {
   createPulseAnimation,
   createShimmerAnimation,
 } from '../../animations/utils'
+import { useGlassVariant } from '../../lib/with-glass'
 
 export interface SkeletonProps extends Omit<
   HTMLMotionProps<'div'>,
@@ -41,6 +42,9 @@ export const Skeleton: React.FC<SkeletonProps> = ({
 }) => {
   // Accessibility: Respect user's reduced motion preference
   const prefersReducedMotion = useReducedMotion()
+  const glassClass = useGlassVariant({
+    intensity: 'subtle',
+  })
 
   const roundedClasses = {
     none: 'rounded-none',
@@ -82,6 +86,7 @@ export const Skeleton: React.FC<SkeletonProps> = ({
       <motion.div
         className={cn(
           'bg-muted/60 backdrop-blur-sm',
+          glassClass,
           roundedClasses[rounded],
           className
         )}
@@ -101,6 +106,7 @@ export const Skeleton: React.FC<SkeletonProps> = ({
     <motion.div
       className={cn(
         'bg-muted/60 backdrop-blur-sm',
+        glassClass,
         roundedClasses[rounded],
         className
       )}

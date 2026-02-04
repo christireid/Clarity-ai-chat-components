@@ -22,6 +22,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { Button, Badge, cn } from '@clarity-chat/primitives'
 import type { ToolCall, Citation } from '../../adapters/types'
 import { DURATION_SECONDS } from '../../animations/constants'
+import { withGlass } from '../../lib/with-glass'
 
 export interface StreamingMessageProps {
   /** Accumulated message content */
@@ -605,8 +606,13 @@ export function StreamingMessage({
     [onToolReject]
   )
 
+  const GlassMotionDiv = React.useMemo(() => withGlass(motion.div, {
+    intensity: 'subtle',
+    hover: 'brighten',
+  }), [])
+
   return (
-    <motion.div
+    <GlassMotionDiv
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: isVisible ? 1 : 0, y: isVisible ? 0 : 10 }}
       transition={{ duration: DURATION_SECONDS.normal }}
@@ -670,7 +676,7 @@ export function StreamingMessage({
           </div>
         </div>
       )}
-    </motion.div>
+    </GlassMotionDiv>
   )
 }
 

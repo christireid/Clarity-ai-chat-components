@@ -104,7 +104,16 @@ export function ModelSelector({
         variant="surface"
         onClick={handleToggle}
         disabled={disabled}
-        className="w-full justify-between rounded-xl border border-border/40 bg-card/95 backdrop-blur-md px-4 py-3 text-left text-sm shadow-sm hover:shadow-md hover:border-border/60 transition-all duration-200 ease-out"
+        className={cn(
+          // Glassmorphism: medium intensity, light border, lift hover
+          'w-full justify-between rounded-xl px-4 py-3 text-left text-sm',
+          'border border-white/20 dark:border-white/10 backdrop-blur-lg backdrop-saturate-150',
+          'bg-white/60 dark:bg-gray-900/60',
+          'shadow-[0_4px_16px_rgba(0,0,0,0.08)]',
+          'transition-all duration-200 ease-out',
+          'hover:border-white/30 dark:hover:border-white/20',
+          'hover:-translate-y-0.5 hover:shadow-[0_8px_24px_rgba(0,0,0,0.12)]'
+        )}
         aria-haspopup="listbox"
         aria-expanded={isOpen}
       >
@@ -182,7 +191,13 @@ export function ModelSelector({
             }
             viewport={{ once: true }}
             role="listbox"
-            className="absolute z-20 mt-2 w-full overflow-auto scrollbar-hide rounded-2xl border border-border/40 bg-card/98 backdrop-blur-lg shadow-xl"
+            className={cn(
+              // Glassmorphism dropdown: medium intensity, light border
+              'absolute z-20 mt-2 w-full overflow-auto scrollbar-hide rounded-2xl',
+              'border border-white/20 dark:border-white/10 backdrop-blur-xl backdrop-saturate-150',
+              'bg-white/70 dark:bg-gray-900/70',
+              'shadow-[0_12px_48px_rgba(0,0,0,0.16)]'
+            )}
           >
             {models.map((model) => (
               <button

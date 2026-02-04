@@ -4,6 +4,8 @@ import * as React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Button } from '@clarity-chat/primitives'
 import { duration } from '../../animations/constants'
+import { useGlassVariant } from '../../lib/with-glass'
+import { cn } from '@clarity-chat/primitives'
 
 export interface ErrorBannerProps {
   error: string | null
@@ -16,6 +18,11 @@ export function ErrorBanner({
   onRetry,
   onDismissError,
 }: ErrorBannerProps) {
+  const glassClass = useGlassVariant({
+    intensity: 'subtle',
+    border: 'light',
+  })
+
   return (
     <AnimatePresence>
       {error && (
@@ -27,7 +34,10 @@ export function ErrorBanner({
             duration: duration('normal'),
             ease: [0.25, 0.1, 0.25, 1],
           }}
-          className="border-b border-destructive/30 bg-destructive/5"
+          className={cn(
+            'border-b border-destructive/30 bg-destructive/5',
+            glassClass
+          )}
           role="alert"
         >
           <div className="flex items-center justify-between gap-3 px-4 py-3">
