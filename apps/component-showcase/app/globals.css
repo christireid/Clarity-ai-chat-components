@@ -236,3 +236,338 @@ code {
 .overflow-y-auto-hidden::-webkit-scrollbar {
   display: none;
 }
+
+/* ============================================================================
+   GLASSMORPHISM DESIGN SYSTEM
+   Inspired by ai-sdk, Ant Design X, and shadcn/ui
+   ============================================================================ */
+
+/* Glass Card Variants */
+.glass {
+  @apply bg-white/60 dark:bg-white/5 backdrop-blur-xl border border-white/20 dark:border-white/10;
+}
+
+.glass-subtle {
+  @apply bg-white/40 dark:bg-white/[0.02] backdrop-blur-lg border border-white/10 dark:border-white/5;
+}
+
+.glass-strong {
+  @apply bg-white/80 dark:bg-white/10 backdrop-blur-2xl border border-white/30 dark:border-white/15;
+}
+
+.glass-card {
+  @apply glass rounded-2xl shadow-lg shadow-black/5 dark:shadow-black/20;
+}
+
+.glass-panel {
+  @apply glass-subtle rounded-xl;
+}
+
+/* Gradient Backgrounds */
+.gradient-mesh {
+  background:
+    radial-gradient(
+      at 40% 20%,
+      hsl(var(--primary) / 0.15) 0px,
+      transparent 50%
+    ),
+    radial-gradient(at 80% 0%, hsl(280 100% 70% / 0.1) 0px, transparent 50%),
+    radial-gradient(at 0% 50%, hsl(200 100% 70% / 0.1) 0px, transparent 50%),
+    radial-gradient(at 80% 50%, hsl(340 100% 70% / 0.08) 0px, transparent 50%),
+    radial-gradient(at 0% 100%, hsl(var(--primary) / 0.1) 0px, transparent 50%);
+}
+
+.gradient-subtle {
+  @apply bg-gradient-to-br from-primary/5 via-transparent to-primary/5;
+}
+
+.gradient-accent {
+  @apply bg-gradient-to-r from-primary via-primary/80 to-violet-500;
+}
+
+.gradient-text {
+  @apply bg-clip-text text-transparent bg-gradient-to-r from-primary to-violet-500;
+}
+
+/* Glow Effects */
+.glow {
+  box-shadow:
+    0 0 20px hsl(var(--primary) / 0.15),
+    0 0 40px hsl(var(--primary) / 0.1),
+    0 0 60px hsl(var(--primary) / 0.05);
+}
+
+.glow-sm {
+  box-shadow: 0 0 15px hsl(var(--primary) / 0.2);
+}
+
+.glow-lg {
+  box-shadow:
+    0 0 30px hsl(var(--primary) / 0.2),
+    0 0 60px hsl(var(--primary) / 0.15),
+    0 0 90px hsl(var(--primary) / 0.1);
+}
+
+/* Animated Gradient Border */
+.gradient-border {
+  position: relative;
+  background: hsl(var(--background));
+  border-radius: 1rem;
+}
+
+.gradient-border::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(
+    135deg,
+    hsl(var(--primary)),
+    hsl(280 100% 70%),
+    hsl(var(--primary))
+  );
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+}
+
+/* Shine Effect */
+.shine {
+  position: relative;
+  overflow: hidden;
+}
+
+.shine::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(
+    to right,
+    transparent 0%,
+    rgba(255, 255, 255, 0.1) 50%,
+    transparent 100%
+  );
+  transform: rotate(30deg);
+  animation: shine 3s ease-in-out infinite;
+}
+
+@keyframes shine {
+  0% {
+    transform: translateX(-100%) rotate(30deg);
+  }
+  100% {
+    transform: translateX(100%) rotate(30deg);
+  }
+}
+
+/* Floating Animation */
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+/* Gradient Orb Backgrounds */
+.orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(60px);
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.orb-primary {
+  @apply orb bg-primary/30 w-72 h-72;
+}
+
+.orb-violet {
+  @apply orb bg-violet-500/20 w-96 h-96;
+}
+
+.orb-cyan {
+  @apply orb bg-cyan-500/20 w-64 h-64;
+}
+
+/* Interactive Card Hover */
+.card-hover {
+  @apply transition-all duration-300 ease-out;
+}
+
+.card-hover:hover {
+  @apply -translate-y-1 shadow-xl shadow-primary/10;
+}
+
+/* Dot Grid Pattern */
+.dot-pattern {
+  background-image: radial-gradient(
+    hsl(var(--muted-foreground) / 0.15) 1px,
+    transparent 1px
+  );
+  background-size: 20px 20px;
+}
+
+/* Grid Pattern */
+.grid-pattern {
+  background-image:
+    linear-gradient(hsl(var(--border) / 0.5) 1px, transparent 1px),
+    linear-gradient(90deg, hsl(var(--border) / 0.5) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+/* Noise Texture Overlay */
+.noise {
+  position: relative;
+}
+
+.noise::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%' height='100%' filter='url(%23noise)'/%3E%3C/svg%3E");
+  opacity: 0.03;
+  pointer-events: none;
+}
+
+/* Badge Variants */
+.badge-glass {
+  @apply px-3 py-1 rounded-full text-xs font-medium bg-white/10 backdrop-blur-sm border border-white/20;
+}
+
+.badge-glow {
+  @apply badge-glass shadow-sm shadow-primary/20;
+}
+
+/* Stat Card */
+.stat-card {
+  @apply glass-card p-6 relative overflow-hidden;
+}
+
+.stat-card::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 100px;
+  height: 100px;
+  background: radial-gradient(
+    circle,
+    hsl(var(--primary) / 0.1) 0%,
+    transparent 70%
+  );
+  pointer-events: none;
+}
+
+/* Feature Card */
+.feature-card {
+  @apply glass-card p-6 card-hover relative overflow-hidden group;
+}
+
+.feature-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    135deg,
+    hsl(var(--primary) / 0.05) 0%,
+    transparent 50%
+  );
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.feature-card:hover::before {
+  opacity: 1;
+}
+
+/* Icon Container */
+.icon-container {
+  @apply w-12 h-12 rounded-xl flex items-center justify-center bg-gradient-to-br from-primary/20 to-primary/5 text-primary;
+}
+
+.icon-container-sm {
+  @apply w-10 h-10 rounded-lg flex items-center justify-center bg-gradient-to-br from-primary/20 to-primary/5 text-primary;
+}
+
+/* Section Divider */
+.section-divider {
+  @apply h-px bg-gradient-to-r from-transparent via-border to-transparent;
+}
+
+/* Hero Gradient */
+.hero-gradient {
+  @apply relative;
+  background:
+    radial-gradient(
+      ellipse 80% 50% at 50% -20%,
+      hsl(var(--primary) / 0.15),
+      transparent
+    ),
+    radial-gradient(
+      ellipse 60% 40% at 80% 50%,
+      hsl(280 100% 70% / 0.08),
+      transparent
+    ),
+    radial-gradient(
+      ellipse 50% 30% at 20% 80%,
+      hsl(200 100% 70% / 0.08),
+      transparent
+    );
+}
+
+/* Animated Underline */
+.animated-underline {
+  position: relative;
+}
+
+.animated-underline::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: linear-gradient(90deg, hsl(var(--primary)), hsl(280 100% 70%));
+  transition: width 0.3s ease;
+}
+
+.animated-underline:hover::after {
+  width: 100%;
+}
+
+/* Pulse Ring */
+@keyframes pulse-ring {
+  0% {
+    transform: scale(0.95);
+    opacity: 0.7;
+  }
+  50% {
+    transform: scale(1);
+    opacity: 0.4;
+  }
+  100% {
+    transform: scale(0.95);
+    opacity: 0.7;
+  }
+}
+
+.pulse-ring {
+  @apply absolute inset-0 rounded-full bg-primary/20;
+  animation: pulse-ring 2s ease-in-out infinite;
+}
