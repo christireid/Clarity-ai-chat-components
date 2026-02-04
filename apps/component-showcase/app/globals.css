@@ -474,9 +474,9 @@ code {
   pointer-events: none;
 }
 
-/* Feature Card */
+/* Feature Card - Note: add 'group' class in markup for hover effects on children */
 .feature-card {
-  @apply glass-card p-6 card-hover relative overflow-hidden group;
+  @apply glass-card p-6 card-hover relative overflow-hidden;
 }
 
 .feature-card::before {

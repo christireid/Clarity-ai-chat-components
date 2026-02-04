@@ -36,6 +36,7 @@ import {
   Archive,
   Folder,
   Tag,
+  Navigation,
 } from 'lucide-react'
 
 // ============================================================================
