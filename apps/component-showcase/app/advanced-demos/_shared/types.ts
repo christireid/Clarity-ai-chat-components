@@ -57,7 +57,14 @@ export interface ArtifactRef {
   version: number
 }
 
-export type ArtifactType = 'code' | 'document' | 'html' | 'svg' | 'mermaid' | 'table' | 'json'
+export type ArtifactType =
+  | 'code'
+  | 'document'
+  | 'html'
+  | 'svg'
+  | 'mermaid'
+  | 'table'
+  | 'json'
 
 export interface Artifact {
   id: string
@@ -157,9 +164,30 @@ export const MODEL_PROVIDERS: ModelProvider[] = [
     name: 'OpenAI',
     icon: 'O',
     models: [
-      { id: 'gpt-4o', name: 'GPT-4o', description: 'Most capable', contextWindow: 128000, costPer1kInput: 0.005, costPer1kOutput: 0.015 },
-      { id: 'gpt-4-turbo', name: 'GPT-4 Turbo', description: 'Fast & powerful', contextWindow: 128000, costPer1kInput: 0.01, costPer1kOutput: 0.03 },
-      { id: 'gpt-3.5-turbo', name: 'GPT-3.5 Turbo', description: 'Fast & affordable', contextWindow: 16385, costPer1kInput: 0.0005, costPer1kOutput: 0.0015 },
+      {
+        id: 'gpt-4o',
+        name: 'GPT-4o',
+        description: 'Most capable',
+        contextWindow: 128000,
+        costPer1kInput: 0.005,
+        costPer1kOutput: 0.015,
+      },
+      {
+        id: 'gpt-4-turbo',
+        name: 'GPT-4 Turbo',
+        description: 'Fast & powerful',
+        contextWindow: 128000,
+        costPer1kInput: 0.01,
+        costPer1kOutput: 0.03,
+      },
+      {
+        id: 'gpt-3.5-turbo',
+        name: 'GPT-3.5 Turbo',
+        description: 'Fast & affordable',
+        contextWindow: 16385,
+        costPer1kInput: 0.0005,
+        costPer1kOutput: 0.0015,
+      },
     ],
   },
   {
@@ -167,9 +195,30 @@ export const MODEL_PROVIDERS: ModelProvider[] = [
     name: 'Anthropic',
     icon: 'A',
     models: [
-      { id: 'claude-3.5-sonnet', name: 'Claude 3.5 Sonnet', description: 'Best balance', contextWindow: 200000, costPer1kInput: 0.003, costPer1kOutput: 0.015 },
-      { id: 'claude-3-opus', name: 'Claude 3 Opus', description: 'Most powerful', contextWindow: 200000, costPer1kInput: 0.015, costPer1kOutput: 0.075 },
-      { id: 'claude-3-haiku', name: 'Claude 3 Haiku', description: 'Fastest', contextWindow: 200000, costPer1kInput: 0.00025, costPer1kOutput: 0.00125 },
+      {
+        id: 'claude-3.5-sonnet',
+        name: 'Claude 3.5 Sonnet',
+        description: 'Best balance',
+        contextWindow: 200000,
+        costPer1kInput: 0.003,
+        costPer1kOutput: 0.015,
+      },
+      {
+        id: 'claude-3-opus',
+        name: 'Claude 3 Opus',
+        description: 'Most powerful',
+        contextWindow: 200000,
+        costPer1kInput: 0.015,
+        costPer1kOutput: 0.075,
+      },
+      {
+        id: 'claude-3-haiku',
+        name: 'Claude 3 Haiku',
+        description: 'Fastest',
+        contextWindow: 200000,
+        costPer1kInput: 0.00025,
+        costPer1kOutput: 0.00125,
+      },
     ],
   },
   {
@@ -177,8 +226,22 @@ export const MODEL_PROVIDERS: ModelProvider[] = [
     name: 'Google',
     icon: 'G',
     models: [
-      { id: 'gemini-2.0-flash', name: 'Gemini 2.0 Flash', description: 'Fast & efficient', contextWindow: 1048576, costPer1kInput: 0.0001, costPer1kOutput: 0.0004 },
-      { id: 'gemini-1.5-pro', name: 'Gemini 1.5 Pro', description: 'Advanced reasoning', contextWindow: 2097152, costPer1kInput: 0.00125, costPer1kOutput: 0.005 },
+      {
+        id: 'gemini-2.0-flash',
+        name: 'Gemini 2.0 Flash',
+        description: 'Fast & efficient',
+        contextWindow: 1048576,
+        costPer1kInput: 0.0001,
+        costPer1kOutput: 0.0004,
+      },
+      {
+        id: 'gemini-1.5-pro',
+        name: 'Gemini 1.5 Pro',
+        description: 'Advanced reasoning',
+        contextWindow: 2097152,
+        costPer1kInput: 0.00125,
+        costPer1kOutput: 0.005,
+      },
     ],
   },
 ]
@@ -194,7 +257,10 @@ export function simulateStreaming(
   const interval = setInterval(() => {
     if (index < text.length) {
       // Stream 1-3 characters at a time for more natural feel
-      const chunkSize = Math.min(1 + Math.floor(Math.random() * 2), text.length - index)
+      const chunkSize = Math.min(
+        1 + Math.floor(Math.random() * 2),
+        text.length - index
+      )
       onChunk(text.slice(index, index + chunkSize))
       index += chunkSize
     } else {
@@ -225,4 +291,14 @@ export function estimateTokens(text: string): number {
 
 export function estimateCost(tokens: number, costPer1k: number): string {
   return `$${((tokens / 1000) * costPer1k).toFixed(4)}`
+}
+
+// Escape HTML entities to prevent XSS when rendering user content
+export function escapeHtml(text: string): string {
+  return text
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;')
 }

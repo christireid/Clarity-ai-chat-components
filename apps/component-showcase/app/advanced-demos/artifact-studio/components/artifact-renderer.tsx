@@ -267,10 +267,7 @@ function DocumentRenderer({ content }: { content: string }) {
       if (/^---+$/.test(line.trim())) {
         flushList()
         elements.push(
-          <hr
-            key={`hr-${i}`}
-            className="my-4 border-t border-border/50"
-          />
+          <hr key={`hr-${i}`} className="my-4 border-t border-border/50" />
         )
         continue
       }
@@ -348,10 +345,7 @@ function DocumentRenderer({ content }: { content: string }) {
                       className="border-b border-border/30 last:border-0"
                     >
                       {row.map((cell, ci) => (
-                        <td
-                          key={ci}
-                          className="px-3 py-2 text-foreground/80"
-                        >
+                        <td key={ci} className="px-3 py-2 text-foreground/80">
                           {renderInline(cell)}
                         </td>
                       ))}
@@ -374,7 +368,10 @@ function DocumentRenderer({ content }: { content: string }) {
       // Paragraph
       flushList()
       elements.push(
-        <p key={`p-${i}`} className="text-sm text-foreground/80 my-1.5 leading-relaxed">
+        <p
+          key={`p-${i}`}
+          className="text-sm text-foreground/80 my-1.5 leading-relaxed"
+        >
           {renderInline(line)}
         </p>
       )
@@ -462,9 +459,7 @@ function renderInline(text: string): React.ReactNode {
       parts.push(<span key={key++}>{remaining[0]}</span>)
       remaining = remaining.slice(1)
     } else {
-      parts.push(
-        <span key={key++}>{remaining.slice(0, nextSpecial)}</span>
-      )
+      parts.push(<span key={key++}>{remaining.slice(0, nextSpecial)}</span>)
       remaining = remaining.slice(nextSpecial)
     }
   }
@@ -472,7 +467,7 @@ function renderInline(text: string): React.ReactNode {
   return <>{parts}</>
 }
 
-// HTML renderer
+// HTML renderer - uses sandboxed iframe to prevent XSS from artifact content
 function HtmlRenderer({ content }: { content: string }) {
   return (
     <div className="rounded-xl overflow-hidden border border-border/50">
@@ -486,16 +481,19 @@ function HtmlRenderer({ content }: { content: string }) {
           preview
         </span>
       </div>
-      <div
-        className="bg-white min-h-[200px]"
-        dangerouslySetInnerHTML={{ __html: content }}
+      <iframe
+        srcDoc={content}
+        sandbox=""
+        className="bg-white min-h-[200px] w-full border-0"
+        title="HTML Preview"
       />
     </div>
   )
 }
 
-// SVG renderer
+// SVG renderer - uses sandboxed iframe to prevent XSS from SVG content
 function SvgRenderer({ content }: { content: string }) {
+  const svgDoc = `<!DOCTYPE html><html><body style="display:flex;align-items:center;justify-content:center;min-height:200px;margin:0;padding:24px">${content}</body></html>`
   return (
     <div className="rounded-xl overflow-hidden border border-border/50">
       <div className="flex items-center gap-2 px-3 py-2 bg-muted/30 border-b border-border/50">
@@ -504,9 +502,11 @@ function SvgRenderer({ content }: { content: string }) {
           SVG Preview
         </span>
       </div>
-      <div
-        className="bg-white p-6 flex items-center justify-center min-h-[200px]"
-        dangerouslySetInnerHTML={{ __html: content }}
+      <iframe
+        srcDoc={svgDoc}
+        sandbox=""
+        className="bg-white min-h-[200px] w-full border-0"
+        title="SVG Preview"
       />
     </div>
   )
@@ -544,8 +544,9 @@ function MermaidRenderer({ content }: { content: string }) {
   )
 }
 
-// Table renderer
+// Table renderer - uses sandboxed iframe to prevent XSS from table content
 function TableRenderer({ content }: { content: string }) {
+  const tableDoc = `<!DOCTYPE html><html><body style="margin:0;background:#0f172a;overflow-x:auto">${content}</body></html>`
   return (
     <div className="rounded-xl overflow-hidden border border-border/50">
       <div className="flex items-center gap-2 px-3 py-2 bg-muted/30 border-b border-border/50">
@@ -554,9 +555,11 @@ function TableRenderer({ content }: { content: string }) {
           Data Table
         </span>
       </div>
-      <div
-        className="overflow-x-auto bg-[#0f172a]"
-        dangerouslySetInnerHTML={{ __html: content }}
+      <iframe
+        srcDoc={tableDoc}
+        sandbox=""
+        className="overflow-x-auto min-h-[150px] w-full border-0"
+        title="Table Preview"
       />
     </div>
   )
@@ -584,9 +587,7 @@ function JsonRenderer({ content }: { content: string }) {
       return renderJsonValue(parsed, '', 0, collapsedPaths, togglePath)
     } catch {
       // If invalid JSON, show as formatted text
-      return (
-        <pre className="text-xs text-gray-200 font-mono">{content}</pre>
-      )
+      return <pre className="text-xs text-gray-200 font-mono">{content}</pre>
     }
   }, [content, collapsedPaths])
 
@@ -615,9 +616,7 @@ function renderJsonValue(
 
   if (value === null) return <span className="text-orange-400">null</span>
   if (typeof value === 'boolean')
-    return (
-      <span className="text-orange-400">{value ? 'true' : 'false'}</span>
-    )
+    return <span className="text-orange-400">{value ? 'true' : 'false'}</span>
   if (typeof value === 'number')
     return <span className="text-cyan-400">{value}</span>
   if (typeof value === 'string')
@@ -640,10 +639,7 @@ function renderJsonValue(
         </button>
         <span className="text-gray-400">[</span>
         {isCollapsed ? (
-          <span className="text-gray-500">
-            {' '}
-            {value.length} items{' '}
-          </span>
+          <span className="text-gray-500"> {value.length} items </span>
         ) : (
           <>
             {'\n'}
@@ -690,10 +686,7 @@ function renderJsonValue(
         </button>
         <span className="text-gray-400">{'{'}</span>
         {isCollapsed ? (
-          <span className="text-gray-500">
-            {' '}
-            {entries.length} keys{' '}
-          </span>
+          <span className="text-gray-500"> {entries.length} keys </span>
         ) : (
           <>
             {'\n'}

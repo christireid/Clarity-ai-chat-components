@@ -2,22 +2,55 @@
 
 import { useState } from 'react'
 import { cn } from '@clarity-chat/primitives'
-import { Download, FileText, Code, FileJson, X, Check, File } from 'lucide-react'
+import {
+  Download,
+  FileText,
+  Code,
+  FileJson,
+  X,
+  Check,
+  File,
+} from 'lucide-react'
 
 interface ExportDialogProps {
   open: boolean
   onClose: () => void
   onExport: (format: string) => void
-  formats?: Array<{ id: string; label: string; description: string; icon: React.ReactNode }>
+  formats?: Array<{
+    id: string
+    label: string
+    description: string
+    icon: React.ReactNode
+  }>
 }
 
 const defaultFormats = [
-  { id: 'markdown', label: 'Markdown', description: 'Formatted with headers and code blocks', icon: <FileText className="h-4 w-4" /> },
-  { id: 'json', label: 'JSON', description: 'Structured data with full metadata', icon: <FileJson className="h-4 w-4" /> },
-  { id: 'text', label: 'Plain Text', description: 'Simple text without formatting', icon: <File className="h-4 w-4" /> },
+  {
+    id: 'markdown',
+    label: 'Markdown',
+    description: 'Formatted with headers and code blocks',
+    icon: <FileText className="h-4 w-4" />,
+  },
+  {
+    id: 'json',
+    label: 'JSON',
+    description: 'Structured data with full metadata',
+    icon: <FileJson className="h-4 w-4" />,
+  },
+  {
+    id: 'text',
+    label: 'Plain Text',
+    description: 'Simple text without formatting',
+    icon: <File className="h-4 w-4" />,
+  },
 ]
 
-export function ChatExportDialog({ open, onClose, onExport, formats = defaultFormats }: ExportDialogProps) {
+export function ChatExportDialog({
+  open,
+  onClose,
+  onExport,
+  formats = defaultFormats,
+}: ExportDialogProps) {
   const [selected, setSelected] = useState(formats[0]?.id || 'markdown')
   const [exported, setExported] = useState(false)
 
@@ -26,24 +59,38 @@ export function ChatExportDialog({ open, onClose, onExport, formats = defaultFor
   const handleExport = () => {
     onExport(selected)
     setExported(true)
-    setTimeout(() => { setExported(false); onClose() }, 1500)
+    setTimeout(() => {
+      setExported(false)
+      onClose()
+    }, 1500)
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm animate-in fade-in duration-200">
-      <div className="w-full max-w-md rounded-2xl border bg-card shadow-2xl p-6 animate-in zoom-in-95 duration-200">
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm animate-in fade-in duration-200"
+      onClick={onClose}
+    >
+      <div
+        className="w-full max-w-md rounded-2xl border bg-card shadow-2xl p-6 animate-in zoom-in-95 duration-200"
+        onClick={(e) => e.stopPropagation()}
+      >
         <div className="flex items-center justify-between mb-4">
           <div>
             <h3 className="font-semibold text-lg">Export Conversation</h3>
-            <p className="text-sm text-muted-foreground">Choose an export format</p>
+            <p className="text-sm text-muted-foreground">
+              Choose an export format
+            </p>
           </div>
-          <button onClick={onClose} className="p-1.5 rounded-lg hover:bg-muted transition-colors">
+          <button
+            onClick={onClose}
+            className="p-1.5 rounded-lg hover:bg-muted transition-colors"
+          >
             <X className="h-4 w-4" />
           </button>
         </div>
 
         <div className="space-y-2 mb-6">
-          {formats.map(format => (
+          {formats.map((format) => (
             <button
               key={format.id}
               onClick={() => setSelected(format.id)}
@@ -54,15 +101,21 @@ export function ChatExportDialog({ open, onClose, onExport, formats = defaultFor
                   : 'hover:bg-muted/50'
               )}
             >
-              <div className={cn(
-                'w-8 h-8 rounded-lg flex items-center justify-center',
-                selected === format.id ? 'bg-primary/20 text-primary' : 'bg-muted text-muted-foreground'
-              )}>
+              <div
+                className={cn(
+                  'w-8 h-8 rounded-lg flex items-center justify-center',
+                  selected === format.id
+                    ? 'bg-primary/20 text-primary'
+                    : 'bg-muted text-muted-foreground'
+                )}
+              >
                 {format.icon}
               </div>
               <div className="flex-1">
                 <div className="text-sm font-medium">{format.label}</div>
-                <div className="text-xs text-muted-foreground">{format.description}</div>
+                <div className="text-xs text-muted-foreground">
+                  {format.description}
+                </div>
               </div>
               {selected === format.id && (
                 <Check className="h-4 w-4 text-primary" />

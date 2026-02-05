@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef, useEffect, useCallback } from 'react'
+import { useState, useRef, useEffect, useCallback, useMemo } from 'react'
 import { PageHeader } from '@/components/component-section'
 import { cn } from '@clarity-chat/primitives'
 import {
@@ -9,13 +9,11 @@ import {
   Settings,
   Download,
   Slash,
-  AtSign,
   Loader2,
   Bot,
   User,
   PanelRight,
   PanelRightClose,
-  Sparkles,
 } from 'lucide-react'
 
 import {
@@ -42,9 +40,13 @@ import {
   simulateStreaming,
   formatTimestamp,
   estimateTokens,
+  escapeHtml,
 } from '../_shared'
 
-import { ResearchPipeline, type PipelineStep } from './components/research-pipeline'
+import {
+  ResearchPipeline,
+  type PipelineStep,
+} from './components/research-pipeline'
 import { MCPManager as MCPManagerPanel } from './components/mcp-manager'
 import { ToolExecutionCard } from './components/tool-cards'
 import { SourceDisplay } from './components/source-display'
@@ -55,14 +57,48 @@ import { ResearchWelcomeScreen } from './components/welcome-screen'
 export const dynamic = 'force-dynamic'
 
 function createConversation(): Conversation {
-  return { id: generateId(), title: 'New Research', messages: [], createdAt: new Date(), updatedAt: new Date() }
+  return {
+    id: generateId(),
+    title: 'New Research',
+    messages: [],
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  }
 }
 
 const defaultMCPServers: MCPServer[] = [
-  { id: '1', name: 'Web Search MCP', endpoint: 'https://search.mcp.local:3001', status: 'connected', enabled: true, tools: ['web_search', 'image_search'] },
-  { id: '2', name: 'Code Execution MCP', endpoint: 'https://code.mcp.local:3002', status: 'connected', enabled: true, tools: ['run_python', 'run_javascript'] },
-  { id: '3', name: 'Database MCP', endpoint: 'https://db.mcp.local:3003', status: 'disconnected', enabled: false, tools: ['query_db', 'schema_info'] },
-  { id: '4', name: 'File System MCP', endpoint: 'https://fs.mcp.local:3004', status: 'connected', enabled: true, tools: ['read_file', 'list_dir'] },
+  {
+    id: '1',
+    name: 'Web Search MCP',
+    endpoint: 'https://search.mcp.local:3001',
+    status: 'connected',
+    enabled: true,
+    tools: ['web_search', 'image_search'],
+  },
+  {
+    id: '2',
+    name: 'Code Execution MCP',
+    endpoint: 'https://code.mcp.local:3002',
+    status: 'connected',
+    enabled: true,
+    tools: ['run_python', 'run_javascript'],
+  },
+  {
+    id: '3',
+    name: 'Database MCP',
+    endpoint: 'https://db.mcp.local:3003',
+    status: 'disconnected',
+    enabled: false,
+    tools: ['query_db', 'schema_info'],
+  },
+  {
+    id: '4',
+    name: 'File System MCP',
+    endpoint: 'https://fs.mcp.local:3004',
+    status: 'connected',
+    enabled: true,
+    tools: ['read_file', 'list_dir'],
+  },
 ]
 
 const defaultPrompts: SavedPrompt[] = [
@@ -73,28 +109,100 @@ const defaultPrompts: SavedPrompt[] = [
 ]
 
 const researchSources: Source[] = [
-  { id: 's1', title: 'Building Effective RAG Systems in Production', url: 'https://arxiv.org/abs/2312.10997', excerpt: 'A comprehensive guide to retrieval-augmented generation systems, covering chunking strategies, embedding models, and retrieval optimization.', type: 'academic', relevance: 95 },
-  { id: 's2', title: 'React Chat UI Libraries Comparison 2025', url: 'https://dev.to/react-chat-comparison-2025', excerpt: 'An in-depth comparison of the top React chat libraries including Clarity Chat, Stream Chat, and Chatscope.', type: 'web', relevance: 88 },
-  { id: 's3', title: 'Clarity Chat Components Documentation', url: 'https://docs.clarity-chat.dev', excerpt: 'Official documentation for the Clarity Chat component library with 180+ components for AI interfaces.', type: 'documentation', relevance: 92 },
-  { id: 's4', title: 'AI Framework Market Analysis Q4 2024', url: 'https://techcrunch.com/ai-frameworks-2024', excerpt: 'Market analysis showing rapid adoption of AI-native development tools and their impact on software engineering.', type: 'news', relevance: 82 },
-  { id: 's5', title: 'Model Context Protocol Specification', url: 'https://modelcontextprotocol.io/spec', excerpt: 'The official MCP specification enabling standardized communication between AI models and external tools.', type: 'documentation', relevance: 90 },
-  { id: 's6', title: 'Streaming Architectures for Real-time AI', url: 'https://stackoverflow.com/questions/streaming-ai', excerpt: 'Community discussion on implementing SSE and WebSocket streaming for AI chat applications.', type: 'forum', relevance: 78 },
+  {
+    id: 's1',
+    title: 'Building Effective RAG Systems in Production',
+    url: 'https://arxiv.org/abs/2312.10997',
+    excerpt:
+      'A comprehensive guide to retrieval-augmented generation systems, covering chunking strategies, embedding models, and retrieval optimization.',
+    type: 'academic',
+    relevance: 95,
+  },
+  {
+    id: 's2',
+    title: 'React Chat UI Libraries Comparison 2025',
+    url: 'https://dev.to/react-chat-comparison-2025',
+    excerpt:
+      'An in-depth comparison of the top React chat libraries including Clarity Chat, Stream Chat, and Chatscope.',
+    type: 'web',
+    relevance: 88,
+  },
+  {
+    id: 's3',
+    title: 'Clarity Chat Components Documentation',
+    url: 'https://docs.clarity-chat.dev',
+    excerpt:
+      'Official documentation for the Clarity Chat component library with 180+ components for AI interfaces.',
+    type: 'documentation',
+    relevance: 92,
+  },
+  {
+    id: 's4',
+    title: 'AI Framework Market Analysis Q4 2024',
+    url: 'https://techcrunch.com/ai-frameworks-2024',
+    excerpt:
+      'Market analysis showing rapid adoption of AI-native development tools and their impact on software engineering.',
+    type: 'news',
+    relevance: 82,
+  },
+  {
+    id: 's5',
+    title: 'Model Context Protocol Specification',
+    url: 'https://modelcontextprotocol.io/spec',
+    excerpt:
+      'The official MCP specification enabling standardized communication between AI models and external tools.',
+    type: 'documentation',
+    relevance: 90,
+  },
+  {
+    id: 's6',
+    title: 'Streaming Architectures for Real-time AI',
+    url: 'https://stackoverflow.com/questions/streaming-ai',
+    excerpt:
+      'Community discussion on implementing SSE and WebSocket streaming for AI chat applications.',
+    type: 'forum',
+    relevance: 78,
+  },
 ]
 
-function generateResearchResponse(query: string, isDeepResearch: boolean): {
+function generateResearchResponse(
+  query: string,
+  isDeepResearch: boolean
+): {
   response: string
   sources: Source[]
   tools: ToolExecution[]
   thinkingSteps: string[]
 } {
   const tools: ToolExecution[] = [
-    { id: generateId(), name: 'web_search', status: 'completed', input: `Searching: "${query.slice(0, 50)}"`, output: `Found ${3 + Math.floor(Math.random() * 5)} relevant results`, duration: `${(0.8 + Math.random()).toFixed(1)}s` },
+    {
+      id: generateId(),
+      name: 'web_search',
+      status: 'completed',
+      input: `Searching: "${query.slice(0, 50)}"`,
+      output: `Found ${3 + Math.floor(Math.random() * 5)} relevant results`,
+      duration: `${(0.8 + Math.random()).toFixed(1)}s`,
+    },
   ]
 
   if (isDeepResearch) {
     tools.push(
-      { id: generateId(), name: 'url_reader', status: 'completed', input: 'Reading top 3 sources...', output: 'Extracted 2,400 words from 3 documents', duration: `${(1.2 + Math.random()).toFixed(1)}s` },
-      { id: generateId(), name: 'code_interpreter', status: 'completed', input: 'Analyzing data patterns...', output: 'Analysis complete: 4 key findings identified', duration: `${(0.5 + Math.random()).toFixed(1)}s` },
+      {
+        id: generateId(),
+        name: 'url_reader',
+        status: 'completed',
+        input: 'Reading top 3 sources...',
+        output: 'Extracted 2,400 words from 3 documents',
+        duration: `${(1.2 + Math.random()).toFixed(1)}s`,
+      },
+      {
+        id: generateId(),
+        name: 'code_interpreter',
+        status: 'completed',
+        input: 'Analyzing data patterns...',
+        output: 'Analysis complete: 4 key findings identified',
+        duration: `${(0.5 + Math.random()).toFixed(1)}s`,
+      }
     )
   }
 
@@ -164,7 +272,10 @@ Would you like me to dive deeper into any of these areas?`
 
 Here's what I found based on ${selectedSources.length} sources:
 
-${selectedSources.slice(0, 3).map((s, i) => `**${s.title}** [${i + 1}]: ${s.excerpt}`).join('\n\n')}
+${selectedSources
+  .slice(0, 3)
+  .map((s, i) => `**${s.title}** [${i + 1}]: ${s.excerpt}`)
+  .join('\n\n')}
 
 ### Summary
 
@@ -183,25 +294,35 @@ export default function DeepResearchAssistantPage() {
   const [model, setModel] = useState('gpt-4o')
   const [apiKey, setApiKey] = useState('')
 
-  const [conversations, setConversations] = useState<Conversation[]>([createConversation()])
+  const [conversations, setConversations] = useState<Conversation[]>([
+    createConversation(),
+  ])
   const [activeConvId, setActiveConvId] = useState(conversations[0].id)
-  const [savedPrompts, setSavedPrompts] = useState<SavedPrompt[]>(defaultPrompts)
+  const [savedPrompts, setSavedPrompts] =
+    useState<SavedPrompt[]>(defaultPrompts)
   const [mcpServers, setMcpServers] = useState<MCPServer[]>(defaultMCPServers)
 
   const [memorySettings, setMemorySettings] = useState<MemorySettings>({
-    enabled: true, strategy: 'vector-store', maxTokens: 8192, usage: 2340,
-    rememberFindings: true, crossReference: true,
+    enabled: true,
+    strategy: 'vector-store',
+    maxTokens: 8192,
+    usage: 2340,
+    rememberFindings: true,
+    crossReference: true,
   })
   const [tokenSettings, setTokenSettings] = useState<TokenSettings>({
     optimizationEnabled: true,
     techniques: { compression: true, summarization: true, pruning: false },
-    budget: 16000, used: { input: 3200, output: 1890, total: 5090 },
+    budget: 16000,
+    used: { input: 3200, output: 1890, total: 5090 },
     showExpenditure: true,
   })
 
   // Research context
   const [researchFocus, setResearchFocus] = useState('')
-  const [preferredSources, setPreferredSources] = useState<Record<string, boolean>>({ academic: true, documentation: true, news: true, forums: false })
+  const [preferredSources, setPreferredSources] = useState<
+    Record<string, boolean>
+  >({ academic: true, documentation: true, news: true, forums: false })
   const [depthLevel, setDepthLevel] = useState(1)
   const [deepResearchMode, setDeepResearchMode] = useState(false)
   const [contextFiles, setContextFiles] = useState<FileAttachment[]>([])
@@ -212,7 +333,9 @@ export default function DeepResearchAssistantPage() {
   const [streamingText, setStreamingText] = useState('')
   const [activeThinking, setActiveThinking] = useState<ThinkingStep[]>([])
   const [isThinking, setIsThinking] = useState(false)
-  const [activePipeline, setActivePipeline] = useState<PipelineStep[] | null>(null)
+  const [activePipeline, setActivePipeline] = useState<PipelineStep[] | null>(
+    null
+  )
   const [activeTools, setActiveTools] = useState<ToolExecution[]>([])
   const [showExport, setShowExport] = useState(false)
   const [showSettings, setShowSettings] = useState(false)
@@ -222,33 +345,54 @@ export default function DeepResearchAssistantPage() {
   const [settingsTemp, setSettingsTemp] = useState(0.3)
   const [settingsMaxTokens, setSettingsMaxTokens] = useState(4096)
   const [settingsCodeTheme, setSettingsCodeTheme] = useState('monokai')
-  const [settingsResponseLength, setSettingsResponseLength] = useState('detailed')
+  const [settingsResponseLength, setSettingsResponseLength] =
+    useState('detailed')
   const [editingMessageId, setEditingMessageId] = useState<string | null>(null)
   const [editingText, setEditingText] = useState('')
 
   const scrollRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLTextAreaElement>(null)
 
-  const activeConversation = conversations.find(c => c.id === activeConvId) || conversations[0]
-  const messages = activeConversation?.messages || []
+  const activeConversation =
+    conversations.find((c) => c.id === activeConvId) || conversations[0]
+  const messages = useMemo(
+    () => activeConversation?.messages ?? [],
+    [activeConversation?.messages]
+  )
 
   useEffect(() => {
-    if (scrollRef.current) scrollRef.current.scrollTop = scrollRef.current.scrollHeight
+    if (scrollRef.current)
+      scrollRef.current.scrollTop = scrollRef.current.scrollHeight
   }, [messages, streamingText, activeThinking, activePipeline])
 
-  const updateMessages = useCallback((newMessages: ChatMessage[]) => {
-    setConversations(prev => prev.map(c =>
-      c.id === activeConvId ? { ...c, messages: newMessages, updatedAt: new Date() } : c
-    ))
-  }, [activeConvId])
+  const updateMessages = useCallback(
+    (newMessages: ChatMessage[]) => {
+      setConversations((prev) =>
+        prev.map((c) =>
+          c.id === activeConvId
+            ? { ...c, messages: newMessages, updatedAt: new Date() }
+            : c
+        )
+      )
+    },
+    [activeConvId]
+  )
 
   // Slash commands
   const slashCommands = [
-    { id: 'research', label: '/research', description: 'Deep research on a topic' },
+    {
+      id: 'research',
+      label: '/research',
+      description: 'Deep research on a topic',
+    },
     { id: 'search', label: '/search', description: 'Quick web search' },
     { id: 'analyze', label: '/analyze', description: 'Analyze a URL' },
     { id: 'compare', label: '/compare', description: 'Compare two things' },
-    { id: 'summarize', label: '/summarize', description: 'Summarize conversation' },
+    {
+      id: 'summarize',
+      label: '/summarize',
+      description: 'Summarize conversation',
+    },
     { id: 'sources', label: '/sources', description: 'Show all sources' },
     { id: 'tools', label: '/tools', description: 'List available tools' },
   ]
@@ -257,11 +401,18 @@ export default function DeepResearchAssistantPage() {
     const text = overrideText || input.trim()
     if (!text || isStreaming) return
 
-    const isResearch = deepResearchMode || text.startsWith('/research') || depthLevel === 2
-    const cleanText = text.replace(/^\/research\s*/, '').replace(/^\/search\s*/, '')
+    const isResearch =
+      deepResearchMode || text.startsWith('/research') || depthLevel === 2
+    const cleanText = text
+      .replace(/^\/research\s*/, '')
+      .replace(/^\/search\s*/, '')
 
     const userMessage: ChatMessage = {
-      id: generateId(), role: 'user', content: text, timestamp: new Date(), status: 'sent',
+      id: generateId(),
+      role: 'user',
+      content: text,
+      timestamp: new Date(),
+      status: 'sent',
     }
     const newMessages = [...messages, userMessage]
     updateMessages(newMessages)
@@ -271,42 +422,96 @@ export default function DeepResearchAssistantPage() {
     setActiveThinking([])
     setActiveTools([])
 
-    const { response, sources, tools, thinkingSteps } = generateResearchResponse(cleanText || text, isResearch)
+    // Local array to track thinking steps (avoids stale closure in streaming callback)
+    const localThinking: ThinkingStep[] = []
+
+    const { response, sources, tools, thinkingSteps } =
+      generateResearchResponse(cleanText || text, isResearch)
 
     // Simulate pipeline for deep research
     if (isResearch) {
       const steps: PipelineStep[] = [
-        { id: '1', label: 'Planning', description: 'Planning research strategy', status: 'active' },
-        { id: '2', label: 'Searching', description: 'Searching sources', status: 'pending' },
-        { id: '3', label: 'Reading', description: 'Reading & extracting', status: 'pending' },
-        { id: '4', label: 'Cross-referencing', description: 'Cross-referencing findings', status: 'pending' },
-        { id: '5', label: 'Synthesizing', description: 'Synthesizing response', status: 'pending' },
+        {
+          id: '1',
+          label: 'Planning',
+          description: 'Planning research strategy',
+          status: 'active',
+        },
+        {
+          id: '2',
+          label: 'Searching',
+          description: 'Searching sources',
+          status: 'pending',
+        },
+        {
+          id: '3',
+          label: 'Reading',
+          description: 'Reading & extracting',
+          status: 'pending',
+        },
+        {
+          id: '4',
+          label: 'Cross-referencing',
+          description: 'Cross-referencing findings',
+          status: 'pending',
+        },
+        {
+          id: '5',
+          label: 'Synthesizing',
+          description: 'Synthesizing response',
+          status: 'pending',
+        },
       ]
       setActivePipeline(steps)
 
       for (let i = 0; i < steps.length; i++) {
-        await new Promise(r => setTimeout(r, 800 + Math.random() * 500))
-        setActivePipeline(prev => prev!.map((s, idx) => ({
-          ...s,
-          status: idx < i + 1 ? 'completed' as const : idx === i + 1 ? 'active' as const : 'pending' as const,
-        })))
+        await new Promise((r) => setTimeout(r, 800 + Math.random() * 500))
+        setActivePipeline((prev) =>
+          prev!.map((s, idx) => ({
+            ...s,
+            status:
+              idx < i + 1
+                ? ('completed' as const)
+                : idx === i + 1
+                  ? ('active' as const)
+                  : ('pending' as const),
+          }))
+        )
         if (thinkingSteps[i]) {
-          setActiveThinking(prev => [...prev, { id: generateId(), content: thinkingSteps[i], timestamp: new Date() }])
+          const thinkingStep: ThinkingStep = {
+            id: generateId(),
+            content: thinkingSteps[i],
+            timestamp: new Date(),
+          }
+          localThinking.push(thinkingStep)
+          setActiveThinking([...localThinking])
         }
       }
-      setActivePipeline(prev => prev!.map(s => ({ ...s, status: 'completed' as const })))
+      setActivePipeline((prev) =>
+        prev!.map((s) => ({ ...s, status: 'completed' as const }))
+      )
     } else {
       for (const step of thinkingSteps) {
-        await new Promise(r => setTimeout(r, 400))
-        setActiveThinking(prev => [...prev, { id: generateId(), content: step, timestamp: new Date() }])
+        await new Promise((r) => setTimeout(r, 400))
+        const thinkingStep: ThinkingStep = {
+          id: generateId(),
+          content: step,
+          timestamp: new Date(),
+        }
+        localThinking.push(thinkingStep)
+        setActiveThinking([...localThinking])
       }
     }
 
     // Show tool executions
     for (const tool of tools) {
-      setActiveTools(prev => [...prev, { ...tool, status: 'running' }])
-      await new Promise(r => setTimeout(r, 600))
-      setActiveTools(prev => prev.map(t => t.id === tool.id ? { ...t, status: 'completed' as const } : t))
+      setActiveTools((prev) => [...prev, { ...tool, status: 'running' }])
+      await new Promise((r) => setTimeout(r, 600))
+      setActiveTools((prev) =>
+        prev.map((t) =>
+          t.id === tool.id ? { ...t, status: 'completed' as const } : t
+        )
+      )
     }
 
     setIsThinking(false)
@@ -315,7 +520,7 @@ export default function DeepResearchAssistantPage() {
 
     simulateStreaming(
       response,
-      (chunk) => setStreamingText(prev => prev + chunk),
+      (chunk) => setStreamingText((prev) => prev + chunk),
       () => {
         setIsStreaming(false)
         const assistantMessage: ChatMessage = {
@@ -323,7 +528,7 @@ export default function DeepResearchAssistantPage() {
           role: 'assistant',
           content: response,
           timestamp: new Date(),
-          thinking: [...(activeThinking || [])],
+          thinking: localThinking,
           sources,
           tools: [...tools],
           status: 'delivered',
@@ -335,9 +540,13 @@ export default function DeepResearchAssistantPage() {
 
         const inTokens = estimateTokens(text)
         const outTokens = estimateTokens(response)
-        setTokenSettings(prev => ({
+        setTokenSettings((prev) => ({
           ...prev,
-          used: { input: prev.used.input + inTokens, output: prev.used.output + outTokens, total: prev.used.total + inTokens + outTokens }
+          used: {
+            input: prev.used.input + inTokens,
+            output: prev.used.output + outTokens,
+            total: prev.used.total + inTokens + outTokens,
+          },
         }))
       },
       12
@@ -345,25 +554,33 @@ export default function DeepResearchAssistantPage() {
   }
 
   const handleFeedback = (msgId: string, feedback: 'up' | 'down') => {
-    updateMessages(messages.map(m => m.id === msgId ? { ...m, feedback } : m))
+    updateMessages(
+      messages.map((m) => (m.id === msgId ? { ...m, feedback } : m))
+    )
   }
   const handleDeleteMessage = (msgId: string) => {
-    updateMessages(messages.filter(m => m.id !== msgId))
+    updateMessages(messages.filter((m) => m.id !== msgId))
   }
   const handleRegenerate = (msgId: string) => {
-    const idx = messages.findIndex(m => m.id === msgId)
+    const idx = messages.findIndex((m) => m.id === msgId)
     if (idx > 0 && messages[idx - 1]?.role === 'user') {
       updateMessages(messages.slice(0, idx))
       setTimeout(() => handleSend(messages[idx - 1].content), 100)
     }
   }
   const handleEditStart = (msgId: string) => {
-    const msg = messages.find(m => m.id === msgId)
-    if (msg) { setEditingMessageId(msgId); setEditingText(msg.content) }
+    const msg = messages.find((m) => m.id === msgId)
+    if (msg) {
+      setEditingMessageId(msgId)
+      setEditingText(msg.content)
+    }
   }
   const handleEditSave = (msgId: string) => {
-    const idx = messages.findIndex(m => m.id === msgId)
-    updateMessages(messages.slice(0, idx).concat({ ...messages[idx], content: editingText }))
+    const idx = messages.findIndex((m) => m.id === msgId)
+    if (idx === -1) return
+    updateMessages(
+      messages.slice(0, idx).concat({ ...messages[idx], content: editingText })
+    )
     setEditingMessageId(null)
     setTimeout(() => handleSend(editingText), 100)
   }
@@ -380,17 +597,66 @@ export default function DeepResearchAssistantPage() {
       return (
         <div key={i}>
           {part.split('\n').map((line, j) => {
-            if (line.startsWith('## ')) return <h2 key={j} className="text-lg font-bold mt-4 mb-2">{line.slice(3)}</h2>
-            if (line.startsWith('### ')) return <h3 key={j} className="text-base font-semibold mt-3 mb-1">{line.slice(4)}</h3>
+            if (line.startsWith('## '))
+              return (
+                <h2 key={j} className="text-lg font-bold mt-4 mb-2">
+                  {line.slice(3)}
+                </h2>
+              )
+            if (line.startsWith('### '))
+              return (
+                <h3 key={j} className="text-base font-semibold mt-3 mb-1">
+                  {line.slice(4)}
+                </h3>
+              )
             if (line.startsWith('- **')) {
               const end = line.indexOf('**', 4)
-              if (end > 0) return <div key={j} className="flex gap-2 py-0.5"><span className="text-muted-foreground">-</span><span><strong>{line.slice(4, end)}</strong>{line.slice(end + 2)}</span></div>
+              if (end > 0)
+                return (
+                  <div key={j} className="flex gap-2 py-0.5">
+                    <span className="text-muted-foreground">-</span>
+                    <span>
+                      <strong>{line.slice(4, end)}</strong>
+                      {line.slice(end + 2)}
+                    </span>
+                  </div>
+                )
             }
-            if (line.startsWith('- ')) return <div key={j} className="flex gap-2 py-0.5"><span className="text-muted-foreground">-</span><span>{line.slice(2)}</span></div>
-            if (/^\d+\.\s/.test(line)) return <div key={j} className="flex gap-2 py-0.5"><span className="text-muted-foreground font-mono text-xs w-4">{line.match(/^\d+/)?.[0]}.</span><span>{line.replace(/^\d+\.\s/, '')}</span></div>
+            if (line.startsWith('- '))
+              return (
+                <div key={j} className="flex gap-2 py-0.5">
+                  <span className="text-muted-foreground">-</span>
+                  <span>{line.slice(2)}</span>
+                </div>
+              )
+            if (/^\d+\.\s/.test(line))
+              return (
+                <div key={j} className="flex gap-2 py-0.5">
+                  <span className="text-muted-foreground font-mono text-xs w-4">
+                    {line.match(/^\d+/)?.[0]}.
+                  </span>
+                  <span>{line.replace(/^\d+\.\s/, '')}</span>
+                </div>
+              )
             if (line.trim() === '') return <div key={j} className="h-2" />
-            const rendered = line.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/`(.*?)`/g, '<code class="px-1 py-0.5 rounded bg-muted text-sm font-mono">$1</code>').replace(/\[(\d+)\]/g, '<sup class="text-blue-500 font-medium cursor-pointer">[$1]</sup>')
-            return <p key={j} className="py-0.5" dangerouslySetInnerHTML={{ __html: rendered }} />
+            const escaped = escapeHtml(line)
+            const rendered = escaped
+              .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+              .replace(
+                /`(.*?)`/g,
+                '<code class="px-1 py-0.5 rounded bg-muted text-sm font-mono">$1</code>'
+              )
+              .replace(
+                /\[(\d+)\]/g,
+                '<sup class="text-blue-500 font-medium cursor-pointer">[$1]</sup>'
+              )
+            return (
+              <p
+                key={j}
+                className="py-0.5"
+                dangerouslySetInnerHTML={{ __html: rendered }}
+              />
+            )
           })}
         </div>
       )
@@ -407,7 +673,14 @@ export default function DeepResearchAssistantPage() {
       />
 
       <div className="glass-card overflow-hidden border-0 h-[calc(100vh-14rem)]">
-        <ApiKeyBar provider={provider} onProviderChange={setProvider} model={model} onModelChange={setModel} apiKey={apiKey} onApiKeyChange={setApiKey} />
+        <ApiKeyBar
+          provider={provider}
+          onProviderChange={setProvider}
+          model={model}
+          onModelChange={setModel}
+          apiKey={apiKey}
+          onApiKeyChange={setApiKey}
+        />
 
         <div className="flex h-[calc(100%-3rem)]">
           {/* Sidebar */}
@@ -417,18 +690,26 @@ export default function DeepResearchAssistantPage() {
             onSelectConversation={setActiveConvId}
             onNewConversation={() => {
               const c = createConversation()
-              setConversations(prev => [c, ...prev])
+              setConversations((prev) => [c, ...prev])
               setActiveConvId(c.id)
             }}
             onDeleteConversation={(id) => {
               if (conversations.length <= 1) return
-              setConversations(prev => prev.filter(c => c.id !== id))
-              if (id === activeConvId) setActiveConvId(conversations.find(c => c.id !== id)!.id)
+              setConversations((prev) => prev.filter((c) => c.id !== id))
+              if (id === activeConvId)
+                setActiveConvId(conversations.find((c) => c.id !== id)!.id)
             }}
             savedPrompts={savedPrompts}
-            onUsePrompt={(text) => { setInput(text); inputRef.current?.focus() }}
-            onDeletePrompt={(id) => setSavedPrompts(prev => prev.filter(p => p.id !== id))}
-            onSavePrompt={(text) => setSavedPrompts(prev => [...prev, { id: generateId(), text }])}
+            onUsePrompt={(text) => {
+              setInput(text)
+              inputRef.current?.focus()
+            }}
+            onDeletePrompt={(id) =>
+              setSavedPrompts((prev) => prev.filter((p) => p.id !== id))
+            }
+            onSavePrompt={(text) =>
+              setSavedPrompts((prev) => [...prev, { id: generateId(), text }])
+            }
             collapsed={sidebarCollapsed}
             onToggleCollapsed={() => setSidebarCollapsed(!sidebarCollapsed)}
           />
@@ -437,49 +718,109 @@ export default function DeepResearchAssistantPage() {
           <div className="flex-1 flex flex-col min-w-0">
             <div ref={scrollRef} className="flex-1 overflow-y-auto">
               {messages.length === 0 && !isStreaming ? (
-                <ResearchWelcomeScreen onSuggestionClick={(text) => { setInput(text); inputRef.current?.focus() }} />
+                <ResearchWelcomeScreen
+                  onSuggestionClick={(text) => {
+                    setInput(text)
+                    inputRef.current?.focus()
+                  }}
+                />
               ) : (
                 <div className="p-4 space-y-6">
-                  {messages.map(msg => (
-                    <div key={msg.id} className={cn('group flex gap-3', msg.role === 'user' && 'justify-end')}>
+                  {messages.map((msg) => (
+                    <div
+                      key={msg.id}
+                      className={cn(
+                        'group flex gap-3',
+                        msg.role === 'user' && 'justify-end'
+                      )}
+                    >
                       {msg.role === 'assistant' && (
                         <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center shrink-0">
                           <Bot className="h-4 w-4 text-white" />
                         </div>
                       )}
-                      <div className={cn('max-w-[75%] min-w-0', msg.role === 'user' ? 'order-first' : '')}>
-                        {msg.role === 'assistant' && msg.thinking && msg.thinking.length > 0 && (
-                          <ThinkingDisplay steps={msg.thinking} />
+                      <div
+                        className={cn(
+                          'max-w-[75%] min-w-0',
+                          msg.role === 'user' ? 'order-first' : ''
                         )}
-                        {msg.role === 'assistant' && msg.tools && msg.tools.length > 0 && (
-                          <div className="mb-2 space-y-1.5">
-                            {msg.tools.map(tool => <ToolExecutionCard key={tool.id} tool={tool} />)}
-                          </div>
-                        )}
-                        <div className={cn('rounded-2xl px-4 py-3', msg.role === 'user' ? 'bg-primary text-primary-foreground ml-auto' : 'bg-muted/50')}>
+                      >
+                        {msg.role === 'assistant' &&
+                          msg.thinking &&
+                          msg.thinking.length > 0 && (
+                            <ThinkingDisplay steps={msg.thinking} />
+                          )}
+                        {msg.role === 'assistant' &&
+                          msg.tools &&
+                          msg.tools.length > 0 && (
+                            <div className="mb-2 space-y-1.5">
+                              {msg.tools.map((tool) => (
+                                <ToolExecutionCard key={tool.id} tool={tool} />
+                              ))}
+                            </div>
+                          )}
+                        <div
+                          className={cn(
+                            'rounded-2xl px-4 py-3',
+                            msg.role === 'user'
+                              ? 'bg-primary text-primary-foreground ml-auto'
+                              : 'bg-muted/50'
+                          )}
+                        >
                           {editingMessageId === msg.id ? (
                             <div className="space-y-2">
-                              <textarea value={editingText} onChange={e => setEditingText(e.target.value)} className="w-full bg-transparent border rounded-lg p-2 text-sm resize-none focus:outline-none focus:ring-1 focus:ring-primary/50" rows={3} />
+                              <textarea
+                                value={editingText}
+                                onChange={(e) => setEditingText(e.target.value)}
+                                className="w-full bg-transparent border rounded-lg p-2 text-sm resize-none focus:outline-none focus:ring-1 focus:ring-primary/50"
+                                rows={3}
+                              />
                               <div className="flex gap-2 justify-end">
-                                <button onClick={() => setEditingMessageId(null)} className="text-xs px-2 py-1 rounded bg-muted">Cancel</button>
-                                <button onClick={() => handleEditSave(msg.id)} className="text-xs px-2 py-1 rounded bg-primary text-primary-foreground">Save & Resend</button>
+                                <button
+                                  onClick={() => setEditingMessageId(null)}
+                                  className="text-xs px-2 py-1 rounded bg-muted"
+                                >
+                                  Cancel
+                                </button>
+                                <button
+                                  onClick={() => handleEditSave(msg.id)}
+                                  className="text-xs px-2 py-1 rounded bg-primary text-primary-foreground"
+                                >
+                                  Save & Resend
+                                </button>
                               </div>
                             </div>
                           ) : (
-                            <div className="text-sm">{renderContent(msg.content)}</div>
+                            <div className="text-sm">
+                              {renderContent(msg.content)}
+                            </div>
                           )}
                         </div>
-                        {msg.sources && msg.sources.length > 0 && <SourceDisplay sources={msg.sources} />}
+                        {msg.sources && msg.sources.length > 0 && (
+                          <SourceDisplay sources={msg.sources} />
+                        )}
                         <div className="mt-1 flex items-center gap-2">
-                          <span className="text-[10px] text-muted-foreground">{formatTimestamp(msg.timestamp)}</span>
+                          <span className="text-[10px] text-muted-foreground">
+                            {formatTimestamp(msg.timestamp)}
+                          </span>
                           <MessageActions
                             role={msg.role as 'user' | 'assistant'}
                             feedback={msg.feedback}
                             onFeedback={(fb) => handleFeedback(msg.id, fb)}
-                            onCopy={() => navigator.clipboard?.writeText(msg.content)}
-                            onRegenerate={msg.role === 'assistant' ? () => handleRegenerate(msg.id) : undefined}
+                            onCopy={() =>
+                              navigator.clipboard?.writeText(msg.content)
+                            }
+                            onRegenerate={
+                              msg.role === 'assistant'
+                                ? () => handleRegenerate(msg.id)
+                                : undefined
+                            }
                             onDelete={() => handleDeleteMessage(msg.id)}
-                            onEdit={msg.role === 'user' ? () => handleEditStart(msg.id) : undefined}
+                            onEdit={
+                              msg.role === 'user'
+                                ? () => handleEditStart(msg.id)
+                                : undefined
+                            }
                           />
                         </div>
                       </div>
@@ -492,7 +833,9 @@ export default function DeepResearchAssistantPage() {
                   ))}
 
                   {/* Active pipeline */}
-                  {activePipeline && <ResearchPipeline steps={activePipeline} />}
+                  {activePipeline && (
+                    <ResearchPipeline steps={activePipeline} />
+                  )}
 
                   {/* Active tools */}
                   {activeTools.length > 0 && !isStreaming && (
@@ -501,8 +844,12 @@ export default function DeepResearchAssistantPage() {
                         <Bot className="h-4 w-4 text-white" />
                       </div>
                       <div className="space-y-1.5 max-w-[75%]">
-                        {isThinking && <ThinkingDisplay steps={activeThinking} isActive />}
-                        {activeTools.map(t => <ToolExecutionCard key={t.id} tool={t} />)}
+                        {isThinking && (
+                          <ThinkingDisplay steps={activeThinking} isActive />
+                        )}
+                        {activeTools.map((t) => (
+                          <ToolExecutionCard key={t.id} tool={t} />
+                        ))}
                       </div>
                     </div>
                   )}
@@ -513,7 +860,9 @@ export default function DeepResearchAssistantPage() {
                         <Bot className="h-4 w-4 text-white" />
                       </div>
                       <div className="max-w-[75%] rounded-2xl px-4 py-3 bg-muted/50">
-                        <div className="text-sm">{renderContent(streamingText)}</div>
+                        <div className="text-sm">
+                          {renderContent(streamingText)}
+                        </div>
                         <span className="inline-block w-1.5 h-4 bg-primary animate-pulse rounded-sm ml-0.5" />
                       </div>
                     </div>
@@ -526,14 +875,22 @@ export default function DeepResearchAssistantPage() {
             <div className="border-t p-4 bg-card/50 relative">
               {showSlashMenu && (
                 <div className="absolute bottom-full left-4 mb-2 w-64 rounded-xl border bg-card shadow-xl z-50 py-1">
-                  {slashCommands.map(cmd => (
+                  {slashCommands.map((cmd) => (
                     <button
                       key={cmd.id}
-                      onClick={() => { setInput(cmd.label + ' '); setShowSlashMenu(false); inputRef.current?.focus() }}
+                      onClick={() => {
+                        setInput(cmd.label + ' ')
+                        setShowSlashMenu(false)
+                        inputRef.current?.focus()
+                      }}
                       className="flex items-center gap-3 w-full px-3 py-2 text-sm hover:bg-muted transition-colors"
                     >
-                      <span className="font-mono text-xs text-primary">{cmd.label}</span>
-                      <span className="text-muted-foreground text-xs">{cmd.description}</span>
+                      <span className="font-mono text-xs text-primary">
+                        {cmd.label}
+                      </span>
+                      <span className="text-muted-foreground text-xs">
+                        {cmd.description}
+                      </span>
                     </button>
                   ))}
                 </div>
@@ -544,36 +901,85 @@ export default function DeepResearchAssistantPage() {
                   <textarea
                     ref={inputRef}
                     value={input}
-                    onChange={e => {
+                    onChange={(e) => {
                       setInput(e.target.value)
                       setShowSlashMenu(e.target.value.endsWith('/'))
                     }}
-                    onKeyDown={e => {
-                      if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSend() }
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' && !e.shiftKey) {
+                        e.preventDefault()
+                        handleSend()
+                      }
                       if (e.key === 'Escape') setShowSlashMenu(false)
                     }}
-                    placeholder={deepResearchMode ? 'Enter a research topic for deep analysis...' : 'Ask anything... (/ for commands)'}
+                    placeholder={
+                      deepResearchMode
+                        ? 'Enter a research topic for deep analysis...'
+                        : 'Ask anything... (/ for commands)'
+                    }
                     rows={1}
                     className="w-full px-4 py-2.5 pr-20 rounded-xl bg-muted/50 border border-muted-foreground/10 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-primary/30 placeholder:text-muted-foreground/50"
                   />
                   <div className="absolute right-2 bottom-1.5 flex items-center gap-1">
-                    <button onClick={() => setShowSlashMenu(!showSlashMenu)} className="p-1.5 rounded-md hover:bg-muted transition-colors text-muted-foreground"><Slash className="h-3.5 w-3.5" /></button>
-                    <button onClick={() => handleSend()} disabled={!input.trim() || isStreaming} className={cn('p-1.5 rounded-md transition-colors', input.trim() && !isStreaming ? 'bg-primary text-primary-foreground' : 'text-muted-foreground')}>
-                      {isStreaming ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Send className="h-3.5 w-3.5" />}
+                    <button
+                      onClick={() => setShowSlashMenu(!showSlashMenu)}
+                      className="p-1.5 rounded-md hover:bg-muted transition-colors text-muted-foreground"
+                    >
+                      <Slash className="h-3.5 w-3.5" />
+                    </button>
+                    <button
+                      onClick={() => handleSend()}
+                      disabled={!input.trim() || isStreaming}
+                      className={cn(
+                        'p-1.5 rounded-md transition-colors',
+                        input.trim() && !isStreaming
+                          ? 'bg-primary text-primary-foreground'
+                          : 'text-muted-foreground'
+                      )}
+                    >
+                      {isStreaming ? (
+                        <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                      ) : (
+                        <Send className="h-3.5 w-3.5" />
+                      )}
                     </button>
                   </div>
                 </div>
               </div>
               <div className="flex items-center justify-between mt-2 text-[10px] text-muted-foreground">
                 <div className="flex items-center gap-2">
-                  {deepResearchMode && <span className="px-1.5 py-0.5 rounded bg-blue-500/10 text-blue-500 font-medium">Deep Research ON</span>}
-                  <span>{mcpServers.filter(s => s.status === 'connected').length} MCP servers connected</span>
+                  {deepResearchMode && (
+                    <span className="px-1.5 py-0.5 rounded bg-blue-500/10 text-blue-500 font-medium">
+                      Deep Research ON
+                    </span>
+                  )}
+                  <span>
+                    {mcpServers.filter((s) => s.status === 'connected').length}{' '}
+                    MCP servers connected
+                  </span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <button onClick={() => setShowExport(true)} className="flex items-center gap-1 hover:text-foreground transition-colors"><Download className="h-3 w-3" /> Export</button>
-                  <button onClick={() => setShowSettings(true)} className="flex items-center gap-1 hover:text-foreground transition-colors"><Settings className="h-3 w-3" /> Settings</button>
-                  <button onClick={() => setRightPanelOpen(!rightPanelOpen)} className="hover:text-foreground transition-colors">
-                    {rightPanelOpen ? <PanelRightClose className="h-3 w-3" /> : <PanelRight className="h-3 w-3" />}
+                  <button
+                    onClick={() => setShowExport(true)}
+                    className="flex items-center gap-1 hover:text-foreground transition-colors"
+                  >
+                    <Download className="h-3 w-3" /> Export
+                  </button>
+                  <button
+                    onClick={() => setShowSettings(true)}
+                    className="flex items-center gap-1 hover:text-foreground transition-colors"
+                  >
+                    <Settings className="h-3 w-3" /> Settings
+                  </button>
+                  <button
+                    onClick={() => setRightPanelOpen(!rightPanelOpen)}
+                    className="hover:text-foreground transition-colors"
+                  >
+                    {rightPanelOpen ? (
+                      <PanelRightClose className="h-3 w-3" />
+                    ) : (
+                      <PanelRight className="h-3 w-3" />
+                    )}
                   </button>
                 </div>
               </div>
@@ -583,17 +989,24 @@ export default function DeepResearchAssistantPage() {
           {/* Right Panel */}
           {rightPanelOpen && (
             <div className="w-72 border-l bg-card/30 overflow-y-auto p-4 space-y-6 shrink-0">
-              <MCPManagerPanel servers={mcpServers} onServersChange={setMcpServers} />
+              <MCPManagerPanel
+                servers={mcpServers}
+                onServersChange={setMcpServers}
+              />
               <div className="h-px bg-border" />
               <ResearchContextPanel
                 researchFocus={researchFocus}
                 onResearchFocusChange={setResearchFocus}
                 preferredSources={preferredSources}
-                onToggleSource={(s) => setPreferredSources(prev => ({ ...prev, [s]: !prev[s] }))}
+                onToggleSource={(s) =>
+                  setPreferredSources((prev) => ({ ...prev, [s]: !prev[s] }))
+                }
                 depthLevel={depthLevel}
                 onDepthLevelChange={setDepthLevel}
                 deepResearchMode={deepResearchMode}
-                onToggleDeepResearch={() => setDeepResearchMode(!deepResearchMode)}
+                onToggleDeepResearch={() =>
+                  setDeepResearchMode(!deepResearchMode)
+                }
                 files={contextFiles}
                 onFilesChange={setContextFiles}
               />
@@ -602,16 +1015,33 @@ export default function DeepResearchAssistantPage() {
                 settings={memorySettings}
                 onUpdate={setMemorySettings}
                 extraToggles={[
-                  { key: 'findings', label: 'Remember findings', checked: memorySettings.rememberFindings || false },
-                  { key: 'crossRef', label: 'Cross-reference research', checked: memorySettings.crossReference || false },
+                  {
+                    key: 'findings',
+                    label: 'Remember findings',
+                    checked: memorySettings.rememberFindings || false,
+                  },
+                  {
+                    key: 'crossRef',
+                    label: 'Cross-reference research',
+                    checked: memorySettings.crossReference || false,
+                  },
                 ]}
-                onExtraToggle={(key) => setMemorySettings(prev => ({
-                  ...prev,
-                  [key === 'findings' ? 'rememberFindings' : 'crossReference']: !(key === 'findings' ? prev.rememberFindings : prev.crossReference)
-                }))}
+                onExtraToggle={(key) =>
+                  setMemorySettings((prev) => ({
+                    ...prev,
+                    [key === 'findings'
+                      ? 'rememberFindings'
+                      : 'crossReference']: !(key === 'findings'
+                      ? prev.rememberFindings
+                      : prev.crossReference),
+                  }))
+                }
               />
               <div className="h-px bg-border" />
-              <TokenPanel settings={tokenSettings} onUpdate={setTokenSettings} />
+              <TokenPanel
+                settings={tokenSettings}
+                onUpdate={setTokenSettings}
+              />
             </div>
           )}
         </div>
@@ -622,17 +1052,37 @@ export default function DeepResearchAssistantPage() {
         onClose={() => setShowExport(false)}
         onExport={() => {}}
         formats={[
-          { id: 'report', label: 'Research Report', description: 'Markdown with citations and sources', icon: <Globe className="h-4 w-4" /> },
-          { id: 'json', label: 'JSON', description: 'Full structured data', icon: <Download className="h-4 w-4" /> },
-          { id: 'markdown', label: 'Markdown', description: 'Plain markdown format', icon: <Download className="h-4 w-4" /> },
+          {
+            id: 'report',
+            label: 'Research Report',
+            description: 'Markdown with citations and sources',
+            icon: <Globe className="h-4 w-4" />,
+          },
+          {
+            id: 'json',
+            label: 'JSON',
+            description: 'Full structured data',
+            icon: <Download className="h-4 w-4" />,
+          },
+          {
+            id: 'markdown',
+            label: 'Markdown',
+            description: 'Plain markdown format',
+            icon: <Download className="h-4 w-4" />,
+          },
         ]}
       />
       <SettingsDialog
-        open={showSettings} onClose={() => setShowSettings(false)}
-        temperature={settingsTemp} onTemperatureChange={setSettingsTemp}
-        maxTokens={settingsMaxTokens} onMaxTokensChange={setSettingsMaxTokens}
-        codeTheme={settingsCodeTheme} onCodeThemeChange={setSettingsCodeTheme}
-        responseLength={settingsResponseLength} onResponseLengthChange={setSettingsResponseLength}
+        open={showSettings}
+        onClose={() => setShowSettings(false)}
+        temperature={settingsTemp}
+        onTemperatureChange={setSettingsTemp}
+        maxTokens={settingsMaxTokens}
+        onMaxTokensChange={setSettingsMaxTokens}
+        codeTheme={settingsCodeTheme}
+        onCodeThemeChange={setSettingsCodeTheme}
+        responseLength={settingsResponseLength}
+        onResponseLengthChange={setSettingsResponseLength}
       />
     </div>
   )
