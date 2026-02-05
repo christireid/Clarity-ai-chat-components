@@ -52,7 +52,7 @@ function ThinkingIndicatorDemo() {
           {/* Pulsing Brain */}
           <div>
             <h4 className="text-sm font-medium mb-3">Pulsing Brain</h4>
-            <div className="flex items-center gap-3 p-4 bg-muted/50 rounded-lg w-fit">
+            <div className="flex items-center gap-3 p-4 glass-subtle rounded-xl w-fit">
               <div className="relative">
                 <Brain className="h-6 w-6 text-primary" />
                 <span className="absolute inset-0 animate-ping">
@@ -68,7 +68,7 @@ function ThinkingIndicatorDemo() {
           {/* Thinking Bar */}
           <div>
             <h4 className="text-sm font-medium mb-3">Thinking Progress Bar</h4>
-            <div className="space-y-2 p-4 bg-muted/50 rounded-lg max-w-md">
+            <div className="space-y-2 p-4 glass-subtle rounded-xl max-w-md">
               <div className="flex items-center justify-between text-sm">
                 <span className="flex items-center gap-2">
                   <Brain className="h-4 w-4 text-primary animate-pulse" />
@@ -88,7 +88,7 @@ function ThinkingIndicatorDemo() {
           {/* Step Progress */}
           <div>
             <h4 className="text-sm font-medium mb-3">Step-by-Step Progress</h4>
-            <div className="space-y-3 p-4 bg-muted/50 rounded-lg max-w-md">
+            <div className="space-y-3 p-4 glass-subtle rounded-xl max-w-md">
               <div className="flex items-center gap-3">
                 <CheckCircle className="h-4 w-4 text-green-500" />
                 <span className="text-sm">Understanding context</span>
@@ -180,7 +180,7 @@ function ChainOfThoughtDemo() {
                     'flex items-center gap-3 p-3 rounded-lg transition-colors',
                     step.status === 'active'
                       ? 'bg-primary/10 border border-primary/20'
-                      : 'bg-muted/50 hover:bg-muted'
+                      : 'bg-muted/50 hover:glass-subtle'
                   )}
                 >
                   <div className="flex items-center gap-2">
@@ -415,7 +415,7 @@ function ReasoningTreeDemo() {
           <div className="space-y-4">
             {/* Root Node */}
             <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center">
+              <div className="icon-container-sm gradient-accent text-white">
                 <Target className="h-4 w-4 text-primary-foreground" />
               </div>
               <span className="text-sm font-medium">

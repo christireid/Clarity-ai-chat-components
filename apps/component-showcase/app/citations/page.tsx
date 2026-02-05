@@ -46,7 +46,7 @@ function CitationChipsDemo() {
           {/* Inline Citations */}
           <div>
             <p className="text-xs text-muted-foreground mb-2">Inline Style</p>
-            <p className="text-sm leading-relaxed">
+            <div className="text-sm leading-relaxed">
               React Hooks allow you to use state and other React features
               without writing a class
               <Badge
@@ -70,7 +70,7 @@ function CitationChipsDemo() {
                 [3]
               </Badge>
               .
-            </p>
+            </div>
           </div>
 
           {/* Citation Pills */}
@@ -100,7 +100,7 @@ function CitationChipsDemo() {
             <p className="text-xs text-muted-foreground mb-2">
               Numbered References
             </p>
-            <div className="p-4 bg-muted/50 rounded-lg space-y-2">
+            <div className="p-4 glass-subtle rounded-lg space-y-2">
               <div className="flex items-start gap-3">
                 <span className="w-6 h-6 rounded-full bg-primary text-primary-foreground text-xs font-medium flex items-center justify-center">
                   1
@@ -188,7 +188,7 @@ function SourceCardsDemo() {
           {sources.map((source, i) => (
             <div
               key={i}
-              className="p-4 border rounded-lg hover:bg-muted/50 cursor-pointer transition-colors group"
+              className="p-4 border rounded-lg hover:glass-subtle cursor-pointer transition-colors group"
             >
               <div className="flex items-start gap-3">
                 <span className="text-2xl">{source.favicon}</span>
@@ -293,7 +293,7 @@ function LinkPreviewDemo() {
             <p className="text-xs text-muted-foreground mb-2">
               Compact Preview
             </p>
-            <div className="flex items-center gap-3 p-3 bg-muted/50 rounded-lg max-w-md">
+            <div className="flex items-center gap-3 p-3 glass-subtle rounded-lg max-w-md">
               <div className="w-10 h-10 bg-muted rounded flex items-center justify-center flex-shrink-0">
                 <Link className="h-4 w-4 text-muted-foreground" />
               </div>
@@ -452,7 +452,7 @@ function QuoteBlockDemo() {
           {/* Card Quote */}
           <div>
             <p className="text-xs text-muted-foreground mb-2">Card Quote</p>
-            <div className="p-4 bg-muted/50 rounded-lg border-l-4 border-primary">
+            <div className="p-4 glass-subtle rounded-lg border-l-4 border-primary">
               <Quote className="h-6 w-6 text-primary/20 mb-2" />
               <p className="text-sm">
                 &quot;The best way to predict the future is to implement

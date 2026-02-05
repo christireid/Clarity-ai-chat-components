@@ -316,7 +316,7 @@ function TestRunnerPanel() {
       </CardHeader>
       <CardContent>
         {/* Summary */}
-        <div className="flex gap-4 mb-4 p-3 bg-muted/50 rounded-lg">
+        <div className="flex gap-4 mb-4 p-3 glass-subtle rounded-lg">
           <div className="flex items-center gap-2">
             <CheckCircle className="h-4 w-4 text-green-500" />
             <span className="text-sm">{summary.passed} passed</span>
@@ -419,7 +419,7 @@ function FileTreeComponent() {
       <div key={i}>
         <button
           className={cn(
-            'w-full flex items-center gap-2 py-1.5 px-2 rounded hover:bg-muted text-sm text-left',
+            'w-full flex items-center gap-2 py-1.5 px-2 rounded hover:glass-subtle text-sm text-left',
             depth > 0 && 'ml-4'
           )}
           onClick={() => item.type === 'folder' && toggleExpand(item.name)}
@@ -648,7 +648,7 @@ function HumanInTheLoop() {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <div className="p-4 bg-muted rounded-lg mb-4">
+        <div className="p-4 glass-subtle rounded-xl mb-4">
           <p className="text-sm font-medium mb-2">Proposed Action:</p>
           <p className="text-sm text-muted-foreground">
             Delete all files in the /temp directory and restart the server
@@ -934,7 +934,7 @@ function ArtifactPanel() {
           {artifacts.map((artifact, i) => (
             <div
               key={i}
-              className="flex items-center gap-3 p-3 border rounded-lg hover:bg-muted/50 cursor-pointer"
+              className="flex items-center gap-3 p-3 border rounded-lg hover:glass-subtle cursor-pointer"
             >
               {artifact.type === 'code' && (
                 <Code className="h-5 w-5 text-blue-500" />
@@ -1003,7 +1003,7 @@ function BookmarksPanel() {
           {bookmarks.map((bookmark, i) => (
             <div
               key={i}
-              className="flex items-start gap-3 p-3 border rounded-lg hover:bg-muted/50"
+              className="flex items-start gap-3 p-3 border rounded-lg hover:glass-subtle"
             >
               <Bookmark className="h-4 w-4 text-yellow-500 mt-0.5" />
               <div className="flex-1">
@@ -1100,7 +1100,7 @@ function CitationChipsDemo() {
           <CardTitle className="text-lg">Citation Chips</CardTitle>
         </CardHeader>
         <CardContent>
-          <p className="text-sm leading-relaxed">
+          <div className="text-sm leading-relaxed">
             React hooks were introduced in React 16.8
             <Badge
               variant="secondary"
@@ -1128,7 +1128,7 @@ function CitationChipsDemo() {
               [3]
             </Badge>
             .
-          </p>
+          </div>
           <Separator className="my-4" />
           <div className="space-y-2">
             <p className="text-xs font-medium text-muted-foreground">
@@ -1168,15 +1168,15 @@ function CostTrackerDemo() {
       </CardHeader>
       <CardContent>
         <div className="grid grid-cols-3 gap-4 mb-4">
-          <div className="text-center p-3 bg-muted/50 rounded-lg">
+          <div className="text-center p-3 glass-subtle rounded-lg">
             <p className="text-2xl font-bold text-green-500">$0.034</p>
             <p className="text-xs text-muted-foreground">This message</p>
           </div>
-          <div className="text-center p-3 bg-muted/50 rounded-lg">
+          <div className="text-center p-3 glass-subtle rounded-lg">
             <p className="text-2xl font-bold">$2.45</p>
             <p className="text-xs text-muted-foreground">Today</p>
           </div>
-          <div className="text-center p-3 bg-muted/50 rounded-lg">
+          <div className="text-center p-3 glass-subtle rounded-lg">
             <p className="text-2xl font-bold">$47.82</p>
             <p className="text-xs text-muted-foreground">This month</p>
           </div>
@@ -1234,7 +1234,7 @@ function DataTableDemo() {
           {data.map((row) => (
             <div
               key={row.id}
-              className="grid grid-cols-5 gap-4 px-4 py-3 border-t text-sm hover:bg-muted/50"
+              className="grid grid-cols-5 gap-4 px-4 py-3 border-t text-sm hover:glass-subtle"
             >
               <span className="font-medium">{row.name}</span>
               <span>{row.requests.toLocaleString()}</span>
@@ -1316,7 +1316,7 @@ function EnvironmentVariablesDemo() {
           {envVars.map((env, i) => (
             <div
               key={i}
-              className="flex items-center gap-3 p-3 bg-muted/50 rounded-lg"
+              className="flex items-center gap-3 p-3 glass-subtle rounded-lg"
             >
               <code className="text-sm font-medium text-primary">
                 {env.key}
@@ -1412,7 +1412,7 @@ function SnippetManagerDemo() {
           {snippets.map((snippet, i) => (
             <div
               key={i}
-              className="flex items-center gap-3 p-3 border rounded-lg hover:bg-muted/50"
+              className="flex items-center gap-3 p-3 border rounded-lg hover:glass-subtle"
             >
               <Code className="h-4 w-4 text-muted-foreground" />
               <div className="flex-1">
@@ -1448,7 +1448,7 @@ function SchemaDisplayDemo() {
         <CardDescription>API or data schema visualization</CardDescription>
       </CardHeader>
       <CardContent>
-        <div className="font-mono text-sm bg-muted/50 rounded-lg p-4 space-y-2">
+        <div className="font-mono text-sm glass-subtle rounded-lg p-4 space-y-2">
           <div className="flex items-center gap-2">
             <span className="text-purple-500">interface</span>
             <span className="text-blue-500">Message</span>
@@ -1548,7 +1548,7 @@ function BeforeAfterDemo() {
         <CardTitle className="text-sm">Before/After Slider</CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="relative h-48 bg-muted rounded-lg overflow-hidden">
+        <div className="relative h-48 glass-subtle rounded-xl overflow-hidden">
           <div className="absolute inset-0 flex items-center justify-center bg-red-500/20">
             <span className="text-sm font-medium">Before (Original)</span>
           </div>
@@ -1617,7 +1617,7 @@ function LinkPreviewDemo() {
         {links.map((link, i) => (
           <div
             key={i}
-            className="flex gap-3 p-3 rounded-lg border hover:bg-muted/50 cursor-pointer transition-colors"
+            className="flex gap-3 p-3 rounded-lg border hover:glass-subtle cursor-pointer transition-colors"
           >
             <div className="w-12 h-12 rounded-lg bg-muted flex items-center justify-center text-2xl shrink-0">
               {link.favicon}
@@ -1661,7 +1661,7 @@ function ContextMenuDemo() {
       </CardHeader>
       <CardContent>
         <div
-          className="relative h-40 bg-muted rounded-lg flex items-center justify-center cursor-context-menu"
+          className="relative h-40 glass-subtle rounded-xl flex items-center justify-center cursor-context-menu"
           onContextMenu={handleContextMenu}
           onClick={() => setShowMenu(false)}
         >
@@ -1671,14 +1671,14 @@ function ContextMenuDemo() {
               className="absolute z-10 bg-popover border rounded-lg shadow-lg py-1 min-w-[160px]"
               style={{ left: menuPosition.x, top: menuPosition.y }}
             >
-              <button className="w-full flex items-center gap-2 px-3 py-2 text-sm hover:bg-muted">
+              <button className="w-full flex items-center gap-2 px-3 py-2 text-sm hover:glass-subtle">
                 <Copy className="h-4 w-4" /> Copy
               </button>
-              <button className="w-full flex items-center gap-2 px-3 py-2 text-sm hover:bg-muted">
+              <button className="w-full flex items-center gap-2 px-3 py-2 text-sm hover:glass-subtle">
                 <Edit className="h-4 w-4" /> Edit
               </button>
               <Separator className="my-1" />
-              <button className="w-full flex items-center gap-2 px-3 py-2 text-sm hover:bg-muted text-destructive">
+              <button className="w-full flex items-center gap-2 px-3 py-2 text-sm hover:glass-subtle text-destructive">
                 <Trash2 className="h-4 w-4" /> Delete
               </button>
             </div>
@@ -1739,7 +1739,7 @@ function ModelSelectorDemo() {
               'w-full flex items-center justify-between p-3 rounded-lg border transition-colors text-left',
               selectedModel === model.id
                 ? 'border-primary bg-primary/5'
-                : 'hover:bg-muted'
+                : 'hover:glass-subtle'
             )}
           >
             <div>
@@ -1931,7 +1931,7 @@ function ThreadsViewDemo() {
           ].map((thread, i) => (
             <div
               key={i}
-              className="flex items-center gap-3 p-3 border rounded-lg hover:bg-muted/50 cursor-pointer"
+              className="flex items-center gap-3 p-3 border rounded-lg hover:glass-subtle cursor-pointer"
             >
               <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center">
                 <Bot className="h-5 w-5 text-muted-foreground" />
@@ -2060,7 +2060,7 @@ function RealtimeIndicatorDemo() {
           ].map((item, i) => (
             <div
               key={i}
-              className="flex items-center gap-3 p-2 rounded-lg bg-muted/50"
+              className="flex items-center gap-3 p-2 rounded-lg glass-subtle"
             >
               <item.icon className="h-4 w-4 text-muted-foreground" />
               <span className="text-sm flex-1">{item.event}</span>
@@ -2163,7 +2163,7 @@ function CalendarDemo() {
                 'h-8 w-8 rounded-full text-sm',
                 date <= 0 || date > 31
                   ? 'text-muted-foreground/50'
-                  : 'hover:bg-muted',
+                  : 'hover:glass-subtle',
                 date === 15 && 'bg-primary text-primary-foreground'
               )}
             >
@@ -2186,7 +2186,7 @@ function MessageActionsDemo() {
         <CardTitle className="text-lg">Message Actions</CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="p-4 bg-muted/50 rounded-lg">
+        <div className="p-4 glass-subtle rounded-lg">
           <p className="text-sm mb-3">
             This is an AI response that can have various actions.
           </p>
@@ -2261,7 +2261,7 @@ function VoiceComponentsDemo() {
           <CardTitle className="text-lg">Audio Player</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="flex items-center gap-4 p-4 bg-muted/50 rounded-lg">
+          <div className="flex items-center gap-4 p-4 glass-subtle rounded-lg">
             <Button size="icon" className="h-10 w-10 rounded-full">
               <Play className="h-4 w-4" />
             </Button>
@@ -2819,7 +2819,7 @@ function ReactionsDemo() {
         <CardTitle className="text-lg">Message Reactions</CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="p-4 bg-muted/50 rounded-lg">
+        <div className="p-4 glass-subtle rounded-lg">
           <p className="text-sm mb-3">
             This is a message that users can react to.
           </p>
@@ -2832,7 +2832,7 @@ function ReactionsDemo() {
             ].map((reaction, i) => (
               <button
                 key={i}
-                className="flex items-center gap-1 px-2 py-1 rounded-full bg-muted hover:bg-muted/80 text-sm"
+                className="flex items-center gap-1 px-2 py-1 rounded-full bg-muted hover:glass-subtle/80 text-sm"
               >
                 <span>{reaction.emoji}</span>
                 <span className="text-xs text-muted-foreground">
@@ -2840,7 +2840,7 @@ function ReactionsDemo() {
                 </span>
               </button>
             ))}
-            <button className="flex items-center justify-center w-8 h-8 rounded-full hover:bg-muted text-muted-foreground">
+            <button className="flex items-center justify-center w-8 h-8 rounded-full hover:glass-subtle text-muted-foreground">
               <Plus className="h-4 w-4" />
             </button>
           </div>
@@ -3024,7 +3024,7 @@ function TraceViewDemo() {
       <CardContent>
         {traces.map((trace, i) => (
           <div key={i} className="space-y-2">
-            <div className="flex items-center gap-3 p-2 bg-muted/50 rounded-lg">
+            <div className="flex items-center gap-3 p-2 glass-subtle rounded-lg">
               <CheckCircle className="h-4 w-4 text-green-500" />
               <span className="text-sm font-medium flex-1">{trace.name}</span>
               <span className="text-xs text-muted-foreground">
@@ -3119,7 +3119,7 @@ function WorkflowNodesDemo() {
         <CardDescription>Visual node-based workflow builder</CardDescription>
       </CardHeader>
       <CardContent>
-        <div className="relative h-64 bg-muted/30 rounded-lg p-4 overflow-hidden">
+        <div className="relative h-64 glass-subtle rounded-lg p-4 overflow-hidden">
           {/* Start Node */}
           <div className="absolute left-4 top-1/2 -translate-y-1/2 w-24 p-2 bg-green-500/20 border border-green-500/50 rounded-lg text-center">
             <Play className="h-4 w-4 text-green-500 mx-auto mb-1" />
@@ -3179,7 +3179,7 @@ function BranchPickerDemo() {
                 'flex items-center gap-3 p-3 rounded-lg cursor-pointer transition-colors',
                 branch.current
                   ? 'bg-primary/10 border border-primary/50'
-                  : 'hover:bg-muted'
+                  : 'hover:glass-subtle'
               )}
             >
               <GitBranch
@@ -3256,8 +3256,8 @@ function ChatSidebarDemo() {
             <div
               key={i}
               className={cn(
-                'flex items-start gap-3 p-3 cursor-pointer hover:bg-muted/50',
-                i === 0 && 'bg-muted/50'
+                'flex items-start gap-3 p-3 cursor-pointer hover:glass-subtle',
+                i === 0 && 'glass-subtle'
               )}
             >
               <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center shrink-0">
@@ -3303,7 +3303,7 @@ function CopyButtonDemo() {
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
-          <div className="flex items-center gap-2 p-3 bg-muted rounded-lg">
+          <div className="flex items-center gap-2 p-3 glass-subtle rounded-xl">
             <code className="text-sm flex-1 font-mono">
               npm install @clarity-chat/react
             </code>
@@ -3448,7 +3448,7 @@ function DevToolsDashboardDemo() {
             <TabsTrigger value="models">Models</TabsTrigger>
           </TabsList>
           <TabsContent value="api" className="space-y-2">
-            <div className="p-3 bg-muted rounded-lg">
+            <div className="p-3 glass-subtle rounded-xl">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <div className="w-2 h-2 rounded-full bg-green-500" />
@@ -3461,7 +3461,7 @@ function DevToolsDashboardDemo() {
                 <span>2.1KB</span>
               </div>
             </div>
-            <div className="p-3 bg-muted rounded-lg">
+            <div className="p-3 glass-subtle rounded-xl">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <div className="w-2 h-2 rounded-full bg-green-500" />
@@ -3546,7 +3546,7 @@ function APIInspectorDemo() {
         {requests.map((req) => (
           <div
             key={req.id}
-            className="flex items-center gap-3 p-2 bg-muted rounded-lg text-sm"
+            className="flex items-center gap-3 p-2 glass-subtle rounded-xl text-sm"
           >
             <Badge
               className={cn(
@@ -3590,7 +3590,7 @@ function ProfilerPanelDemo() {
       <CardContent>
         <div className="grid grid-cols-2 gap-3">
           {metrics.map((metric) => (
-            <div key={metric.name} className="p-3 bg-muted rounded-lg">
+            <div key={metric.name} className="p-3 glass-subtle rounded-xl">
               <p className="text-xs text-muted-foreground">{metric.name}</p>
               <div className="flex items-center gap-2 mt-1">
                 <p className="text-lg font-bold">{metric.value}</p>
@@ -3654,7 +3654,7 @@ function TimeTravelDemo() {
               'w-full flex items-center gap-3 p-2 rounded-lg text-sm text-left transition-colors',
               i === currentIndex
                 ? 'bg-primary/10 border border-primary/30'
-                : 'hover:bg-muted'
+                : 'hover:glass-subtle'
             )}
           >
             <span className="w-6 h-6 rounded-full bg-muted flex items-center justify-center text-xs font-mono">
@@ -3933,7 +3933,7 @@ function CircuitBreakerDemo() {
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
-          <div className="flex items-center justify-between p-3 bg-muted rounded-lg">
+          <div className="flex items-center justify-between p-3 glass-subtle rounded-xl">
             <span className="text-sm">Failures</span>
             <span className="font-mono">{failures} / 3</span>
           </div>
@@ -4128,7 +4128,7 @@ function TokenOptimizationDashboardDemo() {
                 Per {metrics.totalTokens.toLocaleString()} tokens
               </div>
             </div>
-            <div className="p-4 rounded-lg bg-muted/50 border">
+            <div className="p-4 rounded-lg glass-subtle border">
               <div className="text-2xl font-bold">
                 {metrics.totalTokens.toLocaleString()}
               </div>
@@ -4170,7 +4170,7 @@ function TokenOptimizationDashboardDemo() {
             ].map((item) => (
               <div
                 key={item.label}
-                className="flex items-center gap-3 p-3 bg-muted/50 rounded-lg"
+                className="flex items-center gap-3 p-3 glass-subtle rounded-lg"
               >
                 <span className="text-xl">{item.icon}</span>
                 <div className="flex-1">
@@ -4733,7 +4733,7 @@ function TokenROICalculatorDemo() {
               step={100}
               value={requestsPerDay}
               onChange={(e) => setRequestsPerDay(Number(e.target.value))}
-              className="w-full h-2 bg-muted rounded-lg appearance-none cursor-pointer"
+              className="w-full h-2 glass-subtle rounded-xl appearance-none cursor-pointer"
             />
           </div>
           <div>
@@ -4748,7 +4748,7 @@ function TokenROICalculatorDemo() {
               step={5}
               value={optimizationPercent}
               onChange={(e) => setOptimizationPercent(Number(e.target.value))}
-              className="w-full h-2 bg-muted rounded-lg appearance-none cursor-pointer"
+              className="w-full h-2 glass-subtle rounded-xl appearance-none cursor-pointer"
             />
           </div>
         </div>
@@ -4810,7 +4810,7 @@ function StreamingTextShimmerDemo() {
   return (
     <Card>
       <CardContent className="pt-6 space-y-4">
-        <div className="min-h-[100px] p-4 rounded-lg bg-muted/30 border">
+        <div className="min-h-[100px] p-4 rounded-lg glass-subtle border">
           <span className={cn('streaming-text', isStreaming && 'text-shimmer')}>
             {text || 'Click "Stream" to see the shimmer effect...'}
             {isStreaming && (
@@ -4876,11 +4876,11 @@ function TextShimmerDemo() {
           ))}
         </div>
 
-        <div className="p-4 rounded-lg bg-muted/30 border min-h-[120px]">
+        <div className="p-4 rounded-lg glass-subtle border min-h-[120px]">
           <div
             className={cn(
               'flex flex-col gap-2',
-              variant === 'code' && 'font-mono bg-muted/30 rounded-lg p-3'
+              variant === 'code' && 'font-mono glass-subtle rounded-lg p-3'
             )}
           >
             {Array.from({ length: lines }).map((_, i) => (
@@ -4920,7 +4920,7 @@ function TextShimmerDemo() {
             max={6}
             value={lines}
             onChange={(e) => setLines(Number(e.target.value))}
-            className="w-24 h-2 bg-muted rounded-lg appearance-none cursor-pointer"
+            className="w-24 h-2 glass-subtle rounded-xl appearance-none cursor-pointer"
           />
           <span className="text-sm font-mono">{lines}</span>
         </div>
@@ -5037,7 +5037,7 @@ function StreamingCursorDemo() {
           ))}
         </div>
 
-        <div className="p-4 rounded-lg bg-muted/30 border">
+        <div className="p-4 rounded-lg glass-subtle border">
           <p>
             The AI is generating a response
             <span className="animate-pulse ml-0.5 text-primary">
@@ -5074,7 +5074,7 @@ function TypingIndicatorDemo() {
           ))}
         </div>
 
-        <div className="flex items-center gap-3 p-4 rounded-lg bg-muted/30 border">
+        <div className="flex items-center gap-3 p-4 rounded-lg glass-subtle border">
           <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center">
             <Bot className="h-4 w-4 text-primary" />
           </div>
@@ -5193,7 +5193,7 @@ Would you like me to elaborate on any of these points?`
           </label>
         </div>
 
-        <div className="p-4 rounded-lg bg-muted/30 border min-h-[200px]">
+        <div className="p-4 rounded-lg glass-subtle border min-h-[200px]">
           <div className="flex gap-3">
             <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center flex-shrink-0">
               <Bot className="h-4 w-4 text-primary" />
@@ -5302,7 +5302,7 @@ function MultiProviderAdapterDemo() {
                   'p-4 rounded-lg border-2 transition-all text-left',
                   selectedProvider === provider.id
                     ? 'border-primary bg-primary/5'
-                    : 'border-transparent bg-muted/50 hover:bg-muted'
+                    : 'border-transparent glass-subtle hover:glass-subtle'
                 )}
               >
                 <div className="flex items-center gap-2 mb-2">
@@ -5460,7 +5460,7 @@ function AdapterModelSelectorDemo() {
                   'w-full p-3 rounded-lg border text-left transition-all',
                   selectedModel === model.id
                     ? 'border-primary bg-primary/5'
-                    : 'border-transparent bg-muted/30 hover:bg-muted/50'
+                    : 'border-transparent glass-subtle hover:glass-subtle'
                 )}
               >
                 <div className="flex items-center justify-between mb-2">
@@ -5526,7 +5526,7 @@ function ProviderHealthDemo() {
           return (
             <div
               key={provider.id}
-              className="flex items-center justify-between p-3 rounded-lg bg-muted/30"
+              className="flex items-center justify-between p-3 rounded-lg glass-subtle"
             >
               <div className="flex items-center gap-3">
                 <span>{provider.icon}</span>
@@ -5639,7 +5639,7 @@ function RetryCircuitBreakerDemo() {
           </Button>
         </div>
 
-        <div className="text-xs text-muted-foreground p-3 bg-muted/30 rounded-lg">
+        <div className="text-xs text-muted-foreground p-3 glass-subtle rounded-lg">
           <p className="font-medium mb-1">Retry Config:</p>
           <p>Max retries: 3 | Backoff: 1s, 2s, 4s | Circuit threshold: 3</p>
         </div>
@@ -5683,7 +5683,7 @@ function RequestInspectorDemo() {
           {requests.map((req) => (
             <div
               key={req.id}
-              className="flex items-center justify-between p-2 rounded-lg bg-muted/30 text-sm"
+              className="flex items-center justify-between p-2 rounded-lg glass-subtle text-sm"
             >
               <div className="flex items-center gap-3">
                 <Badge
@@ -5782,7 +5782,7 @@ function AdapterConfigDemo() {
                     temperature: Number(e.target.value),
                   }))
                 }
-                className="w-full h-2 bg-muted rounded-lg appearance-none cursor-pointer"
+                className="w-full h-2 glass-subtle rounded-xl appearance-none cursor-pointer"
               />
             </div>
 
@@ -5803,7 +5803,7 @@ function AdapterConfigDemo() {
                     maxTokens: Number(e.target.value),
                   }))
                 }
-                className="w-full h-2 bg-muted rounded-lg appearance-none cursor-pointer"
+                className="w-full h-2 glass-subtle rounded-xl appearance-none cursor-pointer"
               />
             </div>
           </div>
@@ -5827,7 +5827,7 @@ function AdapterConfigDemo() {
                     timeout: Number(e.target.value),
                   }))
                 }
-                className="w-full h-2 bg-muted rounded-lg appearance-none cursor-pointer"
+                className="w-full h-2 glass-subtle rounded-xl appearance-none cursor-pointer"
               />
             </div>
 
@@ -5848,11 +5848,11 @@ function AdapterConfigDemo() {
                     retries: Number(e.target.value),
                   }))
                 }
-                className="w-full h-2 bg-muted rounded-lg appearance-none cursor-pointer"
+                className="w-full h-2 glass-subtle rounded-xl appearance-none cursor-pointer"
               />
             </div>
 
-            <div className="flex items-center justify-between p-3 rounded-lg bg-muted/30">
+            <div className="flex items-center justify-between p-3 rounded-lg glass-subtle">
               <label className="text-sm font-medium">Enable Streaming</label>
               <Checkbox
                 checked={config.streaming}

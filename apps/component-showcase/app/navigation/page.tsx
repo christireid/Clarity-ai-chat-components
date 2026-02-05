@@ -105,7 +105,7 @@ function CommandPaletteDemo() {
               {filteredCommands.map((cmd, i) => (
                 <button
                   key={i}
-                  className="w-full flex items-center justify-between p-2 rounded-lg hover:bg-muted text-sm"
+                  className="w-full flex items-center justify-between p-2 rounded-lg hover:glass-subtle text-sm"
                 >
                   <div className="flex items-center gap-3">
                     <span className="text-muted-foreground">{cmd.icon}</span>
@@ -215,9 +215,11 @@ function ConversationListDemo() {
               {conversations
                 .filter((c) => c.pinned)
                 .map((conv) => (
-                  <button
+                  <div
                     key={conv.id}
-                    className="w-full flex items-center gap-3 p-3 rounded-lg hover:bg-muted transition-colors text-left"
+                    role="button"
+                    tabIndex={0}
+                    className="w-full flex items-center gap-3 p-3 rounded-lg hover:glass-subtle transition-colors text-left cursor-pointer"
                   >
                     <MessageSquare className="h-4 w-4 text-muted-foreground" />
                     <div className="flex-1 min-w-0">
@@ -240,7 +242,7 @@ function ConversationListDemo() {
                     >
                       <MoreHorizontal className="h-4 w-4" />
                     </Button>
-                  </button>
+                  </div>
                 ))}
             </div>
           </div>
@@ -254,9 +256,11 @@ function ConversationListDemo() {
               {conversations
                 .filter((c) => !c.pinned)
                 .map((conv) => (
-                  <button
+                  <div
                     key={conv.id}
-                    className="w-full flex items-center gap-3 p-3 rounded-lg hover:bg-muted transition-colors text-left"
+                    role="button"
+                    tabIndex={0}
+                    className="w-full flex items-center gap-3 p-3 rounded-lg hover:glass-subtle transition-colors text-left cursor-pointer"
                   >
                     <MessageSquare className="h-4 w-4 text-muted-foreground" />
                     <div className="flex-1 min-w-0">
@@ -274,7 +278,7 @@ function ConversationListDemo() {
                     >
                       <MoreHorizontal className="h-4 w-4" />
                     </Button>
-                  </button>
+                  </div>
                 ))}
             </div>
           </div>
@@ -492,7 +496,7 @@ function QuickNavigationDemo() {
           {shortcuts.map((item, i) => (
             <button
               key={i}
-              className="flex flex-col items-center gap-2 p-4 rounded-lg border hover:bg-muted/50 transition-colors"
+              className="flex flex-col items-center gap-2 p-4 rounded-lg border hover:glass-subtle/50 transition-colors"
             >
               <div
                 className={cn(

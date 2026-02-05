@@ -129,7 +129,7 @@ function SkeletonLoadersDemo() {
               <div className="w-8 h-8 bg-muted rounded-full animate-pulse flex-shrink-0" />
               <div className="flex-1 space-y-2">
                 <div className="h-4 bg-muted rounded animate-pulse w-1/4" />
-                <div className="p-3 bg-muted rounded-lg space-y-2">
+                <div className="p-3 glass-subtle rounded-xl space-y-2">
                   <div className="h-3 bg-muted-foreground/10 rounded animate-pulse w-full" />
                   <div className="h-3 bg-muted-foreground/10 rounded animate-pulse w-4/5" />
                   <div className="h-3 bg-muted-foreground/10 rounded animate-pulse w-2/3" />
@@ -381,7 +381,7 @@ function AILoadingStatesDemo() {
       <CardContent>
         <div className="space-y-6">
           {/* Thinking Animation */}
-          <div className="p-4 bg-muted/50 rounded-lg">
+          <div className="p-4 glass-subtle rounded-lg">
             <div className="flex items-center gap-3">
               <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
                 <Bot className="h-4 w-4 text-primary" />
@@ -425,7 +425,7 @@ function AILoadingStatesDemo() {
           </div>
 
           {/* Streaming Text */}
-          <div className="p-4 bg-muted rounded-lg">
+          <div className="p-4 glass-subtle rounded-xl">
             <p className="text-sm">
               React hooks are functions that let you use state and other React
               features in functional components

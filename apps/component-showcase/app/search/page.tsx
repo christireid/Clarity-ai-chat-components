@@ -113,7 +113,7 @@ function MessageSearchDemo() {
             {results.map((result) => (
               <div
                 key={result.id}
-                className="p-3 border rounded-lg hover:bg-muted/50 cursor-pointer transition-colors"
+                className="p-3 border rounded-lg hover:glass-subtle/50 cursor-pointer transition-colors"
               >
                 <div className="flex items-start justify-between gap-2">
                   <div className="flex-1">
@@ -346,7 +346,7 @@ function SemanticSearchDemo() {
             {semanticResults.map((result) => (
               <div
                 key={result.id}
-                className="p-3 border rounded-lg hover:bg-muted/50 cursor-pointer transition-colors"
+                className="p-3 border rounded-lg hover:glass-subtle/50 cursor-pointer transition-colors"
               >
                 <div className="flex items-start gap-3">
                   <div className="flex-shrink-0 w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center">
@@ -413,7 +413,7 @@ function RecentSearchesDemo() {
               {savedSearches.map((search, i) => (
                 <button
                   key={i}
-                  className="w-full flex items-center gap-3 p-2 rounded-lg hover:bg-muted transition-colors"
+                  className="w-full flex items-center gap-3 p-2 rounded-lg hover:glass-subtle transition-colors"
                 >
                   <Search className="h-4 w-4 text-muted-foreground" />
                   <span className="text-sm flex-1 text-left">
@@ -440,7 +440,7 @@ function RecentSearchesDemo() {
               {recentSearches.map((search, i) => (
                 <button
                   key={i}
-                  className="w-full flex items-center gap-3 p-2 rounded-lg hover:bg-muted transition-colors"
+                  className="w-full flex items-center gap-3 p-2 rounded-lg hover:glass-subtle transition-colors"
                 >
                   <Search className="h-4 w-4 text-muted-foreground" />
                   <span className="text-sm flex-1 text-left">

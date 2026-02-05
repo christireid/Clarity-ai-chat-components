@@ -1,0 +1,514 @@
+/**
+ * CitationCard Showcase Styles
+ * Includes glassmorphism effects and smooth transitions
+ */
+
+.citation-showcase {
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+/* Header */
+.showcase-section-header {
+  text-align: center;
+  margin-bottom: 2rem;
+  padding: 2rem;
+  background: linear-gradient(
+    135deg,
+    hsl(var(--primary) / 0.05),
+    hsl(var(--accent) / 0.05)
+  );
+  border-radius: 1rem;
+  border: 1px solid hsl(var(--border) / 0.4);
+}
+
+.showcase-section-header h2 {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  color: hsl(var(--foreground));
+}
+
+.showcase-section-header p {
+  color: hsl(var(--muted-foreground));
+  font-size: 1.1rem;
+}
+
+/* Navigation Tabs */
+.showcase-nav-tabs {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 2rem;
+  padding: 0.5rem;
+  background: hsl(var(--muted) / 0.3);
+  border-radius: 0.75rem;
+  backdrop-filter: blur(8px);
+  border: 1px solid hsl(var(--border) / 0.4);
+}
+
+.showcase-nav-tabs button {
+  flex: 1;
+  padding: 0.75rem 1.5rem;
+  border: none;
+  background: transparent;
+  color: hsl(var(--muted-foreground));
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  border-radius: 0.5rem;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.showcase-nav-tabs button:hover {
+  background: hsl(var(--accent) / 0.5);
+  color: hsl(var(--foreground));
+}
+
+.showcase-nav-tabs button.active {
+  background: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+  box-shadow: 0 4px 12px hsl(var(--primary) / 0.25);
+}
+
+/* Content Area */
+.showcase-content {
+  min-height: 600px;
+}
+
+.demo-section {
+  animation: fadeSlideIn 0.4s ease;
+}
+
+@keyframes fadeSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Demo Header */
+.demo-header {
+  margin-bottom: 2rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 2px solid hsl(var(--border) / 0.3);
+}
+
+.demo-header h3 {
+  font-size: 1.75rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: hsl(var(--foreground));
+}
+
+.demo-header p {
+  color: hsl(var(--muted-foreground));
+  font-size: 1rem;
+}
+
+/* Demo Grid */
+.demo-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  gap: 2rem;
+  margin-bottom: 2rem;
+}
+
+.demo-item {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.demo-label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: hsl(var(--primary));
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* Variant Controls */
+.variant-controls {
+  display: flex;
+  gap: 1.5rem;
+  margin-top: 1rem;
+  padding: 1rem;
+  background: hsl(var(--muted) / 0.3);
+  border-radius: 0.5rem;
+  border: 1px solid hsl(var(--border) / 0.4);
+}
+
+.variant-controls label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  font-weight: 500;
+  color: hsl(var(--foreground));
+}
+
+.variant-controls input[type='radio'] {
+  width: 1.125rem;
+  height: 1.125rem;
+  cursor: pointer;
+  accent-color: hsl(var(--primary));
+}
+
+/* Variant Demo */
+.variant-demo {
+  display: grid;
+  gap: 3rem;
+}
+
+.variant-preview {
+  padding: 2rem;
+  background: hsl(var(--card));
+  border: 1px solid hsl(var(--border) / 0.4);
+  border-radius: 1rem;
+  /* Glassmorphism */
+  backdrop-filter: blur(12px);
+  background: linear-gradient(
+    135deg,
+    hsl(var(--card) / 0.8),
+    hsl(var(--muted) / 0.4)
+  );
+}
+
+.variant-preview h4 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+  color: hsl(var(--foreground));
+}
+
+/* Interactive Grid */
+.interactive-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  gap: 2rem;
+  margin-bottom: 2rem;
+}
+
+.interactive-demo {
+  padding: 1.5rem;
+  background: hsl(var(--card));
+  border: 1px solid hsl(var(--border) / 0.4);
+  border-radius: 1rem;
+  /* Glassmorphism effect */
+  backdrop-filter: blur(10px);
+  background: linear-gradient(
+    135deg,
+    hsl(var(--card) / 0.7),
+    hsl(var(--muted) / 0.3)
+  );
+}
+
+.interactive-demo h4 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: hsl(var(--foreground));
+}
+
+.demo-note {
+  font-size: 0.875rem;
+  color: hsl(var(--muted-foreground));
+  margin-bottom: 1rem;
+  font-style: italic;
+}
+
+.citation-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* Hover Demo Cards - Enhanced Glassmorphism */
+.hover-demo-card {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+}
+
+.hover-demo-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 2px;
+  background: linear-gradient(
+    135deg,
+    hsl(var(--primary) / 0.3),
+    hsl(var(--accent) / 0.3)
+  );
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.hover-demo-card:hover::before {
+  opacity: 1;
+}
+
+.hover-demo-card:hover {
+  transform: translateY(-4px) scale(1.01);
+  box-shadow:
+    0 20px 40px hsl(var(--primary) / 0.15),
+    0 10px 20px hsl(var(--primary) / 0.1);
+  backdrop-filter: blur(16px);
+}
+
+/* Inline Citation Wrapper */
+.inline-demo-container {
+  padding: 1.5rem;
+  background: hsl(var(--muted) / 0.2);
+  border-radius: 0.75rem;
+  border: 1px solid hsl(var(--border) / 0.3);
+}
+
+.demo-text {
+  font-size: 1rem;
+  line-height: 1.7;
+  color: hsl(var(--foreground));
+}
+
+.inline-citation-wrapper {
+  display: inline-flex;
+  margin: 0 0.25rem;
+  vertical-align: middle;
+}
+
+/* Selected Citation Panel */
+.selected-citation-panel {
+  margin-top: 2rem;
+  padding: 1.5rem;
+  background: linear-gradient(
+    135deg,
+    hsl(var(--primary) / 0.05),
+    hsl(var(--accent) / 0.05)
+  );
+  border: 1px solid hsl(var(--border) / 0.4);
+  border-radius: 1rem;
+  backdrop-filter: blur(8px);
+  animation: slideInUp 0.3s ease;
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.selected-citation-panel h4 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  color: hsl(var(--primary));
+}
+
+.citation-details {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.detail-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.5rem;
+  background: hsl(var(--background) / 0.5);
+  border-radius: 0.5rem;
+}
+
+.detail-label {
+  font-weight: 600;
+  color: hsl(var(--muted-foreground));
+  min-width: 100px;
+}
+
+.detail-value {
+  color: hsl(var(--foreground));
+}
+
+.detail-link {
+  color: hsl(var(--primary));
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.detail-link:hover {
+  color: hsl(var(--primary) / 0.8);
+  text-decoration: underline;
+}
+
+/* Real-World Examples */
+.realworld-examples {
+  display: flex;
+  flex-direction: column;
+  gap: 3rem;
+}
+
+.example-category {
+  padding: 2rem;
+  background: hsl(var(--card));
+  border: 1px solid hsl(var(--border) / 0.4);
+  border-radius: 1rem;
+  /* Glassmorphism */
+  backdrop-filter: blur(12px);
+  background: linear-gradient(
+    135deg,
+    hsl(var(--card) / 0.8),
+    hsl(var(--background) / 0.5)
+  );
+}
+
+.example-category h4 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+  color: hsl(var(--foreground));
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.example-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  gap: 1.5rem;
+}
+
+/* Code Examples Section */
+.code-examples-section {
+  margin-top: 4rem;
+  padding: 2rem;
+  background: hsl(var(--muted) / 0.2);
+  border-radius: 1rem;
+  border: 1px solid hsl(var(--border) / 0.4);
+}
+
+.code-examples-section h3 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+  color: hsl(var(--foreground));
+}
+
+.code-tabs {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+  gap: 1.5rem;
+}
+
+.code-example {
+  background: hsl(var(--card));
+  border: 1px solid hsl(var(--border) / 0.4);
+  border-radius: 0.75rem;
+  overflow: hidden;
+}
+
+.code-example h4 {
+  padding: 1rem 1.5rem;
+  background: hsl(var(--muted));
+  font-size: 1rem;
+  font-weight: 600;
+  color: hsl(var(--foreground));
+  border-bottom: 1px solid hsl(var(--border) / 0.4);
+}
+
+.code-example pre {
+  margin: 0;
+  padding: 1.5rem;
+  overflow-x: auto;
+  background: hsl(var(--background));
+}
+
+.code-example code {
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+  font-size: 0.875rem;
+  line-height: 1.6;
+  color: hsl(var(--foreground));
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .demo-grid,
+  .example-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .interactive-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .code-tabs {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .citation-showcase {
+    padding: 1rem;
+  }
+
+  .showcase-nav-tabs {
+    flex-direction: column;
+  }
+
+  .showcase-nav-tabs button {
+    width: 100%;
+  }
+
+  .variant-controls {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+}
+
+/* Smooth Transitions for All Interactive Elements */
+* {
+  transition-property: background-color, border-color, color, fill, stroke, opacity,
+    box-shadow, transform;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Glassmorphism Utility Classes */
+.glass-card {
+  backdrop-filter: blur(12px);
+  background: linear-gradient(
+    135deg,
+    hsl(var(--card) / 0.7),
+    hsl(var(--muted) / 0.4)
+  );
+  border: 1px solid hsl(var(--border) / 0.4);
+  box-shadow:
+    0 8px 32px hsl(var(--foreground) / 0.05),
+    inset 0 1px 0 hsl(var(--background) / 0.1);
+}
+
+.glass-hover:hover {
+  backdrop-filter: blur(16px);
+  background: linear-gradient(
+    135deg,
+    hsl(var(--card) / 0.85),
+    hsl(var(--muted) / 0.5)
+  );
+  box-shadow:
+    0 12px 48px hsl(var(--primary) / 0.15),
+    inset 0 1px 0 hsl(var(--background) / 0.2);
+}

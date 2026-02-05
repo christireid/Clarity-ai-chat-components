@@ -29,6 +29,7 @@ import {
   ExternalLink,
   Command,
   Cpu,
+  Eye,
 } from 'lucide-react'
 import { cn } from '@clarity-chat/primitives'
 
@@ -195,6 +196,51 @@ const categories = [
     gradient: 'from-violet-500/20 to-indigo-500/20',
     iconColor: 'text-violet-500',
   },
+  {
+    name: 'Performance',
+    href: '/performance',
+    icon: Cpu,
+    description: 'Real-time monitoring & metrics',
+    count: 8,
+    gradient: 'from-green-500/20 to-emerald-500/20',
+    iconColor: 'text-green-500',
+  },
+  {
+    name: 'Testing',
+    href: '/testing',
+    icon: Code2,
+    description: 'Test utilities, examples, mocks',
+    count: 59,
+    gradient: 'from-teal-500/20 to-cyan-500/20',
+    iconColor: 'text-teal-500',
+  },
+  {
+    name: 'Config Manager',
+    href: '/config-manager',
+    icon: Command,
+    description: 'Export, import & manage configs',
+    count: 8,
+    gradient: 'from-fuchsia-500/20 to-pink-500/20',
+    iconColor: 'text-fuchsia-500',
+  },
+  {
+    name: 'Responsive Testing',
+    href: '/responsive-testing',
+    icon: LayoutDashboard,
+    description: 'Device preview, A11y, Performance',
+    count: 12,
+    gradient: 'from-lime-500/20 to-green-500/20',
+    iconColor: 'text-lime-500',
+  },
+  {
+    name: 'Accessibility',
+    href: '/accessibility',
+    icon: Eye,
+    description: 'A11y testing, WCAG, screen readers',
+    count: 9,
+    gradient: 'from-blue-500/20 to-indigo-500/20',
+    iconColor: 'text-blue-500',
+  },
 ]
 
 const features = [
@@ -221,8 +267,8 @@ const features = [
 ]
 
 const quickLinks = [
+  { name: 'Gallery', href: '/gallery', icon: LayoutDashboard },
   { name: 'AI Clones', href: '/clones', icon: Copy },
-  { name: 'Dashboards', href: '/dashboards', icon: LayoutDashboard },
   { name: 'Features', href: '/features', icon: Sparkles },
 ]
 

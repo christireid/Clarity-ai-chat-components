@@ -113,7 +113,7 @@ console.log(fibonacci(10)); // Output: 55`
           </div>
 
           {/* Inline Code */}
-          <div className="p-4 bg-muted/50 rounded-lg">
+          <div className="p-4 glass-subtle rounded-lg">
             <p className="text-sm">
               Use the{' '}
               <code className="px-1.5 py-0.5 bg-muted rounded font-mono text-sm">
@@ -361,7 +361,7 @@ function DataTableDemo() {
             </thead>
             <tbody className="divide-y">
               {data.map((row) => (
-                <tr key={row.id} className="hover:bg-muted/50">
+                <tr key={row.id} className="hover:glass-subtle">
                   <td className="p-3 font-medium">{row.name}</td>
                   <td className="p-3 text-muted-foreground">{row.email}</td>
                   <td className="p-3">
@@ -424,7 +424,7 @@ function TestResultsDemo() {
       <CardContent>
         <div className="space-y-4">
           {/* Summary */}
-          <div className="flex gap-4 p-3 bg-muted/50 rounded-lg">
+          <div className="flex gap-4 p-3 glass-subtle rounded-lg">
             <div className="flex items-center gap-2">
               <CheckCircle className="h-4 w-4 text-green-500" />
               <span className="text-sm">{summary.passed} passed</span>

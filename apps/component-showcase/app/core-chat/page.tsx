@@ -68,30 +68,35 @@ useEffect(() => {
   ]
 
   return (
-    <Card className="h-[500px] flex flex-col">
-      <CardHeader className="border-b pb-3">
+    <div className="glass-card h-[500px] flex flex-col">
+      <div className="glass-subtle border-b border-white/10 dark:border-white/5 p-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
-              <Bot className="h-5 w-5 text-primary" />
+            <div className="icon-container">
+              <Bot className="h-6 w-6" />
             </div>
             <div>
-              <CardTitle className="text-lg">Clarity Assistant</CardTitle>
-              <CardDescription className="text-xs">
-                GPT-4o • Online
-              </CardDescription>
+              <h3 className="text-lg font-semibold">Clarity Assistant</h3>
+              <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                <span>GPT-4o</span>
+                <span>•</span>
+                <span className="flex items-center gap-1">
+                  <span className="w-1.5 h-1.5 rounded-full bg-green-500" />
+                  Online
+                </span>
+              </div>
             </div>
           </div>
           <div className="flex items-center gap-2">
-            <Button variant="ghost" size="icon">
+            <Button variant="ghost" size="icon" className="hover:glass-subtle">
               <Settings className="h-4 w-4" />
             </Button>
-            <Button variant="ghost" size="icon">
+            <Button variant="ghost" size="icon" className="hover:glass-subtle">
               <Maximize className="h-4 w-4" />
             </Button>
           </div>
         </div>
-      </CardHeader>
+      </div>
       <ScrollArea className="flex-1 p-4">
         <div className="space-y-4">
           {messages.map((msg) => (
@@ -104,37 +109,37 @@ useEffect(() => {
             >
               <div
                 className={cn(
-                  'w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0',
-                  msg.role === 'user' ? 'bg-primary' : 'bg-muted'
+                  'icon-container-sm flex-shrink-0',
+                  msg.role === 'user' ? 'gradient-accent text-white' : ''
                 )}
               >
                 {msg.role === 'user' ? (
-                  <User className="h-4 w-4 text-primary-foreground" />
+                  <User className="h-5 w-5" />
                 ) : (
-                  <Bot className="h-4 w-4" />
+                  <Bot className="h-5 w-5" />
                 )}
               </div>
               <div
                 className={cn(
-                  'flex-1 max-w-[80%] rounded-lg p-3',
+                  'flex-1 max-w-[80%] rounded-xl p-3.5',
                   msg.role === 'user'
-                    ? 'bg-primary text-primary-foreground'
-                    : 'bg-muted'
+                    ? 'gradient-accent text-white glow-sm'
+                    : 'glass-subtle'
                 )}
               >
                 <div className="text-sm whitespace-pre-wrap">{msg.content}</div>
                 {msg.role === 'assistant' && (
-                  <div className="flex items-center gap-1 mt-3 pt-2 border-t border-border/50">
-                    <Button variant="ghost" size="icon" className="h-7 w-7">
+                  <div className="flex items-center gap-1 mt-3 pt-2 border-t border-white/10 dark:border-white/5">
+                    <Button variant="ghost" size="icon" className="h-7 w-7 hover:glass">
                       <ThumbsUp className="h-3.5 w-3.5" />
                     </Button>
-                    <Button variant="ghost" size="icon" className="h-7 w-7">
+                    <Button variant="ghost" size="icon" className="h-7 w-7 hover:glass">
                       <ThumbsDown className="h-3.5 w-3.5" />
                     </Button>
-                    <Button variant="ghost" size="icon" className="h-7 w-7">
+                    <Button variant="ghost" size="icon" className="h-7 w-7 hover:glass">
                       <Copy className="h-3.5 w-3.5" />
                     </Button>
-                    <Button variant="ghost" size="icon" className="h-7 w-7">
+                    <Button variant="ghost" size="icon" className="h-7 w-7 hover:glass">
                       <RefreshCw className="h-3.5 w-3.5" />
                     </Button>
                   </div>
@@ -144,27 +149,27 @@ useEffect(() => {
           ))}
         </div>
       </ScrollArea>
-      <div className="p-4 border-t">
+      <div className="p-4 glass-subtle border-t border-white/10 dark:border-white/5">
         <div className="flex items-center gap-2">
-          <Button variant="ghost" size="icon">
+          <Button variant="ghost" size="icon" className="hover:glass">
             <Paperclip className="h-4 w-4" />
           </Button>
-          <div className="flex-1 flex items-center gap-2 bg-muted rounded-lg px-3 py-2">
+          <div className="flex-1 flex items-center gap-2 glass rounded-xl px-3 py-2.5">
             <input
               type="text"
               placeholder="Type a message..."
-              className="flex-1 bg-transparent text-sm outline-none"
+              className="flex-1 bg-transparent text-sm outline-none placeholder:text-muted-foreground"
             />
-            <Button variant="ghost" size="icon" className="h-8 w-8">
+            <Button variant="ghost" size="icon" className="h-8 w-8 hover:glass-subtle">
               <Mic className="h-4 w-4" />
             </Button>
           </div>
-          <Button size="icon">
+          <Button size="icon" className="gradient-accent text-white glow-sm hover:opacity-90 transition-opacity">
             <Send className="h-4 w-4" />
           </Button>
         </div>
       </div>
-    </Card>
+    </div>
   )
 }
 
@@ -181,26 +186,26 @@ function ChatSidebarDemo() {
   ]
 
   return (
-    <Card className="w-72 h-[400px] flex flex-col">
-      <CardHeader className="pb-3 border-b">
+    <div className="glass-card w-72 h-[400px] flex flex-col">
+      <div className="p-4 glass-subtle border-b border-white/10 dark:border-white/5">
         <div className="flex items-center justify-between">
-          <CardTitle className="text-sm font-medium">Conversations</CardTitle>
-          <Button variant="ghost" size="sm" className="h-8 gap-1">
+          <h3 className="text-sm font-semibold">Conversations</h3>
+          <Button variant="ghost" size="sm" className="h-8 gap-1 hover:glass">
             <MessageSquare className="h-3.5 w-3.5" />
             New
           </Button>
         </div>
-      </CardHeader>
+      </div>
       <ScrollArea className="flex-1">
         <div className="p-2 space-y-1">
           {conversations.map((conv) => (
             <button
               key={conv.id}
               className={cn(
-                'w-full text-left p-3 rounded-lg transition-colors',
+                'w-full text-left p-3 rounded-xl transition-all duration-200 group',
                 conv.active
-                  ? 'bg-primary/10 border border-primary/20'
-                  : 'hover:bg-muted'
+                  ? 'glass glow-sm'
+                  : 'hover:glass-subtle'
               )}
             >
               <div className="flex items-start justify-between">
@@ -222,7 +227,7 @@ function ChatSidebarDemo() {
           ))}
         </div>
       </ScrollArea>
-    </Card>
+    </div>
   )
 }
 
@@ -349,7 +354,7 @@ function ChatContainerDemo() {
           {/* Header */}
           <div className="p-3 border-b bg-muted/50 flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center">
+              <div className="icon-container-sm gradient-accent text-white">
                 <Bot className="h-4 w-4 text-primary-foreground" />
               </div>
               <div>
@@ -372,10 +377,10 @@ function ChatContainerDemo() {
                 </div>
               </div>
               <div className="flex gap-3 flex-row-reverse">
-                <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center">
+                <div className="icon-container-sm gradient-accent text-white">
                   <User className="h-4 w-4 text-primary-foreground" />
                 </div>
-                <div className="bg-primary text-primary-foreground rounded-lg p-3 max-w-[80%]">
+                <div className="gradient-accent text-white rounded-xl glow-sm p-3 max-w-[80%]">
                   <p className="text-sm">I need help with a React component</p>
                 </div>
               </div>

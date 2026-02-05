@@ -76,7 +76,7 @@ function FollowUpSuggestionsDemo() {
           {/* Vertical List */}
           <div>
             <p className="text-xs text-muted-foreground mb-2">Vertical List</p>
-            <div className="space-y-1 p-3 bg-muted/50 rounded-lg">
+            <div className="space-y-1 p-3 glass-subtle rounded-lg">
               {suggestions.map((suggestion, i) => (
                 <button
                   key={i}
@@ -160,7 +160,7 @@ function PromptSuggestionsDemo() {
                 {category.prompts.map((prompt, i) => (
                   <button
                     key={i}
-                    className="p-3 text-left text-sm border rounded-lg hover:bg-muted/50 hover:border-primary/50 transition-colors"
+                    className="p-3 text-left text-sm border rounded-lg hover:glass-subtle hover:border-primary/50 transition-colors"
                   >
                     {prompt}
                   </button>
@@ -242,14 +242,14 @@ function QuickRepliesDemo() {
               Card Style Options
             </p>
             <div className="grid grid-cols-2 gap-2">
-              <button className="p-4 border rounded-lg text-left hover:bg-muted/50 hover:border-primary/50 transition-colors">
+              <button className="p-4 border rounded-lg text-left hover:glass-subtle hover:border-primary/50 transition-colors">
                 <Wand2 className="h-5 w-5 text-primary mb-2" />
                 <p className="font-medium text-sm">Generate more</p>
                 <p className="text-xs text-muted-foreground">
                   Create additional variations
                 </p>
               </button>
-              <button className="p-4 border rounded-lg text-left hover:bg-muted/50 hover:border-primary/50 transition-colors">
+              <button className="p-4 border rounded-lg text-left hover:glass-subtle hover:border-primary/50 transition-colors">
                 <Sparkles className="h-5 w-5 text-purple-500 mb-2" />
                 <p className="font-medium text-sm">Improve this</p>
                 <p className="text-xs text-muted-foreground">
@@ -277,7 +277,7 @@ function ResponseActionsDemo() {
       <CardContent>
         <div className="space-y-4">
           {/* AI Response Example */}
-          <div className="p-4 bg-muted rounded-lg">
+          <div className="p-4 glass-subtle rounded-xl">
             <p className="text-sm">
               Here&apos;s a React hook that manages form state with validation.
               It supports multiple field types and provides error messages...
@@ -313,7 +313,7 @@ function ResponseActionsDemo() {
           <div className="p-4 border rounded-lg">
             <p className="text-xs text-muted-foreground mb-3">Click to apply</p>
             <div className="space-y-2">
-              <button className="w-full flex items-center gap-3 p-2 rounded-lg hover:bg-muted text-sm text-left">
+              <button className="w-full flex items-center gap-3 p-2 rounded-lg hover:glass-subtle text-sm text-left">
                 <div className="w-8 h-8 rounded bg-blue-500/10 flex items-center justify-center">
                   <Zap className="h-4 w-4 text-blue-500" />
                 </div>
@@ -324,7 +324,7 @@ function ResponseActionsDemo() {
                   </p>
                 </div>
               </button>
-              <button className="w-full flex items-center gap-3 p-2 rounded-lg hover:bg-muted text-sm text-left">
+              <button className="w-full flex items-center gap-3 p-2 rounded-lg hover:glass-subtle text-sm text-left">
                 <div className="w-8 h-8 rounded bg-purple-500/10 flex items-center justify-center">
                   <TrendingUp className="h-4 w-4 text-purple-500" />
                 </div>
@@ -335,7 +335,7 @@ function ResponseActionsDemo() {
                   </p>
                 </div>
               </button>
-              <button className="w-full flex items-center gap-3 p-2 rounded-lg hover:bg-muted text-sm text-left">
+              <button className="w-full flex items-center gap-3 p-2 rounded-lg hover:glass-subtle text-sm text-left">
                 <div className="w-8 h-8 rounded bg-green-500/10 flex items-center justify-center">
                   <Code className="h-4 w-4 text-green-500" />
                 </div>
@@ -411,7 +411,7 @@ function SuggestionChipsDemo() {
           </div>
 
           {selected.length > 0 && (
-            <div className="p-3 bg-muted/50 rounded-lg">
+            <div className="p-3 glass-subtle rounded-lg">
               <p className="text-xs text-muted-foreground mb-1">Selected:</p>
               <p className="text-sm">{selected.join(', ')}</p>
             </div>

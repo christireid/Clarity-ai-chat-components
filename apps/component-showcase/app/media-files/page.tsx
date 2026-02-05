@@ -103,7 +103,7 @@ function FileTreeDemo() {
       <div key={i}>
         <button
           className={cn(
-            'w-full flex items-center gap-2 py-1.5 px-2 rounded hover:bg-muted text-sm text-left',
+            'w-full flex items-center gap-2 py-1.5 px-2 rounded hover:glass-subtle text-sm text-left',
             depth > 0 && 'ml-4'
           )}
           onClick={() => item.type === 'folder' && toggleExpand(item.name)}
@@ -201,7 +201,7 @@ function ImageGalleryDemo() {
             {images.map((img) => (
               <div
                 key={img.id}
-                className="group relative aspect-square bg-muted rounded-lg overflow-hidden"
+                className="group relative aspect-square glass-subtle rounded-xl overflow-hidden"
               >
                 <div className="absolute inset-0 flex items-center justify-center">
                   <Image className="h-12 w-12 text-muted-foreground/30" />
@@ -225,7 +225,7 @@ function ImageGalleryDemo() {
             {images.map((img) => (
               <div
                 key={img.id}
-                className="flex items-center gap-3 p-3 border rounded-lg hover:bg-muted/50"
+                className="flex items-center gap-3 p-3 border rounded-lg hover:glass-subtle"
               >
                 <div className="w-12 h-12 bg-muted rounded flex items-center justify-center">
                   <Image className="h-6 w-6 text-muted-foreground" />
@@ -380,7 +380,7 @@ function AudioPlayerDemo() {
       <CardContent>
         <div className="space-y-4">
           {/* Compact Player */}
-          <div className="flex items-center gap-3 p-3 bg-muted/50 rounded-lg">
+          <div className="flex items-center gap-3 p-3 glass-subtle rounded-lg">
             <Button
               variant="outline"
               size="icon"
@@ -412,7 +412,7 @@ function AudioPlayerDemo() {
           </div>
 
           {/* Waveform Style */}
-          <div className="p-3 bg-muted/50 rounded-lg">
+          <div className="p-3 glass-subtle rounded-lg">
             <div className="flex items-center gap-3 mb-3">
               <Button
                 variant="default"
@@ -485,7 +485,7 @@ function FileViewerDemo() {
           </div>
 
           {/* Preview Area */}
-          <div className="h-[300px] bg-muted/30 flex items-center justify-center">
+          <div className="h-[300px] glass-subtle flex items-center justify-center">
             <div className="text-center">
               <FileText className="h-16 w-16 text-muted-foreground/30 mx-auto mb-3" />
               <p className="text-sm text-muted-foreground">Document Preview</p>

@@ -265,7 +265,7 @@ function TokenOptimizationDashboard() {
           <CardContent>
             <div className="space-y-3">
               {optimizationTips.map((tip, i) => (
-                <div key={i} className="p-3 rounded-lg bg-muted/50">
+                <div key={i} className="p-3 rounded-lg glass-subtle">
                   <div className="flex items-start justify-between gap-2">
                     <p className="text-sm font-medium">{tip.tip}</p>
                     {tip.status === 'enabled' ? (
@@ -439,7 +439,7 @@ function PromptManagementDashboard() {
 
       {/* Quick Actions */}
       <div className="grid grid-cols-4 gap-4">
-        <Card className="cursor-pointer hover:bg-muted/50 transition-colors">
+        <Card className="cursor-pointer hover:glass-subtle transition-colors">
           <CardContent className="p-4 flex items-center gap-3">
             <div className="w-10 h-10 rounded-lg bg-blue-500/10 flex items-center justify-center">
               <Upload className="h-5 w-5 text-blue-500" />
@@ -450,7 +450,7 @@ function PromptManagementDashboard() {
             </div>
           </CardContent>
         </Card>
-        <Card className="cursor-pointer hover:bg-muted/50 transition-colors">
+        <Card className="cursor-pointer hover:glass-subtle transition-colors">
           <CardContent className="p-4 flex items-center gap-3">
             <div className="w-10 h-10 rounded-lg bg-emerald-500/10 flex items-center justify-center">
               <Download className="h-5 w-5 text-emerald-500" />
@@ -463,7 +463,7 @@ function PromptManagementDashboard() {
             </div>
           </CardContent>
         </Card>
-        <Card className="cursor-pointer hover:bg-muted/50 transition-colors">
+        <Card className="cursor-pointer hover:glass-subtle transition-colors">
           <CardContent className="p-4 flex items-center gap-3">
             <div className="w-10 h-10 rounded-lg bg-purple-500/10 flex items-center justify-center">
               <Layers className="h-5 w-5 text-purple-500" />
@@ -474,7 +474,7 @@ function PromptManagementDashboard() {
             </div>
           </CardContent>
         </Card>
-        <Card className="cursor-pointer hover:bg-muted/50 transition-colors">
+        <Card className="cursor-pointer hover:glass-subtle transition-colors">
           <CardContent className="p-4 flex items-center gap-3">
             <div className="w-10 h-10 rounded-lg bg-orange-500/10 flex items-center justify-center">
               <Settings className="h-5 w-5 text-orange-500" />
@@ -592,10 +592,10 @@ function ConversationHistoryDashboard() {
             {conversations.map((conv) => (
               <div
                 key={conv.id}
-                className="flex items-center justify-between p-4 hover:bg-muted/50 cursor-pointer transition-colors"
+                className="flex items-center justify-between p-4 hover:glass-subtle cursor-pointer transition-colors"
               >
                 <div className="flex items-center gap-4">
-                  <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                  <div className="icon-container flex items-center justify-center">
                     <MessageSquare className="h-5 w-5 text-primary" />
                   </div>
                   <div>
@@ -774,7 +774,7 @@ function AgentObservabilityDashboard() {
               {recentTasks.map((task) => (
                 <div
                   key={task.id}
-                  className="flex items-center justify-between p-3 rounded-lg bg-muted/50"
+                  className="flex items-center justify-between p-3 rounded-lg glass-subtle"
                 >
                   <div className="flex items-center gap-3">
                     {task.status === 'running' ? (
@@ -1135,7 +1135,7 @@ function SDKDevToolsDashboard() {
                 {apiCalls.map((call) => (
                   <div
                     key={call.id}
-                    className="px-4 py-3 grid grid-cols-6 items-center hover:bg-muted/50 cursor-pointer text-sm"
+                    className="px-4 py-3 grid grid-cols-6 items-center hover:glass-subtle cursor-pointer text-sm"
                   >
                     <Badge className="w-fit" variant="outline">
                       {call.method}
@@ -1259,7 +1259,7 @@ function SDKDevToolsDashboard() {
                     'flex items-center gap-4 p-3 rounded-lg border transition-colors cursor-pointer',
                     i === 2
                       ? 'border-violet-500 bg-violet-500/5'
-                      : 'hover:bg-muted/50'
+                      : 'hover:glass-subtle'
                   )}
                 >
                   <div className="w-16 text-xs font-mono text-muted-foreground">
@@ -1327,7 +1327,7 @@ function SDKDevToolsDashboard() {
                 {modelComparisons.map((model, i) => (
                   <div
                     key={i}
-                    className="px-4 py-4 grid grid-cols-5 items-center hover:bg-muted/50 text-sm"
+                    className="px-4 py-4 grid grid-cols-5 items-center hover:glass-subtle text-sm"
                   >
                     <span className="font-medium">{model.model}</span>
                     <span>{model.latency}</span>

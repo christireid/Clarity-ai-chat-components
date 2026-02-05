@@ -571,3 +571,14 @@ code {
   @apply absolute inset-0 rounded-full bg-primary/20;
   animation: pulse-ring 2s ease-in-out infinite;
 }
+
+/* Wave Animation for Typing Indicator */
+@keyframes wave {
+  0%,
+  100% {
+    transform: scaleY(0.5);
+  }
+  50% {
+    transform: scaleY(1.5);
+  }
+}

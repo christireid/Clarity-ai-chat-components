@@ -28,6 +28,11 @@ import {
   Copy,
   LayoutDashboard,
   Sparkles,
+  Activity,
+  Grid3x3,
+  BookOpen,
+  Wand2,
+  GitCompare,
 } from 'lucide-react'
 import { useState, useEffect } from 'react'
 
@@ -46,6 +51,27 @@ const categories: NavCategory[] = [
     icon: <Home className="h-4 w-4" />,
     description: 'Component showcase home',
     componentCount: 0,
+  },
+  {
+    name: 'Playground',
+    href: '/playground',
+    icon: <Wand2 className="h-4 w-4" />,
+    description: 'Interactive component playground',
+    componentCount: 0,
+  },
+  {
+    name: 'Documentation',
+    href: '/docs',
+    icon: <BookOpen className="h-4 w-4" />,
+    description: 'Interactive component docs',
+    componentCount: 0,
+  },
+  {
+    name: 'Gallery',
+    href: '/gallery',
+    icon: <Grid3x3 className="h-4 w-4" />,
+    description: 'Browse all components',
+    componentCount: 180,
   },
   {
     name: 'Chat Components',
@@ -186,6 +212,34 @@ const categories: NavCategory[] = [
     icon: <Sparkles className="h-4 w-4" />,
     description: 'Advanced code & workflow components',
     componentCount: 60,
+  },
+  {
+    name: 'Glass Molecules',
+    href: '/glass-demo',
+    icon: <Sparkles className="h-4 w-4" />,
+    description: 'Reusable glassmorphism components',
+    componentCount: 6,
+  },
+  {
+    name: 'Performance',
+    href: '/performance',
+    icon: <Activity className="h-4 w-4" />,
+    description: 'Real-time performance monitoring',
+    componentCount: 0,
+  },
+  {
+    name: 'Testing',
+    href: '/testing',
+    icon: <Code2 className="h-4 w-4" />,
+    description: 'Testing utilities and examples',
+    componentCount: 59,
+  },
+  {
+    name: 'Compare',
+    href: '/compare',
+    icon: <GitCompare className="h-4 w-4" />,
+    description: 'Component comparison tool',
+    componentCount: 0,
   },
 ]
 

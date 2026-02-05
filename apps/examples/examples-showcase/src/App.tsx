@@ -1,51 +1,67 @@
 /**
  * Clarity Chat Components Showcase
  *
- * Interactive demonstration of all components, themes, and features
+ * Interactive demonstration with Slash Command System
  */
 
 import React, { useState } from 'react'
-import { ThemeProvider, ChatWindow, TokenCounter } from '@clarity-chat/react'
-import {
-  ModelSelector,
-  ContextManager,
-  UsageDashboard,
-  VoiceInput,
-  PerformanceDashboard,
-  CustomerSupportTemplate,
-  AIAssistantTemplate,
-  CodeHelperTemplate,
-  defaultLightTheme,
-  defaultDarkTheme,
-  oceanLightTheme as oceanTheme,
-  sunsetLightTheme as sunsetTheme,
-  forestLightTheme as forestTheme,
-  slateLightTheme as corporateTheme,
-  minimalLightTheme,
-  minimalDarkTheme,
-  vibrantLightTheme,
-  vibrantDarkTheme,
-} from '@clarity-chat/react'
+// import { ThemeProvider } from '@clarity-chat/react' // Not exported yet
+import { TokenOptimizationDemo } from './components/TokenOptimizationDemo'
+import { PromptSuggestionsDemo } from './demos/PromptSuggestionsDemo'
+import { FollowUpSuggestionsDemo } from './demos/FollowUpSuggestionsDemo'
+import NetworkStatusDemo from './components/NetworkStatusDemo'
+import { MediaComponentsShowcase } from './components/MediaComponentsShowcase'
+import { AnalyticsDashboardsShowcase } from './demos/AnalyticsDashboardsShowcase'
+// import { FeedbackComponentsView } from './views/FeedbackComponentsView' // Disabled - components not yet exported
+import { InputComponentsShowcase } from './components/InputComponentsShowcase'
+import { CommandInput } from './components/CommandInput'
+import { AIFeaturesDemo } from './components/AIFeaturesDemo'
+import { SearchNavigationDemo } from './demos/SearchNavigationDemo'
+import type { Command } from './components/CommandPalette'
+// Theme imports commented out until exported
+// import {
+//   defaultLightTheme,
+//   defaultDarkTheme,
+//   oceanLightTheme,
+//   sunsetLightTheme,
+//   forestLightTheme,
+//   slateLightTheme,
+//   vibrantLightTheme,
+//   vibrantDarkTheme,
+// } from '@clarity-chat/react'
 import type { Message } from '@clarity-chat/types'
 
-const themes = {
-  'Default Light': defaultLightTheme,
-  'Default Dark': defaultDarkTheme,
-  Ocean: oceanTheme,
-  Sunset: sunsetTheme,
-  Forest: forestTheme,
-  Corporate: corporateTheme,
-  'Minimal Light': minimalLightTheme,
-  'Minimal Dark': minimalDarkTheme,
-  'Vibrant Light': vibrantLightTheme,
-  'Vibrant Dark': vibrantDarkTheme,
-}
+// const themes = {
+//   'Default Light': defaultLightTheme,
+//   'Default Dark': defaultDarkTheme,
+//   'Ocean Light': oceanLightTheme,
+//   'Sunset Light': sunsetLightTheme,
+//   'Forest Light': forestLightTheme,
+//   'Slate Light': slateLightTheme,
+//   'Vibrant Light': vibrantLightTheme,
+//   'Vibrant Dark': vibrantDarkTheme,
+// }
 
-type View = 'components' | 'templates' | 'themes' | 'playground'
+type View =
+  | 'components'
+  | 'templates'
+  | 'themes'
+  | 'playground'
+  | 'token-optimization'
+  | 'prompt-suggestions'
+  | 'follow-up-suggestions'
+  | 'network-status'
+  | 'input-components'
+  | 'ai-features'
+  | 'media-components'
+  // | 'feedback-components' // Disabled - components not yet exported
+  | 'analytics-dashboards'
+  | 'search-navigation'
 
 export default function App() {
   const [currentView, setCurrentView] = useState<View>('playground')
-  const [selectedTheme, setSelectedTheme] = useState(defaultLightTheme)
+  // Theme functionality disabled until theme exports are available
+  // const [selectedTheme, setSelectedTheme] = useState(defaultLightTheme)
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
@@ -57,10 +73,9 @@ This is an interactive demonstration of all the features and components availabl
 ## Features You Can Try:
 - 🎨 **Theme Switching** - Try all 10 built-in themes
 - 💬 **Rich Messages** - Markdown, code highlighting, and more
-- 🎤 **Voice Input** - Click the microphone to speak
-- 📁 **File Upload** - Drag & drop or click to upload
 - 📊 **Usage Tracking** - See token counts and costs
 - ⚡ **Performance** - Monitor real-time performance
+- ⌨️ **Slash Commands** - Type / to see available commands
 
 ## Code Example:
 \`\`\`typescript
@@ -71,10 +86,227 @@ function App() {
 }
 \`\`\`
 
-Try sending a message below!`,
+Try typing **/** to see available commands!`,
       timestamp: new Date(),
     },
   ])
+
+  // Define slash commands
+  const commands: Command[] = [
+    {
+      id: 'clear',
+      label: '/clear',
+      description: 'Clear all messages from the chat',
+      icon: '🗑️',
+      category: 'chat',
+      action: () => {
+        setMessages([
+          {
+            id: Date.now().toString(),
+            role: 'assistant',
+            content: 'Chat cleared! Start a new conversation.',
+            timestamp: new Date(),
+          },
+        ])
+      },
+      shortcut: 'Ctrl+L',
+    },
+    {
+      id: 'help',
+      label: '/help',
+      description: 'Show help information and available commands',
+      icon: '❓',
+      category: 'help',
+      action: () => {
+        const helpMessage: Message = {
+          id: Date.now().toString(),
+          role: 'assistant',
+          content: `# Available Commands
+
+Type **/** to open the command palette at any time.
+
+## Chat Commands
+- **/clear** - Clear all messages
+- **/export** - Export chat history
+
+## Settings
+- **/model** - Change AI model
+- **/theme** - Switch theme
+- **/settings** - Open settings
+
+## View
+- **/components** - View component library
+- **/templates** - View templates
+- **/themes** - Browse themes
+- **/playground** - Return to playground
+- **/ai-features** - AI assistant features showcase
+- **/search** - Search & Navigation showcase
+
+## Tips
+- Use **↑** **↓** to navigate commands
+- Press **Enter** to execute
+- Press **Esc** to close palette`,
+          timestamp: new Date(),
+        }
+        setMessages((prev) => [...prev, helpMessage])
+      },
+    },
+    {
+      id: 'model',
+      label: '/model',
+      description: 'Change the AI model',
+      icon: '🤖',
+      category: 'settings',
+      action: () => {
+        const modelMessage: Message = {
+          id: Date.now().toString(),
+          role: 'assistant',
+          content: 'Model selection feature coming soon! You can change models from the settings panel.',
+          timestamp: new Date(),
+        }
+        setMessages((prev) => [...prev, modelMessage])
+      },
+    },
+    // Theme command disabled until theme exports are available
+    // {
+    //   id: 'theme',
+    //   label: '/theme',
+    //   description: 'Switch between available themes',
+    //   icon: '🎨',
+    //   category: 'settings',
+    //   action: () => {
+    //     const themeNames = Object.keys(themes)
+    //     const currentIndex = themeNames.findIndex(
+    //       (name) => themes[name as keyof typeof themes] === selectedTheme
+    //     )
+    //     const nextIndex = (currentIndex + 1) % themeNames.length
+    //     const nextTheme = themes[themeNames[nextIndex] as keyof typeof themes]
+    //     setSelectedTheme(nextTheme)
+
+    //     const themeMessage: Message = {
+    //       id: Date.now().toString(),
+    //       role: 'assistant',
+    //       content: `Theme changed to **${themeNames[nextIndex]}**! 🎨`,
+    //       timestamp: new Date(),
+    //     }
+    //     setMessages((prev) => [...prev, themeMessage])
+    //   },
+    //   shortcut: 'Ctrl+T',
+    // },
+    {
+      id: 'settings',
+      label: '/settings',
+      description: 'Open settings panel',
+      icon: '⚙️',
+      category: 'settings',
+      action: () => {
+        const settingsMessage: Message = {
+          id: Date.now().toString(),
+          role: 'assistant',
+          content: 'Settings panel opened! Configure your preferences here.',
+          timestamp: new Date(),
+        }
+        setMessages((prev) => [...prev, settingsMessage])
+      },
+      shortcut: 'Ctrl+,',
+    },
+    {
+      id: 'export',
+      label: '/export',
+      description: 'Export chat history to file',
+      icon: '💾',
+      category: 'chat',
+      action: () => {
+        const chatExport = JSON.stringify(messages, null, 2)
+        const blob = new Blob([chatExport], { type: 'application/json' })
+        const url = URL.createObjectURL(blob)
+        const a = document.createElement('a')
+        a.href = url
+        a.download = `chat-export-${Date.now()}.json`
+        a.click()
+        URL.revokeObjectURL(url)
+
+        const exportMessage: Message = {
+          id: Date.now().toString(),
+          role: 'assistant',
+          content: 'Chat history exported successfully! ✅',
+          timestamp: new Date(),
+        }
+        setMessages((prev) => [...prev, exportMessage])
+      },
+      shortcut: 'Ctrl+E',
+    },
+    {
+      id: 'components',
+      label: '/components',
+      description: 'View component library',
+      icon: '📦',
+      category: 'view',
+      action: () => {
+        setCurrentView('components')
+      },
+    },
+    {
+      id: 'templates',
+      label: '/templates',
+      description: 'View pre-built templates',
+      icon: '📋',
+      category: 'view',
+      action: () => {
+        setCurrentView('templates')
+      },
+    },
+    {
+      id: 'themes',
+      label: '/themes',
+      description: 'Browse all available themes',
+      icon: '🌈',
+      category: 'view',
+      action: () => {
+        setCurrentView('themes')
+      },
+    },
+    {
+      id: 'playground',
+      label: '/playground',
+      description: 'Return to interactive playground',
+      icon: '🎮',
+      category: 'view',
+      action: () => {
+        setCurrentView('playground')
+      },
+    },
+    {
+      id: 'ai-features',
+      label: '/ai-features',
+      description: 'View AI assistant features showcase',
+      icon: '🤖',
+      category: 'view',
+      action: () => {
+        setCurrentView('ai-features')
+      },
+    },
+    {
+      id: 'media-components',
+      label: '/media',
+      description: 'View media components showcase',
+      icon: '🎬',
+      category: 'view',
+      action: () => {
+        setCurrentView('media-components')
+      },
+    },
+    {
+      id: 'search-navigation',
+      label: '/search',
+      description: 'View Search & Navigation showcase',
+      icon: '🔍',
+      category: 'view',
+      action: () => {
+        setCurrentView('search-navigation')
+      },
+    },
+  ]
 
   const handleSendMessage = async (content: string) => {
     // Add user message
@@ -100,15 +332,65 @@ Try sending a message below!`,
 
   const renderView = () => {
     switch (currentView) {
+      case 'token-optimization':
+        return <TokenOptimizationDemo />
+
+      case 'prompt-suggestions':
+        return <PromptSuggestionsDemo />
+
+      case 'follow-up-suggestions':
+        return <FollowUpSuggestionsDemo />
+
+      case 'network-status':
+        return <NetworkStatusDemo />
+
+      case 'input-components':
+        return <InputComponentsShowcase />
+
+      case 'ai-features':
+        return <AIFeaturesDemo />
+
+      case 'media-components':
+        return <MediaComponentsShowcase />
+
+      case 'analytics-dashboards':
+        return <AnalyticsDashboardsShowcase />
+
+      case 'search-navigation':
+        return <SearchNavigationDemo />
+
       case 'playground':
         return (
           <div className="playground">
-            <ChatWindow
-              messages={messages}
-              onSendMessage={handleSendMessage}
-              enableFileUpload
-              enableVoiceInput
-            />
+            <div className="playground-chat">
+              <div className="messages-container">
+                {messages.map((message) => (
+                  <div key={message.id} className={`message message-${message.role}`}>
+                    <div className="message-avatar">
+                      {message.role === 'user' ? '👤' : '🤖'}
+                    </div>
+                    <div className="message-bubble">
+                      <div className="message-header">
+                        <span className="message-author">
+                          {message.role === 'user' ? 'You' : 'Assistant'}
+                        </span>
+                        <span className="message-time">
+                          {message.timestamp.toLocaleTimeString()}
+                        </span>
+                      </div>
+                      <div className="message-content">
+                        {message.content.split('\n').map((line, i) => (
+                          <p key={i}>{line}</p>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <div className="input-container">
+                <CommandInput onSendMessage={handleSendMessage} commands={commands} />
+              </div>
+            </div>
           </div>
         )
 
@@ -120,43 +402,28 @@ Try sending a message below!`,
               <div className="template-card">
                 <h3>Customer Support</h3>
                 <p>Professional support chat with FAQ and escalation</p>
-                <CustomerSupportTemplate companyName="Demo Corp" />
+                <p className="template-placeholder">Template preview coming soon</p>
               </div>
               <div className="template-card">
                 <h3>AI Assistant</h3>
                 <p>General-purpose AI assistant with multiple models</p>
+                <p className="template-placeholder">Template preview coming soon</p>
               </div>
               <div className="template-card">
                 <h3>Code Helper</h3>
                 <p>Programming assistant with syntax highlighting</p>
+                <p className="template-placeholder">Template preview coming soon</p>
               </div>
             </div>
           </div>
         )
 
       case 'themes':
+        // Themes view commented out until ThemeProvider is exported
         return (
           <div className="themes-view">
             <h2>Theme Gallery</h2>
-            <div className="theme-grid">
-              {Object.entries(themes).map(([name, theme]) => (
-                <div
-                  key={name}
-                  className="theme-preview-card"
-                  onClick={() => setSelectedTheme(theme)}
-                >
-                  <h3>{name}</h3>
-                  <div className="mini-chat-preview">
-                    <ThemeProvider theme={theme}>
-                      <div className="mini-messages">
-                        <div className="mini-message user">Hello!</div>
-                        <div className="mini-message assistant">Hi there!</div>
-                      </div>
-                    </ThemeProvider>
-                  </div>
-                </div>
-              ))}
-            </div>
+            <p>Theme switching is temporarily unavailable. The app uses the default CSS theme.</p>
           </div>
         )
 
@@ -203,8 +470,8 @@ Try sending a message below!`,
   }
 
   return (
-    <ThemeProvider theme={selectedTheme}>
-      <div className="showcase-app">
+    // ThemeProvider removed until exported
+    <div className="showcase-app">
         <header className="showcase-header">
           <h1>Clarity Chat Components</h1>
           <p>Production-ready AI chat components for React</p>
@@ -224,6 +491,54 @@ Try sending a message below!`,
             Components
           </button>
           <button
+            className={currentView === 'prompt-suggestions' ? 'active' : ''}
+            onClick={() => setCurrentView('prompt-suggestions')}
+          >
+            Prompt Suggestions
+          </button>
+          <button
+            className={currentView === 'follow-up-suggestions' ? 'active' : ''}
+            onClick={() => setCurrentView('follow-up-suggestions')}
+          >
+            Follow-Up Suggestions
+          </button>
+          <button
+            className={currentView === 'token-optimization' ? 'active' : ''}
+            onClick={() => setCurrentView('token-optimization')}
+          >
+            Token Optimization
+          </button>
+          <button
+            className={currentView === 'network-status' ? 'active' : ''}
+            onClick={() => setCurrentView('network-status')}
+          >
+            Network Status
+          </button>
+          <button
+            className={currentView === 'input-components' ? 'active' : ''}
+            onClick={() => setCurrentView('input-components')}
+          >
+            Input Components
+          </button>
+          <button
+            className={currentView === 'ai-features' ? 'active' : ''}
+            onClick={() => setCurrentView('ai-features')}
+          >
+            AI Features
+          </button>
+          <button
+            className={currentView === 'media-components' ? 'active' : ''}
+            onClick={() => setCurrentView('media-components')}
+          >
+            Media Components
+          </button>
+          <button
+            className={currentView === 'search-navigation' ? 'active' : ''}
+            onClick={() => setCurrentView('search-navigation')}
+          >
+            Search & Navigation
+          </button>
+          <button
             className={currentView === 'templates' ? 'active' : ''}
             onClick={() => setCurrentView('templates')}
           >
@@ -237,7 +552,8 @@ Try sending a message below!`,
           </button>
         </nav>
 
-        <div className="showcase-controls">
+        {/* Theme selector disabled until theme exports are available */}
+        {/* <div className="showcase-controls">
           <label>
             Current Theme:
             <select
@@ -257,7 +573,7 @@ Try sending a message below!`,
               ))}
             </select>
           </label>
-        </div>
+        </div> */}
 
         <main className="showcase-main">{renderView()}</main>
 
@@ -271,6 +587,6 @@ Try sending a message below!`,
           </p>
         </footer>
       </div>
-    </ThemeProvider>
+    // ThemeProvider closing tag removed
   )
 }

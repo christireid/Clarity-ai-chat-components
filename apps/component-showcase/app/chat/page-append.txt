@@ -1,0 +1,22 @@
+
+# Add this after the "SSE Streaming" TabsTrigger (around line 2101):
+
+          <TabsTrigger
+            value="rate-limiting"
+            className="rounded-lg gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+          >
+            <Gauge className="h-4 w-4" />
+            Rate Limiting
+          </TabsTrigger>
+
+# Add this after the streaming TabsContent (around line 2140):
+
+        <TabsContent value="rate-limiting" className="space-y-8">
+          <ComponentSection
+            title="Request Queue & Rate Limiting"
+            description="Interactive demonstration of rate limiting, request queuing, and priority management"
+            icon={Gauge}
+          >
+            <RateLimitingDemo />
+          </ComponentSection>
+        </TabsContent>

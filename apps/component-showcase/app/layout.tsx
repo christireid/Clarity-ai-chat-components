@@ -1,6 +1,11 @@
 import type { Metadata } from 'next'
 import './globals.css'
+import './markdown-loader' // Pre-load markdown dependencies
 import { Sidebar } from '@/components/sidebar'
+import {
+  PerformanceMonitorProvider,
+  PerformanceMonitorDisplay,
+} from '@/components/performance-monitor'
 
 export const metadata: Metadata = {
   title: 'Clarity Chat Component Showcase',
@@ -31,10 +36,13 @@ export default function RootLayout({
         />
       </head>
       <body className="font-sans antialiased">
-        <Sidebar />
-        <main className="ml-64 min-h-screen p-8 transition-all duration-300">
-          {children}
-        </main>
+        <PerformanceMonitorProvider>
+          <Sidebar />
+          <main className="ml-64 min-h-screen p-8 transition-all duration-300">
+            {children}
+          </main>
+          <PerformanceMonitorDisplay />
+        </PerformanceMonitorProvider>
       </body>
     </html>
   )

@@ -55,7 +55,7 @@ function ThemeSwitcherDemo() {
             <p className="text-xs text-muted-foreground mb-2">
               Segmented Control
             </p>
-            <div className="inline-flex items-center p-1 bg-muted rounded-lg">
+            <div className="inline-flex items-center p-1 glass-subtle rounded-xl">
               {themes.map((t) => (
                 <button
                   key={t.id}
@@ -325,7 +325,7 @@ function AppearanceSettingsDemo() {
                 </Button>
               ))}
             </div>
-            <div className="mt-3 p-3 bg-muted rounded-lg">
+            <div className="mt-3 p-3 glass-subtle rounded-xl">
               <p
                 className={cn(
                   fontSize === 'small' && 'text-xs',

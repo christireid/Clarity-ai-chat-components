@@ -85,7 +85,7 @@ function TokenCounterDemo() {
                 {percentage.toFixed(1)}%
               </span>
             </div>
-            <div className="h-3 bg-muted rounded-full overflow-hidden">
+            <div className="h-3 glass-subtle rounded-xl-full overflow-hidden">
               <div
                 className={cn(
                   'h-full rounded-full transition-all',
@@ -178,7 +178,7 @@ function TokenBudgetDemo() {
                 {(budget.daily.limit / 1000).toFixed(0)}K
               </span>
             </div>
-            <div className="h-2 bg-muted rounded-full overflow-hidden">
+            <div className="h-2 glass-subtle rounded-xl-full overflow-hidden">
               <div
                 className="h-full bg-blue-500 rounded-full"
                 style={{
@@ -200,7 +200,7 @@ function TokenBudgetDemo() {
                 {(budget.monthly.limit / 1000000).toFixed(0)}M
               </span>
             </div>
-            <div className="h-2 bg-muted rounded-full overflow-hidden">
+            <div className="h-2 glass-subtle rounded-xl-full overflow-hidden">
               <div
                 className="h-full bg-purple-500 rounded-full"
                 style={{
@@ -358,7 +358,7 @@ function CostTrackingDemo() {
                     <span className="font-medium">{model.name}</span>
                     <span className="text-muted-foreground">{model.cost}</span>
                   </div>
-                  <div className="h-2 bg-muted rounded-full overflow-hidden">
+                  <div className="h-2 glass-subtle rounded-xl-full overflow-hidden">
                     <div
                       className={cn('h-full rounded-full', colors[i])}
                       style={{ width: `${model.percent}%` }}

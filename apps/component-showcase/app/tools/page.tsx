@@ -202,7 +202,7 @@ function ToolExecutionDemo() {
               )}
             >
               <button
-                className="w-full flex items-center gap-3 p-3 hover:bg-muted/50 transition-colors text-left"
+                className="w-full flex items-center gap-3 p-3 hover:glass-subtle/50 transition-colors text-left"
                 onClick={() =>
                   setExpanded((prev) =>
                     prev.includes(exec.id)
@@ -310,7 +310,7 @@ function WebSearchResultsDemo() {
             {results.map((result, i) => (
               <div
                 key={i}
-                className="p-3 rounded-lg border hover:bg-muted/50 transition-colors"
+                className="p-3 rounded-lg border hover:glass-subtle/50 transition-colors"
               >
                 <a
                   href={result.url}

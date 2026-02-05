@@ -282,7 +282,7 @@ function ErrorStatesDemo() {
           </div>
 
           {/* API Error */}
-          <div className="p-4 border rounded-lg bg-muted/50">
+          <div className="p-4 border rounded-lg glass-subtle">
             <div className="flex items-start gap-3">
               <Zap className="h-5 w-5 text-muted-foreground mt-0.5" />
               <div className="flex-1">
@@ -464,7 +464,7 @@ function NotificationCenterDemo() {
             <div
               key={notif.id}
               className={cn(
-                'flex items-start gap-3 p-3 rounded-lg hover:bg-muted/50 cursor-pointer',
+                'flex items-start gap-3 p-3 rounded-lg hover:glass-subtle cursor-pointer',
                 !notif.read && 'bg-primary/5'
               )}
             >
