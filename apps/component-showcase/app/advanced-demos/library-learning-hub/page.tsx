@@ -1,8 +1,9 @@
 'use client'
 
-import { useState, useRef, useEffect, useCallback, useMemo } from 'react'
+import { useState, useRef, useCallback, useMemo } from 'react'
 import { PageHeader } from '@/components/component-section'
 import { cn } from '@clarity-chat/primitives'
+import { useAutoScroll, useClipboard } from '@clarity-chat/react/internal'
 import {
   Send,
   GraduationCap,
@@ -48,6 +49,7 @@ import {
 import { ChatSidebar as LibrarySidebar } from './components/chat-sidebar'
 import {
   SlashCommandMenu,
+  SLASH_COMMANDS,
   type SlashCommand,
 } from './components/slash-commands'
 import { MentionPopup, type MentionItem } from './components/mention-popup'
@@ -70,19 +72,8 @@ const knowledgeBase = KNOWLEDGE_BASE
 
 export const dynamic = 'force-dynamic'
 
-// Slash commands definition
-const slashCommands: SlashCommand[] = [
-  {
-    id: 'components',
-    label: '/components',
-    description: 'List all components',
-  },
-  { id: 'hooks', label: '/hooks', description: 'List all hooks' },
-  { id: 'adapters', label: '/adapters', description: 'Show adapter docs' },
-  { id: 'example', label: '/example [name]', description: 'Show code example' },
-  { id: 'memory', label: '/memory', description: 'Memory system docs' },
-  { id: 'tokens', label: '/tokens', description: 'Token optimization docs' },
-]
+// Use built-in slash commands from the component
+const slashCommands = SLASH_COMMANDS
 
 // Mention items
 const mentionItems: MentionItem[] = [
@@ -269,7 +260,8 @@ export default function LibraryLearningHubPage() {
   const [editingMessageId, setEditingMessageId] = useState<string | null>(null)
   const [editingText, setEditingText] = useState('')
 
-  const scrollRef = useRef<HTMLDivElement>(null)
+  const { copy } = useClipboard()
+  const streamCancelRef = useRef<(() => void) | null>(null)
   const inputRef = useRef<HTMLTextAreaElement>(null)
 
   const activeConversation =
@@ -278,13 +270,9 @@ export default function LibraryLearningHubPage() {
     () => activeConversation?.messages ?? [],
     [activeConversation?.messages]
   )
-
-  // Auto-scroll
-  useEffect(() => {
-    if (scrollRef.current) {
-      scrollRef.current.scrollTop = scrollRef.current.scrollHeight
-    }
-  }, [messages, streamingText, activeThinking])
+  const { scrollRef } = useAutoScroll({
+    dependencies: [messages, streamingText, activeThinking],
+  })
 
   // Update messages helper
   const updateMessages = useCallback(
@@ -300,33 +288,49 @@ export default function LibraryLearningHubPage() {
     [activeConvId]
   )
 
-  // Input handling
+  const cancelStreaming = useCallback(() => {
+    streamCancelRef.current?.()
+    streamCancelRef.current = null
+    setIsStreaming(false)
+    setStreamingText('')
+    setActiveThinking([])
+  }, [])
+
+  const handleSelectConversation = useCallback(
+    (id: string) => {
+      cancelStreaming()
+      setActiveConvId(id)
+    },
+    [cancelStreaming]
+  )
+
+  // Input handling - only trigger slash menu when / is first char or follows whitespace
   const handleInputChange = (value: string) => {
     setInput(value)
     const lastChar = value.slice(-1)
-    const beforeCursor = value
+    const charBeforeLast = value.length >= 2 ? value[value.length - 2] : ''
 
-    if (lastChar === '/') {
+    if (lastChar === '/' && (value.length === 1 || /\s/.test(charBeforeLast))) {
       setShowSlashMenu(true)
       setSlashFilter('')
       setShowMentionMenu(false)
     } else if (showSlashMenu) {
-      const slashIdx = beforeCursor.lastIndexOf('/')
-      if (slashIdx >= 0) {
-        setSlashFilter(beforeCursor.slice(slashIdx + 1).toLowerCase())
+      const slashIdx = value.lastIndexOf('/')
+      if (slashIdx >= 0 && (slashIdx === 0 || /\s/.test(value[slashIdx - 1]))) {
+        setSlashFilter(value.slice(slashIdx + 1).toLowerCase())
       } else {
         setShowSlashMenu(false)
       }
     }
 
-    if (lastChar === '@') {
+    if (lastChar === '@' && (value.length === 1 || /\s/.test(charBeforeLast))) {
       setShowMentionMenu(true)
       setMentionFilter('')
       setShowSlashMenu(false)
     } else if (showMentionMenu) {
-      const atIdx = beforeCursor.lastIndexOf('@')
-      if (atIdx >= 0) {
-        setMentionFilter(beforeCursor.slice(atIdx + 1).toLowerCase())
+      const atIdx = value.lastIndexOf('@')
+      if (atIdx >= 0 && (atIdx === 0 || /\s/.test(value[atIdx - 1]))) {
+        setMentionFilter(value.slice(atIdx + 1).toLowerCase())
       } else {
         setShowMentionMenu(false)
       }
@@ -417,7 +421,7 @@ export default function LibraryLearningHubPage() {
     setIsStreaming(true)
     setStreamingText('')
 
-    const cancelStream = simulateStreaming(
+    streamCancelRef.current = simulateStreaming(
       responseData.response,
       (chunk) => setStreamingText((prev) => prev + chunk),
       () => {
@@ -502,6 +506,7 @@ export default function LibraryLearningHubPage() {
 
   // Conversation management
   const handleNewConversation = () => {
+    cancelStreaming()
     const conv = createDefaultConversation()
     setConversations((prev) => [conv, ...prev])
     setActiveConvId(conv.id)
@@ -509,6 +514,7 @@ export default function LibraryLearningHubPage() {
 
   const handleDeleteConversation = (id: string) => {
     if (conversations.length <= 1) return
+    if (id === activeConvId) cancelStreaming()
     setConversations((prev) => prev.filter((c) => c.id !== id))
     if (id === activeConvId) {
       setActiveConvId(conversations.find((c) => c.id !== id)!.id)
@@ -617,7 +623,7 @@ export default function LibraryLearningHubPage() {
           <LibrarySidebar
             conversations={conversations}
             activeConversationId={activeConvId}
-            onSelectConversation={setActiveConvId}
+            onSelectConversation={handleSelectConversation}
             onNewConversation={handleNewConversation}
             onDeleteConversation={handleDeleteConversation}
             savedPrompts={savedPrompts}
@@ -730,9 +736,7 @@ export default function LibraryLearningHubPage() {
                             role={msg.role as 'user' | 'assistant'}
                             feedback={msg.feedback}
                             onFeedback={(fb) => handleFeedback(msg.id, fb)}
-                            onCopy={() =>
-                              navigator.clipboard?.writeText(msg.content)
-                            }
+                            onCopy={() => copy(msg.content)}
                             onRegenerate={
                               msg.role === 'assistant'
                                 ? () => handleRegenerate(msg.id)

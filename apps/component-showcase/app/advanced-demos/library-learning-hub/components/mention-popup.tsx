@@ -43,42 +43,65 @@ const MENTION_ITEMS: MentionItem[] = [
 ]
 
 const typeConfig = {
-  component: { icon: Layers, color: 'text-blue-500', bg: 'bg-blue-500/10', label: 'Component' },
-  hook: { icon: Code2, color: 'text-green-500', bg: 'bg-green-500/10', label: 'Hook' },
-  adapter: { icon: Plug, color: 'text-orange-500', bg: 'bg-orange-500/10', label: 'Adapter' },
+  component: {
+    icon: Layers,
+    color: 'text-blue-500',
+    bg: 'bg-blue-500/10',
+    label: 'Component',
+  },
+  hook: {
+    icon: Code2,
+    color: 'text-green-500',
+    bg: 'bg-green-500/10',
+    label: 'Hook',
+  },
+  adapter: {
+    icon: Plug,
+    color: 'text-orange-500',
+    bg: 'bg-orange-500/10',
+    label: 'Adapter',
+  },
 }
 
-interface MentionPopupProps {
+export interface MentionPopupProps {
+  items?: MentionItem[]
   filter: string
   onSelect: (item: MentionItem) => void
-  visible: boolean
+  onClose?: () => void
+  visible?: boolean
   className?: string
 }
 
 export function MentionPopup({
+  items,
   filter,
   onSelect,
-  visible,
+  onClose,
+  visible = true,
   className,
 }: MentionPopupProps) {
+  const sourceItems = items ?? MENTION_ITEMS
   const filteredItems = useMemo(() => {
-    if (!filter) return MENTION_ITEMS
+    if (!filter) return sourceItems
     const lowerFilter = filter.toLowerCase()
-    return MENTION_ITEMS.filter(
+    return sourceItems.filter(
       (item) =>
         item.label.toLowerCase().includes(lowerFilter) ||
         item.type.toLowerCase().includes(lowerFilter)
     )
-  }, [filter])
+  }, [filter, sourceItems])
 
   if (!visible || filteredItems.length === 0) return null
 
   // Group by type
-  const grouped = filteredItems.reduce<Record<string, MentionItem[]>>((acc, item) => {
-    if (!acc[item.type]) acc[item.type] = []
-    acc[item.type].push(item)
-    return acc
-  }, {})
+  const grouped = filteredItems.reduce<Record<string, MentionItem[]>>(
+    (acc, item) => {
+      if (!acc[item.type]) acc[item.type] = []
+      acc[item.type].push(item)
+      return acc
+    },
+    {}
+  )
 
   return (
     <div
@@ -120,11 +143,19 @@ export function MentionPopup({
                     onClick={() => onSelect(item)}
                     className="flex items-center gap-2.5 w-full px-3 py-1.5 rounded-lg hover:bg-muted/70 transition-colors text-left"
                   >
-                    <div className={cn('w-1.5 h-1.5 rounded-full', config.color.replace('text-', 'bg-'))} />
+                    <div
+                      className={cn(
+                        'w-1.5 h-1.5 rounded-full',
+                        config.color.replace('text-', 'bg-')
+                      )}
+                    />
                     <span className="text-sm font-mono">@{item.label}</span>
                     <Badge
                       variant="outline"
-                      className={cn('text-[9px] px-1.5 py-0 ml-auto', config.color)}
+                      className={cn(
+                        'text-[9px] px-1.5 py-0 ml-auto',
+                        config.color
+                      )}
                     >
                       {config.label}
                     </Badge>
@@ -138,7 +169,11 @@ export function MentionPopup({
 
       <div className="px-3 py-1.5 border-t bg-muted/20">
         <p className="text-[10px] text-muted-foreground">
-          Type <kbd className="px-1 py-0.5 rounded bg-muted text-[10px] font-mono">@</kbd> followed by a name to mention
+          Type{' '}
+          <kbd className="px-1 py-0.5 rounded bg-muted text-[10px] font-mono">
+            @
+          </kbd>{' '}
+          followed by a name to mention
         </p>
       </div>
     </div>

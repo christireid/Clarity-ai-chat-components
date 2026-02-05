@@ -1,8 +1,9 @@
 'use client'
 
-import { useState, useRef, useEffect, useCallback, useMemo } from 'react'
+import { useState, useRef, useCallback, useMemo } from 'react'
 import { PageHeader } from '@/components/component-section'
 import { cn } from '@clarity-chat/primitives'
+import { useAutoScroll, useClipboard } from '@clarity-chat/react/internal'
 import {
   Send,
   Globe,
@@ -350,7 +351,8 @@ export default function DeepResearchAssistantPage() {
   const [editingMessageId, setEditingMessageId] = useState<string | null>(null)
   const [editingText, setEditingText] = useState('')
 
-  const scrollRef = useRef<HTMLDivElement>(null)
+  const { copy } = useClipboard()
+  const streamCancelRef = useRef<(() => void) | null>(null)
   const inputRef = useRef<HTMLTextAreaElement>(null)
 
   const activeConversation =
@@ -359,11 +361,9 @@ export default function DeepResearchAssistantPage() {
     () => activeConversation?.messages ?? [],
     [activeConversation?.messages]
   )
-
-  useEffect(() => {
-    if (scrollRef.current)
-      scrollRef.current.scrollTop = scrollRef.current.scrollHeight
-  }, [messages, streamingText, activeThinking, activePipeline])
+  const { scrollRef } = useAutoScroll({
+    dependencies: [messages, streamingText, activeThinking, activePipeline],
+  })
 
   const updateMessages = useCallback(
     (newMessages: ChatMessage[]) => {
@@ -376,6 +376,24 @@ export default function DeepResearchAssistantPage() {
       )
     },
     [activeConvId]
+  )
+
+  const cancelStreaming = useCallback(() => {
+    streamCancelRef.current?.()
+    streamCancelRef.current = null
+    setIsStreaming(false)
+    setStreamingText('')
+    setActiveThinking([])
+    setActivePipeline([])
+    setActiveTools([])
+  }, [])
+
+  const handleSelectConversation = useCallback(
+    (id: string) => {
+      cancelStreaming()
+      setActiveConvId(id)
+    },
+    [cancelStreaming]
   )
 
   // Slash commands
@@ -518,7 +536,7 @@ export default function DeepResearchAssistantPage() {
     setIsStreaming(true)
     setStreamingText('')
 
-    simulateStreaming(
+    streamCancelRef.current = simulateStreaming(
       response,
       (chunk) => setStreamingText((prev) => prev + chunk),
       () => {
@@ -687,14 +705,16 @@ export default function DeepResearchAssistantPage() {
           <ResearchSidebar
             conversations={conversations}
             activeConversationId={activeConvId}
-            onSelectConversation={setActiveConvId}
+            onSelectConversation={handleSelectConversation}
             onNewConversation={() => {
+              cancelStreaming()
               const c = createConversation()
               setConversations((prev) => [c, ...prev])
               setActiveConvId(c.id)
             }}
             onDeleteConversation={(id) => {
               if (conversations.length <= 1) return
+              if (id === activeConvId) cancelStreaming()
               setConversations((prev) => prev.filter((c) => c.id !== id))
               if (id === activeConvId)
                 setActiveConvId(conversations.find((c) => c.id !== id)!.id)
@@ -807,9 +827,7 @@ export default function DeepResearchAssistantPage() {
                             role={msg.role as 'user' | 'assistant'}
                             feedback={msg.feedback}
                             onFeedback={(fb) => handleFeedback(msg.id, fb)}
-                            onCopy={() =>
-                              navigator.clipboard?.writeText(msg.content)
-                            }
+                            onCopy={() => copy(msg.content)}
                             onRegenerate={
                               msg.role === 'assistant'
                                 ? () => handleRegenerate(msg.id)

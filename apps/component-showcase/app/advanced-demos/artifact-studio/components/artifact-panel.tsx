@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { cn } from '@clarity-chat/primitives'
+import { useClipboard } from '@clarity-chat/react/internal'
 import {
   X,
   Copy,
@@ -73,7 +74,7 @@ export function ArtifactPanel({
   className,
 }: ArtifactPanelProps) {
   const [isFullscreen, setIsFullscreen] = useState(false)
-  const [copied, setCopied] = useState(false)
+  const { copy, copied } = useClipboard({ timeout: 2000 })
   const [showVersionDropdown, setShowVersionDropdown] = useState(false)
   const [selectedVersionIdx, setSelectedVersionIdx] = useState<
     Record<string, number>
@@ -81,17 +82,14 @@ export function ArtifactPanel({
 
   const activeArtifact = artifacts.find((a) => a.id === activeArtifactId)
   const currentVersionIdx = activeArtifact
-    ? selectedVersionIdx[activeArtifact.id] ?? activeArtifact.versions.length - 1
+    ? (selectedVersionIdx[activeArtifact.id] ??
+      activeArtifact.versions.length - 1)
     : 0
   const currentVersion = activeArtifact?.versions[currentVersionIdx]
   const displayContent =
     currentVersion?.content ?? activeArtifact?.content ?? ''
 
-  const handleCopy = () => {
-    navigator.clipboard?.writeText(displayContent)
-    setCopied(true)
-    setTimeout(() => setCopied(false), 2000)
-  }
+  const handleCopy = () => copy(displayContent)
 
   const handleDownload = () => {
     if (!activeArtifact) return
@@ -211,9 +209,7 @@ export function ArtifactPanel({
                 <span className={typeColors[artifact.type]}>
                   {typeIcons[artifact.type]}
                 </span>
-                <span className="max-w-[120px] truncate">
-                  {artifact.title}
-                </span>
+                <span className="max-w-[120px] truncate">{artifact.title}</span>
                 {artifact.versions.length > 1 && (
                   <span className="text-[9px] bg-muted px-1 rounded">
                     v{artifact.versions.length}
@@ -270,9 +266,7 @@ export function ArtifactPanel({
             {activeArtifact.versions.length > 1 && (
               <div className="relative">
                 <button
-                  onClick={() =>
-                    setShowVersionDropdown(!showVersionDropdown)
-                  }
+                  onClick={() => setShowVersionDropdown(!showVersionDropdown)}
                   className="flex items-center gap-1.5 px-2 py-1 rounded-md hover:bg-muted transition-colors text-xs text-muted-foreground"
                 >
                   <Clock className="h-3 w-3" />

@@ -16,14 +16,17 @@ import {
   Clock,
   Wrench,
 } from 'lucide-react'
-import { type ToolExecution } from '../../../_shared'
+import { type ToolExecution } from '../../_shared'
 
 interface ToolCardsProps {
   tools: ToolExecution[]
   className?: string
 }
 
-const toolMeta: Record<string, { icon: React.ElementType; color: string; bgColor: string; label: string }> = {
+const toolMeta: Record<
+  string,
+  { icon: React.ElementType; color: string; bgColor: string; label: string }
+> = {
   web_search: {
     icon: Search,
     color: 'text-blue-500',
@@ -118,34 +121,47 @@ function ToolCard({ tool }: { tool: ToolExecution }) {
   const IconComponent = meta.icon
 
   return (
-    <div className={cn(
-      'rounded-lg border transition-all overflow-hidden',
-      tool.status === 'running' && 'ring-1 ring-blue-500/20',
-      tool.status === 'error' && 'ring-1 ring-red-500/20',
-    )}>
+    <div
+      className={cn(
+        'rounded-lg border transition-all overflow-hidden',
+        tool.status === 'running' && 'ring-1 ring-blue-500/20',
+        tool.status === 'error' && 'ring-1 ring-red-500/20'
+      )}
+    >
       {/* Header */}
       <button
         onClick={() => setExpanded(!expanded)}
         className="flex items-center gap-2.5 w-full px-3 py-2 text-left hover:bg-muted/30 transition-colors"
       >
-        <div className={cn('w-6 h-6 rounded-md flex items-center justify-center shrink-0', meta.bgColor)}>
+        <div
+          className={cn(
+            'w-6 h-6 rounded-md flex items-center justify-center shrink-0',
+            meta.bgColor
+          )}
+        >
           <IconComponent className={cn('h-3.5 w-3.5', meta.color)} />
         </div>
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2">
             <span className="text-xs font-medium">{meta.label}</span>
-            <span className="text-[10px] font-mono text-muted-foreground">{tool.name}</span>
+            <span className="text-[10px] font-mono text-muted-foreground">
+              {tool.name}
+            </span>
           </div>
         </div>
         <div className="flex items-center gap-2 shrink-0">
           {tool.duration && (
-            <span className="text-[10px] text-muted-foreground font-mono">{tool.duration}</span>
+            <span className="text-[10px] text-muted-foreground font-mono">
+              {tool.duration}
+            </span>
           )}
           {statusIcons[tool.status]}
-          <ChevronDown className={cn(
-            'h-3 w-3 text-muted-foreground transition-transform',
-            expanded && 'rotate-180'
-          )} />
+          <ChevronDown
+            className={cn(
+              'h-3 w-3 text-muted-foreground transition-transform',
+              expanded && 'rotate-180'
+            )}
+          />
         </div>
       </button>
 
@@ -170,10 +186,14 @@ function ToolCard({ tool }: { tool: ToolExecution }) {
               <p className="text-[10px] text-muted-foreground font-medium uppercase tracking-wider mb-1">
                 Output
               </p>
-              <div className={cn(
-                'p-2 rounded-md text-xs font-mono break-all whitespace-pre-wrap max-h-40 overflow-y-auto',
-                tool.status === 'error' ? 'bg-red-500/5 text-red-400' : 'bg-muted/30'
-              )}>
+              <div
+                className={cn(
+                  'p-2 rounded-md text-xs font-mono break-all whitespace-pre-wrap max-h-40 overflow-y-auto',
+                  tool.status === 'error'
+                    ? 'bg-red-500/5 text-red-400'
+                    : 'bg-muted/30'
+                )}
+              >
                 {tool.output}
               </div>
             </div>
@@ -197,7 +217,7 @@ export function ToolCards({ tools, className }: ToolCardsProps) {
 
   return (
     <div className={cn('space-y-1.5 mb-3', className)}>
-      {tools.map(tool => (
+      {tools.map((tool) => (
         <ToolCard key={tool.id} tool={tool} />
       ))}
     </div>
@@ -205,7 +225,13 @@ export function ToolCards({ tools, className }: ToolCardsProps) {
 }
 
 // Single tool card export for use when iterating externally
-export function ToolExecutionCard({ tool, className }: { tool: ToolExecution; className?: string }) {
+export function ToolExecutionCard({
+  tool,
+  className,
+}: {
+  tool: ToolExecution
+  className?: string
+}) {
   return (
     <div className={className}>
       <ToolCard tool={tool} />

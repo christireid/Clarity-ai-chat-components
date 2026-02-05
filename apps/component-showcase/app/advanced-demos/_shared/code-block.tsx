@@ -1,7 +1,7 @@
 'use client'
 
-import { useState } from 'react'
 import { cn } from '@clarity-chat/primitives'
+import { useClipboard } from '@clarity-chat/react/internal'
 import { Copy, Check, Download, Play, FileCode } from 'lucide-react'
 
 interface CodeBlockDisplayProps {
@@ -39,22 +39,26 @@ export function CodeBlockDisplay({
   onRun,
   className,
 }: CodeBlockDisplayProps) {
-  const [copied, setCopied] = useState(false)
-
-  const handleCopy = () => {
-    navigator.clipboard?.writeText(code)
-    setCopied(true)
-    setTimeout(() => setCopied(false), 2000)
-  }
+  const { copy, copied } = useClipboard({ timeout: 2000 })
 
   const lines = code.split('\n')
 
   return (
-    <div className={cn('rounded-xl overflow-hidden border bg-[#1e1e2e] my-3', className)}>
+    <div
+      className={cn(
+        'rounded-xl overflow-hidden border bg-[#1e1e2e] my-3',
+        className
+      )}
+    >
       {/* Header */}
       <div className="flex items-center justify-between px-4 py-2 bg-[#181825] border-b border-white/5">
         <div className="flex items-center gap-2">
-          <FileCode className={cn('h-3.5 w-3.5', languageColors[language] || 'text-gray-400')} />
+          <FileCode
+            className={cn(
+              'h-3.5 w-3.5',
+              languageColors[language] || 'text-gray-400'
+            )}
+          />
           <span className="text-xs text-gray-400 font-mono">
             {title || language}
           </span>
@@ -85,11 +89,15 @@ export function CodeBlockDisplay({
             <Download className="h-3.5 w-3.5" />
           </button>
           <button
-            onClick={handleCopy}
+            onClick={() => copy(code)}
             className="p-1 rounded text-gray-500 hover:text-gray-300 hover:bg-white/5 transition-colors"
             title="Copy"
           >
-            {copied ? <Check className="h-3.5 w-3.5 text-green-400" /> : <Copy className="h-3.5 w-3.5" />}
+            {copied ? (
+              <Check className="h-3.5 w-3.5 text-green-400" />
+            ) : (
+              <Copy className="h-3.5 w-3.5" />
+            )}
           </button>
         </div>
       </div>
@@ -120,7 +128,8 @@ export function CodeBlockDisplay({
 // Simple syntax highlighting (production would use Shiki/Prism)
 function highlightLine(line: string, _language: string): React.ReactNode {
   // Keywords
-  const keywords = /\b(import|export|from|const|let|var|function|return|if|else|for|while|class|interface|type|extends|implements|async|await|new|try|catch|throw|switch|case|default|break|continue|typeof|instanceof|in|of|as|is)\b/g
+  const keywords =
+    /\b(import|export|from|const|let|var|function|return|if|else|for|while|class|interface|type|extends|implements|async|await|new|try|catch|throw|switch|case|default|break|continue|typeof|instanceof|in|of|as|is)\b/g
   // Strings
   const strings = /(["'`])(?:(?=(\\?))\2.)*?\1/g
   // Comments
@@ -133,20 +142,38 @@ function highlightLine(line: string, _language: string): React.ReactNode {
   }
 
   // Simple approach: render as-is with basic keyword coloring
-  const parts = line.split(/(\b(?:import|export|from|const|let|var|function|return|if|else|for|while|class|interface|type|extends|implements|async|await|new|try|catch|throw)\b|(?:["'`])(?:(?=(?:\\?))\\.)*?(?:["'`])|\/\/.*$)/g)
+  const parts = line.split(
+    /(\b(?:import|export|from|const|let|var|function|return|if|else|for|while|class|interface|type|extends|implements|async|await|new|try|catch|throw)\b|(?:["'`])(?:(?=(?:\\?))\\.)*?(?:["'`])|\/\/.*$)/g
+  )
 
   return (
     <>
       {parts.map((part, i) => {
         if (!part) return null
-        if (/^(import|export|from|const|let|var|function|return|if|else|for|while|class|interface|type|extends|implements|async|await|new|try|catch|throw)$/.test(part)) {
-          return <span key={i} className="text-purple-400">{part}</span>
+        if (
+          /^(import|export|from|const|let|var|function|return|if|else|for|while|class|interface|type|extends|implements|async|await|new|try|catch|throw)$/.test(
+            part
+          )
+        ) {
+          return (
+            <span key={i} className="text-purple-400">
+              {part}
+            </span>
+          )
         }
         if (/^["'`]/.test(part)) {
-          return <span key={i} className="text-green-400">{part}</span>
+          return (
+            <span key={i} className="text-green-400">
+              {part}
+            </span>
+          )
         }
         if (/^\/\//.test(part)) {
-          return <span key={i} className="text-gray-500 italic">{part}</span>
+          return (
+            <span key={i} className="text-gray-500 italic">
+              {part}
+            </span>
+          )
         }
         return <span key={i}>{part}</span>
       })}

@@ -246,7 +246,11 @@ export const MODEL_PROVIDERS: ModelProvider[] = [
   },
 ]
 
-// Streaming simulation utility
+// Re-export utilities from library packages instead of custom implementations
+export { generateId, formatBytes as formatFileSize } from '@clarity-chat/utils'
+export { escapeHtml } from '@clarity-chat/react/internal'
+
+// Streaming simulation utility (demo-specific, not in library)
 export function simulateStreaming(
   text: string,
   onChunk: (text: string) => void,
@@ -271,18 +275,8 @@ export function simulateStreaming(
   return () => clearInterval(interval)
 }
 
-export function generateId(): string {
-  return `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`
-}
-
 export function formatTimestamp(date: Date): string {
   return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-}
-
-export function formatFileSize(bytes: number): string {
-  if (bytes < 1024) return `${bytes} B`
-  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`
-  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`
 }
 
 export function estimateTokens(text: string): number {
@@ -291,14 +285,4 @@ export function estimateTokens(text: string): number {
 
 export function estimateCost(tokens: number, costPer1k: number): string {
   return `$${((tokens / 1000) * costPer1k).toFixed(4)}`
-}
-
-// Escape HTML entities to prevent XSS when rendering user content
-export function escapeHtml(text: string): string {
-  return text
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#39;')
 }

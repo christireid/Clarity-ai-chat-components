@@ -23,7 +23,7 @@ interface ChatSidebarProps {
   onSelectConversation: (id: string) => void
   onDeleteConversation: (id: string) => void
   savedPrompts: SavedPrompt[]
-  onUsePrompt: (prompt: SavedPrompt) => void
+  onUsePrompt: (text: string) => void
   onSavePrompt: (text: string) => void
   onDeletePrompt: (id: string) => void
   collapsed: boolean
@@ -57,7 +57,12 @@ export function ChatSidebar({
 
   if (collapsed) {
     return (
-      <div className={cn('flex flex-col items-center py-3 gap-2 border-r bg-card/30 w-12', className)}>
+      <div
+        className={cn(
+          'flex flex-col items-center py-3 gap-2 border-r bg-card/30 w-12',
+          className
+        )}
+      >
         <button
           onClick={onToggleCollapsed}
           className="p-2 rounded-lg hover:bg-muted transition-colors"
@@ -136,7 +141,9 @@ export function ChatSidebar({
               >
                 <MessageSquare className="h-3.5 w-3.5 shrink-0" />
                 <div className="flex-1 min-w-0">
-                  <div className="text-xs font-medium truncate">{convo.title}</div>
+                  <div className="text-xs font-medium truncate">
+                    {convo.title}
+                  </div>
                   <div className="text-[10px] text-muted-foreground">
                     {convo.messages.length} messages
                   </div>
@@ -211,7 +218,7 @@ export function ChatSidebar({
                 <div
                   key={prompt.id}
                   className="group flex items-center gap-2 px-2 py-1.5 rounded-md hover:bg-muted/50 cursor-pointer transition-colors"
-                  onClick={() => onUsePrompt(prompt)}
+                  onClick={() => onUsePrompt(prompt.text)}
                 >
                   <Sparkles className="h-3 w-3 shrink-0 text-yellow-500" />
                   <span className="text-xs truncate flex-1">{prompt.text}</span>

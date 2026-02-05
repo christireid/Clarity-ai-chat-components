@@ -19,12 +19,12 @@ export interface PipelineStep {
   label: string
   description: string
   status: 'pending' | 'active' | 'completed'
-  progress: number
+  progress?: number
 }
 
-interface ResearchPipelineProps {
+export interface ResearchPipelineProps {
   steps: PipelineStep[]
-  isActive: boolean
+  isActive?: boolean
   estimatedTimeRemaining?: number
   className?: string
 }
@@ -79,16 +79,19 @@ export function ResearchPipeline({
 
   if (steps.length === 0 && !isActive) return null
 
-  const completedCount = steps.filter(s => s.status === 'completed').length
+  const completedCount = steps.filter((s) => s.status === 'completed').length
   const totalSteps = steps.length
-  const overallProgress = totalSteps > 0 ? (completedCount / totalSteps) * 100 : 0
+  const overallProgress =
+    totalSteps > 0 ? (completedCount / totalSteps) * 100 : 0
 
   return (
-    <div className={cn(
-      'rounded-xl border bg-card/50 backdrop-blur-sm overflow-hidden mb-4',
-      isActive && 'ring-1 ring-primary/20',
-      className
-    )}>
+    <div
+      className={cn(
+        'rounded-xl border bg-card/50 backdrop-blur-sm overflow-hidden mb-4',
+        isActive && 'ring-1 ring-primary/20',
+        className
+      )}
+    >
       {/* Header */}
       <button
         onClick={() => setCollapsed(!collapsed)}
@@ -102,7 +105,9 @@ export function ResearchPipeline({
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2">
             <span className="text-sm font-medium">
-              {isActive ? 'Deep Research in Progress' : 'Research Pipeline Complete'}
+              {isActive
+                ? 'Deep Research in Progress'
+                : 'Research Pipeline Complete'}
             </span>
             <span className="text-xs text-muted-foreground">
               {completedCount}/{totalSteps} steps
@@ -116,16 +121,19 @@ export function ResearchPipeline({
             />
           </div>
         </div>
-        {isActive && estimatedTimeRemaining !== undefined && estimatedTimeRemaining > 0 && (
-          <div className="flex items-center gap-1 text-xs text-muted-foreground shrink-0">
-            <Clock className="h-3 w-3" />
-            ~{estimatedTimeRemaining}s
-          </div>
-        )}
-        <ChevronDown className={cn(
-          'h-4 w-4 text-muted-foreground transition-transform shrink-0',
-          collapsed && '-rotate-90'
-        )} />
+        {isActive &&
+          estimatedTimeRemaining !== undefined &&
+          estimatedTimeRemaining > 0 && (
+            <div className="flex items-center gap-1 text-xs text-muted-foreground shrink-0">
+              <Clock className="h-3 w-3" />~{estimatedTimeRemaining}s
+            </div>
+          )}
+        <ChevronDown
+          className={cn(
+            'h-4 w-4 text-muted-foreground transition-transform shrink-0',
+            collapsed && '-rotate-90'
+          )}
+        />
       </button>
 
       {/* Steps */}
@@ -142,12 +150,23 @@ export function ResearchPipeline({
               <div key={step.id} className="flex items-start gap-3">
                 {/* Connector line */}
                 <div className="flex flex-col items-center">
-                  <div className={cn(
-                    'w-8 h-8 rounded-lg flex items-center justify-center shrink-0 transition-all duration-300',
-                    step.status === 'completed' && 'bg-green-500/10 text-green-500',
-                    step.status === 'active' && cn(bgColor, color, 'ring-1', ringColor, 'animate-pulse'),
-                    step.status === 'pending' && 'bg-muted text-muted-foreground'
-                  )}>
+                  <div
+                    className={cn(
+                      'w-8 h-8 rounded-lg flex items-center justify-center shrink-0 transition-all duration-300',
+                      step.status === 'completed' &&
+                        'bg-green-500/10 text-green-500',
+                      step.status === 'active' &&
+                        cn(
+                          bgColor,
+                          color,
+                          'ring-1',
+                          ringColor,
+                          'animate-pulse'
+                        ),
+                      step.status === 'pending' &&
+                        'bg-muted text-muted-foreground'
+                    )}
+                  >
                     {step.status === 'completed' ? (
                       <Check className="h-4 w-4" />
                     ) : step.status === 'active' ? (
@@ -157,20 +176,26 @@ export function ResearchPipeline({
                     )}
                   </div>
                   {index < steps.length - 1 && (
-                    <div className={cn(
-                      'w-px h-4 mt-1',
-                      step.status === 'completed' ? 'bg-green-500/30' : 'bg-muted'
-                    )} />
+                    <div
+                      className={cn(
+                        'w-px h-4 mt-1',
+                        step.status === 'completed'
+                          ? 'bg-green-500/30'
+                          : 'bg-muted'
+                      )}
+                    />
                   )}
                 </div>
 
                 {/* Step content */}
                 <div className="flex-1 min-w-0 pt-1">
                   <div className="flex items-center gap-2">
-                    <span className={cn(
-                      'text-sm font-medium',
-                      step.status === 'pending' && 'text-muted-foreground'
-                    )}>
+                    <span
+                      className={cn(
+                        'text-sm font-medium',
+                        step.status === 'pending' && 'text-muted-foreground'
+                      )}
+                    >
                       {step.label}
                     </span>
                     {step.status === 'active' && (
@@ -184,11 +209,16 @@ export function ResearchPipeline({
                       </span>
                     )}
                   </div>
-                  <p className="text-xs text-muted-foreground mt-0.5">{step.description}</p>
-                  {step.status === 'active' && (
+                  <p className="text-xs text-muted-foreground mt-0.5">
+                    {step.description}
+                  </p>
+                  {step.status === 'active' && step.progress != null && (
                     <div className="h-1 w-full bg-muted rounded-full mt-2 overflow-hidden">
                       <div
-                        className={cn('h-full rounded-full transition-all duration-300', progressColor)}
+                        className={cn(
+                          'h-full rounded-full transition-all duration-300',
+                          progressColor
+                        )}
                         style={{ width: `${step.progress}%` }}
                       />
                     </div>

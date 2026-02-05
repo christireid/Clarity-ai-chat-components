@@ -19,11 +19,13 @@ import {
   Plug,
   PlugZap,
 } from 'lucide-react'
-import { type MCPServer, generateId } from '../../../_shared'
+import { type MCPServer, generateId } from '../../_shared'
 
 interface MCPManagerProps {
   servers: MCPServer[]
-  onServersChange: (servers: MCPServer[]) => void
+  onServersChange: (
+    serversOrUpdater: MCPServer[] | ((prev: MCPServer[]) => MCPServer[])
+  ) => void
   className?: string
 }
 
@@ -48,33 +50,39 @@ const statusLabels: Record<string, string> = {
   connecting: 'Connecting...',
 }
 
-export function MCPManager({ servers, onServersChange, className }: MCPManagerProps) {
+export function MCPManager({
+  servers,
+  onServersChange,
+  className,
+}: MCPManagerProps) {
   const [expandedServer, setExpandedServer] = useState<string | null>(null)
   const [showAddForm, setShowAddForm] = useState(false)
-  const [newServer, setNewServer] = useState({ name: '', endpoint: '', authToken: '' })
+  const [newServer, setNewServer] = useState({
+    name: '',
+    endpoint: '',
+    authToken: '',
+  })
 
   const toggleServer = (id: string) => {
     onServersChange(
-      servers.map(s =>
-        s.id === id ? { ...s, enabled: !s.enabled } : s
-      )
+      servers.map((s) => (s.id === id ? { ...s, enabled: !s.enabled } : s))
     )
   }
 
   const removeServer = (id: string) => {
-    onServersChange(servers.filter(s => s.id !== id))
+    onServersChange(servers.filter((s) => s.id !== id))
   }
 
   const reconnectServer = (id: string) => {
     onServersChange(
-      servers.map(s =>
+      servers.map((s) =>
         s.id === id ? { ...s, status: 'connecting' as const } : s
       )
     )
     // Simulate reconnection
     setTimeout(() => {
       onServersChange(
-        servers.map(s =>
+        servers.map((s) =>
           s.id === id ? { ...s, status: 'connected' as const } : s
         )
       )
@@ -97,16 +105,18 @@ export function MCPManager({ servers, onServersChange, className }: MCPManagerPr
     setShowAddForm(false)
     // Simulate connection
     setTimeout(() => {
-      onServersChange(prev => {
+      onServersChange((prev) => {
         // Need to use the latest state
         return prev
       })
     }, 1500)
   }
 
-  const connectedCount = servers.filter(s => s.status === 'connected' && s.enabled).length
+  const connectedCount = servers.filter(
+    (s) => s.status === 'connected' && s.enabled
+  ).length
   const totalTools = servers
-    .filter(s => s.status === 'connected' && s.enabled)
+    .filter((s) => s.status === 'connected' && s.enabled)
     .reduce((acc, s) => acc + s.tools.length, 0)
 
   return (
@@ -159,21 +169,27 @@ export function MCPManager({ servers, onServersChange, className }: MCPManagerPr
             type="text"
             placeholder="Server name"
             value={newServer.name}
-            onChange={e => setNewServer({ ...newServer, name: e.target.value })}
+            onChange={(e) =>
+              setNewServer({ ...newServer, name: e.target.value })
+            }
             className="w-full px-2.5 py-1.5 text-xs bg-muted rounded-lg border-0 focus:outline-none focus:ring-2 focus:ring-primary/50 placeholder:text-muted-foreground/50"
           />
           <input
             type="text"
             placeholder="Endpoint URL (e.g., https://mcp.example.com)"
             value={newServer.endpoint}
-            onChange={e => setNewServer({ ...newServer, endpoint: e.target.value })}
+            onChange={(e) =>
+              setNewServer({ ...newServer, endpoint: e.target.value })
+            }
             className="w-full px-2.5 py-1.5 text-xs bg-muted rounded-lg border-0 focus:outline-none focus:ring-2 focus:ring-primary/50 placeholder:text-muted-foreground/50"
           />
           <input
             type="password"
             placeholder="Auth token (optional)"
             value={newServer.authToken}
-            onChange={e => setNewServer({ ...newServer, authToken: e.target.value })}
+            onChange={(e) =>
+              setNewServer({ ...newServer, authToken: e.target.value })
+            }
             className="w-full px-2.5 py-1.5 text-xs bg-muted rounded-lg border-0 focus:outline-none focus:ring-2 focus:ring-primary/50 placeholder:text-muted-foreground/50"
           />
           <button
@@ -193,7 +209,7 @@ export function MCPManager({ servers, onServersChange, className }: MCPManagerPr
 
       {/* Server List */}
       <div className="space-y-1.5">
-        {servers.map(server => {
+        {servers.map((server) => {
           const IconComponent = serverIcons[server.name] || Server
           const isExpanded = expandedServer === server.id
 
@@ -210,20 +226,25 @@ export function MCPManager({ servers, onServersChange, className }: MCPManagerPr
               {/* Server Header */}
               <div className="flex items-center gap-2 px-3 py-2">
                 {/* Status Dot */}
-                <div className={cn(
-                  'w-2 h-2 rounded-full shrink-0',
-                  statusColors[server.status],
-                  server.status === 'connecting' && 'animate-pulse'
-                )} />
+                <div
+                  className={cn(
+                    'w-2 h-2 rounded-full shrink-0',
+                    statusColors[server.status],
+                    server.status === 'connecting' && 'animate-pulse'
+                  )}
+                />
 
                 {/* Icon */}
                 <IconComponent className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
 
                 {/* Name & Status */}
                 <div className="flex-1 min-w-0">
-                  <div className="text-xs font-medium truncate">{server.name}</div>
+                  <div className="text-xs font-medium truncate">
+                    {server.name}
+                  </div>
                   <div className="text-[10px] text-muted-foreground">
-                    {statusLabels[server.status]} &middot; {server.tools.length} tools
+                    {statusLabels[server.status]} &middot; {server.tools.length}{' '}
+                    tools
                   </div>
                 </div>
 
@@ -237,10 +258,12 @@ export function MCPManager({ servers, onServersChange, className }: MCPManagerPr
                       server.enabled ? 'bg-green-500' : 'bg-muted-foreground/30'
                     )}
                   >
-                    <div className={cn(
-                      'absolute top-0.5 w-3 h-3 rounded-full bg-white transition-transform shadow-sm',
-                      server.enabled ? 'translate-x-3' : 'translate-x-0.5'
-                    )} />
+                    <div
+                      className={cn(
+                        'absolute top-0.5 w-3 h-3 rounded-full bg-white transition-transform shadow-sm',
+                        server.enabled ? 'translate-x-3' : 'translate-x-0.5'
+                      )}
+                    />
                   </button>
 
                   {/* Reconnect */}
@@ -262,7 +285,9 @@ export function MCPManager({ servers, onServersChange, className }: MCPManagerPr
 
                   {/* Expand Tools */}
                   <button
-                    onClick={() => setExpandedServer(isExpanded ? null : server.id)}
+                    onClick={() =>
+                      setExpandedServer(isExpanded ? null : server.id)
+                    }
                     className="p-1 rounded hover:bg-muted transition-colors text-muted-foreground"
                   >
                     {isExpanded ? (
@@ -290,7 +315,7 @@ export function MCPManager({ servers, onServersChange, className }: MCPManagerPr
                     Available Tools
                   </p>
                   <div className="space-y-1">
-                    {server.tools.map(tool => (
+                    {server.tools.map((tool: string) => (
                       <div
                         key={tool}
                         className="flex items-center gap-2 px-2 py-1 rounded-md bg-muted/30 text-xs"

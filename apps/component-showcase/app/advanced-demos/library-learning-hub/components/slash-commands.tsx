@@ -13,7 +13,9 @@ import {
 } from 'lucide-react'
 
 export interface SlashCommand {
+  id: string
   name: string
+  label: string
   description: string
   icon: React.ReactNode
   category: string
@@ -21,66 +23,83 @@ export interface SlashCommand {
 
 const SLASH_COMMANDS: SlashCommand[] = [
   {
+    id: 'components',
     name: 'components',
+    label: '/components',
     description: 'List all available components',
     icon: <Layers className="h-3.5 w-3.5" />,
     category: 'Browse',
   },
   {
+    id: 'hooks',
     name: 'hooks',
+    label: '/hooks',
     description: 'List all available hooks',
     icon: <Code2 className="h-3.5 w-3.5" />,
     category: 'Browse',
   },
   {
+    id: 'adapters',
     name: 'adapters',
+    label: '/adapters',
     description: 'Show adapter documentation',
     icon: <Plug className="h-3.5 w-3.5" />,
     category: 'Browse',
   },
   {
+    id: 'example',
     name: 'example',
+    label: '/example',
     description: 'Show code example for a component or hook',
     icon: <FileCode className="h-3.5 w-3.5" />,
     category: 'Code',
   },
   {
+    id: 'memory',
     name: 'memory',
+    label: '/memory',
     description: 'Memory system documentation',
     icon: <Brain className="h-3.5 w-3.5" />,
     category: 'Docs',
   },
   {
+    id: 'tokens',
     name: 'tokens',
+    label: '/tokens',
     description: 'Token optimization documentation',
     icon: <Coins className="h-3.5 w-3.5" />,
     category: 'Docs',
   },
 ]
 
-interface SlashCommandMenuProps {
+export interface SlashCommandMenuProps {
+  commands?: SlashCommand[]
   filter: string
   onSelect: (command: SlashCommand) => void
-  visible: boolean
+  onClose?: () => void
+  visible?: boolean
   className?: string
 }
 
 export function SlashCommandMenu({
+  commands,
   filter,
   onSelect,
-  visible,
+  onClose,
+  visible = true,
   className,
 }: SlashCommandMenuProps) {
+  const sourceCommands = commands ?? SLASH_COMMANDS
   const filteredCommands = useMemo(() => {
-    if (!filter) return SLASH_COMMANDS
+    if (!filter) return sourceCommands
     const lowerFilter = filter.toLowerCase()
-    return SLASH_COMMANDS.filter(
+    return sourceCommands.filter(
       (cmd) =>
         cmd.name.toLowerCase().includes(lowerFilter) ||
         cmd.description.toLowerCase().includes(lowerFilter) ||
         cmd.category.toLowerCase().includes(lowerFilter)
     )
-  }, [filter])
+  }, [filter, sourceCommands])
 
   if (!visible || filteredCommands.length === 0) return null
 
@@ -119,10 +138,7 @@ export function SlashCommandMenu({
                   <span className="text-sm font-medium font-mono">
                     /{cmd.name}
                   </span>
-                  <Badge
-                    variant="outline"
-                    className="text-[9px] px-1.5 py-0"
-                  >
+                  <Badge variant="outline" className="text-[9px] px-1.5 py-0">
                     {cmd.category}
                   </Badge>
                 </div>
@@ -136,7 +152,11 @@ export function SlashCommandMenu({
       </ScrollArea>
       <div className="px-3 py-1.5 border-t bg-muted/20">
         <p className="text-[10px] text-muted-foreground">
-          Type <kbd className="px-1 py-0.5 rounded bg-muted text-[10px] font-mono">/</kbd> followed by a command name
+          Type{' '}
+          <kbd className="px-1 py-0.5 rounded bg-muted text-[10px] font-mono">
+            /
+          </kbd>{' '}
+          followed by a command name
         </p>
       </div>
     </div>
