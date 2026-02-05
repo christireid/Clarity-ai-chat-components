@@ -16,7 +16,6 @@ import {
   FolderOpen,
   X,
   Loader2,
-  Plug,
   PlugZap,
 } from 'lucide-react'
 import { type MCPServer, generateId } from '../../_shared'
@@ -81,8 +80,8 @@ export function MCPManager({
     )
     // Simulate reconnection
     setTimeout(() => {
-      onServersChange(
-        servers.map((s) =>
+      onServersChange((prev: MCPServer[]) =>
+        prev.map((s) =>
           s.id === id ? { ...s, status: 'connected' as const } : s
         )
       )
@@ -103,12 +102,13 @@ export function MCPManager({
     onServersChange([...servers, server])
     setNewServer({ name: '', endpoint: '', authToken: '' })
     setShowAddForm(false)
-    // Simulate connection
+    // Simulate connection completing
     setTimeout(() => {
-      onServersChange((prev) => {
-        // Need to use the latest state
-        return prev
-      })
+      onServersChange((prev: MCPServer[]) =>
+        prev.map((s) =>
+          s.id === server.id ? { ...s, status: 'connected' as const } : s
+        )
+      )
     }, 1500)
   }
 

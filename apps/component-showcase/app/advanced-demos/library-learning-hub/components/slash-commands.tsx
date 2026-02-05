@@ -85,7 +85,7 @@ export function SlashCommandMenu({
   commands,
   filter,
   onSelect,
-  onClose,
+  onClose: _onClose,
   visible = true,
   className,
 }: SlashCommandMenuProps) {

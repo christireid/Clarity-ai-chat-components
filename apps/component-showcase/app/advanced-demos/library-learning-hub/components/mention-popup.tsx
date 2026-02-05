@@ -76,7 +76,7 @@ export function MentionPopup({
   items,
   filter,
   onSelect,
-  onClose,
+  onClose: _onClose,
   visible = true,
   className,
 }: MentionPopupProps) {

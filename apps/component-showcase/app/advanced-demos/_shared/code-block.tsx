@@ -127,15 +127,7 @@ export function CodeBlockDisplay({
 
 // Simple syntax highlighting (production would use Shiki/Prism)
 function highlightLine(line: string, _language: string): React.ReactNode {
-  // Keywords
-  const keywords =
-    /\b(import|export|from|const|let|var|function|return|if|else|for|while|class|interface|type|extends|implements|async|await|new|try|catch|throw|switch|case|default|break|continue|typeof|instanceof|in|of|as|is)\b/g
-  // Strings
-  const strings = /(["'`])(?:(?=(\\?))\2.)*?\1/g
-  // Comments
   const comments = /(\/\/.*$|\/\*[\s\S]*?\*\/)/g
-  // Numbers
-  const numbers = /\b(\d+\.?\d*)\b/g
 
   if (comments.test(line)) {
     return <span className="text-gray-500 italic">{line}</span>

@@ -28,7 +28,6 @@ import {
   SettingsDialog,
   type ChatMessage,
   type ThinkingStep,
-  type Citation,
   type Source,
   type Conversation,
   type SavedPrompt,
@@ -382,9 +381,10 @@ export default function DeepResearchAssistantPage() {
     streamCancelRef.current?.()
     streamCancelRef.current = null
     setIsStreaming(false)
+    setIsThinking(false)
     setStreamingText('')
     setActiveThinking([])
-    setActivePipeline([])
+    setActivePipeline(null)
     setActiveTools([])
   }, [])
 
@@ -540,6 +540,7 @@ export default function DeepResearchAssistantPage() {
       response,
       (chunk) => setStreamingText((prev) => prev + chunk),
       () => {
+        streamCancelRef.current = null
         setIsStreaming(false)
         const assistantMessage: ChatMessage = {
           id: generateId(),

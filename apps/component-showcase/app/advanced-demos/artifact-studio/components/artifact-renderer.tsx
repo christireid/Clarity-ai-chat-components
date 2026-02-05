@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useCallback } from 'react'
 import { cn } from '@clarity-chat/primitives'
 import {
   FileCode,
@@ -569,7 +569,7 @@ function TableRenderer({ content }: { content: string }) {
 function JsonRenderer({ content }: { content: string }) {
   const [collapsedPaths, setCollapsedPaths] = useState<Set<string>>(new Set())
 
-  const togglePath = (path: string) => {
+  const togglePath = useCallback((path: string) => {
     setCollapsedPaths((prev) => {
       const next = new Set(prev)
       if (next.has(path)) {
@@ -579,7 +579,7 @@ function JsonRenderer({ content }: { content: string }) {
       }
       return next
     })
-  }
+  }, [])
 
   const renderJson = useMemo(() => {
     try {
@@ -589,7 +589,7 @@ function JsonRenderer({ content }: { content: string }) {
       // If invalid JSON, show as formatted text
       return <pre className="text-xs text-gray-200 font-mono">{content}</pre>
     }
-  }, [content, collapsedPaths])
+  }, [content, collapsedPaths, togglePath])
 
   return (
     <div className="rounded-xl overflow-hidden bg-[#1e1e2e] border border-white/5">

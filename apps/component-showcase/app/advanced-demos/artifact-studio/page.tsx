@@ -211,6 +211,7 @@ export default function ArtifactStudioPage() {
     streamCancelRef.current?.()
     streamCancelRef.current = null
     setIsStreaming(false)
+    setIsThinking(false)
     setStreamingText('')
     setActiveThinking([])
   }, [])
@@ -367,6 +368,7 @@ export default function ArtifactStudioPage() {
         template.response,
         (chunk) => setStreamingText((prev) => prev + chunk),
         () => {
+          streamCancelRef.current = null
           setIsStreaming(false)
           const assistantMessage: ChatMessage = {
             id: generateId(),
@@ -463,6 +465,7 @@ export default function ArtifactStudioPage() {
         updateResponse,
         (chunk) => setStreamingText((prev) => prev + chunk),
         () => {
+          streamCancelRef.current = null
           setIsStreaming(false)
           updateMessages([
             ...newMessages,
@@ -514,6 +517,7 @@ export default function ArtifactStudioPage() {
         response,
         (chunk) => setStreamingText((prev) => prev + chunk),
         () => {
+          streamCancelRef.current = null
           setIsStreaming(false)
           updateMessages([
             ...newMessages,

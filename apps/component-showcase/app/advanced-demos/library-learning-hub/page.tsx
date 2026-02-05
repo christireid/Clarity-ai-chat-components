@@ -292,6 +292,7 @@ export default function LibraryLearningHubPage() {
     streamCancelRef.current?.()
     streamCancelRef.current = null
     setIsStreaming(false)
+    setIsThinking(false)
     setStreamingText('')
     setActiveThinking([])
   }, [])
@@ -425,6 +426,7 @@ export default function LibraryLearningHubPage() {
       responseData.response,
       (chunk) => setStreamingText((prev) => prev + chunk),
       () => {
+        streamCancelRef.current = null
         setIsStreaming(false)
         const assistantMessage: ChatMessage = {
           id: generateId(),

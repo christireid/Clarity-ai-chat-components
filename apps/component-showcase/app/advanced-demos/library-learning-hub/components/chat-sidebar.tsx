@@ -1,12 +1,11 @@
 'use client'
 
 import { useState } from 'react'
-import { cn, Button, Badge, ScrollArea } from '@clarity-chat/primitives'
+import { cn, ScrollArea } from '@clarity-chat/primitives'
 import {
   MessageSquarePlus,
   Trash2,
   BookmarkPlus,
-  Bookmark,
   ChevronLeft,
   ChevronRight,
   MessageSquare,
@@ -14,7 +13,7 @@ import {
   X,
 } from 'lucide-react'
 import type { Conversation, SavedPrompt } from '../../_shared'
-import { generateId, formatTimestamp } from '../../_shared'
+import { formatTimestamp } from '../../_shared'
 
 interface ChatSidebarProps {
   conversations: Conversation[]
