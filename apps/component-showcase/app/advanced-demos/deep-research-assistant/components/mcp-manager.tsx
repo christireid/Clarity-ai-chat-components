@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { cn } from '@clarity-chat/primitives'
+import { useSafeTimeout } from '@clarity-chat/react/internal'
 import {
   Server,
   Plus,
@@ -54,6 +55,7 @@ export function MCPManager({
   onServersChange,
   className,
 }: MCPManagerProps) {
+  const { setSafeTimeout } = useSafeTimeout()
   const [expandedServer, setExpandedServer] = useState<string | null>(null)
   const [showAddForm, setShowAddForm] = useState(false)
   const [newServer, setNewServer] = useState({
@@ -79,7 +81,7 @@ export function MCPManager({
       )
     )
     // Simulate reconnection
-    setTimeout(() => {
+    setSafeTimeout(() => {
       onServersChange((prev: MCPServer[]) =>
         prev.map((s) =>
           s.id === id ? { ...s, status: 'connected' as const } : s
@@ -103,7 +105,7 @@ export function MCPManager({
     setNewServer({ name: '', endpoint: '', authToken: '' })
     setShowAddForm(false)
     // Simulate connection completing
-    setTimeout(() => {
+    setSafeTimeout(() => {
       onServersChange((prev: MCPServer[]) =>
         prev.map((s) =>
           s.id === server.id ? { ...s, status: 'connected' as const } : s

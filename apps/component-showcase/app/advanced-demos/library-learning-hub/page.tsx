@@ -3,7 +3,11 @@
 import { useState, useRef, useCallback, useMemo } from 'react'
 import { PageHeader } from '@/components/component-section'
 import { cn } from '@clarity-chat/primitives'
-import { useAutoScroll, useClipboard } from '@clarity-chat/react/internal'
+import {
+  useAutoScroll,
+  useClipboard,
+  MarkdownRenderer,
+} from '@clarity-chat/react/internal'
 import {
   Send,
   GraduationCap,
@@ -25,7 +29,6 @@ import {
   TokenPanel,
   MemoryPanel,
   ChatExportDialog,
-  CodeBlockDisplay,
   SettingsDialog,
   type ChatMessage,
   type ThinkingStep,
@@ -39,7 +42,6 @@ import {
   simulateStreaming,
   formatTimestamp,
   estimateTokens,
-  escapeHtml,
 } from '../_shared'
 
 import {
@@ -531,74 +533,14 @@ export default function LibraryLearningHubPage() {
     setSavedPrompts((prev) => prev.filter((p) => p.id !== id))
   }
 
-  // Render message content with code blocks
-  const renderContent = (content: string) => {
-    const parts = content.split(/(```[\s\S]*?```)/g)
-    return parts.map((part, i) => {
-      if (part.startsWith('```')) {
-        const lines = part.slice(3, -3).split('\n')
-        const lang = lines[0]?.trim() || 'typescript'
-        const code = lines.slice(1).join('\n')
-        return <CodeBlockDisplay key={i} code={code} language={lang} />
-      }
-      // Basic markdown rendering
-      return (
-        <div key={i} className="prose prose-sm dark:prose-invert max-w-none">
-          {part.split('\n').map((line, j) => {
-            if (line.startsWith('## '))
-              return (
-                <h2 key={j} className="text-lg font-bold mt-4 mb-2">
-                  {line.slice(3)}
-                </h2>
-              )
-            if (line.startsWith('### '))
-              return (
-                <h3 key={j} className="text-base font-semibold mt-3 mb-1">
-                  {line.slice(4)}
-                </h3>
-              )
-            if (line.startsWith('- **')) {
-              const boldEnd = line.indexOf('**', 4)
-              if (boldEnd > 0) {
-                return (
-                  <div key={j} className="flex gap-2 py-0.5">
-                    <span className="text-muted-foreground">-</span>
-                    <span>
-                      <strong>{line.slice(4, boldEnd)}</strong>
-                      {line.slice(boldEnd + 2)}
-                    </span>
-                  </div>
-                )
-              }
-            }
-            if (line.startsWith('- '))
-              return (
-                <div key={j} className="flex gap-2 py-0.5">
-                  <span className="text-muted-foreground">-</span>
-                  <span>{line.slice(2)}</span>
-                </div>
-              )
-            if (line.trim() === '') return <div key={j} className="h-2" />
-            // Inline code and bold
-            const escaped = escapeHtml(line)
-            const rendered = escaped
-              .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-              .replace(
-                /`(.*?)`/g,
-                '<code class="px-1 py-0.5 rounded bg-muted text-sm font-mono">$1</code>'
-              )
-            return (
-              <p
-                key={j}
-                className="py-0.5"
-                dangerouslySetInnerHTML={{ __html: rendered }}
-              />
-            )
-          })}
-        </div>
-      )
-    })
-  }
+  const markdownConfig = useMemo(
+    () => ({
+      enableSyntaxHighlight: true,
+      codeTheme: 'dark' as const,
+      enableCopyButton: true,
+    }),
+    []
+  )
 
   return (
     <div>
@@ -711,7 +653,10 @@ export default function LibraryLearningHubPage() {
                             </div>
                           ) : (
                             <div className="text-sm">
-                              {renderContent(msg.content)}
+                              <MarkdownRenderer
+                                content={msg.content}
+                                config={markdownConfig}
+                              />
                             </div>
                           )}
                         </div>
@@ -784,7 +729,11 @@ export default function LibraryLearningHubPage() {
                       </div>
                       <div className="max-w-[75%] rounded-2xl px-4 py-3 bg-muted/50">
                         <div className="text-sm">
-                          {renderContent(streamingText)}
+                          <MarkdownRenderer
+                            content={streamingText}
+                            isStreaming
+                            config={markdownConfig}
+                          />
                         </div>
                         <span className="inline-block w-1.5 h-4 bg-primary animate-pulse rounded-sm ml-0.5" />
                       </div>
