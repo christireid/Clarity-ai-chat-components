@@ -35,7 +35,7 @@
     "./styles.css": "./dist/styles.css",
     "./glass-variants": {
       "types": "./dist/lib/glass-variants.d.ts",
-      "import": "./dist/lib/glass-variants.js",
+      "import": "./dist/lib/glass-variants.mjs",
       "require": "./dist/lib/glass-variants.js"
     },
     "./components/icons": {

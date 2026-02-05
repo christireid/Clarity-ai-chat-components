@@ -70,7 +70,13 @@
       "import": "./dist/internal.js",
       "require": "./dist/internal.cjs"
     },
-    "./styles.css": "./dist/styles/index.css"
+    "./clarity": {
+      "types": "./dist/clarity.d.ts",
+      "import": "./dist/clarity.js",
+      "require": "./dist/clarity.cjs"
+    },
+    "./styles.css": "./dist/styles/index.css",
+    "./dist/styles/oklch-colors.css": "./dist/styles/oklch-colors.css"
   },
   "files": [
     "dist",

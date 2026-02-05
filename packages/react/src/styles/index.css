@@ -36,7 +36,12 @@
  * @lastUpdated 2026-01-28
  */
 
-/* Import OKLCH color system */
+/* Import OKLCH color system
+ * NOTE: If using Vite or other bundlers that don't resolve @import in built CSS,
+ * import oklch-colors.css separately in your app:
+ * import '@clarity-chat/react/dist/styles/oklch-colors.css'
+ * import '@clarity-chat/react/styles.css'
+ */
 @import './oklch-colors.css';
 
 /* ============================================================================
@@ -1016,6 +1021,17 @@ body,
   }
 }
 
+/* Gradient Shift Animation - For glassmorphism animated gradients */
+@keyframes gradient-shift {
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
 /* Focus Ring - Enhanced */
 .clarity-focus-ring:focus-visible {
   outline: none;
@@ -1470,5 +1486,139 @@ body,
   .shadow-elevated {
     box-shadow: none;
     border: 1px solid CanvasText;
+  }
+}
+
+/* ============================================================================
+   Glassmorphism Utility Classes
+   Premium glass effect utilities for modern UI components
+   ============================================================================ */
+
+/* Glass Subtle - Light glassmorphism for subtle backgrounds */
+.glass-subtle {
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  border: 1px solid var(--glass-border);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.glass-subtle:hover {
+  background: var(--glass-bg-hover);
+  border-color: var(--glass-border-hover);
+}
+
+/* Gradient Accent - Premium gradient for CTAs and emphasis */
+.gradient-accent {
+  background: var(--gradient-cta);
+  color: white;
+  border: none;
+  position: relative;
+  overflow: hidden;
+}
+
+.gradient-accent::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.1) 0%,
+    transparent 50%,
+    rgba(0, 0, 0, 0.1) 100%
+  );
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.gradient-accent:hover::before {
+  opacity: 1;
+}
+
+/* Icon Container - Glassmorphic container for icons */
+.icon-container {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 36px;
+  min-height: 36px;
+  padding: 0.5rem;
+  background: var(--glass-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-md);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.icon-container:hover {
+  background: var(--glass-bg-hover);
+  border-color: var(--glass-border-hover);
+  transform: translateY(-1px);
+}
+
+/* Badge Glass - Glassmorphic badges for status indicators */
+.badge-glass {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.25rem 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  line-height: 1;
+  background: var(--glass-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--glass-border);
+  border-radius: 9999px;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+}
+
+.badge-glass:hover {
+  background: var(--glass-bg-hover);
+  border-color: var(--glass-border-hover);
+}
+
+/* Badge variants */
+.badge-glass.badge-primary {
+  background: oklch(from var(--primary) l c h / 0.1);
+  border-color: oklch(from var(--primary) l c h / 0.2);
+  color: hsl(var(--primary));
+}
+
+.badge-glass.badge-success {
+  background: oklch(from var(--success) l c h / 0.1);
+  border-color: oklch(from var(--success) l c h / 0.2);
+  color: hsl(var(--success));
+}
+
+.badge-glass.badge-warning {
+  background: oklch(from var(--warning) l c h / 0.1);
+  border-color: oklch(from var(--warning) l c h / 0.2);
+  color: hsl(var(--warning));
+}
+
+.badge-glass.badge-error {
+  background: oklch(from var(--destructive) l c h / 0.1);
+  border-color: oklch(from var(--destructive) l c h / 0.2);
+  color: hsl(var(--destructive));
+}
+
+/* Reduced motion support for glassmorphism */
+@media (prefers-reduced-motion: reduce) {
+  .glass-subtle,
+  .gradient-accent,
+  .icon-container,
+  .badge-glass {
+    transition: none;
+  }
+
+  .gradient-accent::before {
+    transition: none;
+  }
+
+  .icon-container:hover {
+    transform: none;
   }
 }

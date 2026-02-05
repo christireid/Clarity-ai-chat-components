@@ -18,7 +18,7 @@ export default defineConfig({
     'validation/index': 'src/validation/index.ts',
     'math/index': 'src/math/index.ts',
     'env/index': 'src/env/index.ts',
-    fs: 'src/fs.ts',
+    // fs: 'src/fs.ts', // Removed - uses Node.js APIs not available in browser
   },
   format: ['esm', 'cjs'],
   dts: true,

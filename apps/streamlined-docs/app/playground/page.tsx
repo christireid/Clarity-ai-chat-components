@@ -20,11 +20,18 @@ import {
 } from 'lucide-react'
 import { ScrollReveal, KineticText } from '@/components/Enhanced/ScrollReveal'
 import { durations } from '@/lib/animations'
+import { CodeEditorDemo } from './components/CodeEditorDemo'
 
 export default function PlaygroundPage() {
-  const [activeDemo, setActiveDemo] = useState<string>('command-palette')
+  const [activeDemo, setActiveDemo] = useState<string>('code-editor')
 
   const demos = [
+    {
+      id: 'code-editor',
+      name: 'Live Code Editor',
+      icon: <Code2 className="w-5 h-5" />,
+      description: 'Monaco editor with TypeScript',
+    },
     {
       id: 'command-palette',
       name: 'Command Palette',
@@ -46,7 +53,7 @@ export default function PlaygroundPage() {
     {
       id: 'interactive-demo',
       name: 'Interactive Examples',
-      icon: <Code2 className="w-5 h-5" />,
+      icon: <Sparkles className="w-5 h-5" />,
       description: 'Live component demos',
     },
   ]
@@ -118,6 +125,7 @@ export default function PlaygroundPage() {
       <ScrollReveal direction="up" delay={0.3}>
         <div className="relative min-h-[600px]">
           <AnimatePresence mode="wait">
+            {activeDemo === 'code-editor' && <CodeEditorDemo key="code-editor" />}
             {activeDemo === 'command-palette' && <CommandPaletteDemo key="command-palette" />}
             {activeDemo === 'audio-recorder' && <AudioRecorderDemo key="audio-recorder" />}
             {activeDemo === 'oklch-picker' && <OKLCHPickerDemo key="oklch-picker" />}

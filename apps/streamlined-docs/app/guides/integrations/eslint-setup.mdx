@@ -1,0 +1,728 @@
+---
+title: 'ESLint Setup and Configuration'
+description: 'Complete ESLint configuration guide for Clarity Chat projects with TypeScript, React, and modern best practices'
+date: '2026-02-04'
+author: 'Clarity Chat Team'
+tags: ['eslint', 'linting', 'typescript', 'code-quality', 'configuration']
+---
+
+# ESLint Setup and Configuration
+
+Complete guide to setting up ESLint for Clarity Chat projects with TypeScript, React, and modern best practices for code quality and consistency.
+
+## Table of Contents
+
+- [Quick Start](#quick-start)
+- [Base Configuration](#base-configuration)
+- [TypeScript Integration](#typescript-integration)
+- [React Rules](#react-rules)
+- [Custom Rules](#custom-rules)
+- [IDE Integration](#ide-integration)
+- [CI/CD Integration](#ci-cd-integration)
+
+---
+
+## Quick Start
+
+```bash
+# Install ESLint and dependencies
+npm install -D eslint @eslint/js typescript-eslint
+
+# Install plugins
+npm install -D eslint-plugin-react eslint-plugin-react-hooks
+npm install -D eslint-plugin-jsx-a11y eslint-plugin-import
+
+# Install Prettier (optional but recommended)
+npm install -D prettier eslint-config-prettier eslint-plugin-prettier
+
+# Create configuration file
+touch eslint.config.js
+
+# Add lint script to package.json
+npm pkg set scripts.lint="eslint . --ext .js,.jsx,.ts,.tsx"
+npm pkg set scripts.lint:fix="eslint . --ext .js,.jsx,.ts,.tsx --fix"
+```
+
+---
+
+## Base Configuration
+
+### ESLint 9+ (Flat Config)
+
+```javascript
+// eslint.config.js
+import js from '@eslint/js'
+import tseslint from 'typescript-eslint'
+import react from 'eslint-plugin-react'
+import reactHooks from 'eslint-plugin-react-hooks'
+import jsxA11y from 'eslint-plugin-jsx-a11y'
+import prettier from 'eslint-plugin-prettier'
+import importPlugin from 'eslint-plugin-import'
+
+export default [
+  // Ignore patterns
+  {
+    ignores: [
+      '**/node_modules/**',
+      '**/dist/**',
+      '**/build/**',
+      '**/.next/**',
+      '**/coverage/**',
+      '**/*.config.js',
+      '**/*.config.ts',
+    ],
+  },
+
+  // Base JavaScript rules
+  js.configs.recommended,
+
+  // TypeScript configuration
+  ...tseslint.configs.recommended,
+  ...tseslint.configs.stylistic,
+
+  // Global settings
+  {
+    languageOptions: {
+      parser: tseslint.parser,
+      parserOptions: {
+        ecmaVersion: 'latest',
+        sourceType: 'module',
+        ecmaFeatures: {
+          jsx: true,
+        },
+        project: './tsconfig.json',
+      },
+      globals: {
+        window: 'readonly',
+        document: 'readonly',
+        navigator: 'readonly',
+        console: 'readonly',
+        process: 'readonly',
+      },
+    },
+
+    settings: {
+      react: {
+        version: 'detect',
+      },
+      'import/resolver': {
+        typescript: true,
+        node: true,
+      },
+    },
+
+    plugins: {
+      react,
+      'react-hooks': reactHooks,
+      'jsx-a11y': jsxA11y,
+      prettier,
+      import: importPlugin,
+    },
+
+    rules: {
+      // General rules
+      'no-console': ['warn', { allow: ['warn', 'error'] }],
+      'no-debugger': 'warn',
+      'no-alert': 'warn',
+      'prefer-const': 'error',
+      'no-var': 'error',
+
+      // TypeScript rules
+      '@typescript-eslint/no-unused-vars': [
+        'error',
+        {
+          argsIgnorePattern: '^_',
+          varsIgnorePattern: '^_',
+          caughtErrorsIgnorePattern: '^_',
+        },
+      ],
+      '@typescript-eslint/no-explicit-any': 'warn',
+      '@typescript-eslint/explicit-function-return-type': 'off',
+      '@typescript-eslint/explicit-module-boundary-types': 'off',
+      '@typescript-eslint/no-non-null-assertion': 'warn',
+      '@typescript-eslint/consistent-type-imports': [
+        'error',
+        {
+          prefer: 'type-imports',
+          fixStyle: 'inline-type-imports',
+        },
+      ],
+
+      // React rules
+      'react/react-in-jsx-scope': 'off', // Not needed in React 17+
+      'react/prop-types': 'off', // Using TypeScript
+      'react/jsx-uses-react': 'off',
+      'react/jsx-uses-vars': 'error',
+      'react/jsx-key': 'error',
+      'react/jsx-no-target-blank': 'error',
+      'react/no-unescaped-entities': 'warn',
+
+      // React Hooks rules
+      'react-hooks/rules-of-hooks': 'error',
+      'react-hooks/exhaustive-deps': 'warn',
+
+      // Accessibility rules
+      'jsx-a11y/alt-text': 'error',
+      'jsx-a11y/anchor-is-valid': 'warn',
+      'jsx-a11y/aria-props': 'error',
+      'jsx-a11y/aria-proptypes': 'error',
+      'jsx-a11y/aria-unsupported-elements': 'error',
+      'jsx-a11y/role-has-required-aria-props': 'error',
+      'jsx-a11y/role-supports-aria-props': 'error',
+
+      // Import rules
+      'import/order': [
+        'error',
+        {
+          groups: [
+            'builtin',
+            'external',
+            'internal',
+            ['parent', 'sibling'],
+            'index',
+            'type',
+          ],
+          'newlines-between': 'always',
+          alphabetize: {
+            order: 'asc',
+            caseInsensitive: true,
+          },
+        },
+      ],
+      'import/no-duplicates': 'error',
+      'import/no-unresolved': 'error',
+
+      // Prettier integration
+      'prettier/prettier': 'error',
+    },
+  },
+]
+```
+
+### Legacy Configuration (.eslintrc.json)
+
+```json
+{
+  "root": true,
+  "env": {
+    "browser": true,
+    "es2021": true,
+    "node": true
+  },
+  "extends": [
+    "eslint:recommended",
+    "plugin:@typescript-eslint/recommended",
+    "plugin:react/recommended",
+    "plugin:react-hooks/recommended",
+    "plugin:jsx-a11y/recommended",
+    "plugin:import/errors",
+    "plugin:import/warnings",
+    "plugin:import/typescript",
+    "prettier"
+  ],
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "ecmaVersion": "latest",
+    "sourceType": "module",
+    "ecmaFeatures": {
+      "jsx": true
+    },
+    "project": "./tsconfig.json"
+  },
+  "plugins": [
+    "@typescript-eslint",
+    "react",
+    "react-hooks",
+    "jsx-a11y",
+    "import",
+    "prettier"
+  ],
+  "settings": {
+    "react": {
+      "version": "detect"
+    },
+    "import/resolver": {
+      "typescript": true,
+      "node": true
+    }
+  },
+  "rules": {
+    "no-console": ["warn", { "allow": ["warn", "error"] }],
+    "@typescript-eslint/no-unused-vars": [
+      "error",
+      {
+        "argsIgnorePattern": "^_",
+        "varsIgnorePattern": "^_"
+      }
+    ],
+    "react/react-in-jsx-scope": "off",
+    "react/prop-types": "off"
+  }
+}
+```
+
+---
+
+## TypeScript Integration
+
+### TypeScript-Specific Rules
+
+```javascript
+// eslint.config.js - TypeScript section
+export default [
+  {
+    files: ['**/*.ts', '**/*.tsx'],
+    rules: {
+      // Require explicit return types on functions
+      '@typescript-eslint/explicit-function-return-type': [
+        'warn',
+        {
+          allowExpressions: true,
+          allowTypedFunctionExpressions: true,
+          allowHigherOrderFunctions: true,
+        },
+      ],
+
+      // Require explicit accessibility modifiers on class members
+      '@typescript-eslint/explicit-member-accessibility': [
+        'error',
+        {
+          accessibility: 'explicit',
+          overrides: {
+            constructors: 'no-public',
+          },
+        },
+      ],
+
+      // Enforce consistent type imports
+      '@typescript-eslint/consistent-type-imports': [
+        'error',
+        {
+          prefer: 'type-imports',
+          fixStyle: 'inline-type-imports',
+        },
+      ],
+
+      // Prevent floating promises
+      '@typescript-eslint/no-floating-promises': 'error',
+
+      // Require awaiting async functions
+      '@typescript-eslint/require-await': 'error',
+
+      // Enforce template literal types over string literal types
+      '@typescript-eslint/prefer-template': 'error',
+
+      // Disallow unnecessary type assertions
+      '@typescript-eslint/no-unnecessary-type-assertion': 'error',
+
+      // Disallow calling a function with a value with type any
+      '@typescript-eslint/no-unsafe-argument': 'warn',
+
+      // Disallow assigning any to variables and properties
+      '@typescript-eslint/no-unsafe-assignment': 'warn',
+
+      // Disallow calling any
+      '@typescript-eslint/no-unsafe-call': 'warn',
+
+      // Disallow member access on any
+      '@typescript-eslint/no-unsafe-member-access': 'warn',
+
+      // Disallow returning any from a function
+      '@typescript-eslint/no-unsafe-return': 'warn',
+    },
+  },
+]
+```
+
+---
+
+## React Rules
+
+### React Component Rules
+
+```javascript
+// eslint.config.js - React section
+export default [
+  {
+    files: ['**/*.jsx', '**/*.tsx'],
+    rules: {
+      // Enforce consistent function component style
+      'react/function-component-definition': [
+        'error',
+        {
+          namedComponents: 'function-declaration',
+          unnamedComponents: 'arrow-function',
+        },
+      ],
+
+      // Prevent missing React when using JSX
+      'react/jsx-uses-react': 'off', // Not needed in React 17+
+
+      // Prevent React to be incorrectly marked as unused
+      'react/react-in-jsx-scope': 'off', // Not needed in React 17+
+
+      // Enforce boolean attributes notation in JSX
+      'react/jsx-boolean-value': ['error', 'never'],
+
+      // Enforce closing bracket location in JSX
+      'react/jsx-closing-bracket-location': ['error', 'line-aligned'],
+
+      // Enforce closing tag location for multiline JSX
+      'react/jsx-closing-tag-location': 'error',
+
+      // Prevent missing key prop in iterators
+      'react/jsx-key': [
+        'error',
+        {
+          checkFragmentShorthand: true,
+          checkKeyMustBeforeSpread: true,
+        },
+      ],
+
+      // Prevent usage of dangerous JSX properties
+      'react/no-danger': 'warn',
+
+      // Prevent direct mutation of this.state
+      'react/no-direct-mutation-state': 'error',
+
+      // Prevent usage of setState in componentDidMount
+      'react/no-did-mount-set-state': 'warn',
+
+      // Prevent usage of setState in componentDidUpdate
+      'react/no-did-update-set-state': 'warn',
+
+      // Prevent usage of findDOMNode
+      'react/no-find-dom-node': 'error',
+
+      // Prevent usage of unknown DOM property
+      'react/no-unknown-property': 'error',
+
+      // Prevent missing props validation in a React component definition
+      'react/prop-types': 'off', // Using TypeScript
+
+      // Enforce a defaultProps definition for every prop that is not required
+      'react/require-default-props': 'off', // Using TypeScript
+
+      // Enforce consistent usage of self-closing JSX tags
+      'react/self-closing-comp': 'error',
+
+      // Enforce style prop value is an object
+      'react/style-prop-object': 'error',
+
+      // Prevent void DOM elements from receiving children
+      'react/void-dom-elements-no-children': 'error',
+    },
+  },
+]
+```
+
+### React Hooks Rules
+
+```javascript
+// eslint.config.js - Hooks section
+export default [
+  {
+    files: ['**/*.jsx', '**/*.tsx'],
+    rules: {
+      // Enforce Rules of Hooks
+      'react-hooks/rules-of-hooks': 'error',
+
+      // Verify the list of dependencies for Hooks
+      'react-hooks/exhaustive-deps': [
+        'warn',
+        {
+          additionalHooks: '(useMyCustomHook|useAnotherCustomHook)',
+        },
+      ],
+    },
+  },
+]
+```
+
+---
+
+## Custom Rules
+
+### Project-Specific Rules
+
+```javascript
+// eslint.config.js - Custom rules for Clarity Chat
+export default [
+  {
+    files: ['**/*.ts', '**/*.tsx'],
+    rules: {
+      // Enforce proper error handling
+      'no-throw-literal': 'error',
+
+      // Prevent console statements in production
+      'no-console': process.env.NODE_ENV === 'production' ? 'error' : 'warn',
+
+      // Enforce proper naming conventions
+      '@typescript-eslint/naming-convention': [
+        'error',
+        {
+          selector: 'interface',
+          format: ['PascalCase'],
+          prefix: ['I'],
+        },
+        {
+          selector: 'typeAlias',
+          format: ['PascalCase'],
+        },
+        {
+          selector: 'enum',
+          format: ['PascalCase'],
+        },
+        {
+          selector: 'variable',
+          format: ['camelCase', 'UPPER_CASE', 'PascalCase'],
+          leadingUnderscore: 'allow',
+        },
+      ],
+
+      // Enforce file naming convention
+      'filenames/match-regex': ['error', '^[a-z0-9-.]+$', true],
+
+      // Prevent importing from dev dependencies in src/
+      'import/no-extraneous-dependencies': [
+        'error',
+        {
+          devDependencies: [
+            '**/*.test.ts',
+            '**/*.test.tsx',
+            '**/*.spec.ts',
+            '**/*.spec.tsx',
+            '**/test/**',
+            '**/__tests__/**',
+            'vite.config.ts',
+            'vitest.config.ts',
+          ],
+        },
+      ],
+    },
+  },
+]
+```
+
+### Accessibility Rules
+
+```javascript
+// eslint.config.js - Accessibility rules
+export default [
+  {
+    files: ['**/*.jsx', '**/*.tsx'],
+    rules: {
+      // Enforce all elements that require alternative text have alt prop
+      'jsx-a11y/alt-text': [
+        'error',
+        {
+          elements: ['img', 'object', 'area', 'input[type="image"]'],
+        },
+      ],
+
+      // Enforce all anchors to contain accessible content
+      'jsx-a11y/anchor-has-content': 'error',
+
+      // Enforce all anchors are valid
+      'jsx-a11y/anchor-is-valid': [
+        'warn',
+        {
+          components: ['Link'],
+          specialLink: ['to'],
+        },
+      ],
+
+      // Enforce ARIA props are valid
+      'jsx-a11y/aria-props': 'error',
+
+      // Enforce ARIA state and property values are valid
+      'jsx-a11y/aria-proptypes': 'error',
+
+      // Enforce that elements with ARIA roles must have all required attributes
+      'jsx-a11y/role-has-required-aria-props': 'error',
+
+      // Enforce that elements with explicit roles have only supported ARIA attributes
+      'jsx-a11y/role-supports-aria-props': 'error',
+
+      // Enforce heading (h1, h2, etc) elements contain accessible content
+      'jsx-a11y/heading-has-content': 'warn',
+
+      // Enforce lang attribute has a valid value
+      'jsx-a11y/lang': 'error',
+
+      // Enforce onClick is accompanied by at least one keyboard handler
+      'jsx-a11y/click-events-have-key-events': 'warn',
+
+      // Enforce that a control (an interactive element) has a text label
+      'jsx-a11y/control-has-associated-label': [
+        'warn',
+        {
+          ignoreElements: ['audio', 'canvas', 'embed', 'input', 'textarea', 'tr', 'video'],
+        },
+      ],
+    },
+  },
+]
+```
+
+---
+
+## IDE Integration
+
+### VS Code Setup
+
+```json
+// .vscode/settings.json
+{
+  "editor.formatOnSave": true,
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit",
+    "source.organizeImports": "explicit"
+  },
+  "eslint.validate": [
+    "javascript",
+    "javascriptreact",
+    "typescript",
+    "typescriptreact"
+  ],
+  "eslint.format.enable": true,
+  "[typescript]": {
+    "editor.defaultFormatter": "dbaeumer.vscode-eslint"
+  },
+  "[typescriptreact]": {
+    "editor.defaultFormatter": "dbaeumer.vscode-eslint"
+  }
+}
+```
+
+### Required Extensions
+
+```json
+// .vscode/extensions.json
+{
+  "recommendations": [
+    "dbaeumer.vscode-eslint",
+    "esbenp.prettier-vscode",
+    "ms-vscode.vscode-typescript-next"
+  ]
+}
+```
+
+---
+
+## CI/CD Integration
+
+### GitHub Actions
+
+```yaml
+# .github/workflows/lint.yml
+name: Lint
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run ESLint
+        run: npm run lint
+
+      - name: Run TypeScript type check
+        run: npm run typecheck
+```
+
+### Pre-commit Hook
+
+```bash
+# Install husky
+npm install -D husky lint-staged
+
+# Initialize husky
+npx husky init
+```
+
+```javascript
+// .husky/pre-commit
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+npx lint-staged
+```
+
+```json
+// package.json
+{
+  "lint-staged": {
+    "*.{js,jsx,ts,tsx}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.{json,md,mdx,css,scss}": [
+      "prettier --write"
+    ]
+  }
+}
+```
+
+---
+
+## Summary
+
+### Key Takeaways
+
+1. **Modern Config**: Use flat config (eslint.config.js) for ESLint 9+
+2. **TypeScript**: Strict rules for type safety
+3. **React**: Proper hooks and component rules
+4. **Accessibility**: WCAG 2.1 AA compliance
+5. **Import Order**: Consistent import organization
+6. **IDE Integration**: Auto-fix on save
+7. **CI/CD**: Automated checks on every commit
+
+### Scripts
+
+```json
+{
+  "scripts": {
+    "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
+    "lint:fix": "eslint . --ext .js,.jsx,.ts,.tsx --fix",
+    "typecheck": "tsc --noEmit",
+    "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,md,mdx,css,scss}\"",
+    "format:check": "prettier --check \"**/*.{js,jsx,ts,tsx,json,md,mdx,css,scss}\""
+  }
+}
+```
+
+### Next Steps
+
+- [TypeScript Configuration](/guides/integrations/typescript-strict) - Strict TypeScript setup
+- [Prettier Integration](/guides/integrations/prettier) - Code formatting
+- [Vite Integration](/guides/integrations/vite) - Build tool setup
+
+---
+
+## Additional Resources
+
+- [ESLint Documentation](https://eslint.org/docs/latest/)
+- [TypeScript ESLint](https://typescript-eslint.io/)
+- [ESLint Plugin React](https://github.com/jsx-eslint/eslint-plugin-react)
+- [ESLint Plugin JSX A11y](https://github.com/jsx-eslint/eslint-plugin-jsx-a11y)
+
+---
+
+**Last Updated**: February 4, 2026

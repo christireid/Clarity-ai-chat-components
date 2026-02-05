@@ -25,6 +25,9 @@ export { cn } from '@clarity-chat/primitives'
 export * from './mobile'
 export * from './export-utils'
 
+// Glassmorphism Utilities
+export * from './glassmorphism'
+
 // Color Utilities
 export * from './color'
 

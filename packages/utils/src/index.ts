@@ -345,7 +345,8 @@ export {
 // File System Utilities
 // ============================================================================
 
-export { pathExists, directoryExists, fileExists } from './fs.js'
+// Temporarily commented out for browser compatibility - these use Node.js fs APIs
+// export { pathExists, directoryExists, fileExists } from './fs.js'
 
 // ============================================================================
 // Configuration Manager

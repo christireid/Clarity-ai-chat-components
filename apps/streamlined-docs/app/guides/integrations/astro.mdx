@@ -1,0 +1,750 @@
+---
+title: 'Astro Integration'
+description: 'Complete guide to integrating Clarity Chat with Astro, featuring islands architecture, partial hydration, and framework-agnostic components'
+date: '2026-02-04'
+author: 'Clarity Chat Team'
+tags: ['astro', 'integration', 'islands', 'mpa', 'performance']
+---
+
+# Astro Integration
+
+Complete guide to integrating Clarity Chat Components with Astro, leveraging islands architecture, partial hydration, and multi-framework support for maximum performance.
+
+## Table of Contents
+
+- [Overview](#overview)
+- [Quick Start](#quick-start)
+- [Islands Architecture](#islands-architecture)
+- [Client Directives](#client-directives)
+- [Content Collections](#content-collections)
+- [API Routes](#api-routes)
+- [Production Optimization](#production-optimization)
+
+---
+
+## Overview
+
+Astro is a modern web framework that ships zero JavaScript by default, using "islands architecture" for interactive components.
+
+### Key Benefits
+
+- **Zero JavaScript**: Static by default, interactive on demand
+- **Framework Agnostic**: Use React, Vue, Svelte, or all three
+- **Islands Architecture**: Partial hydration for optimal performance
+- **Content-First**: Perfect for documentation and content sites
+- **Fast Builds**: Optimized for large sites
+
+### When to Use Astro + Clarity Chat
+
+- Documentation sites with AI assistant
+- Marketing sites with chat support
+- Content-heavy applications
+- Sites requiring maximum performance
+- Multi-page applications (MPA)
+
+---
+
+## Quick Start
+
+```bash
+# Create new Astro project
+npm create astro@latest my-chat-app
+
+# Choose options:
+# - Template: Empty
+# - TypeScript: Yes (strict)
+# - Dependencies: Yes
+
+cd my-chat-app
+
+# Add React integration
+npx astro add react tailwind
+
+# Install Clarity Chat
+npm install @clarity-chat/react @clarity-chat/primitives @clarity-chat/token-optimization
+
+# Install peer dependencies
+npm install framer-motion lucide-react clsx tailwind-merge
+
+# Run development server
+npm run dev
+```
+
+---
+
+## Islands Architecture
+
+### Basic Chat Island
+
+```astro
+---
+// src/pages/index.astro
+import ChatIsland from '../components/ChatIsland'
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>AI Chat</title>
+  </head>
+  <body>
+    <header>
+      <h1>Welcome to AI Chat</h1>
+    </header>
+
+    <!-- Interactive island - only this loads JavaScript -->
+    <ChatIsland client:load />
+
+    <footer>
+      <p>Powered by Clarity Chat</p>
+    </footer>
+  </body>
+</html>
+```
+
+### React Chat Component
+
+```tsx
+// src/components/ChatIsland.tsx
+import { useState } from 'react'
+import { ClarityChatApp } from '@clarity-chat/react'
+import type { Message } from '@clarity-chat/react'
+
+export default function ChatIsland() {
+  const [messages, setMessages] = useState<Message[]>([
+    {
+      id: '1',
+      role: 'assistant',
+      content: 'Hello! How can I help you today?',
+    },
+  ])
+
+  const handleSendMessage = async (content: string) => {
+    const userMessage: Message = {
+      id: Date.now().toString(),
+      role: 'user',
+      content,
+    }
+    setMessages((prev) => [...prev, userMessage])
+
+    try {
+      const response = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          messages: [...messages, userMessage],
+        }),
+      })
+
+      const data = await response.json()
+      const assistantMessage: Message = {
+        id: (Date.now() + 1).toString(),
+        role: 'assistant',
+        content: data.content,
+      }
+      setMessages((prev) => [...prev, assistantMessage])
+    } catch (error) {
+      console.error('Error:', error)
+    }
+  }
+
+  return (
+    <div className="h-screen">
+      <ClarityChatApp
+        messages={messages}
+        onSendMessage={handleSendMessage}
+        placeholder="Ask anything..."
+      />
+    </div>
+  )
+}
+```
+
+---
+
+## Client Directives
+
+### Available Directives
+
+```astro
+<!-- Load immediately (blocks rendering) -->
+<ChatIsland client:load />
+
+<!-- Load when page is idle (after initial render) -->
+<ChatIsland client:idle />
+
+<!-- Load when visible in viewport -->
+<ChatIsland client:visible />
+
+<!-- Load on media query match -->
+<ChatIsland client:media="(min-width: 768px)" />
+
+<!-- Only render on client (skip SSR) -->
+<ChatIsland client:only="react" />
+```
+
+### Choosing the Right Directive
+
+```astro
+---
+// src/pages/docs.astro
+import ChatAssistant from '../components/ChatAssistant'
+import HeavyComponent from '../components/HeavyComponent'
+---
+
+<html>
+  <body>
+    <!-- Critical: Load immediately -->
+    <ChatAssistant client:load />
+
+    <!-- Below the fold: Load when visible -->
+    <HeavyComponent client:visible />
+
+    <!-- Mobile hidden: Load conditionally -->
+    <DesktopChat client:media="(min-width: 1024px)" />
+  </body>
+</html>
+```
+
+---
+
+## Content Collections
+
+### Setup Content Collections
+
+```typescript
+// src/content/config.ts
+import { defineCollection, z } from 'astro:content'
+
+const docs = defineCollection({
+  schema: z.object({
+    title: z.string(),
+    description: z.string(),
+    date: z.date(),
+    tags: z.array(z.string()).optional(),
+  }),
+})
+
+export const collections = { docs }
+```
+
+### Create Documentation with AI Assistant
+
+```astro
+---
+// src/pages/docs/[...slug].astro
+import { getCollection } from 'astro:content'
+import DocsLayout from '../../layouts/DocsLayout.astro'
+import DocsAssistant from '../../components/DocsAssistant'
+
+export async function getStaticPaths() {
+  const docs = await getCollection('docs')
+  return docs.map((doc) => ({
+    params: { slug: doc.slug },
+    props: { doc },
+  }))
+}
+
+const { doc } = Astro.props
+const { Content } = await doc.render()
+---
+
+<DocsLayout title={doc.data.title}>
+  <div class="grid grid-cols-[1fr_300px] gap-8">
+    <!-- Static documentation content -->
+    <article class="prose dark:prose-invert">
+      <h1>{doc.data.title}</h1>
+      <Content />
+    </article>
+
+    <!-- Interactive AI assistant -->
+    <aside>
+      <DocsAssistant
+        client:idle
+        context={doc.data.title}
+        category={doc.collection}
+      />
+    </aside>
+  </div>
+</DocsLayout>
+```
+
+### AI-Powered Search
+
+```tsx
+// src/components/DocsAssistant.tsx
+import { useState } from 'react'
+import { ClarityChatApp } from '@clarity-chat/react'
+import type { Message } from '@clarity-chat/react'
+
+interface Props {
+  context: string
+  category: string
+}
+
+export default function DocsAssistant({ context, category }: Props) {
+  const [messages, setMessages] = useState<Message[]>([
+    {
+      id: '1',
+      role: 'assistant',
+      content: `I'm here to help you with ${context}. What would you like to know?`,
+    },
+  ])
+
+  const handleSendMessage = async (content: string) => {
+    const userMessage: Message = {
+      id: Date.now().toString(),
+      role: 'user',
+      content,
+    }
+    setMessages((prev) => [...prev, userMessage])
+
+    try {
+      const response = await fetch('/api/docs-assistant', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          query: content,
+          context,
+          category,
+        }),
+      })
+
+      const data = await response.json()
+      const assistantMessage: Message = {
+        id: (Date.now() + 1).toString(),
+        role: 'assistant',
+        content: data.content,
+      }
+      setMessages((prev) => [...prev, assistantMessage])
+    } catch (error) {
+      console.error('Error:', error)
+    }
+  }
+
+  return (
+    <div className="sticky top-4 h-[calc(100vh-2rem)]">
+      <ClarityChatApp
+        messages={messages}
+        onSendMessage={handleSendMessage}
+        placeholder="Ask about this documentation..."
+        header={{ title: 'Docs Assistant' }}
+      />
+    </div>
+  )
+}
+```
+
+---
+
+## API Routes
+
+### Chat API Endpoint
+
+```typescript
+// src/pages/api/chat.ts
+import type { APIRoute } from 'astro'
+import { openai } from '@ai-sdk/openai'
+import { generateText } from 'ai'
+import { z } from 'zod'
+
+const requestSchema = z.object({
+  messages: z.array(
+    z.object({
+      role: z.enum(['user', 'assistant', 'system']),
+      content: z.string(),
+    })
+  ),
+})
+
+export const POST: APIRoute = async ({ request }) => {
+  try {
+    const body = await request.json()
+    const { messages } = requestSchema.parse(body)
+
+    const result = await generateText({
+      model: openai('gpt-4o-mini'),
+      messages,
+      temperature: 0.7,
+      maxTokens: 2000,
+    })
+
+    return new Response(
+      JSON.stringify({
+        content: result.text,
+        usage: result.usage,
+      }),
+      {
+        status: 200,
+        headers: { 'Content-Type': 'application/json' },
+      }
+    )
+  } catch (error) {
+    console.error('Chat API error:', error)
+    return new Response(JSON.stringify({ error: 'Internal server error' }), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json' },
+    })
+  }
+}
+```
+
+### Streaming API Endpoint
+
+```typescript
+// src/pages/api/chat/stream.ts
+import type { APIRoute } from 'astro'
+import { openai } from '@ai-sdk/openai'
+import { streamText } from 'ai'
+
+export const POST: APIRoute = async ({ request }) => {
+  try {
+    const { messages } = await request.json()
+
+    const result = await streamText({
+      model: openai('gpt-4o'),
+      messages,
+    })
+
+    // Return streaming response
+    return result.toAIStreamResponse()
+  } catch (error) {
+    console.error('Stream API error:', error)
+    return new Response(JSON.stringify({ error: 'Stream failed' }), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json' },
+    })
+  }
+}
+```
+
+### RAG Search Endpoint
+
+```typescript
+// src/pages/api/docs-assistant.ts
+import type { APIRoute } from 'astro'
+import { getCollection } from 'astro:content'
+import { openai } from '@ai-sdk/openai'
+import { generateText, embed } from 'ai'
+
+export const POST: APIRoute = async ({ request }) => {
+  try {
+    const { query, context, category } = await request.json()
+
+    // Get all docs from collection
+    const docs = await getCollection(category)
+
+    // Generate query embedding
+    const queryEmbedding = await embed({
+      model: openai.embedding('text-embedding-3-small'),
+      value: query,
+    })
+
+    // Find relevant docs (simplified - use vector DB in production)
+    const relevantDocs = docs
+      .filter((doc) => doc.data.title.toLowerCase().includes(query.toLowerCase()))
+      .slice(0, 3)
+
+    // Generate response with context
+    const result = await generateText({
+      model: openai('gpt-4o-mini'),
+      messages: [
+        {
+          role: 'system',
+          content: `You are a helpful documentation assistant. Answer questions based on the following context:\n\n${relevantDocs.map((doc) => `${doc.data.title}: ${doc.data.description}`).join('\n\n')}`,
+        },
+        {
+          role: 'user',
+          content: query,
+        },
+      ],
+    })
+
+    return new Response(
+      JSON.stringify({
+        content: result.text,
+        sources: relevantDocs.map((doc) => ({
+          title: doc.data.title,
+          slug: doc.slug,
+        })),
+      }),
+      {
+        status: 200,
+        headers: { 'Content-Type': 'application/json' },
+      }
+    )
+  } catch (error) {
+    console.error('Docs assistant error:', error)
+    return new Response(JSON.stringify({ error: 'Failed to generate response' }), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json' },
+    })
+  }
+}
+```
+
+---
+
+## Production Optimization
+
+### Astro Configuration
+
+```javascript
+// astro.config.mjs
+import { defineConfig } from 'astro/config'
+import react from '@astrojs/react'
+import tailwind from '@astrojs/tailwind'
+import sitemap from '@astrojs/sitemap'
+
+export default defineConfig({
+  site: 'https://example.com',
+  integrations: [
+    react(),
+    tailwind(),
+    sitemap(),
+  ],
+
+  output: 'static', // or 'server' for SSR
+  adapter: undefined, // Add adapter for SSR (vercel, netlify, node)
+
+  vite: {
+    build: {
+      // Optimize chunks
+      rollupOptions: {
+        output: {
+          manualChunks: {
+            'react-vendor': ['react', 'react-dom'],
+            'clarity-chat': ['@clarity-chat/react', '@clarity-chat/primitives'],
+          },
+        },
+      },
+    },
+    optimizeDeps: {
+      include: ['@clarity-chat/react', 'framer-motion'],
+    },
+  },
+
+  // Build performance
+  build: {
+    inlineStylesheets: 'auto',
+  },
+
+  // Compress assets
+  compressHTML: true,
+})
+```
+
+### Environment Variables
+
+```bash
+# .env
+PUBLIC_API_URL=https://api.example.com
+OPENAI_API_KEY=sk-...
+DATABASE_URL=postgresql://...
+
+# .env.production
+PUBLIC_API_URL=https://api.production.com
+```
+
+Usage in components:
+
+```typescript
+// Access public env vars in client
+const apiUrl = import.meta.env.PUBLIC_API_URL
+
+// Access private env vars in server only
+// src/pages/api/chat.ts
+const apiKey = import.meta.env.OPENAI_API_KEY
+```
+
+### Image Optimization
+
+```astro
+---
+import { Image } from 'astro:assets'
+import avatarImg from '../assets/avatar.png'
+---
+
+<!-- Optimized image with automatic format conversion -->
+<Image
+  src={avatarImg}
+  alt="Avatar"
+  width={40}
+  height={40}
+  format="webp"
+  quality={80}
+/>
+```
+
+### Preloading Critical Resources
+
+```astro
+---
+// src/layouts/Layout.astro
+---
+
+<html>
+  <head>
+    <link rel="preload" href="/fonts/Inter-Variable.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" as="style" href="/styles/global.css" />
+  </head>
+  <body>
+    <slot />
+  </body>
+</html>
+```
+
+---
+
+## Multi-Framework Support
+
+### Using Vue Components
+
+```bash
+# Add Vue integration
+npx astro add vue
+
+# Install Vue components
+npm install @clarity-chat/vue
+```
+
+```astro
+---
+// src/pages/vue-chat.astro
+import VueChatComponent from '../components/VueChat.vue'
+---
+
+<html>
+  <body>
+    <!-- Vue component island -->
+    <VueChatComponent client:load />
+  </body>
+</html>
+```
+
+### Using Svelte Components
+
+```bash
+# Add Svelte integration
+npx astro add svelte
+
+# Install Svelte components
+npm install @clarity-chat/svelte
+```
+
+```astro
+---
+// src/pages/svelte-chat.astro
+import SvelteChatComponent from '../components/SvelteChat.svelte'
+---
+
+<html>
+  <body>
+    <!-- Svelte component island -->
+    <SvelteChatComponent client:load />
+  </body>
+</html>
+```
+
+### Mixing Frameworks
+
+```astro
+---
+// src/pages/mixed.astro
+import ReactChat from '../components/ReactChat'
+import VueChat from '../components/VueChat.vue'
+import SvelteChat from '../components/SvelteChat.svelte'
+---
+
+<html>
+  <body>
+    <div class="grid grid-cols-3 gap-4">
+      <!-- All three frameworks on one page! -->
+      <ReactChat client:load />
+      <VueChat client:load />
+      <SvelteChat client:load />
+    </div>
+  </body>
+</html>
+```
+
+---
+
+## Complete Example
+
+```astro
+---
+// src/pages/index.astro
+import Layout from '../layouts/Layout.astro'
+import ChatIsland from '../components/ChatIsland'
+import Hero from '../components/Hero.astro'
+import Features from '../components/Features.astro'
+
+const title = 'AI Chat Assistant'
+const description = 'Talk to our AI assistant'
+---
+
+<Layout title={title} description={description}>
+  <!-- Static hero section - no JavaScript -->
+  <Hero />
+
+  <!-- Static features - no JavaScript -->
+  <Features />
+
+  <!-- Interactive chat - JavaScript only for this section -->
+  <section id="chat" class="py-16">
+    <div class="container mx-auto">
+      <h2 class="text-3xl font-bold mb-8">Try It Now</h2>
+      <ChatIsland client:visible />
+    </div>
+  </section>
+
+  <!-- Static footer - no JavaScript -->
+  <footer class="border-t py-8">
+    <p class="text-center text-neutral-600">
+      Powered by Clarity Chat
+    </p>
+  </footer>
+</Layout>
+```
+
+---
+
+## Summary
+
+### Key Features
+
+1. **Zero JavaScript**: Static by default, interactive islands
+2. **Partial Hydration**: Only interactive components load JS
+3. **Framework Agnostic**: React, Vue, Svelte, or all three
+4. **Content Collections**: Type-safe content management
+5. **Fast Builds**: Optimized for large sites
+6. **API Routes**: Built-in server endpoints
+
+### Performance Benefits
+
+- 90+ Lighthouse scores out of the box
+- Minimal JavaScript shipped to client
+- Optimal loading strategy with client directives
+- Fast page loads with static generation
+- Smart code splitting with islands
+
+### Next Steps
+
+- [Vite Integration](/guides/integrations/vite) - Similar build tool
+- [Next.js Integration](/guides/integrations/nextjs-app-router) - Alternative framework
+- [Production Best Practices](/guides/production-best-practices) - Deploy optimized apps
+
+---
+
+## Additional Resources
+
+- [Astro Documentation](https://docs.astro.build/)
+- [Astro Islands](https://docs.astro.build/en/concepts/islands/)
+- [Content Collections](https://docs.astro.build/en/guides/content-collections/)
+- [Clarity Chat Examples](https://github.com/clarity-chat/examples/astro)
+
+---
+
+**Last Updated**: February 4, 2026

@@ -38,6 +38,7 @@ const entries = [
   { name: 'main', entry: 'src/index.ts src/styles/index.css', css: true },
   { name: 'extended', entry: 'src/extended.ts' },
   { name: 'advanced', entry: 'src/advanced.ts' },
+  { name: 'clarity', entry: 'src/clarity.ts' },
   { name: 'core-minimal', entry: 'src/core-minimal.ts' },
   { name: 'utils', entry: 'src/utils/index.ts', outDir: 'dist/utils' },
   { name: 'animations', entry: 'src/animations/index.ts', outDir: 'dist/animations' },

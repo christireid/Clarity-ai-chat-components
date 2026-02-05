@@ -1,0 +1,909 @@
+---
+title: 'Remix Integration'
+description: 'Complete guide to integrating Clarity Chat with Remix, featuring server-side rendering, loaders, actions, and real-time streaming'
+date: '2026-02-04'
+author: 'Clarity Chat Team'
+tags: ['remix', 'integration', 'ssr', 'react-router', 'streaming']
+---
+
+# Remix Integration
+
+Complete guide to integrating Clarity Chat Components with Remix, leveraging server-side rendering, loaders, actions, and streaming for optimal performance.
+
+## Table of Contents
+
+- [Overview](#overview)
+- [Quick Start](#quick-start)
+- [Project Setup](#project-setup)
+- [Routes and Loaders](#routes-and-loaders)
+- [Form Actions](#form-actions)
+- [Streaming Responses](#streaming-responses)
+- [Error Handling](#error-handling)
+- [Optimistic UI](#optimistic-ui)
+- [Production Deployment](#production-deployment)
+
+---
+
+## Overview
+
+Remix provides a modern approach to building React applications with:
+
+- **Server-Side Rendering (SSR)**: Fast initial page loads
+- **Progressive Enhancement**: Works without JavaScript
+- **Form Actions**: Server-side mutations with type safety
+- **Streaming**: Real-time data with EventStream
+- **Nested Routes**: Component-based routing
+- **Error Boundaries**: Granular error handling
+
+### Key Benefits
+
+- SEO-friendly AI chat interfaces
+- Fast initial load times
+- Offline-first capabilities
+- Progressive enhancement
+- Type-safe data loading
+
+---
+
+## Quick Start
+
+```bash
+# Create new Remix project
+npx create-remix@latest my-chat-app
+
+# Choose template:
+# - Remix App Server (Node.js)
+# - TypeScript
+
+cd my-chat-app
+
+# Install Clarity Chat
+npm install @clarity-chat/react @clarity-chat/primitives @clarity-chat/token-optimization
+
+# Install peer dependencies
+npm install framer-motion lucide-react clsx tailwind-merge
+
+# Install Tailwind CSS
+npm install -D tailwindcss postcss autoprefixer
+npx tailwindcss init -p
+
+# Run development server
+npm run dev
+```
+
+---
+
+## Project Setup
+
+### Tailwind Configuration
+
+```javascript
+// tailwind.config.js
+module.exports = {
+  content: [
+    './app/**/*.{js,jsx,ts,tsx}',
+    './node_modules/@clarity-chat/**/*.{js,jsx,ts,tsx}',
+  ],
+  darkMode: 'class',
+  theme: {
+    extend: {
+      colors: {
+        brand: {
+          50: '#f0f9ff',
+          100: '#e0f2fe',
+          200: '#bae6fd',
+          300: '#7dd3fc',
+          400: '#38bdf8',
+          500: '#0ea5e9',
+          600: '#0284c7',
+          700: '#0369a1',
+          800: '#075985',
+          900: '#0c4a6e',
+        },
+      },
+    },
+  },
+  plugins: [],
+}
+```
+
+### Root Layout
+
+```typescript
+// app/root.tsx
+import type { LinksFunction, MetaFunction } from '@remix-run/node'
+import {
+  Links,
+  LiveReload,
+  Meta,
+  Outlet,
+  Scripts,
+  ScrollRestoration,
+  useLoaderData,
+} from '@remix-run/react'
+import stylesheet from '~/styles/tailwind.css'
+
+export const links: LinksFunction = () => [{ rel: 'stylesheet', href: stylesheet }]
+
+export const meta: MetaFunction = () => [
+  { title: 'Clarity Chat' },
+  { name: 'description', content: 'AI-powered chat assistant' },
+]
+
+export async function loader() {
+  return {
+    ENV: {
+      API_URL: process.env.API_URL,
+    },
+  }
+}
+
+export default function App() {
+  const { ENV } = useLoaderData<typeof loader>()
+
+  return (
+    <html lang="en" className="h-full">
+      <head>
+        <meta charSet="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <Meta />
+        <Links />
+      </head>
+      <body className="h-full bg-background text-foreground">
+        <Outlet />
+        <ScrollRestoration />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `window.ENV = ${JSON.stringify(ENV)}`,
+          }}
+        />
+        <Scripts />
+        <LiveReload />
+      </body>
+    </html>
+  )
+}
+```
+
+### Tailwind CSS
+
+```css
+/* app/styles/tailwind.css */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+    --primary: 221.2 83.2% 53.3%;
+    --primary-foreground: 210 40% 98%;
+  }
+
+  .dark {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+    --primary: 217.2 91.2% 59.8%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+  }
+}
+
+body {
+  @apply bg-background text-foreground;
+}
+```
+
+---
+
+## Routes and Loaders
+
+### Chat Route with Loader
+
+```typescript
+// app/routes/chat.$id.tsx
+import { json, type LoaderFunctionArgs } from '@remix-run/node'
+import { useLoaderData } from '@remix-run/react'
+import { ClarityChatApp } from '@clarity-chat/react'
+import type { Message } from '@clarity-chat/react'
+
+// Server-side data loading
+export async function loader({ params }: LoaderFunctionArgs) {
+  const conversationId = params.id
+
+  // Fetch conversation from database
+  const conversation = await db.conversation.findUnique({
+    where: { id: conversationId },
+    include: { messages: true },
+  })
+
+  if (!conversation) {
+    throw new Response('Not Found', { status: 404 })
+  }
+
+  return json({
+    conversation: {
+      id: conversation.id,
+      title: conversation.title,
+      messages: conversation.messages as Message[],
+    },
+  })
+}
+
+export default function ChatRoute() {
+  const { conversation } = useLoaderData<typeof loader>()
+
+  return (
+    <div className="h-screen flex flex-col">
+      <header className="border-b p-4">
+        <h1 className="text-xl font-bold">{conversation.title}</h1>
+      </header>
+
+      <ClarityChatApp
+        messages={conversation.messages}
+        onSendMessage={async (content) => {
+          // Handle message submission via form action
+        }}
+      />
+    </div>
+  )
+}
+
+// Error boundary for this route
+export function ErrorBoundary() {
+  return (
+    <div className="flex items-center justify-center h-screen">
+      <div className="text-center">
+        <h2 className="text-2xl font-bold mb-4">Conversation Not Found</h2>
+        <a href="/chat" className="text-brand-500 hover:underline">
+          Back to Chat
+        </a>
+      </div>
+    </div>
+  )
+}
+```
+
+### Index Route
+
+```typescript
+// app/routes/_index.tsx
+import { redirect } from '@remix-run/node'
+import { Link } from '@remix-run/react'
+
+export async function loader() {
+  // Redirect to chat or show landing page
+  // return redirect('/chat')
+
+  return null
+}
+
+export default function Index() {
+  return (
+    <div className="flex items-center justify-center min-h-screen">
+      <div className="text-center">
+        <h1 className="text-4xl font-bold mb-8">Welcome to Clarity Chat</h1>
+        <Link
+          to="/chat/new"
+          className="px-6 py-3 bg-brand-500 text-white rounded-lg hover:bg-brand-600"
+        >
+          Start Chatting
+        </Link>
+      </div>
+    </div>
+  )
+}
+```
+
+---
+
+## Form Actions
+
+### Send Message Action
+
+```typescript
+// app/routes/chat.$id.tsx
+import { json, type ActionFunctionArgs } from '@remix-run/node'
+import { Form, useActionData, useNavigation } from '@remix-run/react'
+import { z } from 'zod'
+
+const messageSchema = z.object({
+  content: z.string().min(1).max(4000),
+  conversationId: z.string(),
+})
+
+// Server-side form action
+export async function action({ request }: ActionFunctionArgs) {
+  const formData = await request.formData()
+  const data = Object.fromEntries(formData)
+
+  // Validate input
+  const result = messageSchema.safeParse(data)
+  if (!result.success) {
+    return json({ error: 'Invalid message' }, { status: 400 })
+  }
+
+  const { content, conversationId } = result.data
+
+  try {
+    // Save user message
+    await db.message.create({
+      data: {
+        conversationId,
+        role: 'user',
+        content,
+      },
+    })
+
+    // Generate AI response
+    const messages = await db.message.findMany({
+      where: { conversationId },
+      orderBy: { createdAt: 'asc' },
+    })
+
+    const aiResponse = await generateAIResponse(messages)
+
+    // Save AI response
+    await db.message.create({
+      data: {
+        conversationId,
+        role: 'assistant',
+        content: aiResponse,
+      },
+    })
+
+    return json({ success: true })
+  } catch (error) {
+    return json({ error: 'Failed to send message' }, { status: 500 })
+  }
+}
+
+// Component with Form
+export default function ChatRoute() {
+  const { conversation } = useLoaderData<typeof loader>()
+  const actionData = useActionData<typeof action>()
+  const navigation = useNavigation()
+  const isSubmitting = navigation.state === 'submitting'
+
+  return (
+    <div className="h-screen flex flex-col">
+      <div className="flex-1 overflow-auto p-4">
+        {conversation.messages.map((message) => (
+          <div key={message.id} className="mb-4">
+            <strong>{message.role}:</strong> {message.content}
+          </div>
+        ))}
+      </div>
+
+      <Form method="post" className="border-t p-4">
+        <input type="hidden" name="conversationId" value={conversation.id} />
+        <div className="flex gap-2">
+          <input
+            type="text"
+            name="content"
+            className="flex-1 px-4 py-2 border rounded-lg"
+            placeholder="Type your message..."
+            disabled={isSubmitting}
+            required
+          />
+          <button
+            type="submit"
+            className="px-6 py-2 bg-brand-500 text-white rounded-lg disabled:opacity-50"
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? 'Sending...' : 'Send'}
+          </button>
+        </div>
+        {actionData?.error && <div className="text-red-500 mt-2">{actionData.error}</div>}
+      </Form>
+    </div>
+  )
+}
+```
+
+### Create Conversation Action
+
+```typescript
+// app/routes/chat.new.tsx
+import { redirect, type ActionFunctionArgs } from '@remix-run/node'
+import { Form } from '@remix-run/react'
+
+export async function action({ request }: ActionFunctionArgs) {
+  // Create new conversation
+  const conversation = await db.conversation.create({
+    data: {
+      title: 'New Conversation',
+      userId: 'user-id', // Get from session
+    },
+  })
+
+  return redirect(`/chat/${conversation.id}`)
+}
+
+export default function NewChat() {
+  return (
+    <div className="flex items-center justify-center min-h-screen">
+      <Form method="post">
+        <button
+          type="submit"
+          className="px-6 py-3 bg-brand-500 text-white rounded-lg hover:bg-brand-600"
+        >
+          Start New Chat
+        </button>
+      </Form>
+    </div>
+  )
+}
+```
+
+---
+
+## Streaming Responses
+
+### Server-Sent Events (SSE)
+
+```typescript
+// app/routes/api.chat.stream.tsx
+import { type LoaderFunctionArgs } from '@remix-run/node'
+
+export async function loader({ request }: LoaderFunctionArgs) {
+  const url = new URL(request.url)
+  const conversationId = url.searchParams.get('conversationId')
+
+  if (!conversationId) {
+    throw new Response('Missing conversationId', { status: 400 })
+  }
+
+  // Create event stream
+  const stream = new ReadableStream({
+    async start(controller) {
+      const encoder = new TextEncoder()
+
+      try {
+        // Get conversation messages
+        const messages = await db.message.findMany({
+          where: { conversationId },
+          orderBy: { createdAt: 'asc' },
+        })
+
+        // Stream AI response
+        const response = await streamAIResponse(messages)
+
+        for await (const chunk of response) {
+          controller.enqueue(encoder.encode(`data: ${JSON.stringify({ chunk })}\n\n`))
+        }
+
+        controller.enqueue(encoder.encode('data: [DONE]\n\n'))
+        controller.close()
+      } catch (error) {
+        controller.enqueue(encoder.encode(`data: ${JSON.stringify({ error: 'Stream failed' })}\n\n`))
+        controller.close()
+      }
+    },
+  })
+
+  return new Response(stream, {
+    headers: {
+      'Content-Type': 'text/event-stream',
+      'Cache-Control': 'no-cache',
+      Connection: 'keep-alive',
+    },
+  })
+}
+```
+
+### Client-Side Stream Consumer
+
+```typescript
+// app/hooks/useStreamingChat.ts
+import { useState, useEffect } from 'react'
+
+export function useStreamingChat(conversationId: string) {
+  const [streamedContent, setStreamedContent] = useState('')
+  const [isStreaming, setIsStreaming] = useState(false)
+
+  const startStreaming = () => {
+    setIsStreaming(true)
+    setStreamedContent('')
+
+    const eventSource = new EventSource(`/api/chat/stream?conversationId=${conversationId}`)
+
+    eventSource.onmessage = (event) => {
+      if (event.data === '[DONE]') {
+        eventSource.close()
+        setIsStreaming(false)
+        return
+      }
+
+      try {
+        const data = JSON.parse(event.data)
+        if (data.chunk) {
+          setStreamedContent((prev) => prev + data.chunk)
+        }
+      } catch (error) {
+        console.error('Failed to parse stream data:', error)
+      }
+    }
+
+    eventSource.onerror = () => {
+      eventSource.close()
+      setIsStreaming(false)
+    }
+
+    return () => eventSource.close()
+  }
+
+  return { streamedContent, isStreaming, startStreaming }
+}
+```
+
+---
+
+## Error Handling
+
+### Route-Level Error Boundary
+
+```typescript
+// app/routes/chat.$id.tsx
+export function ErrorBoundary() {
+  const error = useRouteError()
+
+  if (isRouteErrorResponse(error)) {
+    if (error.status === 404) {
+      return (
+        <div className="flex items-center justify-center h-screen">
+          <div className="text-center">
+            <h2 className="text-2xl font-bold mb-4">Conversation Not Found</h2>
+            <p className="text-neutral-600 mb-6">This conversation doesn't exist.</p>
+            <Link to="/chat" className="text-brand-500 hover:underline">
+              Back to Chat
+            </Link>
+          </div>
+        </div>
+      )
+    }
+
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold mb-4">Error {error.status}</h2>
+          <p className="text-neutral-600">{error.data}</p>
+        </div>
+      </div>
+    )
+  }
+
+  return (
+    <div className="flex items-center justify-center h-screen">
+      <div className="text-center">
+        <h2 className="text-2xl font-bold mb-4">Something went wrong</h2>
+        <button
+          onClick={() => window.location.reload()}
+          className="px-4 py-2 bg-brand-500 text-white rounded-lg"
+        >
+          Reload
+        </button>
+      </div>
+    </div>
+  )
+}
+```
+
+### Global Error Boundary
+
+```typescript
+// app/root.tsx
+import { isRouteErrorResponse, useRouteError } from '@remix-run/react'
+
+export function ErrorBoundary() {
+  const error = useRouteError()
+
+  return (
+    <html lang="en">
+      <head>
+        <meta charSet="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <Meta />
+        <Links />
+      </head>
+      <body>
+        <div className="flex items-center justify-center min-h-screen">
+          <div className="text-center">
+            <h1 className="text-4xl font-bold mb-4">Unexpected Error</h1>
+            {isRouteErrorResponse(error) ? (
+              <p className="text-neutral-600">{error.data}</p>
+            ) : (
+              <p className="text-neutral-600">An unexpected error occurred.</p>
+            )}
+          </div>
+        </div>
+        <Scripts />
+      </body>
+    </html>
+  )
+}
+```
+
+---
+
+## Optimistic UI
+
+### Optimistic Message Updates
+
+```typescript
+// app/routes/chat.$id.tsx
+import { useFetcher } from '@remix-run/react'
+import { useState, useOptimistic } from 'react'
+
+export default function ChatRoute() {
+  const { conversation } = useLoaderData<typeof loader>()
+  const fetcher = useFetcher()
+  const [optimisticMessages, addOptimisticMessage] = useOptimistic(
+    conversation.messages,
+    (state, newMessage: Message) => [...state, newMessage]
+  )
+
+  const handleSendMessage = (content: string) => {
+    // Add optimistic message
+    const tempMessage: Message = {
+      id: `temp-${Date.now()}`,
+      role: 'user',
+      content,
+    }
+    addOptimisticMessage(tempMessage)
+
+    // Submit to server
+    fetcher.submit(
+      {
+        content,
+        conversationId: conversation.id,
+      },
+      { method: 'post' }
+    )
+  }
+
+  return (
+    <div className="h-screen flex flex-col">
+      <div className="flex-1 overflow-auto p-4">
+        {optimisticMessages.map((message) => (
+          <div key={message.id} className="mb-4">
+            <strong>{message.role}:</strong> {message.content}
+          </div>
+        ))}
+      </div>
+
+      <ChatInput onSend={handleSendMessage} isLoading={fetcher.state === 'submitting'} />
+    </div>
+  )
+}
+```
+
+---
+
+## Production Deployment
+
+### Environment Variables
+
+```bash
+# .env
+DATABASE_URL=postgresql://...
+OPENAI_API_KEY=sk-...
+API_URL=https://api.production.com
+SESSION_SECRET=random-secret-key
+```
+
+### Build Configuration
+
+```javascript
+// remix.config.js
+module.exports = {
+  ignoredRouteFiles: ['**/.*'],
+  appDirectory: 'app',
+  assetsBuildDirectory: 'public/build',
+  serverBuildPath: 'build/index.js',
+  publicPath: '/build/',
+  serverModuleFormat: 'cjs',
+  future: {
+    v2_routeConvention: true,
+    v2_errorBoundary: true,
+    v2_meta: true,
+    v2_normalizeFormMethod: true,
+  },
+}
+```
+
+### Docker Deployment
+
+```dockerfile
+# Dockerfile
+FROM node:20-alpine
+
+WORKDIR /app
+
+# Install dependencies
+COPY package*.json ./
+RUN npm ci --production
+
+# Copy application
+COPY . .
+
+# Build
+RUN npm run build
+
+EXPOSE 3000
+
+CMD ["npm", "start"]
+```
+
+### Vercel Deployment
+
+```bash
+# Install Vercel CLI
+npm i -g vercel
+
+# Deploy
+vercel --prod
+```
+
+---
+
+## Complete Example
+
+```typescript
+// app/routes/chat.$id.tsx - Complete production example
+import { json, redirect, type LoaderFunctionArgs, type ActionFunctionArgs } from '@remix-run/node'
+import {
+  useLoaderData,
+  useActionData,
+  useFetcher,
+  Link,
+  isRouteErrorResponse,
+  useRouteError,
+} from '@remix-run/react'
+import { ClarityChatApp } from '@clarity-chat/react'
+import type { Message } from '@clarity-chat/react'
+import { z } from 'zod'
+
+// Validation schema
+const messageSchema = z.object({
+  content: z.string().min(1).max(4000),
+  conversationId: z.string(),
+})
+
+// Server-side data loading
+export async function loader({ params, request }: LoaderFunctionArgs) {
+  const session = await getSession(request.headers.get('Cookie'))
+  const userId = session.get('userId')
+
+  if (!userId) {
+    return redirect('/login')
+  }
+
+  const conversation = await db.conversation.findUnique({
+    where: { id: params.id, userId },
+    include: { messages: { orderBy: { createdAt: 'asc' } } },
+  })
+
+  if (!conversation) {
+    throw new Response('Not Found', { status: 404 })
+  }
+
+  return json({ conversation })
+}
+
+// Server-side form action
+export async function action({ request }: ActionFunctionArgs) {
+  const formData = await request.formData()
+  const result = messageSchema.safeParse(Object.fromEntries(formData))
+
+  if (!result.success) {
+    return json({ error: result.error.format() }, { status: 400 })
+  }
+
+  const { content, conversationId } = result.data
+
+  try {
+    await db.message.create({
+      data: { conversationId, role: 'user', content },
+    })
+
+    const messages = await db.message.findMany({
+      where: { conversationId },
+      orderBy: { createdAt: 'asc' },
+    })
+
+    const aiResponse = await generateAIResponse(messages)
+
+    await db.message.create({
+      data: { conversationId, role: 'assistant', content: aiResponse },
+    })
+
+    return json({ success: true })
+  } catch (error) {
+    return json({ error: 'Failed to send message' }, { status: 500 })
+  }
+}
+
+// Component
+export default function ChatRoute() {
+  const { conversation } = useLoaderData<typeof loader>()
+  const fetcher = useFetcher()
+
+  return (
+    <div className="h-screen flex flex-col">
+      <header className="border-b p-4 flex justify-between items-center">
+        <h1 className="text-xl font-bold">{conversation.title}</h1>
+        <Link to="/chat" className="text-brand-500 hover:underline">
+          All Chats
+        </Link>
+      </header>
+
+      <ClarityChatApp
+        messages={conversation.messages as Message[]}
+        onSendMessage={(content) => {
+          fetcher.submit(
+            { content, conversationId: conversation.id },
+            { method: 'post' }
+          )
+        }}
+        isLoading={fetcher.state === 'submitting'}
+      />
+    </div>
+  )
+}
+
+// Error boundary
+export function ErrorBoundary() {
+  const error = useRouteError()
+
+  if (isRouteErrorResponse(error) && error.status === 404) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold mb-4">Conversation Not Found</h2>
+          <Link to="/chat" className="text-brand-500 hover:underline">
+            Back to Chat
+          </Link>
+        </div>
+      </div>
+    )
+  }
+
+  return (
+    <div className="flex items-center justify-center h-screen">
+      <h2 className="text-2xl font-bold">Something went wrong</h2>
+    </div>
+  )
+}
+```
+
+---
+
+## Summary
+
+### Key Features
+
+1. **Server-Side Rendering**: Fast initial loads with SEO benefits
+2. **Progressive Enhancement**: Works without JavaScript
+3. **Type-Safe Actions**: Validated server-side mutations
+4. **Streaming**: Real-time AI responses with SSE
+5. **Error Boundaries**: Granular error handling
+6. **Optimistic UI**: Instant feedback for better UX
+
+### Next Steps
+
+- [Next.js Integration](/guides/integrations/nextjs-app-router) - Alternative SSR framework
+- [Streaming Patterns](/guides/streaming) - Advanced streaming techniques
+- [Production Best Practices](/guides/production-best-practices) - Deploy with confidence
+
+---
+
+## Additional Resources
+
+- [Remix Documentation](https://remix.run/docs)
+- [React Router](https://reactrouter.com/)
+- [Clarity Chat Examples](https://github.com/clarity-chat/examples/remix)
+
+---
+
+**Last Updated**: February 4, 2026

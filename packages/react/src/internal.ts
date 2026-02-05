@@ -36,7 +36,10 @@ export * from './public-api'
 
 // Re-export components from internal that aren't in public-api
 // Note: Some items are excluded to avoid duplicate export conflicts
-export { AdvancedChatInput } from './components/input/AdvancedChatInput'
+export {
+  AdvancedChatInput,
+  type AdvancedChatInputProps,
+} from './components/input/AdvancedChatInput'
 export { ChatLayout } from './components/chat/ChatLayout'
 export { Message } from './components/message/message'
 export { MessageMetadata } from './components/message/MessageMetadata'

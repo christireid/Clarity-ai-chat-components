@@ -119,9 +119,15 @@ function generateId(): string {
 
 /** Map Vercel AI message to ClarityChatMessage */
 function mapVercelMessage(msg: VercelAIMessage): ClarityChatMessage {
+  // Map Vercel AI roles to Clarity roles
+  const mapRole = (role: typeof msg.role): 'user' | 'system' | 'assistant' => {
+    if (role === 'function' || role === 'tool' || role === 'data') return 'assistant'
+    return role
+  }
+
   return {
     id: msg.id,
-    role: msg.role === 'function' || msg.role === 'tool' ? 'assistant' : msg.role,
+    role: mapRole(msg.role),
     content: typeof msg.content === 'string' ? msg.content : JSON.stringify(msg.content),
     createdAt: msg.createdAt || new Date(),
     attachments: msg.experimental_attachments?.map((att, i) => ({
