@@ -1,7 +1,8 @@
 'use client'
 
 import { useState, useRef, useEffect } from 'react'
-import { PageHeader } from '@/components/component-section'
+import { PageHeader, ComponentSection } from '@/components/component-section'
+import { clonesDocs } from '@/data/docs/clones-docs'
 import { ChatInput, CodeBlock, MarkdownRenderer } from '@clarity-chat/react'
 import {
   Card,
@@ -1887,25 +1888,39 @@ export default function ClonesPage() {
         </TabsList>
 
         <TabsContent value="claude">
-          <ClaudeClone />
+          <ComponentSection title="Claude" docs={clonesDocs['Claude']}>
+            <ClaudeClone />
+          </ComponentSection>
         </TabsContent>
         <TabsContent value="chatgpt">
-          <ChatGPTClone />
+          <ComponentSection title="ChatGPT" docs={clonesDocs['ChatGPT']}>
+            <ChatGPTClone />
+          </ComponentSection>
         </TabsContent>
         <TabsContent value="perplexity">
-          <PerplexityClone />
+          <ComponentSection title="Perplexity" docs={clonesDocs['Perplexity']}>
+            <PerplexityClone />
+          </ComponentSection>
         </TabsContent>
         <TabsContent value="grok">
-          <GrokClone />
+          <ComponentSection title="Grok" docs={clonesDocs['Grok']}>
+            <GrokClone />
+          </ComponentSection>
         </TabsContent>
         <TabsContent value="manus">
-          <ManusClone />
+          <ComponentSection title="Manus" docs={clonesDocs['Manus']}>
+            <ManusClone />
+          </ComponentSection>
         </TabsContent>
         <TabsContent value="emergent">
-          <EmergentClone />
+          <ComponentSection title="Emergent" docs={clonesDocs['Emergent']}>
+            <EmergentClone />
+          </ComponentSection>
         </TabsContent>
         <TabsContent value="lovable">
-          <LovableClone />
+          <ComponentSection title="Lovable" docs={clonesDocs['Lovable']}>
+            <LovableClone />
+          </ComponentSection>
         </TabsContent>
       </Tabs>
     </div>

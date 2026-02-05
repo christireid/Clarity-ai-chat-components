@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { PageHeader, ComponentSection } from '@/components/component-section'
+import { toolsDocs } from '@/data/docs/tools-docs'
 import {
   Card,
   CardHeader,
@@ -669,6 +670,7 @@ export default function ToolsPage() {
           <ComponentSection
             title="Tool Cards"
             description="Display available tools with status"
+            docs={toolsDocs['Tool Cards']}
           >
             <ToolCardDemo />
           </ComponentSection>
@@ -678,6 +680,7 @@ export default function ToolsPage() {
           <ComponentSection
             title="Tool Execution"
             description="View tool call history"
+            docs={toolsDocs['Tool Execution']}
           >
             <ToolExecutionDemo />
           </ComponentSection>
@@ -687,6 +690,7 @@ export default function ToolsPage() {
           <ComponentSection
             title="Search Results"
             description="Web search results display"
+            docs={toolsDocs['Search Results']}
           >
             <WebSearchResultsDemo />
           </ComponentSection>
@@ -696,6 +700,7 @@ export default function ToolsPage() {
           <ComponentSection
             title="Tool Approval"
             description="Human-in-the-loop approval"
+            docs={toolsDocs['Tool Approval']}
           >
             <ToolApprovalDemo />
           </ComponentSection>
@@ -705,6 +710,7 @@ export default function ToolsPage() {
           <ComponentSection
             title="Confirmation"
             description="Modal confirmation dialogs"
+            docs={toolsDocs['Confirmation']}
           >
             <ConfirmationDialogDemo />
           </ComponentSection>
@@ -714,6 +720,7 @@ export default function ToolsPage() {
           <ComponentSection
             title="Tool Registry"
             description="Organized tool management"
+            docs={toolsDocs['Tool Registry']}
           >
             <ToolRegistryDemo />
           </ComponentSection>
@@ -723,6 +730,7 @@ export default function ToolsPage() {
           <ComponentSection
             title="Tool Metrics"
             description="Performance tracking"
+            docs={toolsDocs['Tool Metrics']}
           >
             <ToolMetricsDemo />
           </ComponentSection>

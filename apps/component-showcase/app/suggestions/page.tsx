@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { PageHeader, ComponentSection } from '@/components/component-section'
+import { suggestionsDocs } from '@/data/docs/suggestions-docs'
 import {
   Card,
   CardHeader,
@@ -454,6 +455,7 @@ export default function SuggestionsPage() {
           <ComponentSection
             title="Follow-up Suggestions"
             description="Questions to continue the conversation"
+            docs={suggestionsDocs['Follow-up Suggestions']}
           >
             <FollowUpSuggestionsDemo />
           </ComponentSection>
@@ -463,6 +465,7 @@ export default function SuggestionsPage() {
           <ComponentSection
             title="Prompt Suggestions"
             description="Starter prompts by category"
+            docs={suggestionsDocs['Prompt Suggestions']}
           >
             <PromptSuggestionsDemo />
           </ComponentSection>
@@ -472,6 +475,7 @@ export default function SuggestionsPage() {
           <ComponentSection
             title="Quick Replies"
             description="Pre-defined responses"
+            docs={suggestionsDocs['Quick Replies']}
           >
             <QuickRepliesDemo />
           </ComponentSection>
@@ -481,6 +485,7 @@ export default function SuggestionsPage() {
           <ComponentSection
             title="Response Actions"
             description="Actions on AI responses"
+            docs={suggestionsDocs['Response Actions']}
           >
             <ResponseActionsDemo />
           </ComponentSection>
@@ -490,6 +495,7 @@ export default function SuggestionsPage() {
           <ComponentSection
             title="Suggestion Chips"
             description="Selectable topic tags"
+            docs={suggestionsDocs['Suggestion Chips']}
           >
             <SuggestionChipsDemo />
           </ComponentSection>

@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { PageHeader, ComponentSection } from '@/components/component-section'
+import { citationsDocs } from '@/data/docs/citations-docs'
 import {
   Card,
   CardHeader,
@@ -523,6 +524,7 @@ export default function CitationsPage() {
           <ComponentSection
             title="Citation Chips"
             description="Inline references"
+            docs={citationsDocs['Citation Chips']}
           >
             <CitationChipsDemo />
           </ComponentSection>
@@ -532,6 +534,7 @@ export default function CitationsPage() {
           <ComponentSection
             title="Source Cards"
             description="Detailed source info"
+            docs={citationsDocs['Source Cards']}
           >
             <SourceCardsDemo />
           </ComponentSection>
@@ -541,6 +544,7 @@ export default function CitationsPage() {
           <ComponentSection
             title="Link Preview"
             description="Rich URL previews"
+            docs={citationsDocs['Link Preview']}
           >
             <LinkPreviewDemo />
           </ComponentSection>
@@ -550,6 +554,7 @@ export default function CitationsPage() {
           <ComponentSection
             title="Citations List"
             description="Academic references"
+            docs={citationsDocs['Citations List']}
           >
             <CitationsListDemo />
           </ComponentSection>
@@ -559,6 +564,7 @@ export default function CitationsPage() {
           <ComponentSection
             title="Quote Blocks"
             description="Highlighted quotations"
+            docs={citationsDocs['Quote Blocks']}
           >
             <QuoteBlockDemo />
           </ComponentSection>

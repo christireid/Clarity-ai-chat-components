@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { PageHeader, ComponentSection } from '@/components/component-section'
+import { navigationDocs } from '@/data/docs/navigation-docs'
 import {
   Card,
   CardHeader,
@@ -543,6 +544,7 @@ export default function NavigationPage() {
           <ComponentSection
             title="Command Palette"
             description="Quick command execution"
+            docs={navigationDocs['Command Palette']}
           >
             <CommandPaletteDemo />
           </ComponentSection>
@@ -552,6 +554,7 @@ export default function NavigationPage() {
           <ComponentSection
             title="Conversation List"
             description="Chat history sidebar"
+            docs={navigationDocs['Conversation List']}
           >
             <ConversationListDemo />
           </ComponentSection>
@@ -561,13 +564,18 @@ export default function NavigationPage() {
           <ComponentSection
             title="Activity History"
             description="Timeline view"
+            docs={navigationDocs['Activity History']}
           >
             <HistoryTimelineDemo />
           </ComponentSection>
         </TabsContent>
 
         <TabsContent value="breadcrumb">
-          <ComponentSection title="Breadcrumbs" description="Navigation paths">
+          <ComponentSection
+            title="Breadcrumbs"
+            description="Navigation paths"
+            docs={navigationDocs['Breadcrumbs']}
+          >
             <BreadcrumbDemo />
           </ComponentSection>
         </TabsContent>
@@ -576,6 +584,7 @@ export default function NavigationPage() {
           <ComponentSection
             title="Quick Navigation"
             description="Shortcut buttons"
+            docs={navigationDocs['Quick Navigation']}
           >
             <QuickNavigationDemo />
           </ComponentSection>

@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { PageHeader, ComponentSection } from '@/components/component-section'
+import { dashboardsDocs } from '@/data/docs/dashboards-docs'
 import {
   Card,
   CardHeader,
@@ -1426,19 +1427,44 @@ export default function DashboardsPage() {
         </TabsList>
 
         <TabsContent value="tokens">
-          <TokenOptimizationDashboard />
+          <ComponentSection
+            title="Token Optimization"
+            docs={dashboardsDocs['Token Optimization']}
+          >
+            <TokenOptimizationDashboard />
+          </ComponentSection>
         </TabsContent>
         <TabsContent value="prompts">
-          <PromptManagementDashboard />
+          <ComponentSection
+            title="Prompt Library"
+            docs={dashboardsDocs['Prompt Library']}
+          >
+            <PromptManagementDashboard />
+          </ComponentSection>
         </TabsContent>
         <TabsContent value="history">
-          <ConversationHistoryDashboard />
+          <ComponentSection
+            title="Conversation History"
+            docs={dashboardsDocs['Conversation History']}
+          >
+            <ConversationHistoryDashboard />
+          </ComponentSection>
         </TabsContent>
         <TabsContent value="agents">
-          <AgentObservabilityDashboard />
+          <ComponentSection
+            title="Agent Observability"
+            docs={dashboardsDocs['Agent Observability']}
+          >
+            <AgentObservabilityDashboard />
+          </ComponentSection>
         </TabsContent>
         <TabsContent value="devtools">
-          <SDKDevToolsDashboard />
+          <ComponentSection
+            title="SDK DevTools"
+            docs={dashboardsDocs['SDK DevTools']}
+          >
+            <SDKDevToolsDashboard />
+          </ComponentSection>
         </TabsContent>
       </Tabs>
     </div>

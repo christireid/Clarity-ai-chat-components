@@ -2,6 +2,7 @@
 
 import { useState, useRef } from 'react'
 import { PageHeader, ComponentSection } from '@/components/component-section'
+import { inputDocs } from '@/data/docs/input-docs'
 import {
   Card,
   CardHeader,
@@ -551,6 +552,7 @@ export default function InputPage() {
           <ComponentSection
             title="AI Textarea"
             description="Smart autocomplete powered by AI"
+            docs={inputDocs['AI Textarea']}
           >
             <AITextareaDemo />
           </ComponentSection>
@@ -560,6 +562,7 @@ export default function InputPage() {
           <ComponentSection
             title="Voice Input"
             description="Speech-to-text capabilities"
+            docs={inputDocs['Voice Input']}
           >
             <VoiceInputDemo />
           </ComponentSection>
@@ -569,13 +572,18 @@ export default function InputPage() {
           <ComponentSection
             title="File Upload"
             description="Drag and drop attachments"
+            docs={inputDocs['File Upload']}
           >
             <FileUploadDemo />
           </ComponentSection>
         </TabsContent>
 
         <TabsContent value="mentions">
-          <ComponentSection title="Mentions" description="@ and # autocomplete">
+          <ComponentSection
+            title="Mentions"
+            description="@ and # autocomplete"
+            docs={inputDocs['Mentions']}
+          >
             <MentionsDemo />
           </ComponentSection>
         </TabsContent>
@@ -584,6 +592,7 @@ export default function InputPage() {
           <ComponentSection
             title="Rich Text"
             description="Formatted text input"
+            docs={inputDocs['Rich Text']}
           >
             <RichTextInputDemo />
           </ComponentSection>
@@ -593,6 +602,7 @@ export default function InputPage() {
           <ComponentSection
             title="Keyboard Shortcuts"
             description="Quick actions reference"
+            docs={inputDocs['Keyboard Shortcuts']}
           >
             <KeyboardShortcutsDemo />
           </ComponentSection>

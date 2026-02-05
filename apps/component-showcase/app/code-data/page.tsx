@@ -16,6 +16,7 @@ import {
   TabsContent,
   cn,
 } from '@clarity-chat/primitives'
+import { codeDataDocs } from '@/data/docs/code-data-docs'
 import {
   Code,
   Copy,
@@ -510,19 +511,28 @@ export default function CodeDataPage() {
           <ComponentSection
             title="Code Block"
             description="Syntax highlighting with actions"
+            docs={codeDataDocs['Code Block']}
           >
             <CodeBlockDemo />
           </ComponentSection>
         </TabsContent>
 
         <TabsContent value="diff">
-          <ComponentSection title="Code Diff" description="Show code changes">
+          <ComponentSection
+            title="Code Diff"
+            description="Show code changes"
+            docs={codeDataDocs['Code Diff']}
+          >
             <CodeDiffDemo />
           </ComponentSection>
         </TabsContent>
 
         <TabsContent value="terminal">
-          <ComponentSection title="Terminal" description="CLI output display">
+          <ComponentSection
+            title="Terminal"
+            description="CLI output display"
+            docs={codeDataDocs['Terminal']}
+          >
             <TerminalDemo />
           </ComponentSection>
         </TabsContent>
@@ -531,6 +541,7 @@ export default function CodeDataPage() {
           <ComponentSection
             title="Data Table"
             description="Structured data display"
+            docs={codeDataDocs['Data Table']}
           >
             <DataTableDemo />
           </ComponentSection>
@@ -540,6 +551,7 @@ export default function CodeDataPage() {
           <ComponentSection
             title="Test Results"
             description="Test execution summary"
+            docs={codeDataDocs['Test Results']}
           >
             <TestResultsDemo />
           </ComponentSection>
