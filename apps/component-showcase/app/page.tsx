@@ -29,6 +29,9 @@ import {
   ExternalLink,
   Command,
   Cpu,
+  GraduationCap,
+  Globe,
+  Blocks,
 } from 'lucide-react'
 import { cn } from '@clarity-chat/primitives'
 
@@ -389,6 +392,83 @@ export default function HomePage() {
                 </div>
               </Link>
             ))}
+          </div>
+        </section>
+
+        {/* Section Divider */}
+        <div className="section-divider mb-12" />
+
+        {/* Advanced Demos Section */}
+        <section className="pb-16">
+          <div className="text-center mb-10">
+            <div className="badge-glass inline-flex items-center gap-2 px-4 py-2 mb-4">
+              <Sparkles className="h-4 w-4 text-violet-500" />
+              <span className="text-sm font-medium">New</span>
+            </div>
+            <h2 className="text-2xl font-bold mb-2">Advanced Interactive Demos</h2>
+            <p className="text-muted-foreground">
+              Three production-quality AI chat demos showcasing model adapters, RAG, MCP, tools, artifacts, and more
+            </p>
+          </div>
+
+          <div className="grid gap-4 md:grid-cols-3">
+            {[
+              {
+                title: 'Library Learning Hub',
+                description: 'RAG-powered tutor for the Clarity Chat library with embedded knowledge base and code examples',
+                href: '/advanced-demos/library-learning-hub',
+                icon: GraduationCap,
+                gradient: 'from-emerald-500 to-teal-600',
+                tag: 'RAG + Teaching',
+              },
+              {
+                title: 'Deep Research',
+                description: 'Multi-step research with MCP servers, enriched sources, tool plugins, and citation management',
+                href: '/advanced-demos/deep-research-assistant',
+                icon: Globe,
+                gradient: 'from-blue-500 to-indigo-600',
+                tag: 'Research + MCP',
+              },
+              {
+                title: 'Artifact Studio',
+                description: 'Claude-style artifact creation with live previews, code generation, diagrams, and version history',
+                href: '/advanced-demos/artifact-studio',
+                icon: Blocks,
+                gradient: 'from-violet-500 to-purple-600',
+                tag: 'Artifacts + Generative',
+              },
+            ].map((demo) => (
+              <Link key={demo.href} href={demo.href}>
+                <div className="feature-card cursor-pointer h-full group">
+                  <div className={cn(
+                    'w-12 h-12 rounded-xl bg-gradient-to-br flex items-center justify-center text-white mb-4 shadow-lg',
+                    demo.gradient
+                  )}>
+                    <demo.icon className="h-6 w-6" />
+                  </div>
+                  <div className="flex items-center gap-2 mb-2">
+                    <h3 className="font-semibold">{demo.title}</h3>
+                    <span className="text-xs px-2 py-0.5 rounded-full bg-violet-500/10 text-violet-500 font-medium">
+                      {demo.tag}
+                    </span>
+                  </div>
+                  <p className="text-sm text-muted-foreground mb-3">{demo.description}</p>
+                  <div className="flex items-center gap-1 text-sm text-primary font-medium">
+                    <span>Open Demo</span>
+                    <ArrowRight className="h-3 w-3 transition-transform group-hover:translate-x-1" />
+                  </div>
+                </div>
+              </Link>
+            ))}
+          </div>
+
+          <div className="text-center mt-6">
+            <Link href="/advanced-demos">
+              <button className="px-4 py-2 rounded-lg glass text-sm font-medium hover:bg-white/80 dark:hover:bg-white/10 transition-colors inline-flex items-center gap-2">
+                View All Advanced Demos
+                <ArrowRight className="h-3 w-3" />
+              </button>
+            </Link>
           </div>
         </section>
 

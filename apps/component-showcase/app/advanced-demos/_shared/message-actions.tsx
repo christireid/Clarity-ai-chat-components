@@ -1,0 +1,111 @@
+'use client'
+
+import { useState } from 'react'
+import { cn } from '@clarity-chat/primitives'
+import {
+  ThumbsUp,
+  ThumbsDown,
+  Copy,
+  RefreshCw,
+  Trash2,
+  Edit3,
+  Check,
+  MoreHorizontal,
+  Bookmark,
+  Share,
+} from 'lucide-react'
+
+interface MessageActionsProps {
+  role: 'user' | 'assistant'
+  feedback?: 'up' | 'down' | null
+  onFeedback?: (feedback: 'up' | 'down') => void
+  onCopy?: () => void
+  onRegenerate?: () => void
+  onDelete?: () => void
+  onEdit?: () => void
+  className?: string
+}
+
+export function MessageActions({
+  role,
+  feedback,
+  onFeedback,
+  onCopy,
+  onRegenerate,
+  onDelete,
+  onEdit,
+  className,
+}: MessageActionsProps) {
+  const [copied, setCopied] = useState(false)
+  const [showMore, setShowMore] = useState(false)
+
+  const handleCopy = () => {
+    onCopy?.()
+    setCopied(true)
+    setTimeout(() => setCopied(false), 2000)
+  }
+
+  return (
+    <div className={cn(
+      'flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity',
+      className
+    )}>
+      {role === 'assistant' && (
+        <>
+          <button
+            onClick={() => onFeedback?.('up')}
+            className={cn(
+              'p-1.5 rounded-md hover:bg-muted transition-colors',
+              feedback === 'up' && 'text-green-500 bg-green-500/10'
+            )}
+            title="Good response"
+          >
+            <ThumbsUp className="h-3.5 w-3.5" />
+          </button>
+          <button
+            onClick={() => onFeedback?.('down')}
+            className={cn(
+              'p-1.5 rounded-md hover:bg-muted transition-colors',
+              feedback === 'down' && 'text-red-500 bg-red-500/10'
+            )}
+            title="Bad response"
+          >
+            <ThumbsDown className="h-3.5 w-3.5" />
+          </button>
+        </>
+      )}
+      <button
+        onClick={handleCopy}
+        className="p-1.5 rounded-md hover:bg-muted transition-colors"
+        title="Copy"
+      >
+        {copied ? <Check className="h-3.5 w-3.5 text-green-500" /> : <Copy className="h-3.5 w-3.5" />}
+      </button>
+      {role === 'assistant' && onRegenerate && (
+        <button
+          onClick={onRegenerate}
+          className="p-1.5 rounded-md hover:bg-muted transition-colors"
+          title="Regenerate"
+        >
+          <RefreshCw className="h-3.5 w-3.5" />
+        </button>
+      )}
+      {role === 'user' && onEdit && (
+        <button
+          onClick={onEdit}
+          className="p-1.5 rounded-md hover:bg-muted transition-colors"
+          title="Edit"
+        >
+          <Edit3 className="h-3.5 w-3.5" />
+        </button>
+      )}
+      <button
+        onClick={onDelete}
+        className="p-1.5 rounded-md hover:bg-muted hover:text-red-500 transition-colors"
+        title="Delete"
+      >
+        <Trash2 className="h-3.5 w-3.5" />
+      </button>
+    </div>
+  )
+}
