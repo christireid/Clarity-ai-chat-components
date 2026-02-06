@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { cn } from '@clarity-chat/primitives'
-import { useSafeTimeout } from '@clarity-chat/react/internal'
+import { useSafeTimeout } from '@clarity-chat/react'
 import {
   Server,
   Plus,

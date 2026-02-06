@@ -160,6 +160,62 @@ export {
   type UseFocusRestorationReturn,
 } from './hooks/ui/use-focus-restoration'
 
+// 8.16. Timer Hooks
+export {
+  useSafeTimeout,
+  type UseSafeTimeoutReturn,
+} from './hooks/ui/use-safe-timeout'
+
+// 8.17. AI Components
+export {
+  Welcome,
+  type WelcomeProps,
+  type WelcomeSuggestion,
+  type WelcomeAction,
+  type WelcomeFeature,
+} from './components/ai/Welcome'
+
+export {
+  Think,
+  type ThinkProps,
+  type ThinkStep,
+  type ThinkStepStatus,
+} from './components/ai/Think'
+
+export { Steps, type StepsProps, type StepData } from './components/ai/Steps'
+
+export {
+  ToolCard,
+  ToolCardList,
+  type ToolCardProps,
+  type ToolCardListProps,
+} from './components/ai/ToolCard'
+
+export {
+  Source as AISource,
+  SourceList,
+  type SourceData,
+  type SourceListProps,
+} from './components/ai/Source'
+
+export { Sender, type SenderProps } from './components/ai/Sender'
+
+export {
+  Citation as AICitation,
+  type CitationProps as AICitationProps,
+  type CitationSource as AICitationSource,
+} from './components/ai/citation'
+
+export {
+  ThinkingBar,
+  useThinkingBar,
+  type ThinkingBarProps,
+  type ThinkingBarStatus,
+  type ThinkingBarVariant,
+  type UseThinkingBarOptions,
+  type UseThinkingBarReturn,
+} from './components/ai/ThinkingBar'
+
 // 9. Command Palette - Quick actions and navigation
 export { CommandPalette } from './components/navigation/CommandPalette'
 export type { CommandPaletteProps } from './components/navigation/CommandPalette'

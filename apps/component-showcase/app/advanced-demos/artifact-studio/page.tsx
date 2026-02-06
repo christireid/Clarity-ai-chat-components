@@ -1,9 +1,10 @@
 'use client'
 
-import { useState, useRef, useCallback, useMemo } from 'react'
+import { useState, useRef, useCallback, useMemo, useEffect } from 'react'
+import { useClarityChat } from '@clarity-chat/react'
 import { PageHeader } from '@/components/component-section'
 import { cn } from '@clarity-chat/primitives'
-import { useAutoScroll, MarkdownRenderer } from '@clarity-chat/react/internal'
+import { useAutoScroll, MarkdownRenderer } from '@clarity-chat/react'
 import {
   Send,
   Blocks,
@@ -14,7 +15,6 @@ import {
   Bot,
   User,
   Layers,
-  Wrench,
   Code,
   FileText,
 } from 'lucide-react'
@@ -22,39 +22,29 @@ import {
 import {
   ApiKeyBar,
   MessageActions,
-  ThinkingDisplay,
-  TokenPanel,
-  MemoryPanel,
   ChatExportDialog,
   SettingsDialog,
   type ChatMessage,
-  type ThinkingStep,
   type Artifact,
-  type ArtifactType,
-  type ArtifactRef,
   type Conversation,
   type SavedPrompt,
-  type FileAttachment,
   type MCPServer,
-  type MemorySettings,
-  type TokenSettings,
-  type ToolExecution,
   generateId,
-  simulateStreaming,
-  formatTimestamp,
-  estimateTokens,
 } from '../_shared'
 
 import { ArtifactPanel } from './components/artifact-panel'
-import { ArtifactRenderer } from './components/artifact-renderer'
-import {
-  ARTIFACT_TEMPLATES as artifactTemplates,
-  type ArtifactTemplate,
-} from './components/artifact-data'
 import { ArtifactMCPManager } from './components/mcp-manager'
 import { ToolPanel } from './components/tool-panel'
 import { ArtifactSidebar } from './components/chat-sidebar'
 import { ArtifactWelcomeScreen } from './components/welcome-screen'
+
+// Local type for hook messages (the package .d.ts files are not generated,
+// so TypeScript cannot infer the return shape of useClarityChat automatically)
+interface HookMessage {
+  id?: string
+  role: string
+  content: string | unknown
+}
 
 export const dynamic = 'force-dynamic'
 
@@ -104,16 +94,6 @@ const defaultPrompts: SavedPrompt[] = [
   { id: '5', text: 'Create a TypeScript utility library' },
 ]
 
-function findTemplate(text: string): ArtifactTemplate | null {
-  const lower = text.toLowerCase()
-  for (const template of artifactTemplates) {
-    if (template.trigger.some((t) => lower.includes(t))) {
-      return template
-    }
-  }
-  return null
-}
-
 export default function ArtifactStudioPage() {
   const [provider, setProvider] = useState('anthropic')
   const [model, setModel] = useState('claude-3.5-sonnet')
@@ -128,43 +108,18 @@ export default function ArtifactStudioPage() {
   const [mcpServers, setMcpServers] = useState<MCPServer[]>(defaultMCPServers)
 
   // Artifacts
-  const [artifacts, setArtifacts] = useState<Artifact[]>([])
+  const [artifacts] = useState<Artifact[]>([])
   const [activeArtifactId, setActiveArtifactId] = useState<string | null>(null)
   const [artifactPanelOpen, setArtifactPanelOpen] = useState(false)
-  const [isGeneratingArtifact, setIsGeneratingArtifact] = useState(false)
-  const [toolUsageCounts, setToolUsageCounts] = useState<
-    Record<string, number>
-  >({})
-
-  // Settings
-  const [memorySettings, setMemorySettings] = useState<MemorySettings>({
-    enabled: true,
-    strategy: 'sliding-window',
-    maxTokens: 4096,
-    usage: 890,
-    trackPatterns: true,
-    rememberPreferences: true,
-  })
-  const [tokenSettings, setTokenSettings] = useState<TokenSettings>({
-    optimizationEnabled: true,
-    techniques: { compression: true, summarization: false, pruning: true },
-    budget: 12000,
-    used: { input: 1800, output: 1200, total: 3000 },
-    showExpenditure: true,
-  })
+  const [isGeneratingArtifact] = useState(false)
+  const [toolUsageCounts] = useState<Record<string, number>>({})
 
   // Context
   const [masterContext, setMasterContext] = useState('')
   const [techStack, setTechStack] = useState<string[]>(['React', 'TypeScript'])
-  const [contextFiles, setContextFiles] = useState<FileAttachment[]>([])
 
   // UI state
   const [input, setInput] = useState('')
-  const [isStreaming, setIsStreaming] = useState(false)
-  const [streamingText, setStreamingText] = useState('')
-  const [activeThinking, setActiveThinking] = useState<ThinkingStep[]>([])
-  const [isThinking, setIsThinking] = useState(false)
-  const [activeTools, setActiveTools] = useState<ToolExecution[]>([])
   const [showExport, setShowExport] = useState(false)
   const [showSettings, setShowSettings] = useState(false)
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
@@ -176,50 +131,133 @@ export default function ArtifactStudioPage() {
     useState('balanced')
   const [editingMessageId, setEditingMessageId] = useState<string | null>(null)
   const [editingText, setEditingText] = useState('')
+  const [feedback, setFeedback] = useState<Record<string, 'up' | 'down'>>({})
 
-  const streamCancelRef = useRef<(() => void) | null>(null)
   const inputRef = useRef<HTMLTextAreaElement>(null)
 
-  const activeConversation =
-    conversations.find((c) => c.id === activeConvId) || conversations[0]
-  const messages = useMemo(
-    () => activeConversation?.messages ?? [],
-    [activeConversation?.messages]
-  )
-  const { scrollRef } = useAutoScroll({
-    dependencies: [messages, streamingText, activeThinking],
+  // Chat hook — replaces all simulation code
+  const chat = useClarityChat({
+    api: '/api/advanced-demos/chat',
+    body: {
+      apiKey,
+      model,
+      systemPrompt: `You are a creative AI assistant specializing in generating artifacts. When asked to create code, documents, HTML, SVG, diagrams, tables, or JSON, generate high-quality, complete content. Format code with proper syntax. Be creative and thorough.`,
+      temperature: settingsTemp,
+      maxTokens: settingsMaxTokens,
+    },
   })
-  const activeArtifact = artifacts.find((a) => a.id === activeArtifactId)
 
-  const updateMessages = useCallback(
-    (newMessages: ChatMessage[]) => {
+  // Typed accessors — workaround for missing .d.ts declarations
+  const chatMessages: HookMessage[] = useMemo(
+    () => chat.messages ?? [],
+    [chat.messages]
+  )
+  const chatData = chat.data as HookMessage | undefined
+  const chatError = chat.error as Error | undefined
+
+  const { scrollRef } = useAutoScroll({
+    dependencies: [chatMessages, chat.isLoading],
+  })
+
+  // Sync chat messages to conversation state when they change
+  useEffect(() => {
+    if (chatMessages.length > 0) {
       setConversations((prev) =>
         prev.map((c) =>
           c.id === activeConvId
-            ? { ...c, messages: newMessages, updatedAt: new Date() }
+            ? {
+                ...c,
+                messages: chatMessages.map(
+                  (m: HookMessage): ChatMessage => ({
+                    id: m.id || generateId(),
+                    role: m.role as 'user' | 'assistant',
+                    content: typeof m.content === 'string' ? m.content : '',
+                    timestamp: new Date(),
+                  })
+                ),
+                updatedAt: new Date(),
+              }
             : c
         )
       )
-    },
-    [activeConvId]
-  )
+    }
+  }, [chatMessages, activeConvId])
 
-  const cancelStreaming = useCallback(() => {
-    streamCancelRef.current?.()
-    streamCancelRef.current = null
-    setIsStreaming(false)
-    setIsThinking(false)
-    setStreamingText('')
-    setActiveThinking([])
-  }, [])
+  const handleSend = async (overrideText?: string) => {
+    const text = overrideText || input.trim()
+    if (!text || chat.isLoading) return
+    setInput('')
+    setShowSlashMenu(false)
+    try {
+      await chat.append({ role: 'user', content: text })
+    } catch {
+      // Error is captured by chat.error state
+    }
+  }
 
   const handleSelectConversation = useCallback(
     (id: string) => {
-      cancelStreaming()
+      chat.stop()
+      const targetConv = conversations.find((c) => c.id === id)
+      if (targetConv) {
+        chat.setMessages(
+          targetConv.messages.map((m: ChatMessage) => ({
+            id: m.id,
+            role: m.role,
+            content: m.content,
+          })) as never
+        )
+      }
       setActiveConvId(id)
     },
-    [cancelStreaming]
+    [chat, conversations]
   )
+
+  const handleFeedback = (msgId: string, fb: 'up' | 'down') => {
+    setFeedback((prev) => ({ ...prev, [msgId]: fb }))
+  }
+
+  const handleDeleteMessage = (msgId: string) => {
+    chat.setMessages(
+      chatMessages.filter((m: HookMessage) => m.id !== msgId) as never
+    )
+  }
+
+  const handleRegenerate = (msgId: string) => {
+    const idx = chatMessages.findIndex((m: HookMessage) => m.id === msgId)
+    if (idx < 0) return
+    if (idx === chatMessages.length - 1) {
+      // Last assistant message — use reload
+      chat.reload()
+    } else if (idx > 0 && chatMessages[idx - 1]?.role === 'user') {
+      const userContent =
+        typeof chatMessages[idx - 1].content === 'string'
+          ? (chatMessages[idx - 1].content as string)
+          : ''
+      chat.setMessages(chatMessages.slice(0, idx - 1) as never)
+      setTimeout(() => {
+        chat.append({ role: 'user', content: userContent })
+      }, 100)
+    }
+  }
+
+  const handleEditStart = (msgId: string) => {
+    const msg = chatMessages.find((m: HookMessage) => m.id === msgId)
+    if (msg) {
+      setEditingMessageId(msgId)
+      setEditingText(typeof msg.content === 'string' ? msg.content : '')
+    }
+  }
+
+  const handleEditSave = (msgId: string) => {
+    const idx = chatMessages.findIndex((m: HookMessage) => m.id === msgId)
+    if (idx === -1) return
+    chat.setMessages(chatMessages.slice(0, idx) as never)
+    setEditingMessageId(null)
+    setTimeout(() => {
+      chat.append({ role: 'user', content: editingText })
+    }, 100)
+  }
 
   const slashCommands = [
     { id: 'create', label: '/create', description: 'Create a new artifact' },
@@ -229,352 +267,6 @@ export default function ArtifactStudioPage() {
     { id: 'export', label: '/export', description: 'Export artifacts' },
     { id: 'tools', label: '/tools', description: 'List available tools' },
   ]
-
-  const handleSend = async (overrideText?: string) => {
-    const text = overrideText || input.trim()
-    if (!text || isStreaming) return
-
-    const userMessage: ChatMessage = {
-      id: generateId(),
-      role: 'user',
-      content: text,
-      timestamp: new Date(),
-      status: 'sent',
-    }
-    const newMessages = [...messages, userMessage]
-    updateMessages(newMessages)
-    setInput('')
-    setShowSlashMenu(false)
-    setIsThinking(true)
-    setActiveThinking([])
-    setActiveTools([])
-
-    // Local array to track thinking steps (avoids stale closure in callbacks)
-    const localThinking: ThinkingStep[] = []
-
-    // Check if this should create an artifact
-    const template = findTemplate(text)
-    const isUpdate =
-      text.toLowerCase().includes('update') ||
-      text.toLowerCase().includes('modify') ||
-      text.toLowerCase().includes('change')
-
-    if (template && !isUpdate) {
-      // Create artifact flow
-      const thinkingSteps = template.thinkingSteps
-      for (const step of thinkingSteps) {
-        await new Promise((r) => setTimeout(r, 500))
-        const thinkingStep: ThinkingStep = {
-          id: generateId(),
-          content: step,
-          timestamp: new Date(),
-        }
-        localThinking.push(thinkingStep)
-        setActiveThinking([...localThinking])
-      }
-
-      // Tool execution
-      const toolId = generateId()
-      const tool: ToolExecution = {
-        id: toolId,
-        name: template.toolName,
-        status: 'running',
-        input: `Creating ${template.artifact.type} artifact...`,
-      }
-      setActiveTools([tool])
-      await new Promise((r) => setTimeout(r, 1200))
-      setActiveTools([
-        {
-          ...tool,
-          status: 'completed',
-          output: `${template.artifact.title} created`,
-          duration: '1.2s',
-        },
-      ])
-
-      // Update tool usage
-      const toolMap: Record<string, string> = {
-        'Code Generator': 'code-gen',
-        'Document Writer': 'doc-writer',
-        'Diagram Creator': 'diagram-creator',
-        'Data Transformer': 'data-transformer',
-        'HTML Builder': 'html-builder',
-      }
-      const toolKey = toolMap[template.toolName] || 'code-gen'
-      setToolUsageCounts((prev) => ({
-        ...prev,
-        [toolKey]: (prev[toolKey] || 0) + 1,
-      }))
-
-      setIsThinking(false)
-      setIsGeneratingArtifact(true)
-
-      // Create artifact
-      const newArtifact: Artifact = {
-        id: generateId(),
-        title: template.artifact.title,
-        type: template.artifact.type,
-        content: template.artifact.content,
-        language: template.artifact.language,
-        versions: [
-          {
-            id: generateId(),
-            content: template.artifact.content,
-            timestamp: new Date(),
-            label: 'v1',
-          },
-        ],
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      }
-
-      // Progressively reveal artifact
-      setArtifactPanelOpen(true)
-      setArtifacts((prev) => [...prev, { ...newArtifact, content: '' }])
-      setActiveArtifactId(newArtifact.id)
-
-      // Simulate progressive generation
-      const lines = template.artifact.content.split('\n')
-      for (let i = 0; i < lines.length; i += 3) {
-        await new Promise((r) => setTimeout(r, 50))
-        const partial = lines.slice(0, i + 3).join('\n')
-        setArtifacts((prev) =>
-          prev.map((a) =>
-            a.id === newArtifact.id ? { ...a, content: partial } : a
-          )
-        )
-      }
-      setArtifacts((prev) =>
-        prev.map((a) => (a.id === newArtifact.id ? newArtifact : a))
-      )
-      setIsGeneratingArtifact(false)
-
-      // Update conversation artifact count
-      setConversations((prev) =>
-        prev.map((c) =>
-          c.id === activeConvId
-            ? { ...c, artifactCount: (c.artifactCount || 0) + 1 }
-            : c
-        )
-      )
-
-      // Stream response
-      setIsStreaming(true)
-      setStreamingText('')
-      streamCancelRef.current = simulateStreaming(
-        template.response,
-        (chunk) => setStreamingText((prev) => prev + chunk),
-        () => {
-          streamCancelRef.current = null
-          setIsStreaming(false)
-          const assistantMessage: ChatMessage = {
-            id: generateId(),
-            role: 'assistant',
-            content: template.response,
-            timestamp: new Date(),
-            thinking: localThinking,
-            tools: [
-              {
-                ...tool,
-                status: 'completed',
-                output: `${template.artifact.title} created`,
-                duration: '1.2s',
-              },
-            ],
-            artifacts: [
-              {
-                id: newArtifact.id,
-                title: newArtifact.title,
-                type: newArtifact.type,
-                version: 1,
-              },
-            ],
-            status: 'delivered',
-          }
-          updateMessages([...newMessages, assistantMessage])
-          setStreamingText('')
-          setActiveTools([])
-          const inT = estimateTokens(text)
-          const outT = estimateTokens(template.response)
-          setTokenSettings((prev) => ({
-            ...prev,
-            used: {
-              input: prev.used.input + inT,
-              output: prev.used.output + outT,
-              total: prev.used.total + inT + outT,
-            },
-          }))
-        },
-        12
-      )
-    } else if (isUpdate && artifacts.length > 0) {
-      // Update existing artifact
-      const latest = artifacts[artifacts.length - 1]
-      await new Promise((r) => setTimeout(r, 400))
-      const step1: ThinkingStep = {
-        id: generateId(),
-        content: 'Understanding modification request...',
-        timestamp: new Date(),
-      }
-      localThinking.push(step1)
-      setActiveThinking([...localThinking])
-      await new Promise((r) => setTimeout(r, 400))
-      const step2: ThinkingStep = {
-        id: generateId(),
-        content: `Updating artifact: ${latest.title}...`,
-        timestamp: new Date(),
-      }
-      localThinking.push(step2)
-      setActiveThinking([...localThinking])
-      await new Promise((r) => setTimeout(r, 600))
-
-      setIsThinking(false)
-
-      // Create new version with a small modification
-      const updatedContent =
-        latest.content + '\n// Updated based on user request: ' + text
-      const newVersion = {
-        id: generateId(),
-        content: updatedContent,
-        timestamp: new Date(),
-        label: `v${latest.versions.length + 1}`,
-      }
-      setArtifacts((prev) =>
-        prev.map((a) =>
-          a.id === latest.id
-            ? {
-                ...a,
-                content: updatedContent,
-                versions: [...a.versions, newVersion],
-                updatedAt: new Date(),
-              }
-            : a
-        )
-      )
-      setActiveArtifactId(latest.id)
-      setArtifactPanelOpen(true)
-
-      const updateResponse = `I've updated **${latest.title}** (now ${newVersion.label}). The changes reflect your request: "${text.slice(0, 50)}". You can view the version history in the artifact panel.`
-
-      setIsStreaming(true)
-      setStreamingText('')
-      streamCancelRef.current = simulateStreaming(
-        updateResponse,
-        (chunk) => setStreamingText((prev) => prev + chunk),
-        () => {
-          streamCancelRef.current = null
-          setIsStreaming(false)
-          updateMessages([
-            ...newMessages,
-            {
-              id: generateId(),
-              role: 'assistant',
-              content: updateResponse,
-              timestamp: new Date(),
-              artifacts: [
-                {
-                  id: latest.id,
-                  title: latest.title,
-                  type: latest.type,
-                  version: latest.versions.length + 1,
-                },
-              ],
-              status: 'delivered',
-            },
-          ])
-          setStreamingText('')
-        },
-        12
-      )
-    } else {
-      // Normal conversation
-      await new Promise((r) => setTimeout(r, 400))
-      const thinkStep1: ThinkingStep = {
-        id: generateId(),
-        content: 'Processing your request...',
-        timestamp: new Date(),
-      }
-      localThinking.push(thinkStep1)
-      setActiveThinking([...localThinking])
-      await new Promise((r) => setTimeout(r, 500))
-      const thinkStep2: ThinkingStep = {
-        id: generateId(),
-        content: 'Generating response...',
-        timestamp: new Date(),
-      }
-      localThinking.push(thinkStep2)
-      setActiveThinking([...localThinking])
-      setIsThinking(false)
-
-      const response = `I'd be happy to help! You can ask me to create various artifacts:\n\n- **Code**: React components, TypeScript modules, utility functions\n- **Documents**: API docs, README files, guides\n- **Diagrams**: Flowcharts, sequence diagrams (Mermaid)\n- **HTML**: Layouts, dashboards, web pages\n- **Data**: Tables, JSON schemas, structured data\n\nTry asking something like "Create a React component" or "Generate a flowchart diagram".\n\nYou can also use \`/create\` followed by a type, or reference existing artifacts with \`@artifact-name\`.`
-
-      setIsStreaming(true)
-      setStreamingText('')
-      streamCancelRef.current = simulateStreaming(
-        response,
-        (chunk) => setStreamingText((prev) => prev + chunk),
-        () => {
-          streamCancelRef.current = null
-          setIsStreaming(false)
-          updateMessages([
-            ...newMessages,
-            {
-              id: generateId(),
-              role: 'assistant',
-              content: response,
-              timestamp: new Date(),
-              thinking: localThinking,
-              status: 'delivered',
-            },
-          ])
-          setStreamingText('')
-          const inT = estimateTokens(text)
-          const outT = estimateTokens(response)
-          setTokenSettings((prev) => ({
-            ...prev,
-            used: {
-              input: prev.used.input + inT,
-              output: prev.used.output + outT,
-              total: prev.used.total + inT + outT,
-            },
-          }))
-        },
-        12
-      )
-    }
-  }
-
-  const handleFeedback = (msgId: string, feedback: 'up' | 'down') => {
-    updateMessages(
-      messages.map((m) => (m.id === msgId ? { ...m, feedback } : m))
-    )
-  }
-  const handleDeleteMessage = (msgId: string) => {
-    updateMessages(messages.filter((m) => m.id !== msgId))
-  }
-  const handleRegenerate = (msgId: string) => {
-    const idx = messages.findIndex((m) => m.id === msgId)
-    if (idx > 0 && messages[idx - 1]?.role === 'user') {
-      updateMessages(messages.slice(0, idx))
-      setTimeout(() => handleSend(messages[idx - 1].content), 100)
-    }
-  }
-  const handleEditStart = (msgId: string) => {
-    const msg = messages.find((m) => m.id === msgId)
-    if (msg) {
-      setEditingMessageId(msgId)
-      setEditingText(msg.content)
-    }
-  }
-  const handleEditSave = (msgId: string) => {
-    const idx = messages.findIndex((m) => m.id === msgId)
-    if (idx === -1) return
-    updateMessages(
-      messages.slice(0, idx).concat({ ...messages[idx], content: editingText })
-    )
-    setEditingMessageId(null)
-    setTimeout(() => handleSend(editingText), 100)
-  }
 
   const markdownConfig = useMemo(
     () => ({
@@ -611,14 +303,18 @@ export default function ArtifactStudioPage() {
             activeConversationId={activeConvId}
             onSelectConversation={handleSelectConversation}
             onNewConversation={() => {
-              cancelStreaming()
+              chat.stop()
+              chat.setMessages([])
               const c = createConversation()
               setConversations((prev) => [c, ...prev])
               setActiveConvId(c.id)
             }}
             onDeleteConversation={(id) => {
               if (conversations.length <= 1) return
-              if (id === activeConvId) cancelStreaming()
+              if (id === activeConvId) {
+                chat.stop()
+                chat.setMessages([])
+              }
               setConversations((prev) => prev.filter((c) => c.id !== id))
               if (id === activeConvId)
                 setActiveConvId(conversations.find((c) => c.id !== id)!.id)
@@ -651,7 +347,7 @@ export default function ArtifactStudioPage() {
           {/* Main Chat */}
           <div className="flex-1 flex flex-col min-w-0">
             <div ref={scrollRef} className="flex-1 overflow-y-auto">
-              {messages.length === 0 && !isStreaming ? (
+              {chatMessages.length === 0 && !chat.isLoading ? (
                 <ArtifactWelcomeScreen
                   onSuggestionClick={(text) => {
                     setInput(text)
@@ -660,204 +356,142 @@ export default function ArtifactStudioPage() {
                 />
               ) : (
                 <div className="p-4 space-y-6">
-                  {messages.map((msg) => (
-                    <div
-                      key={msg.id}
-                      className={cn(
-                        'group flex gap-3',
-                        msg.role === 'user' && 'justify-end'
-                      )}
-                    >
-                      {msg.role === 'assistant' && (
-                        <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center shrink-0">
-                          <Bot className="h-4 w-4 text-white" />
-                        </div>
-                      )}
-                      <div
-                        className={cn(
-                          'max-w-[75%] min-w-0',
-                          msg.role === 'user' ? 'order-first' : ''
-                        )}
-                      >
-                        {msg.role === 'assistant' &&
-                          msg.thinking &&
-                          msg.thinking.length > 0 && (
-                            <ThinkingDisplay steps={msg.thinking} />
-                          )}
-                        {msg.role === 'assistant' &&
-                          msg.tools &&
-                          msg.tools.length > 0 && (
-                            <div className="mb-2 space-y-1">
-                              {msg.tools.map((tool) => (
-                                <div
-                                  key={tool.id}
-                                  className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-muted/30 text-xs"
-                                >
-                                  <Wrench className="h-3 w-3 text-orange-500" />
-                                  <span className="font-medium">
-                                    {tool.name}
-                                  </span>
-                                  <span className="text-muted-foreground">
-                                    {tool.output}
-                                  </span>
-                                  {tool.duration && (
-                                    <span className="text-muted-foreground ml-auto font-mono">
-                                      {tool.duration}
-                                    </span>
-                                  )}
-                                </div>
-                              ))}
-                            </div>
-                          )}
-                        {/* Artifact references */}
-                        {msg.artifacts && msg.artifacts.length > 0 && (
-                          <div className="mb-2 space-y-1">
-                            {msg.artifacts.map((ref) => (
-                              <button
-                                key={ref.id}
-                                onClick={() => {
-                                  setActiveArtifactId(ref.id)
-                                  setArtifactPanelOpen(true)
-                                }}
-                                className="flex items-center gap-2 px-3 py-2 rounded-xl bg-violet-500/10 border border-violet-500/20 text-sm hover:bg-violet-500/15 transition-colors w-full text-left"
-                              >
-                                <Layers className="h-4 w-4 text-violet-500" />
-                                <div className="flex-1">
-                                  <span className="font-medium">
-                                    {ref.title}
-                                  </span>
-                                  <span className="text-xs text-muted-foreground ml-2">
-                                    v{ref.version} &middot; {ref.type}
-                                  </span>
-                                </div>
-                                <span className="text-xs text-violet-500">
-                                  View
-                                </span>
-                              </button>
-                            ))}
-                          </div>
-                        )}
-                        <div
-                          className={cn(
-                            'rounded-2xl px-4 py-3',
-                            msg.role === 'user'
-                              ? 'bg-primary text-primary-foreground ml-auto'
-                              : 'bg-muted/50'
-                          )}
-                        >
-                          {editingMessageId === msg.id ? (
-                            <div className="space-y-2">
-                              <textarea
-                                value={editingText}
-                                onChange={(e) => setEditingText(e.target.value)}
-                                className="w-full bg-transparent border rounded-lg p-2 text-sm resize-none focus:outline-none"
-                                rows={3}
-                              />
-                              <div className="flex gap-2 justify-end">
-                                <button
-                                  onClick={() => setEditingMessageId(null)}
-                                  className="text-xs px-2 py-1 rounded bg-muted"
-                                >
-                                  Cancel
-                                </button>
-                                <button
-                                  onClick={() => handleEditSave(msg.id)}
-                                  className="text-xs px-2 py-1 rounded bg-primary text-primary-foreground"
-                                >
-                                  Save & Resend
-                                </button>
-                              </div>
-                            </div>
-                          ) : (
-                            <div className="text-sm">
-                              <MarkdownRenderer
-                                content={msg.content}
-                                config={markdownConfig}
-                              />
-                            </div>
-                          )}
-                        </div>
-                        <div className="mt-1 flex items-center gap-2">
-                          <span className="text-[10px] text-muted-foreground">
-                            {formatTimestamp(msg.timestamp)}
-                          </span>
-                          <MessageActions
-                            role={msg.role as 'user' | 'assistant'}
-                            feedback={msg.feedback}
-                            onFeedback={(fb) => handleFeedback(msg.id, fb)}
-                            copyText={msg.content}
-                            onRegenerate={
-                              msg.role === 'assistant'
-                                ? () => handleRegenerate(msg.id)
-                                : undefined
-                            }
-                            onDelete={() => handleDeleteMessage(msg.id)}
-                            onEdit={
-                              msg.role === 'user'
-                                ? () => handleEditStart(msg.id)
-                                : undefined
-                            }
-                          />
-                        </div>
-                      </div>
-                      {msg.role === 'user' && (
-                        <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center shrink-0">
-                          <User className="h-4 w-4 text-primary-foreground" />
-                        </div>
-                      )}
-                    </div>
-                  ))}
+                  {chatMessages
+                    .filter(
+                      (m: HookMessage) =>
+                        m.role === 'user' || m.role === 'assistant'
+                    )
+                    .map(
+                      (
+                        msg: HookMessage,
+                        index: number,
+                        filtered: HookMessage[]
+                      ) => {
+                        const msgId = msg.id || `msg-${index}`
+                        const isLastAssistant =
+                          msg.role === 'assistant' &&
+                          index === filtered.length - 1
+                        const content =
+                          typeof msg.content === 'string' ? msg.content : ''
 
-                  {/* Active state */}
-                  {(isThinking || activeTools.length > 0) && (
-                    <div className="flex gap-3">
-                      <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center shrink-0">
-                        <Bot className="h-4 w-4 text-white" />
-                      </div>
-                      <div className="max-w-[75%] space-y-2">
-                        {isThinking && (
-                          <ThinkingDisplay steps={activeThinking} isActive />
-                        )}
-                        {activeTools.map((t) => (
+                        return (
                           <div
-                            key={t.id}
+                            key={msgId}
                             className={cn(
-                              'flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs',
-                              t.status === 'running'
-                                ? 'bg-yellow-500/10'
-                                : 'bg-muted/30'
+                              'group flex gap-3',
+                              msg.role === 'user' && 'justify-end'
                             )}
                           >
-                            {t.status === 'running' ? (
-                              <Loader2 className="h-3 w-3 animate-spin text-yellow-500" />
-                            ) : (
-                              <Wrench className="h-3 w-3 text-green-500" />
+                            {msg.role === 'assistant' && (
+                              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center shrink-0">
+                                <Bot className="h-4 w-4 text-white" />
+                              </div>
                             )}
-                            <span className="font-medium">{t.name}</span>
-                            <span className="text-muted-foreground">
-                              {t.status === 'running' ? t.input : t.output}
-                            </span>
+                            <div
+                              className={cn(
+                                'max-w-[75%] min-w-0',
+                                msg.role === 'user' ? 'order-first' : ''
+                              )}
+                            >
+                              <div
+                                className={cn(
+                                  'rounded-2xl px-4 py-3',
+                                  msg.role === 'user'
+                                    ? 'bg-primary text-primary-foreground ml-auto'
+                                    : 'bg-muted/50'
+                                )}
+                              >
+                                {editingMessageId === msgId ? (
+                                  <div className="space-y-2">
+                                    <textarea
+                                      value={editingText}
+                                      onChange={(e) =>
+                                        setEditingText(e.target.value)
+                                      }
+                                      className="w-full bg-transparent border rounded-lg p-2 text-sm resize-none focus:outline-none"
+                                      rows={3}
+                                    />
+                                    <div className="flex gap-2 justify-end">
+                                      <button
+                                        onClick={() =>
+                                          setEditingMessageId(null)
+                                        }
+                                        className="text-xs px-2 py-1 rounded bg-muted"
+                                      >
+                                        Cancel
+                                      </button>
+                                      <button
+                                        onClick={() => handleEditSave(msgId)}
+                                        className="text-xs px-2 py-1 rounded bg-primary text-primary-foreground"
+                                      >
+                                        Save & Resend
+                                      </button>
+                                    </div>
+                                  </div>
+                                ) : (
+                                  <div className="text-sm">
+                                    <MarkdownRenderer
+                                      content={content}
+                                      isStreaming={
+                                        isLastAssistant && chat.isLoading
+                                      }
+                                      config={markdownConfig}
+                                    />
+                                    {isLastAssistant && chat.isLoading && (
+                                      <span className="inline-block w-1.5 h-4 bg-violet-500 animate-pulse rounded-sm ml-0.5" />
+                                    )}
+                                  </div>
+                                )}
+                              </div>
+                              <div className="mt-1 flex items-center gap-2">
+                                <MessageActions
+                                  role={msg.role as 'user' | 'assistant'}
+                                  feedback={feedback[msgId]}
+                                  onFeedback={(fb) => handleFeedback(msgId, fb)}
+                                  copyText={content}
+                                  onRegenerate={
+                                    msg.role === 'assistant'
+                                      ? () => handleRegenerate(msgId)
+                                      : undefined
+                                  }
+                                  onDelete={() => handleDeleteMessage(msgId)}
+                                  onEdit={
+                                    msg.role === 'user'
+                                      ? () => handleEditStart(msgId)
+                                      : undefined
+                                  }
+                                />
+                              </div>
+                            </div>
+                            {msg.role === 'user' && (
+                              <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center shrink-0">
+                                <User className="h-4 w-4 text-primary-foreground" />
+                              </div>
+                            )}
                           </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
+                        )
+                      }
+                    )}
 
-                  {isStreaming && streamingText && (
+                  {/* Thinking indicator — shown while loading and no content streamed yet */}
+                  {chat.isLoading && !chatData?.content && (
                     <div className="flex gap-3">
                       <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center shrink-0">
                         <Bot className="h-4 w-4 text-white" />
                       </div>
                       <div className="max-w-[75%] rounded-2xl px-4 py-3 bg-muted/50">
-                        <div className="text-sm">
-                          <MarkdownRenderer
-                            content={streamingText}
-                            isStreaming
-                            config={markdownConfig}
-                          />
+                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                          <span>Thinking...</span>
                         </div>
-                        <span className="inline-block w-1.5 h-4 bg-violet-500 animate-pulse rounded-sm ml-0.5" />
                       </div>
+                    </div>
+                  )}
+
+                  {/* Error display */}
+                  {chatError && (
+                    <div className="mx-4 p-3 rounded-lg bg-red-500/10 border border-red-500/20 text-sm text-red-500">
+                      {chatError.message}
                     </div>
                   )}
                 </div>
@@ -908,7 +542,11 @@ export default function ArtifactStudioPage() {
                   onKeyDown={(e) => {
                     if (e.key === 'Enter' && !e.shiftKey) {
                       e.preventDefault()
-                      handleSend()
+                      if (chat.isLoading) {
+                        chat.stop()
+                      } else {
+                        handleSend()
+                      }
                     }
                     if (e.key === 'Escape') setShowSlashMenu(false)
                   }}
@@ -924,16 +562,24 @@ export default function ArtifactStudioPage() {
                     <Slash className="h-3.5 w-3.5" />
                   </button>
                   <button
-                    onClick={() => handleSend()}
-                    disabled={!input.trim() || isStreaming}
+                    onClick={() => {
+                      if (chat.isLoading) {
+                        chat.stop()
+                      } else {
+                        handleSend()
+                      }
+                    }}
+                    disabled={!input.trim() && !chat.isLoading}
                     className={cn(
                       'p-1.5 rounded-md transition-colors',
-                      input.trim() && !isStreaming
-                        ? 'bg-primary text-primary-foreground'
-                        : 'text-muted-foreground'
+                      chat.isLoading
+                        ? 'bg-red-500/20 text-red-500'
+                        : input.trim()
+                          ? 'bg-primary text-primary-foreground'
+                          : 'text-muted-foreground'
                     )}
                   >
-                    {isStreaming ? (
+                    {chat.isLoading ? (
                       <Loader2 className="h-3.5 w-3.5 animate-spin" />
                     ) : (
                       <Send className="h-3.5 w-3.5" />

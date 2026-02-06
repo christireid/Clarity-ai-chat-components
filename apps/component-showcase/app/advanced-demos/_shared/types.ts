@@ -249,39 +249,6 @@ export const MODEL_PROVIDERS: ModelProvider[] = [
 // Re-export utilities from library packages instead of custom implementations
 export { generateId, formatBytes as formatFileSize } from '@clarity-chat/utils'
 
-// Streaming simulation utility (demo-specific, not in library)
-export function simulateStreaming(
-  text: string,
-  onChunk: (text: string) => void,
-  onComplete: () => void,
-  speed = 15
-): () => void {
-  let index = 0
-  const interval = setInterval(() => {
-    if (index < text.length) {
-      // Stream 1-3 characters at a time for more natural feel
-      const chunkSize = Math.min(
-        1 + Math.floor(Math.random() * 2),
-        text.length - index
-      )
-      onChunk(text.slice(index, index + chunkSize))
-      index += chunkSize
-    } else {
-      clearInterval(interval)
-      onComplete()
-    }
-  }, speed)
-  return () => clearInterval(interval)
-}
-
 export function formatTimestamp(date: Date): string {
   return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-}
-
-export function estimateTokens(text: string): number {
-  return Math.ceil(text.length / 4)
-}
-
-export function estimateCost(tokens: number, costPer1k: number): string {
-  return `$${((tokens / 1000) * costPer1k).toFixed(4)}`
 }

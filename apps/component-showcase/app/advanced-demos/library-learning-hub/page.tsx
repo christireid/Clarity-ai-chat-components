@@ -1,9 +1,10 @@
 'use client'
 
-import { useState, useRef, useCallback, useMemo } from 'react'
+import { useState, useRef, useCallback, useMemo, useEffect } from 'react'
+import { useClarityChat } from '@clarity-chat/react'
 import { PageHeader } from '@/components/component-section'
 import { cn } from '@clarity-chat/primitives'
-import { useAutoScroll, MarkdownRenderer } from '@clarity-chat/react/internal'
+import { useAutoScroll, MarkdownRenderer } from '@clarity-chat/react'
 import {
   Send,
   GraduationCap,
@@ -16,28 +17,23 @@ import {
   User,
   PanelRight,
   PanelRightClose,
+  AlertCircle,
 } from 'lucide-react'
 
 import {
   ApiKeyBar,
   MessageActions,
-  ThinkingDisplay,
   TokenPanel,
   MemoryPanel,
   ChatExportDialog,
   SettingsDialog,
-  type ChatMessage,
-  type ThinkingStep,
-  type Citation,
   type Conversation,
   type SavedPrompt,
   type FileAttachment,
   type MemorySettings,
   type TokenSettings,
   generateId,
-  simulateStreaming,
   formatTimestamp,
-  estimateTokens,
 } from '../_shared'
 
 import {
@@ -54,6 +50,13 @@ import { MentionPopup, type MentionItem } from './components/mention-popup'
 import { RagCitations } from './components/rag-citations'
 import { ContextPanel } from './components/context-panel'
 import { WelcomeScreen as LibraryWelcomeScreen } from './components/welcome-screen'
+
+// Message type matching useClarityChat's ChatMsg shape
+interface ChatMsg {
+  id?: string
+  role: string
+  content: string | unknown
+}
 
 // Simple keyword search for RAG simulation
 function searchKnowledgeBase(query: string): KnowledgeEntry[] {
@@ -108,101 +111,6 @@ const defaultPrompts: SavedPrompt[] = [
   { id: '6', text: 'Set up a RAG pipeline', category: 'rag' },
 ]
 
-function generateLibraryResponse(
-  query: string,
-  matches: KnowledgeEntry[]
-): { response: string; citations: Citation[] } {
-  const citations: Citation[] = matches.slice(0, 4).map((m, i) => ({
-    id: `cit-${i}`,
-    title: m.title,
-    snippet: m.content.slice(0, 120) + '...',
-    type: 'library',
-    relevance: 0.95 - i * 0.1,
-  }))
-
-  if (matches.length === 0) {
-    return {
-      response: `I'd be happy to help with your question about "${query}". While I couldn't find a specific match in the library documentation, here are some general pointers:\n\n- Check the **component reference** with \`/components\`\n- Explore available **hooks** with \`/hooks\`\n- Look at **adapters** with \`/adapters\`\n\nCould you provide more details about what you're trying to build?`,
-      citations: [],
-    }
-  }
-
-  const primary = matches[0]
-  let response = `## ${primary.title}\n\n${primary.content}\n\n### Code Example\n\n\`\`\`typescript\n${primary.codeExample}\n\`\`\``
-
-  if (matches.length > 1) {
-    response += `\n\n### Related\n\n`
-    matches.slice(1, 4).forEach((m) => {
-      response += `- **${m.title}**: ${m.content.slice(0, 80)}...\n`
-    })
-  }
-
-  response += `\n\nWould you like me to show more examples or explain any of these in detail?`
-
-  return { response, citations }
-}
-
-function generateSlashResponse(commandId: string): {
-  response: string
-  citations: Citation[]
-} {
-  switch (commandId) {
-    case 'components': {
-      const components = knowledgeBase.filter((e) => e.category === 'component')
-      return {
-        response: `## Available Components (${components.length})\n\n${components.map((c) => `- **${c.title}**: ${c.content.slice(0, 60)}...`).join('\n')}\n\nUse \`@ComponentName\` to learn more about any component, or \`/example ComponentName\` for code examples.`,
-        citations: [],
-      }
-    }
-    case 'hooks': {
-      const hooks = knowledgeBase.filter((e) => e.category === 'hook')
-      return {
-        response: `## Available Hooks (${hooks.length})\n\n${hooks.map((h) => `- **${h.title}**: ${h.content.slice(0, 60)}...`).join('\n')}\n\nUse \`@hookName\` to learn more about any hook.`,
-        citations: [],
-      }
-    }
-    case 'adapters': {
-      const adapters = knowledgeBase.filter((e) => e.category === 'adapter')
-      return {
-        response: `## Model Adapters\n\n${adapters.map((a) => `### ${a.title}\n${a.content}\n\n\`\`\`typescript\n${a.codeExample}\n\`\`\``).join('\n\n')}`,
-        citations: adapters.map((a, i) => ({
-          id: `cit-${i}`,
-          title: a.title,
-          snippet: a.content.slice(0, 100),
-          type: 'library' as const,
-          relevance: 0.9,
-        })),
-      }
-    }
-    case 'memory': {
-      const memEntries = knowledgeBase.filter((e) => e.category === 'memory')
-      return {
-        response:
-          memEntries.length > 0
-            ? `## Memory System\n\n${memEntries.map((m) => `${m.content}\n\n\`\`\`typescript\n${m.codeExample}\n\`\`\``).join('\n\n')}`
-            : '## Memory System\n\nThe memory system supports sliding-window, semantic-chunks, and vector-store strategies. Configure with `<MemoryProvider strategy="vector-store">` wrapper.',
-        citations: [],
-      }
-    }
-    case 'tokens': {
-      const tokenEntries = knowledgeBase.filter((e) => e.category === 'token')
-      return {
-        response:
-          tokenEntries.length > 0
-            ? `## Token Optimization\n\n${tokenEntries.map((t) => `${t.content}\n\n\`\`\`typescript\n${t.codeExample}\n\`\`\``).join('\n\n')}`
-            : '## Token Optimization\n\nUse `useTokenBudgetMonitor` hook to track usage. Enable compression, summarization, and pruning to reduce costs.',
-        citations: [],
-      }
-    }
-    default:
-      return {
-        response:
-          'Command not recognized. Available commands: /components, /hooks, /adapters, /example, /memory, /tokens',
-        citations: [],
-      }
-  }
-}
-
 export default function LibraryLearningHubPage() {
   // Provider/model state
   const [provider, setProvider] = useState('anthropic')
@@ -236,10 +144,6 @@ export default function LibraryLearningHubPage() {
 
   // UI state
   const [input, setInput] = useState('')
-  const [isStreaming, setIsStreaming] = useState(false)
-  const [streamingText, setStreamingText] = useState('')
-  const [activeThinking, setActiveThinking] = useState<ThinkingStep[]>([])
-  const [isThinking, setIsThinking] = useState(false)
   const [showSlashMenu, setShowSlashMenu] = useState(false)
   const [showMentionMenu, setShowMentionMenu] = useState(false)
   const [slashFilter, setSlashFilter] = useState('')
@@ -258,48 +162,143 @@ export default function LibraryLearningHubPage() {
   const [editingMessageId, setEditingMessageId] = useState<string | null>(null)
   const [editingText, setEditingText] = useState('')
 
-  const streamCancelRef = useRef<(() => void) | null>(null)
+  // Feedback state (separate from ChatMsg which has no feedback field)
+  const [feedback, setFeedback] = useState<Record<string, 'up' | 'down'>>({})
+
+  // RAG citations per assistant message
+  const [messageCitations, setMessageCitations] = useState<
+    Record<string, KnowledgeEntry[]>
+  >({})
+  const pendingCitationsRef = useRef<KnowledgeEntry[]>([])
+
+  // Message timestamps (ChatMsg has no timestamp field)
+  const messageTimestampsRef = useRef<Record<string, Date>>({})
+
   const inputRef = useRef<HTMLTextAreaElement>(null)
 
-  const activeConversation =
-    conversations.find((c) => c.id === activeConvId) || conversations[0]
-  const messages = useMemo(
-    () => activeConversation?.messages ?? [],
-    [activeConversation?.messages]
+  // Build system prompt with optional RAG context
+  const buildSystemPrompt = useCallback(
+    (ragContext?: string, slashCommandId?: string) => {
+      let prompt = `You are a helpful AI tutor for the Clarity Chat component library. You have deep knowledge of all components, hooks, adapters, and features. When users ask questions:
+
+1. Provide clear, detailed explanations with code examples
+2. Use proper markdown formatting with headers, code blocks, and lists
+3. Reference specific component names and hook APIs
+4. Show TypeScript code examples with proper imports`
+
+      if (masterContext) {
+        prompt += `\n\nAdditional context provided by user:\n${masterContext}`
+      }
+
+      if (slashCommandId) {
+        prompt += `\n\nThe user is executing the /${slashCommandId} command. Provide a comprehensive response for this command.`
+      }
+
+      if (ragContext) {
+        prompt += `\n\nRelevant documentation from the knowledge base:\n${ragContext}\n\nPlease answer the question using the documentation above. Include code examples where relevant.`
+      }
+
+      return prompt
+    },
+    [masterContext]
   )
-  const { scrollRef } = useAutoScroll({
-    dependencies: [messages, streamingText, activeThinking],
+
+  // onFinish callback — associate pending RAG citations with the assistant message
+  const handleChatFinish = useCallback(
+    (message: { id?: string; role: string; content: unknown }) => {
+      if (pendingCitationsRef.current.length > 0 && message.id) {
+        setMessageCitations((prev) => ({
+          ...prev,
+          [message.id as string]: pendingCitationsRef.current,
+        }))
+        pendingCitationsRef.current = []
+      }
+    },
+    []
+  )
+
+  // onError callback
+  const handleChatError = useCallback((error: Error) => {
+    console.error('[LibraryLearningHub] Chat error:', error.message)
+  }, [])
+
+  // useClarityChat instance
+  const chat = useClarityChat({
+    api: '/api/advanced-demos/chat',
+    body: {
+      apiKey,
+      model,
+      temperature: settingsTemp,
+      maxTokens: settingsMaxTokens,
+    },
+    onFinish: handleChatFinish,
+    onError: handleChatError,
   })
 
-  // Update messages helper
-  const updateMessages = useCallback(
-    (newMessages: ChatMessage[]) => {
+  // Eagerly record timestamps for new messages during render
+  for (const msg of chat.messages) {
+    if (msg.id && !messageTimestampsRef.current[msg.id]) {
+      messageTimestampsRef.current[msg.id] = new Date()
+    }
+  }
+
+  // Sync chat.messages to conversation store
+  useEffect(() => {
+    if (chat.messages.length > 0) {
       setConversations((prev) =>
         prev.map((c) =>
           c.id === activeConvId
-            ? { ...c, messages: newMessages, updatedAt: new Date() }
+            ? {
+                ...c,
+                messages: chat.messages.map((m: ChatMsg) => ({
+                  id: m.id || generateId(),
+                  role: m.role as 'user' | 'assistant',
+                  content:
+                    typeof m.content === 'string'
+                      ? m.content
+                      : String(m.content),
+                  timestamp:
+                    messageTimestampsRef.current[m.id || ''] || new Date(),
+                })),
+                updatedAt: new Date(),
+                title:
+                  c.title === 'New Chat' && chat.messages[0]?.role === 'user'
+                    ? (typeof chat.messages[0].content === 'string'
+                        ? chat.messages[0].content.slice(0, 30)
+                        : 'Chat') +
+                      (typeof chat.messages[0].content === 'string' &&
+                      chat.messages[0].content.length > 30
+                        ? '...'
+                        : '')
+                    : c.title,
+              }
             : c
         )
       )
-    },
-    [activeConvId]
-  )
+    }
+  }, [chat.messages, activeConvId])
 
-  const cancelStreaming = useCallback(() => {
-    streamCancelRef.current?.()
-    streamCancelRef.current = null
-    setIsStreaming(false)
-    setIsThinking(false)
-    setStreamingText('')
-    setActiveThinking([])
-  }, [])
+  const { scrollRef } = useAutoScroll({
+    dependencies: [chat.messages, chat.isLoading],
+  })
 
+  // Switch conversations
   const handleSelectConversation = useCallback(
     (id: string) => {
-      cancelStreaming()
+      chat.stop()
+      const targetConv = conversations.find((c) => c.id === id)
+      if (targetConv) {
+        chat.setMessages(
+          targetConv.messages.map((m) => ({
+            id: m.id,
+            role: m.role,
+            content: m.content,
+          }))
+        )
+      }
       setActiveConvId(id)
     },
-    [cancelStreaming]
+    [chat, conversations]
   )
 
   // Input handling - only trigger slash menu when / is first char or follows whitespace
@@ -351,161 +350,94 @@ export default function LibraryLearningHubPage() {
   // Main send handler
   const handleSend = async (overrideText?: string, slashCommandId?: string) => {
     const text = overrideText || input.trim()
-    if (!text || isStreaming) return
+    if (!text || chat.isLoading) return
 
-    const userMessage: ChatMessage = {
-      id: generateId(),
-      role: 'user',
-      content: text,
-      timestamp: new Date(),
-      status: 'sent',
-    }
-    const newMessages = [...messages, userMessage]
-    updateMessages(newMessages)
     setInput('')
     setShowSlashMenu(false)
     setShowMentionMenu(false)
-    setIsThinking(true)
-    setActiveThinking([])
 
-    // Thinking steps
-    const thinkingSteps: ThinkingStep[] = []
-    const addThinkingStep = (content: string) => {
-      const step = { id: generateId(), content, timestamp: new Date() }
-      thinkingSteps.push(step)
-      setActiveThinking([...thinkingSteps])
-    }
+    // Build RAG context from knowledge base search
+    const matches = searchKnowledgeBase(text)
+    const ragContext =
+      matches.length > 0
+        ? matches
+            .map(
+              (m) =>
+                `### ${m.title}\n${m.content}\n\`\`\`typescript\n${m.codeExample}\n\`\`\``
+            )
+            .join('\n\n')
+        : ''
 
-    await new Promise((r) => setTimeout(r, 400))
-    addThinkingStep('Understanding the question...')
-
-    // Determine response type
-    let responseData: { response: string; citations: Citation[] }
-
-    if (slashCommandId) {
-      await new Promise((r) => setTimeout(r, 300))
-      addThinkingStep(`Executing /${slashCommandId} command...`)
-      await new Promise((r) => setTimeout(r, 500))
-      responseData = generateSlashResponse(slashCommandId)
+    // Store pending citations for the upcoming assistant response
+    if (matches.length > 0) {
+      pendingCitationsRef.current = matches.slice(0, 4)
     } else {
-      // RAG search
-      addThinkingStep('Searching knowledge base...')
-      await new Promise((r) => setTimeout(r, 500))
-
-      const matches = searchKnowledgeBase(text)
-      if (matches.length > 0) {
-        addThinkingStep(
-          `Found ${matches.length} relevant entries: ${matches
-            .slice(0, 3)
-            .map((m) => m.title)
-            .join(', ')}`
-        )
-        await new Promise((r) => setTimeout(r, 400))
-        addThinkingStep('Composing response with code examples...')
-      } else {
-        addThinkingStep(
-          'No direct matches found, generating general guidance...'
-        )
-      }
-      await new Promise((r) => setTimeout(r, 400))
-
-      responseData = generateLibraryResponse(text, matches)
+      pendingCitationsRef.current = []
     }
 
-    addThinkingStep('Formatting response...')
-    setIsThinking(false)
+    // Build system prompt with RAG context and pass via data override
+    const systemPrompt = buildSystemPrompt(ragContext, slashCommandId)
 
-    // Stream response
-    setIsStreaming(true)
-    setStreamingText('')
-
-    streamCancelRef.current = simulateStreaming(
-      responseData.response,
-      (chunk) => setStreamingText((prev) => prev + chunk),
-      () => {
-        streamCancelRef.current = null
-        setIsStreaming(false)
-        const assistantMessage: ChatMessage = {
-          id: generateId(),
-          role: 'assistant',
-          content: responseData.response,
-          timestamp: new Date(),
-          thinking: [...thinkingSteps],
-          citations: responseData.citations,
-          status: 'delivered',
-        }
-        updateMessages([...newMessages, assistantMessage])
-        setStreamingText('')
-
-        // Update token usage
-        const inputTokens = estimateTokens(text)
-        const outputTokens = estimateTokens(responseData.response)
-        setTokenSettings((prev) => ({
-          ...prev,
-          used: {
-            input: prev.used.input + inputTokens,
-            output: prev.used.output + outputTokens,
-            total: prev.used.total + inputTokens + outputTokens,
-          },
-        }))
-        setMemorySettings((prev) => ({
-          ...prev,
-          usage: Math.min(
-            prev.usage + inputTokens + outputTokens,
-            prev.maxTokens
-          ),
-        }))
-      },
-      12
+    await chat.append(
+      { role: 'user', content: text },
+      { data: { systemPrompt } }
     )
   }
 
   // Message actions
-  const handleFeedback = (msgId: string, feedback: 'up' | 'down') => {
-    updateMessages(
-      messages.map((m) => (m.id === msgId ? { ...m, feedback } : m))
-    )
+  const handleFeedback = (msgId: string, fb: 'up' | 'down') => {
+    setFeedback((prev) => ({ ...prev, [msgId]: fb }))
   }
 
   const handleDeleteMessage = (msgId: string) => {
-    updateMessages(messages.filter((m) => m.id !== msgId))
+    chat.setMessages(chat.messages.filter((m: ChatMsg) => m.id !== msgId))
+    setFeedback((prev) => {
+      const next = { ...prev }
+      delete next[msgId]
+      return next
+    })
+    setMessageCitations((prev) => {
+      const next = { ...prev }
+      delete next[msgId]
+      return next
+    })
   }
 
   const handleRegenerate = (msgId: string) => {
-    const msgIndex = messages.findIndex((m) => m.id === msgId)
+    const msgIndex = chat.messages.findIndex((m: ChatMsg) => m.id === msgId)
     if (msgIndex <= 0) return
-    const userMsg = messages[msgIndex - 1]
+    const userMsg = chat.messages[msgIndex - 1]
     if (userMsg?.role !== 'user') return
-    updateMessages(messages.slice(0, msgIndex))
-    setTimeout(() => handleSend(userMsg.content), 100)
+    const userContent =
+      typeof userMsg.content === 'string' ? userMsg.content : ''
+    // Truncate to before the user message, then resend
+    chat.setMessages(chat.messages.slice(0, msgIndex - 1))
+    setTimeout(() => handleSend(userContent), 100)
   }
 
   const handleEditStart = (msgId: string) => {
-    const msg = messages.find((m) => m.id === msgId)
+    const msg = chat.messages.find((m: ChatMsg) => m.id === msgId)
     if (msg) {
       setEditingMessageId(msgId)
-      setEditingText(msg.content)
+      setEditingText(typeof msg.content === 'string' ? msg.content : '')
     }
   }
 
   const handleEditSave = (msgId: string) => {
-    const msgIndex = messages.findIndex((m) => m.id === msgId)
+    const msgIndex = chat.messages.findIndex((m: ChatMsg) => m.id === msgId)
     if (msgIndex === -1) return
     const newText = editingText
-    updateMessages(
-      messages
-        .slice(0, msgIndex)
-        .concat({ ...messages[msgIndex], content: newText })
-    )
+    // Truncate to before the edited message, then resend with new text
+    chat.setMessages(chat.messages.slice(0, msgIndex))
     setEditingMessageId(null)
     setEditingText('')
-    // Re-send with edited text
     setTimeout(() => handleSend(newText), 100)
   }
 
   // Conversation management
   const handleNewConversation = () => {
-    cancelStreaming()
+    chat.stop()
+    chat.setMessages([])
     const conv = createDefaultConversation()
     setConversations((prev) => [conv, ...prev])
     setActiveConvId(conv.id)
@@ -513,11 +445,21 @@ export default function LibraryLearningHubPage() {
 
   const handleDeleteConversation = (id: string) => {
     if (conversations.length <= 1) return
-    if (id === activeConvId) cancelStreaming()
-    setConversations((prev) => prev.filter((c) => c.id !== id))
     if (id === activeConvId) {
-      setActiveConvId(conversations.find((c) => c.id !== id)!.id)
+      chat.stop()
+      const remaining = conversations.find((c) => c.id !== id)
+      if (remaining) {
+        chat.setMessages(
+          remaining.messages.map((m) => ({
+            id: m.id,
+            role: m.role,
+            content: m.content,
+          }))
+        )
+        setActiveConvId(remaining.id)
+      }
     }
+    setConversations((prev) => prev.filter((c) => c.id !== id))
   }
 
   // Prompt management
@@ -536,6 +478,14 @@ export default function LibraryLearningHubPage() {
     }),
     []
   )
+
+  // Determine if the last message is an assistant message currently streaming
+  const lastMessage = chat.messages[chat.messages.length - 1]
+  const isStreamingLastMessage =
+    chat.isLoading &&
+    lastMessage?.role === 'assistant' &&
+    typeof lastMessage.content === 'string' &&
+    lastMessage.content.length > 0
 
   return (
     <div>
@@ -580,7 +530,7 @@ export default function LibraryLearningHubPage() {
           <div className="flex-1 flex flex-col min-w-0">
             {/* Messages */}
             <div ref={scrollRef} className="flex-1 overflow-y-auto">
-              {messages.length === 0 && !isStreaming ? (
+              {chat.messages.length === 0 && !chat.isLoading ? (
                 <LibraryWelcomeScreen
                   onSuggestionClick={(text) => {
                     setInput(text)
@@ -589,148 +539,157 @@ export default function LibraryLearningHubPage() {
                 />
               ) : (
                 <div className="p-4 space-y-6">
-                  {messages.map((msg) => (
-                    <div
-                      key={msg.id}
-                      className={cn(
-                        'group flex gap-3',
-                        msg.role === 'user' && 'justify-end'
-                      )}
-                    >
-                      {msg.role === 'assistant' && (
-                        <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center shrink-0 shadow-sm">
-                          <Bot className="h-4 w-4 text-white" />
-                        </div>
-                      )}
+                  {chat.messages.map((msg: ChatMsg, idx: number) => {
+                    const msgId = msg.id || `msg-${idx}`
+                    const content =
+                      typeof msg.content === 'string'
+                        ? msg.content
+                        : String(msg.content)
+                    const isLastAssistantStreaming =
+                      idx === chat.messages.length - 1 && isStreamingLastMessage
+
+                    return (
                       <div
+                        key={msgId}
                         className={cn(
-                          'max-w-[75%] min-w-0',
-                          msg.role === 'user' ? 'order-first' : ''
+                          'group flex gap-3',
+                          msg.role === 'user' && 'justify-end'
                         )}
                       >
-                        {/* Thinking display */}
-                        {msg.role === 'assistant' &&
-                          msg.thinking &&
-                          msg.thinking.length > 0 && (
-                            <ThinkingDisplay steps={msg.thinking} />
-                          )}
-
+                        {msg.role === 'assistant' && (
+                          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center shrink-0 shadow-sm">
+                            <Bot className="h-4 w-4 text-white" />
+                          </div>
+                        )}
                         <div
                           className={cn(
-                            'rounded-2xl px-4 py-3',
-                            msg.role === 'user'
-                              ? 'bg-primary text-primary-foreground ml-auto'
-                              : 'bg-muted/50'
+                            'max-w-[75%] min-w-0',
+                            msg.role === 'user' ? 'order-first' : ''
                           )}
                         >
-                          {editingMessageId === msg.id ? (
-                            <div className="space-y-2">
-                              <textarea
-                                value={editingText}
-                                onChange={(e) => setEditingText(e.target.value)}
-                                className="w-full bg-transparent border rounded-lg p-2 text-sm resize-none focus:outline-none focus:ring-1 focus:ring-primary/50"
-                                rows={3}
-                              />
-                              <div className="flex gap-2 justify-end">
-                                <button
-                                  onClick={() => setEditingMessageId(null)}
-                                  className="text-xs px-2 py-1 rounded bg-muted"
-                                >
-                                  Cancel
-                                </button>
-                                <button
-                                  onClick={() => handleEditSave(msg.id)}
-                                  className="text-xs px-2 py-1 rounded bg-primary text-primary-foreground"
-                                >
-                                  Save & Resend
-                                </button>
-                              </div>
-                            </div>
-                          ) : (
-                            <div className="text-sm">
-                              <MarkdownRenderer
-                                content={msg.content}
-                                config={markdownConfig}
-                              />
-                            </div>
-                          )}
-                        </div>
-
-                        {/* Citations - find matching knowledge entries */}
-                        {msg.citations && msg.citations.length > 0 && (
-                          <RagCitations
-                            entries={
-                              msg.citations
-                                .map((c) =>
-                                  knowledgeBase.find((k) => k.title === c.title)
-                                )
-                                .filter(Boolean) as KnowledgeEntry[]
-                            }
-                          />
-                        )}
-
-                        {/* Message Actions */}
-                        <div className="mt-1 flex items-center gap-2">
-                          <span className="text-[10px] text-muted-foreground">
-                            {formatTimestamp(msg.timestamp)}
-                          </span>
-                          <MessageActions
-                            role={msg.role as 'user' | 'assistant'}
-                            feedback={msg.feedback}
-                            onFeedback={(fb) => handleFeedback(msg.id, fb)}
-                            copyText={msg.content}
-                            onRegenerate={
-                              msg.role === 'assistant'
-                                ? () => handleRegenerate(msg.id)
-                                : undefined
-                            }
-                            onDelete={() => handleDeleteMessage(msg.id)}
-                            onEdit={
+                          <div
+                            className={cn(
+                              'rounded-2xl px-4 py-3',
                               msg.role === 'user'
-                                ? () => handleEditStart(msg.id)
-                                : undefined
-                            }
-                          />
-                        </div>
-                      </div>
-                      {msg.role === 'user' && (
-                        <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center shrink-0 shadow-sm">
-                          <User className="h-4 w-4 text-primary-foreground" />
-                        </div>
-                      )}
-                    </div>
-                  ))}
+                                ? 'bg-primary text-primary-foreground ml-auto'
+                                : 'bg-muted/50'
+                            )}
+                          >
+                            {editingMessageId === msgId ? (
+                              <div className="space-y-2">
+                                <textarea
+                                  value={editingText}
+                                  onChange={(e) =>
+                                    setEditingText(e.target.value)
+                                  }
+                                  className="w-full bg-transparent border rounded-lg p-2 text-sm resize-none focus:outline-none focus:ring-1 focus:ring-primary/50"
+                                  rows={3}
+                                />
+                                <div className="flex gap-2 justify-end">
+                                  <button
+                                    onClick={() => setEditingMessageId(null)}
+                                    className="text-xs px-2 py-1 rounded bg-muted"
+                                  >
+                                    Cancel
+                                  </button>
+                                  <button
+                                    onClick={() => handleEditSave(msgId)}
+                                    className="text-xs px-2 py-1 rounded bg-primary text-primary-foreground"
+                                  >
+                                    Save & Resend
+                                  </button>
+                                </div>
+                              </div>
+                            ) : (
+                              <div className="text-sm">
+                                <MarkdownRenderer
+                                  content={content}
+                                  isStreaming={isLastAssistantStreaming}
+                                  config={markdownConfig}
+                                />
+                                {isLastAssistantStreaming && (
+                                  <span className="inline-block w-1.5 h-4 bg-primary animate-pulse rounded-sm ml-0.5" />
+                                )}
+                              </div>
+                            )}
+                          </div>
 
-                  {/* Active thinking */}
-                  {isThinking && (
-                    <div className="flex gap-3">
-                      <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center shrink-0">
-                        <Bot className="h-4 w-4 text-white" />
-                      </div>
-                      <div className="max-w-[75%]">
-                        <ThinkingDisplay
-                          steps={activeThinking}
-                          isActive={true}
-                        />
-                      </div>
-                    </div>
-                  )}
+                          {/* RAG Citations */}
+                          {msg.role === 'assistant' &&
+                            msgId in messageCitations &&
+                            messageCitations[msgId].length > 0 && (
+                              <RagCitations entries={messageCitations[msgId]} />
+                            )}
 
-                  {/* Streaming response */}
-                  {isStreaming && streamingText && (
+                          {/* Message Actions */}
+                          <div className="mt-1 flex items-center gap-2">
+                            <span className="text-[10px] text-muted-foreground">
+                              {messageTimestampsRef.current[msgId]
+                                ? formatTimestamp(
+                                    messageTimestampsRef.current[msgId]
+                                  )
+                                : ''}
+                            </span>
+                            <MessageActions
+                              role={msg.role as 'user' | 'assistant'}
+                              feedback={feedback[msgId]}
+                              onFeedback={(fb) => handleFeedback(msgId, fb)}
+                              copyText={content}
+                              onRegenerate={
+                                msg.role === 'assistant'
+                                  ? () => handleRegenerate(msgId)
+                                  : undefined
+                              }
+                              onDelete={() => handleDeleteMessage(msgId)}
+                              onEdit={
+                                msg.role === 'user'
+                                  ? () => handleEditStart(msgId)
+                                  : undefined
+                              }
+                            />
+                          </div>
+                        </div>
+                        {msg.role === 'user' && (
+                          <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center shrink-0 shadow-sm">
+                            <User className="h-4 w-4 text-primary-foreground" />
+                          </div>
+                        )}
+                      </div>
+                    )
+                  })}
+
+                  {/* Thinking indicator while waiting for response */}
+                  {chat.isLoading && !isStreamingLastMessage && (
                     <div className="flex gap-3">
                       <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center shrink-0">
                         <Bot className="h-4 w-4 text-white" />
                       </div>
                       <div className="max-w-[75%] rounded-2xl px-4 py-3 bg-muted/50">
-                        <div className="text-sm">
-                          <MarkdownRenderer
-                            content={streamingText}
-                            isStreaming
-                            config={markdownConfig}
-                          />
+                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                          <span>Thinking...</span>
                         </div>
-                        <span className="inline-block w-1.5 h-4 bg-primary animate-pulse rounded-sm ml-0.5" />
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Error display */}
+                  {chat.error && (
+                    <div className="flex gap-3">
+                      <div className="w-8 h-8 rounded-lg bg-destructive/20 flex items-center justify-center shrink-0">
+                        <AlertCircle className="h-4 w-4 text-destructive" />
+                      </div>
+                      <div className="max-w-[75%] rounded-2xl px-4 py-3 bg-destructive/10 border border-destructive/20">
+                        <p className="text-sm text-destructive">
+                          {(chat.error as Error).message ||
+                            'An error occurred. Please check your API key and try again.'}
+                        </p>
+                        <button
+                          onClick={() => chat.reload()}
+                          className="mt-2 text-xs px-3 py-1 rounded-lg bg-destructive/20 text-destructive hover:bg-destructive/30 transition-colors"
+                        >
+                          Retry
+                        </button>
                       </div>
                     </div>
                   )}
@@ -806,16 +765,20 @@ export default function LibraryLearningHubPage() {
                       <AtSign className="h-3.5 w-3.5" />
                     </button>
                     <button
-                      onClick={() => handleSend()}
-                      disabled={!input.trim() || isStreaming}
+                      onClick={() =>
+                        chat.isLoading ? chat.stop() : handleSend()
+                      }
+                      disabled={!input.trim() && !chat.isLoading}
                       className={cn(
                         'p-1.5 rounded-md transition-colors',
-                        input.trim() && !isStreaming
-                          ? 'bg-primary text-primary-foreground hover:opacity-90'
-                          : 'text-muted-foreground'
+                        chat.isLoading
+                          ? 'bg-destructive/20 text-destructive hover:bg-destructive/30'
+                          : input.trim()
+                            ? 'bg-primary text-primary-foreground hover:opacity-90'
+                            : 'text-muted-foreground'
                       )}
                     >
-                      {isStreaming ? (
+                      {chat.isLoading ? (
                         <Loader2 className="h-3.5 w-3.5 animate-spin" />
                       ) : (
                         <Send className="h-3.5 w-3.5" />

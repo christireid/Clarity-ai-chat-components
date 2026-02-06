@@ -1,7 +1,7 @@
 'use client'
 
 import { cn } from '@clarity-chat/primitives'
-import { useClipboard } from '@clarity-chat/react/internal'
+import { useClipboard } from '@clarity-chat/react'
 import {
   ThumbsUp,
   ThumbsDown,

@@ -277,6 +277,60 @@ export {
   type SafeEvaluateOptions,
 } from './utils/security'
 
+// ============================================================================
+// AI COMPONENTS (for showcase / advanced demos)
+// ============================================================================
+// Note: These are explicitly exported because `export * from './components/ai'`
+// is excluded to avoid conflicts. These are the most commonly needed AI components.
+export {
+  Welcome,
+  type WelcomeProps,
+  type WelcomeSuggestion,
+  type WelcomeAction,
+  type WelcomeFeature,
+} from './components/ai/Welcome'
+
+export {
+  Think,
+  type ThinkProps,
+  type ThinkStep,
+  type ThinkStepStatus,
+} from './components/ai/Think'
+
+export { Steps, type StepsProps, type StepData } from './components/ai/Steps'
+
+export {
+  ToolCard,
+  ToolCardList,
+  type ToolCardProps,
+  type ToolCardListProps,
+} from './components/ai/ToolCard'
+
+export {
+  Source as AISource,
+  SourceList,
+  type SourceData,
+  type SourceListProps,
+} from './components/ai/Source'
+
+export { Sender, type SenderProps } from './components/ai/Sender'
+
+export {
+  Citation as AICitation,
+  type CitationProps as AICitationProps,
+  type CitationSource as AICitationSource,
+} from './components/ai/citation'
+
+export {
+  ThinkingBar,
+  useThinkingBar,
+  type ThinkingBarProps,
+  type ThinkingBarStatus,
+  type ThinkingBarVariant,
+  type UseThinkingBarOptions,
+  type UseThinkingBarReturn,
+} from './components/ai/ThinkingBar'
+
 // Re-export types from @clarity-chat/types for convenience
 export type { MessageAttachment, SavedPrompt } from '@clarity-chat/types'
 

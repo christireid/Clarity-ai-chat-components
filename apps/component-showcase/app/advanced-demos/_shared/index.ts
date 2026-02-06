@@ -1,6 +1,4 @@
 export * from './types'
-export { useDemoChat } from './use-demo-chat'
-export type { UseDemoChatOptions, UseDemoChatReturn } from './use-demo-chat'
 export { ApiKeyBar } from './api-key-bar'
 export { MessageActions } from './message-actions'
 export { ThinkingDisplay } from './thinking-display'
