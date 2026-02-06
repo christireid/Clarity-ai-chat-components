@@ -248,7 +248,6 @@ export const MODEL_PROVIDERS: ModelProvider[] = [
 
 // Re-export utilities from library packages instead of custom implementations
 export { generateId, formatBytes as formatFileSize } from '@clarity-chat/utils'
-export { escapeHtml } from '@clarity-chat/react/internal'
 
 // Streaming simulation utility (demo-specific, not in library)
 export function simulateStreaming(

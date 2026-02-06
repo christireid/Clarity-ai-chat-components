@@ -3,11 +3,7 @@
 import { useState, useRef, useCallback, useMemo } from 'react'
 import { PageHeader } from '@/components/component-section'
 import { cn } from '@clarity-chat/primitives'
-import {
-  useAutoScroll,
-  useClipboard,
-  MarkdownRenderer,
-} from '@clarity-chat/react/internal'
+import { useAutoScroll, MarkdownRenderer } from '@clarity-chat/react/internal'
 import {
   Send,
   Blocks,
@@ -181,7 +177,6 @@ export default function ArtifactStudioPage() {
   const [editingMessageId, setEditingMessageId] = useState<string | null>(null)
   const [editingText, setEditingText] = useState('')
 
-  const { copy } = useClipboard()
   const streamCancelRef = useRef<(() => void) | null>(null)
   const inputRef = useRef<HTMLTextAreaElement>(null)
 
@@ -790,7 +785,7 @@ export default function ArtifactStudioPage() {
                             role={msg.role as 'user' | 'assistant'}
                             feedback={msg.feedback}
                             onFeedback={(fb) => handleFeedback(msg.id, fb)}
-                            onCopy={() => copy(msg.content)}
+                            copyText={msg.content}
                             onRegenerate={
                               msg.role === 'assistant'
                                 ? () => handleRegenerate(msg.id)

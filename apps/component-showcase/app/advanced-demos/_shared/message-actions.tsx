@@ -1,7 +1,7 @@
 'use client'
 
-import { useState } from 'react'
 import { cn } from '@clarity-chat/primitives'
+import { useClipboard } from '@clarity-chat/react/internal'
 import {
   ThumbsUp,
   ThumbsDown,
@@ -10,16 +10,13 @@ import {
   Trash2,
   Edit3,
   Check,
-  MoreHorizontal,
-  Bookmark,
-  Share,
 } from 'lucide-react'
 
 interface MessageActionsProps {
   role: 'user' | 'assistant'
   feedback?: 'up' | 'down' | null
   onFeedback?: (feedback: 'up' | 'down') => void
-  onCopy?: () => void
+  copyText?: string
   onRegenerate?: () => void
   onDelete?: () => void
   onEdit?: () => void
@@ -30,26 +27,25 @@ export function MessageActions({
   role,
   feedback,
   onFeedback,
-  onCopy,
+  copyText,
   onRegenerate,
   onDelete,
   onEdit,
   className,
 }: MessageActionsProps) {
-  const [copied, setCopied] = useState(false)
-  const [showMore, setShowMore] = useState(false)
+  const { copy, copied } = useClipboard({ timeout: 2000 })
 
   const handleCopy = () => {
-    onCopy?.()
-    setCopied(true)
-    setTimeout(() => setCopied(false), 2000)
+    if (copyText) copy(copyText)
   }
 
   return (
-    <div className={cn(
-      'flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity',
-      className
-    )}>
+    <div
+      className={cn(
+        'flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity',
+        className
+      )}
+    >
       {role === 'assistant' && (
         <>
           <button
@@ -79,7 +75,11 @@ export function MessageActions({
         className="p-1.5 rounded-md hover:bg-muted transition-colors"
         title="Copy"
       >
-        {copied ? <Check className="h-3.5 w-3.5 text-green-500" /> : <Copy className="h-3.5 w-3.5" />}
+        {copied ? (
+          <Check className="h-3.5 w-3.5 text-green-500" />
+        ) : (
+          <Copy className="h-3.5 w-3.5" />
+        )}
       </button>
       {role === 'assistant' && onRegenerate && (
         <button
