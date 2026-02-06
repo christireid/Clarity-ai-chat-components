@@ -1,7 +1,6 @@
 'use client'
 
-import { useState, useRef, useMemo } from 'react'
-import { useClarityChat } from '@clarity-chat/react'
+import { useState, useRef } from 'react'
 import { PageHeader } from '@/components/component-section'
 import { cn } from '@clarity-chat/primitives'
 import { useAutoScroll, MarkdownRenderer } from '@clarity-chat/react'
@@ -25,11 +24,16 @@ import {
   ChatExportDialog,
   SettingsDialog,
   ChatThinkingIndicator,
+  ChatErrorDisplay,
+  TokenOptimizationShowcase,
   useConversationManager,
   useMessageEditing,
+  useMessageActions,
+  useTypedChat,
   type Artifact,
   type SavedPrompt,
   type MCPServer,
+  type TokenSettings,
   type HookMessage,
   getTextContent,
   generateId,
@@ -110,12 +114,18 @@ export default function ArtifactStudioPage() {
   const [settingsCodeTheme, setSettingsCodeTheme] = useState('monokai')
   const [settingsResponseLength, setSettingsResponseLength] =
     useState('balanced')
-  const [feedback, setFeedback] = useState<Record<string, 'up' | 'down'>>({})
+  const [tokenSettings, setTokenSettings] = useState<TokenSettings>({
+    optimizationEnabled: true,
+    techniques: { compression: true, summarization: false, pruning: false },
+    budget: 16000,
+    used: { input: 0, output: 0, total: 0 },
+    showExpenditure: true,
+  })
 
   const inputRef = useRef<HTMLTextAreaElement>(null)
 
-  // Chat hook — replaces all simulation code
-  const chat = useClarityChat({
+  // Chat hook — typed wrapper around useClarityChat
+  const chat = useTypedChat({
     api: '/api/advanced-demos/chat',
     body: {
       apiKey,
@@ -126,15 +136,7 @@ export default function ArtifactStudioPage() {
     },
   })
 
-  // Typed accessors — workaround for missing .d.ts declarations
-  const chatMessages: HookMessage[] = useMemo(
-    () => chat.messages ?? [],
-    [chat.messages]
-  )
-  const chatData = chat.data as HookMessage | undefined
-  const chatError = chat.error as Error | undefined
-
-  // Conversation management (replaces manual state + sync effect + handlers)
+  // Conversation management
   const {
     conversations,
     setConversations,
@@ -144,10 +146,10 @@ export default function ArtifactStudioPage() {
     handleDeleteConversation,
   } = useConversationManager({
     defaultTitle: 'New Project',
-    chat: chat as never,
+    chat,
   })
 
-  // Message editing (replaces manual editingMessageId + editingText + handlers)
+  // Message editing
   const {
     editingMessageId,
     editingText,
@@ -156,12 +158,16 @@ export default function ArtifactStudioPage() {
     handleEditSave,
     handleEditCancel,
   } = useMessageEditing({
-    chat: chat as never,
-    messages: chatMessages,
+    chat,
+    messages: chat.messages,
   })
 
+  // Message actions (feedback, delete, regenerate)
+  const { feedback, handleFeedback, handleDeleteMessage, handleRegenerate } =
+    useMessageActions({ chat, messages: chat.messages })
+
   const { scrollRef } = useAutoScroll({
-    dependencies: [chatMessages, chat.isLoading],
+    dependencies: [chat.messages, chat.isLoading],
   })
 
   const handleSend = async (overrideText?: string) => {
@@ -173,30 +179,6 @@ export default function ArtifactStudioPage() {
       await chat.append({ role: 'user', content: text })
     } catch {
       // Error is captured by chat.error state
-    }
-  }
-
-  const handleFeedback = (msgId: string, fb: 'up' | 'down') => {
-    setFeedback((prev) => ({ ...prev, [msgId]: fb }))
-  }
-
-  const handleDeleteMessage = (msgId: string) => {
-    chat.setMessages(
-      chatMessages.filter((m: HookMessage) => m.id !== msgId) as never
-    )
-  }
-
-  const handleRegenerate = (msgId: string) => {
-    const idx = chatMessages.findIndex((m: HookMessage) => m.id === msgId)
-    if (idx < 0) return
-    if (idx === chatMessages.length - 1) {
-      chat.reload()
-    } else if (idx > 0 && chatMessages[idx - 1]?.role === 'user') {
-      const userContent = getTextContent(chatMessages[idx - 1].content)
-      chat.setMessages(chatMessages.slice(0, idx - 1) as never)
-      setTimeout(() => {
-        chat.append({ role: 'user', content: userContent })
-      }, 100)
     }
   }
 
@@ -269,7 +251,7 @@ export default function ArtifactStudioPage() {
               ref={scrollRef as React.RefObject<HTMLDivElement>}
               className="flex-1 overflow-y-auto"
             >
-              {chatMessages.length === 0 && !chat.isLoading ? (
+              {chat.messages.length === 0 && !chat.isLoading ? (
                 <ArtifactWelcomeScreen
                   onSuggestionClick={(text) => {
                     setInput(text)
@@ -278,7 +260,7 @@ export default function ArtifactStudioPage() {
                 />
               ) : (
                 <div className="p-4 space-y-6">
-                  {chatMessages
+                  {chat.messages
                     .filter(
                       (m: HookMessage) =>
                         m.role === 'user' || m.role === 'assistant'
@@ -393,16 +375,14 @@ export default function ArtifactStudioPage() {
                     )}
 
                   <ChatThinkingIndicator
-                    visible={chat.isLoading && !chatData?.content}
+                    visible={
+                      chat.isLoading &&
+                      !(chat.data as HookMessage | undefined)?.content
+                    }
                     avatarGradient={AVATAR_GRADIENT}
                   />
 
-                  {/* Error display */}
-                  {chatError && (
-                    <div className="mx-4 p-3 rounded-lg bg-red-500/10 border border-red-500/20 text-sm text-red-500">
-                      {chatError.message}
-                    </div>
-                  )}
+                  <ChatErrorDisplay error={chat.error} />
                 </div>
               )}
             </div>
@@ -585,6 +565,12 @@ export default function ArtifactStudioPage() {
         onResponseLengthChange={setSettingsResponseLength}
       >
         <div className="space-y-4">
+          <h3 className="font-medium">Token Optimization</h3>
+          <TokenOptimizationShowcase
+            settings={tokenSettings}
+            onUpdate={setTokenSettings}
+          />
+          <div className="h-px bg-border" />
           <h3 className="font-medium">MCP Servers</h3>
           <ArtifactMCPManager
             servers={mcpServers}

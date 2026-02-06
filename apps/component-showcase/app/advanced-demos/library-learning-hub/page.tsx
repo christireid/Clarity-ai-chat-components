@@ -1,7 +1,6 @@
 'use client'
 
 import { useState, useRef, useCallback, useMemo } from 'react'
-import { useClarityChat } from '@clarity-chat/react'
 import { PageHeader } from '@/components/component-section'
 import { cn } from '@clarity-chat/primitives'
 import { useAutoScroll, MarkdownRenderer } from '@clarity-chat/react'
@@ -17,19 +16,21 @@ import {
   User,
   PanelRight,
   PanelRightClose,
-  AlertCircle,
 } from 'lucide-react'
 
 import {
   ApiKeyBar,
   MessageActions,
-  TokenPanel,
+  TokenOptimizationShowcase,
   MemoryPanel,
   ChatExportDialog,
   SettingsDialog,
   ChatThinkingIndicator,
+  ChatErrorDisplay,
   useConversationManager,
   useMessageEditing,
+  useMessageActions,
+  useTypedChat,
   type SavedPrompt,
   type FileAttachment,
   type MemorySettings,
@@ -55,8 +56,6 @@ import { MentionPopup, type MentionItem } from './components/mention-popup'
 import { RagCitations } from './components/rag-citations'
 import { ContextPanel } from './components/context-panel'
 import { WelcomeScreen as LibraryWelcomeScreen } from './components/welcome-screen'
-
-type ChatMsg = HookMessage
 
 // Simple keyword search for RAG simulation
 function searchKnowledgeBase(query: string): KnowledgeEntry[] {
@@ -144,16 +143,13 @@ export default function LibraryLearningHubPage() {
   const [settingsCodeTheme, setSettingsCodeTheme] = useState('monokai')
   const [settingsResponseLength, setSettingsResponseLength] =
     useState('balanced')
-  // Feedback state (separate from ChatMsg which has no feedback field)
-  const [feedback, setFeedback] = useState<Record<string, 'up' | 'down'>>({})
-
   // RAG citations per assistant message
   const [messageCitations, setMessageCitations] = useState<
     Record<string, KnowledgeEntry[]>
   >({})
   const pendingCitationsRef = useRef<KnowledgeEntry[]>([])
 
-  // Message timestamps (ChatMsg has no timestamp field)
+  // Message timestamps (HookMessage has no timestamp field)
   const messageTimestampsRef = useRef<Record<string, Date>>({})
 
   const inputRef = useRef<HTMLTextAreaElement>(null)
@@ -204,8 +200,8 @@ export default function LibraryLearningHubPage() {
     console.error('[LibraryLearningHub] Chat error:', error.message)
   }, [])
 
-  // useClarityChat instance
-  const chat = useClarityChat({
+  // Chat instance (typed wrapper)
+  const chat = useTypedChat({
     api: '/api/advanced-demos/chat',
     body: {
       apiKey,
@@ -252,7 +248,7 @@ export default function LibraryLearningHubPage() {
     handleDeleteConversation,
   } = useConversationManager({
     defaultTitle: 'New Chat',
-    chat: chat as never,
+    chat,
     sync: syncOptions,
   })
 
@@ -343,35 +339,19 @@ export default function LibraryLearningHubPage() {
     )
   }
 
-  // Message actions
-  const handleFeedback = (msgId: string, fb: 'up' | 'down') => {
-    setFeedback((prev) => ({ ...prev, [msgId]: fb }))
-  }
-
-  const handleDeleteMessage = (msgId: string) => {
-    chat.setMessages(chat.messages.filter((m: ChatMsg) => m.id !== msgId))
-    setFeedback((prev) => {
-      const next = { ...prev }
-      delete next[msgId]
-      return next
+  // Message actions (feedback, delete, regenerate)
+  const { feedback, handleFeedback, handleDeleteMessage, handleRegenerate } =
+    useMessageActions({
+      chat,
+      onResend: (text) => handleSend(text),
+      onDeleteCleanup: (msgId) => {
+        setMessageCitations((prev) => {
+          const next = { ...prev }
+          delete next[msgId]
+          return next
+        })
+      },
     })
-    setMessageCitations((prev) => {
-      const next = { ...prev }
-      delete next[msgId]
-      return next
-    })
-  }
-
-  const handleRegenerate = (msgId: string) => {
-    const msgIndex = chat.messages.findIndex((m: ChatMsg) => m.id === msgId)
-    if (msgIndex <= 0) return
-    const userMsg = chat.messages[msgIndex - 1]
-    if (userMsg?.role !== 'user') return
-    const userContent = getTextContent(userMsg.content)
-    // Truncate to before the user message, then resend
-    chat.setMessages(chat.messages.slice(0, msgIndex - 1))
-    setTimeout(() => handleSend(userContent), 100)
-  }
 
   // Message editing
   const {
@@ -382,7 +362,7 @@ export default function LibraryLearningHubPage() {
     handleEditSave,
     handleEditCancel,
   } = useMessageEditing({
-    chat: chat as never,
+    chat,
     onResend: (text) => handleSend(text),
   })
 
@@ -458,7 +438,7 @@ export default function LibraryLearningHubPage() {
                 />
               ) : (
                 <div className="p-4 space-y-6">
-                  {chat.messages.map((msg: ChatMsg, idx: number) => {
+                  {chat.messages.map((msg: HookMessage, idx: number) => {
                     const msgId = msg.id || `msg-${idx}`
                     const content =
                       getTextContent(msg.content) || String(msg.content)
@@ -580,26 +560,12 @@ export default function LibraryLearningHubPage() {
                     avatarGradient={AVATAR_GRADIENT}
                   />
 
-                  {/* Error display */}
-                  {chat.error && (
-                    <div className="flex gap-3">
-                      <div className="w-8 h-8 rounded-lg bg-destructive/20 flex items-center justify-center shrink-0">
-                        <AlertCircle className="h-4 w-4 text-destructive" />
-                      </div>
-                      <div className="max-w-[75%] rounded-2xl px-4 py-3 bg-destructive/10 border border-destructive/20">
-                        <p className="text-sm text-destructive">
-                          {(chat.error as Error).message ||
-                            'An error occurred. Please check your API key and try again.'}
-                        </p>
-                        <button
-                          onClick={() => chat.reload()}
-                          className="mt-2 text-xs px-3 py-1 rounded-lg bg-destructive/20 text-destructive hover:bg-destructive/30 transition-colors"
-                        >
-                          Retry
-                        </button>
-                      </div>
-                    </div>
-                  )}
+                  <ChatErrorDisplay
+                    error={chat.error}
+                    variant="chat-bubble"
+                    avatarIcon="alert"
+                    onRetry={() => chat.reload()}
+                  />
                 </div>
               )}
             </div>
@@ -761,7 +727,7 @@ export default function LibraryLearningHubPage() {
               <div className="h-px bg-border" />
 
               {/* Tokens */}
-              <TokenPanel
+              <TokenOptimizationShowcase
                 settings={tokenSettings}
                 onUpdate={setTokenSettings}
               />

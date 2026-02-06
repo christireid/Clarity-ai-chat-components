@@ -1,11 +1,11 @@
 'use client'
 
-import { useState, useCallback, useEffect } from 'react'
+import { useState, useCallback, useEffect, useRef } from 'react'
 import type { Conversation, ChatMessage, HookMessage } from './types'
 import { generateId, getTextContent, createConversation } from './types'
 
 /** Options for syncing chat messages into the conversation store. */
-interface SyncOptions {
+export interface SyncOptions {
   /** Optional function to compute timestamp for a message (e.g. from a ref cache). */
   getTimestamp?: (msgId: string) => Date | undefined
   /** Optional function to derive a conversation title from messages.
@@ -17,7 +17,7 @@ interface SyncOptions {
 
 interface ChatHandle {
   messages: HookMessage[]
-  setMessages: (msgs: unknown) => void
+  setMessages: (msgs: HookMessage[]) => void
   stop: () => void
 }
 
@@ -50,9 +50,21 @@ export function useConversationManager({
   ])
   const [activeConvId, setActiveConvId] = useState(conversations[0].id)
 
+  // Stabilize sync callbacks via refs to avoid infinite re-render loops
+  // when consumers forget to memoize the sync object.
+  const syncRef = useRef(sync)
+  syncRef.current = sync
+
+  // Keep refs for use in stable callbacks (avoids stale closure bugs)
+  const conversationsRef = useRef(conversations)
+  conversationsRef.current = conversations
+  const activeConvIdRef = useRef(activeConvId)
+  activeConvIdRef.current = activeConvId
+
   // Sync chat.messages → conversation store
   useEffect(() => {
     if (chat.messages.length > 0) {
+      const s = syncRef.current
       setConversations((prev) =>
         prev.map((c) => {
           if (c.id !== activeConvId) return c
@@ -60,12 +72,12 @@ export function useConversationManager({
             id: m.id || generateId(),
             role: m.role as 'user' | 'assistant',
             content: getTextContent(m.content),
-            timestamp: sync?.getTimestamp?.(m.id || '') || new Date(),
+            timestamp: s?.getTimestamp?.(m.id || '') || new Date(),
           }))
-          const title = sync?.deriveTitle
-            ? sync.deriveTitle(c.title, chat.messages)
+          const title = s?.deriveTitle
+            ? s.deriveTitle(c.title, chat.messages)
             : c.title
-          const extra = sync?.extraProps ? sync.extraProps(c) : {}
+          const extra = s?.extraProps ? s.extraProps(c) : {}
           return {
             ...c,
             ...extra,
@@ -76,24 +88,24 @@ export function useConversationManager({
         })
       )
     }
-  }, [chat.messages, activeConvId, sync])
+  }, [chat.messages, activeConvId])
 
   const handleSelectConversation = useCallback(
     (id: string) => {
       chat.stop()
-      const targetConv = conversations.find((c) => c.id === id)
+      const targetConv = conversationsRef.current.find((c) => c.id === id)
       if (targetConv) {
         chat.setMessages(
           targetConv.messages.map((m) => ({
             id: m.id,
             role: m.role,
             content: m.content,
-          }))
+          })) as HookMessage[]
         )
       }
       setActiveConvId(id)
     },
-    [chat, conversations]
+    [chat]
   )
 
   const handleNewConversation = useCallback(() => {
@@ -106,17 +118,18 @@ export function useConversationManager({
 
   const handleDeleteConversation = useCallback(
     (id: string) => {
-      if (conversations.length <= 1) return
-      if (id === activeConvId) {
+      const convs = conversationsRef.current
+      if (convs.length <= 1) return
+      const currentActive = activeConvIdRef.current
+      if (id === currentActive) {
         chat.stop()
         chat.setMessages([])
+        const next = convs.find((c) => c.id !== id)
+        if (next) setActiveConvId(next.id)
       }
       setConversations((prev) => prev.filter((c) => c.id !== id))
-      if (id === activeConvId) {
-        setActiveConvId(conversations.find((c) => c.id !== id)!.id)
-      }
     },
-    [chat, conversations, activeConvId]
+    [chat]
   )
 
   return {

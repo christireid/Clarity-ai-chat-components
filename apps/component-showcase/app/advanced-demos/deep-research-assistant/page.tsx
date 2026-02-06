@@ -4,7 +4,6 @@ import { useState, useRef } from 'react'
 import { PageHeader } from '@/components/component-section'
 import { cn } from '@clarity-chat/primitives'
 import { useAutoScroll, MarkdownRenderer } from '@clarity-chat/react'
-import { useClarityChat } from '@clarity-chat/react'
 import {
   Send,
   Globe,
@@ -21,19 +20,21 @@ import {
 import {
   ApiKeyBar,
   MessageActions,
-  TokenPanel,
+  TokenOptimizationShowcase,
   MemoryPanel,
   ChatExportDialog,
   SettingsDialog,
   ChatThinkingIndicator,
+  ChatErrorDisplay,
   useConversationManager,
   useMessageEditing,
+  useMessageActions,
+  useTypedChat,
   type SavedPrompt,
   type FileAttachment,
   type MCPServer,
   type MemorySettings,
   type TokenSettings,
-  type HookMessage,
   getTextContent,
   MARKDOWN_CONFIG,
   generateId,
@@ -44,20 +45,6 @@ import { MCPManager as MCPManagerPanel } from './components/mcp-manager'
 import { ResearchSidebar } from './components/chat-sidebar'
 import { ResearchContextPanel } from './components/context-panel'
 import { ResearchWelcomeScreen } from './components/welcome-screen'
-
-type ClarityMsg = HookMessage
-
-interface ClarityChatInstance {
-  messages: ClarityMsg[]
-  setMessages: (
-    msgs: ClarityMsg[] | ((prev: ClarityMsg[]) => ClarityMsg[])
-  ) => void
-  append: (msg: Pick<ClarityMsg, 'role' | 'content'>) => Promise<string | null>
-  reload: () => Promise<string | null>
-  stop: () => void
-  isLoading: boolean
-  error: Error | undefined
-}
 
 export const dynamic = 'force-dynamic'
 
@@ -141,7 +128,6 @@ export default function DeepResearchAssistantPage() {
 
   // UI state
   const [input, setInput] = useState('')
-  const [feedback, setFeedback] = useState<Record<string, 'up' | 'down'>>({})
   const [showExport, setShowExport] = useState(false)
   const [showSettings, setShowSettings] = useState(false)
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
@@ -159,7 +145,7 @@ export default function DeepResearchAssistantPage() {
     ? `You are a deep research assistant operating in Deep Research Mode. When users ask questions, provide thorough, well-structured research responses with proper markdown formatting. Include headers, bullet points, code examples where relevant, and numbered references. Provide comprehensive analysis with multiple sections, cross-referenced findings, and detailed recommendations.`
     : `You are a deep research assistant. When users ask questions, provide thorough, well-structured research responses with proper markdown formatting. Include headers, bullet points, code examples where relevant, and numbered references. For /research queries, provide more comprehensive analysis with multiple sections.`
 
-  const chat = useClarityChat({
+  const chat = useTypedChat({
     api: '/api/advanced-demos/chat',
     body: {
       apiKey,
@@ -168,7 +154,7 @@ export default function DeepResearchAssistantPage() {
       temperature: settingsTemp,
       maxTokens: settingsMaxTokens,
     },
-  }) as unknown as ClarityChatInstance
+  })
 
   // Conversation management
   const {
@@ -179,7 +165,7 @@ export default function DeepResearchAssistantPage() {
     handleDeleteConversation,
   } = useConversationManager({
     defaultTitle: 'New Research',
-    chat: chat as never,
+    chat,
   })
 
   // Message editing
@@ -191,9 +177,13 @@ export default function DeepResearchAssistantPage() {
     handleEditSave,
     handleEditCancel,
   } = useMessageEditing({
-    chat: chat as never,
+    chat,
     onResend: (text) => handleSend(text),
   })
+
+  // Message actions (feedback, delete, regenerate)
+  const { feedback, handleFeedback, handleDeleteMessage, handleRegenerate } =
+    useMessageActions({ chat, onResend: (text) => handleSend(text) })
 
   const { scrollRef } = useAutoScroll({
     dependencies: [chat.messages, chat.isLoading],
@@ -373,23 +363,14 @@ export default function DeepResearchAssistantPage() {
                             <MessageActions
                               role={msg.role as 'user' | 'assistant'}
                               feedback={feedback[msg.id!] || undefined}
-                              onFeedback={(fb) =>
-                                setFeedback((prev) => ({
-                                  ...prev,
-                                  [msg.id!]: fb,
-                                }))
-                              }
+                              onFeedback={(fb) => handleFeedback(msg.id!, fb)}
                               copyText={content}
                               onRegenerate={
                                 msg.role === 'assistant'
-                                  ? () => chat.reload()
+                                  ? () => handleRegenerate(msg.id!)
                                   : undefined
                               }
-                              onDelete={() =>
-                                chat.setMessages(
-                                  chat.messages.filter((m) => m.id !== msg.id)
-                                )
-                              }
+                              onDelete={() => handleDeleteMessage(msg.id!)}
                               onEdit={
                                 msg.role === 'user'
                                   ? () => handleEditStart(msg.id!)
@@ -413,20 +394,11 @@ export default function DeepResearchAssistantPage() {
                     label="Researching..."
                   />
 
-                  {/* Error display */}
-                  {chat.error && (
-                    <div className="flex gap-3">
-                      <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-red-500 to-rose-600 flex items-center justify-center shrink-0">
-                        <Bot className="h-4 w-4 text-white" />
-                      </div>
-                      <div className="max-w-[75%] rounded-2xl px-4 py-3 bg-red-500/10 border border-red-500/20">
-                        <p className="text-sm text-red-500">
-                          {chat.error.message ||
-                            'An error occurred. Please try again.'}
-                        </p>
-                      </div>
-                    </div>
-                  )}
+                  <ChatErrorDisplay
+                    error={chat.error}
+                    variant="chat-bubble"
+                    avatarGradient="from-red-500 to-rose-600"
+                  />
                 </div>
               )}
             </div>
@@ -598,7 +570,7 @@ export default function DeepResearchAssistantPage() {
                 }
               />
               <div className="h-px bg-border" />
-              <TokenPanel
+              <TokenOptimizationShowcase
                 settings={tokenSettings}
                 onUpdate={setTokenSettings}
               />

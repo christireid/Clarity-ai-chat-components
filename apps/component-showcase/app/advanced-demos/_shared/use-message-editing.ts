@@ -6,7 +6,7 @@ import { getTextContent } from './types'
 
 interface ChatHandle {
   messages: HookMessage[]
-  setMessages: (msgs: unknown) => void
+  setMessages: (msgs: HookMessage[]) => void
   append: (msg: { role: string; content: string }) => unknown
 }
 
