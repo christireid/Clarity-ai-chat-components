@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef, useCallback, useMemo, useEffect } from 'react'
+import { useState, useRef, useMemo } from 'react'
 import { useClarityChat } from '@clarity-chat/react'
 import { PageHeader } from '@/components/component-section'
 import { cn } from '@clarity-chat/primitives'
@@ -24,16 +24,16 @@ import {
   MessageActions,
   ChatExportDialog,
   SettingsDialog,
-  type ChatMessage,
+  ChatThinkingIndicator,
+  useConversationManager,
+  useMessageEditing,
   type Artifact,
-  type Conversation,
   type SavedPrompt,
   type MCPServer,
   type HookMessage,
   getTextContent,
   generateId,
   MARKDOWN_CONFIG,
-  createConversation as createConversationBase,
 } from '../_shared'
 
 import { ArtifactPanel } from './components/artifact-panel'
@@ -44,9 +44,7 @@ import { ArtifactWelcomeScreen } from './components/welcome-screen'
 
 export const dynamic = 'force-dynamic'
 
-function createConversation(): Conversation {
-  return { ...createConversationBase('New Project'), artifactCount: 0 }
-}
+const AVATAR_GRADIENT = 'from-violet-500 to-purple-600'
 
 const defaultMCPServers: MCPServer[] = [
   {
@@ -88,10 +86,6 @@ export default function ArtifactStudioPage() {
   const [model, setModel] = useState('claude-3.5-sonnet')
   const [apiKey, setApiKey] = useState('')
 
-  const [conversations, setConversations] = useState<Conversation[]>([
-    createConversation(),
-  ])
-  const [activeConvId, setActiveConvId] = useState(conversations[0].id)
   const [savedPrompts, setSavedPrompts] =
     useState<SavedPrompt[]>(defaultPrompts)
   const [mcpServers, setMcpServers] = useState<MCPServer[]>(defaultMCPServers)
@@ -116,8 +110,6 @@ export default function ArtifactStudioPage() {
   const [settingsCodeTheme, setSettingsCodeTheme] = useState('monokai')
   const [settingsResponseLength, setSettingsResponseLength] =
     useState('balanced')
-  const [editingMessageId, setEditingMessageId] = useState<string | null>(null)
-  const [editingText, setEditingText] = useState('')
   const [feedback, setFeedback] = useState<Record<string, 'up' | 'down'>>({})
 
   const inputRef = useRef<HTMLTextAreaElement>(null)
@@ -142,33 +134,35 @@ export default function ArtifactStudioPage() {
   const chatData = chat.data as HookMessage | undefined
   const chatError = chat.error as Error | undefined
 
+  // Conversation management (replaces manual state + sync effect + handlers)
+  const {
+    conversations,
+    setConversations,
+    activeConvId,
+    handleSelectConversation,
+    handleNewConversation,
+    handleDeleteConversation,
+  } = useConversationManager({
+    defaultTitle: 'New Project',
+    chat: chat as never,
+  })
+
+  // Message editing (replaces manual editingMessageId + editingText + handlers)
+  const {
+    editingMessageId,
+    editingText,
+    setEditingText,
+    handleEditStart,
+    handleEditSave,
+    handleEditCancel,
+  } = useMessageEditing({
+    chat: chat as never,
+    messages: chatMessages,
+  })
+
   const { scrollRef } = useAutoScroll({
     dependencies: [chatMessages, chat.isLoading],
   })
-
-  // Sync chat messages to conversation state when they change
-  useEffect(() => {
-    if (chatMessages.length > 0) {
-      setConversations((prev) =>
-        prev.map((c) =>
-          c.id === activeConvId
-            ? {
-                ...c,
-                messages: chatMessages.map(
-                  (m: HookMessage): ChatMessage => ({
-                    id: m.id || generateId(),
-                    role: m.role as 'user' | 'assistant',
-                    content: getTextContent(m.content),
-                    timestamp: new Date(),
-                  })
-                ),
-                updatedAt: new Date(),
-              }
-            : c
-        )
-      )
-    }
-  }, [chatMessages, activeConvId])
 
   const handleSend = async (overrideText?: string) => {
     const text = overrideText || input.trim()
@@ -181,24 +175,6 @@ export default function ArtifactStudioPage() {
       // Error is captured by chat.error state
     }
   }
-
-  const handleSelectConversation = useCallback(
-    (id: string) => {
-      chat.stop()
-      const targetConv = conversations.find((c) => c.id === id)
-      if (targetConv) {
-        chat.setMessages(
-          targetConv.messages.map((m: ChatMessage) => ({
-            id: m.id,
-            role: m.role,
-            content: m.content,
-          })) as never
-        )
-      }
-      setActiveConvId(id)
-    },
-    [chat, conversations]
-  )
 
   const handleFeedback = (msgId: string, fb: 'up' | 'down') => {
     setFeedback((prev) => ({ ...prev, [msgId]: fb }))
@@ -214,36 +190,14 @@ export default function ArtifactStudioPage() {
     const idx = chatMessages.findIndex((m: HookMessage) => m.id === msgId)
     if (idx < 0) return
     if (idx === chatMessages.length - 1) {
-      // Last assistant message — use reload
       chat.reload()
     } else if (idx > 0 && chatMessages[idx - 1]?.role === 'user') {
-      const userContent =
-        typeof chatMessages[idx - 1].content === 'string'
-          ? (chatMessages[idx - 1].content as string)
-          : ''
+      const userContent = getTextContent(chatMessages[idx - 1].content)
       chat.setMessages(chatMessages.slice(0, idx - 1) as never)
       setTimeout(() => {
         chat.append({ role: 'user', content: userContent })
       }, 100)
     }
-  }
-
-  const handleEditStart = (msgId: string) => {
-    const msg = chatMessages.find((m: HookMessage) => m.id === msgId)
-    if (msg) {
-      setEditingMessageId(msgId)
-      setEditingText(getTextContent(msg.content))
-    }
-  }
-
-  const handleEditSave = (msgId: string) => {
-    const idx = chatMessages.findIndex((m: HookMessage) => m.id === msgId)
-    if (idx === -1) return
-    chat.setMessages(chatMessages.slice(0, idx) as never)
-    setEditingMessageId(null)
-    setTimeout(() => {
-      chat.append({ role: 'user', content: editingText })
-    }, 100)
   }
 
   const slashCommands = [
@@ -282,23 +236,8 @@ export default function ArtifactStudioPage() {
             conversations={conversations}
             activeConversationId={activeConvId}
             onSelectConversation={handleSelectConversation}
-            onNewConversation={() => {
-              chat.stop()
-              chat.setMessages([])
-              const c = createConversation()
-              setConversations((prev) => [c, ...prev])
-              setActiveConvId(c.id)
-            }}
-            onDeleteConversation={(id) => {
-              if (conversations.length <= 1) return
-              if (id === activeConvId) {
-                chat.stop()
-                chat.setMessages([])
-              }
-              setConversations((prev) => prev.filter((c) => c.id !== id))
-              if (id === activeConvId)
-                setActiveConvId(conversations.find((c) => c.id !== id)!.id)
-            }}
+            onNewConversation={handleNewConversation}
+            onDeleteConversation={handleDeleteConversation}
             savedPrompts={savedPrompts}
             onUsePrompt={(text) => {
               setInput(text)
@@ -395,9 +334,7 @@ export default function ArtifactStudioPage() {
                                     />
                                     <div className="flex gap-2 justify-end">
                                       <button
-                                        onClick={() =>
-                                          setEditingMessageId(null)
-                                        }
+                                        onClick={() => handleEditCancel()}
                                         className="text-xs px-2 py-1 rounded bg-muted"
                                       >
                                         Cancel
@@ -455,20 +392,10 @@ export default function ArtifactStudioPage() {
                       }
                     )}
 
-                  {/* Thinking indicator — shown while loading and no content streamed yet */}
-                  {chat.isLoading && !chatData?.content && (
-                    <div className="flex gap-3">
-                      <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center shrink-0">
-                        <Bot className="h-4 w-4 text-white" />
-                      </div>
-                      <div className="max-w-[75%] rounded-2xl px-4 py-3 bg-muted/50">
-                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                          <Loader2 className="h-4 w-4 animate-spin" />
-                          <span>Thinking...</span>
-                        </div>
-                      </div>
-                    </div>
-                  )}
+                  <ChatThinkingIndicator
+                    visible={chat.isLoading && !chatData?.content}
+                    avatarGradient={AVATAR_GRADIENT}
+                  />
 
                   {/* Error display */}
                   {chatError && (

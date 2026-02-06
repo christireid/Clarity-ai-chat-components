@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef, useCallback, useEffect } from 'react'
+import { useState, useRef } from 'react'
 import { PageHeader } from '@/components/component-section'
 import { cn } from '@clarity-chat/primitives'
 import { useAutoScroll, MarkdownRenderer } from '@clarity-chat/react'
@@ -25,7 +25,9 @@ import {
   MemoryPanel,
   ChatExportDialog,
   SettingsDialog,
-  type Conversation,
+  ChatThinkingIndicator,
+  useConversationManager,
+  useMessageEditing,
   type SavedPrompt,
   type FileAttachment,
   type MCPServer,
@@ -34,7 +36,6 @@ import {
   type HookMessage,
   getTextContent,
   MARKDOWN_CONFIG,
-  createConversation,
   generateId,
   formatTimestamp,
 } from '../_shared'
@@ -59,6 +60,8 @@ interface ClarityChatInstance {
 }
 
 export const dynamic = 'force-dynamic'
+
+const AVATAR_GRADIENT = 'from-blue-500 to-indigo-600'
 
 const defaultMCPServers: MCPServer[] = [
   {
@@ -107,10 +110,6 @@ export default function DeepResearchAssistantPage() {
   const [model, setModel] = useState('gpt-4o')
   const [apiKey, setApiKey] = useState('')
 
-  const [conversations, setConversations] = useState<Conversation[]>([
-    createConversation('New Research'),
-  ])
-  const [activeConvId, setActiveConvId] = useState(conversations[0].id)
   const [savedPrompts, setSavedPrompts] =
     useState<SavedPrompt[]>(defaultPrompts)
   const [mcpServers, setMcpServers] = useState<MCPServer[]>(defaultMCPServers)
@@ -153,8 +152,6 @@ export default function DeepResearchAssistantPage() {
   const [settingsCodeTheme, setSettingsCodeTheme] = useState('monokai')
   const [settingsResponseLength, setSettingsResponseLength] =
     useState('detailed')
-  const [editingMessageId, setEditingMessageId] = useState<string | null>(null)
-  const [editingText, setEditingText] = useState('')
 
   const inputRef = useRef<HTMLTextAreaElement>(null)
 
@@ -173,49 +170,34 @@ export default function DeepResearchAssistantPage() {
     },
   }) as unknown as ClarityChatInstance
 
+  // Conversation management
+  const {
+    conversations,
+    activeConvId,
+    handleSelectConversation,
+    handleNewConversation,
+    handleDeleteConversation,
+  } = useConversationManager({
+    defaultTitle: 'New Research',
+    chat: chat as never,
+  })
+
+  // Message editing
+  const {
+    editingMessageId,
+    editingText,
+    setEditingText,
+    handleEditStart,
+    handleEditSave,
+    handleEditCancel,
+  } = useMessageEditing({
+    chat: chat as never,
+    onResend: (text) => handleSend(text),
+  })
+
   const { scrollRef } = useAutoScroll({
     dependencies: [chat.messages, chat.isLoading],
   })
-
-  // Sync chat messages to conversations
-  useEffect(() => {
-    if (chat.messages.length > 0) {
-      setConversations((prev) =>
-        prev.map((c) =>
-          c.id === activeConvId
-            ? {
-                ...c,
-                messages: chat.messages.map((m) => ({
-                  id: m.id || generateId(),
-                  role: m.role as 'user' | 'assistant',
-                  content: getTextContent(m.content),
-                  timestamp: new Date(),
-                })),
-                updatedAt: new Date(),
-              }
-            : c
-        )
-      )
-    }
-  }, [chat.messages, activeConvId])
-
-  const handleSelectConversation = useCallback(
-    (id: string) => {
-      chat.stop()
-      const targetConv = conversations.find((c) => c.id === id)
-      if (targetConv) {
-        chat.setMessages(
-          targetConv.messages.map((m) => ({
-            id: m.id,
-            role: m.role,
-            content: m.content,
-          }))
-        )
-      }
-      setActiveConvId(id)
-    },
-    [chat, conversations]
-  )
 
   // Slash commands
   const slashCommands = [
@@ -242,22 +224,6 @@ export default function DeepResearchAssistantPage() {
     setInput('')
     setShowSlashMenu(false)
     await chat.append({ role: 'user', content: text })
-  }
-
-  const handleEditStart = (msgId: string) => {
-    const msg = chat.messages.find((m) => m.id === msgId)
-    if (msg) {
-      setEditingMessageId(msgId)
-      setEditingText(getTextContent(msg.content))
-    }
-  }
-
-  const handleEditSave = (msgId: string) => {
-    const idx = chat.messages.findIndex((m) => m.id === msgId)
-    if (idx === -1) return
-    chat.setMessages(chat.messages.slice(0, idx))
-    setEditingMessageId(null)
-    setTimeout(() => handleSend(editingText), 100)
   }
 
   const markdownConfig = MARKDOWN_CONFIG
@@ -295,23 +261,8 @@ export default function DeepResearchAssistantPage() {
             conversations={conversations}
             activeConversationId={activeConvId}
             onSelectConversation={handleSelectConversation}
-            onNewConversation={() => {
-              chat.stop()
-              const c = createConversation('New Research')
-              setConversations((prev) => [c, ...prev])
-              setActiveConvId(c.id)
-              chat.setMessages([])
-            }}
-            onDeleteConversation={(id) => {
-              if (conversations.length <= 1) return
-              if (id === activeConvId) {
-                chat.stop()
-                chat.setMessages([])
-              }
-              setConversations((prev) => prev.filter((c) => c.id !== id))
-              if (id === activeConvId)
-                setActiveConvId(conversations.find((c) => c.id !== id)!.id)
-            }}
+            onNewConversation={handleNewConversation}
+            onDeleteConversation={handleDeleteConversation}
             savedPrompts={savedPrompts}
             onUsePrompt={(text) => {
               setInput(text)
@@ -387,7 +338,7 @@ export default function DeepResearchAssistantPage() {
                                 />
                                 <div className="flex gap-2 justify-end">
                                   <button
-                                    onClick={() => setEditingMessageId(null)}
+                                    onClick={() => handleEditCancel()}
                                     className="text-xs px-2 py-1 rounded bg-muted"
                                   >
                                     Cancel
@@ -456,20 +407,11 @@ export default function DeepResearchAssistantPage() {
                     )
                   })}
 
-                  {/* Thinking indicator */}
-                  {showThinkingIndicator && (
-                    <div className="flex gap-3">
-                      <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center shrink-0">
-                        <Bot className="h-4 w-4 text-white" />
-                      </div>
-                      <div className="max-w-[75%] rounded-2xl px-4 py-3 bg-muted/50">
-                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                          <Loader2 className="h-4 w-4 animate-spin" />
-                          <span>Researching...</span>
-                        </div>
-                      </div>
-                    </div>
-                  )}
+                  <ChatThinkingIndicator
+                    visible={showThinkingIndicator}
+                    avatarGradient={AVATAR_GRADIENT}
+                    label="Researching..."
+                  />
 
                   {/* Error display */}
                   {chat.error && (

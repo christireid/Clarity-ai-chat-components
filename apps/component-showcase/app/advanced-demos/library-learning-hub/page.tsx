@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef, useCallback, useEffect } from 'react'
+import { useState, useRef, useCallback, useMemo } from 'react'
 import { useClarityChat } from '@clarity-chat/react'
 import { PageHeader } from '@/components/component-section'
 import { cn } from '@clarity-chat/primitives'
@@ -27,7 +27,9 @@ import {
   MemoryPanel,
   ChatExportDialog,
   SettingsDialog,
-  type Conversation,
+  ChatThinkingIndicator,
+  useConversationManager,
+  useMessageEditing,
   type SavedPrompt,
   type FileAttachment,
   type MemorySettings,
@@ -35,7 +37,6 @@ import {
   type HookMessage,
   getTextContent,
   MARKDOWN_CONFIG,
-  createConversation,
   generateId,
   formatTimestamp,
 } from '../_shared'
@@ -72,6 +73,8 @@ const knowledgeBase = KNOWLEDGE_BASE
 
 export const dynamic = 'force-dynamic'
 
+const AVATAR_GRADIENT = 'from-emerald-500 to-teal-600'
+
 // Use built-in slash commands from the component
 const slashCommands = SLASH_COMMANDS
 
@@ -84,8 +87,6 @@ const mentionItems: MentionItem[] = [
     .filter((e) => e.category === 'hook')
     .map((e) => ({ id: e.id, label: e.title, type: 'hook' as const })),
 ]
-
-const createDefaultConversation = () => createConversation('New Chat')
 
 // Default prompts
 const defaultPrompts: SavedPrompt[] = [
@@ -106,12 +107,6 @@ export default function LibraryLearningHubPage() {
   const [provider, setProvider] = useState('anthropic')
   const [model, setModel] = useState('claude-3.5-sonnet')
   const [apiKey, setApiKey] = useState('')
-
-  // Conversations
-  const [conversations, setConversations] = useState<Conversation[]>([
-    createDefaultConversation(),
-  ])
-  const [activeConvId, setActiveConvId] = useState(conversations[0].id)
 
   // Prompts
   const [savedPrompts, setSavedPrompts] =
@@ -149,9 +144,6 @@ export default function LibraryLearningHubPage() {
   const [settingsCodeTheme, setSettingsCodeTheme] = useState('monokai')
   const [settingsResponseLength, setSettingsResponseLength] =
     useState('balanced')
-  const [editingMessageId, setEditingMessageId] = useState<string | null>(null)
-  const [editingText, setEditingText] = useState('')
-
   // Feedback state (separate from ChatMsg which has no feedback field)
   const [feedback, setFeedback] = useState<Record<string, 'up' | 'down'>>({})
 
@@ -232,58 +224,41 @@ export default function LibraryLearningHubPage() {
     }
   }
 
-  // Sync chat.messages to conversation store
-  useEffect(() => {
-    if (chat.messages.length > 0) {
-      setConversations((prev) =>
-        prev.map((c) =>
-          c.id === activeConvId
-            ? {
-                ...c,
-                messages: chat.messages.map((m: ChatMsg) => ({
-                  id: m.id || generateId(),
-                  role: m.role as 'user' | 'assistant',
-                  content: getTextContent(m.content) || String(m.content),
-                  timestamp:
-                    messageTimestampsRef.current[m.id || ''] || new Date(),
-                })),
-                updatedAt: new Date(),
-                title:
-                  c.title === 'New Chat' && chat.messages[0]?.role === 'user'
-                    ? getTextContent(chat.messages[0].content).slice(0, 30) +
-                        (getTextContent(chat.messages[0].content).length > 30
-                          ? '...'
-                          : '') || 'Chat'
-                    : c.title,
-              }
-            : c
-        )
-      )
-    }
-  }, [chat.messages, activeConvId])
+  // Title derivation: auto-name conversation from first user message
+  const deriveTitle = useCallback(
+    (currentTitle: string, messages: HookMessage[]) => {
+      if (currentTitle !== 'New Chat' || messages[0]?.role !== 'user')
+        return currentTitle
+      const text = getTextContent(messages[0].content)
+      return text.slice(0, 30) + (text.length > 30 ? '...' : '') || 'Chat'
+    },
+    []
+  )
+
+  // Conversation management with custom sync (timestamps + title derivation)
+  const syncOptions = useMemo(
+    () => ({
+      getTimestamp: (msgId: string) => messageTimestampsRef.current[msgId],
+      deriveTitle,
+    }),
+    [deriveTitle]
+  )
+
+  const {
+    conversations,
+    activeConvId,
+    handleSelectConversation,
+    handleNewConversation,
+    handleDeleteConversation,
+  } = useConversationManager({
+    defaultTitle: 'New Chat',
+    chat: chat as never,
+    sync: syncOptions,
+  })
 
   const { scrollRef } = useAutoScroll({
     dependencies: [chat.messages, chat.isLoading],
   })
-
-  // Switch conversations
-  const handleSelectConversation = useCallback(
-    (id: string) => {
-      chat.stop()
-      const targetConv = conversations.find((c) => c.id === id)
-      if (targetConv) {
-        chat.setMessages(
-          targetConv.messages.map((m) => ({
-            id: m.id,
-            role: m.role,
-            content: m.content,
-          }))
-        )
-      }
-      setActiveConvId(id)
-    },
-    [chat, conversations]
-  )
 
   // Input handling - only trigger slash menu when / is first char or follows whitespace
   const handleInputChange = (value: string) => {
@@ -398,52 +373,18 @@ export default function LibraryLearningHubPage() {
     setTimeout(() => handleSend(userContent), 100)
   }
 
-  const handleEditStart = (msgId: string) => {
-    const msg = chat.messages.find((m: ChatMsg) => m.id === msgId)
-    if (msg) {
-      setEditingMessageId(msgId)
-      setEditingText(getTextContent(msg.content))
-    }
-  }
-
-  const handleEditSave = (msgId: string) => {
-    const msgIndex = chat.messages.findIndex((m: ChatMsg) => m.id === msgId)
-    if (msgIndex === -1) return
-    const newText = editingText
-    // Truncate to before the edited message, then resend with new text
-    chat.setMessages(chat.messages.slice(0, msgIndex))
-    setEditingMessageId(null)
-    setEditingText('')
-    setTimeout(() => handleSend(newText), 100)
-  }
-
-  // Conversation management
-  const handleNewConversation = () => {
-    chat.stop()
-    chat.setMessages([])
-    const conv = createDefaultConversation()
-    setConversations((prev) => [conv, ...prev])
-    setActiveConvId(conv.id)
-  }
-
-  const handleDeleteConversation = (id: string) => {
-    if (conversations.length <= 1) return
-    if (id === activeConvId) {
-      chat.stop()
-      const remaining = conversations.find((c) => c.id !== id)
-      if (remaining) {
-        chat.setMessages(
-          remaining.messages.map((m) => ({
-            id: m.id,
-            role: m.role,
-            content: m.content,
-          }))
-        )
-        setActiveConvId(remaining.id)
-      }
-    }
-    setConversations((prev) => prev.filter((c) => c.id !== id))
-  }
+  // Message editing
+  const {
+    editingMessageId,
+    editingText,
+    setEditingText,
+    handleEditStart,
+    handleEditSave,
+    handleEditCancel,
+  } = useMessageEditing({
+    chat: chat as never,
+    onResend: (text) => handleSend(text),
+  })
 
   // Prompt management
   const handleSavePrompt = (text: string) => {
@@ -563,7 +504,7 @@ export default function LibraryLearningHubPage() {
                                 />
                                 <div className="flex gap-2 justify-end">
                                   <button
-                                    onClick={() => setEditingMessageId(null)}
+                                    onClick={() => handleEditCancel()}
                                     className="text-xs px-2 py-1 rounded bg-muted"
                                   >
                                     Cancel
@@ -634,20 +575,10 @@ export default function LibraryLearningHubPage() {
                     )
                   })}
 
-                  {/* Thinking indicator while waiting for response */}
-                  {chat.isLoading && !isStreamingLastMessage && (
-                    <div className="flex gap-3">
-                      <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center shrink-0">
-                        <Bot className="h-4 w-4 text-white" />
-                      </div>
-                      <div className="max-w-[75%] rounded-2xl px-4 py-3 bg-muted/50">
-                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                          <Loader2 className="h-4 w-4 animate-spin" />
-                          <span>Thinking...</span>
-                        </div>
-                      </div>
-                    </div>
-                  )}
+                  <ChatThinkingIndicator
+                    visible={chat.isLoading && !isStreamingLastMessage}
+                    avatarGradient={AVATAR_GRADIENT}
+                  />
 
                   {/* Error display */}
                   {chat.error && (
