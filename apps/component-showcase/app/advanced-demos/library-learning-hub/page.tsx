@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef, useCallback, useMemo } from 'react'
+import { useState, useRef, useCallback, useMemo, useEffect } from 'react'
 import { PageHeader } from '@/components/component-section'
 import { cn } from '@clarity-chat/primitives'
 import { useAutoScroll, MarkdownRenderer } from '@clarity-chat/react'
@@ -68,8 +68,6 @@ function searchKnowledgeBase(query: string): KnowledgeEntry[] {
   }).slice(0, 5)
 }
 
-const knowledgeBase = KNOWLEDGE_BASE
-
 export const dynamic = 'force-dynamic'
 
 const AVATAR_GRADIENT = 'from-emerald-500 to-teal-600'
@@ -79,12 +77,16 @@ const slashCommands = SLASH_COMMANDS
 
 // Mention items
 const mentionItems: MentionItem[] = [
-  ...knowledgeBase
-    .filter((e) => e.category === 'component')
-    .map((e) => ({ id: e.id, label: e.title, type: 'component' as const })),
-  ...knowledgeBase
-    .filter((e) => e.category === 'hook')
-    .map((e) => ({ id: e.id, label: e.title, type: 'hook' as const })),
+  ...KNOWLEDGE_BASE.filter((e) => e.category === 'component').map((e) => ({
+    id: e.id,
+    label: e.title,
+    type: 'component' as const,
+  })),
+  ...KNOWLEDGE_BASE.filter((e) => e.category === 'hook').map((e) => ({
+    id: e.id,
+    label: e.title,
+    type: 'hook' as const,
+  })),
 ]
 
 // Default prompts
@@ -195,9 +197,9 @@ export default function LibraryLearningHubPage() {
     []
   )
 
-  // onError callback
-  const handleChatError = useCallback((error: Error) => {
-    console.error('[LibraryLearningHub] Chat error:', error.message)
+  // onError callback — error is surfaced via chat.error; no additional action needed
+  const handleChatError = useCallback((_error: Error) => {
+    // Error is surfaced via chat.error state
   }, [])
 
   // Chat instance (typed wrapper)
@@ -213,12 +215,14 @@ export default function LibraryLearningHubPage() {
     onError: handleChatError,
   })
 
-  // Eagerly record timestamps for new messages during render
-  for (const msg of chat.messages) {
-    if (msg.id && !messageTimestampsRef.current[msg.id]) {
-      messageTimestampsRef.current[msg.id] = new Date()
+  // Record timestamps for new messages
+  useEffect(() => {
+    for (const msg of chat.messages) {
+      if (msg.id && !messageTimestampsRef.current[msg.id]) {
+        messageTimestampsRef.current[msg.id] = new Date()
+      }
     }
-  }
+  }, [chat.messages])
 
   // Title derivation: auto-name conversation from first user message
   const deriveTitle = useCallback(
@@ -333,10 +337,14 @@ export default function LibraryLearningHubPage() {
     // Build system prompt with RAG context and pass via data override
     const systemPrompt = buildSystemPrompt(ragContext, slashCommandId)
 
-    await chat.append(
-      { role: 'user', content: text },
-      { data: { systemPrompt } }
-    )
+    try {
+      await chat.append(
+        { role: 'user', content: text },
+        { data: { systemPrompt } }
+      )
+    } catch {
+      // Error is captured by chat.error state
+    }
   }
 
   // Message actions (feedback, delete, regenerate)
@@ -373,8 +381,6 @@ export default function LibraryLearningHubPage() {
   const handleDeletePrompt = (id: string) => {
     setSavedPrompts((prev) => prev.filter((p) => p.id !== id))
   }
-
-  const markdownConfig = MARKDOWN_CONFIG
 
   // Determine if the last message is an assistant message currently streaming
   const lastMessage = chat.messages[chat.messages.length - 1]
@@ -419,7 +425,7 @@ export default function LibraryLearningHubPage() {
             onDeletePrompt={handleDeletePrompt}
             onSavePrompt={handleSavePrompt}
             collapsed={sidebarCollapsed}
-            onToggleCollapsed={() => setSidebarCollapsed(!sidebarCollapsed)}
+            onToggleCollapsed={() => setSidebarCollapsed((prev) => !prev)}
           />
 
           {/* Main Chat Area */}
@@ -438,122 +444,137 @@ export default function LibraryLearningHubPage() {
                 />
               ) : (
                 <div className="p-4 space-y-6">
-                  {chat.messages.map((msg: HookMessage, idx: number) => {
-                    const msgId = msg.id || `msg-${idx}`
-                    const content =
-                      getTextContent(msg.content) || String(msg.content)
-                    const isLastAssistantStreaming =
-                      idx === chat.messages.length - 1 && isStreamingLastMessage
+                  {chat.messages
+                    .filter(
+                      (m: HookMessage) =>
+                        m.role === 'user' || m.role === 'assistant'
+                    )
+                    .map((msg: HookMessage, idx: number) => {
+                      const msgKey = msg.id || `msg-${idx}`
+                      const content =
+                        getTextContent(msg.content) || String(msg.content)
+                      const isThisStreaming =
+                        msg === lastMessage && isStreamingLastMessage
 
-                    return (
-                      <div
-                        key={msgId}
-                        className={cn(
-                          'group flex gap-3',
-                          msg.role === 'user' && 'justify-end'
-                        )}
-                      >
-                        {msg.role === 'assistant' && (
-                          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center shrink-0 shadow-sm">
-                            <Bot className="h-4 w-4 text-white" />
-                          </div>
-                        )}
+                      return (
                         <div
+                          key={msgKey}
                           className={cn(
-                            'max-w-[75%] min-w-0',
-                            msg.role === 'user' ? 'order-first' : ''
+                            'group flex gap-3',
+                            msg.role === 'user' && 'justify-end'
                           )}
                         >
+                          {msg.role === 'assistant' && (
+                            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center shrink-0 shadow-sm">
+                              <Bot className="h-4 w-4 text-white" />
+                            </div>
+                          )}
                           <div
                             className={cn(
-                              'rounded-2xl px-4 py-3',
-                              msg.role === 'user'
-                                ? 'bg-primary text-primary-foreground ml-auto'
-                                : 'bg-muted/50'
+                              'max-w-[75%] min-w-0',
+                              msg.role === 'user' ? 'order-first' : ''
                             )}
                           >
-                            {editingMessageId === msgId ? (
-                              <div className="space-y-2">
-                                <textarea
-                                  value={editingText}
-                                  onChange={(e) =>
-                                    setEditingText(e.target.value)
-                                  }
-                                  className="w-full bg-transparent border rounded-lg p-2 text-sm resize-none focus:outline-none focus:ring-1 focus:ring-primary/50"
-                                  rows={3}
-                                />
-                                <div className="flex gap-2 justify-end">
-                                  <button
-                                    onClick={() => handleEditCancel()}
-                                    className="text-xs px-2 py-1 rounded bg-muted"
-                                  >
-                                    Cancel
-                                  </button>
-                                  <button
-                                    onClick={() => handleEditSave(msgId)}
-                                    className="text-xs px-2 py-1 rounded bg-primary text-primary-foreground"
-                                  >
-                                    Save & Resend
-                                  </button>
-                                </div>
-                              </div>
-                            ) : (
-                              <div className="text-sm">
-                                <MarkdownRenderer
-                                  content={content}
-                                  isStreaming={isLastAssistantStreaming}
-                                  config={markdownConfig}
-                                />
-                                {isLastAssistantStreaming && (
-                                  <span className="inline-block w-1.5 h-4 bg-primary animate-pulse rounded-sm ml-0.5" />
-                                )}
-                              </div>
-                            )}
-                          </div>
-
-                          {/* RAG Citations */}
-                          {msg.role === 'assistant' &&
-                            msgId in messageCitations &&
-                            messageCitations[msgId].length > 0 && (
-                              <RagCitations entries={messageCitations[msgId]} />
-                            )}
-
-                          {/* Message Actions */}
-                          <div className="mt-1 flex items-center gap-2">
-                            <span className="text-[10px] text-muted-foreground">
-                              {messageTimestampsRef.current[msgId]
-                                ? formatTimestamp(
-                                    messageTimestampsRef.current[msgId]
-                                  )
-                                : ''}
-                            </span>
-                            <MessageActions
-                              role={msg.role as 'user' | 'assistant'}
-                              feedback={feedback[msgId]}
-                              onFeedback={(fb) => handleFeedback(msgId, fb)}
-                              copyText={content}
-                              onRegenerate={
-                                msg.role === 'assistant'
-                                  ? () => handleRegenerate(msgId)
-                                  : undefined
-                              }
-                              onDelete={() => handleDeleteMessage(msgId)}
-                              onEdit={
+                            <div
+                              className={cn(
+                                'rounded-2xl px-4 py-3',
                                 msg.role === 'user'
-                                  ? () => handleEditStart(msgId)
-                                  : undefined
-                              }
-                            />
+                                  ? 'bg-primary text-primary-foreground ml-auto'
+                                  : 'bg-muted/50'
+                              )}
+                            >
+                              {editingMessageId === msg.id ? (
+                                <div className="space-y-2">
+                                  <textarea
+                                    value={editingText}
+                                    onChange={(e) =>
+                                      setEditingText(e.target.value)
+                                    }
+                                    className="w-full bg-transparent border rounded-lg p-2 text-sm resize-none focus:outline-none focus:ring-1 focus:ring-primary/50"
+                                    rows={3}
+                                  />
+                                  <div className="flex gap-2 justify-end">
+                                    <button
+                                      onClick={() => handleEditCancel()}
+                                      className="text-xs px-2 py-1 rounded bg-muted"
+                                    >
+                                      Cancel
+                                    </button>
+                                    <button
+                                      onClick={() =>
+                                        msg.id && handleEditSave(msg.id)
+                                      }
+                                      className="text-xs px-2 py-1 rounded bg-primary text-primary-foreground"
+                                    >
+                                      Save & Resend
+                                    </button>
+                                  </div>
+                                </div>
+                              ) : (
+                                <div className="text-sm">
+                                  <MarkdownRenderer
+                                    content={content}
+                                    isStreaming={isThisStreaming}
+                                    config={MARKDOWN_CONFIG}
+                                  />
+                                  {isThisStreaming && (
+                                    <span className="inline-block w-1.5 h-4 bg-primary animate-pulse rounded-sm ml-0.5" />
+                                  )}
+                                </div>
+                              )}
+                            </div>
+
+                            {/* RAG Citations */}
+                            {msg.role === 'assistant' &&
+                              msg.id &&
+                              msg.id in messageCitations &&
+                              messageCitations[msg.id].length > 0 && (
+                                <RagCitations
+                                  entries={messageCitations[msg.id]}
+                                />
+                              )}
+
+                            {/* Message Actions */}
+                            <div className="mt-1 flex items-center gap-2">
+                              {msg.id &&
+                                messageTimestampsRef.current[msg.id] && (
+                                  <span className="text-[10px] text-muted-foreground">
+                                    {formatTimestamp(
+                                      messageTimestampsRef.current[msg.id]
+                                    )}
+                                  </span>
+                                )}
+                              {msg.id && (
+                                <MessageActions
+                                  role={msg.role as 'user' | 'assistant'}
+                                  feedback={feedback[msg.id]}
+                                  onFeedback={(fb) =>
+                                    handleFeedback(msg.id!, fb)
+                                  }
+                                  copyText={content}
+                                  onRegenerate={
+                                    msg.role === 'assistant'
+                                      ? () => handleRegenerate(msg.id!)
+                                      : undefined
+                                  }
+                                  onDelete={() => handleDeleteMessage(msg.id!)}
+                                  onEdit={
+                                    msg.role === 'user'
+                                      ? () => handleEditStart(msg.id!)
+                                      : undefined
+                                  }
+                                />
+                              )}
+                            </div>
                           </div>
+                          {msg.role === 'user' && (
+                            <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center shrink-0 shadow-sm">
+                              <User className="h-4 w-4 text-primary-foreground" />
+                            </div>
+                          )}
                         </div>
-                        {msg.role === 'user' && (
-                          <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center shrink-0 shadow-sm">
-                            <User className="h-4 w-4 text-primary-foreground" />
-                          </div>
-                        )}
-                      </div>
-                    )
-                  })}
+                      )
+                    })}
 
                   <ChatThinkingIndicator
                     visible={chat.isLoading && !isStreamingLastMessage}
@@ -619,7 +640,7 @@ export default function LibraryLearningHubPage() {
                   <div className="absolute right-2 bottom-1.5 flex items-center gap-1">
                     <button
                       onClick={() => {
-                        setShowSlashMenu(!showSlashMenu)
+                        setShowSlashMenu((prev) => !prev)
                         setShowMentionMenu(false)
                       }}
                       className="p-1.5 rounded-md hover:bg-muted transition-colors text-muted-foreground"
@@ -629,7 +650,7 @@ export default function LibraryLearningHubPage() {
                     </button>
                     <button
                       onClick={() => {
-                        setShowMentionMenu(!showMentionMenu)
+                        setShowMentionMenu((prev) => !prev)
                         setShowSlashMenu(false)
                       }}
                       className="p-1.5 rounded-md hover:bg-muted transition-colors text-muted-foreground"
@@ -691,7 +712,7 @@ export default function LibraryLearningHubPage() {
                     <Settings className="h-3 w-3" /> Settings
                   </button>
                   <button
-                    onClick={() => setRightPanelOpen(!rightPanelOpen)}
+                    onClick={() => setRightPanelOpen((prev) => !prev)}
                     className="flex items-center gap-1 hover:text-foreground transition-colors"
                   >
                     {rightPanelOpen ? (

@@ -139,7 +139,6 @@ export default function ArtifactStudioPage() {
   // Conversation management
   const {
     conversations,
-    setConversations,
     activeConvId,
     handleSelectConversation,
     handleNewConversation,
@@ -160,11 +159,16 @@ export default function ArtifactStudioPage() {
   } = useMessageEditing({
     chat,
     messages: chat.messages,
+    onResend: (text) => handleSend(text),
   })
 
   // Message actions (feedback, delete, regenerate)
   const { feedback, handleFeedback, handleDeleteMessage, handleRegenerate } =
-    useMessageActions({ chat, messages: chat.messages })
+    useMessageActions({
+      chat,
+      messages: chat.messages,
+      onResend: (text) => handleSend(text),
+    })
 
   const { scrollRef } = useAutoScroll({
     dependencies: [chat.messages, chat.isLoading],
@@ -191,7 +195,16 @@ export default function ArtifactStudioPage() {
     { id: 'tools', label: '/tools', description: 'List available tools' },
   ]
 
-  const markdownConfig = MARKDOWN_CONFIG
+  // Thinking indicator: show while loading before assistant content arrives
+  const lastMsg =
+    chat.messages.length > 0
+      ? chat.messages[chat.messages.length - 1]
+      : undefined
+  const showThinkingIndicator =
+    chat.isLoading &&
+    (!lastMsg ||
+      lastMsg.role !== 'assistant' ||
+      !getTextContent(lastMsg.content))
 
   return (
     <div>
@@ -242,7 +255,7 @@ export default function ArtifactStudioPage() {
               )
             }
             collapsed={sidebarCollapsed}
-            onToggleCollapsed={() => setSidebarCollapsed(!sidebarCollapsed)}
+            onToggleCollapsed={() => setSidebarCollapsed((prev) => !prev)}
           />
 
           {/* Main Chat */}
@@ -304,7 +317,7 @@ export default function ArtifactStudioPage() {
                                     : 'bg-muted/50'
                                 )}
                               >
-                                {editingMessageId === msgId ? (
+                                {editingMessageId === msg.id ? (
                                   <div className="space-y-2">
                                     <textarea
                                       value={editingText}
@@ -322,7 +335,9 @@ export default function ArtifactStudioPage() {
                                         Cancel
                                       </button>
                                       <button
-                                        onClick={() => handleEditSave(msgId)}
+                                        onClick={() =>
+                                          msg.id && handleEditSave(msg.id)
+                                        }
                                         className="text-xs px-2 py-1 rounded bg-primary text-primary-foreground"
                                       >
                                         Save & Resend
@@ -336,7 +351,7 @@ export default function ArtifactStudioPage() {
                                       isStreaming={
                                         isLastAssistant && chat.isLoading
                                       }
-                                      config={markdownConfig}
+                                      config={MARKDOWN_CONFIG}
                                     />
                                     {isLastAssistant && chat.isLoading && (
                                       <span className="inline-block w-1.5 h-4 bg-violet-500 animate-pulse rounded-sm ml-0.5" />
@@ -344,25 +359,31 @@ export default function ArtifactStudioPage() {
                                   </div>
                                 )}
                               </div>
-                              <div className="mt-1 flex items-center gap-2">
-                                <MessageActions
-                                  role={msg.role as 'user' | 'assistant'}
-                                  feedback={feedback[msgId]}
-                                  onFeedback={(fb) => handleFeedback(msgId, fb)}
-                                  copyText={content}
-                                  onRegenerate={
-                                    msg.role === 'assistant'
-                                      ? () => handleRegenerate(msgId)
-                                      : undefined
-                                  }
-                                  onDelete={() => handleDeleteMessage(msgId)}
-                                  onEdit={
-                                    msg.role === 'user'
-                                      ? () => handleEditStart(msgId)
-                                      : undefined
-                                  }
-                                />
-                              </div>
+                              {msg.id && (
+                                <div className="mt-1 flex items-center gap-2">
+                                  <MessageActions
+                                    role={msg.role as 'user' | 'assistant'}
+                                    feedback={feedback[msg.id]}
+                                    onFeedback={(fb) =>
+                                      handleFeedback(msg.id!, fb)
+                                    }
+                                    copyText={content}
+                                    onRegenerate={
+                                      msg.role === 'assistant'
+                                        ? () => handleRegenerate(msg.id!)
+                                        : undefined
+                                    }
+                                    onDelete={() =>
+                                      handleDeleteMessage(msg.id!)
+                                    }
+                                    onEdit={
+                                      msg.role === 'user'
+                                        ? () => handleEditStart(msg.id!)
+                                        : undefined
+                                    }
+                                  />
+                                </div>
+                              )}
                             </div>
                             {msg.role === 'user' && (
                               <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center shrink-0">
@@ -375,10 +396,7 @@ export default function ArtifactStudioPage() {
                     )}
 
                   <ChatThinkingIndicator
-                    visible={
-                      chat.isLoading &&
-                      !(chat.data as HookMessage | undefined)?.content
-                    }
+                    visible={showThinkingIndicator}
                     avatarGradient={AVATAR_GRADIENT}
                   />
 
@@ -396,7 +414,7 @@ export default function ArtifactStudioPage() {
                       key={cmd.id}
                       onClick={() => {
                         if (cmd.id === 'preview') {
-                          setArtifactPanelOpen(!artifactPanelOpen)
+                          setArtifactPanelOpen((prev) => !prev)
                           setShowSlashMenu(false)
                         } else if (cmd.id === 'export') {
                           setShowExport(true)
@@ -445,7 +463,7 @@ export default function ArtifactStudioPage() {
                 />
                 <div className="absolute right-6 bottom-5.5 flex items-center gap-1">
                   <button
-                    onClick={() => setShowSlashMenu(!showSlashMenu)}
+                    onClick={() => setShowSlashMenu((prev) => !prev)}
                     className="p-1.5 rounded-md hover:bg-muted transition-colors text-muted-foreground"
                   >
                     <Slash className="h-3.5 w-3.5" />
@@ -501,7 +519,7 @@ export default function ArtifactStudioPage() {
                     <Settings className="h-3 w-3" /> Settings
                   </button>
                   <button
-                    onClick={() => setArtifactPanelOpen(!artifactPanelOpen)}
+                    onClick={() => setArtifactPanelOpen((prev) => !prev)}
                     className={cn(
                       'flex items-center gap-1 hover:text-foreground',
                       artifactPanelOpen && 'text-violet-500'

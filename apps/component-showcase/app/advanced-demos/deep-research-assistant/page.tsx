@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { PageHeader } from '@/components/component-section'
 import { cn } from '@clarity-chat/primitives'
 import { useAutoScroll, MarkdownRenderer } from '@clarity-chat/react'
@@ -141,6 +141,9 @@ export default function DeepResearchAssistantPage() {
 
   const inputRef = useRef<HTMLTextAreaElement>(null)
 
+  // Track message timestamps (HookMessage has no timestamp field)
+  const messageTimestampsRef = useRef<Record<string, Date>>({})
+
   const systemPrompt = deepResearchMode
     ? `You are a deep research assistant operating in Deep Research Mode. When users ask questions, provide thorough, well-structured research responses with proper markdown formatting. Include headers, bullet points, code examples where relevant, and numbered references. Provide comprehensive analysis with multiple sections, cross-referenced findings, and detailed recommendations.`
     : `You are a deep research assistant. When users ask questions, provide thorough, well-structured research responses with proper markdown formatting. Include headers, bullet points, code examples where relevant, and numbered references. For /research queries, provide more comprehensive analysis with multiple sections.`
@@ -189,6 +192,15 @@ export default function DeepResearchAssistantPage() {
     dependencies: [chat.messages, chat.isLoading],
   })
 
+  // Record timestamps for new messages
+  useEffect(() => {
+    for (const msg of chat.messages) {
+      if (msg.id && !messageTimestampsRef.current[msg.id]) {
+        messageTimestampsRef.current[msg.id] = new Date()
+      }
+    }
+  }, [chat.messages])
+
   // Slash commands
   const slashCommands = [
     {
@@ -213,10 +225,12 @@ export default function DeepResearchAssistantPage() {
     if (!text || chat.isLoading) return
     setInput('')
     setShowSlashMenu(false)
-    await chat.append({ role: 'user', content: text })
+    try {
+      await chat.append({ role: 'user', content: text })
+    } catch {
+      // Error is captured by chat.error state
+    }
   }
-
-  const markdownConfig = MARKDOWN_CONFIG
 
   const lastMsg =
     chat.messages.length > 0
@@ -265,7 +279,7 @@ export default function DeepResearchAssistantPage() {
               setSavedPrompts((prev) => [...prev, { id: generateId(), text }])
             }
             collapsed={sidebarCollapsed}
-            onToggleCollapsed={() => setSidebarCollapsed(!sidebarCollapsed)}
+            onToggleCollapsed={() => setSidebarCollapsed((prev) => !prev)}
           />
 
           {/* Main Chat */}
@@ -283,110 +297,124 @@ export default function DeepResearchAssistantPage() {
                 />
               ) : (
                 <div className="p-4 space-y-6">
-                  {chat.messages.map((msg) => {
-                    const isLastAssistant =
-                      msg.role === 'assistant' &&
-                      msg === chat.messages[chat.messages.length - 1]
-                    const content = getTextContent(msg.content)
+                  {chat.messages
+                    .filter((m) => m.role === 'user' || m.role === 'assistant')
+                    .map((msg, index, filtered) => {
+                      const msgKey = msg.id || `msg-${index}`
+                      const isLastAssistant =
+                        msg.role === 'assistant' &&
+                        index === filtered.length - 1
+                      const content = getTextContent(msg.content)
 
-                    return (
-                      <div
-                        key={msg.id}
-                        className={cn(
-                          'group flex gap-3',
-                          msg.role === 'user' && 'justify-end'
-                        )}
-                      >
-                        {msg.role === 'assistant' && (
-                          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center shrink-0">
-                            <Bot className="h-4 w-4 text-white" />
-                          </div>
-                        )}
+                      return (
                         <div
+                          key={msgKey}
                           className={cn(
-                            'max-w-[75%] min-w-0',
-                            msg.role === 'user' ? 'order-first' : ''
+                            'group flex gap-3',
+                            msg.role === 'user' && 'justify-end'
                           )}
                         >
+                          {msg.role === 'assistant' && (
+                            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center shrink-0">
+                              <Bot className="h-4 w-4 text-white" />
+                            </div>
+                          )}
                           <div
                             className={cn(
-                              'rounded-2xl px-4 py-3',
-                              msg.role === 'user'
-                                ? 'bg-primary text-primary-foreground ml-auto'
-                                : 'bg-muted/50'
+                              'max-w-[75%] min-w-0',
+                              msg.role === 'user' ? 'order-first' : ''
                             )}
                           >
-                            {editingMessageId === msg.id ? (
-                              <div className="space-y-2">
-                                <textarea
-                                  value={editingText}
-                                  onChange={(e) =>
-                                    setEditingText(e.target.value)
-                                  }
-                                  className="w-full bg-transparent border rounded-lg p-2 text-sm resize-none focus:outline-none focus:ring-1 focus:ring-primary/50"
-                                  rows={3}
-                                />
-                                <div className="flex gap-2 justify-end">
-                                  <button
-                                    onClick={() => handleEditCancel()}
-                                    className="text-xs px-2 py-1 rounded bg-muted"
-                                  >
-                                    Cancel
-                                  </button>
-                                  <button
-                                    onClick={() => handleEditSave(msg.id!)}
-                                    className="text-xs px-2 py-1 rounded bg-primary text-primary-foreground"
-                                  >
-                                    Save & Resend
-                                  </button>
-                                </div>
-                              </div>
-                            ) : (
-                              <div className="text-sm">
-                                <MarkdownRenderer
-                                  content={content}
-                                  config={markdownConfig}
-                                  isStreaming={
-                                    isLastAssistant && chat.isLoading
-                                  }
-                                />
-                              </div>
-                            )}
-                            {isLastAssistant && chat.isLoading && (
-                              <span className="inline-block w-1.5 h-4 bg-primary animate-pulse rounded-sm ml-0.5" />
-                            )}
-                          </div>
-                          <div className="mt-1 flex items-center gap-2">
-                            <span className="text-[10px] text-muted-foreground">
-                              {formatTimestamp(new Date())}
-                            </span>
-                            <MessageActions
-                              role={msg.role as 'user' | 'assistant'}
-                              feedback={feedback[msg.id!] || undefined}
-                              onFeedback={(fb) => handleFeedback(msg.id!, fb)}
-                              copyText={content}
-                              onRegenerate={
-                                msg.role === 'assistant'
-                                  ? () => handleRegenerate(msg.id!)
-                                  : undefined
-                              }
-                              onDelete={() => handleDeleteMessage(msg.id!)}
-                              onEdit={
+                            <div
+                              className={cn(
+                                'rounded-2xl px-4 py-3',
                                 msg.role === 'user'
-                                  ? () => handleEditStart(msg.id!)
-                                  : undefined
-                              }
-                            />
+                                  ? 'bg-primary text-primary-foreground ml-auto'
+                                  : 'bg-muted/50'
+                              )}
+                            >
+                              {editingMessageId === msg.id ? (
+                                <div className="space-y-2">
+                                  <textarea
+                                    value={editingText}
+                                    onChange={(e) =>
+                                      setEditingText(e.target.value)
+                                    }
+                                    className="w-full bg-transparent border rounded-lg p-2 text-sm resize-none focus:outline-none focus:ring-1 focus:ring-primary/50"
+                                    rows={3}
+                                  />
+                                  <div className="flex gap-2 justify-end">
+                                    <button
+                                      onClick={() => handleEditCancel()}
+                                      className="text-xs px-2 py-1 rounded bg-muted"
+                                    >
+                                      Cancel
+                                    </button>
+                                    <button
+                                      onClick={() =>
+                                        msg.id && handleEditSave(msg.id)
+                                      }
+                                      className="text-xs px-2 py-1 rounded bg-primary text-primary-foreground"
+                                    >
+                                      Save & Resend
+                                    </button>
+                                  </div>
+                                </div>
+                              ) : (
+                                <div className="text-sm">
+                                  <MarkdownRenderer
+                                    content={content}
+                                    config={MARKDOWN_CONFIG}
+                                    isStreaming={
+                                      isLastAssistant && chat.isLoading
+                                    }
+                                  />
+                                </div>
+                              )}
+                              {isLastAssistant && chat.isLoading && (
+                                <span className="inline-block w-1.5 h-4 bg-primary animate-pulse rounded-sm ml-0.5" />
+                              )}
+                            </div>
+                            <div className="mt-1 flex items-center gap-2">
+                              {msg.id &&
+                                messageTimestampsRef.current[msg.id] && (
+                                  <span className="text-[10px] text-muted-foreground">
+                                    {formatTimestamp(
+                                      messageTimestampsRef.current[msg.id]
+                                    )}
+                                  </span>
+                                )}
+                              {msg.id && (
+                                <MessageActions
+                                  role={msg.role as 'user' | 'assistant'}
+                                  feedback={feedback[msg.id]}
+                                  onFeedback={(fb) =>
+                                    handleFeedback(msg.id!, fb)
+                                  }
+                                  copyText={content}
+                                  onRegenerate={
+                                    msg.role === 'assistant'
+                                      ? () => handleRegenerate(msg.id!)
+                                      : undefined
+                                  }
+                                  onDelete={() => handleDeleteMessage(msg.id!)}
+                                  onEdit={
+                                    msg.role === 'user'
+                                      ? () => handleEditStart(msg.id!)
+                                      : undefined
+                                  }
+                                />
+                              )}
+                            </div>
                           </div>
+                          {msg.role === 'user' && (
+                            <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center shrink-0">
+                              <User className="h-4 w-4 text-primary-foreground" />
+                            </div>
+                          )}
                         </div>
-                        {msg.role === 'user' && (
-                          <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center shrink-0">
-                            <User className="h-4 w-4 text-primary-foreground" />
-                          </div>
-                        )}
-                      </div>
-                    )
-                  })}
+                      )
+                    })}
 
                   <ChatThinkingIndicator
                     visible={showThinkingIndicator}
@@ -454,7 +482,7 @@ export default function DeepResearchAssistantPage() {
                   />
                   <div className="absolute right-2 bottom-1.5 flex items-center gap-1">
                     <button
-                      onClick={() => setShowSlashMenu(!showSlashMenu)}
+                      onClick={() => setShowSlashMenu((prev) => !prev)}
                       className="p-1.5 rounded-md hover:bg-muted transition-colors text-muted-foreground"
                     >
                       <Slash className="h-3.5 w-3.5" />
@@ -504,7 +532,7 @@ export default function DeepResearchAssistantPage() {
                     <Settings className="h-3 w-3" /> Settings
                   </button>
                   <button
-                    onClick={() => setRightPanelOpen(!rightPanelOpen)}
+                    onClick={() => setRightPanelOpen((prev) => !prev)}
                     className="hover:text-foreground transition-colors"
                   >
                     {rightPanelOpen ? (
@@ -537,7 +565,7 @@ export default function DeepResearchAssistantPage() {
                 onDepthLevelChange={setDepthLevel}
                 deepResearchMode={deepResearchMode}
                 onToggleDeepResearch={() =>
-                  setDeepResearchMode(!deepResearchMode)
+                  setDeepResearchMode((prev) => !prev)
                 }
                 files={contextFiles}
                 onFilesChange={setContextFiles}
