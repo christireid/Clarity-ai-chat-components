@@ -1,7 +1,6 @@
 export * from './types'
 export { ApiKeyBar } from './api-key-bar'
 export { MessageActions } from './message-actions'
-export { ThinkingDisplay } from './thinking-display'
 export { TokenPanel } from './token-panel'
 export { MemoryPanel } from './memory-panel'
 export { ChatExportDialog } from './export-dialog'

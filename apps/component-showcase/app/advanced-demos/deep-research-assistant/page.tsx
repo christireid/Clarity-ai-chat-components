@@ -348,7 +348,10 @@ export default function DeepResearchAssistantPage() {
 
           {/* Main Chat */}
           <div className="flex-1 flex flex-col min-w-0">
-            <div ref={scrollRef} className="flex-1 overflow-y-auto">
+            <div
+              ref={scrollRef as React.RefObject<HTMLDivElement>}
+              className="flex-1 overflow-y-auto"
+            >
               {chat.messages.length === 0 && !chat.isLoading ? (
                 <ResearchWelcomeScreen
                   onSuggestionClick={(text) => {

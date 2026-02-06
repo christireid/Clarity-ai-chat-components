@@ -989,11 +989,9 @@ export default function ChatPage() {
             </TabsTrigger>
           </TabsList>
           <TabsContent value="code" className="mt-0">
-            <CodeBlock
-              code={sampleCode}
-              language="typescript"
-              showLineNumbers
-            />
+            <CodeBlock language="typescript" showLineNumbers>
+              {sampleCode}
+            </CodeBlock>
           </TabsContent>
           <TabsContent value="terminal" className="mt-0">
             <div className="bg-[#1e1e1e] rounded-lg p-4 font-mono text-sm h-[300px] overflow-auto">

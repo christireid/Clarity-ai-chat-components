@@ -529,7 +529,10 @@ export default function LibraryLearningHubPage() {
           {/* Main Chat Area */}
           <div className="flex-1 flex flex-col min-w-0">
             {/* Messages */}
-            <div ref={scrollRef} className="flex-1 overflow-y-auto">
+            <div
+              ref={scrollRef as React.RefObject<HTMLDivElement>}
+              className="flex-1 overflow-y-auto"
+            >
               {chat.messages.length === 0 && !chat.isLoading ? (
                 <LibraryWelcomeScreen
                   onSuggestionClick={(text) => {
