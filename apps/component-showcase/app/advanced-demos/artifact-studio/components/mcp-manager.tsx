@@ -15,8 +15,7 @@ import {
   WifiOff,
   AlertCircle,
 } from 'lucide-react'
-import type { MCPServer } from '../../_shared/types'
-import { generateId } from '../../_shared/types'
+import { type MCPServer, generateId } from '../../_shared'
 
 interface MCPManagerProps {
   servers: MCPServer[]

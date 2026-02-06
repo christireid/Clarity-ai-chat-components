@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef, useCallback, useMemo, useEffect } from 'react'
+import { useState, useRef, useCallback, useEffect } from 'react'
 import { PageHeader } from '@/components/component-section'
 import { cn } from '@clarity-chat/primitives'
 import { useAutoScroll, MarkdownRenderer } from '@clarity-chat/react'
@@ -31,6 +31,10 @@ import {
   type MCPServer,
   type MemorySettings,
   type TokenSettings,
+  type HookMessage,
+  getTextContent,
+  MARKDOWN_CONFIG,
+  createConversation,
   generateId,
   formatTimestamp,
 } from '../_shared'
@@ -40,13 +44,7 @@ import { ResearchSidebar } from './components/chat-sidebar'
 import { ResearchContextPanel } from './components/context-panel'
 import { ResearchWelcomeScreen } from './components/welcome-screen'
 
-// Local type for chat messages returned by useClarityChat
-// (package dist lacks .d.ts declarations so we define the shape here)
-interface ClarityMsg {
-  id?: string
-  role: string
-  content: string | unknown
-}
+type ClarityMsg = HookMessage
 
 interface ClarityChatInstance {
   messages: ClarityMsg[]
@@ -61,16 +59,6 @@ interface ClarityChatInstance {
 }
 
 export const dynamic = 'force-dynamic'
-
-function createConversation(): Conversation {
-  return {
-    id: generateId(),
-    title: 'New Research',
-    messages: [],
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  }
-}
 
 const defaultMCPServers: MCPServer[] = [
   {
@@ -120,7 +108,7 @@ export default function DeepResearchAssistantPage() {
   const [apiKey, setApiKey] = useState('')
 
   const [conversations, setConversations] = useState<Conversation[]>([
-    createConversation(),
+    createConversation('New Research'),
   ])
   const [activeConvId, setActiveConvId] = useState(conversations[0].id)
   const [savedPrompts, setSavedPrompts] =
@@ -200,7 +188,7 @@ export default function DeepResearchAssistantPage() {
                 messages: chat.messages.map((m) => ({
                   id: m.id || generateId(),
                   role: m.role as 'user' | 'assistant',
-                  content: typeof m.content === 'string' ? m.content : '',
+                  content: getTextContent(m.content),
                   timestamp: new Date(),
                 })),
                 updatedAt: new Date(),
@@ -260,7 +248,7 @@ export default function DeepResearchAssistantPage() {
     const msg = chat.messages.find((m) => m.id === msgId)
     if (msg) {
       setEditingMessageId(msgId)
-      setEditingText(typeof msg.content === 'string' ? msg.content : '')
+      setEditingText(getTextContent(msg.content))
     }
   }
 
@@ -272,14 +260,7 @@ export default function DeepResearchAssistantPage() {
     setTimeout(() => handleSend(editingText), 100)
   }
 
-  const markdownConfig = useMemo(
-    () => ({
-      enableSyntaxHighlight: true,
-      codeTheme: 'dark' as const,
-      enableCopyButton: true,
-    }),
-    []
-  )
+  const markdownConfig = MARKDOWN_CONFIG
 
   const lastMsg =
     chat.messages.length > 0
@@ -316,7 +297,7 @@ export default function DeepResearchAssistantPage() {
             onSelectConversation={handleSelectConversation}
             onNewConversation={() => {
               chat.stop()
-              const c = createConversation()
+              const c = createConversation('New Research')
               setConversations((prev) => [c, ...prev])
               setActiveConvId(c.id)
               chat.setMessages([])
@@ -365,8 +346,7 @@ export default function DeepResearchAssistantPage() {
                     const isLastAssistant =
                       msg.role === 'assistant' &&
                       msg === chat.messages[chat.messages.length - 1]
-                    const content =
-                      typeof msg.content === 'string' ? msg.content : ''
+                    const content = getTextContent(msg.content)
 
                     return (
                       <div

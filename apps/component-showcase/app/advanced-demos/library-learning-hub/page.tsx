@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef, useCallback, useMemo, useEffect } from 'react'
+import { useState, useRef, useCallback, useEffect } from 'react'
 import { useClarityChat } from '@clarity-chat/react'
 import { PageHeader } from '@/components/component-section'
 import { cn } from '@clarity-chat/primitives'
@@ -32,6 +32,10 @@ import {
   type FileAttachment,
   type MemorySettings,
   type TokenSettings,
+  type HookMessage,
+  getTextContent,
+  MARKDOWN_CONFIG,
+  createConversation,
   generateId,
   formatTimestamp,
 } from '../_shared'
@@ -51,12 +55,7 @@ import { RagCitations } from './components/rag-citations'
 import { ContextPanel } from './components/context-panel'
 import { WelcomeScreen as LibraryWelcomeScreen } from './components/welcome-screen'
 
-// Message type matching useClarityChat's ChatMsg shape
-interface ChatMsg {
-  id?: string
-  role: string
-  content: string | unknown
-}
+type ChatMsg = HookMessage
 
 // Simple keyword search for RAG simulation
 function searchKnowledgeBase(query: string): KnowledgeEntry[] {
@@ -86,16 +85,7 @@ const mentionItems: MentionItem[] = [
     .map((e) => ({ id: e.id, label: e.title, type: 'hook' as const })),
 ]
 
-// Default conversations
-function createDefaultConversation(): Conversation {
-  return {
-    id: generateId(),
-    title: 'New Chat',
-    messages: [],
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  }
-}
+const createDefaultConversation = () => createConversation('New Chat')
 
 // Default prompts
 const defaultPrompts: SavedPrompt[] = [
@@ -253,23 +243,17 @@ export default function LibraryLearningHubPage() {
                 messages: chat.messages.map((m: ChatMsg) => ({
                   id: m.id || generateId(),
                   role: m.role as 'user' | 'assistant',
-                  content:
-                    typeof m.content === 'string'
-                      ? m.content
-                      : String(m.content),
+                  content: getTextContent(m.content) || String(m.content),
                   timestamp:
                     messageTimestampsRef.current[m.id || ''] || new Date(),
                 })),
                 updatedAt: new Date(),
                 title:
                   c.title === 'New Chat' && chat.messages[0]?.role === 'user'
-                    ? (typeof chat.messages[0].content === 'string'
-                        ? chat.messages[0].content.slice(0, 30)
-                        : 'Chat') +
-                      (typeof chat.messages[0].content === 'string' &&
-                      chat.messages[0].content.length > 30
-                        ? '...'
-                        : '')
+                    ? getTextContent(chat.messages[0].content).slice(0, 30) +
+                        (getTextContent(chat.messages[0].content).length > 30
+                          ? '...'
+                          : '') || 'Chat'
                     : c.title,
               }
             : c
@@ -408,8 +392,7 @@ export default function LibraryLearningHubPage() {
     if (msgIndex <= 0) return
     const userMsg = chat.messages[msgIndex - 1]
     if (userMsg?.role !== 'user') return
-    const userContent =
-      typeof userMsg.content === 'string' ? userMsg.content : ''
+    const userContent = getTextContent(userMsg.content)
     // Truncate to before the user message, then resend
     chat.setMessages(chat.messages.slice(0, msgIndex - 1))
     setTimeout(() => handleSend(userContent), 100)
@@ -419,7 +402,7 @@ export default function LibraryLearningHubPage() {
     const msg = chat.messages.find((m: ChatMsg) => m.id === msgId)
     if (msg) {
       setEditingMessageId(msgId)
-      setEditingText(typeof msg.content === 'string' ? msg.content : '')
+      setEditingText(getTextContent(msg.content))
     }
   }
 
@@ -470,22 +453,14 @@ export default function LibraryLearningHubPage() {
     setSavedPrompts((prev) => prev.filter((p) => p.id !== id))
   }
 
-  const markdownConfig = useMemo(
-    () => ({
-      enableSyntaxHighlight: true,
-      codeTheme: 'dark' as const,
-      enableCopyButton: true,
-    }),
-    []
-  )
+  const markdownConfig = MARKDOWN_CONFIG
 
   // Determine if the last message is an assistant message currently streaming
   const lastMessage = chat.messages[chat.messages.length - 1]
   const isStreamingLastMessage =
     chat.isLoading &&
     lastMessage?.role === 'assistant' &&
-    typeof lastMessage.content === 'string' &&
-    lastMessage.content.length > 0
+    getTextContent(lastMessage.content).length > 0
 
   return (
     <div>
@@ -545,9 +520,7 @@ export default function LibraryLearningHubPage() {
                   {chat.messages.map((msg: ChatMsg, idx: number) => {
                     const msgId = msg.id || `msg-${idx}`
                     const content =
-                      typeof msg.content === 'string'
-                        ? msg.content
-                        : String(msg.content)
+                      getTextContent(msg.content) || String(msg.content)
                     const isLastAssistantStreaming =
                       idx === chat.messages.length - 1 && isStreamingLastMessage
 

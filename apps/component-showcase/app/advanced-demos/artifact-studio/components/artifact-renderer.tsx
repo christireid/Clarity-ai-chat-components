@@ -4,33 +4,21 @@ import { useState, useMemo, useCallback } from 'react'
 import { cn } from '@clarity-chat/primitives'
 import { CodeBlock, MarkdownRenderer } from '@clarity-chat/react'
 import {
-  FileCode,
-  FileText,
-  Globe,
+  ChevronRight,
+  ChevronDown,
   Image,
   GitBranch,
   Table2,
   Braces,
-  ChevronRight,
-  ChevronDown,
 } from 'lucide-react'
 import type { ArtifactType } from '../../_shared'
+import { ARTIFACT_TYPE_ICONS } from './artifact-data'
 
 interface ArtifactRendererProps {
   content: string
   type: ArtifactType
   language?: string
   className?: string
-}
-
-const typeIcons: Record<ArtifactType, React.ReactNode> = {
-  code: <FileCode className="h-3.5 w-3.5" />,
-  document: <FileText className="h-3.5 w-3.5" />,
-  html: <Globe className="h-3.5 w-3.5" />,
-  svg: <Image className="h-3.5 w-3.5" />,
-  mermaid: <GitBranch className="h-3.5 w-3.5" />,
-  table: <Table2 className="h-3.5 w-3.5" />,
-  json: <Braces className="h-3.5 w-3.5" />,
 }
 
 // HTML renderer - uses sandboxed iframe to prevent XSS from artifact content
@@ -294,4 +282,4 @@ export function ArtifactRenderer({
   )
 }
 
-export { typeIcons }
+export { ARTIFACT_TYPE_ICONS as typeIcons }

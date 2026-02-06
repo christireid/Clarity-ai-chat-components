@@ -29,7 +29,11 @@ import {
   type Conversation,
   type SavedPrompt,
   type MCPServer,
+  type HookMessage,
+  getTextContent,
   generateId,
+  MARKDOWN_CONFIG,
+  createConversation as createConversationBase,
 } from '../_shared'
 
 import { ArtifactPanel } from './components/artifact-panel'
@@ -38,25 +42,10 @@ import { ToolPanel } from './components/tool-panel'
 import { ArtifactSidebar } from './components/chat-sidebar'
 import { ArtifactWelcomeScreen } from './components/welcome-screen'
 
-// Local type for hook messages (the package .d.ts files are not generated,
-// so TypeScript cannot infer the return shape of useClarityChat automatically)
-interface HookMessage {
-  id?: string
-  role: string
-  content: string | unknown
-}
-
 export const dynamic = 'force-dynamic'
 
 function createConversation(): Conversation {
-  return {
-    id: generateId(),
-    title: 'New Project',
-    messages: [],
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    artifactCount: 0,
-  }
+  return { ...createConversationBase('New Project'), artifactCount: 0 }
 }
 
 const defaultMCPServers: MCPServer[] = [
@@ -111,8 +100,6 @@ export default function ArtifactStudioPage() {
   const [artifacts] = useState<Artifact[]>([])
   const [activeArtifactId, setActiveArtifactId] = useState<string | null>(null)
   const [artifactPanelOpen, setArtifactPanelOpen] = useState(false)
-  const [isGeneratingArtifact] = useState(false)
-  const [toolUsageCounts] = useState<Record<string, number>>({})
 
   // Context
   const [masterContext, setMasterContext] = useState('')
@@ -171,7 +158,7 @@ export default function ArtifactStudioPage() {
                   (m: HookMessage): ChatMessage => ({
                     id: m.id || generateId(),
                     role: m.role as 'user' | 'assistant',
-                    content: typeof m.content === 'string' ? m.content : '',
+                    content: getTextContent(m.content),
                     timestamp: new Date(),
                   })
                 ),
@@ -245,7 +232,7 @@ export default function ArtifactStudioPage() {
     const msg = chatMessages.find((m: HookMessage) => m.id === msgId)
     if (msg) {
       setEditingMessageId(msgId)
-      setEditingText(typeof msg.content === 'string' ? msg.content : '')
+      setEditingText(getTextContent(msg.content))
     }
   }
 
@@ -268,14 +255,7 @@ export default function ArtifactStudioPage() {
     { id: 'tools', label: '/tools', description: 'List available tools' },
   ]
 
-  const markdownConfig = useMemo(
-    () => ({
-      enableSyntaxHighlight: true,
-      codeTheme: 'dark' as const,
-      enableCopyButton: true,
-    }),
-    []
-  )
+  const markdownConfig = MARKDOWN_CONFIG
 
   return (
     <div>
@@ -374,8 +354,7 @@ export default function ArtifactStudioPage() {
                         const isLastAssistant =
                           msg.role === 'assistant' &&
                           index === filtered.length - 1
-                        const content =
-                          typeof msg.content === 'string' ? msg.content : ''
+                        const content = getTextContent(msg.content)
 
                         return (
                           <div
@@ -635,7 +614,7 @@ export default function ArtifactStudioPage() {
               activeArtifactId={activeArtifactId}
               onActiveArtifactChange={setActiveArtifactId}
               onClose={() => setArtifactPanelOpen(false)}
-              isGenerating={isGeneratingArtifact}
+              isGenerating={false}
             />
           )}
         </div>
@@ -686,7 +665,7 @@ export default function ArtifactStudioPage() {
           />
           <div className="h-px bg-border" />
           <h3 className="font-medium">Creation Tools</h3>
-          <ToolPanel usageCounts={toolUsageCounts} />
+          <ToolPanel usageCounts={{}} />
         </div>
       </SettingsDialog>
     </div>

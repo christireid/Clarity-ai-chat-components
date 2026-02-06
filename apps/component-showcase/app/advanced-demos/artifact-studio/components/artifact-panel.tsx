@@ -14,17 +14,11 @@ import {
   ChevronDown,
   Blocks,
   Loader2,
-  FileCode,
-  FileText,
-  Globe,
-  Image,
-  GitBranch,
-  Table2,
-  Braces,
 } from 'lucide-react'
 import type { Artifact, ArtifactType } from '../../_shared'
 import { formatTimestamp } from '../../_shared'
 import { ArtifactRenderer } from './artifact-renderer'
+import { ARTIFACT_TYPE_ICONS, ARTIFACT_TYPE_LABELS } from './artifact-data'
 
 interface ArtifactPanelProps {
   artifacts: Artifact[]
@@ -33,26 +27,6 @@ interface ArtifactPanelProps {
   onClose: () => void
   isGenerating?: boolean
   className?: string
-}
-
-const typeIcons: Record<ArtifactType, React.ReactNode> = {
-  code: <FileCode className="h-3.5 w-3.5" />,
-  document: <FileText className="h-3.5 w-3.5" />,
-  html: <Globe className="h-3.5 w-3.5" />,
-  svg: <Image className="h-3.5 w-3.5" />,
-  mermaid: <GitBranch className="h-3.5 w-3.5" />,
-  table: <Table2 className="h-3.5 w-3.5" />,
-  json: <Braces className="h-3.5 w-3.5" />,
-}
-
-const typeLabels: Record<ArtifactType, string> = {
-  code: 'Code',
-  document: 'Document',
-  html: 'HTML',
-  svg: 'SVG',
-  mermaid: 'Diagram',
-  table: 'Table',
-  json: 'JSON',
 }
 
 const typeColors: Record<ArtifactType, string> = {
@@ -207,7 +181,7 @@ export function ArtifactPanel({
                 )}
               >
                 <span className={typeColors[artifact.type]}>
-                  {typeIcons[artifact.type]}
+                  {ARTIFACT_TYPE_ICONS[artifact.type]}
                 </span>
                 <span className="max-w-[120px] truncate">{artifact.title}</span>
                 {artifact.versions.length > 1 && (
@@ -252,8 +226,8 @@ export function ArtifactPanel({
                   typeColors[activeArtifact.type]
                 )}
               >
-                {typeIcons[activeArtifact.type]}
-                {typeLabels[activeArtifact.type]}
+                {ARTIFACT_TYPE_ICONS[activeArtifact.type]}
+                {ARTIFACT_TYPE_LABELS[activeArtifact.type]}
               </span>
               {activeArtifact.language && (
                 <span className="text-[10px] text-muted-foreground bg-muted px-1.5 py-0.5 rounded font-mono">

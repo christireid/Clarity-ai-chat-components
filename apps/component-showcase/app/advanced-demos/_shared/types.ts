@@ -246,9 +246,45 @@ export const MODEL_PROVIDERS: ModelProvider[] = [
   },
 ]
 
-// Re-export utilities from library packages instead of custom implementations
-export { generateId, formatBytes as formatFileSize } from '@clarity-chat/utils'
+// Import utilities from library packages for local use and re-export
+import { generateId, formatBytes } from '@clarity-chat/utils'
+export { generateId }
+export { formatBytes as formatFileSize }
 
 export function formatTimestamp(date: Date): string {
   return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+}
+
+/**
+ * Minimal message shape returned by useClarityChat.
+ * The package dist lacks generated .d.ts declarations, so we define the shape
+ * here once instead of repeating it in each demo page.
+ */
+export interface HookMessage {
+  id?: string
+  role: string
+  content: string | unknown
+}
+
+/** Safely extract string content from a HookMessage. */
+export function getTextContent(content: string | unknown): string {
+  return typeof content === 'string' ? content : ''
+}
+
+/** Shared markdown renderer configuration used by all demo pages. */
+export const MARKDOWN_CONFIG = {
+  enableSyntaxHighlight: true,
+  codeTheme: 'dark' as const,
+  enableCopyButton: true,
+}
+
+/** Factory for creating a new conversation with the given title. */
+export function createConversation(title: string): Conversation {
+  return {
+    id: generateId(),
+    title,
+    messages: [],
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  }
 }

@@ -1,6 +1,38 @@
 'use client'
 
+import {
+  FileCode,
+  FileText,
+  Globe,
+  Image,
+  GitBranch,
+  Table2,
+  Braces,
+} from 'lucide-react'
+import React from 'react'
 import type { ArtifactType } from '../../_shared'
+
+/** Shared icon mapping for artifact types — used by ArtifactPanel and ArtifactRenderer. */
+export const ARTIFACT_TYPE_ICONS: Record<ArtifactType, React.ReactNode> = {
+  code: React.createElement(FileCode, { className: 'h-3.5 w-3.5' }),
+  document: React.createElement(FileText, { className: 'h-3.5 w-3.5' }),
+  html: React.createElement(Globe, { className: 'h-3.5 w-3.5' }),
+  svg: React.createElement(Image, { className: 'h-3.5 w-3.5' }),
+  mermaid: React.createElement(GitBranch, { className: 'h-3.5 w-3.5' }),
+  table: React.createElement(Table2, { className: 'h-3.5 w-3.5' }),
+  json: React.createElement(Braces, { className: 'h-3.5 w-3.5' }),
+}
+
+/** Shared label mapping for artifact types. */
+export const ARTIFACT_TYPE_LABELS: Record<ArtifactType, string> = {
+  code: 'Code',
+  document: 'Document',
+  html: 'HTML',
+  svg: 'SVG',
+  mermaid: 'Diagram',
+  table: 'Table',
+  json: 'JSON',
+}
 
 export interface ArtifactTemplate {
   trigger: string[]
@@ -907,7 +939,7 @@ export function readingTime(text: string, wpm = 200): { minutes: number; text: s
 export function findMatchingTemplate(input: string): ArtifactTemplate | null {
   const lower = input.toLowerCase()
   for (const template of ARTIFACT_TEMPLATES) {
-    const matchCount = template.trigger.filter(t => lower.includes(t)).length
+    const matchCount = template.trigger.filter((t) => lower.includes(t)).length
     if (matchCount > 0) return template
   }
   return null
