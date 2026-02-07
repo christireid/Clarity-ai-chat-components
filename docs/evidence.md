@@ -112,13 +112,60 @@ exports.
 
 ---
 
-## Remaining P2 Items (deferred to future sessions)
+## Commit 2: Complete Consolidation (all P1/P2 items)
 
-| Item                                            | Reason for Deferral                                                      |
-| ----------------------------------------------- | ------------------------------------------------------------------------ |
-| Consolidate ErrorBoundary (13+ implementations) | Requires architectural design — domain-specific variants are intentional |
-| Unify ChatMessage type (12+ definitions)        | Breaking change requiring API versioning                                 |
-| Consolidate SSE parsing (3 implementations)     | Each serves different format requirements                                |
-| Unify CircuitState conventions                  | Public API uses UPPERCASE; changing requires semver bump                 |
-| Consolidate model routing                       | Requires deeper understanding of ai-infrastructure vs token-optimization |
-| Enable dts:true in dev builds                   | DX impact assessment needed                                              |
+### P1-5: CircuitState Unification
+
+- Standardized to UPPERCASE (`'CLOSED' | 'OPEN' | 'HALF_OPEN'`) across all 5 definitions
+- 44 string literal replacements in token-optimization and error-handling
+
+### P2-1: ErrorBoundary Consolidation
+
+- **Deleted 3 dead files** (1,596 lines): `ui/error-boundary.tsx`,
+  `ui/dashboard-error-boundary.tsx`, `ui/__tests__/error-boundary.test.tsx`
+- **Refactored 2 files** to delegate to `@clarity-chat/error-handling`'s `EnhancedErrorBoundary`
+- Fixed broken imports in `enhanced-markdown-renderer.tsx` and `dashboard-components.test.tsx`
+- Cleaned up `ui/ErrorBoundary.tsx`: removed `null as any` stubs, fixed `require()` → static import
+
+### P2-2: ChatMessage Type Alignment
+
+- Standardized showcase status enum: `'sending'|'sent'|'delivered'|'read'` →
+  `'pending'|'streaming'|'complete'|'error'`
+- Added missing `MessageToolCall` interface and `toolCalls` field to `clarity-chat-types.ts`
+
+### P2-3: SSE Parsing Consolidation
+
+- Removed dead `parseSSELine` from `adapters/shared.ts` (exported but never imported)
+- Added canonical source cross-references in all 3 parser files
+
+### P2-4: Model Routing Documentation
+
+- Documented distinction: ai-infrastructure (server dispatch) vs token-optimization (cost routing)
+- Added cross-reference comments in both packages
+
+### Infrastructure
+
+- **Added `deepMerge` to `@clarity-chat/utils`** as canonical source (new `object.ts` + subpath
+  export)
+- Updated `react/internal/helpers.ts` → re-export from utils (breaks no consumers)
+- Replaced `memory/config-presets.ts` local `deepMerge` with utils import
+- **Deleted dead files** (723 lines): `performance.ts`, `performance-optimization.ts`
+- Moved react from CLI deps to devDeps, aligned boxen to ^8.0.1
+
+### Combined Metrics (both commits)
+
+| Metric                          | Value                          |
+| ------------------------------- | ------------------------------ |
+| Files deleted                   | 8                              |
+| Lines removed (net)             | ~3,900                         |
+| Duplication categories resolved | 14 of 18                       |
+| Packages modified               | 10                             |
+| Tests passing                   | 569 (109 showcase + 460 utils) |
+| Builds passing                  | All 6 core packages            |
+
+## Remaining Items (deferred — require breaking changes or deep design)
+
+| Item                                                      | Reason for Deferral                       |
+| --------------------------------------------------------- | ----------------------------------------- |
+| Unify ChatMessage type across ALL 12+ package definitions | Requires semver-major API change          |
+| Enable dts:true in dev builds                             | DX impact (build speed) assessment needed |
