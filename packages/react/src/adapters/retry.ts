@@ -7,6 +7,11 @@
  * - Automatic retry decision based on error types
  * - Rate limit awareness
  * - AbortSignal support
+ *
+ * @deprecated Prefer `retryWithBackoff` from `../../utils/resilience/retry-with-backoff`
+ * which provides the same functionality plus rate-limit header parsing and
+ * pre-configured presets for AI APIs (`AI_API_RETRY_OPTIONS`, `STREAMING_RETRY_OPTIONS`).
+ * This module is kept for backwards compatibility with existing adapter code.
  */
 
 import {

@@ -2,6 +2,13 @@
  * Type guards for all Clarity Chat error types
  * Use these for type-safe error handling in catch blocks
  *
+ * NOTE: `normalizeError` in this module returns a plain object with structured fields
+ * (code, statusCode, recoverable, userMessage). Related functions exist in:
+ * - `@clarity-chat/utils` (`errors/utils.ts`): normalizeError wraps to Error instances
+ * - `@clarity-chat/react` (`utils/resilience/error-handling.ts`): normalizeError returns
+ *   ClarityError shape with type classification, handles Response objects
+ * Each serves a different context — they are intentionally different.
+ *
  * @example
  * ```typescript
  * import { isApiError, isStreamingError, isProviderError } from '@clarity-chat/error-handling'

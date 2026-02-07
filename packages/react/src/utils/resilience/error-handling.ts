@@ -1,8 +1,23 @@
 /**
  * Unified error handling utilities
- * 
+ *
  * Provides consistent error classification, formatting, and handling
  * across all Clarity Chat APIs.
+ *
+ * NOTE: There are related error utilities in other packages:
+ * - `@clarity-chat/utils` (`errors/utils.ts`): formatError, normalizeError (wraps to Error),
+ *   tryCatch, assert — CLI/server oriented, uses ClarityError.toTerminalString()
+ * - `@clarity-chat/error-handling` (`errors/type-guards.ts`): normalizeError (returns plain object),
+ *   type guards for ApiError, StreamingError, ProviderError — structured error handling
+ *
+ * This module's `normalizeError` returns a ClarityError shape (message, type, retryable) and
+ * additionally handles `Response` objects. The three `normalizeError` functions serve different
+ * purposes — they are NOT duplicates, but the naming overlap can cause confusion.
+ *
+ * Consolidation plan:
+ * - Keep each version as-is since they serve different contexts (CLI, structured, runtime)
+ * - Import from the package closest to your use case
+ * - Consider a unified re-export barrel in @clarity-chat/error-handling in the future
  */
 
 /**

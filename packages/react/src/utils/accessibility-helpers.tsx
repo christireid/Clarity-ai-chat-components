@@ -4,10 +4,21 @@
  * Comprehensive accessibility utilities for Clarity Chat components,
  * including screen reader support, keyboard navigation, and ARIA compliance.
  *
+ * Low-level primitives (announce, getFocusableElements) are re-exported
+ * from @clarity-chat/primitives which is the canonical source.
+ *
  * @module utils/accessibility-helpers
  */
 
 import * as React from 'react'
+
+// Re-export canonical accessibility primitives
+export {
+  announce,
+  getFocusableElements as getFocusableElementsPrimitive,
+  saveFocus,
+  restoreFocus,
+} from '@clarity-chat/primitives'
 
 // =============================================================================
 // ARIA HELPERS

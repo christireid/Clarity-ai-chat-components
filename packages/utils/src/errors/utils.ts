@@ -2,6 +2,16 @@
  * Error Handling Utilities
  *
  * Helper functions for error handling, formatting, and common patterns.
+ *
+ * NOTE: Related `normalizeError`/`formatError` exist in other packages:
+ * - `@clarity-chat/error-handling` (`errors/type-guards.ts`): normalizeError returns
+ *   a plain object with code, statusCode, recoverable, userMessage fields
+ * - `@clarity-chat/react` (`utils/resilience/error-handling.ts`): normalizeError returns
+ *   ClarityError shape with type classification, handles Response objects
+ *
+ * This module's `normalizeError` wraps unknown values to Error instances (simplest form).
+ * This module's `formatError` uses ClarityError.toTerminalString() for CLI output.
+ * Each version serves a different context — they are intentionally different.
  */
 
 import { ClarityError } from './base.js'
