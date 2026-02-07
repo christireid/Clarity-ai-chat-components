@@ -38,6 +38,7 @@ import {
   getTextContent,
   MARKDOWN_CONFIG,
   generateId,
+  exportConversation,
   formatTimestamp,
 } from '../_shared'
 
@@ -296,7 +297,12 @@ export default function DeepResearchAssistantPage() {
                   }}
                 />
               ) : (
-                <div className="p-4 space-y-6">
+                <div
+                  className="p-4 space-y-6"
+                  role="log"
+                  aria-live="polite"
+                  aria-label="Chat messages"
+                >
                   {chat.messages
                     .filter((m) => m.role === 'user' || m.role === 'assistant')
                     .map((msg, index, filtered) => {
@@ -468,7 +474,11 @@ export default function DeepResearchAssistantPage() {
                     onKeyDown={(e) => {
                       if (e.key === 'Enter' && !e.shiftKey) {
                         e.preventDefault()
-                        handleSend()
+                        if (chat.isLoading) {
+                          chat.stop()
+                        } else {
+                          handleSend()
+                        }
                       }
                       if (e.key === 'Escape') setShowSlashMenu(false)
                     }}
@@ -484,17 +494,26 @@ export default function DeepResearchAssistantPage() {
                     <button
                       onClick={() => setShowSlashMenu((prev) => !prev)}
                       className="p-1.5 rounded-md hover:bg-muted transition-colors text-muted-foreground"
+                      title="Slash commands"
                     >
                       <Slash className="h-3.5 w-3.5" />
                     </button>
                     <button
-                      onClick={() => handleSend()}
-                      disabled={!input.trim() || chat.isLoading}
+                      onClick={() => {
+                        if (chat.isLoading) {
+                          chat.stop()
+                        } else {
+                          handleSend()
+                        }
+                      }}
+                      disabled={!input.trim() && !chat.isLoading}
                       className={cn(
                         'p-1.5 rounded-md transition-colors',
-                        input.trim() && !chat.isLoading
-                          ? 'bg-primary text-primary-foreground'
-                          : 'text-muted-foreground'
+                        chat.isLoading
+                          ? 'bg-red-500/20 text-red-500'
+                          : input.trim()
+                            ? 'bg-primary text-primary-foreground'
+                            : 'text-muted-foreground'
                       )}
                     >
                       {chat.isLoading ? (
@@ -611,7 +630,9 @@ export default function DeepResearchAssistantPage() {
       <ChatExportDialog
         open={showExport}
         onClose={() => setShowExport(false)}
-        onExport={() => {}}
+        onExport={(format) =>
+          exportConversation(chat.messages, format, 'deep-research')
+        }
         formats={[
           {
             id: 'report',

@@ -271,6 +271,23 @@ export function getTextContent(content: string | unknown): string {
   return typeof content === 'string' ? content : ''
 }
 
+/**
+ * Minimal chat instance interface used by shared hooks.
+ *
+ * Extracted here so that useMessageEditing, useMessageActions,
+ * useConversationManager, and useTypedChat all share a single definition.
+ */
+export interface ChatHandle {
+  messages: HookMessage[]
+  setMessages: (msgs: HookMessage[]) => void
+  append: (
+    msg: { role: string; content: string },
+    options?: { data?: Record<string, unknown> }
+  ) => unknown
+  reload: () => unknown
+  stop: () => void
+}
+
 /** Shared markdown renderer configuration used by all demo pages. */
 export const MARKDOWN_CONFIG = {
   enableSyntaxHighlight: true,

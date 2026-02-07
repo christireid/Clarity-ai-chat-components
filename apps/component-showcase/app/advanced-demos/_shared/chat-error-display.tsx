@@ -28,7 +28,10 @@ export function ChatErrorDisplay({
 
   if (variant === 'inline') {
     return (
-      <div className="mx-4 p-3 rounded-lg bg-red-500/10 border border-red-500/20 text-sm text-red-500">
+      <div
+        className="mx-4 p-3 rounded-lg bg-red-500/10 border border-red-500/20 text-sm text-red-500"
+        role="alert"
+      >
         {message}
       </div>
     )
@@ -49,7 +52,10 @@ export function ChatErrorDisplay({
           className={`h-4 w-4 ${avatarIcon === 'alert' ? 'text-destructive' : 'text-white'}`}
         />
       </div>
-      <div className="max-w-[75%] rounded-2xl px-4 py-3 bg-destructive/10 border border-destructive/20">
+      <div
+        className="max-w-[75%] rounded-2xl px-4 py-3 bg-destructive/10 border border-destructive/20"
+        role="alert"
+      >
         <p className="text-sm text-destructive">{message}</p>
         {onRetry && (
           <button

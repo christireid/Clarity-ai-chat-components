@@ -1,15 +1,8 @@
 'use client'
 
-import { useState, useCallback } from 'react'
-import type { HookMessage } from './types'
+import { useState, useCallback, useRef, useEffect } from 'react'
+import type { ChatHandle, HookMessage } from './types'
 import { getTextContent } from './types'
-
-interface ChatHandle {
-  messages: HookMessage[]
-  setMessages: (msgs: HookMessage[]) => void
-  append: (msg: { role: string; content: string }) => unknown
-  reload: () => unknown
-}
 
 interface UseMessageActionsOptions {
   /** The chat instance. */
@@ -36,6 +29,14 @@ export function useMessageActions({
   onDeleteCleanup,
 }: UseMessageActionsOptions): UseMessageActionsReturn {
   const [feedback, setFeedback] = useState<Record<string, 'up' | 'down'>>({})
+
+  // Cleanup pending setTimeout on unmount
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  useEffect(() => {
+    return () => {
+      if (timerRef.current) clearTimeout(timerRef.current)
+    }
+  }, [])
 
   const handleFeedback = useCallback((msgId: string, fb: 'up' | 'down') => {
     setFeedback((prev) => ({ ...prev, [msgId]: fb }))
@@ -69,7 +70,7 @@ export function useMessageActions({
       if (idx > 0 && currentMsgs[idx - 1]?.role === 'user') {
         const userContent = getTextContent(currentMsgs[idx - 1].content)
         chat.setMessages(currentMsgs.slice(0, idx - 1))
-        setTimeout(() => {
+        timerRef.current = setTimeout(() => {
           if (onResend) {
             onResend(userContent)
           } else {

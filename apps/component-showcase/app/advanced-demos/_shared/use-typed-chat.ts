@@ -1,16 +1,15 @@
 'use client'
 
 import { useClarityChat } from '@clarity-chat/react'
-import type { HookMessage } from './types'
+import type { ChatHandle, HookMessage } from './types'
 
 /**
  * Typed return shape from useClarityChat.
  *
- * The @clarity-chat/react package doesn't ship generated .d.ts declarations,
- * so the actual return of useClarityChat is typed as `any`. This interface
- * provides a safe, narrow type for the properties the demos actually use.
+ * Extends ChatHandle so that all shared hooks accept this return value
+ * directly without separate interface definitions.
  */
-export interface TypedChatReturn {
+export interface TypedChatReturn extends ChatHandle {
   messages: HookMessage[]
   setMessages: (
     msgs: HookMessage[] | ((prev: HookMessage[]) => HookMessage[])

@@ -37,6 +37,7 @@ import {
   type HookMessage,
   getTextContent,
   generateId,
+  exportConversation,
   MARKDOWN_CONFIG,
 } from '../_shared'
 
@@ -270,7 +271,12 @@ export default function ArtifactStudioPage() {
                   }}
                 />
               ) : (
-                <div className="p-4 space-y-6">
+                <div
+                  className="p-4 space-y-6"
+                  role="log"
+                  aria-live="polite"
+                  aria-label="Chat messages"
+                >
                   {chat.messages
                     .filter(
                       (m: HookMessage) =>
@@ -548,7 +554,9 @@ export default function ArtifactStudioPage() {
       <ChatExportDialog
         open={showExport}
         onClose={() => setShowExport(false)}
-        onExport={() => {}}
+        onExport={(format) =>
+          exportConversation(chat.messages, format, 'artifact-studio')
+        }
         formats={[
           {
             id: 'all',

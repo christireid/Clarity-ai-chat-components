@@ -1,14 +1,8 @@
 'use client'
 
-import { useState, useCallback } from 'react'
-import type { HookMessage } from './types'
+import { useState, useCallback, useRef, useEffect } from 'react'
+import type { ChatHandle, HookMessage } from './types'
 import { getTextContent } from './types'
-
-interface ChatHandle {
-  messages: HookMessage[]
-  setMessages: (msgs: HookMessage[]) => void
-  append: (msg: { role: string; content: string }) => unknown
-}
 
 interface UseMessageEditingOptions {
   /** The chat instance returned by useClarityChat. */
@@ -36,28 +30,36 @@ export function useMessageEditing({
   const [editingMessageId, setEditingMessageId] = useState<string | null>(null)
   const [editingText, setEditingText] = useState('')
 
-  const msgs = messages ?? chat.messages
+  // Cleanup pending setTimeout on unmount
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  useEffect(() => {
+    return () => {
+      if (timerRef.current) clearTimeout(timerRef.current)
+    }
+  }, [])
 
   const handleEditStart = useCallback(
     (msgId: string) => {
-      const msg = msgs.find((m) => m.id === msgId)
+      const currentMsgs = messages ?? chat.messages
+      const msg = currentMsgs.find((m) => m.id === msgId)
       if (msg) {
         setEditingMessageId(msgId)
         setEditingText(getTextContent(msg.content))
       }
     },
-    [msgs]
+    [chat, messages]
   )
 
   const handleEditSave = useCallback(
     (msgId: string) => {
-      const idx = msgs.findIndex((m) => m.id === msgId)
+      const currentMsgs = messages ?? chat.messages
+      const idx = currentMsgs.findIndex((m) => m.id === msgId)
       if (idx === -1) return
       const newText = editingText
-      chat.setMessages(msgs.slice(0, idx))
+      chat.setMessages(currentMsgs.slice(0, idx))
       setEditingMessageId(null)
       setEditingText('')
-      setTimeout(() => {
+      timerRef.current = setTimeout(() => {
         if (onResend) {
           onResend(newText)
         } else {
@@ -65,7 +67,7 @@ export function useMessageEditing({
         }
       }, 100)
     },
-    [msgs, editingText, chat, onResend]
+    [chat, messages, editingText, onResend]
   )
 
   const handleEditCancel = useCallback(() => {

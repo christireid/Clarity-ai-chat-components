@@ -39,6 +39,7 @@ import {
   getTextContent,
   MARKDOWN_CONFIG,
   generateId,
+  exportConversation,
   formatTimestamp,
 } from '../_shared'
 
@@ -441,7 +442,12 @@ export default function LibraryLearningHubPage() {
                   }}
                 />
               ) : (
-                <div className="p-4 space-y-6">
+                <div
+                  className="p-4 space-y-6"
+                  role="log"
+                  aria-live="polite"
+                  aria-label="Chat messages"
+                >
                   {chat.messages
                     .filter(
                       (m: HookMessage) =>
@@ -759,7 +765,9 @@ export default function LibraryLearningHubPage() {
       <ChatExportDialog
         open={showExport}
         onClose={() => setShowExport(false)}
-        onExport={() => {}}
+        onExport={(format) =>
+          exportConversation(chat.messages, format, 'library-learning-hub')
+        }
       />
       <SettingsDialog
         open={showSettings}

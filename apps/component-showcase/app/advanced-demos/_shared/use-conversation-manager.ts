@@ -1,7 +1,12 @@
 'use client'
 
 import { useState, useCallback, useEffect, useRef } from 'react'
-import type { Conversation, ChatMessage, HookMessage } from './types'
+import type {
+  Conversation,
+  ChatMessage,
+  ChatHandle,
+  HookMessage,
+} from './types'
 import { generateId, getTextContent, createConversation } from './types'
 
 /** Options for syncing chat messages into the conversation store. */
@@ -13,12 +18,6 @@ export interface SyncOptions {
   deriveTitle?: (currentTitle: string, messages: HookMessage[]) => string
   /** Extra properties to merge into the conversation on sync (e.g. artifactCount). */
   extraProps?: (conv: Conversation) => Partial<Conversation>
-}
-
-interface ChatHandle {
-  messages: HookMessage[]
-  setMessages: (msgs: HookMessage[]) => void
-  stop: () => void
 }
 
 interface UseConversationManagerOptions {

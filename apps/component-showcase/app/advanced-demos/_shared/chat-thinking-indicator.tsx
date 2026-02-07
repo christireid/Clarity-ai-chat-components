@@ -18,7 +18,12 @@ export function ChatThinkingIndicator({
 }: ChatThinkingIndicatorProps) {
   if (!visible) return null
   return (
-    <div className="flex gap-3">
+    <div
+      className="flex gap-3"
+      role="status"
+      aria-live="polite"
+      aria-label={label}
+    >
       <div
         className={`w-8 h-8 rounded-lg bg-gradient-to-br ${avatarGradient} flex items-center justify-center shrink-0`}
       >
@@ -26,7 +31,7 @@ export function ChatThinkingIndicator({
       </div>
       <div className="max-w-[75%] rounded-2xl px-4 py-3 bg-muted/50">
         <div className="flex items-center gap-2 text-sm text-muted-foreground">
-          <Loader2 className="h-4 w-4 animate-spin" />
+          <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
           <span>{label}</span>
         </div>
       </div>
