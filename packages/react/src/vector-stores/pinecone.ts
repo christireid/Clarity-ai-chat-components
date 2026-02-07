@@ -17,12 +17,6 @@ import type {
   VectorFilter,
 } from './types'
 
-/**
- * @deprecated Use PineconeStoreConfig from './types' instead. Will be removed in v3.0.
- * @see {@link PineconeStoreConfig} from './types' for the canonical type
- */
-export type PineconeConfig = PineconeStoreConfig
-
 export class PineconeVectorStore implements VectorStore {
   readonly provider = 'pinecone'
 

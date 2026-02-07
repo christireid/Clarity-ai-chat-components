@@ -17,12 +17,6 @@ import type {
 } from './types'
 
 /**
- * @deprecated Use ChromaStoreConfig from './types' instead. Will be removed in v3.0.
- * @see {@link ChromaStoreConfig} from './types' for the canonical type
- */
-export type ChromaConfig = ChromaStoreConfig
-
-/**
  * Default Chroma endpoint - uses environment variable or localhost for development.
  * In production, always set CHROMA_ENDPOINT environment variable.
  */

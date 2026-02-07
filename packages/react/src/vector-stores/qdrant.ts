@@ -18,12 +18,6 @@ import type {
   VectorFilterValue,
 } from './types'
 
-/**
- * @deprecated Use QdrantStoreConfig from './types' instead. Will be removed in v3.0.
- * @see {@link QdrantStoreConfig} from './types' for the canonical type
- */
-export type QdrantConfig = QdrantStoreConfig
-
 export class QdrantVectorStore implements VectorStore {
   readonly provider = 'qdrant'
 

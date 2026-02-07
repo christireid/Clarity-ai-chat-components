@@ -8,7 +8,7 @@
  *
  * @example
  * ```tsx
- * import { TokenOptimizationDashboard, CommandPaletteEnhanced } from '@clarity-chat/react/extended'
+ * import { CommandPaletteEnhanced } from '@clarity-chat/react/extended'
  * ```
  *
  * @packageDocumentation
@@ -128,33 +128,13 @@ export {
 // ============================================================================
 
 export {
-  TokenUsageMeter,
-  type TokenUsageMeterProps,
-} from './components/token/TokenUsageMeter'
-export {
   TokenBudgetBar,
   type TokenBudgetBarProps,
 } from './components/token/TokenBudgetBar'
 export {
-  TokenOptimizationPanel,
-  type TokenOptimizationPanelProps,
-} from './components/token/TokenOptimizationPanel'
-export {
-  TokenOptimizationDashboard,
-  type TokenOptimizationDashboardProps,
-} from './components/token/TokenOptimizationDashboard'
-export {
-  TokenCostPreview,
-  type TokenCostPreviewProps,
-} from './components/token/TokenCostPreview'
-export {
   TokenCounter,
   type TokenCounterProps,
 } from './components/token/TokenCounter'
-export {
-  TokenOptimizationBadge,
-  type TokenOptimizationBadgeProps,
-} from './components/token/TokenOptimizationBadge'
 
 // ============================================================================
 // MEMORY COMPONENTS

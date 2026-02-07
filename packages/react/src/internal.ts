@@ -75,27 +75,10 @@ export type {
   ConsoleAlert,
   ConsoleAlertHandlerProps,
 } from './components/feedback/ConsoleAlertHandler'
-export { TokenOptimizationPanel } from './components/token/TokenOptimizationPanel'
-export { TokenOptimizationBadge } from './components/token/TokenOptimizationBadge'
 export {
   TokenBudgetBar,
   TokenBudgetIndicator,
 } from './components/token/TokenBudgetBar'
-export { TokenOptimizationDashboard } from './components/token/TokenOptimizationDashboard'
-export {
-  TokenCostPreview,
-  useTokenEstimate,
-  type TokenCostPreviewProps,
-  type UseTokenEstimateOptions,
-  type TokenEstimate,
-} from './components/token/TokenCostPreview'
-export {
-  TokenUsageMeter,
-  MODEL_PRICING_PRESETS,
-  type TokenUsage,
-  type ModelPricing,
-  type TokenUsageMeterProps,
-} from './components/token/TokenUsageMeter'
 export { ContextVisualizer } from './components/context/ContextVisualizer'
 export { ConversationList } from './components/conversation/ConversationList'
 export { ConversationBranchVisualizer } from './components/conversation/ConversationBranchVisualizer'

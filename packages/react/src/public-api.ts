@@ -18,7 +18,7 @@
  *
  * **Extended Package** (comprehensive library - all necessary components):
  * ```tsx
- * import { CommandPaletteEnhanced, TokenOptimizationDashboard } from '@clarity-chat/react/extended'
+ * import { CommandPaletteEnhanced } from '@clarity-chat/react/extended'
  * ```
  *
  * **Advanced Package** (power users - specialized features):
@@ -75,8 +75,6 @@ export { StreamStatusProgress as StreamingProgress } from './components/ai/Strea
 export type { StreamStatusProgressProps as StreamingProgressProps } from './components/ai/StreamingProgress'
 
 // 7. Token Optimization - Usage tracking and cost preview
-export { TokenUsageMeter } from './components/token/TokenUsageMeter'
-export type { TokenUsageMeterProps } from './components/token/TokenUsageMeter'
 export { TokenBudgetBar } from './components/token/TokenBudgetBar'
 export type { TokenBudgetBarProps } from './components/token/TokenBudgetBar'
 export { useTokenBudget } from './prompt/hooks/use-token-budget'
@@ -341,7 +339,7 @@ export {
 // Essential components and hooks for 90% of use cases:
 // - Chat: ClarityChatApp, MessageList, ChatInput
 // - Streaming: StreamingMessage, StreamingProgress
-// - Token Management: TokenUsageMeter, TokenBudgetBar, useTokenBudget
+// - Token Management: TokenBudgetBar, useTokenBudget
 // - Memory: MemoryActivityIndicator, useMemoryFeedback
 // - Navigation: CommandPalette
 // - Search: SearchFiltersPanel

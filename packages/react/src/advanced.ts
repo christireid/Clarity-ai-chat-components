@@ -29,11 +29,6 @@ export { MemoryInspector } from './components/context/MemoryInspector'
 export { ConversationTimeline } from './components/conversation/ConversationTimeline'
 export { MessageThreadView } from './components/message/MessageThreadView'
 
-// Token Optimization (Advanced)
-export { TokenOptimizationPanel } from './components/token/TokenOptimizationPanel'
-export { TokenOptimizationDashboard } from './components/token/TokenOptimizationDashboard'
-export { TokenCostPreview } from './components/token/TokenCostPreview'
-
 // ============================================================================
 // ADVANCED HOOKS (For complex state management)
 // ============================================================================

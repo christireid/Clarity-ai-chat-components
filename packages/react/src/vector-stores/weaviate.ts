@@ -17,12 +17,6 @@ import type {
   VectorFilter,
 } from './types'
 
-/**
- * @deprecated Use WeaviateStoreConfig from './types' instead. Will be removed in v3.0.
- * @see {@link WeaviateStoreConfig} from './types' for the canonical type
- */
-export type WeaviateConfig = WeaviateStoreConfig
-
 export class WeaviateVectorStore implements VectorStore {
   readonly provider = 'weaviate'
 
