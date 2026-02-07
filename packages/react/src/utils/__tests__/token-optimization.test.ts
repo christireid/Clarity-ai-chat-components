@@ -22,7 +22,7 @@ import {
   calculateSimilarity,
   findSimilarCached,
 } from '../token-optimization'
-import type { CoreMessage } from '../../hooks/chat/use-chat-enhanced'
+import type { CoreMessage } from '../../internal/hooks/use-chat-enhanced'
 
 describe('Token Optimization Utilities', () => {
   describe('shortenPrompt', () => {

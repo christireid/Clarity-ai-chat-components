@@ -10,7 +10,7 @@
 
 import * as React from 'react'
 import { Slot } from '@radix-ui/react-slot'
-import type { CoreMessage } from '../../hooks/chat/use-chat-enhanced'
+import type { CoreMessage } from '../../internal/hooks/use-chat-enhanced'
 
 // ============================================================================
 // CONTEXT

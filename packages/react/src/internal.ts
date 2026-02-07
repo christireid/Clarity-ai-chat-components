@@ -234,7 +234,7 @@ export type {
 // export * from './accessibility/accessibility-automation'
 
 // Re-export types that are commonly needed
-export type { CoreMessage } from './hooks/chat/use-chat-enhanced'
+export type { CoreMessage } from './internal/hooks/use-chat-enhanced'
 // Note: Commented out to avoid MessageRole conflict with public-api
 // If you need chat types, import from public-api instead: import type { MessageRole } from '@clarity-chat/react'
 // export * from './types/chat-types'
@@ -322,7 +322,7 @@ export { useCompletion } from './hooks/chat/use-completion'
 export {
   useChat,
   useChat as useChatEnhanced,
-} from './hooks/chat/use-chat-enhanced'
+} from './internal/hooks/use-chat-enhanced'
 
 // ============================================================================
 // STREAMING HOOKS (Advanced)

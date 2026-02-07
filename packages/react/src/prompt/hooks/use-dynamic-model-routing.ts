@@ -9,7 +9,7 @@
  */
 
 import { useMemo, useCallback } from 'react'
-import type { CoreMessage } from '../../hooks/chat/use-chat-enhanced'
+import type { CoreMessage } from '../../internal/hooks/use-chat-enhanced'
 import type { ModelProfile } from '../core/model-profiles'
 import {
   getModelProfileOrDefault,

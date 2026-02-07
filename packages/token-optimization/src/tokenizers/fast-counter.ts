@@ -181,15 +181,3 @@ export class FastTokenCounter {
     return FastTokenCounter.getTokenInfo(text)
   }
 }
-
-/**
- * @deprecated Use FastTokenCounter instead
- * Backward compatibility alias. Will be removed in v3.0.0
- */
-export const SimpleTokenCounter = FastTokenCounter
-
-/**
- * @deprecated Use FastTokenCounterConfig instead
- * Backward compatibility alias. Will be removed in v3.0.0
- */
-export type SimpleTokenCounterConfig = FastTokenCounterConfig

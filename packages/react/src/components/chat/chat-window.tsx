@@ -8,7 +8,7 @@ import { duration } from '../../animations/constants'
 import { MessageList } from '../message/message-list'
 import { ChatInput } from './chat-input'
 import { ThinkingIndicator } from '../message/thinking-indicator'
-import type { CoreMessage } from '../../hooks/chat/use-chat-enhanced'
+import type { CoreMessage } from '../../internal/hooks/use-chat-enhanced'
 import { useMessageNormalization } from '../../hooks/chat/use-message-normalization'
 import {
   ChatWindowHeader,

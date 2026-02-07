@@ -65,7 +65,7 @@ export * from './use-rag-pipeline'
 // ============================================================================
 
 // CoreMessage and related types are re-exported for consumers who need type compatibility
-export { type CoreMessage } from './use-chat-enhanced'
+export { type CoreMessage } from '../../internal/hooks/use-chat-enhanced'
 
 // ============================================================================
 // INTERNAL HOOKS (For advanced use cases only)
@@ -79,4 +79,4 @@ export {
   useChat as useChatEnhanced,
   type UseChatOptions as UseChatEnhancedOptions,
   type UseChatReturn as UseChatEnhancedReturn,
-} from './use-chat-enhanced'
+} from '../../internal/hooks/use-chat-enhanced'

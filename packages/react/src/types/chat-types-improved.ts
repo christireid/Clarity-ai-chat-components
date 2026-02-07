@@ -5,7 +5,7 @@
  */
 
 import type { Message } from '@clarity-chat/types'
-import type { CoreMessage } from '../hooks/chat/use-chat-enhanced'
+import type { CoreMessage } from '../internal/hooks/use-chat-enhanced'
 
 /**
  * Message role type with better autocomplete

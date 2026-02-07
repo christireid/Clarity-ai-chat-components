@@ -10,7 +10,7 @@ import {
   needsOptimization,
   getRecommendedTargetTokens,
 } from '../core/utils'
-import type { CoreMessage } from '../../hooks/chat/use-chat-enhanced'
+import type { CoreMessage } from '../../internal/hooks/use-chat-enhanced'
 import { estimatePromptTokens } from '../core/tokenizer'
 import type { ModelMetadata } from '../core/types'
 

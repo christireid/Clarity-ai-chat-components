@@ -69,7 +69,7 @@ export type {
   UseChatOptions as UseChatEnhancedOptions,
   UseChatReturn as UseChatEnhancedReturn,
   CoreMessage,
-} from './hooks/chat/use-chat-enhanced'
+} from './internal/hooks/use-chat-enhanced'
 
 export type {
   UseChatHandlersOptions,

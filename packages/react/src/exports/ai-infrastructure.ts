@@ -36,7 +36,6 @@ export { useStreamableUI } from '../hooks/streaming/use-streamable-ui'
 export * from '../adapters'
 
 // Tools
-export * from '../agents/tools'
 export * from '../agents/tool-ui-registry'
 
 // ============================================================================

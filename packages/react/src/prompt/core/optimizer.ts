@@ -4,7 +4,7 @@
  * Strategies for optimizing message arrays to fit within token budgets.
  */
 
-import type { CoreMessage } from '../../hooks/chat/use-chat-enhanced'
+import type { CoreMessage } from '../../internal/hooks/use-chat-enhanced'
 import type { Tokenizer, ModelMetadata } from './tokenizer'
 import {
   estimateMessageTokens,

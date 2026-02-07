@@ -53,7 +53,7 @@ import { useMessageNormalization } from '../../hooks/chat/use-message-normalizat
 import { ChatWindow } from './chat-window'
 import { RequestQueueStatus } from '../ai/request-queue-status'
 import { convertCoreMessagesToMessages } from '../../utils/message/message-conversion'
-import type { CoreMessage } from '../../hooks/chat/use-chat-enhanced'
+import type { CoreMessage } from '../../internal/hooks/use-chat-enhanced'
 import { useToast } from '../ui/toast'
 
 // Grouped props interfaces for cleaner API

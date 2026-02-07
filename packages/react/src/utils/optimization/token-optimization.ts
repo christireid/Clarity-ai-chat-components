@@ -13,7 +13,7 @@
  * - Batching requests
  */
 
-import type { CoreMessage } from '../../hooks/chat/use-chat-enhanced'
+import type { CoreMessage } from '../../internal/hooks/use-chat-enhanced'
 import { estimateTokens as centralEstimateTokens } from '../tokenization/estimator'
 
 // ============================================================================

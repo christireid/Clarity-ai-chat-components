@@ -12,7 +12,6 @@
  * ## Legacy / Utility (Not Real Compression)
  *
  * - **BasicCompressionEngine**: Whitespace normalization only (10-20% reduction)
- * - **DynamicCompressionEngine**: Complex but limited actual compression
  *
  * @example
  * ```typescript
@@ -159,12 +158,3 @@ export type {
   CompressionResult,
   CompressionConfig,
 } from './basic-engine'
-
-/**
- * @deprecated Use compressAdaptively() instead.
- */
-export { compressText, compressTextBatch } from './basic-engine'
-
-// DynamicCompressionEngine has been removed (deprecated)
-// Use AdaptiveCompressor instead:
-// import { AdaptiveCompressor } from '@clarity-chat/token-optimization'

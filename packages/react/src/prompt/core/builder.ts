@@ -5,7 +5,7 @@
  * Integrates recipes, memory, user input, and optimization.
  */
 
-import type { CoreMessage } from '../../hooks/chat/use-chat-enhanced'
+import type { CoreMessage } from '../../internal/hooks/use-chat-enhanced'
 import { toonToMessages } from './toon'
 import type { ToonNode } from './toon'
 import { buildMessagesFromRecipe } from './recipe'

@@ -11,7 +11,7 @@ import type {
   ClarityChatMemoryInfo,
   ClarityChatErrorInfo,
 } from '../hooks/chat/use-clarity-chat'
-import type { CoreMessage } from '../hooks/chat/use-chat-enhanced'
+import type { CoreMessage } from '../internal/hooks/use-chat-enhanced'
 import type { Message } from '@clarity-chat/types'
 
 /**

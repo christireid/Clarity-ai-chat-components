@@ -88,21 +88,10 @@ export function deepMerge<T extends Record<string, unknown>>(
   return deepMerge(target, ...sources)
 }
 
-/**
- * Clamp a number between min and max
- * @deprecated Import from @clarity-chat/utils instead
- */
-export { clamp } from '@clarity-chat/utils'
-
 // NOTE: retry() has been removed from this file.
 // Import retry from @clarity-chat/utils/async or use retryWithBackoff from @clarity-chat/react/utils/resilience/retry-with-backoff
 
-/**
- * Format bytes to human-readable string
- * @deprecated Import from @clarity-chat/utils/format instead
- */
 import { formatBytes as formatBytesUtil } from '@clarity-chat/utils/format'
-export { formatBytes } from '@clarity-chat/utils/format'
 
 /**
  * Create a cancellable promise
@@ -135,18 +124,6 @@ export function cancellable<T>(promise: Promise<T>): {
     },
   }
 }
-
-/**
- * Check if code is running in a browser environment
- * @deprecated Import from @clarity-chat/utils/env instead
- */
-export { isBrowser } from '@clarity-chat/utils/env'
-
-/**
- * Check if code is running in a server environment
- * @deprecated Import from @clarity-chat/utils/env instead
- */
-export { isServer } from '@clarity-chat/utils/env'
 
 /**
  * Format a date/timestamp as relative time (e.g., "2h ago", "Just now")

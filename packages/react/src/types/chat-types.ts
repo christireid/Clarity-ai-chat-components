@@ -7,7 +7,7 @@
 import type {
   CoreMessage,
   CoreMessageContent,
-} from '../hooks/chat/use-chat-enhanced'
+} from '../internal/hooks/use-chat-enhanced'
 import { isString, isArray } from '@clarity-chat/utils/validation'
 
 /**

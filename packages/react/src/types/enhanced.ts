@@ -60,7 +60,7 @@ import type {
   FormalizedModelAdapter,
   AdapterCapabilities,
 } from '../adapters/types'
-import type { CoreMessage } from '../hooks/chat/use-chat-enhanced'
+import type { CoreMessage } from '../internal/hooks/use-chat-enhanced'
 
 // =============================================================================
 // 1. STRICTER EVENT TYPES - Discriminated Union for Type Safety

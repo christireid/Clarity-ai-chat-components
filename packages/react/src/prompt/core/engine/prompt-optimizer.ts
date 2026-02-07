@@ -9,7 +9,7 @@
  * 5. Emission - Final optimized prompt
  */
 
-import type { CoreMessage } from '../../../hooks/chat/use-chat-enhanced'
+import type { CoreMessage } from '../../../internal/hooks/use-chat-enhanced'
 import { toonToMessages } from '../toon'
 import type { ToonNode } from '../toon'
 import { getModelProfileOrDefault } from '../model-profiles'

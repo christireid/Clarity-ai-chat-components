@@ -6,7 +6,7 @@
  */
 
 import { useMemo, useCallback, useEffect, useState } from 'react'
-import type { CoreMessage } from '../../hooks/chat/use-chat-enhanced'
+import type { CoreMessage } from '../../internal/hooks/use-chat-enhanced'
 import type { ModelMetadata } from '../core/tokenizer'
 import type { OptimizationStrategy } from '../core/optimizer'
 import { buildModelPrompt } from '../core/builder'

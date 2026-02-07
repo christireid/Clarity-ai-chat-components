@@ -10,7 +10,7 @@
  */
 
 import { useMemo } from 'react'
-import type { CoreMessage } from '../../hooks/chat/use-chat-enhanced'
+import type { CoreMessage } from '../../internal/hooks/use-chat-enhanced'
 import type { OptimizationStage, OptimizationDiagnostics } from '../core'
 import type { ModelRoutingDecision } from './use-dynamic-model-routing'
 

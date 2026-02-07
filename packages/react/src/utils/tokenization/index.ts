@@ -129,9 +129,7 @@ export {
 // Re-export the comprehensive test utilities
 // export * from '../utils/__tests__/token-counter-comprehensive.test';
 
-// Convenience re-exports from the original estimator and accurate-counter
-// These maintain backward compatibility while using the new TokenCounter internally
-export { estimateTokens, estimateMessagesTokens } from './estimator'
+// Accurate counter
 export {
   countTokens,
   countConversationTokens,

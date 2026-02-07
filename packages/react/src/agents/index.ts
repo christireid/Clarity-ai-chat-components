@@ -50,7 +50,6 @@
 
 export * from './types'
 export * from './react-agent'
-export * from './tools'
 export * from './tool-ui-registry'
 
 import type {

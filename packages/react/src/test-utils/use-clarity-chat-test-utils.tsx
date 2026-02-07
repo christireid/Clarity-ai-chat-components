@@ -11,7 +11,7 @@ import type {
   UseClarityChatReturn,
   UseClarityChatOptions,
 } from '../hooks/chat/use-clarity-chat'
-import type { CoreMessage } from '../hooks/chat/use-chat-enhanced'
+import type { CoreMessage } from '../internal/hooks/use-chat-enhanced'
 
 /**
  * Mock implementation of useClarityChat for testing

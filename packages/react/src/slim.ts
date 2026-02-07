@@ -79,7 +79,7 @@ export type {
   CoreMessage,
   CoreMessageContent,
   MessageRole,
-} from './hooks/chat/use-chat-enhanced'
+} from './internal/hooks/use-chat-enhanced'
 export type { Message as MessageType, AIStatus } from '@clarity-chat/types'
 
 // ============================================================================

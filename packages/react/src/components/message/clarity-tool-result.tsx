@@ -22,7 +22,7 @@
 
 import * as React from 'react'
 import DOMPurify from 'isomorphic-dompurify'
-import type { CoreMessage } from '../../hooks/chat/use-chat-enhanced'
+import type { CoreMessage } from '../../internal/hooks/use-chat-enhanced'
 import type {
   ToolComponentRegistry,
   ToolComponentProps,

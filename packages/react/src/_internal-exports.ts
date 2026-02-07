@@ -83,7 +83,7 @@ export {
   type UseChatOptions as UseChatEnhancedOptions,
   type UseChatReturn as UseChatEnhancedReturn,
   type CoreMessage,
-} from './hooks/chat/use-chat-enhanced'
+} from './internal/hooks/use-chat-enhanced'
 
 export {
   useChatHandlers,

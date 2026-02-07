@@ -10,7 +10,7 @@
 import type {
   CoreMessage,
   CoreMessageContent,
-} from '../../hooks/chat/use-chat-enhanced'
+} from '../../internal/hooks/use-chat-enhanced'
 import type { Message, MessageRole } from '@clarity-chat/types'
 
 // Import ID generator from canonical utils package

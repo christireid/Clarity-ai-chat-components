@@ -11,11 +11,6 @@ import {
   useReducedMotion,
   useColorContrast,
   useKeyboardNavigation,
-  useFocusManagementLegacy,
-  useFocusTrap,
-  useAnnounce,
-  usePrefersReducedMotionLegacy as usePrefersReducedMotion,
-  useIdLegacy,
 } from '../accessibility'
 
 // Mock SecureLogger
@@ -387,88 +382,6 @@ describe('Enhanced Accessibility Utilities', () => {
 
       // Test that all handlers are set up correctly
       expect(handlers).toBeDefined()
-    })
-  })
-
-  describe('Legacy Hooks (Backward Compatibility)', () => {
-    describe('useFocusManagementLegacy', () => {
-      it('should manage focus for error handling', () => {
-        const { result } = renderHook(() => useFocusManagementLegacy())
-
-        expect(result.current).toHaveProperty('previousFocusRef')
-        expect(result.current).toHaveProperty('errorContainerRef')
-        expect(result.current).toHaveProperty('captureFocus')
-        expect(result.current).toHaveProperty('focusError')
-        expect(result.current).toHaveProperty('restoreFocus')
-      })
-
-      it('should capture and restore focus', () => {
-        const button = document.createElement('button')
-        document.body.appendChild(button)
-        button.focus()
-
-        const { result } = renderHook(() => useFocusManagementLegacy())
-
-        act(() => {
-          result.current.captureFocus()
-        })
-
-        expect(result.current.previousFocusRef.current).toBe(
-          document.activeElement
-        )
-
-        act(() => {
-          result.current.restoreFocus()
-        })
-
-        document.body.removeChild(button)
-      })
-    })
-
-    describe('useAnnounce', () => {
-      it('should announce messages to screen readers', () => {
-        const { result } = renderHook(() => useAnnounce())
-
-        expect(result.current).toHaveProperty('announceRef')
-        expect(result.current).toHaveProperty('announce')
-      })
-
-      it('should handle announcements with different priorities', () => {
-        const { result } = renderHook(() => useAnnounce())
-
-        act(() => {
-          result.current.announce('Test message', 'polite')
-          result.current.announce('Urgent message', 'assertive')
-        })
-      })
-    })
-
-    describe('usePrefersReducedMotion', () => {
-      it('should detect reduced motion preference', () => {
-        mockMatchMedia(true)
-
-        const { result } = renderHook(() => usePrefersReducedMotion())
-
-        expect(result.current).toBe(true)
-      })
-    })
-
-    describe('useIdLegacy', () => {
-      it('should generate unique IDs', () => {
-        const { result } = renderHook(() => useIdLegacy('test'))
-
-        expect(result.current).toMatch(/^test-[a-z0-9]+$/)
-      })
-
-      it('should return same ID on subsequent calls', () => {
-        const { result, rerender } = renderHook(() => useIdLegacy('test'))
-
-        const firstId = result.current
-        rerender()
-        const secondId = result.current
-
-        expect(firstId).toBe(secondId)
-      })
     })
   })
 

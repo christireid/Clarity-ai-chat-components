@@ -86,7 +86,7 @@ export {
   useChat as useChatEnhanced,
   type UseChatOptions as UseChatEnhancedOptions,
   type UseChatReturn as UseChatEnhancedReturn,
-} from '../hooks/chat/use-chat-enhanced'
+} from '../internal/hooks/use-chat-enhanced'
 
 // Message conversion utilities
 export {

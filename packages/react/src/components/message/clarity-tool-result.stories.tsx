@@ -8,7 +8,7 @@ import type { Meta, StoryObj } from '@storybook/react'
 import { ClarityToolResult, type ToolCall } from './ClarityToolResult'
 import { createToolUIRegistry } from '../../agents/tool-ui-registry'
 import { Card, CardContent, CardHeader, Badge } from '@clarity-chat/primitives'
-import type { CoreMessage } from '../../hooks/chat/use-chat-enhanced'
+import type { CoreMessage } from '../../internal/hooks/use-chat-enhanced'
 
 const meta: Meta<typeof ClarityToolResult> = {
   title: 'Components/ClarityToolResult',

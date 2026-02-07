@@ -2,7 +2,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { renderHook, act } from '@testing-library/react'
 // Import directly from source to verify isolation from other modules in public-api
-import { useChat as useHeadlessChat } from '../hooks/chat/use-chat-enhanced'
+import { useChat as useHeadlessChat } from '../internal/hooks/use-chat-enhanced'
 
 // Mock global fetch
 global.fetch = vi.fn()

@@ -586,22 +586,6 @@ export class ProviderCachingFormatter {
   }
 
   /**
-   * @deprecated Use formatMessagesForCaching() instead. Will be removed in v2.0.0.
-   */
-  async applyCaching(
-    messages: CacheableMessage[],
-    provider?: CachingProvider
-  ): Promise<ProviderCachingResult> {
-    if (process.env.NODE_ENV === 'development') {
-      console.warn(
-        '[DEPRECATION] ProviderCachingFormatter.applyCaching() is deprecated. ' +
-          'Use formatMessagesForCaching() instead. See MIGRATION.md for details.'
-      )
-    }
-    return this.formatMessagesForCaching(messages, provider)
-  }
-
-  /**
    * Update configuration
    */
   updateConfig(config: Partial<ProviderCachingConfig>): void {
@@ -615,11 +599,6 @@ export class ProviderCachingFormatter {
     return { ...this.config }
   }
 }
-
-/**
- * @deprecated Use ProviderCachingFormatter instead. Will be removed in v2.0.0.
- */
-export const ProviderCachingManager = ProviderCachingFormatter
 
 /**
  * Convenience function: Format messages for provider caching
@@ -636,25 +615,8 @@ export async function formatMessagesForProviderCaching(
 }
 
 /**
- * @deprecated Use formatMessagesForProviderCaching() instead. Will be removed in v2.0.0.
- */
-export async function applyProviderCaching(
-  messages: CacheableMessage[],
-  config: Partial<ProviderCachingConfig> = {},
-  tokenCounter?: TokenCounter
-): Promise<ProviderCachingResult> {
-  if (process.env.NODE_ENV === 'development') {
-    console.warn(
-      '[DEPRECATION] applyProviderCaching() is deprecated. ' +
-        'Use formatMessagesForProviderCaching() instead. See MIGRATION.md for details.'
-    )
-  }
-  return formatMessagesForProviderCaching(messages, config, tokenCounter)
-}
-
-/**
  * Convenience function: Parse OpenAI cache metrics
  */
 export function parseOpenAICacheMetrics(usage: OpenAIUsageMetadata) {
-  return ProviderCachingManager.parseOpenAIUsage(usage)
+  return ProviderCachingFormatter.parseOpenAIUsage(usage)
 }

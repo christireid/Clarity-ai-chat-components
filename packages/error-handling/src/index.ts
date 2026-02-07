@@ -97,12 +97,6 @@ export {
   useReducedMotion,
   useColorContrast,
   useKeyboardNavigation,
-  // Legacy accessibility hooks (for backward compatibility)
-  useFocusManagementLegacy as useFocusManagementLegacy,
-  useFocusTrap as useFocusTrapLegacy,
-  useAnnounce as useAnnounceLegacy,
-  usePrefersReducedMotionLegacy as usePrefersReducedMotionLegacy,
-  useIdLegacy as useIdLegacy,
 } from './accessibility'
 
 // Analytics hooks

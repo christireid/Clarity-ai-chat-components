@@ -4,7 +4,7 @@
  * Helper functions and utilities for common tasks.
  */
 
-import type { CoreMessage } from '../hooks/chat/use-chat-enhanced'
+import type { CoreMessage } from '../internal/hooks/use-chat-enhanced'
 import {
   estimateMessageTokens,
   getTokenizerForModel,

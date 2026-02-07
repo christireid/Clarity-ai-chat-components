@@ -122,8 +122,7 @@ export {
   TokenOptimizationAnalytics,
   createTokenMonitor,
   createTokenAnalytics,
-  // Estimator functions
-  estimateMessagesTokens,
+  // Accurate counter functions
   countTokens,
   countConversationTokens,
   truncateToTokenBudget,

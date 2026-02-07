@@ -5,7 +5,7 @@
  * Toon nodes can be combined to create complex prompt structures.
  */
 
-import type { CoreMessage } from '../../hooks/chat/use-chat-enhanced'
+import type { CoreMessage } from '../../internal/hooks/use-chat-enhanced'
 
 /**
  * Base toon node type

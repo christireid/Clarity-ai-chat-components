@@ -7,7 +7,7 @@ import { render } from '@testing-library/react'
 import React from 'react'
 import { ClarityToolResult, type ToolCall } from '../ClarityToolResult'
 import { createToolUIRegistry } from '../../agents/tool-ui-registry'
-import type { CoreMessage } from '../../hooks/chat/use-chat-enhanced'
+import type { CoreMessage } from '../../internal/hooks/use-chat-enhanced'
 
 describe('ClarityToolResult', () => {
   const mockMessages: CoreMessage[] = [
