@@ -193,8 +193,6 @@ export type {
   StreamMetrics,
   OptimizationLevel,
   GlobalOptimizationStats,
-  ModelIdentifier,
-  TokenEncoding,
   // Note: ChatMessage is not re-exported here to avoid conflict with ./hooks/chat
   // Use ClarityTokensChatMessage from pipeline types instead
   ModelId,

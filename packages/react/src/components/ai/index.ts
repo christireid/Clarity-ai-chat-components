@@ -386,6 +386,7 @@ export {
   type UseOptionListReturn,
 } from './OptionList'
 
+/** @deprecated For chat messages use TanStackMessageList. See CODE_REUSE_AUDIT.md P0-12 */
 // VirtualScroller - Virtualized list for large datasets
 export {
   VirtualScroller,

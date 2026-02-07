@@ -94,13 +94,7 @@ export interface TokenBreakdown {
   total: number
 }
 
-/**
- * Token budget configuration
- *
- * @deprecated Use `CanonicalTokenBudgetConfig` (or `MemoryTokenBudgetConfig`) from
- * `@clarity-chat/token-optimization` instead. This local definition is kept for
- * backwards compatibility.
- */
+/** Local budget config. @see CanonicalTokenBudgetConfig in @clarity-chat/token-optimization for cross-package use */
 export interface TokenBudgetConfig {
   /** Maximum context window size */
   maxContextWindow: number

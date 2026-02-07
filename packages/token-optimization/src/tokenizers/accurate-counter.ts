@@ -22,12 +22,7 @@ export interface TokenizerConfig {
   enableMonitoring?: boolean
 }
 
-/**
- * Chat message format for token counting.
- *
- * @deprecated Define locally — use `TokenChatMessage` from `@clarity-chat/types` instead.
- * Kept for backwards compatibility; this is structurally compatible with `TokenChatMessage`.
- */
+/** @see ChatMessage in @clarity-chat/types for the canonical version */
 export interface ChatMessage {
   role: 'system' | 'user' | 'assistant' | 'function' | 'tool'
   content: string

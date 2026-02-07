@@ -8,11 +8,7 @@ export interface TokenBudget {
   isExceeded: boolean
 }
 
-/**
- * @deprecated Use `CanonicalTokenBudgetConfig` (or `ReactTokenBudgetConfig`) from
- * `@clarity-chat/token-optimization` instead. This local definition is kept for
- * backwards compatibility.
- */
+/** Local budget config. @see CanonicalTokenBudgetConfig in @clarity-chat/token-optimization for cross-package use */
 export interface TokenBudgetConfig {
   maxTokens: number
   warningThreshold?: number // percentage (0-1)

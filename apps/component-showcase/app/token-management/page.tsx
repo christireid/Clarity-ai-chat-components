@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { formatCompact, formatPercent } from '@/hooks/format-helpers'
 import { PageHeader, ComponentSection } from '@/components/component-section'
 import {
   Card,
@@ -82,7 +83,7 @@ function TokenCounterDemo() {
                       : 'text-green-500'
                 )}
               >
-                {percentage.toFixed(1)}%
+                {formatPercent(percentage / 100, 1)}
               </span>
             </div>
             <div className="h-3 bg-muted rounded-full overflow-hidden">
@@ -174,8 +175,8 @@ function TokenBudgetDemo() {
             <div className="flex items-center justify-between mb-2">
               <span className="text-sm font-medium">Daily Budget</span>
               <span className="text-sm">
-                {(budget.daily.used / 1000).toFixed(0)}K /{' '}
-                {(budget.daily.limit / 1000).toFixed(0)}K
+                {formatCompact(budget.daily.used)} /{' '}
+                {formatCompact(budget.daily.limit)}
               </span>
             </div>
             <div className="h-2 bg-muted rounded-full overflow-hidden">
@@ -196,8 +197,8 @@ function TokenBudgetDemo() {
             <div className="flex items-center justify-between mb-2">
               <span className="text-sm font-medium">Monthly Budget</span>
               <span className="text-sm">
-                {(budget.monthly.used / 1000000).toFixed(2)}M /{' '}
-                {(budget.monthly.limit / 1000000).toFixed(0)}M
+                {formatCompact(budget.monthly.used)} /{' '}
+                {formatCompact(budget.monthly.limit)}
               </span>
             </div>
             <div className="h-2 bg-muted rounded-full overflow-hidden">

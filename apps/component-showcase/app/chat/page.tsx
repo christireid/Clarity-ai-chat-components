@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useRef, useEffect } from 'react'
+import { formatPercent, formatCost } from '@/hooks/format-helpers'
 import { PageHeader, ComponentSection } from '@/components/component-section'
 import {
   // Core Chat Components
@@ -471,7 +472,7 @@ Would you like me to elaborate on any of these points or perform additional anal
             <div className="flex justify-between text-xs text-muted-foreground">
               <span>Token Budget</span>
               <span>
-                {Math.round((tokenUsage.total / tokenUsage.budget) * 100)}% used
+                {formatPercent(tokenUsage.total / tokenUsage.budget)} used
               </span>
             </div>
             <div className="h-2 w-full bg-muted rounded-full overflow-hidden">
@@ -827,14 +828,14 @@ Would you like me to elaborate on any of these points or perform additional anal
                 />
               </div>
               <p className="text-xs text-muted-foreground text-right">
-                {Math.round((tokenUsage.total / tokenUsage.budget) * 100)}% of
+                {formatPercent(tokenUsage.total / tokenUsage.budget)} of
                 budget
               </p>
             </div>
             <div className="mt-3 p-2 bg-primary/5 rounded-lg">
               <p className="text-xs text-muted-foreground">Estimated cost</p>
               <p className="text-lg font-bold text-primary">
-                ${((tokenUsage.total / 1000) * 0.01).toFixed(4)}
+                {formatCost((tokenUsage.total / 1000) * 0.01)}
               </p>
             </div>
           </CardContent>

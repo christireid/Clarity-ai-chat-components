@@ -4,11 +4,7 @@
  * Sophisticated budget management with dynamic allocation
  */
 
-/**
- * @deprecated Use `CanonicalTokenBudgetConfig` (or `AdvancedTokenBudgetConfig`) from
- * `@clarity-chat/token-optimization/types` instead. This local definition is kept
- * for backwards compatibility.
- */
+/** Local budget config. @see CanonicalTokenBudgetConfig in types.ts for cross-package use */
 export interface TokenBudgetConfig {
   maxTokens: number
   reserveTokens: number

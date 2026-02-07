@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { formatCompact } from '@/hooks/format-helpers'
 import { PageHeader, ComponentSection } from '@/components/component-section'
 import {
   Card,
@@ -121,7 +122,7 @@ function TokenOptimizationDashboard() {
                   Total Tokens Used
                 </p>
                 <p className="text-2xl font-bold">
-                  {(tokenMetrics.totalUsed / 1000000).toFixed(2)}M
+                  {formatCompact(tokenMetrics.totalUsed)}
                 </p>
               </div>
               <div className="w-12 h-12 rounded-full bg-blue-500/10 flex items-center justify-center">
@@ -144,11 +145,7 @@ function TokenOptimizationDashboard() {
                   Budget Remaining
                 </p>
                 <p className="text-2xl font-bold">
-                  {(
-                    (tokenMetrics.totalBudget - tokenMetrics.totalUsed) /
-                    1000000
-                  ).toFixed(2)}
-                  M
+                  {formatCompact(tokenMetrics.totalBudget - tokenMetrics.totalUsed)}
                 </p>
               </div>
               <div className="w-12 h-12 rounded-full bg-emerald-500/10 flex items-center justify-center">
@@ -245,7 +242,7 @@ function TokenOptimizationDashboard() {
                     </div>
                   </div>
                   <div className="w-20 text-right text-sm text-muted-foreground">
-                    {(item.tokens / 1000).toFixed(0)}K
+                    {formatCompact(item.tokens)}
                   </div>
                   <div className="w-16 text-right text-sm font-medium">
                     {item.cost}

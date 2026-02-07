@@ -19,7 +19,6 @@ import type {
   UseCostEstimatorReturn,
   CostEstimate,
   CostTracking,
-  ModelIdentifier,
 } from './types'
 
 /**
@@ -162,7 +161,7 @@ export function useCostEstimator(
    * Get model pricing from MODEL_REGISTRY or custom overrides
    */
   const getModelPricingInternal = React.useCallback(
-    (model: ModelIdentifier) => {
+    (model: ModelId) => {
       // Check custom pricing first
       const custom = customPricing[model]
       if (custom) {
@@ -214,7 +213,7 @@ export function useCostEstimator(
       inputText?: string
       inputTokens?: number
       messages?: ChatMessage[]
-      model?: ModelIdentifier
+      model?: ModelId
       expectedOutputTokens?: number
     }): CostEstimate => {
       const model = params.model ?? defaultModel
@@ -261,7 +260,7 @@ export function useCostEstimator(
       inputTokens: number
       outputTokens: number
       cachedTokens?: number
-      model: ModelIdentifier
+      model: ModelId
       category?: string
     }): void => {
       const pricing = getModelPricingInternal(params.model)
@@ -328,7 +327,7 @@ export function useCostEstimator(
    */
   const getModelPricing = React.useCallback(
     (
-      model: ModelIdentifier
+      model: ModelId
     ): {
       inputPer1M: number
       outputPer1M: number

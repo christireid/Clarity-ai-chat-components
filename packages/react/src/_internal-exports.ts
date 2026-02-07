@@ -34,10 +34,17 @@ export { ClarityChatPresets } from './components/chat/ClarityChatPresets'
 export { ChatWindow } from './components/chat/ChatWindow'
 export { ChatInput } from './components/chat/ChatInput'
 export { AdvancedChatInput } from './components/input/AdvancedChatInput'
+/** @deprecated Use TanStackMessageList instead. See CODE_REUSE_AUDIT.md P0-12 */
 export {
   VirtualizedMessageList as MessageList,
   VirtualizedMessageList,
 } from './components/chat/VirtualizedMessageList'
+export {
+  TanStackMessageList,
+  AutoTanStackMessageList,
+  type TanStackMessageListProps,
+  type AutoTanStackMessageListProps,
+} from './components/chat/tanstack-message-list'
 export { ChatLayout } from './components/chat/ChatLayout'
 export { StreamingMessage } from './components/message/StreamingMessage'
 export { ThinkingIndicator } from './components/message/ThinkingIndicator'

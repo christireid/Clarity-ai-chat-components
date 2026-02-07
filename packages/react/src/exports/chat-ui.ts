@@ -61,7 +61,14 @@ export {
 // Message components
 export { Message, type MessageProps } from '../components/message'
 export { MessageList, type MessageListProps } from '../components/MessageList'
+/** @deprecated Use TanStackMessageList instead. See CODE_REUSE_AUDIT.md P0-12 */
 export { VirtualizedMessageList } from '../components/VirtualizedMessageList'
+export {
+  TanStackMessageList,
+  AutoTanStackMessageList,
+  type TanStackMessageListProps,
+  type AutoTanStackMessageListProps,
+} from '../components/chat/tanstack-message-list'
 
 // Input components
 export { ChatInput, type ChatInputProps } from '../components/ChatInput'

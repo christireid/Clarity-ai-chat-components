@@ -51,10 +51,17 @@ export {
   MessageList,
   type MessageListProps,
 } from './components/message/MessageList'
+/** @deprecated Use TanStackMessageList instead. See CODE_REUSE_AUDIT.md P0-12 */
 export {
   VirtualizedMessageList,
   type VirtualizedMessageListProps,
 } from './components/chat/VirtualizedMessageList'
+export {
+  TanStackMessageList,
+  AutoTanStackMessageList,
+  type TanStackMessageListProps,
+  type AutoTanStackMessageListProps,
+} from './components/chat/tanstack-message-list'
 export {
   StreamingMessage,
   type StreamingMessageProps,

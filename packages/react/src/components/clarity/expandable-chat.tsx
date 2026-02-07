@@ -29,10 +29,7 @@ import {
 // TYPES
 // ============================================================================
 
-/**
- * @deprecated Use `IdentifiedChatMessage` from `@clarity-chat/types` instead.
- * Kept for backwards compatibility; structurally compatible with the canonical type.
- */
+/** @see ChatMessage in @clarity-chat/types for the canonical version */
 export interface ChatMessage {
   id: string
   role: 'user' | 'assistant'

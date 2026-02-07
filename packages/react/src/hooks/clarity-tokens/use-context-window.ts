@@ -18,7 +18,6 @@ import type {
   UseContextWindowReturn,
   ContextWindowState,
   ContextStrategy,
-  TokenEncoding,
 } from './types'
 
 /**

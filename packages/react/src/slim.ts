@@ -42,10 +42,17 @@ export {
 } from './components/chat/ClarityChat'
 export { ChatWindow, type ChatWindowProps } from './components/chat/ChatWindow'
 export { ChatInput, type ChatInputProps } from './components/chat/ChatInput'
+/** @deprecated Use TanStackMessageList instead. See CODE_REUSE_AUDIT.md P0-12 */
 export {
   default as MessageList,
   type MessageListProps,
 } from './components/chat/VirtualizedMessageList'
+export {
+  TanStackMessageList,
+  AutoTanStackMessageList,
+  type TanStackMessageListProps,
+  type AutoTanStackMessageListProps,
+} from './components/chat/tanstack-message-list'
 export { Message, type MessageProps } from './components/message/message'
 
 // ============================================================================

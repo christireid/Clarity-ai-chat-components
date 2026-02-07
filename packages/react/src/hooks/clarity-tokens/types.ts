@@ -5,32 +5,16 @@
  * Uses types from @clarity-chat/token-optimization and local MODEL_REGISTRY.
  */
 
-import type { ChatMessage } from '@clarity-chat/token-optimization'
+import type { ChatMessage } from '@clarity-chat/types'
 import type { ModelId, TokenizerEncoding } from '../../utils/tokenization/model-registry'
 
 // Re-export types for convenience
-export type { ChatMessage } from '@clarity-chat/token-optimization'
+export type { ChatMessage } from '@clarity-chat/types'
 export type { ModelId, TokenizerEncoding } from '../../utils/tokenization/model-registry'
 
 // =============================================================================
 // Shared Types (defined locally to avoid duplicate package dependency)
 // =============================================================================
-
-/**
- * Model identifier - supports all models in MODEL_REGISTRY plus custom strings.
- *
- * @deprecated `ModelId` already accepts arbitrary strings via `(string & Record<never, never>)`,
- * so this union is redundant. Use `ModelId` directly instead.
- */
-export type ModelIdentifier = ModelId | string
-
-/**
- * Token encoding type.
- *
- * @deprecated `TokenizerEncoding` already covers all encoding types.
- * Use `TokenizerEncoding` directly instead if possible.
- */
-export type TokenEncoding = TokenizerEncoding | string
 
 /** Cost estimate result */
 export interface CostEstimate {
@@ -147,7 +131,7 @@ export interface GlobalOptimizationStats {
 
 export interface UseTokenCounterConfig {
   /** Model identifier for encoding selection */
-  model: ModelIdentifier
+  model: ModelId
   /** Debounce delay for reactive counting (ms) */
   debounceMs?: number
   /** Include chat message overhead tokens */
@@ -174,7 +158,7 @@ export interface UseTokenCounterReturn {
   /** Maximum tokens for current model */
   modelMaxTokens: number
   /** Encoding name for current model */
-  encodingName: TokenEncoding
+  encodingName: TokenizerEncoding
 }
 
 // =============================================================================
@@ -183,7 +167,7 @@ export interface UseTokenCounterReturn {
 
 export interface UseCostEstimatorConfig {
   /** Default model for estimation */
-  defaultModel?: ModelIdentifier
+  defaultModel?: ModelId
   /** Custom pricing overrides */
   pricingOverrides?: Record<string, { inputPer1M: number; outputPer1M: number }>
   /** Display currency */
@@ -198,7 +182,7 @@ export interface UseCostEstimatorReturn {
     inputText?: string
     inputTokens?: number
     messages?: ChatMessage[]
-    model?: ModelIdentifier
+    model?: ModelId
     expectedOutputTokens?: number
   }) => CostEstimate
   /** Record actual cost */
@@ -206,13 +190,13 @@ export interface UseCostEstimatorReturn {
     inputTokens: number
     outputTokens: number
     cachedTokens?: number
-    model: ModelIdentifier
+    model: ModelId
     category?: string
   }) => void
   /** Current tracking data */
   tracking: CostTracking
   /** Get pricing for a model */
-  getModelPricing: (model: ModelIdentifier) => {
+  getModelPricing: (model: ModelId) => {
     inputPer1M: number
     outputPer1M: number
     cachedInputPer1M?: number
@@ -739,7 +723,7 @@ export interface UseContextBudgetReturn {
 
 export interface UseOptimizedChatConfig {
   /** Model identifier */
-  model: ModelIdentifier
+  model: ModelId
   /** API endpoint */
   apiEndpoint?: string
   /** Maximum tokens */
@@ -813,7 +797,7 @@ export interface UseCostDashboardReturn {
 
 export interface TokenOptimizationProviderConfig {
   /** Default model */
-  defaultModel: ModelIdentifier
+  defaultModel: ModelId
   /** Enable persistence */
   enablePersistence: boolean
   /** Optimization level */

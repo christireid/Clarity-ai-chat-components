@@ -45,8 +45,16 @@ export {
 } from './hooks/use-clarity-chat'
 
 // 3. Message List - Virtualized, accessible message display
+/** @deprecated Use TanStackMessageList instead. See CODE_REUSE_AUDIT.md P0-12 */
 export { VirtualizedMessageList as MessageList } from './components/chat/VirtualizedMessageList'
+/** @deprecated Use TanStackMessageListProps instead. See CODE_REUSE_AUDIT.md P0-12 */
 export type { VirtualizedMessageListProps as MessageListProps } from './components/chat/VirtualizedMessageList'
+export {
+  TanStackMessageList,
+  AutoTanStackMessageList,
+  type TanStackMessageListProps,
+  type AutoTanStackMessageListProps,
+} from './components/chat/tanstack-message-list'
 
 // 4. Chat Input - Feature-rich input component
 export { ChatInput } from './components/chat/ChatInput'

@@ -45,20 +45,7 @@ export {
   getErrorRetryDelay,
 } from './errors'
 
-// Retry types and utilities
-export type {
-  RetryConfig,
-  RetryContext,
-  RetryStats,
-} from './retry'
-
-export {
-  DEFAULT_RETRY_CONFIG,
-  calculateRetryDelay,
-  withRetry,
-  withRetryWrapper,
-  RetryTracker,
-} from './retry'
+// retry.ts removed — use utils/resilience/retry-with-backoff instead
 
 // Circuit breaker types and utilities
 export {

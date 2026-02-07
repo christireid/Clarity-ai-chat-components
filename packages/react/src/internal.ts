@@ -100,7 +100,14 @@ export { ContextVisualizer } from './components/context/ContextVisualizer'
 export { ConversationList } from './components/conversation/ConversationList'
 export { ConversationBranchVisualizer } from './components/conversation/ConversationBranchVisualizer'
 export { Tabs, TabsList, TabsTrigger, TabsContent } from './components/ui/tabs'
+/** @deprecated Use TanStackMessageList instead. See CODE_REUSE_AUDIT.md P0-12 */
 export { VirtualizedMessageList } from './components/chat/VirtualizedMessageList'
+export {
+  TanStackMessageList,
+  AutoTanStackMessageList,
+  type TanStackMessageListProps,
+  type AutoTanStackMessageListProps,
+} from './components/chat/tanstack-message-list'
 export { MessageList } from './components/message/MessageList'
 export { VoiceInput } from './components/input/VoiceInput'
 export * from './components/ui/link-preview'

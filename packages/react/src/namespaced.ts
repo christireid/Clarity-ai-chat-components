@@ -32,9 +32,14 @@ import {
 } from './components/chat/ClarityChat'
 import { ChatWindow, type ChatWindowProps } from './components/chat/ChatWindow'
 import { ChatInput, type ChatInputProps } from './components/chat/ChatInput'
+/** @deprecated Use TanStackMessageList instead. See CODE_REUSE_AUDIT.md P0-12 */
 import MessageList, {
   type MessageListProps,
 } from './components/chat/VirtualizedMessageList'
+import {
+  TanStackMessageList,
+  type TanStackMessageListProps,
+} from './components/chat/tanstack-message-list'
 import { Message, type MessageProps } from './components/message/message'
 import { ThinkingIndicator } from './components/message/ThinkingIndicator'
 import {
@@ -95,6 +100,7 @@ export type {
   ChatWindowProps,
   ChatInputProps,
   MessageListProps,
+  TanStackMessageListProps,
   MessageProps,
   PromptSuggestion,
   // Hook options and returns (UseChatOptions/UseChatReturn removed in v2.0)
@@ -144,7 +150,9 @@ export const Clarity = {
   // Mid-level components
   Window: ChatWindow,
   Input: ChatInput,
+  /** @deprecated Use TanStackMessages instead. See CODE_REUSE_AUDIT.md P0-12 */
   Messages: MessageList,
+  TanStackMessages: TanStackMessageList,
   Message: Message,
 
   // UI components
