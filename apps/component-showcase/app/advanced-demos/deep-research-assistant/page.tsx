@@ -287,15 +287,18 @@ export default function DeepResearchAssistantPage() {
     return last?.role === 'assistant'
   }, [chat.isLoading, chat.messages])
 
-  const lastMsg =
-    chat.messages.length > 0
-      ? chat.messages[chat.messages.length - 1]
-      : undefined
-  const showThinkingIndicator =
-    chat.isLoading &&
-    (!lastMsg ||
-      lastMsg.role !== 'assistant' ||
-      !getTextContent(lastMsg.content))
+  const showThinkingIndicator = useMemo(() => {
+    const lastMsg =
+      chat.messages.length > 0
+        ? chat.messages[chat.messages.length - 1]
+        : undefined
+    return (
+      chat.isLoading &&
+      (!lastMsg ||
+        lastMsg.role !== 'assistant' ||
+        !getTextContent(lastMsg.content))
+    )
+  }, [chat.messages, chat.isLoading])
 
   return (
     <div>
@@ -508,10 +511,16 @@ export default function DeepResearchAssistantPage() {
               {/* Input */}
               <div className="border-t p-4 bg-card/50 relative">
                 {showSlashMenu && (
-                  <div className="absolute bottom-full left-4 mb-2 w-64 rounded-xl border bg-card shadow-xl z-50 py-1">
+                  <div
+                    className="absolute bottom-full left-4 mb-2 w-64 rounded-xl border bg-card shadow-xl z-50 py-1"
+                    role="listbox"
+                    aria-label="Slash commands"
+                  >
                     {slashCommands.map((cmd) => (
                       <button
                         key={cmd.id}
+                        role="option"
+                        aria-selected={false}
                         onClick={() => {
                           setInput(cmd.label + ' ')
                           setShowSlashMenu(false)

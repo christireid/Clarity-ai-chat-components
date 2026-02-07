@@ -241,15 +241,18 @@ export default function ArtifactStudioPage() {
   )
 
   // Thinking indicator: show while loading before assistant content arrives
-  const lastMsg =
-    chat.messages.length > 0
-      ? chat.messages[chat.messages.length - 1]
-      : undefined
-  const showThinkingIndicator =
-    chat.isLoading &&
-    (!lastMsg ||
-      lastMsg.role !== 'assistant' ||
-      !getTextContent(lastMsg.content))
+  const showThinkingIndicator = useMemo(() => {
+    const lastMsg =
+      chat.messages.length > 0
+        ? chat.messages[chat.messages.length - 1]
+        : undefined
+    return (
+      chat.isLoading &&
+      (!lastMsg ||
+        lastMsg.role !== 'assistant' ||
+        !getTextContent(lastMsg.content))
+    )
+  }, [chat.messages, chat.isLoading])
 
   // Show follow-up after assistant stops streaming
   const showFollowUp = useMemo(() => {
@@ -477,7 +480,12 @@ export default function ArtifactStudioPage() {
                       avatarGradient={AVATAR_GRADIENT}
                     />
 
-                    <ChatErrorDisplay error={chat.error} />
+                    <ChatErrorDisplay
+                      error={chat.error}
+                      variant="chat-bubble"
+                      avatarIcon="alert"
+                      onRetry={() => chat.reload()}
+                    />
 
                     <FollowUpSuggestions
                       showFollowUp={showFollowUp}
@@ -491,10 +499,16 @@ export default function ArtifactStudioPage() {
               {/* Input */}
               <div className="border-t p-4 bg-card/50 relative">
                 {showSlashMenu && (
-                  <div className="absolute bottom-full left-4 mb-2 w-64 rounded-xl border bg-card shadow-xl z-50 py-1">
+                  <div
+                    className="absolute bottom-full left-4 mb-2 w-64 rounded-xl border bg-card shadow-xl z-50 py-1"
+                    role="listbox"
+                    aria-label="Slash commands"
+                  >
                     {slashCommands.map((cmd) => (
                       <button
                         key={cmd.id}
+                        role="option"
+                        aria-selected={false}
                         onClick={() => {
                           if (cmd.id === 'preview') {
                             setArtifactPanelOpen((prev) => !prev)
@@ -614,7 +628,7 @@ export default function ArtifactStudioPage() {
                 activeArtifactId={activeArtifactId}
                 onActiveArtifactChange={setActiveArtifactId}
                 onClose={() => setArtifactPanelOpen(false)}
-                isGenerating={false}
+                isGenerating={chat.isLoading}
               />
             )}
           </div>

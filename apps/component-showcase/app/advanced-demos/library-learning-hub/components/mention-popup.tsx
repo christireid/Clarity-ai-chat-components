@@ -143,20 +143,21 @@ export function MentionPopup({
     highlighted?.scrollIntoView({ block: 'nearest' })
   }, [highlightIdx])
 
+  // Pre-compute grouped items with stable flat indices (avoids render-time side effects)
+  const groupedWithIndices = useMemo(() => {
+    const grouped: Record<string, MentionItem[]> = {}
+    for (const item of filteredItems) {
+      if (!grouped[item.type]) grouped[item.type] = []
+      grouped[item.type].push(item)
+    }
+    let idx = 0
+    return Object.entries(grouped).map(([type, groupItems]) => ({
+      type,
+      items: groupItems.map((item) => ({ item, flatIdx: idx++ })),
+    }))
+  }, [filteredItems])
+
   if (!visible || filteredItems.length === 0) return null
-
-  // Group by type (flat list for keyboard nav)
-  const grouped = filteredItems.reduce<Record<string, MentionItem[]>>(
-    (acc, item) => {
-      if (!acc[item.type]) acc[item.type] = []
-      acc[item.type].push(item)
-      return acc
-    },
-    {}
-  )
-
-  // Build a flat index mapping for keyboard navigation across groups
-  let flatIdx = 0
 
   return (
     <div
@@ -184,7 +185,7 @@ export function MentionPopup({
 
       <ScrollArea className="max-h-60">
         <div className="p-1.5" ref={listRef}>
-          {Object.entries(grouped).map(([type, groupItems]) => {
+          {groupedWithIndices.map(({ type, items: groupItems }) => {
             const config = typeConfig[type as keyof typeof typeConfig]
             const TypeIcon = config.icon
 
@@ -199,9 +200,8 @@ export function MentionPopup({
                     ({groupItems.length})
                   </span>
                 </div>
-                {groupItems.map((item) => {
-                  const currentFlatIdx = flatIdx++
-                  const isHighlighted = currentFlatIdx === highlightIdx
+                {groupItems.map(({ item, flatIdx }) => {
+                  const isHighlighted = flatIdx === highlightIdx
 
                   return (
                     <button
@@ -211,7 +211,7 @@ export function MentionPopup({
                       aria-selected={isHighlighted}
                       data-highlighted={isHighlighted}
                       onClick={() => onSelect(item)}
-                      onMouseEnter={() => setHighlightIdx(currentFlatIdx)}
+                      onMouseEnter={() => setHighlightIdx(flatIdx)}
                       className={cn(
                         'flex items-center gap-2.5 w-full px-3 py-1.5 rounded-lg transition-colors text-left',
                         isHighlighted ? 'bg-muted/70' : 'hover:bg-muted/70'

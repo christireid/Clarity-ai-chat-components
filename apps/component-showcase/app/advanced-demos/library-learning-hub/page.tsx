@@ -439,11 +439,16 @@ export default function LibraryLearningHubPage() {
   }, [chat.isLoading, chat.messages])
 
   // Determine if the last message is an assistant message currently streaming
-  const lastMessage = chat.messages[chat.messages.length - 1]
-  const isStreamingLastMessage =
-    chat.isLoading &&
-    lastMessage?.role === 'assistant' &&
-    getTextContent(lastMessage.content).length > 0
+  const { lastMessage, isStreamingLastMessage } = useMemo(() => {
+    const last = chat.messages[chat.messages.length - 1]
+    return {
+      lastMessage: last,
+      isStreamingLastMessage:
+        chat.isLoading &&
+        last?.role === 'assistant' &&
+        getTextContent(last.content).length > 0,
+    }
+  }, [chat.messages, chat.isLoading])
 
   return (
     <div>
