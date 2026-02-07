@@ -35,33 +35,6 @@ export function generateAriaId(prefix: string = 'aria'): string {
 // ============================================================================
 
 /**
- * Announce message to screen readers
- *
- * @deprecated Prefer using the `useA11y().announce()` hook from `@clarity-chat/primitives`
- * for React components. This function remains available for non-React contexts.
- */
-export function announceToScreenReader(
-  message: string,
-  priority: 'polite' | 'assertive' = 'polite'
-): void {
-  if (typeof document === 'undefined') return
-  const announcement = document.createElement('div')
-  announcement.setAttribute('role', 'status')
-  announcement.setAttribute('aria-live', priority)
-  announcement.setAttribute('aria-atomic', 'true')
-  announcement.className = 'sr-only'
-  announcement.textContent = message
-
-  document.body.appendChild(announcement)
-
-  setTimeout(() => {
-    if (announcement.parentNode) {
-      announcement.parentNode.removeChild(announcement)
-    }
-  }, 1000)
-}
-
-/**
  * Check if element is visible to screen readers
  */
 export function isVisibleToScreenReader(element: HTMLElement): boolean {
@@ -94,32 +67,6 @@ export function getAccessibleName(element: HTMLElement): string {
   }
 
   return element.textContent || ''
-}
-
-/**
- * Create live region for announcements
- *
- * @deprecated Prefer using `A11yProvider` from `@clarity-chat/primitives` which
- * automatically manages live regions with proper lifecycle handling.
- */
-export function createLiveRegion(id: string = 'live-region'): HTMLElement {
-  if (typeof document === 'undefined') {
-    // @ts-expect-error SSR fallback: no element available
-    return {}
-  }
-  let region = document.getElementById(id)
-
-  if (!region) {
-    region = document.createElement('div')
-    region.id = id
-    region.setAttribute('role', 'status')
-    region.setAttribute('aria-live', 'polite')
-    region.setAttribute('aria-atomic', 'true')
-    region.className = 'sr-only'
-    document.body.appendChild(region)
-  }
-
-  return region
 }
 
 // ============================================================================

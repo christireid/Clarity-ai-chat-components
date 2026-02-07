@@ -14,11 +14,11 @@ import {
 import type { Message } from '@clarity-chat/types'
 
 // Mock the accessibility utilities
-vi.mock('../../accessibility', () => ({
+vi.mock('../../utils/accessibility-helpers', () => ({
   announceToScreenReader: vi.fn(),
 }))
 
-import { announceToScreenReader } from '../../accessibility'
+import { announceToScreenReader } from '../../utils/accessibility-helpers'
 
 const mockAnnounce = vi.mocked(announceToScreenReader)
 

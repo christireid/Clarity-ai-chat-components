@@ -15,7 +15,7 @@
 
 import * as React from 'react'
 import type { Message } from '@clarity-chat/types'
-import { announceToScreenReader } from '../../accessibility'
+import { announceToScreenReader } from '../../utils/accessibility-helpers'
 
 export interface OptimisticMessage extends Message {
   /** Whether this is an optimistic (not yet confirmed) message */
