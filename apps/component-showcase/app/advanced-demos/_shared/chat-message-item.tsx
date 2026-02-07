@@ -5,6 +5,7 @@ import {
   MessageBubble,
   MarkdownRenderer,
   StreamingMessage,
+  EditableMessageContent,
   type MessageAvatar,
 } from '@clarity-chat/react'
 import { MessageActions } from './message-actions'
@@ -21,9 +22,7 @@ export interface ChatMessageItemProps {
   timestamp?: Date
   /** Editing state */
   editingMessageId: string | null
-  editingText: string
-  onEditingTextChange: (text: string) => void
-  onEditSave: (msgId: string) => void
+  onEditSaveWithText: (msgId: string, newText: string) => void
   onEditCancel: () => void
   /** Message action callbacks */
   feedback?: 'up' | 'down' | null
@@ -37,7 +36,8 @@ export interface ChatMessageItemProps {
 
 /**
  * Shared message item that wraps the library's MessageBubble component.
- * Replaces ~100 lines of duplicated custom message JSX across all 3 demo pages.
+ * Uses library's EditableMessageContent for inline editing (keyboard shortcuts,
+ * auto-focus, character count, animated transitions).
  */
 export const ChatMessageItem = memo(function ChatMessageItem({
   msg,
@@ -45,9 +45,7 @@ export const ChatMessageItem = memo(function ChatMessageItem({
   assistantAvatar,
   timestamp,
   editingMessageId,
-  editingText,
-  onEditingTextChange,
-  onEditSave,
+  onEditSaveWithText,
   onEditCancel,
   feedback,
   onFeedback,
@@ -92,28 +90,12 @@ export const ChatMessageItem = memo(function ChatMessageItem({
       disableAnimation={false}
     >
       {isEditing ? (
-        <div className="space-y-2">
-          <textarea
-            value={editingText}
-            onChange={(e) => onEditingTextChange(e.target.value)}
-            className="w-full bg-transparent border rounded-lg p-2 text-sm resize-none focus:outline-none focus:ring-1 focus:ring-primary/50"
-            rows={3}
-          />
-          <div className="flex gap-2 justify-end">
-            <button
-              onClick={onEditCancel}
-              className="text-xs px-2 py-1 rounded bg-muted"
-            >
-              Cancel
-            </button>
-            <button
-              onClick={() => msgId && onEditSave(msgId)}
-              className="text-xs px-2 py-1 rounded bg-primary text-primary-foreground"
-            >
-              Save &amp; Resend
-            </button>
-          </div>
-        </div>
+        <EditableMessageContent
+          content={content}
+          isEditing={true}
+          onSave={(newText) => onEditSaveWithText(msgId, newText)}
+          onCancel={onEditCancel}
+        />
       ) : isStreaming ? (
         <StreamingMessage
           content={content}

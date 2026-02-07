@@ -1,5 +1,6 @@
 'use client'
 
+import { memo } from 'react'
 import { Welcome, type WelcomeSuggestion } from '@clarity-chat/react'
 import { Globe, Search, BarChart3, BookOpen, Microscope } from 'lucide-react'
 
@@ -30,7 +31,7 @@ interface ResearchWelcomeScreenProps {
   onSuggestionClick: (text: string) => void
 }
 
-export function ResearchWelcomeScreen({
+export const ResearchWelcomeScreen = memo(function ResearchWelcomeScreen({
   onSuggestionClick,
 }: ResearchWelcomeScreenProps) {
   return (
@@ -64,4 +65,4 @@ export function ResearchWelcomeScreen({
       }
     />
   )
-}
+})

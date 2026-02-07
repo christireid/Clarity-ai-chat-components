@@ -1,6 +1,6 @@
 'use client'
 
-import { useMemo, useState, useEffect, useCallback, useRef } from 'react'
+import { useMemo, useState, useEffect, useCallback, useRef, memo } from 'react'
 import { cn, Badge, ScrollArea } from '@clarity-chat/primitives'
 import {
   Layers,
@@ -81,7 +81,7 @@ export interface SlashCommandMenuProps {
   className?: string
 }
 
-export function SlashCommandMenu({
+export const SlashCommandMenu = memo(function SlashCommandMenu({
   commands,
   filter,
   onSelect,
@@ -231,6 +231,6 @@ export function SlashCommandMenu({
       </div>
     </div>
   )
-}
+})
 
 export { SLASH_COMMANDS }

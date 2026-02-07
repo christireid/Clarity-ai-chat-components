@@ -112,6 +112,10 @@ export {
   type MessageAvatar,
 } from './components/message/MessageBubble'
 export {
+  EditableMessageContent,
+  type EditableMessageContentProps,
+} from './components/message/EditableMessageContent'
+export {
   TypingIndicator,
   type TypingIndicatorProps,
   type TypingIndicatorVariant,

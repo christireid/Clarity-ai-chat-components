@@ -371,10 +371,8 @@ export default function LibraryLearningHubPage() {
 
   const {
     editingMessageId,
-    editingText,
-    setEditingText,
     handleEditStart,
-    handleEditSave,
+    handleEditSaveWithText,
     handleEditCancel,
   } = useMessageEditing({ chat, onResend: (text) => handleSend(text) })
 
@@ -582,9 +580,7 @@ export default function LibraryLearningHubPage() {
                               : undefined
                           }
                           editingMessageId={editingMessageId}
-                          editingText={editingText}
-                          onEditingTextChange={setEditingText}
-                          onEditSave={handleEditSave}
+                          onEditSaveWithText={handleEditSaveWithText}
                           onEditCancel={handleEditCancel}
                           feedback={msg.id ? feedback[msg.id] : undefined}
                           onFeedback={handleFeedback}

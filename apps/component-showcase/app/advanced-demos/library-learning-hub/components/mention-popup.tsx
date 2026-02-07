@@ -1,6 +1,6 @@
 'use client'
 
-import { useMemo, useState, useEffect, useCallback, useRef } from 'react'
+import { useMemo, useState, useEffect, useCallback, useRef, memo } from 'react'
 import { cn, Badge, ScrollArea } from '@clarity-chat/primitives'
 import { AtSign, Layers, Code2, Plug } from 'lucide-react'
 
@@ -76,7 +76,7 @@ export interface MentionPopupProps {
   className?: string
 }
 
-export function MentionPopup({
+export const MentionPopup = memo(function MentionPopup({
   items,
   filter,
   onSelect,
@@ -260,6 +260,6 @@ export function MentionPopup({
       </div>
     </div>
   )
-}
+})
 
 export { MENTION_ITEMS }

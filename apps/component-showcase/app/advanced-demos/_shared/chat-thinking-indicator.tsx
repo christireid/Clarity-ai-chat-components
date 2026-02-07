@@ -1,5 +1,6 @@
 'use client'
 
+import { memo } from 'react'
 import { Bot, Loader2 } from 'lucide-react'
 
 interface ChatThinkingIndicatorProps {
@@ -11,7 +12,7 @@ interface ChatThinkingIndicatorProps {
   label?: string
 }
 
-export function ChatThinkingIndicator({
+export const ChatThinkingIndicator = memo(function ChatThinkingIndicator({
   visible,
   avatarGradient,
   label = 'Thinking...',
@@ -37,4 +38,4 @@ export function ChatThinkingIndicator({
       </div>
     </div>
   )
-}
+})

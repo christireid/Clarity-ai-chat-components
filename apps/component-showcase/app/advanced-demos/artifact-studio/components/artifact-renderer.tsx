@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useMemo, useCallback } from 'react'
+import { useState, useMemo, useCallback, memo } from 'react'
 import { cn } from '@clarity-chat/primitives'
 import { CodeBlock, MarkdownRenderer } from '@clarity-chat/react'
 import {
@@ -259,7 +259,7 @@ function renderJsonValue(
   return <span>{String(value)}</span>
 }
 
-export function ArtifactRenderer({
+export const ArtifactRenderer = memo(function ArtifactRenderer({
   content,
   type,
   language,
@@ -280,6 +280,6 @@ export function ArtifactRenderer({
       {type === 'json' && <JsonRenderer content={content} />}
     </div>
   )
-}
+})
 
 export { ARTIFACT_TYPE_ICONS as typeIcons }

@@ -202,10 +202,8 @@ export default function ArtifactStudioPage() {
   // Message editing
   const {
     editingMessageId,
-    editingText,
-    setEditingText,
     handleEditStart,
-    handleEditSave,
+    handleEditSaveWithText,
     handleEditCancel,
   } = useMessageEditing({
     chat,
@@ -421,9 +419,7 @@ export default function ArtifactStudioPage() {
                           isStreaming={streamingMsgId === msg.id}
                           assistantAvatar={AssistantAvatar}
                           editingMessageId={editingMessageId}
-                          editingText={editingText}
-                          onEditingTextChange={setEditingText}
-                          onEditSave={handleEditSave}
+                          onEditSaveWithText={handleEditSaveWithText}
                           onEditCancel={handleEditCancel}
                           feedback={msg.id ? feedback[msg.id] : undefined}
                           onFeedback={handleFeedback}

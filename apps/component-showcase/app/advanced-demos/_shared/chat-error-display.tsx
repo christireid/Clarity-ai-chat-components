@@ -1,5 +1,6 @@
 'use client'
 
+import { memo } from 'react'
 import { Bot, AlertCircle } from 'lucide-react'
 
 interface ChatErrorDisplayProps {
@@ -15,7 +16,7 @@ interface ChatErrorDisplayProps {
   onRetry?: () => void
 }
 
-export function ChatErrorDisplay({
+export const ChatErrorDisplay = memo(function ChatErrorDisplay({
   error,
   variant = 'inline',
   avatarIcon = 'bot',
@@ -68,4 +69,4 @@ export function ChatErrorDisplay({
       </div>
     </div>
   )
-}
+})

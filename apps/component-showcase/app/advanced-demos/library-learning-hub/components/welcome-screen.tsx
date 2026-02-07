@@ -1,5 +1,6 @@
 'use client'
 
+import { memo } from 'react'
 import { cn } from '@clarity-chat/primitives'
 import { Welcome, type WelcomeSuggestion } from '@clarity-chat/react'
 import {
@@ -50,7 +51,7 @@ interface WelcomeScreenProps {
   className?: string
 }
 
-export function WelcomeScreen({
+export const WelcomeScreen = memo(function WelcomeScreen({
   onSuggestionClick,
   className,
 }: WelcomeScreenProps) {
@@ -75,4 +76,4 @@ export function WelcomeScreen({
       }
     />
   )
-}
+})

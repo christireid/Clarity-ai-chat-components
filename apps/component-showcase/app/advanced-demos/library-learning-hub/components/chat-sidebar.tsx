@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, memo } from 'react'
 import { cn, ScrollArea } from '@clarity-chat/primitives'
 import {
   MessageSquarePlus,
@@ -30,7 +30,7 @@ interface ChatSidebarProps {
   className?: string
 }
 
-export function ChatSidebar({
+export const ChatSidebar = memo(function ChatSidebar({
   conversations,
   activeConversationId,
   onNewConversation,
@@ -238,4 +238,4 @@ export function ChatSidebar({
       </div>
     </div>
   )
-}
+})

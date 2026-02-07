@@ -1,5 +1,6 @@
 'use client'
 
+import { memo } from 'react'
 import { cn } from '@clarity-chat/primitives'
 import { FileUploadZone } from '../../_shared/file-upload'
 import type { FileAttachment } from '../../_shared/types'
@@ -28,7 +29,7 @@ const sourceTypes = [
 
 const depthLabels = ['Quick', 'Standard', 'Deep']
 
-export function ResearchContextPanel({
+export const ResearchContextPanel = memo(function ResearchContextPanel({
   researchFocus,
   onResearchFocusChange,
   preferredSources,
@@ -52,7 +53,9 @@ export function ResearchContextPanel({
       <label className="flex items-center justify-between cursor-pointer p-2.5 rounded-lg bg-blue-500/5 border border-blue-500/10">
         <div>
           <div className="text-sm font-medium">Deep Research Mode</div>
-          <div className="text-[10px] text-muted-foreground">Multi-step research with cross-referencing</div>
+          <div className="text-[10px] text-muted-foreground">
+            Multi-step research with cross-referencing
+          </div>
         </div>
         <button
           onClick={onToggleDeepResearch}
@@ -61,19 +64,23 @@ export function ResearchContextPanel({
             deepResearchMode ? 'bg-blue-500' : 'bg-muted-foreground/30'
           )}
         >
-          <div className={cn(
-            'absolute top-0.5 w-4 h-4 rounded-full bg-white transition-transform shadow-sm',
-            deepResearchMode ? 'translate-x-4' : 'translate-x-0.5'
-          )} />
+          <div
+            className={cn(
+              'absolute top-0.5 w-4 h-4 rounded-full bg-white transition-transform shadow-sm',
+              deepResearchMode ? 'translate-x-4' : 'translate-x-0.5'
+            )}
+          />
         </button>
       </label>
 
       {/* Research Focus */}
       <div className="space-y-1.5">
-        <label className="text-xs text-muted-foreground font-medium">Research Focus</label>
+        <label className="text-xs text-muted-foreground font-medium">
+          Research Focus
+        </label>
         <textarea
           value={researchFocus}
-          onChange={e => onResearchFocusChange(e.target.value)}
+          onChange={(e) => onResearchFocusChange(e.target.value)}
           placeholder="Describe your research focus..."
           rows={3}
           className="w-full text-sm px-3 py-2 rounded-lg bg-muted/30 border border-muted-foreground/10 focus:outline-none focus:ring-1 focus:ring-primary/50 resize-none placeholder:text-muted-foreground/40"
@@ -82,9 +89,11 @@ export function ResearchContextPanel({
 
       {/* Preferred Sources */}
       <div className="space-y-2">
-        <label className="text-xs text-muted-foreground font-medium">Preferred Sources</label>
+        <label className="text-xs text-muted-foreground font-medium">
+          Preferred Sources
+        </label>
         <div className="grid grid-cols-2 gap-1.5">
-          {sourceTypes.map(source => (
+          {sourceTypes.map((source) => (
             <button
               key={source.key}
               onClick={() => onToggleSource(source.key)}
@@ -104,8 +113,12 @@ export function ResearchContextPanel({
       {/* Research Depth */}
       <div className="space-y-2">
         <div className="flex justify-between text-xs">
-          <span className="text-muted-foreground font-medium">Research Depth</span>
-          <span className="font-medium text-blue-500">{depthLabels[depthLevel]}</span>
+          <span className="text-muted-foreground font-medium">
+            Research Depth
+          </span>
+          <span className="font-medium text-blue-500">
+            {depthLabels[depthLevel]}
+          </span>
         </div>
         <input
           type="range"
@@ -113,7 +126,7 @@ export function ResearchContextPanel({
           max={2}
           step={1}
           value={depthLevel}
-          onChange={e => onDepthLevelChange(Number(e.target.value))}
+          onChange={(e) => onDepthLevelChange(Number(e.target.value))}
           className="w-full accent-blue-500 h-1.5"
         />
         <div className="flex justify-between text-[10px] text-muted-foreground">
@@ -125,9 +138,11 @@ export function ResearchContextPanel({
 
       {/* File Upload */}
       <div className="space-y-1.5">
-        <label className="text-xs text-muted-foreground font-medium">Research Documents</label>
+        <label className="text-xs text-muted-foreground font-medium">
+          Research Documents
+        </label>
         <FileUploadZone files={files} onFilesChange={onFilesChange} />
       </div>
     </div>
   )
-}
+})

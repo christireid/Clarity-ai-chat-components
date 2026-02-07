@@ -1,5 +1,6 @@
 'use client'
 
+import { memo } from 'react'
 import { cn, Badge, ScrollArea } from '@clarity-chat/primitives'
 import { FileText, Trash2, Info } from 'lucide-react'
 import {
@@ -23,7 +24,7 @@ export interface ContextPanelProps {
   className?: string
 }
 
-export function ContextPanel({
+export const ContextPanel = memo(function ContextPanel({
   context,
   onContextChange,
   files,
@@ -99,4 +100,4 @@ export function ContextPanel({
       </div>
     </ScrollArea>
   )
-}
+})

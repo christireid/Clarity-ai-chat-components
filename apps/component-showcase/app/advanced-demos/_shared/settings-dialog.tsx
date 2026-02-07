@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, memo } from 'react'
 import { cn } from '@clarity-chat/primitives'
 import {
   Settings,
@@ -30,7 +30,7 @@ interface SettingsDialogProps {
   children?: React.ReactNode
 }
 
-export function SettingsDialog({
+export const SettingsDialog = memo(function SettingsDialog({
   open,
   onClose,
   temperature,
@@ -326,4 +326,4 @@ export function SettingsDialog({
       </div>
     </div>
   )
-}
+})

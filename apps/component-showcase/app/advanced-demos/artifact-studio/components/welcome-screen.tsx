@@ -1,5 +1,6 @@
 'use client'
 
+import { memo } from 'react'
 import { Welcome, type WelcomeSuggestion } from '@clarity-chat/react'
 import {
   Blocks,
@@ -48,7 +49,7 @@ interface ArtifactWelcomeScreenProps {
   onSuggestionClick: (text: string) => void
 }
 
-export function ArtifactWelcomeScreen({
+export const ArtifactWelcomeScreen = memo(function ArtifactWelcomeScreen({
   onSuggestionClick,
 }: ArtifactWelcomeScreenProps) {
   return (
@@ -78,4 +79,4 @@ export function ArtifactWelcomeScreen({
       }
     />
   )
-}
+})

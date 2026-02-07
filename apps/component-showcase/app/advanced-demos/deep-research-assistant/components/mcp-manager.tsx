@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, memo } from 'react'
 import { cn } from '@clarity-chat/primitives'
 import { useSafeTimeout } from '@clarity-chat/react'
 import {
@@ -50,7 +50,7 @@ const statusLabels: Record<string, string> = {
   connecting: 'Connecting...',
 }
 
-export function MCPManager({
+export const MCPManager = memo(function MCPManager({
   servers,
   onServersChange,
   className,
@@ -338,4 +338,4 @@ export function MCPManager({
       </div>
     </div>
   )
-}
+})

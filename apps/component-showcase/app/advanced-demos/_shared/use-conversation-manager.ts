@@ -64,15 +64,16 @@ export function useConversationManager({
   useEffect(() => {
     if (chat.messages.length > 0) {
       const s = syncRef.current
+      const mapMessage = (m: HookMessage): ChatMessage => ({
+        id: m.id || generateId(),
+        role: m.role as 'user' | 'assistant',
+        content: getTextContent(m.content),
+        timestamp: s?.getTimestamp?.(m.id || '') || new Date(),
+      })
       setConversations((prev) =>
         prev.map((c) => {
           if (c.id !== activeConvId) return c
-          const mapped: ChatMessage[] = chat.messages.map((m: HookMessage) => ({
-            id: m.id || generateId(),
-            role: m.role as 'user' | 'assistant',
-            content: getTextContent(m.content),
-            timestamp: s?.getTimestamp?.(m.id || '') || new Date(),
-          }))
+          const mapped: ChatMessage[] = chat.messages.map(mapMessage)
           const title = s?.deriveTitle
             ? s.deriveTitle(c.title, chat.messages)
             : c.title

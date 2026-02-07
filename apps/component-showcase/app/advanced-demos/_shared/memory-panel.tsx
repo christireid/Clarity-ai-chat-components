@@ -1,5 +1,6 @@
 'use client'
 
+import { memo } from 'react'
 import { cn } from '@clarity-chat/primitives'
 import { Brain, Database, Layers, Trash2, Activity } from 'lucide-react'
 import type { MemorySettings } from './types'
@@ -12,8 +13,17 @@ interface MemoryPanelProps {
   className?: string
 }
 
-export function MemoryPanel({ settings, onUpdate, extraToggles, onExtraToggle, className }: MemoryPanelProps) {
-  const usagePercent = Math.min((settings.usage / settings.maxTokens) * 100, 100)
+export const MemoryPanel = memo(function MemoryPanel({
+  settings,
+  onUpdate,
+  extraToggles,
+  onExtraToggle,
+  className,
+}: MemoryPanelProps) {
+  const usagePercent = Math.min(
+    (settings.usage / settings.maxTokens) * 100,
+    100
+  )
 
   return (
     <div className={cn('space-y-4', className)}>
@@ -32,10 +42,12 @@ export function MemoryPanel({ settings, onUpdate, extraToggles, onExtraToggle, c
             settings.enabled ? 'bg-purple-500' : 'bg-muted-foreground/30'
           )}
         >
-          <div className={cn(
-            'absolute top-0.5 w-4 h-4 rounded-full bg-white transition-transform shadow-sm',
-            settings.enabled ? 'translate-x-4' : 'translate-x-0.5'
-          )} />
+          <div
+            className={cn(
+              'absolute top-0.5 w-4 h-4 rounded-full bg-white transition-transform shadow-sm',
+              settings.enabled ? 'translate-x-4' : 'translate-x-0.5'
+            )}
+          />
         </button>
       </label>
 
@@ -43,16 +55,35 @@ export function MemoryPanel({ settings, onUpdate, extraToggles, onExtraToggle, c
         <>
           {/* Strategy */}
           <div className="space-y-2">
-            <p className="text-xs text-muted-foreground font-medium uppercase tracking-wider">Strategy</p>
+            <p className="text-xs text-muted-foreground font-medium uppercase tracking-wider">
+              Strategy
+            </p>
             <div className="grid grid-cols-1 gap-1.5">
               {[
-                { value: 'sliding-window' as const, label: 'Sliding Window', icon: Layers, desc: 'Recent messages only' },
-                { value: 'semantic-chunks' as const, label: 'Semantic Chunks', icon: Database, desc: 'Similarity-based retrieval' },
-                { value: 'vector-store' as const, label: 'Vector Store', icon: Activity, desc: 'Full semantic search' },
-              ].map(strategy => (
+                {
+                  value: 'sliding-window' as const,
+                  label: 'Sliding Window',
+                  icon: Layers,
+                  desc: 'Recent messages only',
+                },
+                {
+                  value: 'semantic-chunks' as const,
+                  label: 'Semantic Chunks',
+                  icon: Database,
+                  desc: 'Similarity-based retrieval',
+                },
+                {
+                  value: 'vector-store' as const,
+                  label: 'Vector Store',
+                  icon: Activity,
+                  desc: 'Full semantic search',
+                },
+              ].map((strategy) => (
                 <button
                   key={strategy.value}
-                  onClick={() => onUpdate({ ...settings, strategy: strategy.value })}
+                  onClick={() =>
+                    onUpdate({ ...settings, strategy: strategy.value })
+                  }
                   className={cn(
                     'flex items-center gap-2.5 p-2 rounded-lg text-left transition-colors text-sm',
                     settings.strategy === strategy.value
@@ -63,7 +94,9 @@ export function MemoryPanel({ settings, onUpdate, extraToggles, onExtraToggle, c
                   <strategy.icon className="h-3.5 w-3.5 shrink-0" />
                   <div className="flex-1 min-w-0">
                     <div className="font-medium text-xs">{strategy.label}</div>
-                    <div className="text-[10px] text-muted-foreground">{strategy.desc}</div>
+                    <div className="text-[10px] text-muted-foreground">
+                      {strategy.desc}
+                    </div>
                   </div>
                 </button>
               ))}
@@ -74,7 +107,9 @@ export function MemoryPanel({ settings, onUpdate, extraToggles, onExtraToggle, c
           <div className="space-y-2">
             <div className="flex justify-between text-xs">
               <span className="text-muted-foreground">Max Memory Tokens</span>
-              <span className="font-mono">{settings.maxTokens.toLocaleString()}</span>
+              <span className="font-mono">
+                {settings.maxTokens.toLocaleString()}
+              </span>
             </div>
             <input
               type="range"
@@ -82,7 +117,9 @@ export function MemoryPanel({ settings, onUpdate, extraToggles, onExtraToggle, c
               max={16384}
               step={512}
               value={settings.maxTokens}
-              onChange={e => onUpdate({ ...settings, maxTokens: Number(e.target.value) })}
+              onChange={(e) =>
+                onUpdate({ ...settings, maxTokens: Number(e.target.value) })
+              }
               className="w-full accent-purple-500 h-1.5"
             />
           </div>
@@ -90,20 +127,27 @@ export function MemoryPanel({ settings, onUpdate, extraToggles, onExtraToggle, c
           {/* Extra Toggles */}
           {extraToggles && extraToggles.length > 0 && (
             <div className="space-y-1.5">
-              {extraToggles.map(toggle => (
-                <label key={toggle.key} className="flex items-center justify-between cursor-pointer py-1">
+              {extraToggles.map((toggle) => (
+                <label
+                  key={toggle.key}
+                  className="flex items-center justify-between cursor-pointer py-1"
+                >
                   <span className="text-xs">{toggle.label}</span>
                   <button
                     onClick={() => onExtraToggle?.(toggle.key)}
                     className={cn(
                       'relative w-8 h-4 rounded-full transition-colors',
-                      toggle.checked ? 'bg-purple-500' : 'bg-muted-foreground/30'
+                      toggle.checked
+                        ? 'bg-purple-500'
+                        : 'bg-muted-foreground/30'
                     )}
                   >
-                    <div className={cn(
-                      'absolute top-0.5 w-3 h-3 rounded-full bg-white transition-transform shadow-sm',
-                      toggle.checked ? 'translate-x-4' : 'translate-x-0.5'
-                    )} />
+                    <div
+                      className={cn(
+                        'absolute top-0.5 w-3 h-3 rounded-full bg-white transition-transform shadow-sm',
+                        toggle.checked ? 'translate-x-4' : 'translate-x-0.5'
+                      )}
+                    />
                   </button>
                 </label>
               ))}
@@ -114,7 +158,10 @@ export function MemoryPanel({ settings, onUpdate, extraToggles, onExtraToggle, c
           <div className="p-2.5 rounded-lg bg-muted/30 space-y-1.5">
             <div className="flex justify-between text-xs">
               <span className="text-muted-foreground">Memory Usage</span>
-              <span className="font-mono text-xs">{settings.usage.toLocaleString()} / {settings.maxTokens.toLocaleString()}</span>
+              <span className="font-mono text-xs">
+                {settings.usage.toLocaleString()} /{' '}
+                {settings.maxTokens.toLocaleString()}
+              </span>
             </div>
             <div className="h-1.5 w-full bg-muted rounded-full overflow-hidden">
               <div
@@ -136,4 +183,4 @@ export function MemoryPanel({ settings, onUpdate, extraToggles, onExtraToggle, c
       )}
     </div>
   )
-}
+})

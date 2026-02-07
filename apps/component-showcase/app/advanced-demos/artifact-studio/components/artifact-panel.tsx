@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, memo } from 'react'
 import { cn } from '@clarity-chat/primitives'
 import { useClipboard } from '@clarity-chat/react'
 import {
@@ -39,7 +39,7 @@ const typeColors: Record<ArtifactType, string> = {
   json: 'text-yellow-300',
 }
 
-export function ArtifactPanel({
+export const ArtifactPanel = memo(function ArtifactPanel({
   artifacts,
   activeArtifactId,
   onActiveArtifactChange,
@@ -360,4 +360,4 @@ export function ArtifactPanel({
       )}
     </div>
   )
-}
+})

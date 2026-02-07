@@ -1,5 +1,6 @@
 'use client'
 
+import { memo } from 'react'
 import { cn } from '@clarity-chat/primitives'
 import { useClipboard } from '@clarity-chat/react'
 import {
@@ -23,7 +24,7 @@ interface MessageActionsProps {
   className?: string
 }
 
-export function MessageActions({
+export const MessageActions = memo(function MessageActions({
   role,
   feedback,
   onFeedback,
@@ -108,4 +109,4 @@ export function MessageActions({
       </button>
     </div>
   )
-}
+})

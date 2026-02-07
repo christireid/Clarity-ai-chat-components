@@ -38,8 +38,7 @@ export function useChatDerivedState(
 
   const followUpSuggestions = useMemo(
     () => deriveFollowUpSuggestions(chat.messages, defaultFollowUps),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [chat.messages]
+    [chat.messages, defaultFollowUps]
   )
 
   const streamingMsgId = useMemo(() => {

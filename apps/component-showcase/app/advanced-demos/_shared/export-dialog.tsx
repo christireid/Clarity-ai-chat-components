@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, memo } from 'react'
 import { cn } from '@clarity-chat/primitives'
 import {
   Download,
@@ -45,7 +45,7 @@ const defaultFormats = [
   },
 ]
 
-export function ChatExportDialog({
+export const ChatExportDialog = memo(function ChatExportDialog({
   open,
   onClose,
   onExport,
@@ -197,4 +197,4 @@ export function ChatExportDialog({
       </div>
     </div>
   )
-}
+})

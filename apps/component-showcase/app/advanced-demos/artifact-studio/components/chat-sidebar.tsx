@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, memo } from 'react'
 import { cn } from '@clarity-chat/primitives'
 import {
   Plus,
@@ -34,9 +34,18 @@ interface ArtifactSidebarProps {
   onToggleCollapsed: () => void
 }
 
-const techOptions = ['React', 'TypeScript', 'Next.js', 'Tailwind CSS', 'Node.js', 'Python', 'Vue', 'Svelte']
+const techOptions = [
+  'React',
+  'TypeScript',
+  'Next.js',
+  'Tailwind CSS',
+  'Node.js',
+  'Python',
+  'Vue',
+  'Svelte',
+]
 
-export function ArtifactSidebar({
+export const ArtifactSidebar = memo(function ArtifactSidebar({
   conversations,
   activeConversationId,
   onSelectConversation,
@@ -60,10 +69,18 @@ export function ArtifactSidebar({
   if (collapsed) {
     return (
       <div className="w-12 border-r bg-card/50 flex flex-col items-center py-3 gap-2 shrink-0">
-        <button onClick={onToggleCollapsed} className="p-2 rounded-lg hover:bg-muted transition-colors" title="Expand">
+        <button
+          onClick={onToggleCollapsed}
+          className="p-2 rounded-lg hover:bg-muted transition-colors"
+          title="Expand"
+        >
           <PanelLeft className="h-4 w-4" />
         </button>
-        <button onClick={onNewConversation} className="p-2 rounded-lg hover:bg-muted transition-colors" title="New session">
+        <button
+          onClick={onNewConversation}
+          className="p-2 rounded-lg hover:bg-muted transition-colors"
+          title="New session"
+        >
           <Plus className="h-4 w-4" />
         </button>
       </div>
@@ -79,10 +96,16 @@ export function ArtifactSidebar({
           <span className="font-semibold text-sm">Projects</span>
         </div>
         <div className="flex items-center gap-1">
-          <button onClick={onNewConversation} className="p-1.5 rounded-md hover:bg-muted transition-colors">
+          <button
+            onClick={onNewConversation}
+            className="p-1.5 rounded-md hover:bg-muted transition-colors"
+          >
             <Plus className="h-3.5 w-3.5" />
           </button>
-          <button onClick={onToggleCollapsed} className="p-1.5 rounded-md hover:bg-muted transition-colors">
+          <button
+            onClick={onToggleCollapsed}
+            className="p-1.5 rounded-md hover:bg-muted transition-colors"
+          >
             <PanelLeftClose className="h-3.5 w-3.5" />
           </button>
         </div>
@@ -90,7 +113,7 @@ export function ArtifactSidebar({
 
       {/* Conversations */}
       <div className="flex-1 overflow-y-auto p-2 space-y-1">
-        {conversations.map(conv => (
+        {conversations.map((conv) => (
           <button
             key={conv.id}
             onClick={() => onSelectConversation(conv.id)}
@@ -113,7 +136,10 @@ export function ArtifactSidebar({
                 </span>
               )}
               <button
-                onClick={e => { e.stopPropagation(); onDeleteConversation(conv.id) }}
+                onClick={(e) => {
+                  e.stopPropagation()
+                  onDeleteConversation(conv.id)
+                }}
                 className="p-0.5 rounded hover:bg-muted opacity-0 group-hover:opacity-100 transition-opacity"
               >
                 <Trash2 className="h-3 w-3 text-muted-foreground hover:text-red-500" />
@@ -130,19 +156,24 @@ export function ArtifactSidebar({
           className="flex items-center justify-between w-full px-3 py-2 text-sm font-medium hover:bg-muted/50 transition-colors"
         >
           <span className="text-xs">Project Context</span>
-          <ChevronDown className={cn('h-3 w-3 transition-transform', contextExpanded && 'rotate-180')} />
+          <ChevronDown
+            className={cn(
+              'h-3 w-3 transition-transform',
+              contextExpanded && 'rotate-180'
+            )}
+          />
         </button>
         {contextExpanded && (
           <div className="px-3 pb-3 space-y-2">
             <textarea
               value={masterContext}
-              onChange={e => onMasterContextChange(e.target.value)}
+              onChange={(e) => onMasterContextChange(e.target.value)}
               placeholder="Describe your project..."
               rows={2}
               className="w-full text-xs px-2 py-1.5 rounded bg-muted/30 border-0 focus:outline-none focus:ring-1 focus:ring-primary/50 resize-none placeholder:text-muted-foreground/40"
             />
             <div className="flex flex-wrap gap-1">
-              {techOptions.map(tech => (
+              {techOptions.map((tech) => (
                 <button
                   key={tech}
                   onClick={() => onToggleTech(tech)}
@@ -171,11 +202,16 @@ export function ArtifactSidebar({
             <Bookmark className="h-3.5 w-3.5 text-amber-500" />
             <span className="text-xs">Prompts</span>
           </div>
-          <ChevronDown className={cn('h-3 w-3 transition-transform', promptsExpanded && 'rotate-180')} />
+          <ChevronDown
+            className={cn(
+              'h-3 w-3 transition-transform',
+              promptsExpanded && 'rotate-180'
+            )}
+          />
         </button>
         {promptsExpanded && (
           <div className="px-2 pb-2 space-y-1">
-            {savedPrompts.map(prompt => (
+            {savedPrompts.map((prompt) => (
               <div key={prompt.id} className="flex items-center gap-1 group">
                 <button
                   onClick={() => onUsePrompt(prompt.text)}
@@ -195,8 +231,8 @@ export function ArtifactSidebar({
             <div className="flex gap-1 mt-1">
               <input
                 value={newPrompt}
-                onChange={e => setNewPrompt(e.target.value)}
-                onKeyDown={e => {
+                onChange={(e) => setNewPrompt(e.target.value)}
+                onKeyDown={(e) => {
                   if (e.key === 'Enter' && newPrompt.trim()) {
                     onSavePrompt(newPrompt.trim())
                     setNewPrompt('')
@@ -211,4 +247,4 @@ export function ArtifactSidebar({
       </div>
     </div>
   )
-}
+})

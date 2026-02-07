@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, memo } from 'react'
 import { cn, Badge, ScrollArea } from '@clarity-chat/primitives'
 import {
   BookOpen,
@@ -23,14 +23,46 @@ const categoryConfig: Record<
   KnowledgeEntry['category'],
   { icon: React.ReactNode; color: string; label: string }
 > = {
-  component: { icon: <Layers className="h-3 w-3" />, color: 'text-blue-500 bg-blue-500/10 border-blue-500/20', label: 'Component' },
-  hook: { icon: <Code2 className="h-3 w-3" />, color: 'text-green-500 bg-green-500/10 border-green-500/20', label: 'Hook' },
-  adapter: { icon: <Plug className="h-3 w-3" />, color: 'text-orange-500 bg-orange-500/10 border-orange-500/20', label: 'Adapter' },
-  memory: { icon: <Brain className="h-3 w-3" />, color: 'text-purple-500 bg-purple-500/10 border-purple-500/20', label: 'Memory' },
-  token: { icon: <Coins className="h-3 w-3" />, color: 'text-yellow-500 bg-yellow-500/10 border-yellow-500/20', label: 'Token' },
-  tool: { icon: <Wrench className="h-3 w-3" />, color: 'text-red-500 bg-red-500/10 border-red-500/20', label: 'Tool' },
-  rag: { icon: <Search className="h-3 w-3" />, color: 'text-cyan-500 bg-cyan-500/10 border-cyan-500/20', label: 'RAG' },
-  setup: { icon: <Settings className="h-3 w-3" />, color: 'text-gray-500 bg-gray-500/10 border-gray-500/20', label: 'Setup' },
+  component: {
+    icon: <Layers className="h-3 w-3" />,
+    color: 'text-blue-500 bg-blue-500/10 border-blue-500/20',
+    label: 'Component',
+  },
+  hook: {
+    icon: <Code2 className="h-3 w-3" />,
+    color: 'text-green-500 bg-green-500/10 border-green-500/20',
+    label: 'Hook',
+  },
+  adapter: {
+    icon: <Plug className="h-3 w-3" />,
+    color: 'text-orange-500 bg-orange-500/10 border-orange-500/20',
+    label: 'Adapter',
+  },
+  memory: {
+    icon: <Brain className="h-3 w-3" />,
+    color: 'text-purple-500 bg-purple-500/10 border-purple-500/20',
+    label: 'Memory',
+  },
+  token: {
+    icon: <Coins className="h-3 w-3" />,
+    color: 'text-yellow-500 bg-yellow-500/10 border-yellow-500/20',
+    label: 'Token',
+  },
+  tool: {
+    icon: <Wrench className="h-3 w-3" />,
+    color: 'text-red-500 bg-red-500/10 border-red-500/20',
+    label: 'Tool',
+  },
+  rag: {
+    icon: <Search className="h-3 w-3" />,
+    color: 'text-cyan-500 bg-cyan-500/10 border-cyan-500/20',
+    label: 'RAG',
+  },
+  setup: {
+    icon: <Settings className="h-3 w-3" />,
+    color: 'text-gray-500 bg-gray-500/10 border-gray-500/20',
+    label: 'Setup',
+  },
 }
 
 interface RagCitationsProps {
@@ -38,7 +70,10 @@ interface RagCitationsProps {
   className?: string
 }
 
-export function RagCitations({ entries, className }: RagCitationsProps) {
+export const RagCitations = memo(function RagCitations({
+  entries,
+  className,
+}: RagCitationsProps) {
   const [expandedId, setExpandedId] = useState<string | null>(null)
 
   if (entries.length === 0) return null
@@ -68,7 +103,12 @@ export function RagCitations({ entries, className }: RagCitationsProps) {
                     : 'bg-card/50 hover:bg-card'
                 )}
               >
-                <div className={cn('p-1 rounded', config.color.split(' ').slice(1).join(' '))}>
+                <div
+                  className={cn(
+                    'p-1 rounded',
+                    config.color.split(' ').slice(1).join(' ')
+                  )}
+                >
                   {config.icon}
                 </div>
                 <div className="min-w-0">
@@ -77,7 +117,10 @@ export function RagCitations({ entries, className }: RagCitationsProps) {
                   </div>
                   <Badge
                     variant="outline"
-                    className={cn('text-[9px] px-1 py-0', config.color.split(' ')[0])}
+                    className={cn(
+                      'text-[9px] px-1 py-0',
+                      config.color.split(' ')[0]
+                    )}
                   >
                     {config.label}
                   </Badge>
@@ -95,14 +138,24 @@ export function RagCitations({ entries, className }: RagCitationsProps) {
                   <div className="px-4 py-3 border-b bg-muted/30">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
-                        <div className={cn('p-1 rounded', config.color.split(' ').slice(1).join(' '))}>
+                        <div
+                          className={cn(
+                            'p-1 rounded',
+                            config.color.split(' ').slice(1).join(' ')
+                          )}
+                        >
                           {config.icon}
                         </div>
                         <div>
-                          <h4 className="text-sm font-semibold">{entry.title}</h4>
+                          <h4 className="text-sm font-semibold">
+                            {entry.title}
+                          </h4>
                           <Badge
                             variant="outline"
-                            className={cn('text-[9px]', config.color.split(' ')[0])}
+                            className={cn(
+                              'text-[9px]',
+                              config.color.split(' ')[0]
+                            )}
                           >
                             {config.label}
                           </Badge>
@@ -150,4 +203,4 @@ export function RagCitations({ entries, className }: RagCitationsProps) {
       </div>
     </div>
   )
-}
+})

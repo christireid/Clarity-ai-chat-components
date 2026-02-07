@@ -1,8 +1,16 @@
 'use client'
 
-import { useState, useRef } from 'react'
+import { useState, useRef, memo } from 'react'
 import { cn } from '@clarity-chat/primitives'
-import { Upload, X, FileText, FileCode, File, FileJson, Image } from 'lucide-react'
+import {
+  Upload,
+  X,
+  FileText,
+  FileCode,
+  File,
+  FileJson,
+  Image,
+} from 'lucide-react'
 import { type FileAttachment, generateId, formatFileSize } from './types'
 
 interface FileUploadProps {
@@ -32,13 +40,18 @@ function getFileIcon(name: string) {
   return fileIcons[ext] || <File className="h-4 w-4 text-muted-foreground" />
 }
 
-export function FileUploadZone({ files, onFilesChange, accept, className }: FileUploadProps) {
+export const FileUploadZone = memo(function FileUploadZone({
+  files,
+  onFilesChange,
+  accept,
+  className,
+}: FileUploadProps) {
   const [dragOver, setDragOver] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
 
   const handleFiles = (fileList: FileList | null) => {
     if (!fileList) return
-    const newFiles: FileAttachment[] = Array.from(fileList).map(f => ({
+    const newFiles: FileAttachment[] = Array.from(fileList).map((f) => ({
       id: generateId(),
       name: f.name,
       type: f.type || `text/${f.name.split('.').pop()}`,
@@ -48,16 +61,23 @@ export function FileUploadZone({ files, onFilesChange, accept, className }: File
   }
 
   const removeFile = (id: string) => {
-    onFilesChange(files.filter(f => f.id !== id))
+    onFilesChange(files.filter((f) => f.id !== id))
   }
 
   return (
     <div className={cn('space-y-2', className)}>
       {/* Drop Zone */}
       <div
-        onDragOver={e => { e.preventDefault(); setDragOver(true) }}
+        onDragOver={(e) => {
+          e.preventDefault()
+          setDragOver(true)
+        }}
         onDragLeave={() => setDragOver(false)}
-        onDrop={e => { e.preventDefault(); setDragOver(false); handleFiles(e.dataTransfer.files) }}
+        onDrop={(e) => {
+          e.preventDefault()
+          setDragOver(false)
+          handleFiles(e.dataTransfer.files)
+        }}
         onClick={() => inputRef.current?.click()}
         className={cn(
           'border-2 border-dashed rounded-xl p-4 text-center cursor-pointer transition-all',
@@ -77,8 +97,11 @@ export function FileUploadZone({ files, onFilesChange, accept, className }: File
           ref={inputRef}
           type="file"
           multiple
-          accept={accept || '.ts,.tsx,.js,.jsx,.json,.md,.txt,.pdf,.csv,.html,.css,.svg'}
-          onChange={e => handleFiles(e.target.files)}
+          accept={
+            accept ||
+            '.ts,.tsx,.js,.jsx,.json,.md,.txt,.pdf,.csv,.html,.css,.svg'
+          }
+          onChange={(e) => handleFiles(e.target.files)}
           className="hidden"
         />
       </div>
@@ -86,7 +109,7 @@ export function FileUploadZone({ files, onFilesChange, accept, className }: File
       {/* File Cards */}
       {files.length > 0 && (
         <div className="space-y-1.5">
-          {files.map(file => (
+          {files.map((file) => (
             <div
               key={file.id}
               className="flex items-center gap-2 p-2 rounded-lg bg-muted/30 group"
@@ -94,10 +117,15 @@ export function FileUploadZone({ files, onFilesChange, accept, className }: File
               {getFileIcon(file.name)}
               <div className="flex-1 min-w-0">
                 <div className="text-xs font-medium truncate">{file.name}</div>
-                <div className="text-[10px] text-muted-foreground">{formatFileSize(file.size)}</div>
+                <div className="text-[10px] text-muted-foreground">
+                  {formatFileSize(file.size)}
+                </div>
               </div>
               <button
-                onClick={e => { e.stopPropagation(); removeFile(file.id) }}
+                onClick={(e) => {
+                  e.stopPropagation()
+                  removeFile(file.id)
+                }}
                 className="p-1 rounded hover:bg-muted transition-colors opacity-0 group-hover:opacity-100"
               >
                 <X className="h-3 w-3 text-muted-foreground" />
@@ -108,4 +136,4 @@ export function FileUploadZone({ files, onFilesChange, accept, className }: File
       )}
     </div>
   )
-}
+})

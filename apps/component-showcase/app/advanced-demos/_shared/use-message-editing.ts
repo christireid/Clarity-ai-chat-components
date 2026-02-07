@@ -19,6 +19,8 @@ interface UseMessageEditingReturn {
   setEditingText: React.Dispatch<React.SetStateAction<string>>
   handleEditStart: (msgId: string) => void
   handleEditSave: (msgId: string) => void
+  /** Save with explicit new text (for library's EditableMessageContent). */
+  handleEditSaveWithText: (msgId: string, newText: string) => void
   handleEditCancel: () => void
 }
 
@@ -70,6 +72,25 @@ export function useMessageEditing({
     [chat, messages, editingText, onResend]
   )
 
+  const handleEditSaveWithText = useCallback(
+    (msgId: string, newText: string) => {
+      const currentMsgs = messages ?? chat.messages
+      const idx = currentMsgs.findIndex((m) => m.id === msgId)
+      if (idx === -1) return
+      chat.setMessages(currentMsgs.slice(0, idx))
+      setEditingMessageId(null)
+      setEditingText('')
+      timerRef.current = setTimeout(() => {
+        if (onResend) {
+          onResend(newText)
+        } else {
+          chat.append({ role: 'user', content: newText })
+        }
+      }, 100)
+    },
+    [chat, messages, onResend]
+  )
+
   const handleEditCancel = useCallback(() => {
     setEditingMessageId(null)
     setEditingText('')
@@ -81,6 +102,7 @@ export function useMessageEditing({
     setEditingText,
     handleEditStart,
     handleEditSave,
+    handleEditSaveWithText,
     handleEditCancel,
   }
 }
