@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useRef, useEffect } from 'react'
+import { useDemoChat } from '@/hooks/use-demo-chat'
 import { PageHeader } from '@/components/component-section'
 import { ChatInput, CodeBlock, MarkdownRenderer } from '@clarity-chat/react'
 import {
@@ -93,30 +94,12 @@ import {
 // CLAUDE CLONE - Authentic claude.ai interface
 // ============================================================================
 function ClaudeClone() {
-  const [input, setInput] = useState('')
+  const { input, setInput, messages, handleSend } = useDemoChat({
+    initialMessage: `Hello! I'm Claude, an AI assistant created by Anthropic to be helpful, harmless, and honest. How can I help you today?`,
+    assistantResponse:
+      "I understand you're asking about that. Let me provide a thoughtful and detailed response that considers multiple perspectives while being direct and helpful.",
+  })
   const [sidebarOpen, setSidebarOpen] = useState(true)
-  const [messages, setMessages] = useState([
-    {
-      role: 'assistant',
-      content: `Hello! I'm Claude, an AI assistant created by Anthropic to be helpful, harmless, and honest. How can I help you today?`,
-    },
-  ])
-
-  const handleSend = () => {
-    if (!input.trim()) return
-    setMessages([...messages, { role: 'user', content: input }])
-    setInput('')
-    setTimeout(() => {
-      setMessages((prev) => [
-        ...prev,
-        {
-          role: 'assistant',
-          content:
-            "I understand you're asking about that. Let me provide a thoughtful and detailed response that considers multiple perspectives while being direct and helpful.",
-        },
-      ])
-    }, 1000)
-  }
 
   return (
     <div className="flex h-[700px] bg-[#2b2a27] rounded-xl overflow-hidden border border-[#3d3c38]">
@@ -343,30 +326,12 @@ function ClaudeClone() {
 // CHATGPT CLONE - Authentic chat.openai.com interface
 // ============================================================================
 function ChatGPTClone() {
-  const [input, setInput] = useState('')
+  const { input, setInput, messages, handleSend } = useDemoChat({
+    initialMessage: `Hello! How can I help you today?`,
+    assistantResponse:
+      "That's a great question! Let me break this down into manageable parts and provide you with a comprehensive answer.",
+  })
   const [sidebarOpen, setSidebarOpen] = useState(true)
-  const [messages, setMessages] = useState([
-    {
-      role: 'assistant',
-      content: `Hello! How can I help you today?`,
-    },
-  ])
-
-  const handleSend = () => {
-    if (!input.trim()) return
-    setMessages([...messages, { role: 'user', content: input }])
-    setInput('')
-    setTimeout(() => {
-      setMessages((prev) => [
-        ...prev,
-        {
-          role: 'assistant',
-          content:
-            "That's a great question! Let me break this down into manageable parts and provide you with a comprehensive answer.",
-        },
-      ])
-    }, 1000)
-  }
 
   return (
     <div className="flex h-[700px] bg-[#212121] rounded-xl overflow-hidden">
@@ -845,29 +810,11 @@ function PerplexityClone() {
 // GROK CLONE - Authentic X/Grok interface
 // ============================================================================
 function GrokClone() {
-  const [input, setInput] = useState('')
-  const [messages, setMessages] = useState([
-    {
-      role: 'assistant',
-      content: `Hey there! I'm Grok, made by xAI. I'm designed to answer your questions with a bit of wit and an outside perspective on humanity. What can I help you with today?`,
-    },
-  ])
-
-  const handleSend = () => {
-    if (!input.trim()) return
-    setMessages([...messages, { role: 'user', content: input }])
-    setInput('')
-    setTimeout(() => {
-      setMessages((prev) => [
-        ...prev,
-        {
-          role: 'assistant',
-          content:
-            "Ah, that's an interesting one! Let me give you the straight answer while keeping things entertaining. Here's what you need to know...",
-        },
-      ])
-    }, 1000)
-  }
+  const { input, setInput, messages, handleSend } = useDemoChat({
+    initialMessage: `Hey there! I'm Grok, made by xAI. I'm designed to answer your questions with a bit of wit and an outside perspective on humanity. What can I help you with today?`,
+    assistantResponse:
+      "Ah, that's an interesting one! Let me give you the straight answer while keeping things entertaining. Here's what you need to know...",
+  })
 
   return (
     <div className="flex h-[700px] bg-black rounded-xl overflow-hidden">

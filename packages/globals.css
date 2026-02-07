@@ -74,6 +74,14 @@
     --message-system: 210 20% 96%;
     --message-system-foreground: 220 15% 40%;
 
+    /* AI-specific colors (used by Tailwind ai-* classes) */
+    --ai-assistant: hsl(221.2 83.2% 53.3%);
+    --ai-user: hsl(210 40% 98%);
+    --ai-system: hsl(210 20% 96%);
+    --ai-thinking: hsl(45.4 93.4% 47.5%);
+    --ai-tool: hsl(142.1 76.2% 36.3%);
+    --ai-error: hsl(0 84.2% 60.2%);
+
     /* Extended surfaces */
     --surface-muted: 210 40% 96.1%;
     --surface-elevated: 0 0% 100%;
@@ -198,6 +206,14 @@
     --message-assistant-foreground: 210 40% 98%;
     --message-system: 217.2 28% 20%;
     --message-system-foreground: 210 30% 80%;
+
+    /* AI-specific colors (dark mode) */
+    --ai-assistant: hsl(217.2 91.2% 59.8%);
+    --ai-user: hsl(217.2 32.6% 17.5%);
+    --ai-system: hsl(217.2 28% 20%);
+    --ai-thinking: hsl(45.4 93.4% 47.5%);
+    --ai-tool: hsl(142.1 70.6% 45.3%);
+    --ai-error: hsl(0 62.8% 30.6%);
 
     --surface-muted: 217.2 32.6% 17.5%;
     --surface-elevated: 222.2 47.4% 11.2%;

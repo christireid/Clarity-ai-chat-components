@@ -28,7 +28,6 @@
  * ```
  */
 
-import * as React from 'react'
 import type {
   Variants,
   Transition,
@@ -36,49 +35,54 @@ import type {
   VariantLabels,
 } from 'framer-motion'
 
+// Re-export canonical animation building blocks from primitives
+import { useReducedMotion } from '@clarity-chat/primitives'
+export { useReducedMotion } from '@clarity-chat/primitives'
+export {
+  durations,
+  springPresets,
+  easingPresets,
+  noAnimation,
+  getReducedMotionTransition,
+  interactiveVariants,
+  getReducedMotionInteractive,
+  staggerContainerVariants,
+  staggerItemVariants,
+  animationPresets as primitiveAnimationPresets,
+} from '@clarity-chat/primitives'
+
+import { durations, springPresets } from '@clarity-chat/primitives'
+
 /**
  * Duration constants for consistent animation timing
+ * Aligned with @clarity-chat/primitives canonical values
  */
 export const DURATION = {
-  /** Quick animations: 150ms */
-  FAST: 0.15,
-  /** Standard animations: 300ms */
-  NORMAL: 0.3,
-  /** Slower animations: 500ms */
-  SLOW: 0.5,
+  /** Quick animations: 100ms (matches primitives durations.fast) */
+  FAST: durations.fast,
+  /** Standard animations: 200ms (matches primitives durations.normal) */
+  NORMAL: durations.normal,
+  /** Slower animations: 300ms (matches primitives durations.slow) */
+  SLOW: durations.slow,
   /** Very slow animations: 800ms */
   VERY_SLOW: 0.8,
 } as const
 
 /**
  * Easing constants for consistent animation feel
+ * Spring presets aligned with @clarity-chat/primitives
  */
 export const EASING = {
   /** Standard easing curve */
   ease: [0.25, 0.46, 0.45, 0.94],
   /** Smooth easing */
   easeInOut: [0.42, 0, 0.58, 1],
-  /** Spring-like easing */
-  spring: {
-    type: 'spring' as const,
-    stiffness: 100,
-    damping: 10,
-    mass: 1,
-  },
-  /** Bouncy spring */
-  bounce: {
-    type: 'spring' as const,
-    stiffness: 200,
-    damping: 12,
-    mass: 1,
-  },
-  /** Gentle spring */
-  gentleSpring: {
-    type: 'spring' as const,
-    stiffness: 80,
-    damping: 15,
-    mass: 1,
-  },
+  /** Spring-like easing (aligned with primitives smooth) */
+  spring: springPresets.smooth,
+  /** Bouncy spring (aligned with primitives bouncy) */
+  bounce: springPresets.bouncy,
+  /** Gentle spring (aligned with primitives gentle) */
+  gentleSpring: springPresets.gentle,
 } as const
 
 /**
@@ -239,28 +243,7 @@ export function getReducedMotionVariants(
   }
 }
 
-/**
- * Check if the user prefers reduced motion
- */
-export function useReducedMotion(): boolean {
-  const [prefersReducedMotion, setPrefersReducedMotion] = React.useState(false)
-
-  React.useEffect(() => {
-    // Check initial preference
-    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
-    setPrefersReducedMotion(mediaQuery.matches)
-
-    // Listen for changes
-    const handler = (e: MediaQueryListEvent) => {
-      setPrefersReducedMotion(e.matches)
-    }
-
-    mediaQuery.addEventListener('change', handler)
-    return () => mediaQuery.removeEventListener('change', handler)
-  }, [])
-
-  return prefersReducedMotion
-}
+// useReducedMotion is imported and re-exported from @clarity-chat/primitives above
 
 /**
  * Configuration for animation orchestration

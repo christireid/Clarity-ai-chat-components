@@ -1,6 +1,10 @@
 /**
  * Async Utilities
  * Asynchronous operation helpers
+ *
+ * NOTE: These are simplified implementations for the primitives package which
+ * has no dependency on @clarity-chat/utils. For the full-featured versions
+ * (with cancel/flush support), use @clarity-chat/utils instead.
  */
 
 /**

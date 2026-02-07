@@ -5,6 +5,11 @@
  * failing services. Essential for production AI systems that depend
  * on external API providers.
  *
+ * NOTE: For model adapter/provider use cases, prefer the more complete
+ * implementation in `../../adapters/circuit-breaker` which includes
+ * CircuitBreakerRegistry for managing multiple providers and
+ * globalCircuitBreakerRegistry for app-wide circuit state.
+ *
  * States:
  * - CLOSED: Normal operation, requests pass through
  * - OPEN: Circuit tripped, requests fail immediately

@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { getStatusIcon } from '@/hooks/use-status-icon'
 import { PageHeader, ComponentSection } from '@/components/component-section'
 import {
   Card,
@@ -62,20 +63,7 @@ function ToastNotificationsDemo() {
     },
   ]
 
-  const getIcon = (type: string) => {
-    switch (type) {
-      case 'success':
-        return <CheckCircle className="h-5 w-5 text-green-500" />
-      case 'error':
-        return <XCircle className="h-5 w-5 text-red-500" />
-      case 'warning':
-        return <AlertTriangle className="h-5 w-5 text-yellow-500" />
-      case 'info':
-        return <Info className="h-5 w-5 text-blue-500" />
-      default:
-        return null
-    }
-  }
+  const getIcon = (type: string) => getStatusIcon(type)
 
   return (
     <Card>
