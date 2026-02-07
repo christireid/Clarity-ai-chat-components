@@ -1,8 +1,10 @@
 'use client'
 
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef } from 'react'
 import type { ChatMessage, ToolExecution, ThinkingStep } from '../types'
 import { MarkdownRenderer, useAutoScroll } from '@clarity-chat/react'
+import { useSafeInterval, useSafeTimeout } from '@clarity-chat/react/internal'
+import { StreamingCursor, AI_AVATAR_CLASSES } from '@/lib/demo-utils'
 import {
   Card,
   Button,
@@ -26,6 +28,11 @@ import {
 } from 'lucide-react'
 import { AgenticSidebar } from './agentic-sidebar'
 import { AgenticMessageBubble } from './agentic-message-bubble'
+
+let demoIdCounter = 0
+function nextDemoId(prefix = 'msg') {
+  return `${prefix}-${Date.now()}-${++demoIdCounter}`
+}
 
 export function AdvancedAgenticChatDemo() {
   const [input, setInput] = useState('')
@@ -60,19 +67,12 @@ Try asking me something that requires tools!`,
   const { scrollRef } = useAutoScroll({
     dependencies: [messages, streamingText, thinkingSteps],
   })
-  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
-
-  // Clean up interval on unmount to prevent memory leaks
-  useEffect(() => {
-    return () => {
-      if (intervalRef.current) {
-        clearInterval(intervalRef.current)
-      }
-    }
-  }, [])
+  const { setSafeInterval, clearAllIntervals } = useSafeInterval()
+  const { setSafeTimeout } = useSafeTimeout()
+  const intervalIdRef = useRef<ReturnType<typeof setInterval> | null>(null)
 
   const simulateToolExecution = async (toolName: string) => {
-    const toolId = String(Date.now())
+    const toolId = nextDemoId()
     const tool: ToolExecution = {
       id: toolId,
       name: toolName,
@@ -105,7 +105,7 @@ Try asking me something that requires tools!`,
       setThinkingSteps((prev) => [
         ...prev,
         {
-          id: String(Date.now()),
+          id: nextDemoId(),
           content: step,
           timestamp: new Date(),
         },
@@ -117,7 +117,7 @@ Try asking me something that requires tools!`,
     if (!input.trim() || isStreaming) return
 
     const userMessage: ChatMessage = {
-      id: String(Date.now()),
+      id: nextDemoId(),
       role: 'user',
       content: input,
       timestamp: new Date(),
@@ -130,7 +130,7 @@ Try asking me something that requires tools!`,
     setIsStreaming(true)
 
     // Update status to sent
-    setTimeout(() => {
+    setSafeTimeout(() => {
       setMessages((prev) =>
         prev.map((m) =>
           m.id === userMessage.id ? { ...m, status: 'sent' } : m
@@ -183,18 +183,18 @@ The requested task has been completed successfully. I've processed the informati
 Would you like me to elaborate on any of these points or perform additional analysis?`
 
     let index = 0
-    intervalRef.current = setInterval(() => {
+    intervalIdRef.current = setSafeInterval(() => {
       if (index < response.length) {
         setStreamingText((prev) => prev + response[index])
         index++
       } else {
-        clearInterval(intervalRef.current!)
-        intervalRef.current = null
+        clearAllIntervals()
+        intervalIdRef.current = null
         setIsStreaming(false)
         setMessages((prev) => [
           ...prev,
           {
-            id: String(Date.now()),
+            id: nextDemoId(),
             role: 'assistant',
             content: response,
             timestamp: new Date(),
@@ -234,7 +234,12 @@ Would you like me to elaborate on any of these points or perform additional anal
         {/* Header */}
         <div className="flex items-center justify-between px-4 py-3 border-b border-white/10 bg-white/5">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center shadow-lg">
+            <div
+              className={cn(
+                'w-10 h-10 rounded-xl flex items-center justify-center shadow-lg',
+                AI_AVATAR_CLASSES
+              )}
+            >
               <Brain className="h-5 w-5 text-white" />
             </div>
             <div>
@@ -303,7 +308,10 @@ Would you like me to elaborate on any of these points or perform additional anal
               <div className="flex gap-3">
                 <Avatar
                   fallback="AI"
-                  className="w-8 h-8 shrink-0 bg-gradient-to-br from-violet-500 to-purple-600 text-white"
+                  className={cn(
+                    'w-8 h-8 shrink-0 text-white',
+                    AI_AVATAR_CLASSES
+                  )}
                 />
                 <div className="flex-1 space-y-2">
                   {showThinking && thinkingSteps.length > 0 && (
@@ -360,7 +368,7 @@ Would you like me to elaborate on any of these points or perform additional anal
                   {streamingText && (
                     <div className="bg-muted rounded-2xl px-4 py-3">
                       <MarkdownRenderer content={streamingText} />
-                      <span className="inline-block w-2 h-4 bg-primary animate-pulse ml-1" />
+                      <StreamingCursor height="h-4" />
                     </div>
                   )}
                 </div>

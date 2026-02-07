@@ -12,6 +12,13 @@ interface State {
   error: Error | null
 }
 
+/**
+ * Application-level error boundary.
+ *
+ * Note: We use a custom class component rather than the library's ErrorBoundary
+ * because the library's ChatErrorBoundary has chat-specific fallback UI (streaming
+ * errors, provider errors) that is inappropriate for a top-level app shell.
+ */
 export class AppErrorBoundary extends Component<Props, State> {
   state: State = { hasError: false, error: null }
 

@@ -261,11 +261,11 @@ function ConnectedChatInner({
 
   return (
     <ClarityChatProvider
-      adapter={adapter as any}
-      onMessagesChange={noop as any}
-      onError={noop as any}
+      adapter={adapter as Parameters<typeof ClarityChatProvider>[0]['adapter']}
+      onMessagesChange={noop as () => void}
+      onError={noop as (error: Error) => void}
     >
-      <div className="rounded-xl border border-border/50 overflow-hidden flex flex-col bg-card">
+      <div className="glass-card overflow-hidden flex flex-col">
         {/* Header */}
         <div className="flex items-center gap-3 px-4 py-3 border-b border-border/50">
           <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center">

@@ -6,16 +6,21 @@ import {
   ClarityChatProvider,
   useClarityChatContext,
   useFocusTrap,
+  useLocalStorage,
 } from '@clarity-chat/react'
 import { createLiveChatAdapter } from '@/lib/live-chat-adapter'
 import { ApiKeyInput } from '@/components/api-key-input'
 import { parseSSEStream } from '@/lib/sse-utils'
-import { getStoredApiKey, getStoredModel } from '@/lib/api-key-store'
+import {
+  useAbortController,
+  StreamingCursor,
+  ApiKeyRequired,
+} from '@/lib/demo-utils'
 import type {
   ChatMessage,
   ClarityChatContextValue,
 } from '@/lib/clarity-chat-types'
-import { RotateCcw, Wifi, WifiOff, Send, Key } from 'lucide-react'
+import { RotateCcw, Wifi, WifiOff, Send } from 'lucide-react'
 
 // Helper to get typed context from provider
 function useTypedChat(): ClarityChatContextValue {
@@ -95,9 +100,7 @@ function ProviderChatUI() {
                 {msg.role}:
               </span>{' '}
               {msg.content}
-              {msg.status === 'streaming' && (
-                <span className="inline-block w-0.5 h-3 bg-foreground animate-pulse ml-0.5" />
-              )}
+              {msg.status === 'streaming' && <StreamingCursor />}
             </div>
           ))
         )}
@@ -128,8 +131,8 @@ function ProviderChatUI() {
 }
 
 export function ProviderContextDemo() {
-  const [apiKey, setApiKey] = useState(() => getStoredApiKey())
-  const [model, setModel] = useState(() => getStoredModel())
+  const [apiKey, setApiKey] = useState('')
+  const [model, setModel] = useState('claude-sonnet-4-5-20250929')
 
   const adapter = useMemo(
     () => (apiKey ? createLiveChatAdapter({ apiKey, model }) : null),
@@ -218,20 +221,22 @@ export function StreamingHookDemo() {
   const [inputVal, setInputVal] = useState('')
   const [isStreaming, setIsStreaming] = useState(false)
   const [streamContent, setStreamContent] = useState('')
-  const [apiKey] = useState(() => getStoredApiKey())
-  const [model] = useState(() => getStoredModel())
-  let abortController: AbortController | null = null
+  const [storedApiKey] = useLocalStorage('clarity-showcase-api-key', '')
+  const [storedModel] = useLocalStorage(
+    'clarity-showcase-model',
+    'claude-sonnet-4-5-20250929'
+  )
+  const { abort, create: createAbort } = useAbortController()
 
   const handleSend = async () => {
-    if (!inputVal.trim() || isStreaming || !apiKey) return
+    if (!inputVal.trim() || isStreaming || !storedApiKey) return
     const userMsg = inputVal.trim()
     setInputVal('')
     setMessages((prev) => [...prev, { role: 'user', content: userMsg }])
     setIsStreaming(true)
     setStreamContent('')
 
-    const controller = new AbortController()
-    abortController = controller
+    const controller = createAbort()
 
     try {
       const allMessages = [
@@ -243,9 +248,9 @@ export function StreamingHookDemo() {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'x-api-key': apiKey,
+          'x-api-key': storedApiKey,
         },
-        body: JSON.stringify({ messages: allMessages, model }),
+        body: JSON.stringify({ messages: allMessages, model: storedModel }),
         signal: controller.signal,
       })
 
@@ -278,12 +283,10 @@ export function StreamingHookDemo() {
         ])
       }
     }
-
-    abortController = null
   }
 
   const handleStop = () => {
-    abortController?.abort()
+    abort()
     setIsStreaming(false)
     if (streamContent) {
       setMessages((prev) => [
@@ -294,14 +297,9 @@ export function StreamingHookDemo() {
     }
   }
 
-  if (!apiKey) {
+  if (!storedApiKey) {
     return (
-      <div className="text-center py-6 text-muted-foreground">
-        <Key className="h-6 w-6 mx-auto mb-2 opacity-50" />
-        <p className="text-xs">
-          Set your API key in any demo above to enable streaming.
-        </p>
-      </div>
+      <ApiKeyRequired message="Set your API key in any demo above to enable streaming." />
     )
   }
 
@@ -329,7 +327,7 @@ export function StreamingHookDemo() {
             {isStreaming && streamContent && (
               <div className="text-xs p-2 rounded-lg bg-muted/50 max-w-[80%]">
                 {streamContent}
-                <span className="inline-block w-0.5 h-3 bg-foreground animate-pulse ml-0.5" />
+                <StreamingCursor />
               </div>
             )}
           </>

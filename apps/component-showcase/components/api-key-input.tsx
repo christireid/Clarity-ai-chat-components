@@ -2,13 +2,8 @@
 
 import { useState, useEffect } from 'react'
 import { Button, Badge, cn } from '@clarity-chat/primitives'
+import { useLocalStorage } from '@clarity-chat/react'
 import { Key, Check, AlertCircle, Eye, EyeOff } from 'lucide-react'
-import {
-  getStoredApiKey,
-  setStoredApiKey,
-  getStoredModel,
-  setStoredModel,
-} from '@/lib/api-key-store'
 
 const MODELS = [
   { id: 'claude-sonnet-4-5-20250929', name: 'Claude Sonnet 4.5' },
@@ -30,18 +25,24 @@ export function ApiKeyInput({
   className,
   compact,
 }: ApiKeyInputProps) {
+  const [storedApiKey, setStoredApiKey] = useLocalStorage(
+    'clarity-showcase-api-key',
+    ''
+  )
+  const [storedModel, setStoredModel] = useLocalStorage(
+    'clarity-showcase-model',
+    'claude-sonnet-4-5-20250929'
+  )
   const [apiKey, setApiKey] = useState('')
   const [model, setModel] = useState('claude-sonnet-4-5-20250929')
   const [showKey, setShowKey] = useState(false)
   const [status, setStatus] = useState<'empty' | 'saved' | 'invalid'>('empty')
 
   useEffect(() => {
-    const stored = getStoredApiKey()
-    const storedModel = getStoredModel()
-    if (stored) {
-      setApiKey(stored)
+    if (storedApiKey) {
+      setApiKey(storedApiKey)
       setStatus('saved')
-      onKeyChange?.(stored)
+      onKeyChange?.(storedApiKey)
     }
     if (storedModel) {
       setModel(storedModel)
@@ -66,10 +67,10 @@ export function ApiKeyInput({
     onKeyChange?.(trimmed)
   }
 
-  const handleModelChange = (newModel: string) => {
-    setModel(newModel)
-    setStoredModel(newModel)
-    onModelChange?.(newModel)
+  const handleModelChange = (value: string) => {
+    setModel(value)
+    setStoredModel(value)
+    onModelChange?.(value)
   }
 
   const maskedKey = apiKey ? `${apiKey.slice(0, 7)}...${apiKey.slice(-4)}` : ''

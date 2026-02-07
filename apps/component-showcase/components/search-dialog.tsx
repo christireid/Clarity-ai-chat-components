@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState, useCallback, useMemo, useRef } from 'react'
+import { useEffect, useState, useCallback, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
 import {
   CommandDialog,
@@ -12,7 +12,8 @@ import {
   CommandShortcut,
 } from '@clarity-chat/primitives'
 import { Search, Component, Puzzle, Layers, Loader2 } from 'lucide-react'
-import { buildSearchIndex, type SearchEntry } from '@/data/search-index'
+import { useSearchIndex } from '@/lib/use-search-index'
+import type { SearchEntry } from '@/data/search-index'
 
 const typeIcons = {
   component: Component,
@@ -32,9 +33,7 @@ export function openSearch() {
 export function SearchDialog() {
   const [open, setOpen] = useState(false)
   const [query, setQuery] = useState('')
-  const [index, setIndex] = useState<SearchEntry[]>([])
-  const [loading, setLoading] = useState(false)
-  const indexLoadedRef = useRef(false)
+  const { index, loading } = useSearchIndex()
   const router = useRouter()
 
   // Subscribe to openSearch() calls
@@ -45,20 +44,6 @@ export function SearchDialog() {
       listeners.delete(listener)
     }
   }, [])
-
-  // Load search index on first open (ref guard prevents concurrent loads)
-  useEffect(() => {
-    if (open && !indexLoadedRef.current && !loading) {
-      indexLoadedRef.current = true
-      setLoading(true)
-      buildSearchIndex()
-        .then(setIndex)
-        .catch((err) =>
-          console.error('[SearchDialog] Failed to build index:', err)
-        )
-        .finally(() => setLoading(false))
-    }
-  }, [open, loading])
 
   // Reset query when dialog closes
   const handleOpenChange = useCallback((nextOpen: boolean) => {

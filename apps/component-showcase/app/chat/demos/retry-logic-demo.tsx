@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef, useEffect } from 'react'
+import { useState } from 'react'
 import {
   Card,
   CardContent,
@@ -10,23 +10,16 @@ import {
   Badge,
   cn,
 } from '@clarity-chat/primitives'
+import { useSafeTimeout } from '@clarity-chat/react/internal'
 import { RotateCw, Loader2, CheckCircle } from 'lucide-react'
+import { STATUS_STYLES } from '@/lib/demo-utils'
 
 export function RetryLogicDemo() {
   const [attempt, setAttempt] = useState(0)
   const [status, setStatus] = useState<
     'idle' | 'retrying' | 'success' | 'failed'
   >('idle')
-
-  const mountedRef = useRef(true)
-  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
-
-  useEffect(() => {
-    return () => {
-      mountedRef.current = false
-      if (timerRef.current) clearTimeout(timerRef.current)
-    }
-  }, [])
+  const { setSafeTimeout } = useSafeTimeout()
 
   const simulateRetry = async () => {
     setStatus('retrying')
@@ -34,9 +27,8 @@ export function RetryLogicDemo() {
 
     for (let i = 1; i <= 3; i++) {
       await new Promise<void>((r) => {
-        timerRef.current = setTimeout(r, 1000)
+        setSafeTimeout(r, 1000)
       })
-      if (!mountedRef.current) return
       setAttempt(i + 1)
       if (i === 3) {
         setStatus('success')
@@ -57,16 +49,7 @@ export function RetryLogicDemo() {
           <div className="p-4 border rounded-lg">
             <div className="flex items-center justify-between mb-3">
               <span className="text-sm font-medium">Request Status</span>
-              <Badge
-                className={cn(
-                  status === 'idle' && 'bg-gray-500/20 text-gray-600',
-                  status === 'retrying' && 'bg-yellow-500/20 text-yellow-600',
-                  status === 'success' && 'bg-green-500/20 text-green-600',
-                  status === 'failed' && 'bg-red-500/20 text-red-600'
-                )}
-              >
-                {status}
-              </Badge>
+              <Badge className={cn(STATUS_STYLES[status])}>{status}</Badge>
             </div>
             {status === 'retrying' && (
               <div className="space-y-2">

@@ -26,6 +26,63 @@ export interface SSEError {
 
 export type SSEEvent = SSETextDelta | SSEThinkingDelta | SSEDone | SSEError
 
+// ---------------------------------------------------------------------------
+// Shared buffer parser — used by both the async generator and TransformStream
+// ---------------------------------------------------------------------------
+
+function parseLinesFromBuffer(
+  buffer: string,
+  chunk: string
+): { lines: string[]; remaining: string } {
+  const combined = buffer + chunk
+  const parts = combined.split('\n')
+  const remaining = parts.pop() || ''
+  return { lines: parts, remaining }
+}
+
+function parseSSELine(line: string): SSEEvent | null {
+  const trimmed = line.trim()
+  if (!trimmed || !trimmed.startsWith('data: ')) return null
+
+  const jsonStr = trimmed.slice(6)
+  if (jsonStr === '[DONE]') return null
+
+  try {
+    const event = JSON.parse(jsonStr)
+
+    if (
+      event.type === 'content_block_delta' &&
+      event.delta?.type === 'text_delta' &&
+      event.delta?.text
+    ) {
+      return { type: 'text', text: event.delta.text }
+    }
+
+    if (
+      event.type === 'content_block_delta' &&
+      event.delta?.type === 'thinking_delta' &&
+      event.delta?.thinking
+    ) {
+      return { type: 'thinking', thinking: event.delta.thinking }
+    }
+
+    if (event.type === 'message_stop') {
+      return { type: 'done' }
+    }
+
+    if (event.type === 'error') {
+      return {
+        type: 'error',
+        error: event.error?.message || 'Unknown stream error',
+      }
+    }
+  } catch {
+    // Skip unparseable lines
+  }
+
+  return null
+}
+
 /**
  * Async generator that reads an SSE ReadableStream and yields parsed events.
  */
@@ -41,53 +98,15 @@ export async function* parseSSEStream(
       const { done, value } = await reader.read()
       if (done) break
 
-      buffer += decoder.decode(value, { stream: true })
-      const lines = buffer.split('\n')
-      buffer = lines.pop() || ''
+      const { lines, remaining } = parseLinesFromBuffer(
+        buffer,
+        decoder.decode(value, { stream: true })
+      )
+      buffer = remaining
 
       for (const line of lines) {
-        const trimmed = line.trim()
-        if (!trimmed || !trimmed.startsWith('data: ')) continue
-
-        const jsonStr = trimmed.slice(6)
-        if (jsonStr === '[DONE]') continue
-
-        try {
-          const event = JSON.parse(jsonStr)
-
-          if (
-            event.type === 'content_block_delta' &&
-            event.delta?.type === 'text_delta' &&
-            event.delta?.text
-          ) {
-            yield { type: 'text', text: event.delta.text }
-          }
-
-          if (
-            event.type === 'content_block_delta' &&
-            event.delta?.type === 'thinking_delta' &&
-            event.delta?.thinking
-          ) {
-            yield { type: 'thinking', thinking: event.delta.thinking }
-          }
-
-          if (event.type === 'message_delta' && event.usage) {
-            // Usage info comes with message_delta
-          }
-
-          if (event.type === 'message_stop') {
-            yield { type: 'done' }
-          }
-
-          if (event.type === 'error') {
-            yield {
-              type: 'error',
-              error: event.error?.message || 'Unknown stream error',
-            }
-          }
-        } catch {
-          // Skip unparseable lines
-        }
+        const event = parseSSELine(line)
+        if (event) yield event
       }
     }
   } finally {
@@ -109,42 +128,24 @@ export function createSSETextTransform(): TransformStream<
 
   return new TransformStream({
     transform(chunk, controller) {
-      buffer += decoder.decode(chunk, { stream: true })
-      const lines = buffer.split('\n')
-      buffer = lines.pop() || ''
+      const { lines, remaining } = parseLinesFromBuffer(
+        buffer,
+        decoder.decode(chunk, { stream: true })
+      )
+      buffer = remaining
 
       for (const line of lines) {
-        const trimmed = line.trim()
-        if (!trimmed || !trimmed.startsWith('data: ')) continue
-
-        try {
-          const event = JSON.parse(trimmed.slice(6))
-          if (
-            event.type === 'content_block_delta' &&
-            event.delta?.type === 'text_delta' &&
-            event.delta?.text
-          ) {
-            controller.enqueue(encoder.encode(event.delta.text))
-          }
-        } catch {
-          // Skip
+        const event = parseSSELine(line)
+        if (event && event.type === 'text') {
+          controller.enqueue(encoder.encode(event.text))
         }
       }
     },
-    flush() {
-      // Process remaining buffer
+    flush(controller) {
       if (buffer.trim()) {
-        try {
-          const event = JSON.parse(buffer.trim().replace(/^data: /, ''))
-          if (
-            event.type === 'content_block_delta' &&
-            event.delta?.type === 'text_delta' &&
-            event.delta?.text
-          ) {
-            // Final chunk
-          }
-        } catch {
-          // Ignore
+        const event = parseSSELine(buffer)
+        if (event && event.type === 'text') {
+          controller.enqueue(encoder.encode(event.text))
         }
       }
     },

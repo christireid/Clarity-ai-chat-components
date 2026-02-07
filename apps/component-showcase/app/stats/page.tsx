@@ -1,7 +1,10 @@
 'use client'
 
-import { useEffect, useState } from 'react'
-import { PageHeader } from '@/components/component-section'
+import {
+  PageHeader,
+  ComponentSection,
+  StatCard,
+} from '@/components/component-section'
 import {
   PieChart,
   Component,
@@ -9,8 +12,10 @@ import {
   Layers,
   Link2,
   FileCode,
+  BarChart3,
+  LayoutList,
 } from 'lucide-react'
-import { buildSearchIndex, type SearchEntry } from '@/data/search-index'
+import { useSearchIndex } from '@/lib/use-search-index'
 
 // ---------------------------------------------------------------------------
 // Bar Chart (pure CSS)
@@ -42,32 +47,6 @@ function BarChart({
           </span>
         </div>
       ))}
-    </div>
-  )
-}
-
-// ---------------------------------------------------------------------------
-// Stat Card
-// ---------------------------------------------------------------------------
-
-function StatBox({
-  value,
-  label,
-  icon: Icon,
-}: {
-  value: string | number
-  label: string
-  icon: React.ElementType
-}) {
-  return (
-    <div className="glass-card p-5 relative overflow-hidden">
-      <div className="flex items-center gap-3 mb-2">
-        <div className="icon-container-sm">
-          <Icon className="h-4 w-4" />
-        </div>
-      </div>
-      <p className="text-2xl font-bold gradient-text">{value}</p>
-      <p className="text-sm text-muted-foreground">{label}</p>
     </div>
   )
 }
@@ -110,7 +89,7 @@ function TypeRing({
             cy="18"
             r="15.915"
             fill="none"
-            stroke="hsl(280 100% 70% / 0.5)"
+            stroke="hsl(var(--chart-violet) / 0.5)"
             strokeWidth="3"
             strokeDasharray={`${pctHooks} ${100 - pctHooks}`}
             strokeDashoffset={`${-pctComponents}`}
@@ -120,7 +99,7 @@ function TypeRing({
             cy="18"
             r="15.915"
             fill="none"
-            stroke="hsl(200 100% 60% / 0.5)"
+            stroke="hsl(var(--chart-cyan) / 0.5)"
             strokeWidth="3"
             strokeDasharray={`${pctPrimitives} ${100 - pctPrimitives}`}
             strokeDashoffset={`${-(pctComponents + pctHooks)}`}
@@ -138,14 +117,14 @@ function TypeRing({
         <div className="flex items-center gap-2">
           <span
             className="w-3 h-3 rounded-full"
-            style={{ background: 'hsl(280 100% 70% / 0.5)' }}
+            style={{ background: 'hsl(var(--chart-violet) / 0.5)' }}
           />
           <span>Hooks ({hooks})</span>
         </div>
         <div className="flex items-center gap-2">
           <span
             className="w-3 h-3 rounded-full"
-            style={{ background: 'hsl(200 100% 60% / 0.5)' }}
+            style={{ background: 'hsl(var(--chart-cyan) / 0.5)' }}
           />
           <span>Primitives ({primitives})</span>
         </div>
@@ -159,15 +138,7 @@ function TypeRing({
 // ---------------------------------------------------------------------------
 
 export default function StatsPage() {
-  const [index, setIndex] = useState<SearchEntry[]>([])
-  const [loading, setLoading] = useState(true)
-
-  useEffect(() => {
-    buildSearchIndex()
-      .then(setIndex)
-      .catch((err) => console.error('[StatsPage] Failed to load index:', err))
-      .finally(() => setLoading(false))
-  }, [])
+  const { index, loading } = useSearchIndex()
 
   // Derive metrics from the search index
   const totalDocs = index.length
@@ -225,24 +196,34 @@ export default function StatsPage() {
 
       {/* Summary Cards */}
       <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-        <StatBox value={totalDocs} label="Documented entries" icon={FileCode} />
-        <StatBox value={components} label="Components" icon={Component} />
-        <StatBox value={hooks} label="Hooks" icon={Puzzle} />
-        <StatBox value={categories} label="Categories" icon={Layers} />
+        <StatCard
+          value={totalDocs}
+          label="Documented entries"
+          icon={FileCode}
+        />
+        <StatCard value={components} label="Components" icon={Component} />
+        <StatCard value={hooks} label="Hooks" icon={Puzzle} />
+        <StatCard value={categories} label="Categories" icon={Layers} />
       </div>
 
       {/* Type Distribution + Source Coverage */}
       <div className="grid md:grid-cols-2 gap-6 mb-8">
-        <div className="glass-card p-6">
-          <h3 className="text-lg font-semibold mb-4">Type Distribution</h3>
+        <ComponentSection
+          title="Type Distribution"
+          description="Breakdown of documented entries by type."
+          icon={PieChart}
+        >
           <TypeRing
             components={components}
             hooks={hooks}
             primitives={primitives}
           />
-        </div>
-        <div className="glass-card p-6">
-          <h3 className="text-lg font-semibold mb-4">Source Coverage</h3>
+        </ComponentSection>
+        <ComponentSection
+          title="Source Coverage"
+          description="How many entries are linked to source code."
+          icon={Link2}
+        >
           <div className="space-y-4">
             <div>
               <div className="flex justify-between text-sm mb-1">
@@ -279,22 +260,26 @@ export default function StatsPage() {
               <span>Source links point to GitHub repository files</span>
             </div>
           </div>
-        </div>
+        </ComponentSection>
       </div>
 
       {/* Category Breakdown */}
-      <div className="glass-card p-6 mb-8">
-        <h3 className="text-lg font-semibold mb-4">Components per Category</h3>
+      <ComponentSection
+        title="Components per Category"
+        description="Number of documented entries in each category."
+        icon={BarChart3}
+      >
         <BarChart data={categoryCounts} />
-      </div>
+      </ComponentSection>
 
       {/* Top Sections */}
-      <div className="glass-card p-6 mb-8">
-        <h3 className="text-lg font-semibold mb-4">
-          Largest Documentation Sections
-        </h3>
+      <ComponentSection
+        title="Largest Documentation Sections"
+        description="Sections with the most documented entries."
+        icon={LayoutList}
+      >
         <BarChart data={sectionCounts} />
-      </div>
+      </ComponentSection>
     </div>
   )
 }

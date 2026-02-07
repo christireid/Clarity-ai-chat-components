@@ -1,9 +1,16 @@
 /**
  * Local type definitions matching @clarity-chat/react provider types.
  *
- * These are defined locally because the @clarity-chat/react package
- * does not ship .d.ts declaration files — TypeScript cannot infer
- * the correct types from the bundled JS alone.
+ * These mirror the canonical types in:
+ * - packages/react/src/providers/ClarityChatProvider.tsx
+ * - packages/react/src/adapters/types.ts
+ *
+ * They are defined locally because the dev-mode tsup config has `dts: false`
+ * (sandbox memory constraint). The production build (`tsup.config.production.ts`)
+ * enables .d.ts generation, which would make this file unnecessary.
+ *
+ * TODO: Once deployed with production build, delete this file and import
+ * types directly from '@clarity-chat/react'.
  */
 
 export type MessageRole = 'user' | 'assistant' | 'system' | 'tool'

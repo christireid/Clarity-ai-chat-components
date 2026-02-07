@@ -1,7 +1,12 @@
 'use client'
 
-import { useState, useEffect, useRef, useCallback } from 'react'
+import { useState, useCallback } from 'react'
 import { Button, Badge, cn } from '@clarity-chat/primitives'
+import { useCircuitBreaker } from '@clarity-chat/react'
+import {
+  useRetryWithBackoff,
+  useSafeInterval,
+} from '@clarity-chat/react/internal'
 import {
   Play,
   X,
@@ -12,73 +17,55 @@ import {
   ShieldOff,
 } from 'lucide-react'
 
+// ---------------------------------------------------------------------------
+// Demo: useRetryWithBackoff – using the real hook
+// ---------------------------------------------------------------------------
+
 export function RetryWithBackoffDemo() {
-  const [isRetrying, setIsRetrying] = useState(false)
-  const [attempt, setAttempt] = useState(0)
-  const [maxRetries] = useState(3)
   const [log, setLog] = useState<string[]>([])
-  const [lastError, setLastError] = useState<string | null>(null)
-  const cancelledRef = useRef(false)
-  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   const addLog = useCallback((msg: string) => {
     setLog((prev) => [...prev, msg])
   }, [])
 
-  const cancel = useCallback(() => {
-    cancelledRef.current = true
-    if (timerRef.current) clearTimeout(timerRef.current)
-    setIsRetrying(false)
-    setAttempt(0)
-    addLog('Cancelled by user')
-  }, [addLog])
+  const { execute, isRetrying, attempt, cancel, lastError, reset } =
+    useRetryWithBackoff({
+      maxRetries: 3,
+      baseDelay: 1000,
+      maxDelay: 8000,
+      onRetry: (attemptNum: number, delay: number) => {
+        addLog(`Retry #${attemptNum} after ${delay}ms delay...`)
+      },
+    })
 
-  const execute = useCallback(async () => {
+  const maxRetries = 3
+
+  const handleExecute = useCallback(async () => {
     setLog([])
-    setLastError(null)
-    setIsRetrying(true)
-    setAttempt(0)
-    cancelledRef.current = false
+    addLog('Initial attempt...')
 
-    for (let i = 0; i <= maxRetries; i++) {
-      if (cancelledRef.current) return
-      setAttempt(i)
-
-      const delay = Math.min(1000 * Math.pow(2, i), 8000)
-      addLog(
-        i === 0 ? 'Initial attempt...' : `Retry #${i} after ${delay}ms delay...`
-      )
-
-      await new Promise<void>((resolve) => {
-        timerRef.current = setTimeout(resolve, i === 0 ? 500 : delay)
-      })
-
-      if (cancelledRef.current) return
-
-      const shouldFail = i < maxRetries
-      if (shouldFail) {
-        const errorMsg = `Request failed (${500 + i * 2})`
-        setLastError(errorMsg)
+    try {
+      await execute(async () => {
+        // Simulate a request that always fails
+        const errorMsg = `Request failed (${500 + Math.floor(Math.random() * 10)})`
         addLog(`Failed: ${errorMsg}`)
-      } else {
-        addLog('All retries exhausted')
-        setLastError('Request failed after all retries')
-      }
+        throw new Error(errorMsg)
+      })
+    } catch {
+      addLog('All retries exhausted')
     }
-    setIsRetrying(false)
-  }, [maxRetries, addLog])
+  }, [execute, addLog])
 
-  useEffect(() => {
-    return () => {
-      if (timerRef.current) clearTimeout(timerRef.current)
-    }
-  }, [])
+  const handleCancel = useCallback(() => {
+    cancel()
+    addLog('Cancelled by user')
+  }, [cancel, addLog])
 
   return (
     <div className="space-y-4">
       <div className="flex gap-2">
         <Button
-          onClick={execute}
+          onClick={handleExecute}
           disabled={isRetrying}
           variant="default"
           size="sm"
@@ -87,7 +74,7 @@ export function RetryWithBackoffDemo() {
           Simulate Failing Request
         </Button>
         {isRetrying && (
-          <Button onClick={cancel} variant="destructive" size="sm">
+          <Button onClick={handleCancel} variant="destructive" size="sm">
             <X className="h-4 w-4 mr-1" />
             Cancel
           </Button>
@@ -120,7 +107,9 @@ export function RetryWithBackoffDemo() {
           <Badge variant={isRetrying ? 'default' : 'secondary'}>
             {isRetrying ? 'Retrying...' : 'Idle'}
           </Badge>
-          {lastError && <Badge variant="destructive">{lastError}</Badge>}
+          {lastError && (
+            <Badge variant="destructive">{(lastError as Error).message}</Badge>
+          )}
         </div>
       </div>
 
@@ -142,31 +131,31 @@ export function RetryWithBackoffDemo() {
   )
 }
 
+// ---------------------------------------------------------------------------
+// Demo: useSafeInterval – using the real hook
+// ---------------------------------------------------------------------------
+
 export function SafeIntervalDemo() {
   const [count, setCount] = useState(0)
   const [isRunning, setIsRunning] = useState(false)
-  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
+  const { setSafeInterval, clearAllIntervals } = useSafeInterval()
+  const [currentId, setCurrentId] = useState<ReturnType<
+    typeof setInterval
+  > | null>(null)
 
   const start = useCallback(() => {
     setIsRunning(true)
-    intervalRef.current = setInterval(() => {
+    const id = setSafeInterval(() => {
       setCount((c) => c + 1)
     }, 100)
-  }, [])
+    setCurrentId(id)
+  }, [setSafeInterval])
 
   const stop = useCallback(() => {
     setIsRunning(false)
-    if (intervalRef.current) {
-      clearInterval(intervalRef.current)
-      intervalRef.current = null
-    }
-  }, [])
-
-  useEffect(() => {
-    return () => {
-      if (intervalRef.current) clearInterval(intervalRef.current)
-    }
-  }, [])
+    clearAllIntervals()
+    setCurrentId(null)
+  }, [clearAllIntervals])
 
   return (
     <div className="space-y-4">
@@ -221,67 +210,69 @@ export function SafeIntervalDemo() {
   )
 }
 
+// ---------------------------------------------------------------------------
+// Demo: useCircuitBreaker – using the real hook
+// ---------------------------------------------------------------------------
+
 export function CircuitBreakerDemo() {
-  const [state, setState] = useState<'closed' | 'open' | 'half-open'>('closed')
-  const [failures, setFailures] = useState(0)
-  const [successes, setSuccesses] = useState(0)
   const [log, setLog] = useState<string[]>([])
+  const [successes, setSuccesses] = useState(0)
   const threshold = 3
-  const resetTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   const addLog = useCallback((msg: string) => {
     setLog((prev) => [...prev.slice(-6), msg])
   }, [])
 
-  const simulateRequest = useCallback(
-    (shouldFail: boolean) => {
-      if (state === 'open') {
-        addLog('BLOCKED: Circuit is OPEN - request rejected')
-        return
+  const {
+    execute,
+    state,
+    stats,
+    reset: resetBreaker,
+  } = useCircuitBreaker({
+    failureThreshold: threshold,
+    resetTimeout: 3000,
+    name: 'demo-circuit',
+    onStateChange: (newState: string) => {
+      if (newState === 'open') {
+        addLog(
+          `CIRCUIT OPEN: ${threshold} failures reached - blocking requests`
+        )
+      } else if (newState === 'half-open') {
+        addLog('HALF-OPEN: Allowing one test request...')
+      } else if (newState === 'closed') {
+        addLog('CIRCUIT CLOSED: Recovery successful')
       }
+    },
+  })
 
-      if (shouldFail) {
-        const newFailures = failures + 1
-        setFailures(newFailures)
-        addLog(`FAILURE #${newFailures}: Request failed`)
-
-        if (newFailures >= threshold) {
-          setState('open')
-          addLog(
-            `CIRCUIT OPEN: ${threshold} failures reached - blocking requests`
-          )
-          if (resetTimerRef.current) clearTimeout(resetTimerRef.current)
-          resetTimerRef.current = setTimeout(() => {
-            setState('half-open')
-            addLog('HALF-OPEN: Allowing one test request...')
-          }, 3000)
-        }
-      } else {
+  const simulateRequest = useCallback(
+    async (shouldFail: boolean) => {
+      try {
+        await execute(async () => {
+          if (shouldFail) {
+            throw new Error('Simulated failure')
+          }
+          return 'success'
+        })
         setSuccesses((s) => s + 1)
         addLog('SUCCESS: Request succeeded')
-        if (state === 'half-open') {
-          setState('closed')
-          setFailures(0)
-          addLog('CIRCUIT CLOSED: Recovery successful')
+      } catch (error) {
+        const msg = (error as Error).message
+        if (msg.includes('Circuit breaker') || msg.includes('circuit')) {
+          addLog('BLOCKED: Circuit is OPEN - request rejected')
+        } else {
+          addLog(`FAILURE #${stats.failures + 1}: Request failed`)
         }
       }
     },
-    [state, failures, threshold, addLog]
+    [execute, addLog, stats.failures]
   )
 
   const reset = useCallback(() => {
-    setState('closed')
-    setFailures(0)
+    resetBreaker()
     setSuccesses(0)
     setLog([])
-    if (resetTimerRef.current) clearTimeout(resetTimerRef.current)
-  }, [])
-
-  useEffect(() => {
-    return () => {
-      if (resetTimerRef.current) clearTimeout(resetTimerRef.current)
-    }
-  }, [])
+  }, [resetBreaker])
 
   const stateColor =
     state === 'closed'
@@ -317,7 +308,7 @@ export function CircuitBreakerDemo() {
               key={i}
               className={cn(
                 'h-3 w-3 rounded-full',
-                i < failures ? 'bg-destructive' : 'bg-muted'
+                i < stats.failures ? 'bg-destructive' : 'bg-muted'
               )}
             />
           ))}
@@ -346,7 +337,7 @@ export function CircuitBreakerDemo() {
 
       <div className="flex gap-2 flex-wrap">
         <Badge variant="outline">threshold: {threshold}</Badge>
-        <Badge variant="destructive">failures: {failures}</Badge>
+        <Badge variant="destructive">failures: {stats.failures}</Badge>
         <Badge variant="default">successes: {successes}</Badge>
         <Badge variant="outline">resetTimeout: 3s</Badge>
       </div>

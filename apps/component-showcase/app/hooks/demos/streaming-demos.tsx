@@ -1,11 +1,16 @@
 'use client'
 
-import { useState, useEffect, useRef, useCallback } from 'react'
+import { useState, useCallback, useRef } from 'react'
 import { Button, Badge, cn } from '@clarity-chat/primitives'
+import { useLocalStorage } from '@clarity-chat/react'
 import { useSmoothedText } from '@clarity-chat/react/internal'
 import { parseSSEStream } from '@/lib/sse-utils'
-import { getStoredApiKey, getStoredModel } from '@/lib/api-key-store'
-import { Play, RotateCcw, Pause, Zap, Gauge, Key } from 'lucide-react'
+import {
+  useAbortController,
+  StreamingCursor,
+  ApiKeyRequired,
+} from '@/lib/demo-utils'
+import { Play, RotateCcw, Pause, Zap, Gauge } from 'lucide-react'
 
 // ---------------------------------------------------------------------------
 // Demo: Raw vs Smoothed Text (Real API Streaming)
@@ -15,11 +20,14 @@ export function SmoothedTextDemo() {
   const [rawText, setRawText] = useState('')
   const [isStreaming, setIsStreaming] = useState(false)
   const [tokensPerSecond, setTokensPerSecond] = useState(0)
-  const abortRef = useRef<AbortController | null>(null)
+  const { abort: abortStream, create: createAbort } = useAbortController()
   const startTimeRef = useRef(0)
   const tokenCountRef = useRef(0)
-  const apiKey = getStoredApiKey()
-  const model = getStoredModel()
+  const [apiKey] = useLocalStorage('clarity-showcase-api-key', '')
+  const [model] = useLocalStorage(
+    'clarity-showcase-model',
+    'claude-sonnet-4-5-20250929'
+  )
 
   const { displayText, isAnimating } = useSmoothedText(rawText, {
     charsPerFrame: 3,
@@ -35,15 +43,13 @@ export function SmoothedTextDemo() {
 
   const start = useCallback(async () => {
     if (!apiKey) return
-    abortRef.current?.abort()
     setRawText('')
     setIsStreaming(true)
     setTokensPerSecond(0)
     startTimeRef.current = Date.now()
     tokenCountRef.current = 0
 
-    const controller = new AbortController()
-    abortRef.current = controller
+    const controller = createAbort()
 
     try {
       const response = await fetch('/api/chat', {
@@ -92,13 +98,12 @@ export function SmoothedTextDemo() {
     }
 
     setIsStreaming(false)
-    abortRef.current = null
-  }, [apiKey, model])
+  }, [apiKey, model, createAbort])
 
   const stop = useCallback(() => {
-    abortRef.current?.abort()
+    abortStream()
     setIsStreaming(false)
-  }, [])
+  }, [abortStream])
 
   const reset = useCallback(() => {
     stop()
@@ -106,21 +111,12 @@ export function SmoothedTextDemo() {
     setTokensPerSecond(0)
   }, [stop])
 
-  useEffect(() => {
-    return () => {
-      abortRef.current?.abort()
-    }
-  }, [])
-
   if (!apiKey) {
     return (
-      <div className="text-center py-8 text-muted-foreground">
-        <Key className="h-6 w-6 mx-auto mb-2 opacity-50" />
-        <p className="text-sm">
-          Set your API key on the Connected Demo or Hooks Chat &amp; AI tab to
-          enable live streaming demos.
-        </p>
-      </div>
+      <ApiKeyRequired
+        message="Set your API key on the Connected Demo or Hooks Chat & AI tab to enable live streaming demos."
+        className="py-8"
+      />
     )
   }
 
@@ -178,9 +174,7 @@ export function SmoothedTextDemo() {
           </div>
           <div className="text-sm min-h-[200px] whitespace-pre-wrap">
             {rawText}
-            {isStreaming && (
-              <span className="inline-block w-0.5 h-4 bg-foreground animate-pulse ml-0.5" />
-            )}
+            {isStreaming && <StreamingCursor height="h-4" />}
           </div>
         </div>
 
@@ -198,9 +192,7 @@ export function SmoothedTextDemo() {
           </div>
           <div className="text-sm min-h-[200px] whitespace-pre-wrap">
             {displayText}
-            {(isStreaming || isAnimating) && (
-              <span className="inline-block w-0.5 h-4 bg-foreground animate-pulse ml-0.5" />
-            )}
+            {(isStreaming || isAnimating) && <StreamingCursor height="h-4" />}
           </div>
         </div>
       </div>
@@ -215,9 +207,12 @@ export function SmoothedTextDemo() {
 export function StreamSpeedDemo() {
   const [rawText, setRawText] = useState('')
   const [isStreaming, setIsStreaming] = useState(false)
-  const abortRef = useRef<AbortController | null>(null)
-  const apiKey = getStoredApiKey()
-  const model = getStoredModel()
+  const { abort: abortStream, create: createAbort } = useAbortController()
+  const [apiKey] = useLocalStorage('clarity-showcase-api-key', '')
+  const [model] = useLocalStorage(
+    'clarity-showcase-model',
+    'claude-sonnet-4-5-20250929'
+  )
 
   const { displayText: slowText } = useSmoothedText(rawText, {
     charsPerFrame: 1,
@@ -234,12 +229,10 @@ export function StreamSpeedDemo() {
 
   const startAll = useCallback(async () => {
     if (!apiKey) return
-    abortRef.current?.abort()
     setRawText('')
     setIsStreaming(true)
 
-    const controller = new AbortController()
-    abortRef.current = controller
+    const controller = createAbort()
 
     try {
       const response = await fetch('/api/chat', {
@@ -279,28 +272,16 @@ export function StreamSpeedDemo() {
     }
 
     setIsStreaming(false)
-    abortRef.current = null
-  }, [apiKey, model])
+  }, [apiKey, model, createAbort])
 
   const resetAll = useCallback(() => {
-    abortRef.current?.abort()
+    abortStream()
     setRawText('')
     setIsStreaming(false)
-  }, [])
-
-  useEffect(() => {
-    return () => {
-      abortRef.current?.abort()
-    }
-  }, [])
+  }, [abortStream])
 
   if (!apiKey) {
-    return (
-      <div className="text-center py-6 text-muted-foreground">
-        <Key className="h-6 w-6 mx-auto mb-2 opacity-50" />
-        <p className="text-xs">Set your API key to enable this demo.</p>
-      </div>
-    )
+    return <ApiKeyRequired />
   }
 
   const entries = [
@@ -370,9 +351,12 @@ export function StreamStatusDemo() {
   const [status, setStatus] = useState<
     'idle' | 'connecting' | 'streaming' | 'complete' | 'error'
   >('idle')
-  const abortRef = useRef<AbortController | null>(null)
-  const apiKey = getStoredApiKey()
-  const model = getStoredModel()
+  const { abort: abortStream, create: createAbort } = useAbortController()
+  const [apiKey] = useLocalStorage('clarity-showcase-api-key', '')
+  const [model] = useLocalStorage(
+    'clarity-showcase-model',
+    'claude-sonnet-4-5-20250929'
+  )
 
   const STATUS_STEPS = [
     'idle',
@@ -384,11 +368,9 @@ export function StreamStatusDemo() {
 
   const runRealCall = useCallback(async () => {
     if (!apiKey) return
-    abortRef.current?.abort()
     setStatus('connecting')
 
-    const controller = new AbortController()
-    abortRef.current = controller
+    const controller = createAbort()
 
     try {
       const response = await fetch('/api/chat', {
@@ -422,12 +404,10 @@ export function StreamStatusDemo() {
         setStatus('error')
       }
     }
-
-    abortRef.current = null
-  }, [apiKey, model])
+  }, [apiKey, model, createAbort])
 
   const triggerError = useCallback(async () => {
-    abortRef.current?.abort()
+    abortStream()
     setStatus('connecting')
 
     try {
@@ -448,21 +428,10 @@ export function StreamStatusDemo() {
     } catch {
       setStatus('error')
     }
-  }, [model])
-
-  useEffect(() => {
-    return () => {
-      abortRef.current?.abort()
-    }
-  }, [])
+  }, [model, abortStream])
 
   if (!apiKey) {
-    return (
-      <div className="text-center py-6 text-muted-foreground">
-        <Key className="h-6 w-6 mx-auto mb-2 opacity-50" />
-        <p className="text-xs">Set your API key to enable this demo.</p>
-      </div>
-    )
+    return <ApiKeyRequired />
   }
 
   return (
@@ -482,7 +451,7 @@ export function StreamStatusDemo() {
           size="sm"
           variant="outline"
           onClick={() => {
-            abortRef.current?.abort()
+            abortStream()
             setStatus('idle')
           }}
         >
