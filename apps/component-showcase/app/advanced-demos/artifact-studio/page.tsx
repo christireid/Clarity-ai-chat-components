@@ -46,8 +46,6 @@ import { ToolPanel } from './components/tool-panel'
 import { ArtifactSidebar } from './components/chat-sidebar'
 import { ArtifactWelcomeScreen } from './components/welcome-screen'
 
-export const dynamic = 'force-dynamic'
-
 const AVATAR_GRADIENT = 'from-violet-500 to-purple-600'
 
 const defaultMCPServers: MCPServer[] = [
@@ -94,8 +92,8 @@ export default function ArtifactStudioPage() {
     useState<SavedPrompt[]>(defaultPrompts)
   const [mcpServers, setMcpServers] = useState<MCPServer[]>(defaultMCPServers)
 
-  // Artifacts
-  const [artifacts] = useState<Artifact[]>([])
+  // Artifacts (placeholder for future artifact creation)
+  const artifacts: Artifact[] = []
   const [activeArtifactId, setActiveArtifactId] = useState<string | null>(null)
   const [artifactPanelOpen, setArtifactPanelOpen] = useState(false)
 
@@ -465,6 +463,7 @@ export default function ArtifactStudioPage() {
                   <button
                     onClick={() => setShowSlashMenu((prev) => !prev)}
                     className="p-1.5 rounded-md hover:bg-muted transition-colors text-muted-foreground"
+                    title="Slash commands"
                   >
                     <Slash className="h-3.5 w-3.5" />
                   </button>
@@ -524,6 +523,7 @@ export default function ArtifactStudioPage() {
                       'flex items-center gap-1 hover:text-foreground',
                       artifactPanelOpen && 'text-violet-500'
                     )}
+                    title="Toggle artifact panel"
                   >
                     <Layers className="h-3 w-3" /> Artifacts
                   </button>

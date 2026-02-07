@@ -46,8 +46,6 @@ import { ResearchSidebar } from './components/chat-sidebar'
 import { ResearchContextPanel } from './components/context-panel'
 import { ResearchWelcomeScreen } from './components/welcome-screen'
 
-export const dynamic = 'force-dynamic'
-
 const AVATAR_GRADIENT = 'from-blue-500 to-indigo-600'
 
 const defaultMCPServers: MCPServer[] = [
@@ -238,7 +236,9 @@ export default function DeepResearchAssistantPage() {
       : undefined
   const showThinkingIndicator =
     chat.isLoading &&
-    (!lastMsg || lastMsg.role !== 'assistant' || !lastMsg.content)
+    (!lastMsg ||
+      lastMsg.role !== 'assistant' ||
+      !getTextContent(lastMsg.content))
 
   return (
     <div>
@@ -534,6 +534,7 @@ export default function DeepResearchAssistantPage() {
                   <button
                     onClick={() => setRightPanelOpen((prev) => !prev)}
                     className="hover:text-foreground transition-colors"
+                    title="Toggle context panel"
                   >
                     {rightPanelOpen ? (
                       <PanelRightClose className="h-3 w-3" />

@@ -68,8 +68,6 @@ function searchKnowledgeBase(query: string): KnowledgeEntry[] {
   }).slice(0, 5)
 }
 
-export const dynamic = 'force-dynamic'
-
 const AVATAR_GRADIENT = 'from-emerald-500 to-teal-600'
 
 // Use built-in slash commands from the component
@@ -451,8 +449,7 @@ export default function LibraryLearningHubPage() {
                     )
                     .map((msg: HookMessage, idx: number) => {
                       const msgKey = msg.id || `msg-${idx}`
-                      const content =
-                        getTextContent(msg.content) || String(msg.content)
+                      const content = getTextContent(msg.content)
                       const isThisStreaming =
                         msg === lastMessage && isStreamingLastMessage
 
@@ -714,6 +711,7 @@ export default function LibraryLearningHubPage() {
                   <button
                     onClick={() => setRightPanelOpen((prev) => !prev)}
                     className="flex items-center gap-1 hover:text-foreground transition-colors"
+                    title="Toggle context panel"
                   >
                     {rightPanelOpen ? (
                       <PanelRightClose className="h-3 w-3" />

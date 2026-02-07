@@ -37,15 +37,14 @@ export function useMessageActions({
 }: UseMessageActionsOptions): UseMessageActionsReturn {
   const [feedback, setFeedback] = useState<Record<string, 'up' | 'down'>>({})
 
-  const msgs = messages ?? chat.messages
-
   const handleFeedback = useCallback((msgId: string, fb: 'up' | 'down') => {
     setFeedback((prev) => ({ ...prev, [msgId]: fb }))
   }, [])
 
   const handleDeleteMessage = useCallback(
     (msgId: string) => {
-      chat.setMessages(msgs.filter((m: HookMessage) => m.id !== msgId))
+      const currentMsgs = messages ?? chat.messages
+      chat.setMessages(currentMsgs.filter((m: HookMessage) => m.id !== msgId))
       setFeedback((prev) => {
         const next = { ...prev }
         delete next[msgId]
@@ -53,22 +52,23 @@ export function useMessageActions({
       })
       onDeleteCleanup?.(msgId)
     },
-    [chat, msgs, onDeleteCleanup]
+    [chat, messages, onDeleteCleanup]
   )
 
   const handleRegenerate = useCallback(
     (msgId: string) => {
-      const idx = msgs.findIndex((m: HookMessage) => m.id === msgId)
+      const currentMsgs = messages ?? chat.messages
+      const idx = currentMsgs.findIndex((m: HookMessage) => m.id === msgId)
       if (idx < 0) return
       // If it's the last message, just reload
-      if (idx === msgs.length - 1) {
+      if (idx === currentMsgs.length - 1) {
         chat.reload()
         return
       }
       // Otherwise find the preceding user message and resend
-      if (idx > 0 && msgs[idx - 1]?.role === 'user') {
-        const userContent = getTextContent(msgs[idx - 1].content)
-        chat.setMessages(msgs.slice(0, idx - 1))
+      if (idx > 0 && currentMsgs[idx - 1]?.role === 'user') {
+        const userContent = getTextContent(currentMsgs[idx - 1].content)
+        chat.setMessages(currentMsgs.slice(0, idx - 1))
         setTimeout(() => {
           if (onResend) {
             onResend(userContent)
@@ -78,7 +78,7 @@ export function useMessageActions({
         }, 100)
       }
     },
-    [chat, msgs, onResend]
+    [chat, messages, onResend]
   )
 
   return {
