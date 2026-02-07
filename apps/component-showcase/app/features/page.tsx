@@ -1,7 +1,8 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { PageHeader, ComponentSection } from '@/components/component-section'
+import { featuresDocs } from '@/data/docs/features-docs'
 import {
   Card,
   CardHeader,
@@ -374,6 +375,12 @@ function TestRunnerPanel() {
 // ============================================================================
 // FILE TREE
 // ============================================================================
+interface FileNode {
+  name: string
+  type: 'file' | 'folder'
+  children?: FileNode[]
+}
+
 function FileTreeComponent() {
   const [expanded, setExpanded] = useState<string[]>(['src', 'components'])
 
@@ -383,7 +390,7 @@ function FileTreeComponent() {
     )
   }
 
-  const fileTree = [
+  const fileTree: FileNode[] = [
     {
       name: 'src',
       type: 'folder',
@@ -414,7 +421,7 @@ function FileTreeComponent() {
     { name: 'README.md', type: 'file' },
   ]
 
-  const renderTree = (items: any[], depth = 0) => {
+  const renderTree = (items: FileNode[], depth = 0) => {
     return items.map((item, i) => (
       <div key={i}>
         <button
@@ -3290,10 +3297,18 @@ function ChatSidebarDemo() {
 // ============================================================================
 function CopyButtonDemo() {
   const [copied, setCopied] = useState(false)
+  const copyTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  useEffect(() => {
+    return () => {
+      if (copyTimerRef.current) clearTimeout(copyTimerRef.current)
+    }
+  }, [])
 
   const handleCopy = () => {
+    if (copyTimerRef.current) clearTimeout(copyTimerRef.current)
     setCopied(true)
-    setTimeout(() => setCopied(false), 2000)
+    copyTimerRef.current = setTimeout(() => setCopied(false), 2000)
   }
 
   return (
@@ -3832,16 +3847,24 @@ function RetryCountdownDemo() {
   const [isRetrying, setIsRetrying] = useState(false)
   const [countdown, setCountdown] = useState(5)
   const [attempt, setAttempt] = useState(0)
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
+
+  useEffect(() => {
+    return () => {
+      if (intervalRef.current) clearInterval(intervalRef.current)
+    }
+  }, [])
 
   const startRetry = () => {
     setIsRetrying(true)
     setCountdown(5)
     setAttempt(1)
 
-    const interval = setInterval(() => {
+    intervalRef.current = setInterval(() => {
       setCountdown((prev) => {
         if (prev <= 1) {
-          clearInterval(interval)
+          clearInterval(intervalRef.current!)
+          intervalRef.current = null
           setIsRetrying(false)
           return 0
         }
@@ -3895,6 +3918,13 @@ function RetryCountdownDemo() {
 function CircuitBreakerDemo() {
   const [state, setState] = useState<'closed' | 'open' | 'half-open'>('closed')
   const [failures, setFailures] = useState(0)
+  const halfOpenTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  useEffect(() => {
+    return () => {
+      if (halfOpenTimerRef.current) clearTimeout(halfOpenTimerRef.current)
+    }
+  }, [])
 
   const simulateRequest = () => {
     if (state === 'open') return
@@ -3905,7 +3935,11 @@ function CircuitBreakerDemo() {
         const newFailures = prev + 1
         if (newFailures >= 3) {
           setState('open')
-          setTimeout(() => setState('half-open'), 3000)
+          if (halfOpenTimerRef.current) clearTimeout(halfOpenTimerRef.current)
+          halfOpenTimerRef.current = setTimeout(
+            () => setState('half-open'),
+            3000
+          )
         }
         return newFailures
       })
@@ -3983,6 +4017,14 @@ function ErrorToastDemo() {
   const [toasts, setToasts] = useState<
     Array<{ id: number; message: string; type: string }>
   >([])
+  const toastTimersRef = useRef<Set<ReturnType<typeof setTimeout>>>(new Set())
+
+  useEffect(() => {
+    const timers = toastTimersRef.current
+    return () => {
+      timers.forEach(clearTimeout)
+    }
+  }, [])
 
   const addToast = (type: string) => {
     const messages = {
@@ -3995,7 +4037,11 @@ function ErrorToastDemo() {
       ...prev,
       { id, message: messages[type as keyof typeof messages], type },
     ])
-    setTimeout(() => setToasts((prev) => prev.filter((t) => t.id !== id)), 3000)
+    const timer = setTimeout(() => {
+      setToasts((prev) => prev.filter((t) => t.id !== id))
+      toastTimersRef.current.delete(timer)
+    }, 3000)
+    toastTimersRef.current.add(timer)
   }
 
   return (
@@ -4326,11 +4372,18 @@ function TokenUsageMeterDemo() {
     completionTokens: 47,
     totalTokens: 197,
   })
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
+
+  useEffect(() => {
+    return () => {
+      if (intervalRef.current) clearInterval(intervalRef.current)
+    }
+  }, [])
 
   const simulateStream = () => {
     setIsStreaming(true)
     let completion = 47
-    const interval = setInterval(() => {
+    intervalRef.current = setInterval(() => {
       completion += Math.floor(Math.random() * 10) + 1
       setUsage((prev) => ({
         ...prev,
@@ -4338,7 +4391,8 @@ function TokenUsageMeterDemo() {
         totalTokens: prev.promptTokens + completion,
       }))
       if (completion >= 200) {
-        clearInterval(interval)
+        clearInterval(intervalRef.current!)
+        intervalRef.current = null
         setIsStreaming(false)
       }
     }, 200)
@@ -4789,19 +4843,27 @@ function TokenROICalculatorDemo() {
 function StreamingTextShimmerDemo() {
   const [isStreaming, setIsStreaming] = useState(false)
   const [text, setText] = useState('')
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
   const fullText =
     "Hello! I'm an AI assistant. I can help you with coding, writing, analysis, and more. How can I assist you today?"
+
+  useEffect(() => {
+    return () => {
+      if (intervalRef.current) clearInterval(intervalRef.current)
+    }
+  }, [])
 
   const startStreaming = () => {
     setIsStreaming(true)
     setText('')
     let i = 0
-    const interval = setInterval(() => {
+    intervalRef.current = setInterval(() => {
       if (i < fullText.length) {
         setText(fullText.slice(0, i + 1))
         i++
       } else {
-        clearInterval(interval)
+        clearInterval(intervalRef.current!)
+        intervalRef.current = null
         setIsStreaming(false)
       }
     }, 30)
@@ -4932,22 +4994,30 @@ function TextShimmerDemo() {
 function StreamProgressDemo() {
   const [progress, setProgress] = useState(0)
   const [isStreaming, setIsStreaming] = useState(false)
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
   const tokens = {
     received: Math.floor(progress * 5),
     estimated: 500,
   }
 
+  useEffect(() => {
+    return () => {
+      if (intervalRef.current) clearInterval(intervalRef.current)
+    }
+  }, [])
+
   const startStream = () => {
     setIsStreaming(true)
     setProgress(0)
-    const interval = setInterval(() => {
+    intervalRef.current = setInterval(() => {
       setProgress((prev) => {
         if (prev >= 100) {
-          clearInterval(interval)
+          clearInterval(intervalRef.current!)
+          intervalRef.current = null
           setIsStreaming(false)
           return 100
         }
-        return prev + Math.random() * 5
+        return Math.min(100, prev + Math.random() * 5)
       })
     }, 100)
   }
@@ -5135,6 +5205,8 @@ function StreamingMessageDemo() {
   const [content, setContent] = useState('')
   const [showThinking, setShowThinking] = useState(true)
   const [currentStep, setCurrentStep] = useState<string | null>(null)
+  const thinkIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
+  const streamIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
 
   const fullMessage = `Here's a summary of your request:
 
@@ -5150,6 +5222,13 @@ Would you like me to elaborate on any of these points?`
     'Generating recommendations...',
   ]
 
+  useEffect(() => {
+    return () => {
+      if (thinkIntervalRef.current) clearInterval(thinkIntervalRef.current)
+      if (streamIntervalRef.current) clearInterval(streamIntervalRef.current)
+    }
+  }, [])
+
   const startDemo = () => {
     setIsStreaming(true)
     setContent('')
@@ -5157,21 +5236,23 @@ Would you like me to elaborate on any of these points?`
 
     // Simulate thinking
     let stepIndex = 0
-    const thinkInterval = setInterval(() => {
+    thinkIntervalRef.current = setInterval(() => {
       if (stepIndex < thinkingSteps.length) {
         setCurrentStep(thinkingSteps[stepIndex])
         stepIndex++
       } else {
-        clearInterval(thinkInterval)
+        clearInterval(thinkIntervalRef.current!)
+        thinkIntervalRef.current = null
         setCurrentStep(null)
         // Start streaming content
         let charIndex = 0
-        const streamInterval = setInterval(() => {
+        streamIntervalRef.current = setInterval(() => {
           if (charIndex < fullMessage.length) {
             setContent(fullMessage.slice(0, charIndex + 1))
             charIndex++
           } else {
-            clearInterval(streamInterval)
+            clearInterval(streamIntervalRef.current!)
+            streamIntervalRef.current = null
             setIsStreaming(false)
           }
         }, 20)
@@ -5248,6 +5329,13 @@ function MultiProviderAdapterDemo() {
   const [status, setStatus] = useState<
     'disconnected' | 'connecting' | 'connected'
   >('disconnected')
+  const connectTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  useEffect(() => {
+    return () => {
+      if (connectTimerRef.current) clearTimeout(connectTimerRef.current)
+    }
+  }, [])
 
   const providers = [
     {
@@ -5276,7 +5364,8 @@ function MultiProviderAdapterDemo() {
   const handleConnect = () => {
     setIsConnecting(true)
     setStatus('connecting')
-    setTimeout(() => {
+    if (connectTimerRef.current) clearTimeout(connectTimerRef.current)
+    connectTimerRef.current = setTimeout(() => {
       setIsConnecting(false)
       setStatus('connected')
     }, 1500)
@@ -5565,6 +5654,13 @@ function RetryCircuitBreakerDemo() {
   const [state, setState] = useState<'closed' | 'open' | 'half-open'>('closed')
   const [attempts, setAttempts] = useState(0)
   const [lastError, setLastError] = useState<string | null>(null)
+  const retryTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  useEffect(() => {
+    return () => {
+      if (retryTimerRef.current) clearTimeout(retryTimerRef.current)
+    }
+  }, [])
 
   const simulateRequest = () => {
     if (state === 'open') {
@@ -5579,7 +5675,8 @@ function RetryCircuitBreakerDemo() {
       setLastError('Request failed - retrying with exponential backoff...')
       if (attempts >= 2) {
         setState('open')
-        setTimeout(() => setState('half-open'), 3000)
+        if (retryTimerRef.current) clearTimeout(retryTimerRef.current)
+        retryTimerRef.current = setTimeout(() => setState('half-open'), 3000)
       }
     } else {
       setLastError(null)
@@ -5947,6 +6044,7 @@ export default function FeaturesPage() {
           <ComponentSection
             title="Code Diff Viewer"
             description="Visualize code changes with syntax highlighting"
+            docs={featuresDocs['Code Diff Viewer']}
           >
             <CodeDiffViewer />
           </ComponentSection>
@@ -5954,6 +6052,7 @@ export default function FeaturesPage() {
           <ComponentSection
             title="Test Runner"
             description="Execute and monitor test results"
+            docs={featuresDocs['Test Runner']}
           >
             <TestRunnerPanel />
           </ComponentSection>
@@ -5962,6 +6061,7 @@ export default function FeaturesPage() {
             <ComponentSection
               title="File Explorer"
               description="Navigate project structure"
+              docs={featuresDocs['File Explorer']}
             >
               <FileTreeComponent />
             </ComponentSection>
@@ -5969,6 +6069,7 @@ export default function FeaturesPage() {
             <ComponentSection
               title="Commit History"
               description="View version control commits"
+              docs={featuresDocs['Commit History']}
             >
               <CommitLog />
             </ComponentSection>
@@ -5977,6 +6078,7 @@ export default function FeaturesPage() {
           <ComponentSection
             title="Code Sandbox"
             description="Live code editor with preview"
+            docs={featuresDocs['Code Sandbox']}
           >
             <CodeSandboxPreview />
           </ComponentSection>
@@ -5984,6 +6086,7 @@ export default function FeaturesPage() {
           <ComponentSection
             title="Web Preview"
             description="Browser-style preview panel"
+            docs={featuresDocs['Web Preview']}
           >
             <WebPreviewPanel />
           </ComponentSection>
@@ -5993,6 +6096,7 @@ export default function FeaturesPage() {
           <ComponentSection
             title="Human in the Loop"
             description="Require human approval for sensitive actions"
+            docs={featuresDocs['Human in the Loop']}
           >
             <HumanInTheLoop />
           </ComponentSection>
@@ -6001,6 +6105,7 @@ export default function FeaturesPage() {
             <ComponentSection
               title="Task Orchestrator"
               description="Visualize multi-step task execution"
+              docs={featuresDocs['Task Orchestrator']}
             >
               <TaskOrchestratorDemo />
             </ComponentSection>
@@ -6008,6 +6113,7 @@ export default function FeaturesPage() {
             <ComponentSection
               title="Artifacts"
               description="Generated outputs and content"
+              docs={featuresDocs['Artifacts']}
             >
               <ArtifactPanel />
             </ComponentSection>
@@ -6016,6 +6122,7 @@ export default function FeaturesPage() {
           <ComponentSection
             title="Chain of Thought"
             description="Visualize AI reasoning process"
+            docs={featuresDocs['Chain of Thought']}
           >
             <ChainOfThoughtDemo />
           </ComponentSection>
@@ -6023,6 +6130,7 @@ export default function FeaturesPage() {
           <ComponentSection
             title="Bookmarks"
             description="Save and organize important content"
+            docs={featuresDocs['Bookmarks']}
           >
             <BookmarksPanel />
           </ComponentSection>
@@ -6032,6 +6140,7 @@ export default function FeaturesPage() {
           <ComponentSection
             title="Data Table"
             description="Display structured data"
+            docs={featuresDocs['Data Table']}
           >
             <DataTableDemo />
           </ComponentSection>
@@ -6040,6 +6149,7 @@ export default function FeaturesPage() {
             <ComponentSection
               title="Dynamic Form"
               description="AI-generated form fields"
+              docs={featuresDocs['Dynamic Form']}
             >
               <DynamicFormDemo />
             </ComponentSection>
@@ -6047,6 +6157,7 @@ export default function FeaturesPage() {
             <ComponentSection
               title="Cost Tracker"
               description="Monitor API usage costs"
+              docs={featuresDocs['Cost Tracker']}
             >
               <CostTrackerDemo />
             </ComponentSection>
@@ -6055,6 +6166,7 @@ export default function FeaturesPage() {
           <ComponentSection
             title="Environment Variables"
             description="Manage configuration secrets"
+            docs={featuresDocs['Environment Variables']}
           >
             <EnvironmentVariablesDemo />
           </ComponentSection>
@@ -6062,6 +6174,7 @@ export default function FeaturesPage() {
           <ComponentSection
             title="Citation Chips"
             description="Inline source references"
+            docs={featuresDocs['Citation Chips']}
           >
             <CitationChipsDemo />
           </ComponentSection>
@@ -6071,6 +6184,7 @@ export default function FeaturesPage() {
           <ComponentSection
             title="Confirmation Dialogs"
             description="User confirmation patterns"
+            docs={featuresDocs['Confirmation Dialogs']}
           >
             <ConfirmationDialogDemo />
           </ComponentSection>
@@ -6078,6 +6192,7 @@ export default function FeaturesPage() {
           <ComponentSection
             title="Component Cards"
             description="Display component information"
+            docs={featuresDocs['Component Cards']}
           >
             <ComponentCardsDemo />
           </ComponentSection>
@@ -6085,6 +6200,7 @@ export default function FeaturesPage() {
           <ComponentSection
             title="Empty States"
             description="Handle empty content gracefully"
+            docs={featuresDocs['Empty States']}
           >
             <EmptyStateDemo />
           </ComponentSection>
@@ -6092,6 +6208,7 @@ export default function FeaturesPage() {
           <ComponentSection
             title="Suggestion Chips"
             description="Quick action buttons"
+            docs={featuresDocs['Suggestion Chips']}
           >
             <SuggestionChipsDemo />
           </ComponentSection>
@@ -6100,6 +6217,7 @@ export default function FeaturesPage() {
             <ComponentSection
               title="Snippet Manager"
               description="Save and reuse code snippets"
+              docs={featuresDocs['Snippet Manager']}
             >
               <SnippetManagerDemo />
             </ComponentSection>
@@ -6107,6 +6225,7 @@ export default function FeaturesPage() {
             <ComponentSection
               title="Schema Display"
               description="Visualize data structures"
+              docs={featuresDocs['Schema Display']}
             >
               <SchemaDisplayDemo />
             </ComponentSection>
@@ -6115,6 +6234,7 @@ export default function FeaturesPage() {
           <ComponentSection
             title="Stats Display"
             description="Key metrics at a glance"
+            docs={featuresDocs['Stats Display']}
           >
             <StatsDisplayDemo />
           </ComponentSection>
@@ -6123,6 +6243,7 @@ export default function FeaturesPage() {
             <ComponentSection
               title="Before/After Comparison"
               description="Image or content comparison slider"
+              docs={featuresDocs['Before/After Comparison']}
             >
               <BeforeAfterDemo />
             </ComponentSection>
@@ -6130,6 +6251,7 @@ export default function FeaturesPage() {
             <ComponentSection
               title="Link Preview"
               description="URL preview cards"
+              docs={featuresDocs['Link Preview']}
             >
               <LinkPreviewDemo />
             </ComponentSection>
@@ -6139,6 +6261,7 @@ export default function FeaturesPage() {
             <ComponentSection
               title="Context Menu"
               description="Right-click context menus"
+              docs={featuresDocs['Context Menu']}
             >
               <ContextMenuDemo />
             </ComponentSection>
@@ -6146,6 +6269,7 @@ export default function FeaturesPage() {
             <ComponentSection
               title="Model Selector"
               description="AI model selection interface"
+              docs={featuresDocs['Model Selector']}
             >
               <ModelSelectorDemo />
             </ComponentSection>
@@ -6154,6 +6278,7 @@ export default function FeaturesPage() {
           <ComponentSection
             title="Keyboard Shortcuts"
             description="Accessible keyboard navigation"
+            docs={featuresDocs['Keyboard Shortcuts']}
           >
             <KeyboardShortcutsDemo />
           </ComponentSection>
@@ -6163,6 +6288,7 @@ export default function FeaturesPage() {
           <ComponentSection
             title="Progress Indicators"
             description="Show loading and completion states"
+            docs={featuresDocs['Progress Indicators']}
           >
             <ProgressIndicatorsDemo />
           </ComponentSection>
@@ -6170,6 +6296,7 @@ export default function FeaturesPage() {
           <ComponentSection
             title="Steps Indicator"
             description="Multi-step workflow progress"
+            docs={featuresDocs['Steps Indicator']}
           >
             <StepsIndicatorDemo />
           </ComponentSection>
@@ -6178,6 +6305,7 @@ export default function FeaturesPage() {
             <ComponentSection
               title="Realtime Status"
               description="Live event streaming"
+              docs={featuresDocs['Realtime Status']}
             >
               <RealtimeIndicatorDemo />
             </ComponentSection>
@@ -6185,6 +6313,7 @@ export default function FeaturesPage() {
             <ComponentSection
               title="Task Queue"
               description="Queued job management"
+              docs={featuresDocs['Task Queue']}
             >
               <QueueDisplayDemo />
             </ComponentSection>
@@ -6193,6 +6322,7 @@ export default function FeaturesPage() {
           <ComponentSection
             title="Conversation Threads"
             description="Threaded discussions"
+            docs={featuresDocs['Conversation Threads']}
           >
             <ThreadsViewDemo />
           </ComponentSection>
@@ -6200,6 +6330,7 @@ export default function FeaturesPage() {
           <ComponentSection
             title="Safety Components"
             description="Warnings and content moderation"
+            docs={featuresDocs['Safety Components']}
           >
             <SafetyComponentsDemo />
           </ComponentSection>
@@ -6207,6 +6338,7 @@ export default function FeaturesPage() {
           <ComponentSection
             title="Retry Logic"
             description="Handle failures gracefully"
+            docs={featuresDocs['Retry Logic']}
           >
             <RetryLogicDemo />
           </ComponentSection>
@@ -6216,6 +6348,7 @@ export default function FeaturesPage() {
           <ComponentSection
             title="Voice Components"
             description="Audio input and playback"
+            docs={featuresDocs['Voice Components']}
           >
             <VoiceComponentsDemo />
           </ComponentSection>
@@ -6223,6 +6356,7 @@ export default function FeaturesPage() {
           <ComponentSection
             title="Rich Embed"
             description="Media preview cards"
+            docs={featuresDocs['Rich Embed']}
           >
             <RichEmbedDemo />
           </ComponentSection>
@@ -6230,6 +6364,7 @@ export default function FeaturesPage() {
           <ComponentSection
             title="Message Actions"
             description="Quick action buttons for messages"
+            docs={featuresDocs['Message Actions']}
           >
             <MessageActionsDemo />
           </ComponentSection>
@@ -6237,6 +6372,7 @@ export default function FeaturesPage() {
           <ComponentSection
             title="Read Receipts"
             description="Message delivery status"
+            docs={featuresDocs['Read Receipts']}
           >
             <ReadReceiptDemo />
           </ComponentSection>
@@ -6245,6 +6381,7 @@ export default function FeaturesPage() {
             <ComponentSection
               title="RAG Sources"
               description="Retrieved document references"
+              docs={featuresDocs['RAG Sources']}
             >
               <RAGSourcesDemo />
             </ComponentSection>
@@ -6252,6 +6389,7 @@ export default function FeaturesPage() {
             <ComponentSection
               title="Calendar"
               description="Date picker component"
+              docs={featuresDocs['Calendar']}
             >
               <CalendarDemo />
             </ComponentSection>
@@ -6259,13 +6397,18 @@ export default function FeaturesPage() {
         </TabsContent>
 
         <TabsContent value="auth" className="space-y-8">
-          <ComponentSection title="Login Form" description="Authentication UI">
+          <ComponentSection
+            title="Login Form"
+            description="Authentication UI"
+            docs={featuresDocs['Login Form']}
+          >
             <LoginFormDemo />
           </ComponentSection>
 
           <ComponentSection
             title="Settings Panel"
             description="Configuration toggles"
+            docs={featuresDocs['Settings Panel']}
           >
             <SettingsPanelDemo />
           </ComponentSection>
@@ -6273,6 +6416,7 @@ export default function FeaturesPage() {
           <ComponentSection
             title="Model Presets"
             description="Quick configuration selection"
+            docs={featuresDocs['Model Presets']}
           >
             <PresetsSelectorDemo />
           </ComponentSection>
@@ -6280,6 +6424,7 @@ export default function FeaturesPage() {
           <ComponentSection
             title="MCP Manager"
             description="Model Context Protocol server management"
+            docs={featuresDocs['MCP Manager']}
           >
             <MCPManagerDemo />
           </ComponentSection>
@@ -6287,6 +6432,7 @@ export default function FeaturesPage() {
           <ComponentSection
             title="Environment Variables"
             description="Secure configuration management"
+            docs={featuresDocs['Environment Variables']}
           >
             <EnvironmentVariablesDemo />
           </ComponentSection>
@@ -6294,6 +6440,7 @@ export default function FeaturesPage() {
           <ComponentSection
             title="Password Input"
             description="Secure password entry with strength indicator"
+            docs={featuresDocs['Password Input']}
           >
             <PasswordInputDemo />
           </ComponentSection>
@@ -6303,6 +6450,7 @@ export default function FeaturesPage() {
           <ComponentSection
             title="Reactions"
             description="Emoji reactions for messages"
+            docs={featuresDocs['Reactions']}
           >
             <ReactionsDemo />
           </ComponentSection>
@@ -6311,6 +6459,7 @@ export default function FeaturesPage() {
             <ComponentSection
               title="Quick Replies"
               description="Pre-defined response options"
+              docs={featuresDocs['Quick Replies']}
             >
               <QuickReplyDemo />
             </ComponentSection>
@@ -6318,6 +6467,7 @@ export default function FeaturesPage() {
             <ComponentSection
               title="Pinned Messages"
               description="Highlight important content"
+              docs={featuresDocs['Pinned Messages']}
             >
               <PinnedMessagesDemo />
             </ComponentSection>
@@ -6326,6 +6476,7 @@ export default function FeaturesPage() {
           <ComponentSection
             title="Social Posts"
             description="Social media style content"
+            docs={featuresDocs['Social Posts']}
           >
             <SocialPostsDemo />
           </ComponentSection>
@@ -6334,6 +6485,7 @@ export default function FeaturesPage() {
             <ComponentSection
               title="Chat Sidebar"
               description="Conversation list navigation"
+              docs={featuresDocs['Chat Sidebar']}
             >
               <ChatSidebarDemo />
             </ComponentSection>
@@ -6341,6 +6493,7 @@ export default function FeaturesPage() {
             <ComponentSection
               title="Copy Button"
               description="One-click content copying"
+              docs={featuresDocs['Copy Button']}
             >
               <CopyButtonDemo />
             </ComponentSection>
@@ -6349,6 +6502,7 @@ export default function FeaturesPage() {
           <ComponentSection
             title="Conversation Manager"
             description="Manage and export conversations"
+            docs={featuresDocs['Conversation Manager']}
           >
             <ConversationManagerDemo />
           </ComponentSection>
@@ -6358,6 +6512,7 @@ export default function FeaturesPage() {
           <ComponentSection
             title="Web Search"
             description="Search the web interface"
+            docs={featuresDocs['Web Search']}
           >
             <WebSearchDemo />
           </ComponentSection>
@@ -6365,6 +6520,7 @@ export default function FeaturesPage() {
           <ComponentSection
             title="Trace View"
             description="Request execution timeline"
+            docs={featuresDocs['Trace View']}
           >
             <TraceViewDemo />
           </ComponentSection>
@@ -6372,6 +6528,7 @@ export default function FeaturesPage() {
           <ComponentSection
             title="Workflow Nodes"
             description="Visual workflow builder"
+            docs={featuresDocs['Workflow Nodes']}
           >
             <WorkflowNodesDemo />
           </ComponentSection>
@@ -6380,6 +6537,7 @@ export default function FeaturesPage() {
             <ComponentSection
               title="Branch Picker"
               description="Git branch selection"
+              docs={featuresDocs['Branch Picker']}
             >
               <BranchPickerDemo />
             </ComponentSection>
@@ -6387,6 +6545,7 @@ export default function FeaturesPage() {
             <ComponentSection
               title="Table of Contents"
               description="Document navigation"
+              docs={featuresDocs['Table of Contents']}
             >
               <TableOfContentsDemo />
             </ComponentSection>
@@ -6395,6 +6554,7 @@ export default function FeaturesPage() {
           <ComponentSection
             title="Sortable List"
             description="Drag and drop reordering"
+            docs={featuresDocs['Sortable List']}
           >
             <SortableListDemo />
           </ComponentSection>
@@ -6404,6 +6564,7 @@ export default function FeaturesPage() {
           <ComponentSection
             title="Developer Tools Dashboard"
             description="Comprehensive debugging and profiling tools"
+            docs={featuresDocs['Developer Tools Dashboard']}
           >
             <DevToolsDashboardDemo />
           </ComponentSection>
@@ -6412,6 +6573,7 @@ export default function FeaturesPage() {
             <ComponentSection
               title="API Inspector"
               description="Monitor API calls in real-time"
+              docs={featuresDocs['API Inspector']}
             >
               <APIInspectorDemo />
             </ComponentSection>
@@ -6419,6 +6581,7 @@ export default function FeaturesPage() {
             <ComponentSection
               title="Performance Profiler"
               description="Track component performance metrics"
+              docs={featuresDocs['Performance Profiler']}
             >
               <ProfilerPanelDemo />
             </ComponentSection>
@@ -6428,6 +6591,7 @@ export default function FeaturesPage() {
             <ComponentSection
               title="State Time Travel"
               description="Debug state changes with history"
+              docs={featuresDocs['State Time Travel']}
             >
               <TimeTravelDemo />
             </ComponentSection>
@@ -6435,6 +6599,7 @@ export default function FeaturesPage() {
             <ComponentSection
               title="Model Comparison"
               description="Compare AI model responses"
+              docs={featuresDocs['Model Comparison']}
             >
               <ModelComparisonDemo />
             </ComponentSection>
@@ -6445,6 +6610,7 @@ export default function FeaturesPage() {
           <ComponentSection
             title="Error Display"
             description="Beautiful error presentation with severity levels"
+            docs={featuresDocs['Error Display']}
           >
             <ErrorDisplayDemo />
           </ComponentSection>
@@ -6453,6 +6619,7 @@ export default function FeaturesPage() {
             <ComponentSection
               title="Error Boundary"
               description="React error boundary with recovery"
+              docs={featuresDocs['Error Boundary']}
             >
               <ErrorBoundaryDemo />
             </ComponentSection>
@@ -6460,6 +6627,7 @@ export default function FeaturesPage() {
             <ComponentSection
               title="Retry Countdown"
               description="Automatic retry with countdown timer"
+              docs={featuresDocs['Retry Countdown']}
             >
               <RetryCountdownDemo />
             </ComponentSection>
@@ -6469,6 +6637,7 @@ export default function FeaturesPage() {
             <ComponentSection
               title="Circuit Breaker"
               description="Resilience pattern for API calls"
+              docs={featuresDocs['Circuit Breaker']}
             >
               <CircuitBreakerDemo />
             </ComponentSection>
@@ -6476,6 +6645,7 @@ export default function FeaturesPage() {
             <ComponentSection
               title="Error Toast"
               description="Toast notifications for errors"
+              docs={featuresDocs['Error Toast']}
             >
               <ErrorToastDemo />
             </ComponentSection>
@@ -6486,6 +6656,7 @@ export default function FeaturesPage() {
           <ComponentSection
             title="Token Optimization Dashboard"
             description="Comprehensive token savings and efficiency metrics"
+            docs={featuresDocs['Token Optimization Dashboard']}
           >
             <TokenOptimizationDashboardDemo />
           </ComponentSection>
@@ -6494,6 +6665,7 @@ export default function FeaturesPage() {
             <ComponentSection
               title="Token Optimization Panel"
               description="Compact optimization statistics display"
+              docs={featuresDocs['Token Optimization Panel']}
             >
               <TokenOptimizationPanelDemo />
             </ComponentSection>
@@ -6501,6 +6673,7 @@ export default function FeaturesPage() {
             <ComponentSection
               title="Token Cost Preview"
               description="Real-time cost estimation as you type"
+              docs={featuresDocs['Token Cost Preview']}
             >
               <TokenCostPreviewDemo />
             </ComponentSection>
@@ -6510,6 +6683,7 @@ export default function FeaturesPage() {
             <ComponentSection
               title="Token Usage Meter"
               description="Live token consumption display for streaming"
+              docs={featuresDocs['Token Usage Meter']}
             >
               <TokenUsageMeterDemo />
             </ComponentSection>
@@ -6517,6 +6691,7 @@ export default function FeaturesPage() {
             <ComponentSection
               title="Token Counter"
               description="Track token usage with warnings"
+              docs={featuresDocs['Token Counter']}
             >
               <TokenCounterDemo />
             </ComponentSection>
@@ -6525,6 +6700,7 @@ export default function FeaturesPage() {
           <ComponentSection
             title="Token Budget Bar"
             description="Visual progress bar for token budget utilization"
+            docs={featuresDocs['Token Budget Bar']}
           >
             <TokenBudgetBarDemo />
           </ComponentSection>
@@ -6533,6 +6709,7 @@ export default function FeaturesPage() {
             <ComponentSection
               title="Token Optimization Badge"
               description="Compact badge showing token savings"
+              docs={featuresDocs['Token Optimization Badge']}
             >
               <TokenOptimizationBadgeDemo />
             </ComponentSection>
@@ -6540,6 +6717,7 @@ export default function FeaturesPage() {
             <ComponentSection
               title="Token ROI Calculator"
               description="Calculate ROI for token optimization strategies"
+              docs={featuresDocs['Token ROI Calculator']}
             >
               <TokenROICalculatorDemo />
             </ComponentSection>
@@ -6550,6 +6728,7 @@ export default function FeaturesPage() {
           <ComponentSection
             title="Streaming Text Shimmer"
             description="Shimmer effect for streaming text content"
+            docs={featuresDocs['Streaming Text Shimmer']}
           >
             <StreamingTextShimmerDemo />
           </ComponentSection>
@@ -6558,6 +6737,7 @@ export default function FeaturesPage() {
             <ComponentSection
               title="Text Shimmer Placeholders"
               description="Animated loading placeholders for text"
+              docs={featuresDocs['Text Shimmer Placeholders']}
             >
               <TextShimmerDemo />
             </ComponentSection>
@@ -6565,6 +6745,7 @@ export default function FeaturesPage() {
             <ComponentSection
               title="Streaming Progress"
               description="Progress indicator with token count and throughput"
+              docs={featuresDocs['Streaming Progress']}
             >
               <StreamProgressDemo />
             </ComponentSection>
@@ -6574,6 +6755,7 @@ export default function FeaturesPage() {
             <ComponentSection
               title="Streaming Cursor"
               description="Animated cursor for active streaming"
+              docs={featuresDocs['Streaming Cursor']}
             >
               <StreamingCursorDemo />
             </ComponentSection>
@@ -6581,6 +6763,7 @@ export default function FeaturesPage() {
             <ComponentSection
               title="Typing Indicator"
               description="AI typing indicator with variants"
+              docs={featuresDocs['Typing Indicator']}
             >
               <TypingIndicatorDemo />
             </ComponentSection>
@@ -6589,6 +6772,7 @@ export default function FeaturesPage() {
           <ComponentSection
             title="Streaming Message"
             description="Full streaming message with tool calls and thinking"
+            docs={featuresDocs['Streaming Message']}
           >
             <StreamingMessageDemo />
           </ComponentSection>
@@ -6598,6 +6782,7 @@ export default function FeaturesPage() {
           <ComponentSection
             title="Multi-Provider Adapter"
             description="Switch between AI providers at runtime"
+            docs={featuresDocs['Multi-Provider Adapter']}
           >
             <MultiProviderAdapterDemo />
           </ComponentSection>
@@ -6606,6 +6791,7 @@ export default function FeaturesPage() {
             <ComponentSection
               title="Model Selector"
               description="Select from available models with capabilities"
+              docs={featuresDocs['Model Selector']}
             >
               <AdapterModelSelectorDemo />
             </ComponentSection>
@@ -6613,6 +6799,7 @@ export default function FeaturesPage() {
             <ComponentSection
               title="Provider Health Monitor"
               description="Track provider status and latency"
+              docs={featuresDocs['Provider Health Monitor']}
             >
               <ProviderHealthDemo />
             </ComponentSection>
@@ -6622,6 +6809,7 @@ export default function FeaturesPage() {
             <ComponentSection
               title="Retry & Circuit Breaker"
               description="Resilience patterns for API calls"
+              docs={featuresDocs['Retry & Circuit Breaker']}
             >
               <RetryCircuitBreakerDemo />
             </ComponentSection>
@@ -6629,6 +6817,7 @@ export default function FeaturesPage() {
             <ComponentSection
               title="Request Inspector"
               description="Debug and inspect API requests"
+              docs={featuresDocs['Request Inspector']}
             >
               <RequestInspectorDemo />
             </ComponentSection>
@@ -6637,6 +6826,7 @@ export default function FeaturesPage() {
           <ComponentSection
             title="Adapter Configuration"
             description="Configure provider-specific settings"
+            docs={featuresDocs['Adapter Configuration']}
           >
             <AdapterConfigDemo />
           </ComponentSection>

@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { PageHeader, ComponentSection } from '@/components/component-section'
+import { loadingStatesDocs } from '@/data/docs/loading-states-docs'
 import {
   Card,
   CardHeader,
@@ -487,6 +488,7 @@ export default function LoadingStatesPage() {
           <ComponentSection
             title="Spinner Loaders"
             description="Rotating loading indicators"
+            docs={loadingStatesDocs['Spinner Loaders']}
           >
             <SpinnerLoadersDemo />
           </ComponentSection>
@@ -496,6 +498,7 @@ export default function LoadingStatesPage() {
           <ComponentSection
             title="Skeleton Loaders"
             description="Content placeholders"
+            docs={loadingStatesDocs['Skeleton Loaders']}
           >
             <SkeletonLoadersDemo />
           </ComponentSection>
@@ -505,6 +508,7 @@ export default function LoadingStatesPage() {
           <ComponentSection
             title="Shimmer Effects"
             description="Gradient animations"
+            docs={loadingStatesDocs['Shimmer Effects']}
           >
             <ShimmerEffectsDemo />
           </ComponentSection>
@@ -514,6 +518,7 @@ export default function LoadingStatesPage() {
           <ComponentSection
             title="Progress Indicators"
             description="Determinate progress"
+            docs={loadingStatesDocs['Progress Indicators']}
           >
             <ProgressIndicatorsDemo />
           </ComponentSection>
@@ -523,6 +528,7 @@ export default function LoadingStatesPage() {
           <ComponentSection
             title="AI Loading States"
             description="AI-specific indicators"
+            docs={loadingStatesDocs['AI Loading States']}
           >
             <AILoadingStatesDemo />
           </ComponentSection>

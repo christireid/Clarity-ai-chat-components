@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { PageHeader, ComponentSection } from '@/components/component-section'
+import { mediaFilesDocs } from '@/data/docs/media-files-docs'
 import {
   Card,
   CardHeader,
@@ -541,6 +542,7 @@ export default function MediaFilesPage() {
           <ComponentSection
             title="File Tree"
             description="Hierarchical file explorer"
+            docs={mediaFilesDocs['File Tree']}
           >
             <FileTreeDemo />
           </ComponentSection>
@@ -550,6 +552,7 @@ export default function MediaFilesPage() {
           <ComponentSection
             title="Image Gallery"
             description="Grid and list image views"
+            docs={mediaFilesDocs['Image Gallery']}
           >
             <ImageGalleryDemo />
           </ComponentSection>
@@ -559,6 +562,7 @@ export default function MediaFilesPage() {
           <ComponentSection
             title="Attachments"
             description="File cards with progress"
+            docs={mediaFilesDocs['Attachments']}
           >
             <AttachmentsDemo />
           </ComponentSection>
@@ -568,13 +572,18 @@ export default function MediaFilesPage() {
           <ComponentSection
             title="Audio Player"
             description="Audio playback controls"
+            docs={mediaFilesDocs['Audio Player']}
           >
             <AudioPlayerDemo />
           </ComponentSection>
         </TabsContent>
 
         <TabsContent value="viewer">
-          <ComponentSection title="File Viewer" description="Document preview">
+          <ComponentSection
+            title="File Viewer"
+            description="Document preview"
+            docs={mediaFilesDocs['File Viewer']}
+          >
             <FileViewerDemo />
           </ComponentSection>
         </TabsContent>

@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { PageHeader, ComponentSection } from '@/components/component-section'
+import { aiReasoningDocs } from '@/data/docs/ai-reasoning-docs'
 import {
   Card,
   CardHeader,
@@ -543,6 +544,7 @@ export default function AIReasoningPage() {
             title="Thinking Indicators"
             description="Various styles of AI thinking visualizations"
             icon={Brain}
+            docs={aiReasoningDocs['Thinking Indicators']}
           >
             <ThinkingIndicatorDemo />
           </ComponentSection>
@@ -553,6 +555,7 @@ export default function AIReasoningPage() {
             title="Chain of Thought"
             description="Step-by-step reasoning visualization"
             icon={Layers}
+            docs={aiReasoningDocs['Chain of Thought']}
           >
             <ChainOfThoughtDemo />
           </ComponentSection>
@@ -563,6 +566,7 @@ export default function AIReasoningPage() {
             title="Agent Panel"
             description="Multi-agent system monitoring"
             icon={Zap}
+            docs={aiReasoningDocs['Agent Panel']}
           >
             <AgentPanelDemo />
           </ComponentSection>
@@ -573,6 +577,7 @@ export default function AIReasoningPage() {
             title="Thinking Blocks"
             description="Toggleable reasoning sections"
             icon={Eye}
+            docs={aiReasoningDocs['Thinking Blocks']}
           >
             <ThinkingBlockDemo />
           </ComponentSection>
@@ -583,6 +588,7 @@ export default function AIReasoningPage() {
             title="Reasoning Tree"
             description="Branching thought visualization"
             icon={GitBranch}
+            docs={aiReasoningDocs['Reasoning Tree']}
           >
             <ReasoningTreeDemo />
           </ComponentSection>

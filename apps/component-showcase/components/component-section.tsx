@@ -1,7 +1,16 @@
 'use client'
 
-import { cn } from '@clarity-chat/primitives'
-import { LucideIcon } from 'lucide-react'
+import {
+  cn,
+  Tabs,
+  TabsList,
+  TabsTrigger,
+  TabsContent,
+} from '@clarity-chat/primitives'
+import { LucideIcon, Eye, BookOpen, Link as LinkIcon } from 'lucide-react'
+import { DocPanel, type ComponentDoc } from './doc-panel'
+import { SectionErrorBoundary } from './section-error-boundary'
+import { slugify } from '@/lib/slugify'
 
 interface ComponentSectionProps {
   title: string
@@ -9,6 +18,7 @@ interface ComponentSectionProps {
   children: React.ReactNode
   className?: string
   icon?: LucideIcon
+  docs?: ComponentDoc | ComponentDoc[]
 }
 
 export function ComponentSection({
@@ -17,17 +27,32 @@ export function ComponentSection({
   children,
   className,
   icon: Icon,
+  docs,
 }: ComponentSectionProps) {
+  const anchor = slugify(title)
+
   return (
-    <div className={cn('glass-card p-6 mb-8', className)}>
-      <div className="flex items-start gap-3 mb-4">
+    <div
+      id={anchor}
+      className={cn('glass-card p-6 mb-8 scroll-mt-24', className)}
+    >
+      <div className="flex items-start gap-3 mb-4 group/header">
         {Icon && (
           <div className="icon-container-sm shrink-0">
             <Icon className="h-5 w-5" />
           </div>
         )}
-        <div>
-          <h3 className="text-lg font-semibold">{title}</h3>
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-2">
+            <h3 className="text-lg font-semibold">{title}</h3>
+            <a
+              href={`#${anchor}`}
+              aria-label={`Link to ${title}`}
+              className="opacity-0 group-hover/header:opacity-100 focus-visible:opacity-100 transition-opacity text-muted-foreground hover:text-foreground"
+            >
+              <LinkIcon className="h-3.5 w-3.5" />
+            </a>
+          </div>
           {description && (
             <p className="text-sm text-muted-foreground mt-0.5">
               {description}
@@ -35,7 +60,36 @@ export function ComponentSection({
           )}
         </div>
       </div>
-      <div>{children}</div>
+      <SectionErrorBoundary sectionTitle={title}>
+        {docs ? (
+          <Tabs defaultValue="preview" className="w-full">
+            <TabsList className="mb-4 h-auto gap-1 p-1 bg-muted/50">
+              <TabsTrigger
+                value="preview"
+                className="rounded-md gap-1.5 text-xs px-3 py-1.5"
+              >
+                <Eye className="h-3.5 w-3.5" />
+                Preview
+              </TabsTrigger>
+              <TabsTrigger
+                value="docs"
+                className="rounded-md gap-1.5 text-xs px-3 py-1.5"
+              >
+                <BookOpen className="h-3.5 w-3.5" />
+                Documentation
+              </TabsTrigger>
+            </TabsList>
+            <TabsContent value="preview">
+              <div>{children}</div>
+            </TabsContent>
+            <TabsContent value="docs">
+              <DocPanel docs={docs} />
+            </TabsContent>
+          </Tabs>
+        ) : (
+          <div>{children}</div>
+        )}
+      </SectionErrorBoundary>
     </div>
   )
 }

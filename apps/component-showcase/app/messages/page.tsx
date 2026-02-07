@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { PageHeader, ComponentSection } from '@/components/component-section'
+import { messagesDocs } from '@/data/docs/messages-docs'
 import {
   Card,
   CardHeader,
@@ -646,6 +647,7 @@ export default function MessagesPage() {
             title="Message Bubble Variants"
             description="Different styles and layouts for chat messages"
             icon={MessagesSquare}
+            docs={messagesDocs['Message Bubble Variants']}
           >
             <MessageBubbleVariants />
           </ComponentSection>
@@ -656,6 +658,7 @@ export default function MessagesPage() {
             title="Streaming Messages"
             description="Real-time text generation with visual feedback"
             icon={Loader2}
+            docs={messagesDocs['Streaming Messages']}
           >
             <StreamingMessageDemo />
           </ComponentSection>
@@ -666,6 +669,7 @@ export default function MessagesPage() {
             title="Typing Indicators"
             description="Show when someone is composing a message"
             icon={Bot}
+            docs={messagesDocs['Typing Indicators']}
           >
             <TypingIndicatorDemo />
           </ComponentSection>
@@ -676,6 +680,7 @@ export default function MessagesPage() {
             title="Message Actions"
             description="Interactive actions for messages"
             icon={MousePointerClick}
+            docs={messagesDocs['Message Actions']}
           >
             <MessageActionsDemo />
           </ComponentSection>
@@ -686,6 +691,7 @@ export default function MessagesPage() {
             title="Message Grouping"
             description="Group messages by sender and time"
             icon={Layers}
+            docs={messagesDocs['Message Grouping']}
           >
             <MessageGroupingDemo />
           </ComponentSection>
@@ -696,6 +702,7 @@ export default function MessagesPage() {
             title="Follow-up Suggestions"
             description="Smart contextual suggestions"
             icon={Lightbulb}
+            docs={messagesDocs['Follow-up Suggestions']}
           >
             <FollowUpSuggestionsDemo />
           </ComponentSection>

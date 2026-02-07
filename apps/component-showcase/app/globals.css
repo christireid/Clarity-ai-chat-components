@@ -28,6 +28,11 @@
     --success-foreground: 355.7 100% 97.3%;
     --warning: 38 92% 50%;
     --warning-foreground: 48 96% 89%;
+    --code-header: 240 6% 10%;
+    --code-header-border: 240 4% 30%;
+    --code-bg: 240 10% 4%;
+    --code-muted: 220 9% 46%;
+    --code-copied: 142 71% 45%;
   }
 
   .dark {
@@ -54,6 +59,11 @@
     --success-foreground: 355.7 100% 97.3%;
     --warning: 38 92% 50%;
     --warning-foreground: 48 96% 89%;
+    --code-header: 222 47% 11%;
+    --code-header-border: 217 33% 17%;
+    --code-bg: 224 71% 4%;
+    --code-muted: 215 20% 65%;
+    --code-copied: 142 71% 45%;
   }
 }
 
@@ -134,19 +144,107 @@ code {
   @apply font-mono text-sm;
 }
 
-/* Animation utilities */
-@keyframes pulse-subtle {
-  0%,
-  100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.7;
-  }
+/* Prism.js syntax highlighting theme (One Dark inspired) */
+code[class*='language-'],
+pre[class*='language-'] {
+  color: #abb2bf;
+  text-shadow: none;
+  font-family:
+    ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, 'Liberation Mono',
+    monospace;
+  font-size: 0.875rem;
+  line-height: 1.6;
+  tab-size: 2;
+  hyphens: none;
+  white-space: pre;
+  word-spacing: normal;
+  word-break: normal;
+  word-wrap: normal;
 }
 
-.animate-pulse-subtle {
-  animation: pulse-subtle 2s ease-in-out infinite;
+pre[class*='language-'] {
+  margin: 0;
+}
+
+.token.comment,
+.token.prolog,
+.token.doctype,
+.token.cdata {
+  color: #5c6370;
+  font-style: italic;
+}
+
+.token.punctuation {
+  color: #abb2bf;
+}
+
+.token.property,
+.token.tag,
+.token.boolean,
+.token.number,
+.token.constant,
+.token.symbol,
+.token.deleted {
+  color: #e06c75;
+}
+
+.token.selector,
+.token.attr-name,
+.token.string,
+.token.char,
+.token.builtin,
+.token.inserted {
+  color: #98c379;
+}
+
+.token.operator,
+.token.entity,
+.token.url,
+.language-css .token.string,
+.style .token.string {
+  color: #56b6c2;
+}
+
+.token.atrule,
+.token.attr-value,
+.token.keyword {
+  color: #c678dd;
+}
+
+.token.function,
+.token.class-name {
+  color: #61afef;
+}
+
+.token.regex,
+.token.important,
+.token.variable {
+  color: #d19a66;
+}
+
+.token.important,
+.token.bold {
+  font-weight: bold;
+}
+
+.token.italic {
+  font-style: italic;
+}
+
+.token.tag .token.punctuation {
+  color: #abb2bf;
+}
+
+.token.tag .token.attr-name {
+  color: #d19a66;
+}
+
+.token.tag .token.attr-value {
+  color: #98c379;
+}
+
+.token.tag .token.script {
+  color: #abb2bf;
 }
 
 /* Focus ring for accessibility */
@@ -162,34 +260,6 @@ code {
 
 .scrollbar-hidden::-webkit-scrollbar {
   display: none; /* Chrome, Safari, Opera */
-}
-
-/* Alternative: thin scrollbar that appears on hover */
-.scrollbar-thin {
-  scrollbar-width: thin;
-  scrollbar-color: transparent transparent;
-}
-
-.scrollbar-thin:hover {
-  scrollbar-color: hsl(var(--muted-foreground) / 0.3) transparent;
-}
-
-.scrollbar-thin::-webkit-scrollbar {
-  width: 4px;
-  height: 4px;
-}
-
-.scrollbar-thin::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.scrollbar-thin::-webkit-scrollbar-thumb {
-  background: transparent;
-  border-radius: 9999px;
-}
-
-.scrollbar-thin:hover::-webkit-scrollbar-thumb {
-  background: hsl(var(--muted-foreground) / 0.3);
 }
 
 /* Text overflow utilities */
@@ -264,19 +334,6 @@ code {
 }
 
 /* Gradient Backgrounds */
-.gradient-mesh {
-  background:
-    radial-gradient(
-      at 40% 20%,
-      hsl(var(--primary) / 0.15) 0px,
-      transparent 50%
-    ),
-    radial-gradient(at 80% 0%, hsl(280 100% 70% / 0.1) 0px, transparent 50%),
-    radial-gradient(at 0% 50%, hsl(200 100% 70% / 0.1) 0px, transparent 50%),
-    radial-gradient(at 80% 50%, hsl(340 100% 70% / 0.08) 0px, transparent 50%),
-    radial-gradient(at 0% 100%, hsl(var(--primary) / 0.1) 0px, transparent 50%);
-}
-
 .gradient-subtle {
   @apply bg-gradient-to-br from-primary/5 via-transparent to-primary/5;
 }
@@ -306,67 +363,6 @@ code {
     0 0 30px hsl(var(--primary) / 0.2),
     0 0 60px hsl(var(--primary) / 0.15),
     0 0 90px hsl(var(--primary) / 0.1);
-}
-
-/* Animated Gradient Border */
-.gradient-border {
-  position: relative;
-  background: hsl(var(--background));
-  border-radius: 1rem;
-}
-
-.gradient-border::before {
-  content: '';
-  position: absolute;
-  inset: -1px;
-  border-radius: inherit;
-  padding: 1px;
-  background: linear-gradient(
-    135deg,
-    hsl(var(--primary)),
-    hsl(280 100% 70%),
-    hsl(var(--primary))
-  );
-  -webkit-mask:
-    linear-gradient(#fff 0 0) content-box,
-    linear-gradient(#fff 0 0);
-  mask:
-    linear-gradient(#fff 0 0) content-box,
-    linear-gradient(#fff 0 0);
-  -webkit-mask-composite: xor;
-  mask-composite: exclude;
-}
-
-/* Shine Effect */
-.shine {
-  position: relative;
-  overflow: hidden;
-}
-
-.shine::after {
-  content: '';
-  position: absolute;
-  top: -50%;
-  left: -50%;
-  width: 200%;
-  height: 200%;
-  background: linear-gradient(
-    to right,
-    transparent 0%,
-    rgba(255, 255, 255, 0.1) 50%,
-    transparent 100%
-  );
-  transform: rotate(30deg);
-  animation: shine 3s ease-in-out infinite;
-}
-
-@keyframes shine {
-  0% {
-    transform: translateX(-100%) rotate(30deg);
-  }
-  100% {
-    transform: translateX(100%) rotate(30deg);
-  }
 }
 
 /* Floating Animation */
@@ -423,14 +419,6 @@ code {
   background-size: 20px 20px;
 }
 
-/* Grid Pattern */
-.grid-pattern {
-  background-image:
-    linear-gradient(hsl(var(--border) / 0.5) 1px, transparent 1px),
-    linear-gradient(90deg, hsl(var(--border) / 0.5) 1px, transparent 1px);
-  background-size: 40px 40px;
-}
-
 /* Noise Texture Overlay */
 .noise {
   position: relative;
@@ -448,10 +436,6 @@ code {
 /* Badge Variants */
 .badge-glass {
   @apply px-3 py-1 rounded-full text-xs font-medium bg-white/10 backdrop-blur-sm border border-white/20;
-}
-
-.badge-glow {
-  @apply badge-glass shadow-sm shadow-primary/20;
 }
 
 /* Stat Card */
@@ -570,4 +554,43 @@ code {
 .pulse-ring {
   @apply absolute inset-0 rounded-full bg-primary/20;
   animation: pulse-ring 2s ease-in-out infinite;
+}
+
+/* Dark mode enhancements for stats & playground */
+.dark .glass-card h3 {
+  color: hsl(210 40% 96%);
+}
+
+.dark .icon-container,
+.dark .icon-container-sm {
+  background: linear-gradient(
+    135deg,
+    hsl(var(--primary) / 0.25),
+    hsl(var(--primary) / 0.08)
+  );
+}
+
+/* Ensure playground control inputs have visible borders in dark mode */
+.dark input[type='range'] {
+  accent-color: hsl(var(--primary));
+}
+
+.dark input[type='text'] {
+  border-color: hsl(var(--border) / 0.4);
+  background: hsl(220 20% 10% / 0.5);
+}
+
+/* =========================================================================
+   Reduced Motion – Respect user's motion preferences
+   ========================================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

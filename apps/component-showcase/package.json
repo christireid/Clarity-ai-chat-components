@@ -8,7 +8,9 @@
     "build": "next build",
     "start": "next start -p 3100",
     "lint": "eslint .",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "generate-docs": "tsx scripts/generate-docs.ts"
   },
   "dependencies": {
     "@clarity-chat/error-handling": "workspace:*",
@@ -40,11 +42,15 @@
   },
   "devDependencies": {
     "@types/node": "^22.0.0",
+    "@types/prismjs": "^1.26.5",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
     "autoprefixer": "^10.4.20",
+    "glob": "^13.0.1",
+    "jsdom": "^27.3.0",
     "postcss": "^8.4.49",
     "tailwindcss": "^3.4.16",
-    "typescript": "^5.9.0"
+    "typescript": "^5.9.0",
+    "vitest": "^4.0.16"
   }
 }

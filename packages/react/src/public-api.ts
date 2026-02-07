@@ -87,7 +87,19 @@ export {
   type UseStreamingOptions,
   type UseStreamingReturn,
 } from './hooks/streaming/use-streaming'
-export { useThrottledCallback } from './hooks/ui/use-throttle'
+export { useThrottle, useThrottledCallback } from './hooks/ui/use-throttle'
+export { useDebounce, useDebouncedCallback } from './hooks/ui/use-debounce'
+export { useToggle, type UseToggleReturn } from './hooks/ui/use-toggle'
+export {
+  useCharacterCounter,
+  type UseCharacterCounterOptions,
+  type CharacterCounterResult,
+} from './hooks/input/use-character-counter'
+export {
+  useCircuitBreaker,
+  type UseCircuitBreakerOptions,
+  type UseCircuitBreakerReturn,
+} from './hooks/resilience/use-circuit-breaker'
 export {
   useLocalStorage,
   type UseLocalStorageOptions,
