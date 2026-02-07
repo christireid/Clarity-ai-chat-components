@@ -172,6 +172,20 @@ export {
   type UseFocusRestorationReturn,
 } from './hooks/ui/use-focus-restoration'
 
+// 8.16. Timer Safety Hooks (promoted from internal)
+export {
+  useSafeTimeout,
+  type UseSafeTimeoutReturn,
+  useSafeInterval,
+  type UseSafeIntervalReturn,
+} from './hooks/ui/use-safe-timeout'
+
+// 8.17. Copy Button (promoted from internal)
+export { CopyButton } from './components/message/CopyButton'
+
+// 8.18. Animated Dots (promoted from internal)
+export { AnimatedDots } from './components/ui/AnimatedDots'
+
 // 9. Command Palette - Quick actions and navigation
 export { CommandPalette } from './components/navigation/CommandPalette'
 export type { CommandPaletteProps } from './components/navigation/CommandPalette'

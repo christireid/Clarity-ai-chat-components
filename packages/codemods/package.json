@@ -30,10 +30,10 @@
     "@clarity-chat/primitives": "workspace:*",
     "@clarity-chat/react": "workspace:*",
     "@types/jscodeshift": "^0.11.6",
-    "@types/node": "^20.0.0",
-    "tsup": "^8.0.0",
-    "typescript": "^5.0.0",
-    "vitest": "^1.0.0"
+    "@types/node": "^22.10.5",
+    "tsup": "^8.5.1",
+    "typescript": "^5.9.3",
+    "vitest": "^4.0.16"
   },
   "peerDependencies": {
     "@clarity-chat/react": "workspace:*",

@@ -757,32 +757,11 @@ export { throttle } from './async/index.js'
 
 /**
  * Debounce function calls
+ *
+ * Re-exported from async utilities. The canonical implementation
+ * supports both cancel() and flush().
  */
-export function debounce<T extends (...args: unknown[]) => unknown>(
-  func: T,
-  wait: number
-): ((...args: Parameters<T>) => void) & { cancel: () => void } {
-  let timeout: NodeJS.Timeout | null = null
-
-  const debounced = function debounced(...args: Parameters<T>) {
-    if (timeout) {
-      clearTimeout(timeout)
-    }
-    timeout = setTimeout(() => {
-      func(...args)
-      timeout = null
-    }, wait)
-  } as ((...args: Parameters<T>) => void) & { cancel: () => void }
-
-  debounced.cancel = () => {
-    if (timeout) {
-      clearTimeout(timeout)
-      timeout = null
-    }
-  }
-
-  return debounced
-}
+export { debounce } from './async/index.js'
 
 /**
  * Create a debounced function

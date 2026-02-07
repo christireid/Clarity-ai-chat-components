@@ -4,35 +4,6 @@
  */
 
 /**
- * Deep merge objects
- */
-export function deepMerge<T extends Record<string, unknown>>(
-  target: T,
-  source: Partial<T>
-): T {
-  const result = { ...target }
-
-  for (const key in source) {
-    const sourceValue = source[key]
-    if (
-      sourceValue &&
-      typeof sourceValue === 'object' &&
-      !Array.isArray(sourceValue)
-    ) {
-      const targetValue = result[key] as Record<string, unknown> | undefined
-      result[key] = deepMerge(
-        targetValue ?? ({} as Record<string, unknown>),
-        sourceValue as Record<string, unknown>
-      ) as T[Extract<keyof T, string>]
-    } else {
-      result[key] = sourceValue as T[Extract<keyof T, string>]
-    }
-  }
-
-  return result
-}
-
-/**
  * Get nested object value safely
  */
 export function getNestedValue(

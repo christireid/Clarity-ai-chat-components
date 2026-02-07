@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 // @ts-nocheck
 /**
  * Animation Utilities for Clarity Chat
@@ -35,6 +36,8 @@ import type {
   TargetAndTransition,
   VariantLabels,
 } from 'framer-motion'
+
+export { useReducedMotion } from '@clarity-chat/primitives'
 
 /**
  * Duration constants for consistent animation timing
@@ -237,29 +240,6 @@ export function getReducedMotionVariants(
     animate: variants.animate,
     exit: variants.exit,
   }
-}
-
-/**
- * Check if the user prefers reduced motion
- */
-export function useReducedMotion(): boolean {
-  const [prefersReducedMotion, setPrefersReducedMotion] = React.useState(false)
-
-  React.useEffect(() => {
-    // Check initial preference
-    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
-    setPrefersReducedMotion(mediaQuery.matches)
-
-    // Listen for changes
-    const handler = (e: MediaQueryListEvent) => {
-      setPrefersReducedMotion(e.matches)
-    }
-
-    mediaQuery.addEventListener('change', handler)
-    return () => mediaQuery.removeEventListener('change', handler)
-  }, [])
-
-  return prefersReducedMotion
 }
 
 /**

@@ -21,8 +21,12 @@ import * as React from 'react'
 import { estimateTokens } from '../../utils/token-estimation'
 import { calculateCost } from '../../models/model-pricing'
 import type { ModelId } from '../../models/model-registry'
-import { cn } from '@clarity-chat/primitives'
-import { glassVariants, getSemanticGradient } from '@clarity-chat/primitives'
+import {
+  cn,
+  glassVariants,
+  getSemanticGradient,
+  useReducedMotion,
+} from '@clarity-chat/primitives'
 
 // =============================================================================
 // useTokenEstimate Hook
@@ -253,27 +257,6 @@ function defaultFormatTokens(tokens: number): string {
  * />
  * ```
  */
-/**
- * Hook to detect prefers-reduced-motion
- */
-function useReducedMotion(): boolean {
-  const [prefersReducedMotion, setPrefersReducedMotion] = React.useState(false)
-
-  React.useEffect(() => {
-    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
-    setPrefersReducedMotion(mediaQuery.matches)
-
-    const handler = (event: MediaQueryListEvent) => {
-      setPrefersReducedMotion(event.matches)
-    }
-
-    mediaQuery.addEventListener('change', handler)
-    return () => mediaQuery.removeEventListener('change', handler)
-  }, [])
-
-  return prefersReducedMotion
-}
-
 export function TokenCostPreview({
   text,
   model = 'gpt-4',

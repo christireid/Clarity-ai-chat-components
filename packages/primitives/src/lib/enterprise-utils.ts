@@ -13,8 +13,7 @@ import {
   debounce,
   generateUniqueFilename,
   parseFileSize,
-  deepMerge,
-  validateConfig
+  validateConfig,
 } from './utils.js'
 
 export {
@@ -25,15 +24,14 @@ export {
   debounce,
   generateUniqueFilename,
   parseFileSize,
-  deepMerge,
-  validateConfig
+  validateConfig,
 }
 
 /**
  * Ensure directories exist
  */
 export function ensureDirectories(directories: string[]): void {
-  directories.forEach(dir => {
+  directories.forEach((dir) => {
     try {
       if (!existsSync(dir)) {
         mkdirSync(dir, { recursive: true })

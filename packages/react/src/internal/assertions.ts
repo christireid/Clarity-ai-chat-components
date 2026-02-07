@@ -8,26 +8,15 @@
  * Most type guards are re-exported from @clarity-chat/utils/validation for consistency.
  */
 
-// Re-export type guards from the canonical utils package
+// Re-export type guards and assertions from the canonical utils package
 export {
   isDefined,
   isNonEmptyString,
   isArray,
   isFunction,
   isPromise,
+  assertDefined,
 } from '@clarity-chat/utils/validation'
-
-/**
- * Asserts that a value is not null or undefined
- */
-export function assertDefined<T>(
-  value: T,
-  message = 'Expected value to be defined'
-): asserts value is NonNullable<T> {
-  if (value === null || value === undefined) {
-    throw new Error(message)
-  }
-}
 
 /**
  * Type guard for valid numbers (not NaN or Infinity)

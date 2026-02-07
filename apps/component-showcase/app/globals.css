@@ -111,10 +111,6 @@
 }
 
 /* Showcase specific styles */
-.component-section {
-  @apply mb-12 p-6 rounded-xl border bg-card;
-}
-
 .component-title {
   @apply text-xl font-semibold mb-4 flex items-center gap-2;
 }
@@ -129,14 +125,6 @@
 
 .component-grid {
   @apply grid gap-6;
-}
-
-.component-grid-2 {
-  @apply grid md:grid-cols-2 gap-6;
-}
-
-.component-grid-3 {
-  @apply grid md:grid-cols-2 lg:grid-cols-3 gap-6;
 }
 
 /* Code highlighting */
