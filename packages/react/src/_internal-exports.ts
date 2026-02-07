@@ -1,5 +1,3 @@
-// @ts-nocheck
-// TODO: Fix export conflicts and type mismatches
 'use client'
 
 /**
@@ -400,6 +398,12 @@ export { ConversationList } from './components/conversation/ConversationList'
 export { ConversationBranchVisualizer } from './components/conversation/ConversationBranchVisualizer'
 
 // Markdown & Rendering
+
+// Resolve export name conflicts between modules:
+// - CodeBlockProps/InlineCodeProps: exported by both ai/MessageRenderer and code/CodeBlock
+// - ExportFormat: exported by both dashboards/SavingsDashboard and search/types
+export { type CodeBlockProps, type InlineCodeProps } from './components/code'
+export { type ExportFormat } from './components/search'
 
 // Dashboard Components
 export * from './components/dashboards'

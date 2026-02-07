@@ -31,14 +31,63 @@ export interface ManagedPrompt extends PromptTemplate {
 
 /**
  * The PromptManager class provides a centralized API for all
- * prompt-related operations.
+ * prompt-related operations, with optional localStorage persistence.
  */
 export class PromptManager {
   private prompts: Map<string, ManagedPrompt> = new Map()
   private engine: PromptTemplateEngine = new PromptTemplateEngine()
+  private static readonly STORAGE_KEY = 'clarity-chat-prompts'
+  private persistEnabled: boolean
 
-  constructor() {
-    // TODO: Load prompts from a persistent storage (e.g., localStorage)
+  constructor(options?: { persist?: boolean }) {
+    this.persistEnabled = options?.persist ?? true
+    this.loadFromStorage()
+  }
+
+  /**
+   * Loads prompts from localStorage if available.
+   */
+  private loadFromStorage(): void {
+    if (
+      !this.persistEnabled ||
+      typeof globalThis.localStorage === 'undefined'
+    ) {
+      return
+    }
+    try {
+      const stored = localStorage.getItem(PromptManager.STORAGE_KEY)
+      if (!stored) return
+      const entries = JSON.parse(stored) as Array<
+        ManagedPrompt & { createdAt: string; updatedAt: string }
+      >
+      for (const entry of entries) {
+        this.prompts.set(entry.id, {
+          ...entry,
+          createdAt: new Date(entry.createdAt),
+          updatedAt: new Date(entry.updatedAt),
+        })
+      }
+    } catch {
+      // Silently ignore corrupt data
+    }
+  }
+
+  /**
+   * Persists prompts to localStorage if available.
+   */
+  private persistToStorage(): void {
+    if (
+      !this.persistEnabled ||
+      typeof globalThis.localStorage === 'undefined'
+    ) {
+      return
+    }
+    try {
+      const entries = Array.from(this.prompts.values())
+      localStorage.setItem(PromptManager.STORAGE_KEY, JSON.stringify(entries))
+    } catch {
+      // Silently ignore storage errors (quota exceeded, etc.)
+    }
   }
 
   /**
@@ -70,12 +119,13 @@ export class PromptManager {
   }
 
   /**
-   * Saves a prompt to the manager.
+   * Saves a prompt to the manager and persists to storage.
    * @param prompt - The prompt to save.
    */
   savePrompt(prompt: ManagedPrompt): void {
     prompt.updatedAt = new Date()
     this.prompts.set(prompt.id, prompt)
+    this.persistToStorage()
   }
 
   /**
@@ -101,6 +151,7 @@ export class PromptManager {
    */
   deletePrompt(promptId: string): void {
     this.prompts.delete(promptId)
+    this.persistToStorage()
   }
 
   /**

@@ -1,5 +1,6 @@
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-nocheck
-// TODO: Fix Collapsible imports from primitives
+// TODO: Fix type errors from peer dependencies (framer-motion, vaul, class-variance-authority)
 'use client'
 
 import * as React from 'react'

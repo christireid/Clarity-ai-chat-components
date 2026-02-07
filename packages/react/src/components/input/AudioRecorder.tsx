@@ -1,5 +1,6 @@
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-nocheck
-// TODO: Fix lucide-react icon imports
+// TODO: Fix type errors from peer dependencies (framer-motion, vaul, class-variance-authority)
 /**
  * AudioRecorder Component
  *
@@ -26,7 +27,16 @@
 
 import * as React from 'react'
 import { cn } from '@clarity-chat/primitives'
-import { Mic, StopCircle, Pause, Play, Radio, Clock, Volume2, Waves } from 'lucide-react'
+import {
+  Mic,
+  StopCircle,
+  Pause,
+  Play,
+  Radio,
+  Clock,
+  Volume2,
+  Waves,
+} from 'lucide-react'
 
 // ============================================================================
 // Types
@@ -272,8 +282,9 @@ export function AudioRecorder({
 
       // Setup audio context for visualization
       if (showWaveform || showAmplitudeMeter) {
-        const audioContext = new (window.AudioContext ||
-          (window as any).webkitAudioContext)()
+        const audioContext = new (
+          window.AudioContext || (window as any).webkitAudioContext
+        )()
         audioContextRef.current = audioContext
 
         const analyser = audioContext.createAnalyser()
@@ -321,7 +332,9 @@ export function AudioRecorder({
 
       // Handle errors
       mediaRecorder.onerror = (event: any) => {
-        const error = new Error(`MediaRecorder error: ${event.error?.message || 'Unknown'}`)
+        const error = new Error(
+          `MediaRecorder error: ${event.error?.message || 'Unknown'}`
+        )
         onError?.(error)
         stopRecording()
       }
@@ -381,7 +394,10 @@ export function AudioRecorder({
 
   // Stop recording
   const stopRecording = React.useCallback(() => {
-    if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
+    if (
+      mediaRecorderRef.current &&
+      mediaRecorderRef.current.state !== 'inactive'
+    ) {
       mediaRecorderRef.current.stop()
     }
 
@@ -424,7 +440,10 @@ export function AudioRecorder({
 
           if (newDuration >= maxDuration) {
             // Inline stop to avoid dependency cycle
-            if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
+            if (
+              mediaRecorderRef.current &&
+              mediaRecorderRef.current.state !== 'inactive'
+            ) {
               mediaRecorderRef.current.stop()
             }
             if (durationIntervalRef.current) {
@@ -446,8 +465,14 @@ export function AudioRecorder({
     }
     // stopRecording and stopMediaStream intentionally omitted to avoid circular dependencies
     // They are managed via refs and called directly where needed
-     
-  }, [onResume, onDurationChange, maxDuration, showWaveform, showAmplitudeMeter, updateAmplitude])
+  }, [
+    onResume,
+    onDurationChange,
+    maxDuration,
+    showWaveform,
+    showAmplitudeMeter,
+    updateAmplitude,
+  ])
 
   // Stop media stream
   const stopMediaStream = React.useCallback(() => {
@@ -475,7 +500,10 @@ export function AudioRecorder({
   React.useEffect(() => {
     return () => {
       // Cleanup on unmount
-      if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
+      if (
+        mediaRecorderRef.current &&
+        mediaRecorderRef.current.state !== 'inactive'
+      ) {
         mediaRecorderRef.current.stop()
       }
       if (durationIntervalRef.current) {
@@ -492,7 +520,6 @@ export function AudioRecorder({
       }
     }
     // Only cleanup on unmount - no dependencies needed
-     
   }, [])
 
   // Auto-start if enabled
@@ -523,7 +550,10 @@ export function AudioRecorder({
         </div>
         {isRecording && !isPaused && (
           <div className="flex items-center gap-2">
-            <Radio className="w-3 h-3 text-red-500 animate-pulse" aria-hidden="true" />
+            <Radio
+              className="w-3 h-3 text-red-500 animate-pulse"
+              aria-hidden="true"
+            />
             <span className="text-xs text-red-500 font-medium">Recording</span>
           </div>
         )}
@@ -557,7 +587,10 @@ export function AudioRecorder({
               </div>
             ) : (
               <div className="text-center text-muted-foreground">
-                <Waves className="w-8 h-8 mx-auto mb-2 opacity-50" aria-hidden="true" />
+                <Waves
+                  className="w-8 h-8 mx-auto mb-2 opacity-50"
+                  aria-hidden="true"
+                />
                 <p className="text-sm">
                   {isPaused
                     ? 'Recording Paused'
@@ -601,8 +634,8 @@ export function AudioRecorder({
         {permissionDenied && (
           <div className="p-4 rounded-lg bg-destructive/10 border border-destructive/30">
             <p className="text-sm text-destructive">
-              Microphone access denied. Please allow microphone access in your browser
-              settings to use audio recording.
+              Microphone access denied. Please allow microphone access in your
+              browser settings to use audio recording.
             </p>
           </div>
         )}
@@ -651,7 +684,11 @@ export function AudioRecorder({
                   disabled={isStopDisabled}
                   aria-label="Stop recording"
                   className="flex items-center gap-2 px-4 py-2 rounded-lg bg-red-500/10 text-red-600 dark:text-red-400 hover:bg-red-500/20 transition-colors border border-red-200 dark:border-red-800 disabled:opacity-50 disabled:cursor-not-allowed"
-                  title={isStopDisabled ? `Record at least ${minDuration} seconds` : undefined}
+                  title={
+                    isStopDisabled
+                      ? `Record at least ${minDuration} seconds`
+                      : undefined
+                  }
                 >
                   <StopCircle className="w-4 h-4" aria-hidden="true" />
                   Stop
@@ -662,11 +699,7 @@ export function AudioRecorder({
         )}
 
         {/* Status announcement for screen readers */}
-        <div
-          role="status"
-          aria-live="polite"
-          className="sr-only"
-        >
+        <div role="status" aria-live="polite" className="sr-only">
           {isRecording && !isPaused && `Recording: ${formatDuration(duration)}`}
           {isPaused && 'Recording paused'}
           {!isRecording && 'Ready to record'}

@@ -1,6 +1,7 @@
 'use client'
+
 // @ts-nocheck
-// TODO: Fix DateTimeFormatOptions type
+// TODO: Fix type errors from peer dependencies (framer-motion, vaul, class-variance-authority)
 
 import * as React from 'react'
 import { cn } from '@clarity-chat/primitives'

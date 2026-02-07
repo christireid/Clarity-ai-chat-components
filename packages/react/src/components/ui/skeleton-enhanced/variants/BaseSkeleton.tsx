@@ -48,11 +48,11 @@ export const EnhancedSkeleton: React.FC<EnhancedSkeletonProps> = ({
     ...style,
   }
 
-  // Performance monitoring - TODO: Update for new UnifiedPerformanceMonitor API
+  // Performance monitoring via UnifiedPerformanceMonitor
   React.useEffect(() => {
     if (performanceId && typeof window !== 'undefined') {
-      // const cleanup = PerformanceMonitor.measureRender(performanceId)
-      // return cleanup
+      const cleanup = PerformanceMonitor.measureRender(performanceId)
+      return cleanup
     }
     return undefined
   }, [performanceId])

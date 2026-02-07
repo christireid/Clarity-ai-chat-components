@@ -1,5 +1,3 @@
-// @ts-nocheck
-// TODO: Fix export conflicts and type mismatches
 /**
  * Anthropic Model Adapter
  *
@@ -317,7 +315,9 @@ function convertToolsToAnthropicFormat(
  */
 function parseToolCalls(content: AnthropicContentBlock[]): ToolCall[] {
   return content
-    .filter((block): block is AnthropicToolUseBlock => block.type === 'tool_use')
+    .filter(
+      (block): block is AnthropicToolUseBlock => block.type === 'tool_use'
+    )
     .map((block) => ({
       id: block.id,
       type: 'function' as const,
@@ -333,14 +333,18 @@ function parseToolCalls(content: AnthropicContentBlock[]): ToolCall[] {
  */
 function extractThinkingSteps(content: AnthropicContentBlock[]): string[] {
   return content
-    .filter((block): block is AnthropicThinkingBlock => block.type === 'thinking')
+    .filter(
+      (block): block is AnthropicThinkingBlock => block.type === 'thinking'
+    )
     .map((block) => block.thinking)
 }
 
 /**
  * Convert our ChatMessage format to Anthropic's message format
  */
-function convertMessageToAnthropicFormat(message: ChatMessage): AnthropicMessage {
+function convertMessageToAnthropicFormat(
+  message: ChatMessage
+): AnthropicMessage {
   const anthropicMessage: AnthropicMessage = {
     role: message.role === 'assistant' ? 'assistant' : 'user',
     content: [],
@@ -367,9 +371,7 @@ function convertMessageToAnthropicFormat(message: ChatMessage): AnthropicMessage
         if (part.imageUrl.startsWith('data:')) {
           // Extract base64 data from data URL
           const [metadata, data] = part.imageUrl.split(',')
-          const mediaType = metadata
-            .split(';')[0]
-            .replace('data:', '') as
+          const mediaType = metadata.split(';')[0].replace('data:', '') as
             | 'image/jpeg'
             | 'image/png'
             | 'image/gif'
@@ -636,7 +638,10 @@ export const anthropicAdapter: ModelAdapter = {
         const { done, value } = await reader.read()
 
         if (done) {
-          yield { type: 'done', finishReason: normalizeFinishReason(stopReason) } as StreamChunk
+          yield {
+            type: 'done',
+            finishReason: normalizeFinishReason(stopReason),
+          } as StreamChunk
           break
         }
 
@@ -693,7 +698,7 @@ export const anthropicAdapter: ModelAdapter = {
               'content_block' in json &&
               json.content_block?.type === 'tool_use'
             ) {
-              const toolBlock = json.content_block as {
+              const toolBlock = json.content_block as unknown as {
                 id: string
                 name: string
               }
@@ -752,7 +757,11 @@ export const anthropicAdapter: ModelAdapter = {
             }
 
             // Handle message delta with usage
-            if (json.type === 'message_delta' && 'delta' in json && 'usage' in json) {
+            if (
+              json.type === 'message_delta' &&
+              'delta' in json &&
+              'usage' in json
+            ) {
               lastUsage = json.usage
               stopReason = json.delta?.stop_reason || null
             }
@@ -950,9 +959,7 @@ export interface UseAnthropicBridgeReturn {
   /** Get current configuration */
   getConfig: () => UseAnthropicBridgeConfig
   /** Update configuration */
-  updateConfig: (
-    config: Partial<UseAnthropicBridgeConfig>
-  ) => void
+  updateConfig: (config: Partial<UseAnthropicBridgeConfig>) => void
 }
 
 /**
@@ -1007,6 +1014,7 @@ export function createAnthropicBridge(
       ]
 
       return anthropicAdapter.chat(messages, {
+        provider: 'anthropic',
         ...currentConfig,
         tools,
         model: currentConfig.model || 'claude-3-5-sonnet-latest',
@@ -1023,6 +1031,7 @@ export function createAnthropicBridge(
       ]
 
       yield* anthropicAdapter.stream(messages, {
+        provider: 'anthropic',
         ...currentConfig,
         tools,
         model: currentConfig.model || 'claude-3-5-sonnet-latest',
@@ -1157,7 +1166,11 @@ export function createAnthropicAdapter(
     role: 'user' | 'assistant',
     content: string,
     toolCalls?: ToolCall[],
-    thinkingSteps?: Array<{ id: string; content: string; status: 'pending' | 'active' | 'complete' }>
+    thinkingSteps?: Array<{
+      id: string
+      content: string
+      status: 'pending' | 'active' | 'complete'
+    }>
   ): ClarityChatMessage {
     return {
       id: generateMessageId(),
@@ -1208,6 +1221,7 @@ export function createAnthropicAdapter(
       const messages = buildConversationMessages(message)
 
       const response = await anthropicAdapter.chat(messages, {
+        provider: 'anthropic',
         apiKey,
         model,
         maxTokens,
@@ -1217,10 +1231,19 @@ export function createAnthropicAdapter(
         signal: abortController?.signal,
       })
 
-      // Create assistant message
+      // Create assistant message - extract text from content
+      const textContent =
+        typeof response.content === 'string'
+          ? response.content
+          : Array.isArray(response.content)
+            ? response.content
+                .filter((p) => p.type === 'text')
+                .map((p) => p.text || '')
+                .join('')
+            : ''
       const assistantMessage = createClarityChatMessage(
         'assistant',
-        response.content,
+        textContent,
         response.toolCalls
       )
 
@@ -1254,131 +1277,138 @@ export function createAnthropicAdapter(
     const messageId = generateMessageId()
     let abortStream = false
 
-    const streamGenerator = async function* (): AsyncGenerator<ClarityChatStreamChunk> {
-      try {
-        abortController = new AbortController()
+    const streamGenerator =
+      async function* (): AsyncGenerator<ClarityChatStreamChunk> {
+        try {
+          abortController = new AbortController()
 
-        const messages = buildConversationMessages(message)
-        const startTime = Date.now()
+          const messages = buildConversationMessages(message)
+          const startTime = Date.now()
 
-        let fullContent = ''
-        let toolCalls: ToolCall[] = []
-        let thinkingSteps: Array<{ id: string; content: string; status: 'pending' | 'active' | 'complete' }> = []
-        let lastUsage: TokenUsage | undefined
-        let finishReason: FinishReason = 'unknown'
+          let fullContent = ''
+          let toolCalls: ToolCall[] = []
+          let thinkingSteps: Array<{
+            id: string
+            content: string
+            status: 'pending' | 'active' | 'complete'
+          }> = []
+          let lastUsage: TokenUsage | undefined
+          let finishReason: FinishReason = 'unknown'
 
-        for await (const chunk of anthropicAdapter.stream(messages, {
-          apiKey,
-          model,
-          maxTokens,
-          temperature,
-          topP,
-          ...config,
-          signal: abortController.signal,
-        })) {
-          if (abortStream) break
+          for await (const chunk of anthropicAdapter.stream(messages, {
+            provider: 'anthropic',
+            apiKey,
+            model,
+            maxTokens,
+            temperature,
+            topP,
+            ...config,
+            signal: abortController.signal,
+          })) {
+            if (abortStream) break
 
-          // Map token chunks
-          if (chunk.type === 'token' && chunk.content) {
-            fullContent += chunk.content
-            yield {
-              type: 'token',
-              content: chunk.content,
-              messageId,
-            } as ClarityChatStreamChunk
-          }
-
-          // Map thinking chunks
-          if (chunk.type === 'thinking' && chunk.thinkingStep) {
-            const thinkingId = `thinking_${thinkingSteps.length}`
-            const existing = thinkingSteps.find((t) => t.id === thinkingId)
-            if (existing) {
-              existing.content += chunk.thinkingStep
-              existing.status = 'active'
-            } else {
-              thinkingSteps.push({
-                id: thinkingId,
-                content: chunk.thinkingStep,
-                status: 'active',
-              })
+            // Map token chunks
+            if (chunk.type === 'token' && chunk.content) {
+              fullContent += chunk.content
+              yield {
+                type: 'token',
+                content: chunk.content,
+                messageId,
+              } as ClarityChatStreamChunk
             }
 
-            yield {
-              type: 'thinking',
-              messageId,
-              thinking: {
-                id: thinkingId,
-                content: chunk.thinkingStep,
-                status: 'active',
-              },
-            } as ClarityChatStreamChunk
+            // Map thinking chunks
+            if (chunk.type === 'thinking' && chunk.thinkingStep) {
+              const thinkingId = `thinking_${thinkingSteps.length}`
+              const existing = thinkingSteps.find((t) => t.id === thinkingId)
+              if (existing) {
+                existing.content += chunk.thinkingStep
+                existing.status = 'active'
+              } else {
+                thinkingSteps.push({
+                  id: thinkingId,
+                  content: chunk.thinkingStep,
+                  status: 'active',
+                })
+              }
+
+              yield {
+                type: 'thinking',
+                messageId,
+                thinking: {
+                  id: thinkingId,
+                  content: chunk.thinkingStep,
+                  status: 'active',
+                },
+              } as ClarityChatStreamChunk
+            }
+
+            // Map tool call chunks
+            if (chunk.type === 'tool_call' && chunk.toolCall) {
+              toolCalls.push(chunk.toolCall)
+
+              yield {
+                type: 'tool_call',
+                messageId,
+                toolCall: chunk.toolCall,
+              } as ClarityChatStreamChunk
+            }
+
+            // Map done/completion chunks
+            if (chunk.type === 'done') {
+              lastUsage = chunk.usage
+              finishReason = chunk.finishReason || 'unknown'
+
+              yield {
+                type: 'done',
+                messageId,
+                usage: chunk.usage,
+                finishReason,
+              } as ClarityChatStreamChunk
+            }
+
+            // Map error chunks
+            if (chunk.type === 'error') {
+              yield {
+                type: 'error',
+                messageId,
+                error: chunk.error,
+              } as ClarityChatStreamChunk
+            }
           }
 
-          // Map tool call chunks
-          if (chunk.type === 'tool_call' && chunk.toolCall) {
-            toolCalls.push(chunk.toolCall)
-
-            yield {
-              type: 'tool_call',
-              messageId,
-              toolCall: chunk.toolCall,
-            } as ClarityChatStreamChunk
-          }
-
-          // Map done/completion chunks
-          if (chunk.type === 'done') {
-            lastUsage = chunk.usage
-            finishReason = chunk.finishReason || 'unknown'
-
-            yield {
-              type: 'done',
-              messageId,
-              usage: chunk.usage,
-              finishReason,
-            } as ClarityChatStreamChunk
-          }
-
-          // Map error chunks
-          if (chunk.type === 'error') {
-            yield {
-              type: 'error',
-              messageId,
-              error: chunk.error,
-            } as ClarityChatStreamChunk
-          }
-        }
-
-        // Complete thinking steps
-        thinkingSteps.forEach((step) => {
-          step.status = 'complete'
-        })
-
-        // Create final message
-        const finalMessage = createClarityChatMessage(
-          'assistant',
-          fullContent,
-          toolCalls,
-          thinkingSteps
-        )
-
-        // Update conversation history
-        if (retainHistory) {
-          conversationHistory.push({
-            id: generateMessageId(),
-            role: 'user',
-            content: message,
-            createdAt: new Date(),
-            attachments,
+          // Complete thinking steps
+          thinkingSteps.forEach((step) => {
+            step.status = 'complete'
           })
-          conversationHistory.push(finalMessage)
-        }
 
-        return finalMessage
-      } catch (error) {
-        const errorMessage = error instanceof Error ? error.message : 'Unknown error'
-        throw new Error(`Anthropic stream error: ${errorMessage}`)
+          // Create final message
+          const finalMessage = createClarityChatMessage(
+            'assistant',
+            fullContent,
+            toolCalls,
+            thinkingSteps
+          )
+
+          // Update conversation history
+          if (retainHistory) {
+            conversationHistory.push({
+              id: generateMessageId(),
+              role: 'user',
+              content: message,
+              createdAt: new Date(),
+              attachments,
+            })
+            conversationHistory.push(finalMessage)
+          }
+
+          return finalMessage
+        } catch (error) {
+          const errorMessage =
+            error instanceof Error ? error.message : 'Unknown error'
+          throw new Error(`Anthropic stream error: ${errorMessage}`)
+        }
       }
-    }
 
     return {
       stream: () => streamGenerator(),
@@ -1448,14 +1478,19 @@ export function createAnthropicAdapter(
       tokensUsed: (status?.tokensUsed as number) || 0,
       tokensTotal: (status?.tokensTotal as number) || undefined,
       startedAt: status?.startedAt instanceof Date ? status.startedAt : null,
-      estimatedCompletion: status?.estimatedCompletion instanceof Date ? status.estimatedCompletion : null,
+      estimatedCompletion:
+        status?.estimatedCompletion instanceof Date
+          ? status.estimatedCompletion
+          : null,
     }
   }
 
   /**
    * Handle tool call execution
    */
-  async function handleToolCall(tool: ClarityChatToolExecution): Promise<unknown> {
+  async function handleToolCall(
+    tool: ClarityChatToolExecution
+  ): Promise<unknown> {
     // Store pending tool call
     pendingToolCalls.set(tool.id, tool)
 
@@ -1512,7 +1547,9 @@ export function createAnthropicAdapter(
     handleToolCall,
     approveTool,
     rejectTool,
-    mapToolCalls: mapToolCalls as (toolCalls: unknown[]) => ClarityChatToolExecution[],
+    mapToolCalls: mapToolCalls as (
+      toolCalls: unknown[]
+    ) => ClarityChatToolExecution[],
     capabilities,
     dispose: () => {
       abortController?.abort()
@@ -1557,32 +1594,4 @@ export function useAnthropicAdapter(
   return createAnthropicAdapter(config)
 }
 
-// =============================================================================
-// Exports
-// =============================================================================
-
-export type {
-  AnthropicRole,
-  AnthropicContentBlockType,
-  AnthropicTextBlock,
-  AnthropicToolUseBlock,
-  AnthropicImageBlock,
-  AnthropicThinkingBlock,
-  AnthropicToolResultBlock,
-  AnthropicContentBlock,
-  AnthropicMessage,
-  AnthropicToolDefinition,
-  AnthropicTokenUsage,
-  AnthropicResponse,
-  AnthropicStreamEventType,
-  AnthropicMessageStartEvent,
-  AnthropicContentBlockStartEvent,
-  AnthropicContentBlockDeltaEvent,
-  AnthropicContentBlockStopEvent,
-  AnthropicMessageDeltaEvent,
-  AnthropicMessageStopEvent,
-  AnthropicStreamEvent,
-  StreamingToolUseBlock,
-  StreamingThinkingBlock,
-  AnthropicClarityChatAdapterConfig,
-}
+// All types are already exported at their declaration sites above.
