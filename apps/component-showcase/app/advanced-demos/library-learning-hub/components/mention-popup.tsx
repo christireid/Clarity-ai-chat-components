@@ -1,6 +1,6 @@
 'use client'
 
-import { useMemo } from 'react'
+import { useMemo, useState, useEffect, useCallback, useRef } from 'react'
 import { cn, Badge, ScrollArea } from '@clarity-chat/primitives'
 import { AtSign, Layers, Code2, Plug } from 'lucide-react'
 
@@ -33,7 +33,11 @@ const MENTION_ITEMS: MentionItem[] = [
   // Hooks
   { id: 'useclaritychat', label: 'useClarityChat', type: 'hook' },
   { id: 'usestreaming', label: 'useStreaming', type: 'hook' },
-  { id: 'usetokenbudgetmonitor', label: 'useTokenBudgetMonitor', type: 'hook' },
+  {
+    id: 'usetokenbudgetmonitor',
+    label: 'useTokenBudgetMonitor',
+    type: 'hook',
+  },
   { id: 'usechat', label: 'useChat', type: 'hook' },
   { id: 'usememorystore', label: 'useMemoryStore', type: 'hook' },
   // Adapters
@@ -76,10 +80,13 @@ export function MentionPopup({
   items,
   filter,
   onSelect,
-  onClose: _onClose,
+  onClose,
   visible = true,
   className,
 }: MentionPopupProps) {
+  const [highlightIdx, setHighlightIdx] = useState(0)
+  const listRef = useRef<HTMLDivElement>(null)
+
   const sourceItems = items ?? MENTION_ITEMS
   const filteredItems = useMemo(() => {
     if (!filter) return sourceItems
@@ -91,9 +98,54 @@ export function MentionPopup({
     )
   }, [filter, sourceItems])
 
+  // Reset highlight when filter changes
+  useEffect(() => {
+    setHighlightIdx(0)
+  }, [filter])
+
+  // Keyboard navigation
+  const handleKeyDown = useCallback(
+    (e: KeyboardEvent) => {
+      if (!visible || filteredItems.length === 0) return
+
+      switch (e.key) {
+        case 'ArrowDown':
+          e.preventDefault()
+          setHighlightIdx((i) => Math.min(i + 1, filteredItems.length - 1))
+          break
+        case 'ArrowUp':
+          e.preventDefault()
+          setHighlightIdx((i) => Math.max(i - 1, 0))
+          break
+        case 'Enter':
+          e.preventDefault()
+          onSelect(filteredItems[highlightIdx])
+          break
+        case 'Escape':
+          e.preventDefault()
+          onClose?.()
+          break
+      }
+    },
+    [visible, filteredItems, highlightIdx, onSelect, onClose]
+  )
+
+  useEffect(() => {
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [handleKeyDown])
+
+  // Scroll highlighted item into view
+  useEffect(() => {
+    const container = listRef.current
+    if (!container) return
+    const highlighted = container.querySelector('[data-highlighted="true"]')
+    highlighted?.scrollIntoView({ block: 'nearest' })
+  }, [highlightIdx])
+
   if (!visible || filteredItems.length === 0) return null
 
-  // Group by type
+  // Group by type (flat list for keyboard nav)
   const grouped = filteredItems.reduce<Record<string, MentionItem[]>>(
     (acc, item) => {
       if (!acc[item.type]) acc[item.type] = []
@@ -103,6 +155,9 @@ export function MentionPopup({
     {}
   )
 
+  // Build a flat index mapping for keyboard navigation across groups
+  let flatIdx = 0
+
   return (
     <div
       className={cn(
@@ -110,6 +165,13 @@ export function MentionPopup({
         'animate-in fade-in slide-in-from-bottom-2 duration-200',
         className
       )}
+      role="listbox"
+      aria-label="Mention items"
+      aria-activedescendant={
+        filteredItems[highlightIdx]
+          ? `mention-${filteredItems[highlightIdx].id}`
+          : undefined
+      }
     >
       <div className="px-3 py-2 border-b bg-muted/30">
         <div className="flex items-center gap-2">
@@ -121,8 +183,8 @@ export function MentionPopup({
       </div>
 
       <ScrollArea className="max-h-60">
-        <div className="p-1.5">
-          {Object.entries(grouped).map(([type, items]) => {
+        <div className="p-1.5" ref={listRef}>
+          {Object.entries(grouped).map(([type, groupItems]) => {
             const config = typeConfig[type as keyof typeof typeConfig]
             const TypeIcon = config.icon
 
@@ -134,33 +196,46 @@ export function MentionPopup({
                     {config.label}s
                   </span>
                   <span className="text-[10px] text-muted-foreground/60">
-                    ({items.length})
+                    ({groupItems.length})
                   </span>
                 </div>
-                {items.map((item) => (
-                  <button
-                    key={item.id}
-                    onClick={() => onSelect(item)}
-                    className="flex items-center gap-2.5 w-full px-3 py-1.5 rounded-lg hover:bg-muted/70 transition-colors text-left"
-                  >
-                    <div
+                {groupItems.map((item) => {
+                  const currentFlatIdx = flatIdx++
+                  const isHighlighted = currentFlatIdx === highlightIdx
+
+                  return (
+                    <button
+                      key={item.id}
+                      id={`mention-${item.id}`}
+                      role="option"
+                      aria-selected={isHighlighted}
+                      data-highlighted={isHighlighted}
+                      onClick={() => onSelect(item)}
+                      onMouseEnter={() => setHighlightIdx(currentFlatIdx)}
                       className={cn(
-                        'w-1.5 h-1.5 rounded-full',
-                        config.color.replace('text-', 'bg-')
-                      )}
-                    />
-                    <span className="text-sm font-mono">@{item.label}</span>
-                    <Badge
-                      variant="outline"
-                      className={cn(
-                        'text-[9px] px-1.5 py-0 ml-auto',
-                        config.color
+                        'flex items-center gap-2.5 w-full px-3 py-1.5 rounded-lg transition-colors text-left',
+                        isHighlighted ? 'bg-muted/70' : 'hover:bg-muted/70'
                       )}
                     >
-                      {config.label}
-                    </Badge>
-                  </button>
-                ))}
+                      <div
+                        className={cn(
+                          'w-1.5 h-1.5 rounded-full',
+                          config.color.replace('text-', 'bg-')
+                        )}
+                      />
+                      <span className="text-sm font-mono">@{item.label}</span>
+                      <Badge
+                        variant="outline"
+                        className={cn(
+                          'text-[9px] px-1.5 py-0 ml-auto',
+                          config.color
+                        )}
+                      >
+                        {config.label}
+                      </Badge>
+                    </button>
+                  )
+                })}
               </div>
             )
           })}
@@ -169,11 +244,18 @@ export function MentionPopup({
 
       <div className="px-3 py-1.5 border-t bg-muted/20">
         <p className="text-[10px] text-muted-foreground">
-          Type{' '}
           <kbd className="px-1 py-0.5 rounded bg-muted text-[10px] font-mono">
-            @
+            ↑↓
           </kbd>{' '}
-          followed by a name to mention
+          navigate{' '}
+          <kbd className="px-1 py-0.5 rounded bg-muted text-[10px] font-mono">
+            ↵
+          </kbd>{' '}
+          select{' '}
+          <kbd className="px-1 py-0.5 rounded bg-muted text-[10px] font-mono">
+            esc
+          </kbd>{' '}
+          close
         </p>
       </div>
     </div>

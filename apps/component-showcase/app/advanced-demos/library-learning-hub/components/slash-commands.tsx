@@ -1,6 +1,6 @@
 'use client'
 
-import { useMemo } from 'react'
+import { useMemo, useState, useEffect, useCallback, useRef } from 'react'
 import { cn, Badge, ScrollArea } from '@clarity-chat/primitives'
 import {
   Layers,
@@ -85,10 +85,13 @@ export function SlashCommandMenu({
   commands,
   filter,
   onSelect,
-  onClose: _onClose,
+  onClose,
   visible = true,
   className,
 }: SlashCommandMenuProps) {
+  const [highlightIdx, setHighlightIdx] = useState(0)
+  const listRef = useRef<HTMLDivElement>(null)
+
   const sourceCommands = commands ?? SLASH_COMMANDS
   const filteredCommands = useMemo(() => {
     if (!filter) return sourceCommands
@@ -101,7 +104,54 @@ export function SlashCommandMenu({
     )
   }, [filter, sourceCommands])
 
+  // Reset highlight when filter changes
+  useEffect(() => {
+    setHighlightIdx(0)
+  }, [filter])
+
+  // Keyboard navigation
+  const handleKeyDown = useCallback(
+    (e: KeyboardEvent) => {
+      if (!visible || filteredCommands.length === 0) return
+
+      switch (e.key) {
+        case 'ArrowDown':
+          e.preventDefault()
+          setHighlightIdx((i) => Math.min(i + 1, filteredCommands.length - 1))
+          break
+        case 'ArrowUp':
+          e.preventDefault()
+          setHighlightIdx((i) => Math.max(i - 1, 0))
+          break
+        case 'Enter':
+          e.preventDefault()
+          onSelect(filteredCommands[highlightIdx])
+          break
+        case 'Escape':
+          e.preventDefault()
+          onClose?.()
+          break
+      }
+    },
+    [visible, filteredCommands, highlightIdx, onSelect, onClose]
+  )
+
+  useEffect(() => {
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [handleKeyDown])
+
+  // Scroll highlighted item into view
+  useEffect(() => {
+    const container = listRef.current
+    if (!container) return
+    const highlighted = container.querySelector('[data-highlighted="true"]')
+    highlighted?.scrollIntoView({ block: 'nearest' })
+  }, [highlightIdx])
+
   if (!visible || filteredCommands.length === 0) return null
+
+  const highlightedId = filteredCommands[highlightIdx]?.name
 
   return (
     <div
@@ -110,6 +160,11 @@ export function SlashCommandMenu({
         'animate-in fade-in slide-in-from-bottom-2 duration-200',
         className
       )}
+      role="listbox"
+      aria-label="Slash commands"
+      aria-activedescendant={
+        highlightedId ? `slash-cmd-${highlightedId}` : undefined
+      }
     >
       <div className="px-3 py-2 border-b bg-muted/30">
         <div className="flex items-center gap-2">
@@ -123,12 +178,20 @@ export function SlashCommandMenu({
         </div>
       </div>
       <ScrollArea className="max-h-52">
-        <div className="p-1.5">
-          {filteredCommands.map((cmd) => (
+        <div className="p-1.5" ref={listRef}>
+          {filteredCommands.map((cmd, idx) => (
             <button
               key={cmd.name}
+              id={`slash-cmd-${cmd.name}`}
+              role="option"
+              aria-selected={idx === highlightIdx}
+              data-highlighted={idx === highlightIdx}
               onClick={() => onSelect(cmd)}
-              className="flex items-center gap-3 w-full px-3 py-2 rounded-lg hover:bg-muted/70 transition-colors text-left group"
+              onMouseEnter={() => setHighlightIdx(idx)}
+              className={cn(
+                'flex items-center gap-3 w-full px-3 py-2 rounded-lg transition-colors text-left group',
+                idx === highlightIdx ? 'bg-muted/70' : 'hover:bg-muted/70'
+              )}
             >
               <div className="p-1.5 rounded-md bg-muted group-hover:bg-primary/10 group-hover:text-primary transition-colors">
                 {cmd.icon}
@@ -152,11 +215,18 @@ export function SlashCommandMenu({
       </ScrollArea>
       <div className="px-3 py-1.5 border-t bg-muted/20">
         <p className="text-[10px] text-muted-foreground">
-          Type{' '}
           <kbd className="px-1 py-0.5 rounded bg-muted text-[10px] font-mono">
-            /
+            ↑↓
           </kbd>{' '}
-          followed by a command name
+          navigate{' '}
+          <kbd className="px-1 py-0.5 rounded bg-muted text-[10px] font-mono">
+            ↵
+          </kbd>{' '}
+          select{' '}
+          <kbd className="px-1 py-0.5 rounded bg-muted text-[10px] font-mono">
+            esc
+          </kbd>{' '}
+          close
         </p>
       </div>
     </div>

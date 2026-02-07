@@ -1,9 +1,16 @@
 'use client'
 
-import { useState, useRef } from 'react'
+import { useState, useRef, useCallback, useMemo } from 'react'
 import { PageHeader } from '@/components/component-section'
 import { cn } from '@clarity-chat/primitives'
-import { useAutoScroll, MarkdownRenderer } from '@clarity-chat/react'
+import {
+  useAutoScroll,
+  MarkdownRenderer,
+  ErrorBoundary,
+  ThinkingBar,
+  FollowUpSuggestions,
+  type PromptSuggestion,
+} from '@clarity-chat/react'
 import {
   Send,
   Blocks,
@@ -82,6 +89,21 @@ const defaultPrompts: SavedPrompt[] = [
   { id: '3', text: 'Write a REST API documentation' },
   { id: '4', text: 'Build a dashboard layout in HTML' },
   { id: '5', text: 'Create a TypeScript utility library' },
+]
+
+const slashCommands = [
+  { id: 'create', label: '/create', description: 'Create a new artifact' },
+  { id: 'edit', label: '/edit', description: 'Edit latest artifact' },
+  { id: 'version', label: '/version', description: 'Show version history' },
+  { id: 'preview', label: '/preview', description: 'Toggle artifact panel' },
+  { id: 'export', label: '/export', description: 'Export artifacts' },
+  { id: 'tools', label: '/tools', description: 'List available tools' },
+]
+
+const followUpSuggestions: PromptSuggestion[] = [
+  { id: '1', text: 'Add dark mode support', type: 'follow-up' },
+  { id: '2', text: 'Make it responsive', type: 'follow-up' },
+  { id: '3', text: 'Add form validation', type: 'follow-up' },
 ]
 
 export default function ArtifactStudioPage() {
@@ -173,26 +195,50 @@ export default function ArtifactStudioPage() {
     dependencies: [chat.messages, chat.isLoading],
   })
 
-  const handleSend = async (overrideText?: string) => {
-    const text = overrideText || input.trim()
-    if (!text || chat.isLoading) return
-    setInput('')
-    setShowSlashMenu(false)
-    try {
-      await chat.append({ role: 'user', content: text })
-    } catch {
-      // Error is captured by chat.error state
-    }
-  }
+  const handleSend = useCallback(
+    async (overrideText?: string) => {
+      const text = overrideText || input.trim()
+      if (!text || chat.isLoading) return
+      setInput('')
+      setShowSlashMenu(false)
+      try {
+        await chat.append({ role: 'user', content: text })
+      } catch {
+        // Error is captured by chat.error state
+      }
+    },
+    [input, chat]
+  )
 
-  const slashCommands = [
-    { id: 'create', label: '/create', description: 'Create a new artifact' },
-    { id: 'edit', label: '/edit', description: 'Edit latest artifact' },
-    { id: 'version', label: '/version', description: 'Show version history' },
-    { id: 'preview', label: '/preview', description: 'Toggle artifact panel' },
-    { id: 'export', label: '/export', description: 'Export artifacts' },
-    { id: 'tools', label: '/tools', description: 'List available tools' },
-  ]
+  const handleInputChange = useCallback(
+    (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+      setInput(e.target.value)
+      setShowSlashMenu(e.target.value.endsWith('/'))
+    },
+    []
+  )
+
+  const handleKeyDown = useCallback(
+    (e: React.KeyboardEvent) => {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault()
+        if (chat.isLoading) {
+          chat.stop()
+        } else {
+          handleSend()
+        }
+      }
+      if (e.key === 'Escape') setShowSlashMenu(false)
+    },
+    [chat, handleSend]
+  )
+
+  const handleFollowUp = useCallback(
+    (suggestion: PromptSuggestion) => {
+      handleSend(suggestion.text)
+    },
+    [handleSend]
+  )
 
   // Thinking indicator: show while loading before assistant content arrives
   const lastMsg =
@@ -204,6 +250,20 @@ export default function ArtifactStudioPage() {
     (!lastMsg ||
       lastMsg.role !== 'assistant' ||
       !getTextContent(lastMsg.content))
+
+  // Show follow-up after assistant stops streaming
+  const showFollowUp = useMemo(() => {
+    if (chat.isLoading || chat.messages.length === 0) return false
+    const last = chat.messages[chat.messages.length - 1]
+    return last?.role === 'assistant'
+  }, [chat.isLoading, chat.messages])
+
+  // ThinkingBar status derived from chat state
+  const thinkingBarStatus = useMemo(() => {
+    if (!chat.isLoading) return 'idle' as const
+    if (showThinkingIndicator) return 'thinking' as const
+    return 'generating' as const
+  }, [chat.isLoading, showThinkingIndicator])
 
   return (
     <div>
@@ -224,331 +284,341 @@ export default function ArtifactStudioPage() {
           onApiKeyChange={setApiKey}
         />
 
-        <div className="flex h-[calc(100%-3rem)]">
-          {/* Sidebar */}
-          <ArtifactSidebar
-            conversations={conversations}
-            activeConversationId={activeConvId}
-            onSelectConversation={handleSelectConversation}
-            onNewConversation={handleNewConversation}
-            onDeleteConversation={handleDeleteConversation}
-            savedPrompts={savedPrompts}
-            onUsePrompt={(text) => {
-              setInput(text)
-              inputRef.current?.focus()
-            }}
-            onDeletePrompt={(id) =>
-              setSavedPrompts((prev) => prev.filter((p) => p.id !== id))
-            }
-            onSavePrompt={(text) =>
-              setSavedPrompts((prev) => [...prev, { id: generateId(), text }])
-            }
-            masterContext={masterContext}
-            onMasterContextChange={setMasterContext}
-            techStack={techStack}
-            onToggleTech={(tech) =>
-              setTechStack((prev) =>
-                prev.includes(tech)
-                  ? prev.filter((t) => t !== tech)
-                  : [...prev, tech]
-              )
-            }
-            collapsed={sidebarCollapsed}
-            onToggleCollapsed={() => setSidebarCollapsed((prev) => !prev)}
-          />
+        <ThinkingBar
+          status={thinkingBarStatus}
+          message={
+            showThinkingIndicator
+              ? 'Thinking...'
+              : chat.isLoading
+                ? 'Generating artifact...'
+                : undefined
+          }
+          variant="minimal"
+        />
 
-          {/* Main Chat */}
-          <div className="flex-1 flex flex-col min-w-0">
-            <div
-              ref={scrollRef as React.RefObject<HTMLDivElement>}
-              className="flex-1 overflow-y-auto"
-            >
-              {chat.messages.length === 0 && !chat.isLoading ? (
-                <ArtifactWelcomeScreen
-                  onSuggestionClick={(text) => {
-                    setInput(text)
-                    inputRef.current?.focus()
-                  }}
-                />
-              ) : (
-                <div
-                  className="p-4 space-y-6"
-                  role="log"
-                  aria-live="polite"
-                  aria-label="Chat messages"
-                >
-                  {chat.messages
-                    .filter(
-                      (m: HookMessage) =>
-                        m.role === 'user' || m.role === 'assistant'
-                    )
-                    .map(
-                      (
-                        msg: HookMessage,
-                        index: number,
-                        filtered: HookMessage[]
-                      ) => {
-                        const msgId = msg.id || `msg-${index}`
-                        const isLastAssistant =
-                          msg.role === 'assistant' &&
-                          index === filtered.length - 1
-                        const content = getTextContent(msg.content)
+        <ErrorBoundary onRetry={() => window.location.reload()}>
+          <div className="flex h-[calc(100%-3rem)]">
+            {/* Sidebar */}
+            <ArtifactSidebar
+              conversations={conversations}
+              activeConversationId={activeConvId}
+              onSelectConversation={handleSelectConversation}
+              onNewConversation={handleNewConversation}
+              onDeleteConversation={handleDeleteConversation}
+              savedPrompts={savedPrompts}
+              onUsePrompt={(text) => {
+                setInput(text)
+                inputRef.current?.focus()
+              }}
+              onDeletePrompt={(id) =>
+                setSavedPrompts((prev) => prev.filter((p) => p.id !== id))
+              }
+              onSavePrompt={(text) =>
+                setSavedPrompts((prev) => [...prev, { id: generateId(), text }])
+              }
+              masterContext={masterContext}
+              onMasterContextChange={setMasterContext}
+              techStack={techStack}
+              onToggleTech={(tech) =>
+                setTechStack((prev) =>
+                  prev.includes(tech)
+                    ? prev.filter((t) => t !== tech)
+                    : [...prev, tech]
+                )
+              }
+              collapsed={sidebarCollapsed}
+              onToggleCollapsed={() => setSidebarCollapsed((prev) => !prev)}
+            />
 
-                        return (
-                          <div
-                            key={msgId}
-                            className={cn(
-                              'group flex gap-3',
-                              msg.role === 'user' && 'justify-end'
-                            )}
-                          >
-                            {msg.role === 'assistant' && (
-                              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center shrink-0">
-                                <Bot className="h-4 w-4 text-white" />
-                              </div>
-                            )}
+            {/* Main Chat */}
+            <div className="flex-1 flex flex-col min-w-0">
+              <div
+                ref={scrollRef as React.RefObject<HTMLDivElement>}
+                className="flex-1 overflow-y-auto"
+              >
+                {chat.messages.length === 0 && !chat.isLoading ? (
+                  <ArtifactWelcomeScreen
+                    onSuggestionClick={(text) => {
+                      setInput(text)
+                      inputRef.current?.focus()
+                    }}
+                  />
+                ) : (
+                  <div
+                    className="p-4 space-y-6"
+                    role="log"
+                    aria-live="polite"
+                    aria-label="Chat messages"
+                  >
+                    {chat.messages
+                      .filter(
+                        (m: HookMessage) =>
+                          m.role === 'user' || m.role === 'assistant'
+                      )
+                      .map(
+                        (
+                          msg: HookMessage,
+                          index: number,
+                          filtered: HookMessage[]
+                        ) => {
+                          const msgId = msg.id || `msg-${index}`
+                          const isLastAssistant =
+                            msg.role === 'assistant' &&
+                            index === filtered.length - 1
+                          const content = getTextContent(msg.content)
+
+                          return (
                             <div
+                              key={msgId}
                               className={cn(
-                                'max-w-[75%] min-w-0',
-                                msg.role === 'user' ? 'order-first' : ''
+                                'group flex gap-3',
+                                msg.role === 'user' && 'justify-end'
                               )}
                             >
+                              {msg.role === 'assistant' && (
+                                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center shrink-0">
+                                  <Bot className="h-4 w-4 text-white" />
+                                </div>
+                              )}
                               <div
                                 className={cn(
-                                  'rounded-2xl px-4 py-3',
-                                  msg.role === 'user'
-                                    ? 'bg-primary text-primary-foreground ml-auto'
-                                    : 'bg-muted/50'
+                                  'max-w-[75%] min-w-0',
+                                  msg.role === 'user' ? 'order-first' : ''
                                 )}
                               >
-                                {editingMessageId === msg.id ? (
-                                  <div className="space-y-2">
-                                    <textarea
-                                      value={editingText}
-                                      onChange={(e) =>
-                                        setEditingText(e.target.value)
-                                      }
-                                      className="w-full bg-transparent border rounded-lg p-2 text-sm resize-none focus:outline-none"
-                                      rows={3}
-                                    />
-                                    <div className="flex gap-2 justify-end">
-                                      <button
-                                        onClick={() => handleEditCancel()}
-                                        className="text-xs px-2 py-1 rounded bg-muted"
-                                      >
-                                        Cancel
-                                      </button>
-                                      <button
-                                        onClick={() =>
-                                          msg.id && handleEditSave(msg.id)
+                                <div
+                                  className={cn(
+                                    'rounded-2xl px-4 py-3',
+                                    msg.role === 'user'
+                                      ? 'bg-primary text-primary-foreground ml-auto'
+                                      : 'bg-muted/50'
+                                  )}
+                                >
+                                  {editingMessageId === msg.id ? (
+                                    <div className="space-y-2">
+                                      <textarea
+                                        value={editingText}
+                                        onChange={(e) =>
+                                          setEditingText(e.target.value)
                                         }
-                                        className="text-xs px-2 py-1 rounded bg-primary text-primary-foreground"
-                                      >
-                                        Save & Resend
-                                      </button>
+                                        className="w-full bg-transparent border rounded-lg p-2 text-sm resize-none focus:outline-none"
+                                        rows={3}
+                                      />
+                                      <div className="flex gap-2 justify-end">
+                                        <button
+                                          onClick={() => handleEditCancel()}
+                                          className="text-xs px-2 py-1 rounded bg-muted"
+                                        >
+                                          Cancel
+                                        </button>
+                                        <button
+                                          onClick={() =>
+                                            msg.id && handleEditSave(msg.id)
+                                          }
+                                          className="text-xs px-2 py-1 rounded bg-primary text-primary-foreground"
+                                        >
+                                          Save & Resend
+                                        </button>
+                                      </div>
                                     </div>
-                                  </div>
-                                ) : (
-                                  <div className="text-sm">
-                                    <MarkdownRenderer
-                                      content={content}
-                                      isStreaming={
-                                        isLastAssistant && chat.isLoading
+                                  ) : (
+                                    <div className="text-sm">
+                                      <MarkdownRenderer
+                                        content={content}
+                                        isStreaming={
+                                          isLastAssistant && chat.isLoading
+                                        }
+                                        config={MARKDOWN_CONFIG}
+                                      />
+                                      {isLastAssistant && chat.isLoading && (
+                                        <span className="inline-block w-1.5 h-4 bg-violet-500 animate-pulse rounded-sm ml-0.5" />
+                                      )}
+                                    </div>
+                                  )}
+                                </div>
+                                {msg.id && (
+                                  <div className="mt-1 flex items-center gap-2">
+                                    <MessageActions
+                                      role={msg.role as 'user' | 'assistant'}
+                                      feedback={feedback[msg.id]}
+                                      onFeedback={(fb) =>
+                                        handleFeedback(msg.id!, fb)
                                       }
-                                      config={MARKDOWN_CONFIG}
+                                      copyText={content}
+                                      onRegenerate={
+                                        msg.role === 'assistant'
+                                          ? () => handleRegenerate(msg.id!)
+                                          : undefined
+                                      }
+                                      onDelete={() =>
+                                        handleDeleteMessage(msg.id!)
+                                      }
+                                      onEdit={
+                                        msg.role === 'user'
+                                          ? () => handleEditStart(msg.id!)
+                                          : undefined
+                                      }
                                     />
-                                    {isLastAssistant && chat.isLoading && (
-                                      <span className="inline-block w-1.5 h-4 bg-violet-500 animate-pulse rounded-sm ml-0.5" />
-                                    )}
                                   </div>
                                 )}
                               </div>
-                              {msg.id && (
-                                <div className="mt-1 flex items-center gap-2">
-                                  <MessageActions
-                                    role={msg.role as 'user' | 'assistant'}
-                                    feedback={feedback[msg.id]}
-                                    onFeedback={(fb) =>
-                                      handleFeedback(msg.id!, fb)
-                                    }
-                                    copyText={content}
-                                    onRegenerate={
-                                      msg.role === 'assistant'
-                                        ? () => handleRegenerate(msg.id!)
-                                        : undefined
-                                    }
-                                    onDelete={() =>
-                                      handleDeleteMessage(msg.id!)
-                                    }
-                                    onEdit={
-                                      msg.role === 'user'
-                                        ? () => handleEditStart(msg.id!)
-                                        : undefined
-                                    }
-                                  />
+                              {msg.role === 'user' && (
+                                <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center shrink-0">
+                                  <User className="h-4 w-4 text-primary-foreground" />
                                 </div>
                               )}
                             </div>
-                            {msg.role === 'user' && (
-                              <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center shrink-0">
-                                <User className="h-4 w-4 text-primary-foreground" />
-                              </div>
-                            )}
-                          </div>
-                        )
-                      }
-                    )}
+                          )
+                        }
+                      )}
 
-                  <ChatThinkingIndicator
-                    visible={showThinkingIndicator}
-                    avatarGradient={AVATAR_GRADIENT}
+                    <ChatThinkingIndicator
+                      visible={showThinkingIndicator}
+                      avatarGradient={AVATAR_GRADIENT}
+                    />
+
+                    <ChatErrorDisplay error={chat.error} />
+
+                    <FollowUpSuggestions
+                      showFollowUp={showFollowUp}
+                      followUpSuggestions={followUpSuggestions}
+                      onPromptSelect={handleFollowUp}
+                    />
+                  </div>
+                )}
+              </div>
+
+              {/* Input */}
+              <div className="border-t p-4 bg-card/50 relative">
+                {showSlashMenu && (
+                  <div className="absolute bottom-full left-4 mb-2 w-64 rounded-xl border bg-card shadow-xl z-50 py-1">
+                    {slashCommands.map((cmd) => (
+                      <button
+                        key={cmd.id}
+                        onClick={() => {
+                          if (cmd.id === 'preview') {
+                            setArtifactPanelOpen((prev) => !prev)
+                            setShowSlashMenu(false)
+                          } else if (cmd.id === 'export') {
+                            setShowExport(true)
+                            setShowSlashMenu(false)
+                          } else {
+                            setInput(cmd.label + ' ')
+                            setShowSlashMenu(false)
+                            inputRef.current?.focus()
+                          }
+                        }}
+                        className="flex items-center gap-3 w-full px-3 py-2 text-sm hover:bg-muted transition-colors"
+                      >
+                        <span className="font-mono text-xs text-violet-500">
+                          {cmd.label}
+                        </span>
+                        <span className="text-muted-foreground text-xs">
+                          {cmd.description}
+                        </span>
+                      </button>
+                    ))}
+                  </div>
+                )}
+
+                <div className="flex items-end gap-2">
+                  <textarea
+                    ref={inputRef}
+                    value={input}
+                    onChange={handleInputChange}
+                    onKeyDown={handleKeyDown}
+                    placeholder="Describe what to create... (/ for commands)"
+                    rows={1}
+                    className="flex-1 px-4 py-2.5 pr-20 rounded-xl bg-muted/50 border border-muted-foreground/10 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-primary/30 placeholder:text-muted-foreground/50"
                   />
-
-                  <ChatErrorDisplay error={chat.error} />
-                </div>
-              )}
-            </div>
-
-            {/* Input */}
-            <div className="border-t p-4 bg-card/50 relative">
-              {showSlashMenu && (
-                <div className="absolute bottom-full left-4 mb-2 w-64 rounded-xl border bg-card shadow-xl z-50 py-1">
-                  {slashCommands.map((cmd) => (
+                  <div className="absolute right-6 bottom-5.5 flex items-center gap-1">
                     <button
-                      key={cmd.id}
+                      onClick={() => setShowSlashMenu((prev) => !prev)}
+                      className="p-1.5 rounded-md hover:bg-muted transition-colors text-muted-foreground"
+                      title="Slash commands"
+                    >
+                      <Slash className="h-3.5 w-3.5" />
+                    </button>
+                    <button
                       onClick={() => {
-                        if (cmd.id === 'preview') {
-                          setArtifactPanelOpen((prev) => !prev)
-                          setShowSlashMenu(false)
-                        } else if (cmd.id === 'export') {
-                          setShowExport(true)
-                          setShowSlashMenu(false)
+                        if (chat.isLoading) {
+                          chat.stop()
                         } else {
-                          setInput(cmd.label + ' ')
-                          setShowSlashMenu(false)
-                          inputRef.current?.focus()
+                          handleSend()
                         }
                       }}
-                      className="flex items-center gap-3 w-full px-3 py-2 text-sm hover:bg-muted transition-colors"
+                      disabled={!input.trim() && !chat.isLoading}
+                      className={cn(
+                        'p-1.5 rounded-md transition-colors',
+                        chat.isLoading
+                          ? 'bg-red-500/20 text-red-500'
+                          : input.trim()
+                            ? 'bg-primary text-primary-foreground'
+                            : 'text-muted-foreground'
+                      )}
                     >
-                      <span className="font-mono text-xs text-violet-500">
-                        {cmd.label}
-                      </span>
-                      <span className="text-muted-foreground text-xs">
-                        {cmd.description}
-                      </span>
+                      {chat.isLoading ? (
+                        <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                      ) : (
+                        <Send className="h-3.5 w-3.5" />
+                      )}
                     </button>
-                  ))}
+                  </div>
                 </div>
-              )}
-
-              <div className="flex items-end gap-2">
-                <textarea
-                  ref={inputRef}
-                  value={input}
-                  onChange={(e) => {
-                    setInput(e.target.value)
-                    setShowSlashMenu(e.target.value.endsWith('/'))
-                  }}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter' && !e.shiftKey) {
-                      e.preventDefault()
-                      if (chat.isLoading) {
-                        chat.stop()
-                      } else {
-                        handleSend()
-                      }
-                    }
-                    if (e.key === 'Escape') setShowSlashMenu(false)
-                  }}
-                  placeholder="Describe what to create... (/ for commands)"
-                  rows={1}
-                  className="flex-1 px-4 py-2.5 pr-20 rounded-xl bg-muted/50 border border-muted-foreground/10 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-primary/30 placeholder:text-muted-foreground/50"
-                />
-                <div className="absolute right-6 bottom-5.5 flex items-center gap-1">
-                  <button
-                    onClick={() => setShowSlashMenu((prev) => !prev)}
-                    className="p-1.5 rounded-md hover:bg-muted transition-colors text-muted-foreground"
-                    title="Slash commands"
-                  >
-                    <Slash className="h-3.5 w-3.5" />
-                  </button>
-                  <button
-                    onClick={() => {
-                      if (chat.isLoading) {
-                        chat.stop()
-                      } else {
-                        handleSend()
-                      }
-                    }}
-                    disabled={!input.trim() && !chat.isLoading}
-                    className={cn(
-                      'p-1.5 rounded-md transition-colors',
-                      chat.isLoading
-                        ? 'bg-red-500/20 text-red-500'
-                        : input.trim()
-                          ? 'bg-primary text-primary-foreground'
-                          : 'text-muted-foreground'
-                    )}
-                  >
-                    {chat.isLoading ? (
-                      <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                    ) : (
-                      <Send className="h-3.5 w-3.5" />
-                    )}
-                  </button>
-                </div>
-              </div>
-              <div className="flex items-center justify-between mt-2 text-[10px] text-muted-foreground">
-                <div className="flex items-center gap-2">
-                  <span>
-                    {artifacts.length} artifact
-                    {artifacts.length !== 1 ? 's' : ''} created
-                  </span>
-                  <span>
-                    {mcpServers.filter((s) => s.status === 'connected').length}{' '}
-                    MCP servers
-                  </span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <button
-                    onClick={() => setShowExport(true)}
-                    className="flex items-center gap-1 hover:text-foreground"
-                  >
-                    <Download className="h-3 w-3" /> Export
-                  </button>
-                  <button
-                    onClick={() => setShowSettings(true)}
-                    className="flex items-center gap-1 hover:text-foreground"
-                  >
-                    <Settings className="h-3 w-3" /> Settings
-                  </button>
-                  <button
-                    onClick={() => setArtifactPanelOpen((prev) => !prev)}
-                    className={cn(
-                      'flex items-center gap-1 hover:text-foreground',
-                      artifactPanelOpen && 'text-violet-500'
-                    )}
-                    title="Toggle artifact panel"
-                  >
-                    <Layers className="h-3 w-3" /> Artifacts
-                  </button>
+                <div className="flex items-center justify-between mt-2 text-[10px] text-muted-foreground">
+                  <div className="flex items-center gap-2">
+                    <span>
+                      {artifacts.length} artifact
+                      {artifacts.length !== 1 ? 's' : ''} created
+                    </span>
+                    <span>
+                      {
+                        mcpServers.filter((s) => s.status === 'connected')
+                          .length
+                      }{' '}
+                      MCP servers
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => setShowExport(true)}
+                      className="flex items-center gap-1 hover:text-foreground"
+                    >
+                      <Download className="h-3 w-3" /> Export
+                    </button>
+                    <button
+                      onClick={() => setShowSettings(true)}
+                      className="flex items-center gap-1 hover:text-foreground"
+                    >
+                      <Settings className="h-3 w-3" /> Settings
+                    </button>
+                    <button
+                      onClick={() => setArtifactPanelOpen((prev) => !prev)}
+                      className={cn(
+                        'flex items-center gap-1 hover:text-foreground',
+                        artifactPanelOpen && 'text-violet-500'
+                      )}
+                      title="Toggle artifact panel"
+                    >
+                      <Layers className="h-3 w-3" /> Artifacts
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
 
-          {/* Artifact Panel */}
-          {artifactPanelOpen && (
-            <ArtifactPanel
-              artifacts={artifacts}
-              activeArtifactId={activeArtifactId}
-              onActiveArtifactChange={setActiveArtifactId}
-              onClose={() => setArtifactPanelOpen(false)}
-              isGenerating={false}
-            />
-          )}
-        </div>
+            {/* Artifact Panel */}
+            {artifactPanelOpen && (
+              <ArtifactPanel
+                artifacts={artifacts}
+                activeArtifactId={activeArtifactId}
+                onActiveArtifactChange={setActiveArtifactId}
+                onClose={() => setArtifactPanelOpen(false)}
+                isGenerating={false}
+              />
+            )}
+          </div>
+        </ErrorBoundary>
       </div>
 
       <ChatExportDialog
