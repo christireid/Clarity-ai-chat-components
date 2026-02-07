@@ -106,6 +106,12 @@ export {
 
 // 8.7. Message Components
 export {
+  MessageBubble,
+  type MessageBubbleProps,
+  type MessageRole,
+  type MessageAvatar,
+} from './components/message/MessageBubble'
+export {
   TypingIndicator,
   type TypingIndicatorProps,
   type TypingIndicatorVariant,
@@ -218,7 +224,10 @@ export {
 
 // 9. Command Palette - Quick actions and navigation
 export { CommandPalette } from './components/navigation/CommandPalette'
-export type { CommandPaletteProps } from './components/navigation/CommandPalette'
+export type {
+  CommandPaletteProps,
+  CommandItem,
+} from './components/navigation/CommandPalette'
 
 // 10. Search - Conversation search and filtering
 export { SearchFiltersPanel } from './components/search/components/SearchFiltersPanel'
@@ -242,9 +251,9 @@ export {
 // ============================================================================
 
 // Message types - What messages look like
+// Note: MessageRole is already exported from MessageBubble above
 export type {
   Message,
-  MessageRole,
   MessageMetadata,
   StreamMessage,
 } from '@clarity-chat/types'

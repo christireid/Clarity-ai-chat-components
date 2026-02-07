@@ -2,53 +2,52 @@
 
 import { useState, useRef, useCallback, useMemo, useEffect } from 'react'
 import { PageHeader } from '@/components/component-section'
-import { cn } from '@clarity-chat/primitives'
 import {
   useAutoScroll,
-  MarkdownRenderer,
   ErrorBoundary,
   FollowUpSuggestions,
   SourceList,
+  ChatInput,
+  CommandPalette,
+  useKeyboardShortcuts,
   type PromptSuggestion,
   type SourceData,
+  type CommandItem,
 } from '@clarity-chat/react'
 import {
-  Send,
   GraduationCap,
   Settings,
   Download,
-  Slash,
-  AtSign,
-  Loader2,
   Bot,
-  User,
   PanelRight,
   PanelRightClose,
+  Search,
+  MessageSquarePlus,
+  PanelLeft,
 } from 'lucide-react'
 
 import {
   ApiKeyBar,
-  MessageActions,
   TokenOptimizationShowcase,
   MemoryPanel,
   ChatExportDialog,
   SettingsDialog,
   ChatThinkingIndicator,
   ChatErrorDisplay,
+  ChatMessageItem,
   useConversationManager,
   useMessageEditing,
   useMessageActions,
   useTypedChat,
+  useChatDerivedState,
   type SavedPrompt,
   type FileAttachment,
   type MemorySettings,
   type TokenSettings,
   type HookMessage,
   getTextContent,
-  MARKDOWN_CONFIG,
   generateId,
   exportConversation,
-  formatTimestamp,
 } from '../_shared'
 
 import {
@@ -78,10 +77,8 @@ function searchKnowledgeBase(query: string): KnowledgeEntry[] {
 
 const AVATAR_GRADIENT = 'from-emerald-500 to-teal-600'
 
-// Use built-in slash commands from the component
 const slashCommands = SLASH_COMMANDS
 
-// Mention items
 const mentionItems: MentionItem[] = [
   ...KNOWLEDGE_BASE.filter((e) => e.category === 'component').map((e) => ({
     id: e.id,
@@ -95,7 +92,6 @@ const mentionItems: MentionItem[] = [
   })),
 ]
 
-// Default prompts
 const defaultPrompts: SavedPrompt[] = [
   { id: '1', text: 'How do I set up streaming?', category: 'setup' },
   {
@@ -109,24 +105,24 @@ const defaultPrompts: SavedPrompt[] = [
   { id: '6', text: 'Set up a RAG pipeline', category: 'rag' },
 ]
 
-// Follow-up suggestions shown after assistant messages
-const followUpSuggestions: PromptSuggestion[] = [
+const defaultFollowUps: PromptSuggestion[] = [
   { id: '1', text: 'Show me a code example', type: 'follow-up' },
   { id: '2', text: 'Explain the API in detail', type: 'follow-up' },
   { id: '3', text: 'Compare with similar components', type: 'follow-up' },
 ]
 
+const AssistantAvatar = (
+  <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center">
+    <Bot className="h-4 w-4 text-white" />
+  </div>
+)
+
 export default function LibraryLearningHubPage() {
-  // Provider/model state
   const [provider, setProvider] = useState('anthropic')
   const [model, setModel] = useState('claude-3.5-sonnet')
   const [apiKey, setApiKey] = useState('')
-
-  // Prompts
   const [savedPrompts, setSavedPrompts] =
     useState<SavedPrompt[]>(defaultPrompts)
-
-  // Settings state
   const [memorySettings, setMemorySettings] = useState<MemorySettings>({
     enabled: true,
     strategy: 'semantic-chunks',
@@ -141,7 +137,6 @@ export default function LibraryLearningHubPage() {
     showExpenditure: true,
   })
 
-  // UI state
   const [input, setInput] = useState('')
   const [showSlashMenu, setShowSlashMenu] = useState(false)
   const [showMentionMenu, setShowMentionMenu] = useState(false)
@@ -151,6 +146,7 @@ export default function LibraryLearningHubPage() {
   const [showSettings, setShowSettings] = useState(false)
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
   const [rightPanelOpen, setRightPanelOpen] = useState(true)
+  const [showCommandPalette, setShowCommandPalette] = useState(false)
   const [masterContext, setMasterContext] = useState('')
   const [contextFiles, setContextFiles] = useState<FileAttachment[]>([])
   const [settingsTemp, setSettingsTemp] = useState(0.7)
@@ -158,18 +154,13 @@ export default function LibraryLearningHubPage() {
   const [settingsCodeTheme, setSettingsCodeTheme] = useState('monokai')
   const [settingsResponseLength, setSettingsResponseLength] =
     useState('balanced')
-  // RAG citations per assistant message
   const [messageCitations, setMessageCitations] = useState<
     Record<string, KnowledgeEntry[]>
   >({})
   const citationQueueRef = useRef<Map<string, KnowledgeEntry[]>>(new Map())
-
-  // Message timestamps (HookMessage has no timestamp field)
   const messageTimestampsRef = useRef<Record<string, Date>>({})
-
   const inputRef = useRef<HTMLTextAreaElement>(null)
 
-  // Build system prompt with optional RAG context
   const buildSystemPrompt = useCallback(
     (ragContext?: string, slashCommandId?: string) => {
       let prompt = `You are a helpful AI tutor for the Clarity Chat component library. You have deep knowledge of all components, hooks, adapters, and features. When users ask questions:
@@ -179,28 +170,20 @@ export default function LibraryLearningHubPage() {
 3. Reference specific component names and hook APIs
 4. Show TypeScript code examples with proper imports`
 
-      if (masterContext) {
+      if (masterContext)
         prompt += `\n\nAdditional context provided by user:\n${masterContext}`
-      }
-
-      if (slashCommandId) {
+      if (slashCommandId)
         prompt += `\n\nThe user is executing the /${slashCommandId} command. Provide a comprehensive response for this command.`
-      }
-
-      if (ragContext) {
+      if (ragContext)
         prompt += `\n\nRelevant documentation from the knowledge base:\n${ragContext}\n\nPlease answer the question using the documentation above. Include code examples where relevant.`
-      }
-
       return prompt
     },
     [masterContext]
   )
 
-  // onFinish callback — associate pending RAG citations with the assistant message
   const handleChatFinish = useCallback(
     (message: { id?: string; role: string; content: unknown }) => {
       if (!message.id) return
-      // Pop the first pending citation entry (FIFO — Map preserves insertion order)
       const firstKey = citationQueueRef.current.keys().next().value
       if (firstKey !== undefined) {
         const citations = citationQueueRef.current.get(firstKey)
@@ -216,12 +199,8 @@ export default function LibraryLearningHubPage() {
     []
   )
 
-  // onError callback — error is surfaced via chat.error; no additional action needed
-  const handleChatError = useCallback((_error: Error) => {
-    // Error is surfaced via chat.error state
-  }, [])
+  const handleChatError = useCallback((_error: Error) => {}, [])
 
-  // Chat instance (typed wrapper)
   const chat = useTypedChat({
     api: '/api/advanced-demos/chat',
     body: {
@@ -234,7 +213,6 @@ export default function LibraryLearningHubPage() {
     onError: handleChatError,
   })
 
-  // Record timestamps for new messages
   useEffect(() => {
     for (const msg of chat.messages) {
       if (msg.id && !messageTimestampsRef.current[msg.id]) {
@@ -243,7 +221,6 @@ export default function LibraryLearningHubPage() {
     }
   }, [chat.messages])
 
-  // Title derivation: auto-name conversation from first user message
   const deriveTitle = useCallback(
     (currentTitle: string, messages: HookMessage[]) => {
       if (currentTitle !== 'New Chat' || messages[0]?.role !== 'user')
@@ -254,7 +231,6 @@ export default function LibraryLearningHubPage() {
     []
   )
 
-  // Conversation management with custom sync (timestamps + title derivation)
   const syncOptions = useMemo(
     () => ({
       getTimestamp: (msgId: string) => messageTimestampsRef.current[msgId],
@@ -279,7 +255,6 @@ export default function LibraryLearningHubPage() {
     dependencies: [chat.messages, chat.isLoading],
   })
 
-  // Input handling - only trigger slash menu when / is first char or follows whitespace
   const handleInputChange = useCallback(
     (value: string) => {
       setInput(value)
@@ -324,17 +299,14 @@ export default function LibraryLearningHubPage() {
     [showSlashMenu, showMentionMenu]
   )
 
-  // Main send handler
   const handleSend = useCallback(
     async (overrideText?: string, slashCommandId?: string) => {
       const text = overrideText || input.trim()
       if (!text || chat.isLoading) return
-
       setInput('')
       setShowSlashMenu(false)
       setShowMentionMenu(false)
 
-      // Build RAG context from knowledge base search
       const matches = searchKnowledgeBase(text)
       const ragContext =
         matches.length > 0
@@ -346,14 +318,11 @@ export default function LibraryLearningHubPage() {
               .join('\n\n')
           : ''
 
-      // Store citations keyed by a pre-generated user message ID to avoid race conditions
       const userMsgKey = generateId()
       citationQueueRef.current.set(
         userMsgKey,
         matches.length > 0 ? matches.slice(0, 4) : []
       )
-
-      // Build system prompt with RAG context and pass via data override
       const systemPrompt = buildSystemPrompt(ragContext, slashCommandId)
 
       try {
@@ -362,8 +331,6 @@ export default function LibraryLearningHubPage() {
           { data: { systemPrompt } }
         )
       } catch {
-        // Error is captured by chat.error state
-        // Clean up the citation queue entry on failure
         citationQueueRef.current.delete(userMsgKey)
       }
     },
@@ -389,7 +356,6 @@ export default function LibraryLearningHubPage() {
     [input]
   )
 
-  // Message actions (feedback, delete, regenerate)
   const { feedback, handleFeedback, handleDeleteMessage, handleRegenerate } =
     useMessageActions({
       chat,
@@ -403,7 +369,6 @@ export default function LibraryLearningHubPage() {
       },
     })
 
-  // Message editing
   const {
     editingMessageId,
     editingText,
@@ -411,12 +376,8 @@ export default function LibraryLearningHubPage() {
     handleEditStart,
     handleEditSave,
     handleEditCancel,
-  } = useMessageEditing({
-    chat,
-    onResend: (text) => handleSend(text),
-  })
+  } = useMessageEditing({ chat, onResend: (text) => handleSend(text) })
 
-  // Prompt management
   const handleSavePrompt = useCallback((text: string) => {
     setSavedPrompts((prev) => [...prev, { id: generateId(), text }])
   }, [])
@@ -432,23 +393,120 @@ export default function LibraryLearningHubPage() {
     [handleSend]
   )
 
-  const showFollowUp = useMemo(() => {
-    if (chat.isLoading || chat.messages.length === 0) return false
-    const last = chat.messages[chat.messages.length - 1]
-    return last?.role === 'assistant'
-  }, [chat.isLoading, chat.messages])
+  // Derived chat UI state (shared hook)
+  const {
+    showThinkingIndicator,
+    showFollowUp,
+    followUpSuggestions,
+    streamingMsgId,
+  } = useChatDerivedState(chat, defaultFollowUps)
 
-  // Determine if the last message is an assistant message currently streaming
-  const { lastMessage, isStreamingLastMessage } = useMemo(() => {
-    const last = chat.messages[chat.messages.length - 1]
-    return {
-      lastMessage: last,
-      isStreamingLastMessage:
-        chat.isLoading &&
-        last?.role === 'assistant' &&
-        getTextContent(last.content).length > 0,
-    }
-  }, [chat.messages, chat.isLoading])
+  const handleInputSubmit = useCallback(
+    async (value: string) => {
+      if (chat.isLoading) {
+        chat.stop()
+      } else {
+        await handleSend(value)
+      }
+    },
+    [chat, handleSend]
+  )
+
+  const commandItems: CommandItem[] = useMemo(
+    () => [
+      {
+        id: 'new-chat',
+        label: 'New Chat',
+        description: 'Start a new conversation',
+        icon: <MessageSquarePlus className="h-4 w-4" />,
+        shortcut: ['mod', 'n'],
+        category: 'Chat',
+        onSelect: () => {
+          handleNewConversation()
+          setShowCommandPalette(false)
+        },
+      },
+      {
+        id: 'export',
+        label: 'Export Conversation',
+        description: 'Save conversation to file',
+        icon: <Download className="h-4 w-4" />,
+        shortcut: ['mod', 'e'],
+        category: 'Chat',
+        onSelect: () => {
+          setShowExport(true)
+          setShowCommandPalette(false)
+        },
+      },
+      {
+        id: 'settings',
+        label: 'Settings',
+        description: 'Configure model and preferences',
+        icon: <Settings className="h-4 w-4" />,
+        shortcut: ['mod', ','],
+        category: 'App',
+        onSelect: () => {
+          setShowSettings(true)
+          setShowCommandPalette(false)
+        },
+      },
+      {
+        id: 'toggle-context',
+        label: 'Toggle Context Panel',
+        description: 'Show or hide the context panel',
+        icon: <PanelRight className="h-4 w-4" />,
+        shortcut: ['mod', 'b'],
+        category: 'View',
+        onSelect: () => {
+          setRightPanelOpen((p) => !p)
+          setShowCommandPalette(false)
+        },
+      },
+      {
+        id: 'toggle-sidebar',
+        label: 'Toggle Sidebar',
+        description: 'Show or hide the sidebar',
+        icon: <PanelLeft className="h-4 w-4" />,
+        shortcut: ['mod', '\\'],
+        category: 'View',
+        onSelect: () => {
+          setSidebarCollapsed((p) => !p)
+          setShowCommandPalette(false)
+        },
+      },
+      {
+        id: 'focus-input',
+        label: 'Focus Chat Input',
+        description: 'Jump to the message input',
+        icon: <Search className="h-4 w-4" />,
+        shortcut: ['mod', 'l'],
+        category: 'Navigation',
+        onSelect: () => {
+          inputRef.current?.focus()
+          setShowCommandPalette(false)
+        },
+      },
+      ...SLASH_COMMANDS.map((cmd) => ({
+        id: `slash-${cmd.id}`,
+        label: cmd.label,
+        description: cmd.description,
+        category: 'Commands',
+        onSelect: () => {
+          handleSlashCommand(cmd)
+          setShowCommandPalette(false)
+        },
+      })),
+    ],
+    [handleNewConversation, handleSlashCommand]
+  )
+
+  useKeyboardShortcuts([
+    {
+      key: 'mod+k',
+      callback: () => setShowCommandPalette((p) => !p),
+      description: 'Toggle command palette',
+    },
+  ])
 
   return (
     <div>
@@ -460,7 +518,6 @@ export default function LibraryLearningHubPage() {
       />
 
       <div className="glass-card overflow-hidden border-0 h-[calc(100vh-14rem)]">
-        {/* API Key Bar */}
         <ApiKeyBar
           provider={provider}
           onProviderChange={setProvider}
@@ -472,7 +529,6 @@ export default function LibraryLearningHubPage() {
 
         <ErrorBoundary onRetry={() => window.location.reload()}>
           <div className="flex h-[calc(100%-3rem)]">
-            {/* Left Sidebar */}
             <LibrarySidebar
               conversations={conversations}
               activeConversationId={activeConvId}
@@ -487,12 +543,10 @@ export default function LibraryLearningHubPage() {
               onDeletePrompt={handleDeletePrompt}
               onSavePrompt={handleSavePrompt}
               collapsed={sidebarCollapsed}
-              onToggleCollapsed={() => setSidebarCollapsed((prev) => !prev)}
+              onToggleCollapsed={() => setSidebarCollapsed((p) => !p)}
             />
 
-            {/* Main Chat Area */}
             <div className="flex-1 flex flex-col min-w-0">
-              {/* Messages */}
               <div
                 ref={scrollRef as React.RefObject<HTMLDivElement>}
                 className="flex-1 overflow-y-auto"
@@ -506,7 +560,7 @@ export default function LibraryLearningHubPage() {
                   />
                 ) : (
                   <div
-                    className="p-4 space-y-6"
+                    className="p-4 space-y-2"
                     role="log"
                     aria-live="polite"
                     aria-label="Chat messages"
@@ -516,156 +570,58 @@ export default function LibraryLearningHubPage() {
                         (m: HookMessage) =>
                           m.role === 'user' || m.role === 'assistant'
                       )
-                      .map((msg: HookMessage, idx: number) => {
-                        const msgKey = msg.id || `msg-${idx}`
-                        const content = getTextContent(msg.content)
-                        const isThisStreaming =
-                          msg === lastMessage && isStreamingLastMessage
-
-                        return (
-                          <div
-                            key={msgKey}
-                            className={cn(
-                              'group flex gap-3',
-                              msg.role === 'user' && 'justify-end'
-                            )}
-                          >
-                            {msg.role === 'assistant' && (
-                              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center shrink-0 shadow-sm">
-                                <Bot className="h-4 w-4 text-white" />
-                              </div>
-                            )}
-                            <div
-                              className={cn(
-                                'max-w-[75%] min-w-0',
-                                msg.role === 'user' ? 'order-first' : ''
-                              )}
-                            >
-                              <div
-                                className={cn(
-                                  'rounded-2xl px-4 py-3',
-                                  msg.role === 'user'
-                                    ? 'bg-primary text-primary-foreground ml-auto'
-                                    : 'bg-muted/50'
-                                )}
-                              >
-                                {editingMessageId === msg.id ? (
-                                  <div className="space-y-2">
-                                    <textarea
-                                      value={editingText}
-                                      onChange={(e) =>
-                                        setEditingText(e.target.value)
-                                      }
-                                      className="w-full bg-transparent border rounded-lg p-2 text-sm resize-none focus:outline-none focus:ring-1 focus:ring-primary/50"
-                                      rows={3}
-                                    />
-                                    <div className="flex gap-2 justify-end">
-                                      <button
-                                        onClick={() => handleEditCancel()}
-                                        className="text-xs px-2 py-1 rounded bg-muted"
-                                      >
-                                        Cancel
-                                      </button>
-                                      <button
-                                        onClick={() =>
-                                          msg.id && handleEditSave(msg.id)
-                                        }
-                                        className="text-xs px-2 py-1 rounded bg-primary text-primary-foreground"
-                                      >
-                                        Save & Resend
-                                      </button>
-                                    </div>
-                                  </div>
-                                ) : (
-                                  <div className="text-sm">
-                                    <MarkdownRenderer
-                                      content={content}
-                                      isStreaming={isThisStreaming}
-                                      config={MARKDOWN_CONFIG}
-                                    />
-                                    {isThisStreaming && (
-                                      <span className="inline-block w-1.5 h-4 bg-primary animate-pulse rounded-sm ml-0.5" />
-                                    )}
-                                  </div>
-                                )}
-                              </div>
-
-                              {/* RAG Citations via SourceList */}
-                              {msg.role === 'assistant' &&
-                                msg.id &&
-                                msg.id in messageCitations &&
-                                messageCitations[msg.id].length > 0 && (
-                                  <SourceList
-                                    sources={messageCitations[msg.id].map(
-                                      (c) => ({
-                                        title: c.title,
-                                        description: c.content.slice(0, 120),
-                                        type: 'document' as const,
-                                        url: `#${c.id}`,
-                                      })
-                                    )}
-                                    variant="compact"
-                                    title="Sources"
-                                    maxSources={4}
-                                  />
-                                )}
-
-                              {/* Message Actions */}
-                              <div className="mt-1 flex items-center gap-2">
-                                {msg.id &&
-                                  messageTimestampsRef.current[msg.id] && (
-                                    <span className="text-[10px] text-muted-foreground">
-                                      {formatTimestamp(
-                                        messageTimestampsRef.current[msg.id]
-                                      )}
-                                    </span>
-                                  )}
-                                {msg.id && (
-                                  <MessageActions
-                                    role={msg.role as 'user' | 'assistant'}
-                                    feedback={feedback[msg.id]}
-                                    onFeedback={(fb) =>
-                                      handleFeedback(msg.id!, fb)
-                                    }
-                                    copyText={content}
-                                    onRegenerate={
-                                      msg.role === 'assistant'
-                                        ? () => handleRegenerate(msg.id!)
-                                        : undefined
-                                    }
-                                    onDelete={() =>
-                                      handleDeleteMessage(msg.id!)
-                                    }
-                                    onEdit={
-                                      msg.role === 'user'
-                                        ? () => handleEditStart(msg.id!)
-                                        : undefined
-                                    }
-                                  />
-                                )}
-                              </div>
-                            </div>
-                            {msg.role === 'user' && (
-                              <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center shrink-0 shadow-sm">
-                                <User className="h-4 w-4 text-primary-foreground" />
-                              </div>
-                            )}
-                          </div>
-                        )
-                      })}
+                      .map((msg: HookMessage) => (
+                        <ChatMessageItem
+                          key={msg.id || msg.content?.toString().slice(0, 20)}
+                          msg={msg}
+                          isStreaming={streamingMsgId === msg.id}
+                          assistantAvatar={AssistantAvatar}
+                          timestamp={
+                            msg.id
+                              ? messageTimestampsRef.current[msg.id]
+                              : undefined
+                          }
+                          editingMessageId={editingMessageId}
+                          editingText={editingText}
+                          onEditingTextChange={setEditingText}
+                          onEditSave={handleEditSave}
+                          onEditCancel={handleEditCancel}
+                          feedback={msg.id ? feedback[msg.id] : undefined}
+                          onFeedback={handleFeedback}
+                          onRegenerate={handleRegenerate}
+                          onDelete={handleDeleteMessage}
+                          onEditStart={handleEditStart}
+                          extraContent={
+                            msg.role === 'assistant' &&
+                            msg.id &&
+                            msg.id in messageCitations &&
+                            messageCitations[msg.id].length > 0 ? (
+                              <SourceList
+                                sources={messageCitations[msg.id].map((c) => ({
+                                  title: c.title,
+                                  description: c.content.slice(0, 120),
+                                  type: 'document' as const,
+                                  url: `#${c.id}`,
+                                }))}
+                                variant="compact"
+                                title="Sources"
+                                maxSources={4}
+                              />
+                            ) : undefined
+                          }
+                        />
+                      ))}
 
                     <ChatThinkingIndicator
-                      visible={chat.isLoading && !isStreamingLastMessage}
+                      visible={showThinkingIndicator}
                       avatarGradient={AVATAR_GRADIENT}
                     />
-
                     <ChatErrorDisplay
                       error={chat.error}
                       variant="chat-bubble"
                       avatarIcon="alert"
                       onRetry={() => chat.reload()}
                     />
-
                     <FollowUpSuggestions
                       showFollowUp={showFollowUp}
                       followUpSuggestions={followUpSuggestions}
@@ -675,9 +631,7 @@ export default function LibraryLearningHubPage() {
                 )}
               </div>
 
-              {/* Input Area */}
               <div className="border-t p-4 bg-card/50 relative">
-                {/* Slash Command Menu */}
                 {showSlashMenu && (
                   <div className="absolute bottom-full left-4 right-4 mb-2">
                     <SlashCommandMenu
@@ -688,8 +642,6 @@ export default function LibraryLearningHubPage() {
                     />
                   </div>
                 )}
-
-                {/* Mention Popup */}
                 {showMentionMenu && (
                   <div className="absolute bottom-full left-4 right-4 mb-2">
                     <MentionPopup
@@ -701,70 +653,19 @@ export default function LibraryLearningHubPage() {
                   </div>
                 )}
 
-                <div className="flex items-end gap-2">
-                  <div className="flex-1 relative">
-                    <textarea
-                      ref={inputRef}
-                      value={input}
-                      onChange={(e) => handleInputChange(e.target.value)}
-                      onKeyDown={(e) => {
-                        if (e.key === 'Enter' && !e.shiftKey) {
-                          e.preventDefault()
-                          handleSend()
-                        }
-                        if (e.key === 'Escape') {
-                          setShowSlashMenu(false)
-                          setShowMentionMenu(false)
-                        }
-                      }}
-                      placeholder="Ask about any component, hook, or feature... (/ for commands, @ for mentions)"
-                      rows={1}
-                      className="w-full px-4 py-2.5 pr-24 rounded-xl bg-muted/50 border border-muted-foreground/10 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-primary/30 placeholder:text-muted-foreground/50"
-                    />
-                    <div className="absolute right-2 bottom-1.5 flex items-center gap-1">
-                      <button
-                        onClick={() => {
-                          setShowSlashMenu((prev) => !prev)
-                          setShowMentionMenu(false)
-                        }}
-                        className="p-1.5 rounded-md hover:bg-muted transition-colors text-muted-foreground"
-                        title="Slash commands"
-                      >
-                        <Slash className="h-3.5 w-3.5" />
-                      </button>
-                      <button
-                        onClick={() => {
-                          setShowMentionMenu((prev) => !prev)
-                          setShowSlashMenu(false)
-                        }}
-                        className="p-1.5 rounded-md hover:bg-muted transition-colors text-muted-foreground"
-                        title="Mention"
-                      >
-                        <AtSign className="h-3.5 w-3.5" />
-                      </button>
-                      <button
-                        onClick={() =>
-                          chat.isLoading ? chat.stop() : handleSend()
-                        }
-                        disabled={!input.trim() && !chat.isLoading}
-                        className={cn(
-                          'p-1.5 rounded-md transition-colors',
-                          chat.isLoading
-                            ? 'bg-destructive/20 text-destructive hover:bg-destructive/30'
-                            : input.trim()
-                              ? 'bg-primary text-primary-foreground hover:opacity-90'
-                              : 'text-muted-foreground'
-                        )}
-                      >
-                        {chat.isLoading ? (
-                          <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                        ) : (
-                          <Send className="h-3.5 w-3.5" />
-                        )}
-                      </button>
-                    </div>
-                  </div>
-                </div>
+                <ChatInput
+                  value={input}
+                  onChange={handleInputChange}
+                  onSubmit={handleInputSubmit}
+                  placeholder="Ask about any component, hook, or feature... (/ commands, @ mentions, ⌘K palette)"
+                  disabled={false}
+                  maxLength={4000}
+                  showCharCounter={true}
+                  animateHeight={true}
+                  glowOnFocus={true}
+                  aria-label="Chat message input"
+                />
+
                 <div className="flex items-center justify-between mt-2 text-[10px] text-muted-foreground">
                   <div className="flex items-center gap-3">
                     <span>
@@ -781,6 +682,12 @@ export default function LibraryLearningHubPage() {
                       </kbd>{' '}
                       for mentions
                     </span>
+                    <span>
+                      <kbd className="px-1 py-0.5 rounded bg-muted text-[9px]">
+                        ⌘K
+                      </kbd>{' '}
+                      palette
+                    </span>
                   </div>
                   <div className="flex items-center gap-2">
                     <button
@@ -796,7 +703,7 @@ export default function LibraryLearningHubPage() {
                       <Settings className="h-3 w-3" /> Settings
                     </button>
                     <button
-                      onClick={() => setRightPanelOpen((prev) => !prev)}
+                      onClick={() => setRightPanelOpen((p) => !p)}
                       className="flex items-center gap-1 hover:text-foreground transition-colors"
                       title="Toggle context panel"
                     >
@@ -811,28 +718,20 @@ export default function LibraryLearningHubPage() {
               </div>
             </div>
 
-            {/* Right Panel */}
             {rightPanelOpen && (
               <div className="w-72 border-l bg-card/30 overflow-y-auto p-4 space-y-6 shrink-0">
-                {/* Context */}
                 <ContextPanel
                   context={masterContext}
                   onContextChange={setMasterContext}
                   files={contextFiles}
                   onFilesChange={setContextFiles}
                 />
-
                 <div className="h-px bg-border" />
-
-                {/* Memory */}
                 <MemoryPanel
                   settings={memorySettings}
                   onUpdate={setMemorySettings}
                 />
-
                 <div className="h-px bg-border" />
-
-                {/* Tokens */}
                 <TokenOptimizationShowcase
                   settings={tokenSettings}
                   onUpdate={setTokenSettings}
@@ -843,7 +742,14 @@ export default function LibraryLearningHubPage() {
         </ErrorBoundary>
       </div>
 
-      {/* Dialogs */}
+      <CommandPalette
+        items={commandItems}
+        open={showCommandPalette}
+        onClose={() => setShowCommandPalette(false)}
+        placeholder="Search commands..."
+        aria-label="Command palette"
+      />
+
       <ChatExportDialog
         open={showExport}
         onClose={() => setShowExport(false)}

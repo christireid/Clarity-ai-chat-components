@@ -28,6 +28,18 @@
     --success-foreground: 355.7 100% 97.3%;
     --warning: 38 92% 50%;
     --warning-foreground: 48 96% 89%;
+
+    /* Message bubble variables (from @clarity-chat/react) */
+    --message-user: 221.2 83.2% 53.3%;
+    --message-user-foreground: 210 40% 98%;
+    --message-assistant: 210 40% 98%;
+    --message-assistant-foreground: 222.2 47.4% 11.2%;
+    --message-system: 210 20% 96%;
+    --message-system-foreground: 220 15% 40%;
+
+    /* Timing variables */
+    --duration-normal: 200ms;
+    --ease-out: cubic-bezier(0, 0, 0.2, 1);
   }
 
   .dark {
@@ -54,6 +66,84 @@
     --success-foreground: 355.7 100% 97.3%;
     --warning: 38 92% 50%;
     --warning-foreground: 48 96% 89%;
+
+    /* Message bubble variables (from @clarity-chat/react) */
+    --message-user: 217.2 91.2% 59.8%;
+    --message-user-foreground: 222.2 47.4% 11.2%;
+    --message-assistant: 217.2 32.6% 17.5%;
+    --message-assistant-foreground: 210 40% 98%;
+    --message-system: 217.2 28% 20%;
+    --message-system-foreground: 210 30% 80%;
+  }
+}
+
+/* Message bubble component classes (from @clarity-chat/react) */
+@layer components {
+  .message {
+    @apply flex gap-3 py-2;
+    animation: message-enter var(--duration-normal) var(--ease-out);
+  }
+  .message-user {
+    @apply flex-row-reverse;
+  }
+  .message-bubble {
+    @apply max-w-[80%] px-4 py-3 text-base leading-relaxed relative;
+    border-radius: 1.25rem;
+  }
+  .message-bubble-user {
+    background: hsl(var(--message-user));
+    color: hsl(var(--message-user-foreground));
+    border-bottom-right-radius: 0.375rem;
+  }
+  .message-bubble-assistant {
+    background: hsl(var(--message-assistant));
+    color: hsl(var(--message-assistant-foreground));
+    border: 1px solid hsl(var(--border));
+    border-bottom-left-radius: 0.375rem;
+  }
+  .message-bubble-system {
+    background: hsl(var(--message-system));
+    color: hsl(var(--message-system-foreground));
+    @apply text-sm text-center max-w-full border-dashed;
+    border: 1px dashed hsl(var(--border));
+    border-radius: 0.75rem;
+  }
+  .message-avatar {
+    @apply w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0;
+    background: hsl(var(--muted));
+  }
+  .message-cursor {
+    @apply inline-block w-0.5 ml-0.5;
+    height: 1.2em;
+    background: hsl(var(--foreground));
+    animation: cursor-blink 0.8s step-end infinite;
+    vertical-align: text-bottom;
+  }
+  .streaming-stable {
+    min-height: 2.5em;
+  }
+  .streaming-text {
+    @apply text-sm;
+  }
+}
+
+@keyframes message-enter {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@keyframes cursor-blink {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
   }
 }
 

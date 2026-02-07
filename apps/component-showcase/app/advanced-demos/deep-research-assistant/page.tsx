@@ -1,49 +1,50 @@
 'use client'
 
-import { useState, useRef, useEffect, useCallback, useMemo } from 'react'
+import { useState, useRef, useEffect, useMemo } from 'react'
 import { PageHeader } from '@/components/component-section'
-import { cn } from '@clarity-chat/primitives'
 import {
   useAutoScroll,
-  MarkdownRenderer,
   ErrorBoundary,
+  ChatInput,
+  CommandPalette,
   FollowUpSuggestions,
+  useKeyboardShortcuts,
   type PromptSuggestion,
+  type CommandItem,
 } from '@clarity-chat/react'
 import {
-  Send,
   Globe,
   Settings,
   Download,
-  Slash,
-  Loader2,
   Bot,
-  User,
   PanelRight,
   PanelRightClose,
+  Search,
+  MessageSquarePlus,
+  PanelLeft,
 } from 'lucide-react'
 
 import {
   ApiKeyBar,
-  MessageActions,
   TokenOptimizationShowcase,
   MemoryPanel,
   ChatExportDialog,
   SettingsDialog,
   ChatThinkingIndicator,
   ChatErrorDisplay,
+  ChatMessageItem,
   useConversationManager,
   useMessageEditing,
   useMessageActions,
   useTypedChat,
+  useChatDerivedState,
+  useChatInputHandlers,
   type SavedPrompt,
   type FileAttachment,
   type MCPServer,
   type MemorySettings,
   type TokenSettings,
   type HookMessage,
-  getTextContent,
-  MARKDOWN_CONFIG,
   generateId,
   exportConversation,
   formatTimestamp,
@@ -117,11 +118,18 @@ const slashCommands = [
   { id: 'tools', label: '/tools', description: 'List available tools' },
 ]
 
-const followUpSuggestions: PromptSuggestion[] = [
+const defaultFollowUps: PromptSuggestion[] = [
   { id: '1', text: 'Dive deeper into this topic', type: 'follow-up' },
   { id: '2', text: 'Compare with alternatives', type: 'follow-up' },
   { id: '3', text: 'Show practical examples', type: 'follow-up' },
 ]
+
+/** Shared assistant avatar for MessageBubble */
+const AssistantAvatar = (
+  <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center">
+    <Bot className="h-4 w-4 text-white" />
+  </div>
+)
 
 export default function DeepResearchAssistantPage() {
   const [provider, setProvider] = useState('openai')
@@ -158,12 +166,11 @@ export default function DeepResearchAssistantPage() {
   const [contextFiles, setContextFiles] = useState<FileAttachment[]>([])
 
   // UI state
-  const [input, setInput] = useState('')
   const [showExport, setShowExport] = useState(false)
   const [showSettings, setShowSettings] = useState(false)
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
   const [rightPanelOpen, setRightPanelOpen] = useState(true)
-  const [showSlashMenu, setShowSlashMenu] = useState(false)
+  const [showCommandPalette, setShowCommandPalette] = useState(false)
   const [settingsTemp, setSettingsTemp] = useState(0.3)
   const [settingsMaxTokens, setSettingsMaxTokens] = useState(4096)
   const [settingsCodeTheme, setSettingsCodeTheme] = useState('monokai')
@@ -193,6 +200,26 @@ export default function DeepResearchAssistantPage() {
       maxTokens: settingsMaxTokens,
     },
   })
+
+  // Shared input state & handlers
+  const {
+    input,
+    setInput,
+    showSlashMenu,
+    setShowSlashMenu,
+    handleSend,
+    handleInputChange,
+    handleInputSubmit,
+    handleFollowUp,
+  } = useChatInputHandlers(chat)
+
+  // Derived chat UI state
+  const {
+    showThinkingIndicator,
+    showFollowUp,
+    followUpSuggestions,
+    streamingMsgId,
+  } = useChatDerivedState(chat, defaultFollowUps)
 
   // Conversation management
   const {
@@ -236,69 +263,105 @@ export default function DeepResearchAssistantPage() {
     }
   }, [chat.messages])
 
-  const handleSend = useCallback(
-    async (overrideText?: string) => {
-      const text = overrideText || input.trim()
-      if (!text || chat.isLoading) return
-      setInput('')
-      setShowSlashMenu(false)
-      try {
-        await chat.append({ role: 'user', content: text })
-      } catch {
-        // Error is captured by chat.error state
-      }
-    },
-    [input, chat]
+  // CommandPalette items
+  const commandItems: CommandItem[] = useMemo(
+    () => [
+      {
+        id: 'new-research',
+        label: 'New Research',
+        description: 'Start a new research topic',
+        icon: <MessageSquarePlus className="h-4 w-4" />,
+        shortcut: ['mod', 'n'],
+        category: 'Chat',
+        onSelect: () => {
+          handleNewConversation()
+          setShowCommandPalette(false)
+        },
+      },
+      {
+        id: 'export',
+        label: 'Export Research',
+        description: 'Save research to file',
+        icon: <Download className="h-4 w-4" />,
+        shortcut: ['mod', 'e'],
+        category: 'Chat',
+        onSelect: () => {
+          setShowExport(true)
+          setShowCommandPalette(false)
+        },
+      },
+      {
+        id: 'settings',
+        label: 'Settings',
+        description: 'Configure model and preferences',
+        icon: <Settings className="h-4 w-4" />,
+        shortcut: ['mod', ','],
+        category: 'App',
+        onSelect: () => {
+          setShowSettings(true)
+          setShowCommandPalette(false)
+        },
+      },
+      {
+        id: 'toggle-context',
+        label: 'Toggle Context Panel',
+        description: 'Show or hide the research context panel',
+        icon: <PanelRight className="h-4 w-4" />,
+        shortcut: ['mod', 'b'],
+        category: 'View',
+        onSelect: () => {
+          setRightPanelOpen((prev) => !prev)
+          setShowCommandPalette(false)
+        },
+      },
+      {
+        id: 'toggle-sidebar',
+        label: 'Toggle Sidebar',
+        description: 'Show or hide the sidebar',
+        icon: <PanelLeft className="h-4 w-4" />,
+        shortcut: ['mod', '\\'],
+        category: 'View',
+        onSelect: () => {
+          setSidebarCollapsed((prev) => !prev)
+          setShowCommandPalette(false)
+        },
+      },
+      {
+        id: 'toggle-deep-research',
+        label: deepResearchMode
+          ? 'Disable Deep Research'
+          : 'Enable Deep Research',
+        description: 'Toggle deep research mode for thorough analysis',
+        icon: <Search className="h-4 w-4" />,
+        category: 'Research',
+        onSelect: () => {
+          setDeepResearchMode((prev) => !prev)
+          setShowCommandPalette(false)
+        },
+      },
+      ...slashCommands.map((cmd) => ({
+        id: `slash-${cmd.id}`,
+        label: cmd.label,
+        description: cmd.description,
+        category: 'Commands',
+        onSelect: () => {
+          setInput(cmd.label + ' ')
+          inputRef.current?.focus()
+          setShowCommandPalette(false)
+        },
+      })),
+    ],
+    [handleNewConversation, deepResearchMode, setInput]
   )
 
-  const handleInputChange = useCallback(
-    (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-      setInput(e.target.value)
-      setShowSlashMenu(e.target.value.endsWith('/'))
+  // Keyboard shortcuts
+  useKeyboardShortcuts([
+    {
+      key: 'mod+k',
+      callback: () => setShowCommandPalette((prev) => !prev),
+      description: 'Toggle command palette',
     },
-    []
-  )
-
-  const handleKeyDown = useCallback(
-    (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-      if (e.key === 'Enter' && !e.shiftKey) {
-        e.preventDefault()
-        if (chat.isLoading) {
-          chat.stop()
-        } else {
-          handleSend()
-        }
-      }
-      if (e.key === 'Escape') setShowSlashMenu(false)
-    },
-    [chat, handleSend]
-  )
-
-  const handleFollowUp = useCallback(
-    (suggestion: PromptSuggestion) => {
-      handleSend(suggestion.text)
-    },
-    [handleSend]
-  )
-
-  const showFollowUp = useMemo(() => {
-    if (chat.isLoading || chat.messages.length === 0) return false
-    const last = chat.messages[chat.messages.length - 1]
-    return last?.role === 'assistant'
-  }, [chat.isLoading, chat.messages])
-
-  const showThinkingIndicator = useMemo(() => {
-    const lastMsg =
-      chat.messages.length > 0
-        ? chat.messages[chat.messages.length - 1]
-        : undefined
-    return (
-      chat.isLoading &&
-      (!lastMsg ||
-        lastMsg.role !== 'assistant' ||
-        !getTextContent(lastMsg.content))
-    )
-  }, [chat.messages, chat.isLoading])
+  ])
 
   return (
     <div>
@@ -358,7 +421,7 @@ export default function DeepResearchAssistantPage() {
                   />
                 ) : (
                   <div
-                    className="p-4 space-y-6"
+                    className="p-4 space-y-2"
                     role="log"
                     aria-live="polite"
                     aria-label="Chat messages"
@@ -368,124 +431,29 @@ export default function DeepResearchAssistantPage() {
                         (m: HookMessage) =>
                           m.role === 'user' || m.role === 'assistant'
                       )
-                      .map((msg, index, filtered) => {
-                        const msgKey = msg.id || `msg-${index}`
-                        const isLastAssistant =
-                          msg.role === 'assistant' &&
-                          index === filtered.length - 1
-                        const content = getTextContent(msg.content)
-
-                        return (
-                          <div
-                            key={msgKey}
-                            className={cn(
-                              'group flex gap-3',
-                              msg.role === 'user' && 'justify-end'
-                            )}
-                          >
-                            {msg.role === 'assistant' && (
-                              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center shrink-0">
-                                <Bot className="h-4 w-4 text-white" />
-                              </div>
-                            )}
-                            <div
-                              className={cn(
-                                'max-w-[75%] min-w-0',
-                                msg.role === 'user' ? 'order-first' : ''
-                              )}
-                            >
-                              <div
-                                className={cn(
-                                  'rounded-2xl px-4 py-3',
-                                  msg.role === 'user'
-                                    ? 'bg-primary text-primary-foreground ml-auto'
-                                    : 'bg-muted/50'
-                                )}
-                              >
-                                {editingMessageId === msg.id ? (
-                                  <div className="space-y-2">
-                                    <textarea
-                                      value={editingText}
-                                      onChange={(e) =>
-                                        setEditingText(e.target.value)
-                                      }
-                                      className="w-full bg-transparent border rounded-lg p-2 text-sm resize-none focus:outline-none focus:ring-1 focus:ring-primary/50"
-                                      rows={3}
-                                    />
-                                    <div className="flex gap-2 justify-end">
-                                      <button
-                                        onClick={() => handleEditCancel()}
-                                        className="text-xs px-2 py-1 rounded bg-muted"
-                                      >
-                                        Cancel
-                                      </button>
-                                      <button
-                                        onClick={() =>
-                                          msg.id && handleEditSave(msg.id)
-                                        }
-                                        className="text-xs px-2 py-1 rounded bg-primary text-primary-foreground"
-                                      >
-                                        Save & Resend
-                                      </button>
-                                    </div>
-                                  </div>
-                                ) : (
-                                  <div className="text-sm">
-                                    <MarkdownRenderer
-                                      content={content}
-                                      config={MARKDOWN_CONFIG}
-                                      isStreaming={
-                                        isLastAssistant && chat.isLoading
-                                      }
-                                    />
-                                  </div>
-                                )}
-                                {isLastAssistant && chat.isLoading && (
-                                  <span className="inline-block w-1.5 h-4 bg-primary animate-pulse rounded-sm ml-0.5" />
-                                )}
-                              </div>
-                              <div className="mt-1 flex items-center gap-2">
-                                {msg.id &&
-                                  messageTimestampsRef.current[msg.id] && (
-                                    <span className="text-[10px] text-muted-foreground">
-                                      {formatTimestamp(
-                                        messageTimestampsRef.current[msg.id]
-                                      )}
-                                    </span>
-                                  )}
-                                {msg.id && (
-                                  <MessageActions
-                                    role={msg.role as 'user' | 'assistant'}
-                                    feedback={feedback[msg.id]}
-                                    onFeedback={(fb) =>
-                                      handleFeedback(msg.id!, fb)
-                                    }
-                                    copyText={content}
-                                    onRegenerate={
-                                      msg.role === 'assistant'
-                                        ? () => handleRegenerate(msg.id!)
-                                        : undefined
-                                    }
-                                    onDelete={() =>
-                                      handleDeleteMessage(msg.id!)
-                                    }
-                                    onEdit={
-                                      msg.role === 'user'
-                                        ? () => handleEditStart(msg.id!)
-                                        : undefined
-                                    }
-                                  />
-                                )}
-                              </div>
-                            </div>
-                            {msg.role === 'user' && (
-                              <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center shrink-0">
-                                <User className="h-4 w-4 text-primary-foreground" />
-                              </div>
-                            )}
-                          </div>
-                        )
-                      })}
+                      .map((msg: HookMessage) => (
+                        <ChatMessageItem
+                          key={msg.id || msg.content?.toString().slice(0, 20)}
+                          msg={msg}
+                          isStreaming={streamingMsgId === msg.id}
+                          assistantAvatar={AssistantAvatar}
+                          timestamp={
+                            msg.id
+                              ? messageTimestampsRef.current[msg.id]
+                              : undefined
+                          }
+                          editingMessageId={editingMessageId}
+                          editingText={editingText}
+                          onEditingTextChange={setEditingText}
+                          onEditSave={handleEditSave}
+                          onEditCancel={handleEditCancel}
+                          feedback={msg.id ? feedback[msg.id] : undefined}
+                          onFeedback={handleFeedback}
+                          onRegenerate={handleRegenerate}
+                          onDelete={handleDeleteMessage}
+                          onEditStart={handleEditStart}
+                        />
+                      ))}
 
                     <ChatThinkingIndicator
                       visible={showThinkingIndicator}
@@ -539,56 +507,23 @@ export default function DeepResearchAssistantPage() {
                   </div>
                 )}
 
-                <div className="flex items-end gap-2">
-                  <div className="flex-1 relative">
-                    <textarea
-                      ref={inputRef}
-                      value={input}
-                      onChange={handleInputChange}
-                      onKeyDown={handleKeyDown}
-                      placeholder={
-                        deepResearchMode
-                          ? 'Enter a research topic for deep analysis...'
-                          : 'Ask anything... (/ for commands)'
-                      }
-                      rows={1}
-                      className="w-full px-4 py-2.5 pr-20 rounded-xl bg-muted/50 border border-muted-foreground/10 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-primary/30 placeholder:text-muted-foreground/50"
-                    />
-                    <div className="absolute right-2 bottom-1.5 flex items-center gap-1">
-                      <button
-                        onClick={() => setShowSlashMenu((prev) => !prev)}
-                        className="p-1.5 rounded-md hover:bg-muted transition-colors text-muted-foreground"
-                        title="Slash commands"
-                      >
-                        <Slash className="h-3.5 w-3.5" />
-                      </button>
-                      <button
-                        onClick={() => {
-                          if (chat.isLoading) {
-                            chat.stop()
-                          } else {
-                            handleSend()
-                          }
-                        }}
-                        disabled={!input.trim() && !chat.isLoading}
-                        className={cn(
-                          'p-1.5 rounded-md transition-colors',
-                          chat.isLoading
-                            ? 'bg-red-500/20 text-red-500'
-                            : input.trim()
-                              ? 'bg-primary text-primary-foreground'
-                              : 'text-muted-foreground'
-                        )}
-                      >
-                        {chat.isLoading ? (
-                          <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                        ) : (
-                          <Send className="h-3.5 w-3.5" />
-                        )}
-                      </button>
-                    </div>
-                  </div>
-                </div>
+                <ChatInput
+                  value={input}
+                  onChange={handleInputChange}
+                  onSubmit={handleInputSubmit}
+                  placeholder={
+                    deepResearchMode
+                      ? 'Enter a research topic for deep analysis... (⌘K for palette)'
+                      : 'Ask anything... (/ for commands, ⌘K for palette)'
+                  }
+                  disabled={false}
+                  maxLength={4000}
+                  showCharCounter={true}
+                  animateHeight={true}
+                  glowOnFocus={true}
+                  aria-label="Research input"
+                />
+
                 <div className="flex items-center justify-between mt-2 text-[10px] text-muted-foreground">
                   <div className="flex items-center gap-2">
                     {deepResearchMode && (
@@ -697,6 +632,15 @@ export default function DeepResearchAssistantPage() {
           </div>
         </ErrorBoundary>
       </div>
+
+      {/* Command Palette */}
+      <CommandPalette
+        items={commandItems}
+        open={showCommandPalette}
+        onClose={() => setShowCommandPalette(false)}
+        placeholder="Search commands..."
+        aria-label="Command palette"
+      />
 
       <ChatExportDialog
         open={showExport}
