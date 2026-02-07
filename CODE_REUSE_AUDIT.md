@@ -376,36 +376,36 @@ This should be extracted to a `useDemoChat()` hook.
 
 ## Appendix: Full Findings Table
 
-| # | File | Issue | Existing Asset | Severity |
-|---|------|-------|---------------|----------|
-| 1 | `packages/react/src/utils/cn.ts` | Broken cn() without tailwind-merge | `packages/primitives/src/lib/cn.ts` | Critical |
-| 2 | `packages/utils/src/errors/base.ts` | Separate ClarityError hierarchy | `packages/error-handling/src/errors/base-error.ts` | Critical |
-| 3 | `packages/react/src/error/clarity-error.ts` | Third ClarityError variant | `packages/error-handling/src/errors/base-error.ts` | Critical |
-| 4 | 10+ files | Incompatible ChatMessage types | `packages/types/src/message.ts` | Critical |
-| 5 | 4 files | Incompatible TokenBudgetConfig | Should be in `packages/token-optimization` | Critical |
-| 6 | `packages/react/src/utils/resilience/circuit-breaker.ts` | Duplicate circuit breaker | `packages/token-optimization/src/resilience/circuit-breaker.ts` | High |
-| 7 | `packages/react/src/adapters/circuit-breaker.ts` | Third circuit breaker | Same as above | High |
-| 8 | 5 files | Duplicate retry/backoff | `packages/utils/src/async/index.ts` | High |
-| 9 | `packages/react/src/utils/animations.ts` | Duplicate animation presets | `packages/primitives/src/lib/animation-presets.ts` | High |
-| 10 | `packages/primitives/src/lib/utils/async.ts` | Duplicate debounce/throttle | `packages/utils/src/async/index.ts` | High |
-| 11 | 6 files | Duplicate useReducedMotion | `packages/primitives/src/hooks/use-reduced-motion.ts` | High |
-| 12 | 4+ files | Duplicate getFocusableElements | `packages/primitives/src/lib/aria.ts` | High |
-| 13 | 3+ files | Duplicate announce() | `packages/primitives/src/lib/aria.ts` | High |
-| 14 | 5 files | Duplicate formatError/normalizeError | Should be in `packages/error-handling` | High |
-| 15 | `apps/component-showcase/app/globals.css` | Border-radius mismatch (0.5rem vs 0.625rem) | `packages/globals.css` | Medium |
-| 16 | `tailwind.config.js` | 6 undefined AI color tokens | `packages/globals.css` (missing definitions) | Medium |
-| 17 | 4 showcase pages | Inline formatting instead of utils | `@clarity-chat/utils` format functions | Medium |
-| 18 | `apps/component-showcase/app/clones/page.tsx` | 7x repeated chat state pattern | Extract `useDemoChat()` | Medium |
-| 19 | 5 files | Duplicate getIcon() functions | Extract shared utility | Medium |
-| 20 | 4 files | Inconsistent useFocusManagement APIs | Standardize single API | Medium |
-| 21 | `packages/globals.css` | 42 hardcoded Tailwind colors | Design tokens | Medium |
-| 22 | Showcase pages | 209+ hardcoded hex/rgb/hsl values | Design tokens / Tailwind theme | Medium |
-| 23 | `apps/component-showcase/app/features/page.tsx` | 6,647 lines, 81 inline demos | Split into smaller files | Medium |
-| 24 | `packages/dev-tools` | Local formatDuration() | `@clarity-chat/utils` | Low |
-| 25 | Showcase tailwind.config.js | Duplicate accordion keyframes | Root tailwind.config.js | Low |
-| 26 | `packages/react` | `ModelIdentifier = ModelId \| string` redundant | Just use `ModelId` | Low |
-| 27 | Multiple packages | Confusing re-export chains | Document canonical import paths | Low |
-| 28 | `packages/globals.css` | Terminal properties outside token system | Integrate into tokens | Low |
+| # | File | Issue | Existing Asset | Severity | Status |
+|---|------|-------|---------------|----------|--------|
+| 1 | `packages/react/src/utils/cn.ts` | Broken cn() without tailwind-merge | `packages/primitives/src/lib/cn.ts` | Critical | **FIXED** — Re-exports from primitives |
+| 2 | `packages/utils/src/errors/base.ts` | Separate ClarityError hierarchy | `packages/error-handling/src/errors/base-error.ts` | Critical | **DOCUMENTED** — Cross-refs added, incompatible constructors noted |
+| 3 | `packages/react/src/error/clarity-error.ts` | Third ClarityError variant | `packages/error-handling/src/errors/base-error.ts` | Critical | **DOCUMENTED** — @see reference to canonical base |
+| 4 | 10+ files | Incompatible ChatMessage types | `packages/types/src/message.ts` | Critical | **FIXED** — Canonical ChatMessage + subtypes added to @clarity-chat/types, all local defs deprecated |
+| 5 | 4 files | Incompatible TokenBudgetConfig | Should be in `packages/token-optimization` | Critical | **FIXED** — CanonicalTokenBudgetConfig + narrowed subtypes in token-optimization/types, all local defs deprecated |
+| 6 | `packages/react/src/utils/resilience/circuit-breaker.ts` | Duplicate circuit breaker | `packages/token-optimization/src/resilience/circuit-breaker.ts` | High | **DOCUMENTED** — Cross-refs to all 3 implementations, consolidation plan noted |
+| 7 | `packages/react/src/adapters/circuit-breaker.ts` | Third circuit breaker | Same as above | High | **DOCUMENTED** — Same as above |
+| 8 | 5 files | Duplicate retry/backoff | `packages/utils/src/async/index.ts` | High | **FIXED** — adapters/retry.ts deprecated, resilience version is canonical |
+| 9 | `packages/react/src/utils/animations.ts` | Duplicate animation presets | `packages/primitives/src/lib/animation-presets.ts` | High | **FIXED** — Aligned DURATION/EASING, re-exports from primitives |
+| 10 | `packages/primitives/src/lib/utils/async.ts` | Duplicate debounce/throttle | `packages/utils/src/async/index.ts` | High | **DOCUMENTED** — Note added about canonical source |
+| 11 | 6 files | Duplicate useReducedMotion | `packages/primitives/src/hooks/use-reduced-motion.ts` | High | **FIXED** — All duplicates replaced with re-exports from primitives |
+| 12 | 4+ files | Duplicate getFocusableElements | `packages/primitives/src/lib/aria.ts` | High | **FIXED** — Re-exports added to accessibility-helpers.tsx, dev-tools, error-handling |
+| 13 | 3+ files | Duplicate announce() | `packages/primitives/src/lib/aria.ts` | High | **FIXED** — Re-exports added to accessibility-helpers.tsx |
+| 14 | 5 files | Duplicate formatError/normalizeError | Should be in `packages/error-handling` | High | **DOCUMENTED** — Cross-refs added to all 3 implementations explaining different contexts |
+| 15 | `apps/component-showcase/app/globals.css` | Border-radius mismatch (0.5rem vs 0.625rem) | `packages/globals.css` | Medium | **FIXED** — Changed to 0.625rem |
+| 16 | `tailwind.config.js` | 6 undefined AI color tokens | `packages/globals.css` (missing definitions) | Medium | **FIXED** — All 6 AI tokens defined in light + dark mode |
+| 17 | 4 showcase pages | Inline formatting instead of utils | `@clarity-chat/utils` format functions | Medium | **FIXED** — format-helpers.ts created with formatCompact/formatPercent/formatCost |
+| 18 | `apps/component-showcase/app/clones/page.tsx` | 7x repeated chat state pattern | Extract `useDemoChat()` | Medium | **FIXED** — useDemoChat hook created, 3 clones migrated (others have different UX) |
+| 19 | 5 files | Duplicate getIcon() functions | Extract shared utility | Medium | **FIXED** — use-status-icon.tsx created with getStatusIcon/getFileIcon |
+| 20 | 4 files | Inconsistent useFocusManagement APIs | Standardize single API | Medium | **DOCUMENTED** — Canonical version identified in accessibility-helpers.tsx, cross-refs added |
+| 21 | `packages/globals.css` | 42 hardcoded Tailwind colors | Design tokens | Medium | Unchanged — Intentional for Tailwind utility reference |
+| 22 | Showcase pages | 209+ hardcoded hex/rgb/hsl values | Design tokens / Tailwind theme | Medium | Unchanged — Many intentional (clone brand colors) |
+| 23 | `apps/component-showcase/app/features/page.tsx` | 6,647 lines, 81 inline demos | Split into smaller files | Medium | **STARTED** — EXTRACTION_GUIDE.md + demos/ directory structure created |
+| 24 | `packages/dev-tools` | Local formatDuration() | `@clarity-chat/utils` | Low | **FIXED** — Replaced with import from @clarity-chat/utils/format |
+| 25 | Showcase tailwind.config.js | Duplicate accordion keyframes | Root tailwind.config.js | Low | **FIXED** — Removed duplicate keyframes, kept animation refs |
+| 26 | `packages/react` | `ModelIdentifier = ModelId \| string` redundant | Just use `ModelId` | Low | **FIXED** — ModelIdentifier and TokenEncoding deprecated |
+| 27 | Multiple packages | Confusing re-export chains | Document canonical import paths | Low | **FIXED** — Tool types barrel (tool.ts), canonical sources documented across packages |
+| 28 | `packages/globals.css` | Terminal properties outside token system | Integrate into tokens | Low | **DOCUMENTED** — Note explaining intentional Night Owl scheme separation |
 
 ---
 

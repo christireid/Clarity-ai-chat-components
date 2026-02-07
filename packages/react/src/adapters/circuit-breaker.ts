@@ -11,6 +11,15 @@
  * - Prevent overwhelming failing providers
  * - Automatic recovery testing
  * - Provider health visibility
+ *
+ * NOTE: There are 3 circuit breaker implementations in this monorepo:
+ * - This file (adapters/) — enum-based state, includes Registry + global instance
+ * - `utils/resilience/circuit-breaker.ts` — string union state, simpler API
+ * - `@clarity-chat/token-optimization` — generic `<T>`, lowercase state strings
+ *
+ * Consolidation plan: standardize on a single generic circuit breaker in
+ * `@clarity-chat/utils`. Adapter-specific configuration stays here but
+ * uses the shared base. See CODE_REUSE_AUDIT.md H1 for details.
  */
 
 /**

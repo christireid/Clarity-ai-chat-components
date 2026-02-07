@@ -337,10 +337,21 @@ export const LiveRegion: React.FC<{
 
 // =============================================================================
 // FOCUS MANAGEMENT
+//
+// NOTE: There are 4 useFocusManagement implementations with different APIs:
+// - This file (options object: initialFocus, returnFocus, trapFocus) — CANONICAL
+// - @clarity-chat/error-handling accessibility.ts (containerRef + options, richer API)
+// - @clarity-chat/error-handling hooks/useAccessibility.ts (no params, simple refs)
+// - @clarity-chat/react accessibility/focus-management.ts (ref-based useFocusTrap)
+//
+// For new code, use THIS version. The error-handling and focus-management variants
+// serve their specific domains. See CODE_REUSE_AUDIT.md M7 for details.
 // =============================================================================
 
 /**
- * Hook for managing focus within a component
+ * Hook for managing focus within a component.
+ *
+ * This is the canonical focus management hook for Clarity Chat React components.
  */
 export function useFocusManagement(
   options: {

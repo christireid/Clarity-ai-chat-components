@@ -6,6 +6,12 @@
  * A virtualized list component for efficiently rendering large datasets.
  * Only renders items currently visible in the viewport plus a buffer.
  *
+ * @deprecated For chat message lists, prefer `TanStackMessageList` from
+ * `../chat/tanstack-message-list` which uses @tanstack/react-virtual with
+ * built-in dynamic heights and smaller bundle. This generic VirtualScroller
+ * is kept for non-chat use cases that need horizontal scrolling or lazy loading.
+ * See CODE_REUSE_AUDIT.md P0-12.
+ *
  * Features:
  * - Efficient rendering of large lists (10k+ items)
  * - Dynamic item heights support

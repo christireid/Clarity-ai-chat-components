@@ -66,7 +66,12 @@ export interface MessageAttachment {
   previewUrl?: string
 }
 
-/** Chat message */
+/**
+ * Chat message.
+ *
+ * @deprecated Use `ChatMessage` from `@clarity-chat/types` instead.
+ * Kept for backwards compatibility; structurally compatible with the canonical type.
+ */
 export interface ChatMessage {
   id: string
   role: MessageRole

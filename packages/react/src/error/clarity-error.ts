@@ -10,6 +10,16 @@
  * The validation helpers in this module compose with the type guards from
  * `../internal/assertions` to provide consistent checking with enriched
  * error context for better developer experience.
+ *
+ * NOTE: The canonical abstract `ClarityError` base class lives in
+ * `@clarity-chat/error-handling` (`errors/base-error.ts`). This module's
+ * `ClarityError` is a concrete, component-focused variant with validation
+ * helpers. It uses a different constructor API (positional `code, message,
+ * context` vs the base class's `message, options`). Ideally this would
+ * extend the canonical base, but the constructor signatures are
+ * incompatible without a breaking change. Kept separate for now.
+ *
+ * @see packages/error-handling/src/errors/base-error.ts — canonical abstract base
  */
 
 import {

@@ -11,6 +11,10 @@
 
 export type Role = 'system' | 'user' | 'assistant' | 'tool' | 'function'
 
+/**
+ * @deprecated Use `ChatMessage` from `@clarity-chat/types` instead.
+ * Kept for backwards compatibility; structurally compatible with the canonical type.
+ */
 export interface ChatMessage {
   role: Role
   content: string

@@ -1347,6 +1347,14 @@
 
 /* ============================================================================
    TERMINAL COMPONENT
+
+   NOTE: Terminal tokens (--terminal-bg, --terminal-fg, --terminal-border,
+   --terminal-prompt, --terminal-command, etc.) use hardcoded hex fallbacks
+   instead of the HSL-based design token system used elsewhere. These are
+   intentionally kept separate because they replicate specific terminal
+   color schemes (Night Owl) that don't map cleanly to the semantic token
+   palette. Future work: consider adding --terminal-* tokens to :root and
+   .dark blocks with HSL values for full theme integration.
    ============================================================================ */
 
 .terminal {

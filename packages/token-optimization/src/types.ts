@@ -284,6 +284,114 @@ export interface TokenOptimizationStats {
   methods: Record<string, number>
 }
 
+// =============================================================================
+// Canonical TokenBudgetConfig
+// =============================================================================
+
+/**
+ * Canonical token budget configuration.
+ *
+ * This is the single source of truth for token budget configuration across
+ * all packages. Other packages should import and use this type instead of
+ * defining their own. Use the narrower subtypes for package-specific needs.
+ *
+ * Consolidates fields from:
+ * - `packages/memory/src/types/config.ts` (maxContextWindow, allocation, dynamicAllocation)
+ * - `packages/react/src/utils/tokenization/token-budget-validator.ts` (thresholds, truncation)
+ * - `packages/token-optimization/src/budget/advanced-budget.ts` (quality, compression, caching)
+ * - `packages/token-optimization/src/hooks/use-token-budget-monitor.ts` (callbacks, model)
+ */
+export interface CanonicalTokenBudgetConfig {
+  /** Maximum token limit (context window or input limit) */
+  maxTokens: number
+
+  /** Tokens reserved for output/response generation */
+  reservedForOutput?: number
+
+  /** Warning threshold as decimal (default: 0.8 = 80%) */
+  warningThreshold?: number
+
+  /** Critical threshold as decimal (default: 0.95 = 95%) */
+  criticalThreshold?: number
+
+  /** Minimum quality threshold for compression (0-1) */
+  minQualityThreshold?: number
+
+  /** Enable dynamic allocation between categories */
+  enableDynamicAllocation?: boolean
+
+  /** Enable token compression */
+  enableCompression?: boolean
+
+  /** Enable response caching */
+  enableCaching?: boolean
+
+  /** Auto-truncate when budget exceeded */
+  autoTruncate?: boolean
+
+  /** Truncation strategy */
+  truncationStrategy?: 'truncate' | 'remove' | 'summarize'
+
+  /** Priority weights for token allocation */
+  priorityWeights?: {
+    system: number
+    user: number
+    context: number
+    response: number
+  }
+
+  /** Model name for accurate token counting */
+  model?: string
+
+  /** Callback when warning threshold is crossed */
+  onWarning?: (usage: unknown) => void
+
+  /** Callback when critical threshold is crossed */
+  onCritical?: (usage: unknown) => void
+
+  /** Callback when budget exceeded */
+  onExceeded?: (usage: unknown) => void
+
+  /** Auto-trigger trimming at critical threshold */
+  autoTrim?: boolean
+
+  /** Debounce delay for token counting in ms */
+  debounceMs?: number
+
+  /** Use accurate tokenization (slower but precise) */
+  useAccurateTokenization?: boolean
+}
+
+/**
+ * Narrowed config for memory package use cases.
+ */
+export type MemoryTokenBudgetConfig = Pick<
+  CanonicalTokenBudgetConfig,
+  'maxTokens' | 'enableDynamicAllocation' | 'priorityWeights'
+>
+
+/**
+ * Narrowed config for React UI validation use cases.
+ */
+export type ReactTokenBudgetConfig = Pick<
+  CanonicalTokenBudgetConfig,
+  'maxTokens' | 'warningThreshold' | 'criticalThreshold' | 'autoTruncate' | 'truncationStrategy'
+>
+
+/**
+ * Narrowed config for advanced budget management.
+ */
+export type AdvancedTokenBudgetConfig = Pick<
+  CanonicalTokenBudgetConfig,
+  | 'maxTokens'
+  | 'reservedForOutput'
+  | 'minQualityThreshold'
+  | 'enableDynamicAllocation'
+  | 'enableCompression'
+  | 'enableCaching'
+  | 'priorityWeights'
+>
+
 // Export commonly used types for convenience
 export type TokenCount = TokenInfo
 export type OptimizationStrategy =

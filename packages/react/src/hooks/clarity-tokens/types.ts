@@ -16,10 +16,20 @@ export type { ModelId, TokenizerEncoding } from '../../utils/tokenization/model-
 // Shared Types (defined locally to avoid duplicate package dependency)
 // =============================================================================
 
-/** Model identifier - supports all models in MODEL_REGISTRY plus custom strings */
+/**
+ * Model identifier - supports all models in MODEL_REGISTRY plus custom strings.
+ *
+ * @deprecated `ModelId` already accepts arbitrary strings via `(string & Record<never, never>)`,
+ * so this union is redundant. Use `ModelId` directly instead.
+ */
 export type ModelIdentifier = ModelId | string
 
-/** Token encoding type */
+/**
+ * Token encoding type.
+ *
+ * @deprecated `TokenizerEncoding` already covers all encoding types.
+ * Use `TokenizerEncoding` directly instead if possible.
+ */
 export type TokenEncoding = TokenizerEncoding | string
 
 /** Cost estimate result */

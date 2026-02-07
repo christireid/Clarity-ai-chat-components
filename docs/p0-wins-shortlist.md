@@ -349,17 +349,17 @@
 | # | Title | Impact | Effort | Status |
 |---|-------|--------|--------|--------|
 | 1 | Broken cn() | Broken Tailwind classes | Low | **FIXED** |
-| 2 | 3 Circuit Breakers | Type mismatches | High | Documented |
-| 3 | 5 Retry impls | Config confusion | Medium | Documented |
+| 2 | 3 Circuit Breakers | Type mismatches | High | **DOCUMENTED** — Cross-refs + consolidation plan |
+| 3 | 5 Retry impls | Config confusion | Medium | **FIXED** — adapters deprecated, canonical identified |
 | 4 | 6 AI color tokens | Invisible colors | Low | **FIXED** |
-| 5 | 10+ ChatMessage types | Type conversion boilerplate | High | Documented |
+| 5 | 10+ ChatMessage types | Type conversion boilerplate | High | **FIXED** — Canonical ChatMessage + subtypes in @clarity-chat/types |
 | 6 | 6 useReducedMotion | Inconsistent a11y | Low | **FIXED** |
 | 7 | Conflicting animation timing | Visual inconsistency | Low | **FIXED** |
 | 8 | Border-radius mismatch | Misleading showcase | Low | **FIXED** |
-| 9 | 3 ClarityError classes | Error interop broken | High | Partially fixed |
-| 10 | 4 TokenBudgetConfig | Budget interop broken | High | Documented |
-| 11 | 7x chat state pattern | Maintenance burden | Low | **FIXED** (3/7) |
-| 12 | 3 virtual list impls | Bundle bloat | Medium | Documented |
-| 13 | 4 tool type files | Import confusion | Low | Documented |
-| 14 | 6647-line features page | IDE/PR review pain | Medium | Documented |
-| 15 | 4x a11y duplication | Bug propagation | Medium | Partially fixed |
+| 9 | 3 ClarityError classes | Error interop broken | High | **DOCUMENTED** — Incompatible constructors, canonical identified |
+| 10 | 4 TokenBudgetConfig | Budget interop broken | High | **FIXED** — CanonicalTokenBudgetConfig + narrowed subtypes |
+| 11 | 7x chat state pattern | Maintenance burden | Low | **FIXED** (3/7, others have different UX) |
+| 12 | 3 virtual list impls | Bundle bloat | Medium | **FIXED** — Custom impls deprecated, TanStack is canonical |
+| 13 | 4 tool type files | Import confusion | Low | **FIXED** — Unified tool.ts barrel |
+| 14 | 6647-line features page | IDE/PR review pain | Medium | **STARTED** — Extraction guide + demos/ structure created |
+| 15 | 4x a11y duplication | Bug propagation | Medium | **FIXED** — Re-exports from primitives, cross-refs added |

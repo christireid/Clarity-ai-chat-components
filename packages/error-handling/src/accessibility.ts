@@ -5,7 +5,14 @@
  * - /apps/docs/lib/accessibility/accessibilityEnhanced.ts (405 lines)
  * - /packages/error-handling/src/hooks/useAccessibility.ts (139 lines)
  *
- * Provides comprehensive WCAG AAA compliant accessibility utilities for React components
+ * Provides comprehensive WCAG AAA compliant accessibility utilities for React components.
+ *
+ * NOTE: Low-level a11y primitives (announce, getFocusableElements, saveFocus, restoreFocus)
+ * are canonically defined in `@clarity-chat/primitives` (`lib/aria.ts`). This module provides
+ * higher-level React hooks for focus management, screen reader announcements, and keyboard
+ * navigation that are specific to error handling UIs. For new code, prefer importing
+ * low-level primitives from `@clarity-chat/primitives` and hooks from
+ * `@clarity-chat/react` (`utils/accessibility-helpers.tsx`).
  *
  * @module @clarity-chat/error-handling/accessibility
  *

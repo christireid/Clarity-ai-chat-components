@@ -7,12 +7,7 @@
 'use client'
 
 import * as React from 'react'
-// Helper function for formatting
-function formatDuration(ms: number): string {
-  if (ms < 1) return `${(ms * 1000).toFixed(2)}µs`
-  if (ms < 1000) return `${ms.toFixed(2)}ms`
-  return `${(ms / 1000).toFixed(2)}s`
-}
+import { formatDuration } from '@clarity-chat/utils/format'
 import { useProfiler } from '../hooks/use-profiler'
 import type { PerformanceMetrics } from '../../performance/profiler'
 import {

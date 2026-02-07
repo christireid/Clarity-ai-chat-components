@@ -4,9 +4,14 @@
  * Efficient rendering for large conversations (1000+ messages) using
  * react-window for virtual scrolling.
  *
+ * @deprecated Prefer `TanStackMessageList` from `./tanstack-message-list` which provides
+ * the same functionality with smaller bundle size, better TypeScript support, built-in
+ * dynamic height measurement, smooth scrolling, and gap support. This component is
+ * kept for backwards compatibility. See CODE_REUSE_AUDIT.md P0-12.
+ *
  * @blueprint Feature 6.1 - Virtual Scrolling
  * @priority HIGH
- * @status NEW - Implementation based on blueprint analysis
+ * @status DEPRECATED - Use TanStackMessageList instead
  */
 
 'use client'

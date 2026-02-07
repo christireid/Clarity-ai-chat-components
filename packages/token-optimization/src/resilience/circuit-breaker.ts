@@ -9,6 +9,14 @@
  * - OPEN: Failing, requests are rejected immediately
  * - HALF-OPEN: Testing recovery, limited requests pass through
  *
+ * NOTE: There are 3 circuit breaker implementations in this monorepo:
+ * - This file — generic `<T>`, lowercase state strings, includes Registry
+ * - `@clarity-chat/react` adapters/ — enum-based state, global registry
+ * - `@clarity-chat/react` utils/resilience/ — string union, simpler API
+ *
+ * Consolidation plan: standardize on a single generic circuit breaker in
+ * `@clarity-chat/utils`. See CODE_REUSE_AUDIT.md H1 for details.
+ *
  * @module resilience/circuit-breaker
  * @version 1.0.0
  */

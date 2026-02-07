@@ -1,6 +1,12 @@
 /**
  * Accessibility Utilities
- * Helpers for building accessible dev tools components
+ * Helpers for building accessible dev tools components.
+ *
+ * NOTE: Low-level a11y primitives (announce, getFocusableElements, saveFocus,
+ * restoreFocus, useReducedMotion) are canonically defined in `@clarity-chat/primitives`.
+ * This module provides dev-tools-specific components and hooks. For new code, prefer
+ * importing shared primitives from `@clarity-chat/primitives` and React hooks from
+ * `@clarity-chat/react` (`utils/accessibility-helpers.tsx`).
  */
 
 'use client'

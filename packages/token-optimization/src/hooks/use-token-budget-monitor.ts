@@ -85,7 +85,10 @@ export interface BudgetMessage {
 }
 
 /**
- * Configuration for the token budget monitor
+ * Configuration for the token budget monitor.
+ *
+ * @deprecated Use `CanonicalTokenBudgetConfig` from `@clarity-chat/token-optimization/types`
+ * instead. This local definition is kept for backwards compatibility.
  */
 export interface TokenBudgetConfig {
   /** Maximum input tokens for the model (e.g., 128000 for GPT-4) */

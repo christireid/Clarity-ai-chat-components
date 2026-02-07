@@ -272,6 +272,93 @@ export interface MessageAction {
  * }
  * ```
  */
+// =============================================================================
+// Canonical ChatMessage type
+// =============================================================================
+
+/**
+ * Canonical role type for chat messages across all packages.
+ *
+ * Superset of all role types used in the system:
+ * - `user` / `assistant` / `system`: Standard chat roles
+ * - `tool` / `function`: Used by token-optimization and pipeline packages
+ */
+export type ChatMessageRole = 'user' | 'assistant' | 'system' | 'tool' | 'function'
+
+/**
+ * Canonical ChatMessage interface for the Clarity Chat ecosystem.
+ *
+ * This is the single source of truth for chat message types. All packages
+ * should import `ChatMessage` from `@clarity-chat/types` instead of defining
+ * their own. Use the narrower subtypes below when you need a constrained shape.
+ *
+ * @example
+ * ```typescript
+ * import type { ChatMessage } from '@clarity-chat/types'
+ *
+ * const msg: ChatMessage = {
+ *   id: 'msg-1',
+ *   role: 'user',
+ *   content: 'Hello!',
+ * }
+ * ```
+ */
+export interface ChatMessage {
+  /** Unique message identifier */
+  id?: string
+  /** Role of the message sender */
+  role: ChatMessageRole
+  /** Text content of the message */
+  content: string
+  /** When the message was created */
+  createdAt?: Date
+  /** Message lifecycle status */
+  status?: 'pending' | 'sending' | 'sent' | 'streaming' | 'complete' | 'error'
+  /** Unix timestamp (milliseconds) — alternative to createdAt */
+  timestamp?: number
+  /** Tool/function call name (for role: 'tool' | 'function') */
+  name?: string
+  /** Tool call ID for correlating tool results */
+  toolCallId?: string
+  /** Tool calls made by this message */
+  toolCalls?: Array<{
+    id: string
+    name: string
+    arguments: Record<string, unknown>
+    result?: unknown
+    status?: 'pending' | 'running' | 'complete' | 'error'
+    error?: string
+  }>
+  /** File/media attachments */
+  attachments?: Array<{
+    id: string
+    name: string
+    type: string
+    url?: string
+    size?: number
+    mimeType?: string
+    previewUrl?: string
+    data?: unknown
+  }>
+  /** Flexible metadata bag */
+  metadata?: Record<string, unknown>
+}
+
+/**
+ * Minimal ChatMessage for token counting and pipeline operations.
+ * Only the fields needed for tokenization.
+ */
+export type TokenChatMessage = Pick<ChatMessage, 'role' | 'content' | 'name'>
+
+/**
+ * ChatMessage with required id — used by UI components and state management.
+ */
+export type IdentifiedChatMessage = ChatMessage & { id: string }
+
+// =============================================================================
+// StreamMessage (legacy)
+// =============================================================================
+
 export interface StreamMessage {
   /** Unique message identifier */
   id: string
