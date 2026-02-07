@@ -16,6 +16,15 @@
 export type MessageRole = 'user' | 'assistant' | 'system' | 'tool'
 export type MessageStatus = 'pending' | 'streaming' | 'complete' | 'error'
 
+export interface MessageToolCall {
+  id: string
+  name: string
+  arguments: Record<string, unknown>
+  result?: unknown
+  status: 'pending' | 'running' | 'complete' | 'error'
+  error?: string
+}
+
 export interface MessageAttachment {
   id: string
   name: string
@@ -31,6 +40,7 @@ export interface ChatMessage {
   content: string
   createdAt: Date
   status: MessageStatus
+  toolCalls?: MessageToolCall[]
   attachments?: MessageAttachment[]
   metadata?: Record<string, unknown>
 }

@@ -19,6 +19,7 @@ export default defineConfig({
     'math/index': 'src/math/index.ts',
     'env/index': 'src/env/index.ts',
     fs: 'src/fs.ts',
+    object: 'src/object.ts',
   },
   format: ['esm', 'cjs'],
   dts: true,

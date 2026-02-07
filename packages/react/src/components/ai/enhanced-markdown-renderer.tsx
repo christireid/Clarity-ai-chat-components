@@ -6,7 +6,7 @@ import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import { cn } from '@clarity-chat/primitives'
 import { usePerformanceTracking } from '../../utils/performance-monitoring'
-import { ContentErrorBoundary } from '../ui/error-boundary'
+import { EnhancedErrorBoundary } from '@clarity-chat/error-handling'
 import { useAnalytics, useInteractionTracking } from '../../utils/analytics'
 import type { ComponentPropsWithoutRef, ReactNode } from 'react'
 
@@ -14,26 +14,41 @@ import type { ComponentPropsWithoutRef, ReactNode } from 'react'
 type MermaidTheme = 'default' | 'dark' | 'neutral' | 'forest' | 'base' | 'null'
 
 /** React-markdown component props */
-interface MarkdownCodeProps extends Omit<ComponentPropsWithoutRef<'code'>, 'ref'> {
+interface MarkdownCodeProps extends Omit<
+  ComponentPropsWithoutRef<'code'>,
+  'ref'
+> {
   node?: unknown
   inline?: boolean
   className?: string
   children?: ReactNode
 }
 
-interface MarkdownParagraphProps extends Omit<ComponentPropsWithoutRef<'p'>, 'ref'> {
+interface MarkdownParagraphProps extends Omit<
+  ComponentPropsWithoutRef<'p'>,
+  'ref'
+> {
   children?: ReactNode
 }
 
-interface MarkdownTableProps extends Omit<ComponentPropsWithoutRef<'table'>, 'ref'> {
+interface MarkdownTableProps extends Omit<
+  ComponentPropsWithoutRef<'table'>,
+  'ref'
+> {
   children?: ReactNode
 }
 
-interface MarkdownElementProps extends Omit<ComponentPropsWithoutRef<'div'>, 'ref'> {
+interface MarkdownElementProps extends Omit<
+  ComponentPropsWithoutRef<'div'>,
+  'ref'
+> {
   children?: ReactNode
 }
 
-interface MarkdownCellProps extends Omit<ComponentPropsWithoutRef<'th'>, 'ref'> {
+interface MarkdownCellProps extends Omit<
+  ComponentPropsWithoutRef<'th'>,
+  'ref'
+> {
   children?: ReactNode
 }
 
@@ -64,14 +79,14 @@ export interface EnhancedMarkdownConfig {
 
 /**
  * Enhanced Markdown Renderer Component
- * 
+ *
  * Supports:
  * - Standard markdown (GFM)
  * - Code syntax highlighting
  * - LaTeX mathematical formulas (via KaTeX)
  * - Mermaid diagrams
  * - Streaming content handling
- * 
+ *
  * @example
  * ```tsx
  * <EnhancedMarkdownRenderer
@@ -126,31 +141,39 @@ const EnhancedMarkdownRendererComponent = React.memo(
 
     // Initialize Mermaid after component mounts
     React.useEffect(() => {
-      if (enableMermaid && !mermaidInitialized.current && typeof window !== 'undefined') {
+      if (
+        enableMermaid &&
+        !mermaidInitialized.current &&
+        typeof window !== 'undefined'
+      ) {
         // Dynamically import mermaid only if needed
         // mermaid is an optional peer dependency
-        import('mermaid').then((mermaidModule) => {
-          const mermaid = mermaidModule.default
-          const theme: MermaidTheme = codeTheme === 'dark' ? 'dark' : 'default'
-          mermaid.initialize({
-            startOnLoad: false,
-            theme,
-            securityLevel: 'loose',
-            // Mermaid v11: Suppress error rendering to avoid inserting 'Syntax error' message to DOM
-            // This allows us to handle errors gracefully in our UI
-            suppressErrorRendering: true,
-          })
-          mermaidInitialized.current = true
-
-          // Render any existing mermaid diagrams
-          if (containerRef.current) {
-            mermaid.run({
-              nodes: containerRef.current.querySelectorAll('.language-mermaid'),
+        import('mermaid')
+          .then((mermaidModule) => {
+            const mermaid = mermaidModule.default
+            const theme: MermaidTheme =
+              codeTheme === 'dark' ? 'dark' : 'default'
+            mermaid.initialize({
+              startOnLoad: false,
+              theme,
+              securityLevel: 'loose',
+              // Mermaid v11: Suppress error rendering to avoid inserting 'Syntax error' message to DOM
+              // This allows us to handle errors gracefully in our UI
+              suppressErrorRendering: true,
             })
-          }
-        }).catch((err: unknown) => {
-          console.warn('Failed to load Mermaid:', err)
-        })
+            mermaidInitialized.current = true
+
+            // Render any existing mermaid diagrams
+            if (containerRef.current) {
+              mermaid.run({
+                nodes:
+                  containerRef.current.querySelectorAll('.language-mermaid'),
+              })
+            }
+          })
+          .catch((err: unknown) => {
+            console.warn('Failed to load Mermaid:', err)
+          })
       }
     }, [enableMermaid, codeTheme])
 
@@ -159,32 +182,38 @@ const EnhancedMarkdownRendererComponent = React.memo(
     React.useEffect(() => {
       if (enableMermaid && mermaidInitialized.current && containerRef.current) {
         // mermaid is an optional peer dependency
-        import('mermaid').then((mermaidModule) => {
-          const mermaid = mermaidModule.default
-          const mermaidElements = containerRef.current?.querySelectorAll('.language-mermaid')
-          if (mermaidElements && mermaidElements.length > 0) {
-            try {
-              mermaid.run({
-                nodes: Array.from(mermaidElements) as HTMLElement[],
-              })
-            } catch (error) {
-              // With suppressErrorRendering: true, errors won't be inserted into DOM
-              // We can handle them gracefully here
-              console.warn('Mermaid rendering error (handled gracefully):', error)
+        import('mermaid')
+          .then((mermaidModule) => {
+            const mermaid = mermaidModule.default
+            const mermaidElements =
+              containerRef.current?.querySelectorAll('.language-mermaid')
+            if (mermaidElements && mermaidElements.length > 0) {
+              try {
+                mermaid.run({
+                  nodes: Array.from(mermaidElements) as HTMLElement[],
+                })
+              } catch (error) {
+                // With suppressErrorRendering: true, errors won't be inserted into DOM
+                // We can handle them gracefully here
+                console.warn(
+                  'Mermaid rendering error (handled gracefully):',
+                  error
+                )
+              }
             }
-          }
-        }).catch(() => {
-          // Silently fail if mermaid not available
-        })
+          })
+          .catch(() => {
+            // Silently fail if mermaid not available
+          })
       }
     }, [content, enableMermaid])
 
     // Build rehype plugins list
     // react-markdown v10 supports async plugins - use async loading for heavy plugins
     // Using any[] here since react-markdown's Pluggable type is complex and supports various formats
-     
+
     const rehypePlugins: any[] = []
-    
+
     if (enableSyntaxHighlight) {
       // Async plugin loading for rehypeHighlight (heavy dependency)
       // Improves initial bundle size by deferring syntax highlighter loading
@@ -227,7 +256,13 @@ const EnhancedMarkdownRendererComponent = React.memo(
           rehypePlugins={rehypePlugins}
           components={{
             // Custom code block rendering for Mermaid
-            code({ node: _node, inline: _inline, className, children, ...props }: MarkdownCodeProps) {
+            code({
+              node: _node,
+              inline: _inline,
+              className,
+              children,
+              ...props
+            }: MarkdownCodeProps) {
               const match = /language-(\w+)/.exec(className || '')
               const language = match ? match[1] : ''
               const codeString = String(children).replace(/\n$/, '')
@@ -252,7 +287,10 @@ const EnhancedMarkdownRendererComponent = React.memo(
             p({ children, ...props }: MarkdownParagraphProps) {
               // Check if paragraph contains math delimiters
               const contentStr = React.Children.toArray(children).join('')
-              if (enableKaTeX && (contentStr.includes('$$') || contentStr.includes('\\('))) {
+              if (
+                enableKaTeX &&
+                (contentStr.includes('$$') || contentStr.includes('\\('))
+              ) {
                 // Would render with KaTeX here
                 // For now, return standard paragraph
               }
@@ -261,7 +299,10 @@ const EnhancedMarkdownRendererComponent = React.memo(
             // Table styling
             table: ({ children, ...props }: MarkdownTableProps) => (
               <div className="overflow-x-auto my-4 w-full">
-                <table className="min-w-full table-auto border-collapse divide-y divide-border" {...props}>
+                <table
+                  className="min-w-full table-auto border-collapse divide-y divide-border"
+                  {...props}
+                >
                   {children}
                 </table>
               </div>
@@ -272,7 +313,10 @@ const EnhancedMarkdownRendererComponent = React.memo(
               </thead>
             ),
             tbody: ({ children, ...props }: MarkdownElementProps) => (
-              <tbody className="bg-background divide-y divide-border" {...props}>
+              <tbody
+                className="bg-background divide-y divide-border"
+                {...props}
+              >
                 {children}
               </tbody>
             ),
@@ -333,11 +377,12 @@ export function useMarkdownFeatures(content: string) {
 /**
  * Enhanced Markdown Renderer with error boundary
  */
-export const EnhancedMarkdownRenderer = (props: EnhancedMarkdownRendererProps) => (
-  <ContentErrorBoundary
-    componentName="EnhancedMarkdownRenderer"
-    showErrorDetails={process.env['NODE_ENV'] === 'development'}
+export const EnhancedMarkdownRenderer = (
+  props: EnhancedMarkdownRendererProps
+) => (
+  <EnhancedErrorBoundary
+    enableLogging={process.env['NODE_ENV'] === 'development'}
   >
     <EnhancedMarkdownRendererComponent {...props} />
-  </ContentErrorBoundary>
+  </EnhancedErrorBoundary>
 )

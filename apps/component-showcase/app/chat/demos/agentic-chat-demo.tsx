@@ -50,7 +50,7 @@ export function AdvancedAgenticChatDemo() {
 
 Try asking me something that requires tools!`,
       timestamp: new Date(Date.now() - 60000),
-      status: 'read',
+      status: 'complete',
     },
   ])
   const [isStreaming, setIsStreaming] = useState(false)
@@ -121,7 +121,7 @@ Try asking me something that requires tools!`,
       role: 'user',
       content: input,
       timestamp: new Date(),
-      status: 'sending',
+      status: 'pending',
     }
     setMessages((prev) => [...prev, userMessage])
     setInput('')
@@ -133,7 +133,7 @@ Try asking me something that requires tools!`,
     setSafeTimeout(() => {
       setMessages((prev) =>
         prev.map((m) =>
-          m.id === userMessage.id ? { ...m, status: 'sent' } : m
+          m.id === userMessage.id ? { ...m, status: 'complete' } : m
         )
       )
     }, 200)
@@ -213,7 +213,7 @@ Would you like me to elaborate on any of these points or perform additional anal
                 snippet: 'Industry best practices',
               },
             ],
-            status: 'delivered',
+            status: 'complete',
           },
         ])
         setStreamingText('')

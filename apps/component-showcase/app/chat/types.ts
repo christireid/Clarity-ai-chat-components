@@ -6,7 +6,7 @@ export interface ChatMessage {
   tools?: ToolExecution[]
   thinking?: ThinkingStep[]
   citations?: Citation[]
-  status?: 'sending' | 'sent' | 'delivered' | 'read' | 'error'
+  status?: 'pending' | 'streaming' | 'complete' | 'error'
   isDraft?: boolean
   isArchived?: boolean
   isPinned?: boolean

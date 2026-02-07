@@ -3,6 +3,8 @@
  * Provides pre-configured settings for common use cases
  */
 
+import { deepMerge } from '@clarity-chat/utils'
+
 /**
  * Environment presets optimize for specific runtime environments
  */
@@ -179,40 +181,6 @@ export const APPLICATION_PROFILES = {
     },
   },
 } as const
-
-/**
- * Deep merge utility for configuration objects
- */
-function deepMerge(
-  target: Record<string, any>,
-  ...sources: Record<string, any>[]
-): Record<string, any> {
-  const result = { ...target }
-
-  for (const source of sources) {
-    for (const key in source) {
-      const sourceValue = source[key]
-      const targetValue = result[key]
-
-      if (
-        sourceValue &&
-        typeof sourceValue === 'object' &&
-        !Array.isArray(sourceValue) &&
-        sourceValue.constructor === Object &&
-        targetValue &&
-        typeof targetValue === 'object' &&
-        !Array.isArray(targetValue) &&
-        targetValue.constructor === Object
-      ) {
-        result[key] = deepMerge(targetValue, sourceValue)
-      } else if (sourceValue !== undefined) {
-        result[key] = sourceValue
-      }
-    }
-  }
-
-  return result
-}
 
 /**
  * Create configuration from preset and profile

@@ -52,41 +52,9 @@ export function deepClone<T>(obj: T): T {
 
 /**
  * Deep merge objects
+ * Re-exported from @clarity-chat/utils for backward compatibility
  */
-export function deepMerge<T extends Record<string, unknown>>(
-  target: T,
-  ...sources: Partial<T>[]
-): T {
-  if (!sources.length) return target
-
-  const source = sources.shift()
-  if (source === undefined) return target
-
-  for (const key in source) {
-    if (Object.prototype.hasOwnProperty.call(source, key)) {
-      const sourceValue = source[key]
-      const targetValue = target[key]
-
-      if (
-        typeof sourceValue === 'object' &&
-        sourceValue !== null &&
-        !Array.isArray(sourceValue) &&
-        typeof targetValue === 'object' &&
-        targetValue !== null &&
-        !Array.isArray(targetValue)
-      ) {
-        target[key] = deepMerge(
-          { ...targetValue } as Record<string, unknown>,
-          sourceValue as Record<string, unknown>
-        ) as T[Extract<keyof T, string>]
-      } else {
-        target[key] = sourceValue as T[Extract<keyof T, string>]
-      }
-    }
-  }
-
-  return deepMerge(target, ...sources)
-}
+export { deepMerge } from '@clarity-chat/utils'
 
 /**
  * Clamp a number between min and max

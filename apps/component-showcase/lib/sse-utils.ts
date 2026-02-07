@@ -2,6 +2,13 @@
  * Parse Anthropic SSE stream events and extract text content.
  *
  * Yields objects with event type and data for each SSE event.
+ *
+ * NOTE: This is an Anthropic-specific SSE parser used only by the showcase
+ * demo app. It handles Anthropic event types (content_block_delta,
+ * thinking_delta, message_stop) which are not covered by the generic parser.
+ *
+ * The canonical generic SSE parser lives in:
+ *   packages/react/src/utils/streaming/streaming-helpers.ts
  */
 export interface SSETextDelta {
   type: 'text'

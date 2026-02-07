@@ -31,7 +31,7 @@
   ],
   "dependencies": {
     "@clack/prompts": "^0.10.0",
-    "boxen": "^7.1.1",
+    "boxen": "^8.0.1",
     "commander": "^12.1.0",
     "cosmiconfig": "^9.0.0",
     "execa": "^8.0.1",
@@ -48,7 +48,6 @@
     "ora": "^8.1.1",
     "picocolors": "^1.0.0",
     "prompts": "^2.4.2",
-    "react": "^19.2.0",
     "zod": "^3.22.4",
     "@clarity-chat/utils": "workspace:*"
   },
@@ -58,6 +57,7 @@
     "@types/node": "^22.10.5",
     "@types/prompts": "^2.4.9",
     "@types/react": "^19.2.3",
+    "react": "^19.2.0",
     "tsup": "^8.5.1",
     "tsx": "^4.21.0",
     "typescript": "^5.9.3",

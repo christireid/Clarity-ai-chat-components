@@ -4,6 +4,36 @@
  * Routes prompts to the most cost-effective model based on
  * complexity analysis, capability requirements, and constraints.
  *
+ * This is the canonical model routing implementation in the monorepo,
+ * designed for library/application-level cost optimization. It provides:
+ *   - Per-model pricing (input/output cost per 1M tokens)
+ *   - Capability-based filtering (vision, tool_use, etc.)
+ *   - Multiple strategies (CostOptimized / Balanced / QualityFirst)
+ *   - Builder pattern with preset models for OpenAI, Claude, and Gemini
+ *   - Cost estimation and savings tracking statistics
+ *   - React hook wrapper (useModelRouter)
+ *
+ * RELATED IMPLEMENTATION (for awareness and future consolidation):
+ *
+ *   @clarity-chat/ai-infrastructure `getStreamingFunctionWithRouting()`
+ *   (packages/ai-infrastructure/src/streaming/provider-streaming.ts)
+ *   - Server-side provider dispatch that combines a simpler complexity
+ *     classification with streaming function selection
+ *   - Decides which streaming function to call (streamFromOpenAI,
+ *     streamFromClaude, streamFromGemini, streamFromDemo) based on
+ *     environment-configured API keys
+ *   - Returns a streaming function + model name string, NOT cost data
+ *
+ * The key distinction:
+ *   - THIS (ModelRouter): Answers "which model ID should I request?"
+ *     based on pricing, capabilities, and complexity. Provider-agnostic.
+ *   - ai-infrastructure: Answers "which streaming function should I call?"
+ *     based on which API keys are configured. Tightly coupled to providers.
+ *
+ * These two could be composed: ai-infrastructure could use this ModelRouter
+ * to decide the model, then map the selected model to a streaming function.
+ * That would require adding @clarity-chat/token-optimization as a dependency.
+ *
  * @module model-router
  */
 

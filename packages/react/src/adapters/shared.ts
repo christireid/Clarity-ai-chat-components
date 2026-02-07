@@ -4,6 +4,10 @@
  * Common utilities used across all AI model adapters.
  * Centralizes duplicate code and enforces security best practices.
  *
+ * NOTE: For SSE parsing, use the canonical implementation in
+ * `utils/streaming/streaming-helpers.ts` which provides multi-format
+ * support, retry logic, and full SSE event framing.
+ *
  * @module adapters/shared
  */
 
@@ -91,30 +95,6 @@ export function createRateLimitError<T extends Record<string, unknown>>(
     err.rateLimitInfo = rateLimitInfo
   }
   return err
-}
-
-/**
- * Parse SSE data line to JSON
- * @returns Parsed JSON or null if line should be skipped
- */
-export function parseSSELine(line: string): unknown | null {
-  const trimmed = line.trim()
-
-  // Skip empty lines and DONE marker
-  if (!trimmed || trimmed === 'data: [DONE]' || trimmed === '[DONE]') {
-    return null
-  }
-
-  // Handle SSE data prefix
-  if (!trimmed.startsWith('data: ')) {
-    return null
-  }
-
-  try {
-    return JSON.parse(trimmed.slice(6))
-  } catch {
-    return null
-  }
 }
 
 /**

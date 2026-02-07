@@ -10,9 +10,9 @@ import {
   RefreshCw,
   Forward,
   Pin,
-  Check,
   CheckCircle,
   Loader2,
+  X,
 } from 'lucide-react'
 
 export function AgenticMessageBubble({ msg }: { msg: ChatMessage }) {
@@ -49,14 +49,16 @@ export function AgenticMessageBubble({ msg }: { msg: ChatMessage }) {
         {/* Status Indicator */}
         {msg.role === 'user' && msg.status && (
           <div className="flex items-center gap-1 text-xs text-muted-foreground">
-            {msg.status === 'sending' && (
+            {msg.status === 'pending' && (
               <Loader2 className="h-3 w-3 animate-spin" />
             )}
-            {msg.status === 'sent' && <Check className="h-3 w-3" />}
-            {msg.status === 'delivered' && <CheckCircle className="h-3 w-3" />}
-            {msg.status === 'read' && (
+            {msg.status === 'streaming' && (
+              <Loader2 className="h-3 w-3 animate-spin" />
+            )}
+            {msg.status === 'complete' && (
               <CheckCircle className="h-3 w-3 text-blue-500" />
             )}
+            {msg.status === 'error' && <X className="h-3 w-3 text-red-500" />}
             <span className="capitalize">{msg.status}</span>
           </div>
         )}

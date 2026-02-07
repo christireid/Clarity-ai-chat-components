@@ -4,6 +4,34 @@
  * Analyzes prompts to determine their complexity and recommend
  * appropriate model tiers for cost-effective processing.
  *
+ * This is the canonical, full-featured complexity analysis implementation
+ * in the monorepo. It provides:
+ *   - Weighted multi-factor scoring (code, multi-step, reasoning, domain, length)
+ *   - 4-level classification (Low / Medium / High / Critical)
+ *   - Numeric score (0-1) with configurable thresholds and weights
+ *   - Confidence estimation
+ *   - Model tier recommendation (small / medium / large / premium)
+ *
+ * RELATED IMPLEMENTATIONS (for awareness and future consolidation):
+ *
+ *   1. @clarity-chat/ai-infrastructure `classifyQueryComplexity()`
+ *      (packages/ai-infrastructure/src/streaming/provider-streaming.ts)
+ *      - Lightweight server-side classifier using regex patterns
+ *      - 3 levels: simple / moderate / complex
+ *      - Tightly coupled to provider dispatch (selects streaming function + model
+ *        based on env-configured API keys)
+ *      - Does NOT use this analyzer; duplicates a subset of the logic
+ *
+ *   2. apps/streamlined-docs `classifyQueryComplexity()`
+ *      (apps/streamlined-docs/lib/ai/query-complexity-classifier.ts)
+ *      - App-local classifier for the advanced prompting pipeline
+ *      - 3 levels: SIMPLE / MODERATE / COMPLEX
+ *      - Used alongside ai-infrastructure's routing in the same API route
+ *
+ * If consolidation is pursued, those implementations could delegate to this
+ * ComplexityAnalyzer for the analysis step while retaining their own mapping
+ * logic for their specific output formats.
+ *
  * @module complexity-analyzer
  */
 

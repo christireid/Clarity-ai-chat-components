@@ -38,7 +38,7 @@ export interface CircuitBreakerConfig {
 /**
  * Possible states for the circuit breaker
  */
-export type CircuitState = 'closed' | 'open' | 'half-open'
+export type CircuitState = 'CLOSED' | 'OPEN' | 'HALF_OPEN'
 
 /**
  * Statistics about the circuit breaker's operation
@@ -106,7 +106,7 @@ export class CircuitBreaker<T> {
   > &
     Pick<CircuitBreakerConfig, 'onStateChange' | 'onSuccess' | 'onFailure'>
 
-  private currentState: CircuitState = 'closed'
+  private currentState: CircuitState = 'CLOSED'
   private failureCount: number = 0
   private successCount: number = 0
   private totalFailures: number = 0
@@ -132,8 +132,8 @@ export class CircuitBreaker<T> {
    */
   get state(): CircuitState {
     // Check if we should transition from open to half-open
-    if (this.currentState === 'open' && this.shouldAttemptReset()) {
-      this.transitionTo('half-open')
+    if (this.currentState === 'OPEN' && this.shouldAttemptReset()) {
+      this.transitionTo('HALF_OPEN')
     }
     return this.currentState
   }
@@ -151,7 +151,7 @@ export class CircuitBreaker<T> {
     // Check current state
     const currentState = this.state
 
-    if (currentState === 'open') {
+    if (currentState === 'OPEN') {
       throw new TokenOptimizationError(
         `Circuit breaker is open for "${this.config.name}"`,
         TokenErrorCode.RATE_LIMIT_EXCEEDED,
@@ -166,7 +166,7 @@ export class CircuitBreaker<T> {
       )
     }
 
-    if (currentState === 'half-open') {
+    if (currentState === 'HALF_OPEN') {
       // Check if we've exceeded half-open request limit
       if (this.halfOpenAttempts >= this.config.halfOpenRequests) {
         throw new TokenOptimizationError(
@@ -201,9 +201,9 @@ export class CircuitBreaker<T> {
     this.lastSuccessTime = Date.now()
     this.failureCount = 0
 
-    if (this.currentState === 'half-open') {
+    if (this.currentState === 'HALF_OPEN') {
       // Successful request in half-open state closes the circuit
-      this.transitionTo('closed')
+      this.transitionTo('CLOSED')
     }
 
     if (this.config.onSuccess) {
@@ -223,14 +223,14 @@ export class CircuitBreaker<T> {
       this.config.onFailure(error)
     }
 
-    if (this.currentState === 'half-open') {
+    if (this.currentState === 'HALF_OPEN') {
       // Failure in half-open state reopens the circuit
-      this.transitionTo('open')
+      this.transitionTo('OPEN')
       return
     }
 
     if (this.failureCount >= this.config.failureThreshold) {
-      this.transitionTo('open')
+      this.transitionTo('OPEN')
     }
   }
 
@@ -251,7 +251,7 @@ export class CircuitBreaker<T> {
     const oldState = this.currentState
 
     // Track time in open state
-    if (oldState === 'open' && this.openedAt) {
+    if (oldState === 'OPEN' && this.openedAt) {
       this.totalOpenTimeMs += Date.now() - this.openedAt
       this.openedAt = undefined
     }
@@ -259,12 +259,12 @@ export class CircuitBreaker<T> {
     this.currentState = newState
 
     // Reset counters on state transition
-    if (newState === 'closed') {
+    if (newState === 'CLOSED') {
       this.failureCount = 0
       this.halfOpenAttempts = 0
-    } else if (newState === 'half-open') {
+    } else if (newState === 'HALF_OPEN') {
       this.halfOpenAttempts = 0
-    } else if (newState === 'open') {
+    } else if (newState === 'OPEN') {
       this.openedAt = Date.now()
       this.timesOpened++
     }
@@ -278,7 +278,7 @@ export class CircuitBreaker<T> {
    * Manually resets the circuit breaker to closed state
    */
   reset(): void {
-    this.transitionTo('closed')
+    this.transitionTo('CLOSED')
     this.failureCount = 0
     this.halfOpenAttempts = 0
   }
@@ -291,7 +291,7 @@ export class CircuitBreaker<T> {
   getStats(): CircuitBreakerStats {
     // Calculate current open time if in open state
     let currentOpenTime = this.totalOpenTimeMs
-    if (this.currentState === 'open' && this.openedAt) {
+    if (this.currentState === 'OPEN' && this.openedAt) {
       currentOpenTime += Date.now() - this.openedAt
     }
 
@@ -315,8 +315,8 @@ export class CircuitBreaker<T> {
    */
   isAllowingRequests(): boolean {
     const currentState = this.state
-    if (currentState === 'closed') return true
-    if (currentState === 'half-open') {
+    if (currentState === 'CLOSED') return true
+    if (currentState === 'HALF_OPEN') {
       return this.halfOpenAttempts < this.config.halfOpenRequests
     }
     return false

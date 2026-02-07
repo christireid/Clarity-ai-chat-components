@@ -57,6 +57,11 @@
       "types": "./dist/env/index.d.ts",
       "import": "./dist/env/index.js",
       "require": "./dist/env/index.cjs"
+    },
+    "./object": {
+      "types": "./dist/object.d.ts",
+      "import": "./dist/object.js",
+      "require": "./dist/object.cjs"
     }
   },
   "files": [

@@ -11,7 +11,7 @@ import { isStreamingError } from '../errors/type-guards'
 /**
  * Circuit breaker states for managing failure patterns
  */
-type CircuitState = 'closed' | 'open' | 'half-open'
+type CircuitState = 'CLOSED' | 'OPEN' | 'HALF_OPEN'
 
 export interface UseStreamingErrorOptions extends UseEnhancedErrorHandlerOptions {
   /** Maximum retry attempts */
@@ -134,7 +134,7 @@ function calculateDelayWithJitter(
  *
  *   return (
  *     <div>
- *       {circuitState === 'open' && <p>Service temporarily unavailable</p>}
+ *       {circuitState === 'OPEN' && <p>Service temporarily unavailable</p>}
  *       {error && canRetry && <button onClick={retry}>Retry</button>}
  *       {error && canResume && <button onClick={() => resumeStream()}>Continue</button>}
  *     </div>
@@ -168,11 +168,13 @@ export function useStreamingError(
   const [retryCount, setRetryCount] = React.useState(0)
   const [isRetrying, setIsRetrying] = React.useState(false)
   const [retryAfterMs, setRetryAfterMs] = React.useState<number | null>(null)
-  const [circuitState, setCircuitState] = React.useState<CircuitState>('closed')
+  const [circuitState, setCircuitState] = React.useState<CircuitState>('CLOSED')
   const [failureCount, setFailureCount] = React.useState(0)
   const [successCount, setSuccessCount] = React.useState(0) // ERROR-1: Track consecutive successes
   const [lastEventId, setLastEventId] = React.useState<string | undefined>()
-  const [partialContent, setPartialContent] = React.useState<string | undefined>() // ERROR-2: Store partial content for retry
+  const [partialContent, setPartialContent] = React.useState<
+    string | undefined
+  >() // ERROR-2: Store partial content for retry
 
   const retryCallbackRef = React.useRef<
     ((resumePayload?: ResumePayload) => void | Promise<void>) | null
@@ -190,8 +192,8 @@ export function useStreamingError(
   const canRetry =
     error?.recoverable === true &&
     retryCount < maxRetries &&
-    circuitState !== 'open'
-  const canResume = error?.hasPartialContent === true && circuitState !== 'open'
+    circuitState !== 'OPEN'
+  const canResume = error?.hasPartialContent === true && circuitState !== 'OPEN'
 
   // Clean up timers on unmount
   React.useEffect(() => {
@@ -210,12 +212,12 @@ export function useStreamingError(
 
   // Handle circuit breaker state transitions
   const openCircuit = React.useCallback(() => {
-    setCircuitState('open')
+    setCircuitState('OPEN')
     onCircuitOpen?.()
 
     // Schedule transition to half-open
     circuitTimerRef.current = setTimeout(() => {
-      setCircuitState('half-open')
+      setCircuitState('HALF_OPEN')
     }, circuitBreakerResetTime)
   }, [circuitBreakerResetTime, onCircuitOpen])
 
@@ -237,13 +239,13 @@ export function useStreamingError(
       // Check if we should open the circuit
       if (
         newFailureCount >= circuitBreakerThreshold &&
-        circuitState === 'closed'
+        circuitState === 'CLOSED'
       ) {
         openCircuit()
       }
 
       // If circuit was half-open and we got an error, open it again
-      if (circuitState === 'half-open') {
+      if (circuitState === 'HALF_OPEN') {
         openCircuit()
       }
 
@@ -298,7 +300,7 @@ export function useStreamingError(
   )
 
   const retry = React.useCallback(() => {
-    if (circuitState === 'open') {
+    if (circuitState === 'OPEN') {
       console.warn('[useStreamingError] Cannot retry: circuit breaker is open')
       return
     }
@@ -366,8 +368,11 @@ export function useStreamingError(
         setSuccessCount(newSuccessCount)
 
         // If circuit was half-open and we have enough successes, close it
-        if (circuitState === 'half-open' && newSuccessCount >= circuitBreakerSuccessThreshold) {
-          setCircuitState('closed')
+        if (
+          circuitState === 'HALF_OPEN' &&
+          newSuccessCount >= circuitBreakerSuccessThreshold
+        ) {
+          setCircuitState('CLOSED')
           setFailureCount(0)
           setSuccessCount(0) // Reset after closing circuit
           onCircuitClose?.()
@@ -378,7 +383,19 @@ export function useStreamingError(
         setIsRetrying(false)
       }
     }, delay)
-  }, [canRetry, retryCount, retryDelay, jitterFactor, onRetry, circuitState, successCount, circuitBreakerSuccessThreshold, onCircuitClose, partialContent, lastEventId])
+  }, [
+    canRetry,
+    retryCount,
+    retryDelay,
+    jitterFactor,
+    onRetry,
+    circuitState,
+    successCount,
+    circuitBreakerSuccessThreshold,
+    onCircuitClose,
+    partialContent,
+    lastEventId,
+  ])
 
   const resumeStream = React.useCallback(
     async (customPayload?: ResumePayload) => {
@@ -411,8 +428,11 @@ export function useStreamingError(
         setSuccessCount(newSuccessCount)
 
         // If circuit was half-open and we have enough successes, close it
-        if (circuitState === 'half-open' && newSuccessCount >= circuitBreakerSuccessThreshold) {
-          setCircuitState('closed')
+        if (
+          circuitState === 'HALF_OPEN' &&
+          newSuccessCount >= circuitBreakerSuccessThreshold
+        ) {
+          setCircuitState('CLOSED')
           setFailureCount(0)
           setSuccessCount(0) // Reset after closing circuit
           onCircuitClose?.()
@@ -423,7 +443,14 @@ export function useStreamingError(
         setIsRetrying(false)
       }
     },
-    [error, lastEventId, circuitState, successCount, circuitBreakerSuccessThreshold, onCircuitClose]
+    [
+      error,
+      lastEventId,
+      circuitState,
+      successCount,
+      circuitBreakerSuccessThreshold,
+      onCircuitClose,
+    ]
   )
 
   const clearError = React.useCallback(() => {

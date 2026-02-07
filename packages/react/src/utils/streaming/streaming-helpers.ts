@@ -1,15 +1,24 @@
 /**
  * Shared Streaming Utilities for Chat Hooks
  *
+ * **Canonical SSE parser for the @clarity-chat/react package.**
+ *
  * This module provides reusable streaming logic that eliminates code duplication
  * across useChat, useCompletion, and useAssistant hooks.
  *
  * **Key Features:**
  * - Type-safe streaming handlers
  * - Multiple format support (SSE, JSON, plain text)
+ * - Full SSE event framing (multi-line data, event/id fields)
  * - AbortSignal integration
- * - Error recovery
+ * - Error recovery and retry with exponential backoff
  * - Progress tracking
+ * - Stream merging, splitting, filtering, and buffering
+ *
+ * Other SSE-related files in the repo:
+ * - `adapters/shared.ts` — adapter utilities (no SSE parsing; delegates here)
+ * - `apps/component-showcase/lib/sse-utils.ts` — Anthropic-specific SSE
+ *   parser for the showcase demo app (intentionally separate)
  *
  * @module streaming-helpers
  */

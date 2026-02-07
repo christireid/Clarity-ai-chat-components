@@ -26,7 +26,7 @@ import { PerformanceDashboard } from '../components/PerformanceDashboard'
 import {
   DashboardErrorBoundary,
   useDashboardErrorHandler,
-} from '../components/dashboard-error-boundary'
+} from '@clarity-chat/error-handling'
 import {
   AnalyticsDashboardSkeleton,
   UsageDashboardSkeleton,

@@ -6,7 +6,7 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react'
 
-export type CircuitState = 'closed' | 'open' | 'half-open'
+export type CircuitState = 'CLOSED' | 'OPEN' | 'HALF_OPEN'
 
 interface PersistedCircuitState {
   state: CircuitState
@@ -127,7 +127,7 @@ export function usePersistentCircuitBreaker({
     () => {
       if (disablePersistence) {
         return {
-          state: 'closed',
+          state: 'CLOSED',
           openedAt: null,
           failureCount: 0,
           lastFailureAt: null,
@@ -138,17 +138,17 @@ export function usePersistentCircuitBreaker({
       if (persisted) {
         // Check if we should transition from open to half-open
         if (
-          persisted.state === 'open' &&
+          persisted.state === 'OPEN' &&
           persisted.openedAt &&
           Date.now() - persisted.openedAt >= resetTime
         ) {
-          return { ...persisted, state: 'half-open' }
+          return { ...persisted, state: 'HALF_OPEN' }
         }
         return persisted
       }
 
       return {
-        state: 'closed',
+        state: 'CLOSED',
         openedAt: null,
         failureCount: 0,
         lastFailureAt: null,
@@ -176,7 +176,7 @@ export function usePersistentCircuitBreaker({
 
   // Timer for half-open transition
   useEffect(() => {
-    if (internalState.state !== 'open' || !internalState.openedAt) {
+    if (internalState.state !== 'OPEN' || !internalState.openedAt) {
       setTimeUntilReset(null)
       return
     }
@@ -188,7 +188,7 @@ export function usePersistentCircuitBreaker({
       if (remaining === 0) {
         setInternalState((prev) => ({
           ...prev,
-          state: 'half-open',
+          state: 'HALF_OPEN',
         }))
         setTimeUntilReset(null)
       } else {
@@ -207,20 +207,20 @@ export function usePersistentCircuitBreaker({
       const newFailureCount = prev.failureCount + 1
       const now = Date.now()
 
-      if (prev.state === 'half-open') {
+      if (prev.state === 'HALF_OPEN') {
         // Any failure in half-open reopens the circuit
         return {
-          state: 'open',
+          state: 'OPEN',
           openedAt: now,
           failureCount: newFailureCount,
           lastFailureAt: now,
         }
       }
 
-      if (prev.state === 'closed' && newFailureCount >= threshold) {
+      if (prev.state === 'CLOSED' && newFailureCount >= threshold) {
         // Threshold exceeded, open circuit
         return {
-          state: 'open',
+          state: 'OPEN',
           openedAt: now,
           failureCount: newFailureCount,
           lastFailureAt: now,
@@ -237,17 +237,17 @@ export function usePersistentCircuitBreaker({
 
   const recordSuccess = useCallback(() => {
     setInternalState((prev) => {
-      if (prev.state === 'half-open') {
+      if (prev.state === 'HALF_OPEN') {
         // Success in half-open closes the circuit
         return {
-          state: 'closed',
+          state: 'CLOSED',
           openedAt: null,
           failureCount: 0,
           lastFailureAt: null,
         }
       }
 
-      if (prev.state === 'closed') {
+      if (prev.state === 'CLOSED') {
         // Reset failure count on success
         return {
           ...prev,
@@ -261,7 +261,7 @@ export function usePersistentCircuitBreaker({
 
   const reset = useCallback(() => {
     setInternalState({
-      state: 'closed',
+      state: 'CLOSED',
       openedAt: null,
       failureCount: 0,
       lastFailureAt: null,
@@ -271,7 +271,7 @@ export function usePersistentCircuitBreaker({
     }
   }, [persistKey, disablePersistence])
 
-  const canRequest = internalState.state !== 'open'
+  const canRequest = internalState.state !== 'OPEN'
 
   return {
     state: internalState.state,

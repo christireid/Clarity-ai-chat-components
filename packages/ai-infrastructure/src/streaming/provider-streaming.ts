@@ -487,6 +487,32 @@ export async function* streamFromDemo(
 
 /**
  * Query complexity classification for smart model routing
+ *
+ * NOTE: This is a lightweight, server-side complexity classifier designed for
+ * provider dispatch (choosing which streaming function + model to call based
+ * on environment-configured API keys). It classifies into 3 levels:
+ * simple / moderate / complex.
+ *
+ * A more sophisticated implementation exists in @clarity-chat/token-optimization:
+ *   - `ComplexityAnalyzer` class (routing/complexity-analyzer.ts) provides
+ *     weighted multi-factor analysis with 4 levels (Low/Medium/High/Critical),
+ *     numeric scores (0-1), configurable weights, and confidence values.
+ *   - `ModelRouter` class (routing/model-router.ts) provides cost-optimized
+ *     model selection with per-model pricing, capability filtering, multiple
+ *     strategies (CostOptimized/Balanced/QualityFirst), and savings tracking.
+ *
+ * The two implementations serve different layers:
+ *   - THIS (ai-infrastructure): Server-side provider dispatch. Decides which
+ *     streaming function to invoke and which model string to pass, based on
+ *     env vars (OPENAI_API_KEY, ANTHROPIC_API_KEY, etc.).
+ *   - token-optimization: Client/library-level cost optimization. Decides which
+ *     model ID to request based on pricing data, capability requirements, and
+ *     detailed complexity scoring. Does NOT handle streaming or API keys.
+ *
+ * If consolidation is desired in the future, this function could delegate to
+ * token-optimization's ComplexityAnalyzer for the classification step, while
+ * keeping the provider dispatch logic here. That would require adding
+ * @clarity-chat/token-optimization as a dependency of this package.
  */
 export type QueryComplexity = 'simple' | 'moderate' | 'complex'
 
@@ -499,6 +525,9 @@ export interface QueryClassification {
 
 /**
  * Classify query complexity to determine optimal model routing
+ *
+ * @see {@link @clarity-chat/token-optimization#ComplexityAnalyzer} for a more
+ * detailed complexity analysis with weighted factors and numeric scoring.
  */
 export function classifyQueryComplexity(
   query: string,
@@ -592,6 +621,10 @@ export function classifyQueryComplexity(
 
 /**
  * Model routing configuration
+ *
+ * NOTE: This is a simplified routing config for server-side provider dispatch.
+ * For detailed per-model pricing and capability-based routing, see
+ * @clarity-chat/token-optimization's ModelRoutingConfig and ModelRouter.
  */
 export interface ModelRoutingConfig {
   /** Enable smart routing (default: true if multiple models available) */
@@ -642,6 +675,14 @@ export function getStreamingFunction():
 
 /**
  * Get streaming function with smart model routing based on query complexity
+ *
+ * This function combines complexity classification with provider dispatch:
+ * it classifies the query, then selects both a streaming function and model
+ * string based on available API keys and complexity.
+ *
+ * @see {@link @clarity-chat/token-optimization#ModelRouter} for a standalone
+ * model routing system that provides cost estimation, capability filtering,
+ * and savings tracking without being tied to streaming providers.
  */
 export function getStreamingFunctionWithRouting(
   query: string,

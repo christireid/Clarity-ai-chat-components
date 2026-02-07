@@ -20,6 +20,7 @@ import {
   MessageSquare,
   Home,
 } from 'lucide-react'
+import { EnhancedErrorBoundary } from '@clarity-chat/error-handling'
 
 // =============================================================================
 // ERROR BOUNDARY
@@ -32,52 +33,31 @@ interface ErrorBoundaryProps {
   onReset?: () => void
 }
 
-interface ErrorBoundaryState {
-  hasError: boolean
-  error: Error | null
-  errorInfo: React.ErrorInfo | null
-}
+/**
+ * ErrorBoundary for Clarity components.
+ *
+ * Delegates to the canonical EnhancedErrorBoundary from @clarity-chat/error-handling
+ * while providing Clarity-specific default fallback UI via ErrorFallback.
+ */
+export function ErrorBoundary({
+  children,
+  fallback,
+  onError,
+  onReset,
+}: ErrorBoundaryProps) {
+  const handleReset = React.useCallback(() => {
+    onReset?.()
+  }, [onReset])
 
-export class ErrorBoundary extends React.Component<
-  ErrorBoundaryProps,
-  ErrorBoundaryState
-> {
-  constructor(props: ErrorBoundaryProps) {
-    super(props)
-    this.state = { hasError: false, error: null, errorInfo: null }
-  }
-
-  static getDerivedStateFromError(error: Error): Partial<ErrorBoundaryState> {
-    return { hasError: true, error }
-  }
-
-  componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
-    this.setState({ errorInfo })
-    this.props.onError?.(error, errorInfo)
-  }
-
-  handleReset = () => {
-    this.setState({ hasError: false, error: null, errorInfo: null })
-    this.props.onReset?.()
-  }
-
-  render() {
-    if (this.state.hasError) {
-      if (this.props.fallback) {
-        return this.props.fallback
-      }
-
-      return (
-        <ErrorFallback
-          error={this.state.error}
-          errorInfo={this.state.errorInfo}
-          onReset={this.handleReset}
-        />
-      )
-    }
-
-    return this.props.children
-  }
+  return (
+    <EnhancedErrorBoundary
+      fallback={fallback}
+      onError={onError}
+      onReset={handleReset}
+    >
+      {children}
+    </EnhancedErrorBoundary>
+  )
 }
 
 // =============================================================================
