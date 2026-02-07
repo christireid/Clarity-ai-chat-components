@@ -381,11 +381,11 @@ This should be extracted to a `useDemoChat()` hook.
 | 1 | `packages/react/src/utils/cn.ts` | Broken cn() without tailwind-merge | `packages/primitives/src/lib/cn.ts` | Critical | **FIXED** — Re-exports from primitives |
 | 2 | `packages/utils/src/errors/base.ts` | Separate ClarityError hierarchy | `packages/error-handling/src/errors/base-error.ts` | Critical | **DOCUMENTED** — Cross-refs added, incompatible constructors noted |
 | 3 | `packages/react/src/error/clarity-error.ts` | Third ClarityError variant | `packages/error-handling/src/errors/base-error.ts` | Critical | **DOCUMENTED** — @see reference to canonical base |
-| 4 | 10+ files | Incompatible ChatMessage types | `packages/types/src/message.ts` | Critical | **FIXED** — Canonical ChatMessage + subtypes added to @clarity-chat/types, all local defs deprecated |
-| 5 | 4 files | Incompatible TokenBudgetConfig | Should be in `packages/token-optimization` | Critical | **FIXED** — CanonicalTokenBudgetConfig + narrowed subtypes in token-optimization/types, all local defs deprecated |
+| 4 | 10+ files | Incompatible ChatMessage types | `packages/types/src/message.ts` | Critical | **COMPLETED** — Canonical ChatMessage in @clarity-chat/types, local defs removed, re-exports updated |
+| 5 | 4 files | Incompatible TokenBudgetConfig | Should be in `packages/token-optimization` | Critical | **COMPLETED** — CanonicalTokenBudgetConfig in token-optimization/types, deprecated aliases removed |
 | 6 | `packages/react/src/utils/resilience/circuit-breaker.ts` | Duplicate circuit breaker | `packages/token-optimization/src/resilience/circuit-breaker.ts` | High | **DOCUMENTED** — Cross-refs to all 3 implementations, consolidation plan noted |
 | 7 | `packages/react/src/adapters/circuit-breaker.ts` | Third circuit breaker | Same as above | High | **DOCUMENTED** — Same as above |
-| 8 | 5 files | Duplicate retry/backoff | `packages/utils/src/async/index.ts` | High | **FIXED** — adapters/retry.ts deprecated, resilience version is canonical |
+| 8 | 5 files | Duplicate retry/backoff | `packages/utils/src/async/index.ts` | High | **COMPLETED** — adapters/retry.ts deleted, resilience version is canonical |
 | 9 | `packages/react/src/utils/animations.ts` | Duplicate animation presets | `packages/primitives/src/lib/animation-presets.ts` | High | **FIXED** — Aligned DURATION/EASING, re-exports from primitives |
 | 10 | `packages/primitives/src/lib/utils/async.ts` | Duplicate debounce/throttle | `packages/utils/src/async/index.ts` | High | **DOCUMENTED** — Note added about canonical source |
 | 11 | 6 files | Duplicate useReducedMotion | `packages/primitives/src/hooks/use-reduced-motion.ts` | High | **FIXED** — All duplicates replaced with re-exports from primitives |
@@ -400,12 +400,53 @@ This should be extracted to a `useDemoChat()` hook.
 | 20 | 4 files | Inconsistent useFocusManagement APIs | Standardize single API | Medium | **DOCUMENTED** — Canonical version identified in accessibility-helpers.tsx, cross-refs added |
 | 21 | `packages/globals.css` | 42 hardcoded Tailwind colors | Design tokens | Medium | Unchanged — Intentional for Tailwind utility reference |
 | 22 | Showcase pages | 209+ hardcoded hex/rgb/hsl values | Design tokens / Tailwind theme | Medium | Unchanged — Many intentional (clone brand colors) |
-| 23 | `apps/component-showcase/app/features/page.tsx` | 6,647 lines, 81 inline demos | Split into smaller files | Medium | **STARTED** — EXTRACTION_GUIDE.md + demos/ directory structure created |
+| 23 | `apps/component-showcase/app/features/page.tsx` | 6,647 lines, 81 inline demos | Split into smaller files | Medium | **COMPLETED** — 13 demo category files extracted to demos/, page.tsx slimmed to ~160 lines |
 | 24 | `packages/dev-tools` | Local formatDuration() | `@clarity-chat/utils` | Low | **FIXED** — Replaced with import from @clarity-chat/utils/format |
 | 25 | Showcase tailwind.config.js | Duplicate accordion keyframes | Root tailwind.config.js | Low | **FIXED** — Removed duplicate keyframes, kept animation refs |
-| 26 | `packages/react` | `ModelIdentifier = ModelId \| string` redundant | Just use `ModelId` | Low | **FIXED** — ModelIdentifier and TokenEncoding deprecated |
+| 26 | `packages/react` | `ModelIdentifier = ModelId \| string` redundant | Just use `ModelId` | Low | **COMPLETED** — ModelIdentifier and TokenEncoding deleted, consumers updated to ModelId/TokenizerEncoding |
 | 27 | Multiple packages | Confusing re-export chains | Document canonical import paths | Low | **FIXED** — Tool types barrel (tool.ts), canonical sources documented across packages |
 | 28 | `packages/globals.css` | Terminal properties outside token system | Integrate into tokens | Low | **DOCUMENTED** — Note explaining intentional Night Owl scheme separation |
+
+---
+
+## Appendix: Dead Code Removal Summary
+
+The following deprecated files/modules were deleted as part of the consolidation:
+
+### Deleted Files (19 total)
+| File | Reason |
+|------|--------|
+| `packages/react/src/adapters/retry.ts` | Replaced by `utils/resilience/retry-with-backoff` |
+| `packages/react/src/agents/tools.ts` | ToolRegistry removed (use `core/tool-registry`) |
+| `packages/react/src/core/tool-executor.ts` | Shim replaced by `core/tool-executor/index.ts` directory module |
+| `packages/react/src/hooks/chat/use-chat-enhanced.ts` | Deprecated shim |
+| `packages/react/src/utils/profiling/index.ts` | Use `@clarity-chat/dev-tools` |
+| `packages/react/src/utils/profiling/performance-profiler.ts` | Use `@clarity-chat/dev-tools` |
+| `packages/react/src/utils/profiling/device-simulation.ts` | Use `@clarity-chat/dev-tools` |
+| `packages/react/src/utils/tokenization/model-registry.ts` | Re-export shim → import from `@clarity-chat/token-optimization` |
+| `packages/react/src/utils/tokenization/model-pricing.ts` | Re-export shim → import from `@clarity-chat/token-optimization` |
+| `packages/react/src/utils/tokenization/estimator.ts` | Re-export shim → import from `@clarity-chat/token-optimization` |
+| `packages/token-optimization/src/tokenizers/simple-counter.ts` | Replaced by `fast-counter.ts` |
+| `packages/token-optimization/src/compression/dynamic-compression.ts` | 1246 lines, superseded |
+| `packages/react/src/components/token/TokenCostPreview.tsx` | Deprecated component |
+| `packages/react/src/components/token/TokenOptimizationBadge.tsx` | Deprecated component |
+| `packages/react/src/components/token/TokenOptimizationDashboard.tsx` | Deprecated component |
+| `packages/react/src/components/token/TokenOptimizationPanel.tsx` | Deprecated component |
+| `packages/react/src/components/token/TokenUsageMeter.tsx` | Deprecated component |
+| `packages/react/src/components/token/token-usage-meter.tsx` | Deprecated component |
+| `apps/storybook/stories/Hooks/Chat/UseChatEnhanced.stories.tsx` | Story for deleted hook |
+
+### Removed Type Aliases
+- `SimpleTokenCounter`, `SimpleTokenCounterConfig` (fast-counter.ts)
+- `compressContent`, `compressMessages`, `compressAdaptively` (compression/index.ts)
+- `formatMessagesForCaching`, `ProviderCachingFormatter`, `formatMessagesForProviderCaching` (prompt-caching.ts)
+- Vector store backward-compat aliases in weaviate.ts, qdrant.ts, pinecone.ts, chroma.ts
+- `ModelIdentifier`, `TokenEncoding` (clarity-tokens/types.ts)
+
+### Total Impact
+- **~9,000+ lines of deprecated code removed**
+- **50+ import paths updated** to canonical sources
+- **Features page** reduced from 6,647 → ~160 lines (13 category modules extracted)
 
 ---
 
