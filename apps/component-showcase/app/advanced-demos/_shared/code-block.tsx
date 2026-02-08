@@ -41,20 +41,52 @@ export function CodeBlockDisplay({
 }: CodeBlockDisplayProps) {
   const [copied, setCopied] = useState(false)
 
-  const handleCopy = () => {
-    navigator.clipboard?.writeText(code)
-    setCopied(true)
-    setTimeout(() => setCopied(false), 2000)
+  const handleCopy = async () => {
+    try {
+      if (navigator.clipboard && window.isSecureContext) {
+        await navigator.clipboard.writeText(code)
+        setCopied(true)
+        setTimeout(() => setCopied(false), 2000)
+      } else {
+        // Fallback for non-secure contexts
+        const textArea = document.createElement('textarea')
+        textArea.value = code
+        textArea.style.position = 'fixed'
+        textArea.style.left = '-999999px'
+        textArea.style.top = '-999999px'
+        document.body.appendChild(textArea)
+        textArea.focus()
+        textArea.select()
+        const successful = document.execCommand('copy')
+        textArea.remove()
+        if (successful) {
+          setCopied(true)
+          setTimeout(() => setCopied(false), 2000)
+        }
+      }
+    } catch (err) {
+      console.error('Failed to copy:', err)
+    }
   }
 
   const lines = code.split('\n')
 
   return (
-    <div className={cn('rounded-xl overflow-hidden border bg-[#1e1e2e] my-3', className)}>
+    <div
+      className={cn(
+        'rounded-xl overflow-hidden border bg-[#1e1e2e] my-3',
+        className
+      )}
+    >
       {/* Header */}
       <div className="flex items-center justify-between px-4 py-2 bg-[#181825] border-b border-white/5">
         <div className="flex items-center gap-2">
-          <FileCode className={cn('h-3.5 w-3.5', languageColors[language] || 'text-gray-400')} />
+          <FileCode
+            className={cn(
+              'h-3.5 w-3.5',
+              languageColors[language] || 'text-gray-400'
+            )}
+          />
           <span className="text-xs text-gray-400 font-mono">
             {title || language}
           </span>
@@ -89,7 +121,11 @@ export function CodeBlockDisplay({
             className="p-1 rounded text-gray-500 hover:text-gray-300 hover:bg-white/5 transition-colors"
             title="Copy"
           >
-            {copied ? <Check className="h-3.5 w-3.5 text-green-400" /> : <Copy className="h-3.5 w-3.5" />}
+            {copied ? (
+              <Check className="h-3.5 w-3.5 text-green-400" />
+            ) : (
+              <Copy className="h-3.5 w-3.5" />
+            )}
           </button>
         </div>
       </div>
@@ -117,38 +153,105 @@ export function CodeBlockDisplay({
   )
 }
 
-// Simple syntax highlighting (production would use Shiki/Prism)
+// Enhanced syntax highlighting
 function highlightLine(line: string, _language: string): React.ReactNode {
-  // Keywords
-  const keywords = /\b(import|export|from|const|let|var|function|return|if|else|for|while|class|interface|type|extends|implements|async|await|new|try|catch|throw|switch|case|default|break|continue|typeof|instanceof|in|of|as|is)\b/g
-  // Strings
-  const strings = /(["'`])(?:(?=(\\?))\2.)*?\1/g
-  // Comments
-  const comments = /(\/\/.*$|\/\*[\s\S]*?\*\/)/g
-  // Numbers
-  const numbers = /\b(\d+\.?\d*)\b/g
-
-  if (comments.test(line)) {
+  // Check for comments first
+  if (/(^|\s)\/\//.test(line)) {
     return <span className="text-gray-500 italic">{line}</span>
   }
 
-  // Simple approach: render as-is with basic keyword coloring
-  const parts = line.split(/(\b(?:import|export|from|const|let|var|function|return|if|else|for|while|class|interface|type|extends|implements|async|await|new|try|catch|throw)\b|(?:["'`])(?:(?=(?:\\?))\\.)*?(?:["'`])|\/\/.*$)/g)
+  // More comprehensive token splitting
+  const parts = line.split(
+    /(\b(?:import|export|from|const|let|var|function|return|if|else|for|while|class|interface|type|extends|implements|async|await|new|try|catch|throw|default)\b|<\/?[A-Z][a-zA-Z0-9]*|\/\/.*$|(?:["'`])(?:[^"'`\\]|\\.)*?(?:["'`])|\b(?:true|false|null|undefined)\b|\b\d+\.?\d*\b|=>|[{}()\[\]:;,.])/g
+  )
 
   return (
     <>
       {parts.map((part, i) => {
         if (!part) return null
-        if (/^(import|export|from|const|let|var|function|return|if|else|for|while|class|interface|type|extends|implements|async|await|new|try|catch|throw)$/.test(part)) {
-          return <span key={i} className="text-purple-400">{part}</span>
+
+        // Keywords (purple)
+        if (
+          /^(import|export|from|const|let|var|function|return|if|else|for|while|class|interface|type|extends|implements|async|await|new|try|catch|throw|default)$/.test(
+            part
+          )
+        ) {
+          return (
+            <span key={i} className="text-purple-400 font-semibold">
+              {part}
+            </span>
+          )
         }
+
+        // Strings (green)
         if (/^["'`]/.test(part)) {
-          return <span key={i} className="text-green-400">{part}</span>
+          return (
+            <span key={i} className="text-green-400">
+              {part}
+            </span>
+          )
         }
+
+        // Comments (gray)
         if (/^\/\//.test(part)) {
-          return <span key={i} className="text-gray-500 italic">{part}</span>
+          return (
+            <span key={i} className="text-gray-500 italic">
+              {part}
+            </span>
+          )
         }
-        return <span key={i}>{part}</span>
+
+        // JSX/React components (cyan)
+        if (/^<\/?[A-Z]/.test(part)) {
+          return (
+            <span key={i} className="text-cyan-400">
+              {part}
+            </span>
+          )
+        }
+
+        // Boolean/null/undefined (orange)
+        if (/^(true|false|null|undefined)$/.test(part)) {
+          return (
+            <span key={i} className="text-orange-400">
+              {part}
+            </span>
+          )
+        }
+
+        // Numbers (orange)
+        if (/^\d+\.?\d*$/.test(part)) {
+          return (
+            <span key={i} className="text-orange-300">
+              {part}
+            </span>
+          )
+        }
+
+        // Arrow function (pink)
+        if (part === '=>') {
+          return (
+            <span key={i} className="text-pink-400">
+              {part}
+            </span>
+          )
+        }
+
+        // Brackets and punctuation (gray-400)
+        if (/^[{}()\[\]:;,.]$/.test(part)) {
+          return (
+            <span key={i} className="text-gray-400">
+              {part}
+            </span>
+          )
+        }
+
+        // Default (light gray for normal text)
+        return (
+          <span key={i} className="text-gray-200">
+            {part}
+          </span>
+        )
       })}
     </>
   )

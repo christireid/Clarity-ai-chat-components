@@ -705,7 +705,13 @@ export function ChatErrorBoundary({
       console.error('[ChatErrorBoundary]', {
         chatId,
         provider,
-        error: isClarityError(error) ? error.toJSON() : error,
+        error: isClarityError(error)
+          ? error.toJSON()
+          : {
+              name: error.name,
+              message: error.message,
+              stack: error.stack,
+            },
         componentStack: info.componentStack,
       })
       onError?.(error)

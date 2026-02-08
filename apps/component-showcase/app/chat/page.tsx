@@ -7,7 +7,6 @@ import {
   ChatInput,
   ChatWindow,
   FollowUpSuggestions,
-  CodeBlock,
   MarkdownRenderer,
 
   // Streaming & Messages
@@ -17,6 +16,7 @@ import {
 
   // Navigation & Commands
   CommandPalette,
+  ChatSidebar,
 
   // Input
   VoiceInput,
@@ -33,6 +33,7 @@ import {
   // Agent & Tools
   AgentPanel,
 } from '@clarity-chat/react'
+import { CodeBlockDisplay } from '../advanced-demos/_shared'
 import {
   Card,
   CardContent,
@@ -213,6 +214,7 @@ interface ChatMessage {
   isDraft?: boolean
   isArchived?: boolean
   isPinned?: boolean
+  feedback?: 'up' | 'down' | null
 }
 
 interface ToolExecution {
@@ -241,6 +243,47 @@ interface Citation {
 // ADVANCED AGENTIC CHAT DEMO
 // ============================================================================
 function AdvancedAgenticChatDemo() {
+  // Conversation state
+  const [conversations, setConversations] = useState([
+    {
+      id: '1',
+      title: 'React Hooks Guide',
+      preview: 'Discussing useState and useEffect...',
+      createdAt: new Date(Date.now() - 86400000 * 2),
+      updatedAt: new Date(Date.now() - 86400000),
+      pinned: true,
+    },
+    {
+      id: '2',
+      title: 'API Design Discussion',
+      preview: 'REST vs GraphQL considerations...',
+      createdAt: new Date(Date.now() - 86400000 * 5),
+      updatedAt: new Date(Date.now() - 86400000 * 3),
+    },
+    {
+      id: '3',
+      title: 'Debug Authentication',
+      preview: 'JWT token validation issues...',
+      createdAt: new Date(Date.now() - 86400000 * 10),
+      updatedAt: new Date(Date.now() - 86400000 * 7),
+    },
+    {
+      id: '4',
+      title: 'Code Review Help',
+      preview: 'Reviewing pull request changes...',
+      createdAt: new Date(Date.now() - 86400000 * 15),
+      updatedAt: new Date(Date.now() - 86400000 * 12),
+    },
+    {
+      id: '5',
+      title: 'Database Schema',
+      preview: 'Optimizing table relationships...',
+      createdAt: new Date(Date.now() - 86400000 * 20),
+      updatedAt: new Date(Date.now() - 86400000 * 18),
+    },
+  ])
+  const [activeConversationId, setActiveConversationId] = useState('1')
+
   const [input, setInput] = useState('')
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
@@ -264,13 +307,117 @@ Try asking me something that requires tools!`,
   const [activeTools, setActiveTools] = useState<ToolExecution[]>([])
   const [thinkingSteps, setThinkingSteps] = useState<ThinkingStep[]>([])
   const [showThinking, setShowThinking] = useState(true)
+  const [showSettings, setShowSettings] = useState(false)
+  const [showSidebar, setShowSidebar] = useState(true)
+  const [copiedMessageId, setCopiedMessageId] = useState<string | null>(null)
   const [tokenUsage, setTokenUsage] = useState({
     input: 1245,
     output: 892,
     total: 2137,
     budget: 8000,
   })
+  const [showAutocomplete, setShowAutocomplete] = useState(false)
+  const [autocompleteType, setAutocompleteType] = useState<
+    'command' | 'mention' | null
+  >(null)
+  const [autocompleteSearch, setAutocompleteSearch] = useState('')
+  const [selectedAutocompleteIndex, setSelectedAutocompleteIndex] = useState(0)
   const scrollRef = useRef<HTMLDivElement>(null)
+
+  // Conversation handlers
+  const handleConversationSelect = (id: string) => {
+    setActiveConversationId(id)
+    // In a real app, load messages for this conversation
+    const conversation = conversations.find((c) => c.id === id)
+    console.log('Selected conversation:', conversation?.title)
+  }
+
+  const handleNewConversation = () => {
+    const newConv = {
+      id: String(Date.now()),
+      title: 'New Chat',
+      preview: '',
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    }
+    setConversations((prev) => [newConv, ...prev])
+    setActiveConversationId(newConv.id)
+    setMessages([])
+  }
+
+  const handleDeleteConversation = (id: string) => {
+    setConversations((prev) => prev.filter((c) => c.id !== id))
+    if (activeConversationId === id && conversations.length > 1) {
+      const remaining = conversations.filter((c) => c.id !== id)
+      setActiveConversationId(remaining[0].id)
+    }
+  }
+
+  const handleRenameConversation = (id: string, name: string) => {
+    setConversations((prev) =>
+      prev.map((c) => (c.id === id ? { ...c, title: name } : c))
+    )
+  }
+
+  const handlePinConversation = (id: string) => {
+    setConversations((prev) =>
+      prev.map((c) => (c.id === id ? { ...c, pinned: !c.pinned } : c))
+    )
+  }
+
+  const handleArchiveConversation = (id: string) => {
+    setConversations((prev) =>
+      prev.map((c) => (c.id === id ? { ...c, archived: !c.archived } : c))
+    )
+  }
+
+  const commands = [
+    { id: '1', name: 'search', desc: 'Search the web', icon: Globe },
+    { id: '2', name: 'code', desc: 'Execute code', icon: Terminal },
+    { id: '3', name: 'image', desc: 'Generate image', icon: ImageIcon },
+    { id: '4', name: 'file', desc: 'Read file', icon: FileText },
+  ]
+
+  const mentions = [
+    { id: '1', name: 'web_search', desc: 'Search tool', icon: Globe },
+    {
+      id: '2',
+      name: 'code_interpreter',
+      desc: 'Code execution',
+      icon: Terminal,
+    },
+    { id: '3', name: 'file_reader', desc: 'File access', icon: FileText },
+  ]
+
+  const handleCopyMessage = (msg: ChatMessage) => {
+    navigator.clipboard?.writeText(msg.content)
+    setCopiedMessageId(msg.id)
+    setTimeout(() => setCopiedMessageId(null), 2000)
+  }
+
+  const handleFeedback = (msgId: string, feedback: 'up' | 'down') => {
+    setMessages((prev) =>
+      prev.map((m) =>
+        m.id === msgId
+          ? { ...m, feedback: m.feedback === feedback ? null : feedback }
+          : m
+      )
+    )
+  }
+
+  const handleRegenerateMessage = () => {
+    // Simulate regeneration by triggering a new response
+    if (!isStreaming) {
+      setIsStreaming(true)
+      setTimeout(() => setIsStreaming(false), 2000)
+    }
+  }
+
+  const handlePinMessage = (msgId: string) => {
+    setMessages((prev) =>
+      prev.map((m) => (m.id === msgId ? { ...m, isPinned: !m.isPinned } : m))
+    )
+  }
 
   const simulateToolExecution = async (toolName: string) => {
     const toolId = String(Date.now())
@@ -441,7 +588,9 @@ Would you like me to elaborate on any of these points or perform additional anal
             <div>
               <div className="flex items-center gap-2">
                 <h3 className="font-semibold">Agentic Assistant</h3>
-                <Badge className="bg-green-500/20 text-green-600">Online</Badge>
+                <Badge className="bg-green-500/20 text-green-600 border-green-500/30 hover:bg-green-500 hover:text-white hover:border-green-500 transition-colors">
+                  Online
+                </Badge>
               </div>
               <p className="text-xs text-muted-foreground">
                 Claude 3.5 Sonnet • Tools Enabled
@@ -459,11 +608,62 @@ Would you like me to elaborate on any of these points or perform additional anal
                 {tokenUsage.budget.toLocaleString()}
               </span>
             </div>
-            <Button variant="ghost" size="icon">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setShowSettings(!showSettings)}
+              title="Settings"
+            >
               <Settings className="h-4 w-4" />
             </Button>
           </div>
         </div>
+
+        {/* Settings Panel */}
+        {showSettings && (
+          <div className="absolute top-14 right-4 z-50 w-80 bg-card border rounded-xl shadow-xl p-4 space-y-4 animate-in slide-in-from-top-2 duration-200">
+            <div className="flex items-center justify-between">
+              <h3 className="font-semibold">Settings</h3>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-6 w-6"
+                onClick={() => setShowSettings(false)}
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            </div>
+            <Separator />
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <span className="text-sm">Show thinking steps</span>
+                <Switch
+                  checked={showThinking}
+                  onCheckedChange={setShowThinking}
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Model</label>
+                <select className="w-full px-3 py-2 rounded-lg border bg-background text-sm">
+                  <option>Claude 3.5 Sonnet</option>
+                  <option>GPT-4o</option>
+                  <option>Gemini 2.0 Flash</option>
+                </select>
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Temperature</label>
+                <input
+                  type="range"
+                  min="0"
+                  max="1"
+                  step="0.1"
+                  defaultValue="0.7"
+                  className="w-full"
+                />
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Token Budget Bar */}
         <div className="px-4 py-2 border-b">
@@ -493,13 +693,13 @@ Would you like me to elaborate on any of these points or perform additional anal
         </div>
 
         {/* Messages */}
-        <ScrollArea className="flex-1 p-4" ref={scrollRef}>
+        <ScrollArea className="flex-1 px-6 py-4" ref={scrollRef}>
           <div className="space-y-6">
             {messages.map((msg) => (
               <div
                 key={msg.id}
                 className={cn(
-                  'flex gap-3',
+                  'flex gap-3 items-start',
                   msg.role === 'user' && 'flex-row-reverse'
                 )}
               >
@@ -508,7 +708,7 @@ Would you like me to elaborate on any of these points or perform additional anal
                   className={cn(
                     'w-8 h-8 shrink-0',
                     msg.role === 'assistant'
-                      ? 'bg-gradient-to-br from-violet-500 to-purple-600 text-white'
+                      ? 'bg-gradient-to-br from-violet-500 to-purple-600 text-white border-violet-500'
                       : 'bg-primary text-primary-foreground'
                   )}
                 />
@@ -594,22 +794,77 @@ Would you like me to elaborate on any of these points or perform additional anal
                   {/* Message Actions */}
                   {msg.role === 'assistant' && (
                     <div className="flex items-center gap-1">
-                      <Button variant="ghost" size="icon" className="h-7 w-7">
-                        <Copy className="h-3.5 w-3.5" />
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-7 w-7"
+                        onClick={() => handleCopyMessage(msg)}
+                        title="Copy message"
+                      >
+                        {copiedMessageId === msg.id ? (
+                          <Check className="h-3.5 w-3.5 text-green-500" />
+                        ) : (
+                          <Copy className="h-3.5 w-3.5" />
+                        )}
                       </Button>
-                      <Button variant="ghost" size="icon" className="h-7 w-7">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className={cn(
+                          'h-7 w-7',
+                          msg.feedback === 'up' && 'text-green-500'
+                        )}
+                        onClick={() => handleFeedback(msg.id, 'up')}
+                        title="Helpful"
+                      >
                         <ThumbsUp className="h-3.5 w-3.5" />
                       </Button>
-                      <Button variant="ghost" size="icon" className="h-7 w-7">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className={cn(
+                          'h-7 w-7',
+                          msg.feedback === 'down' && 'text-red-500'
+                        )}
+                        onClick={() => handleFeedback(msg.id, 'down')}
+                        title="Not helpful"
+                      >
                         <ThumbsDown className="h-3.5 w-3.5" />
                       </Button>
-                      <Button variant="ghost" size="icon" className="h-7 w-7">
-                        <RefreshCw className="h-3.5 w-3.5" />
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-7 w-7"
+                        onClick={handleRegenerateMessage}
+                        title="Regenerate"
+                        disabled={isStreaming}
+                      >
+                        <RefreshCw
+                          className={cn(
+                            'h-3.5 w-3.5',
+                            isStreaming && 'animate-spin'
+                          )}
+                        />
                       </Button>
-                      <Button variant="ghost" size="icon" className="h-7 w-7">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-7 w-7"
+                        onClick={() => handleCopyMessage(msg)}
+                        title="Share"
+                      >
                         <Forward className="h-3.5 w-3.5" />
                       </Button>
-                      <Button variant="ghost" size="icon" className="h-7 w-7">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className={cn(
+                          'h-7 w-7',
+                          msg.isPinned && 'text-primary'
+                        )}
+                        onClick={() => handlePinMessage(msg.id)}
+                        title={msg.isPinned ? 'Unpin' : 'Pin'}
+                      >
                         <Pin className="h-3.5 w-3.5" />
                       </Button>
                     </div>
@@ -623,7 +878,7 @@ Would you like me to elaborate on any of these points or perform additional anal
               <div className="flex gap-3">
                 <Avatar
                   fallback="AI"
-                  className="w-8 h-8 shrink-0 bg-gradient-to-br from-violet-500 to-purple-600 text-white"
+                  className="w-8 h-8 shrink-0 bg-gradient-to-br from-violet-500 to-purple-600 text-white border-violet-500"
                 />
                 <div className="flex-1 space-y-2">
                   {showThinking && thinkingSteps.length > 0 && (
@@ -695,19 +950,169 @@ Would you like me to elaborate on any of these points or perform additional anal
             <Button variant="ghost" size="icon" className="h-10 w-10 shrink-0">
               <Paperclip className="h-5 w-5" />
             </Button>
-            <div className="flex-1">
+            <div className="flex-1 relative">
               <Input
                 value={input}
-                onChange={(e) => setInput(e.target.value)}
+                onChange={(e) => {
+                  const newValue = e.target.value
+                  setInput(newValue)
+
+                  // Detect "/" or "@" triggers
+                  const lastChar = newValue[newValue.length - 1]
+                  const beforeLast = newValue[newValue.length - 2]
+
+                  if (lastChar === '/' && (!beforeLast || beforeLast === ' ')) {
+                    setShowAutocomplete(true)
+                    setAutocompleteType('command')
+                    setAutocompleteSearch('')
+                    setSelectedAutocompleteIndex(0)
+                  } else if (
+                    lastChar === '@' &&
+                    (!beforeLast || beforeLast === ' ')
+                  ) {
+                    setShowAutocomplete(true)
+                    setAutocompleteType('mention')
+                    setAutocompleteSearch('')
+                    setSelectedAutocompleteIndex(0)
+                  } else if (showAutocomplete) {
+                    // Extract search term after trigger
+                    const triggerChar =
+                      autocompleteType === 'command' ? '/' : '@'
+                    const lastTriggerIndex = newValue.lastIndexOf(triggerChar)
+                    if (lastTriggerIndex !== -1) {
+                      const searchTerm = newValue.slice(lastTriggerIndex + 1)
+                      if (searchTerm.includes(' ')) {
+                        setShowAutocomplete(false)
+                      } else {
+                        setAutocompleteSearch(searchTerm)
+                      }
+                    }
+                  }
+                }}
                 placeholder="Ask me anything or request a tool..."
                 className="h-10"
                 onKeyDown={(e) => {
-                  if (e.key === 'Enter' && !e.shiftKey) {
+                  if (showAutocomplete) {
+                    const filteredItems = (
+                      autocompleteType === 'command' ? commands : mentions
+                    ).filter(
+                      (item) =>
+                        item.name
+                          .toLowerCase()
+                          .includes(autocompleteSearch.toLowerCase()) ||
+                        item.desc
+                          .toLowerCase()
+                          .includes(autocompleteSearch.toLowerCase())
+                    )
+
+                    if (e.key === 'ArrowDown') {
+                      e.preventDefault()
+                      setSelectedAutocompleteIndex((prev) =>
+                        prev < filteredItems.length - 1 ? prev + 1 : prev
+                      )
+                    } else if (e.key === 'ArrowUp') {
+                      e.preventDefault()
+                      setSelectedAutocompleteIndex((prev) =>
+                        prev > 0 ? prev - 1 : 0
+                      )
+                    } else if (e.key === 'Enter' && !e.shiftKey) {
+                      e.preventDefault()
+                      const selectedItem =
+                        filteredItems[selectedAutocompleteIndex]
+                      if (selectedItem) {
+                        const triggerChar =
+                          autocompleteType === 'command' ? '/' : '@'
+                        const lastTriggerIndex = input.lastIndexOf(triggerChar)
+                        const newInput =
+                          input.slice(0, lastTriggerIndex) +
+                          triggerChar +
+                          selectedItem.name +
+                          ' '
+                        setInput(newInput)
+                        setShowAutocomplete(false)
+                      }
+                    } else if (e.key === 'Escape') {
+                      e.preventDefault()
+                      setShowAutocomplete(false)
+                    }
+                  } else if (e.key === 'Enter' && !e.shiftKey) {
                     e.preventDefault()
                     handleSend()
                   }
                 }}
               />
+
+              {/* Autocomplete Popup */}
+              {showAutocomplete && (
+                <div className="absolute bottom-full left-0 mb-2 w-full max-w-sm bg-card border rounded-lg shadow-xl p-2 z-50 animate-in slide-in-from-bottom-2 duration-200">
+                  <div className="text-xs text-muted-foreground px-2 py-1 mb-1">
+                    {autocompleteType === 'command' ? 'Commands' : 'Mentions'}
+                  </div>
+                  <div className="space-y-1 max-h-60 overflow-auto">
+                    {(autocompleteType === 'command' ? commands : mentions)
+                      .filter(
+                        (item) =>
+                          item.name
+                            .toLowerCase()
+                            .includes(autocompleteSearch.toLowerCase()) ||
+                          item.desc
+                            .toLowerCase()
+                            .includes(autocompleteSearch.toLowerCase())
+                      )
+                      .map((item, index) => (
+                        <button
+                          key={item.id}
+                          onClick={() => {
+                            const triggerChar =
+                              autocompleteType === 'command' ? '/' : '@'
+                            const lastTriggerIndex =
+                              input.lastIndexOf(triggerChar)
+                            const newInput =
+                              input.slice(0, lastTriggerIndex) +
+                              triggerChar +
+                              item.name +
+                              ' '
+                            setInput(newInput)
+                            setShowAutocomplete(false)
+                          }}
+                          onMouseEnter={() =>
+                            setSelectedAutocompleteIndex(index)
+                          }
+                          className={cn(
+                            'w-full flex items-center gap-2 px-2 py-1.5 rounded transition-colors text-left',
+                            index === selectedAutocompleteIndex
+                              ? 'bg-primary text-primary-foreground'
+                              : 'hover:bg-muted'
+                          )}
+                        >
+                          <item.icon
+                            className={cn(
+                              'h-4 w-4 shrink-0',
+                              index === selectedAutocompleteIndex
+                                ? 'text-primary-foreground'
+                                : 'text-muted-foreground'
+                            )}
+                          />
+                          <div className="flex-1 min-w-0">
+                            <div className="text-sm font-medium truncate">
+                              {item.name}
+                            </div>
+                            <div
+                              className={cn(
+                                'text-xs truncate',
+                                index === selectedAutocompleteIndex
+                                  ? 'text-primary-foreground/80'
+                                  : 'text-muted-foreground'
+                              )}
+                            >
+                              {item.desc}
+                            </div>
+                          </div>
+                        </button>
+                      ))}
+                  </div>
+                </div>
+              )}
             </div>
             <Button variant="ghost" size="icon" className="h-10 w-10 shrink-0">
               <Mic className="h-5 w-5" />
@@ -853,6 +1258,16 @@ Would you like me to elaborate on any of these points or perform additional anal
               variant="outline"
               size="sm"
               className="w-full justify-start gap-2"
+              onClick={() => {
+                const chatData = JSON.stringify(messages, null, 2)
+                const blob = new Blob([chatData], { type: 'application/json' })
+                const url = URL.createObjectURL(blob)
+                const a = document.createElement('a')
+                a.href = url
+                a.download = `chat-export-${new Date().toISOString()}.json`
+                a.click()
+                URL.revokeObjectURL(url)
+              }}
             >
               <Download className="h-4 w-4" />
               Export Chat
@@ -861,6 +1276,13 @@ Would you like me to elaborate on any of these points or perform additional anal
               variant="outline"
               size="sm"
               className="w-full justify-start gap-2"
+              onClick={() => {
+                const branchMessages = [...messages]
+                setMessages(branchMessages)
+                alert(
+                  'Conversation branched! You can now explore a different path.'
+                )
+              }}
             >
               <GitBranch className="h-4 w-4" />
               Branch Conversation
@@ -869,6 +1291,22 @@ Would you like me to elaborate on any of these points or perform additional anal
               variant="outline"
               size="sm"
               className="w-full justify-start gap-2"
+              onClick={async () => {
+                if (navigator.share) {
+                  try {
+                    await navigator.share({
+                      title: 'Chat Conversation',
+                      text: 'Check out this AI conversation',
+                      url: window.location.href,
+                    })
+                  } catch (err) {
+                    console.log('Share cancelled or not supported')
+                  }
+                } else {
+                  await navigator.clipboard.writeText(window.location.href)
+                  alert('Link copied to clipboard!')
+                }
+              }}
             >
               <Share className="h-4 w-4" />
               Share
@@ -877,6 +1315,12 @@ Would you like me to elaborate on any of these points or perform additional anal
               variant="outline"
               size="sm"
               className="w-full justify-start gap-2"
+              onClick={() => {
+                setMessages((prev) =>
+                  prev.map((m) => ({ ...m, isArchived: !m.isArchived }))
+                )
+                alert('Conversation archived!')
+              }}
             >
               <Archive className="h-4 w-4" />
               Archive
@@ -989,7 +1433,7 @@ export default function ChatPage() {
             </TabsTrigger>
           </TabsList>
           <TabsContent value="code" className="mt-0">
-            <CodeBlock
+            <CodeBlockDisplay
               code={sampleCode}
               language="typescript"
               showLineNumbers
@@ -1357,11 +1801,11 @@ function ChainOfThoughtDemo() {
       </CardHeader>
       {expanded && (
         <CardContent>
-          <div className="relative pl-6 space-y-4">
-            <div className="absolute left-[11px] top-2 bottom-2 w-0.5 bg-violet-500/30" />
+          <div className="relative pl-10 space-y-4">
+            <div className="absolute left-[19px] top-2 bottom-2 w-0.5 bg-violet-500/30" />
             {steps.map((step, i) => (
               <div key={step.id} className="relative flex items-start gap-3">
-                <div className="absolute left-[-13px] w-5 h-5 rounded-full flex items-center justify-center text-xs font-medium bg-violet-500 text-white">
+                <div className="absolute left-[-25px] w-6 h-6 rounded-full flex items-center justify-center text-xs font-medium bg-violet-500 text-white shadow-lg">
                   {i + 1}
                 </div>
                 <div className="flex-1 pt-0.5">
@@ -1527,7 +1971,7 @@ function QuickRepliesDemo() {
               key={i}
               variant="outline"
               size="sm"
-              className="rounded-full"
+              className="rounded-full hover:bg-primary hover:text-primary-foreground hover:border-primary transition-colors"
             >
               {reply}
             </Button>
@@ -1574,7 +2018,9 @@ function NotificationsDemo() {
             <Bell className="h-5 w-5" />
             Notifications
           </CardTitle>
-          <Badge className="bg-red-500">2</Badge>
+          <Badge className="bg-red-500 border-red-500 text-white hover:border-primary transition-colors">
+            2
+          </Badge>
         </div>
       </CardHeader>
       <CardContent className="space-y-2">
@@ -1606,27 +2052,26 @@ function NotificationsDemo() {
 // PERSONAS DEMO
 // ============================================================================
 function PersonasDemo() {
+  const [activePersonaId, setActivePersonaId] = useState(1)
+
   const personas = [
     {
       id: 1,
       name: 'Code Assistant',
       desc: 'Expert in programming',
       icon: Code,
-      active: true,
     },
     {
       id: 2,
       name: 'Writing Helper',
       desc: 'Creative writing & editing',
       icon: Edit3,
-      active: false,
     },
     {
       id: 3,
       name: 'Research Agent',
       desc: 'Deep research & analysis',
       icon: Search,
-      active: false,
     },
   ]
 
@@ -1639,33 +2084,35 @@ function PersonasDemo() {
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-2">
-        {personas.map((persona) => (
-          <div
-            key={persona.id}
-            className={cn(
-              'flex items-center gap-3 p-3 rounded-lg cursor-pointer transition-colors',
-              persona.active
-                ? 'bg-primary/10 border border-primary/30'
-                : 'hover:bg-muted'
-            )}
-          >
+        {personas.map((persona) => {
+          const isActive = persona.id === activePersonaId
+          return (
             <div
+              key={persona.id}
+              onClick={() => setActivePersonaId(persona.id)}
               className={cn(
-                'w-10 h-10 rounded-lg flex items-center justify-center',
-                persona.active
-                  ? 'bg-primary text-primary-foreground'
-                  : 'bg-muted'
+                'flex items-center gap-3 p-3 rounded-lg cursor-pointer transition-colors',
+                isActive
+                  ? 'bg-primary/10 border border-primary/30'
+                  : 'hover:bg-muted'
               )}
             >
-              <persona.icon className="h-5 w-5" />
+              <div
+                className={cn(
+                  'w-10 h-10 rounded-lg flex items-center justify-center',
+                  isActive ? 'bg-primary text-primary-foreground' : 'bg-muted'
+                )}
+              >
+                <persona.icon className="h-5 w-5" />
+              </div>
+              <div className="flex-1">
+                <p className="font-medium text-sm">{persona.name}</p>
+                <p className="text-xs text-muted-foreground">{persona.desc}</p>
+              </div>
+              {isActive && <Badge>Active</Badge>}
             </div>
-            <div className="flex-1">
-              <p className="font-medium text-sm">{persona.name}</p>
-              <p className="text-xs text-muted-foreground">{persona.desc}</p>
-            </div>
-            {persona.active && <Badge>Active</Badge>}
-          </div>
-        ))}
+          )
+        })}
       </CardContent>
     </Card>
   )
@@ -1765,6 +2212,7 @@ function RetryLogicDemo() {
               <span className="text-sm font-medium">Request Status</span>
               <Badge
                 className={cn(
+                  'hover:bg-primary hover:text-primary-foreground transition-colors cursor-pointer',
                   status === 'idle' && 'bg-gray-500/20 text-gray-600',
                   status === 'retrying' && 'bg-yellow-500/20 text-yellow-600',
                   status === 'success' && 'bg-green-500/20 text-green-600',
@@ -1918,12 +2366,76 @@ function ModelFallbackDemo() {
 // DATE PICKER DEMO
 // ============================================================================
 function DatePickerDemo() {
-  const [selectedDate, setSelectedDate] = useState<Date | null>(new Date())
+  const [selectedDate, setSelectedDate] = useState<Date>(new Date())
+  const [currentMonth, setCurrentMonth] = useState(new Date())
   const days = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa']
-  const currentMonth = new Date().toLocaleString('default', {
+
+  const monthName = currentMonth.toLocaleString('default', {
     month: 'long',
     year: 'numeric',
   })
+
+  // Generate calendar days
+  const getDaysInMonth = () => {
+    const year = currentMonth.getFullYear()
+    const month = currentMonth.getMonth()
+    const firstDay = new Date(year, month, 1).getDay()
+    const daysInMonth = new Date(year, month + 1, 0).getDate()
+
+    const days = []
+
+    // Add empty cells for days before month starts
+    for (let i = 0; i < firstDay; i++) {
+      days.push(null)
+    }
+
+    // Add actual days
+    for (let i = 1; i <= daysInMonth; i++) {
+      days.push(i)
+    }
+
+    return days
+  }
+
+  const handlePrevMonth = () => {
+    setCurrentMonth(
+      new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1)
+    )
+  }
+
+  const handleNextMonth = () => {
+    setCurrentMonth(
+      new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1)
+    )
+  }
+
+  const handleDateClick = (day: number) => {
+    const newDate = new Date(
+      currentMonth.getFullYear(),
+      currentMonth.getMonth(),
+      day
+    )
+    setSelectedDate(newDate)
+  }
+
+  const isSelectedDate = (day: number | null) => {
+    if (!day) return false
+    return (
+      selectedDate.getDate() === day &&
+      selectedDate.getMonth() === currentMonth.getMonth() &&
+      selectedDate.getFullYear() === currentMonth.getFullYear()
+    )
+  }
+
+  const isToday = (day: number | null) => {
+    if (!day) return false
+    const today = new Date()
+    return (
+      today.getDate() === day &&
+      today.getMonth() === currentMonth.getMonth() &&
+      today.getFullYear() === currentMonth.getFullYear()
+    )
+  }
 
   return (
     <Card>
@@ -1936,11 +2448,11 @@ function DatePickerDemo() {
       <CardContent>
         <div className="p-3 border rounded-lg">
           <div className="flex items-center justify-between mb-4">
-            <Button variant="ghost" size="icon">
+            <Button variant="ghost" size="icon" onClick={handlePrevMonth}>
               <ChevronUp className="h-4 w-4 rotate-[-90deg]" />
             </Button>
-            <span className="font-medium">{currentMonth}</span>
-            <Button variant="ghost" size="icon">
+            <span className="font-medium">{monthName}</span>
+            <Button variant="ghost" size="icon" onClick={handleNextMonth}>
               <ChevronUp className="h-4 w-4 rotate-90" />
             </Button>
           </div>
@@ -1952,13 +2464,20 @@ function DatePickerDemo() {
             ))}
           </div>
           <div className="grid grid-cols-7 gap-1 text-center text-sm">
-            {Array.from({ length: 31 }, (_, i) => i + 1).map((day) => (
+            {getDaysInMonth().map((day, index) => (
               <button
-                key={day}
+                key={index}
+                onClick={() => day && handleDateClick(day)}
+                disabled={!day}
                 className={cn(
-                  'py-2 rounded-lg hover:bg-muted transition-colors',
-                  day === new Date().getDate() &&
-                    'bg-primary text-primary-foreground'
+                  'py-2 rounded-lg transition-colors',
+                  day && 'hover:bg-muted cursor-pointer',
+                  !day && 'invisible',
+                  isSelectedDate(day) &&
+                    'bg-primary text-primary-foreground hover:bg-primary/90',
+                  isToday(day) &&
+                    !isSelectedDate(day) &&
+                    'border border-primary'
                 )}
               >
                 {day}
@@ -2052,6 +2571,26 @@ export default function ChatPage() {
         icon={MessageSquare}
         badge="45+ Components"
       />
+
+      {/* Demo Notice Banner */}
+      <div className="mb-6 rounded-lg border border-amber-500/30 bg-amber-500/10 p-4">
+        <div className="flex items-start gap-3">
+          <div className="rounded-full bg-amber-500/20 p-1.5">
+            <Sparkles className="h-4 w-4 text-amber-600 dark:text-amber-400" />
+          </div>
+          <div className="flex-1">
+            <h3 className="font-semibold text-sm text-amber-900 dark:text-amber-100 mb-1">
+              Interactive Demo & Example Showcase
+            </h3>
+            <p className="text-sm text-amber-800 dark:text-amber-200">
+              This page demonstrates UI components and interaction patterns.
+              Some features show simulated data and behaviors for demonstration
+              purposes. Click and interact with components to see how they work
+              in a real application.
+            </p>
+          </div>
+        </div>
+      </div>
 
       <Tabs defaultValue="agentic" className="w-full">
         <TabsList className="mb-8 flex-wrap h-auto gap-2 p-1 glass-panel">

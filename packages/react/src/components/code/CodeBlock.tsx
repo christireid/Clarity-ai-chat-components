@@ -35,6 +35,7 @@ let shikiModule: {
 
 let shikiImportError: Error | null = null
 let shikiExplicitlyDisabled = false
+let shikiLoadPromise: Promise<void> | null = null
 
 // Check if syntax highlighting is explicitly disabled via feature flag
 if (isFeatureDisabled('syntax-highlighting')) {
@@ -45,19 +46,25 @@ if (isFeatureDisabled('syntax-highlighting')) {
     )
   }
 } else {
-  // Only try to import if not explicitly disabled
-  try {
-    shikiModule = require('shiki')
-  } catch (err) {
-    shikiImportError =
-      err instanceof Error ? err : new Error('Failed to load shiki')
-    if (typeof window === 'undefined') {
-      // Only log on server to avoid spamming browser console
-      logger.warn(
-        'shiki peer dependency not found. CodeBlock will use basic syntax highlighting. Install with: npm install shiki'
-      )
-    }
-  }
+  // Use dynamic import for better Next.js/ESM compatibility
+  shikiLoadPromise = import('shiki')
+    .then((mod) => {
+      shikiModule = {
+        codeToHtml: mod.codeToHtml,
+        BundledLanguage: mod.BundledLanguage,
+        BundledTheme: mod.BundledTheme,
+      }
+    })
+    .catch((err) => {
+      shikiImportError =
+        err instanceof Error ? err : new Error('Failed to load shiki')
+      if (typeof window === 'undefined') {
+        // Only log on server to avoid spamming browser console
+        logger.warn(
+          'shiki peer dependency not found. CodeBlock will use basic syntax highlighting. Install with: npm install shiki'
+        )
+      }
+    })
 }
 
 type BundledLanguage = string
@@ -316,6 +323,15 @@ const CodeBlockComponent = React.memo<CodeBlockProps>(function CodeBlock({
     async function highlight() {
       setIsLoading(true)
       setError(null)
+
+      // Wait for shiki to load if it's still loading
+      if (shikiLoadPromise) {
+        try {
+          await shikiLoadPromise
+        } catch {
+          // Error already captured in shikiImportError
+        }
+      }
 
       // Check if shiki is available
       if (!shikiModule?.codeToHtml) {
