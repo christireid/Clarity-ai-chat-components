@@ -28,6 +28,9 @@ import {
   Copy,
   LayoutDashboard,
   Sparkles,
+  GraduationCap,
+  Globe,
+  Blocks,
 } from 'lucide-react'
 import { useState, useEffect } from 'react'
 
@@ -189,6 +192,30 @@ const categories: NavCategory[] = [
   },
 ]
 
+const advancedDemos: NavCategory[] = [
+  {
+    name: 'Library Learning Hub',
+    href: '/advanced-demos/library-learning-hub',
+    icon: <GraduationCap className="h-4 w-4" />,
+    description: 'RAG-powered library tutor',
+    componentCount: 35,
+  },
+  {
+    name: 'Deep Research',
+    href: '/advanced-demos/deep-research-assistant',
+    icon: <Globe className="h-4 w-4" />,
+    description: 'Research with MCP & sources',
+    componentCount: 40,
+  },
+  {
+    name: 'Artifact Studio',
+    href: '/advanced-demos/artifact-studio',
+    icon: <Blocks className="h-4 w-4" />,
+    description: 'Claude-style artifact creation',
+    componentCount: 38,
+  },
+]
+
 export function Sidebar() {
   const pathname = usePathname()
   const [collapsed, setCollapsed] = useState(false)
@@ -210,7 +237,7 @@ export function Sidebar() {
   const totalComponents = categories.reduce(
     (acc, cat) => acc + cat.componentCount,
     0
-  )
+  ) + advancedDemos.reduce((acc, cat) => acc + cat.componentCount, 0)
 
   return (
     <aside
@@ -279,6 +306,53 @@ export function Sidebar() {
                           )}
                         >
                           {category.componentCount}
+                        </span>
+                      )}
+                    </div>
+                  )}
+                </Link>
+              </li>
+            )
+          })}
+        </ul>
+
+        {/* Advanced Demos Section */}
+        {!collapsed && (
+          <div className="mt-4 pt-4 border-t border-border/50">
+            <p className="px-3 py-1.5 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+              Advanced Demos
+            </p>
+          </div>
+        )}
+        <ul className="space-y-1 mt-1">
+          {advancedDemos.map((demo) => {
+            const isActive = pathname === demo.href
+            return (
+              <li key={demo.href}>
+                <Link
+                  href={demo.href}
+                  className={cn(
+                    'flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors',
+                    isActive
+                      ? 'bg-gradient-to-r from-violet-600 to-purple-600 text-white'
+                      : 'hover:bg-muted text-muted-foreground hover:text-foreground'
+                  )}
+                  title={collapsed ? demo.name : undefined}
+                >
+                  {demo.icon}
+                  {!collapsed && (
+                    <div className="flex-1 flex items-center justify-between">
+                      <span>{demo.name}</span>
+                      {demo.componentCount > 0 && (
+                        <span
+                          className={cn(
+                            'text-xs px-1.5 py-0.5 rounded',
+                            isActive
+                              ? 'bg-white/20'
+                              : 'bg-violet-500/20 text-violet-400'
+                          )}
+                        >
+                          {demo.componentCount}
                         </span>
                       )}
                     </div>
