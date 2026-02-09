@@ -14,16 +14,16 @@
     "@clarity-chat/types": "workspace:*",
     "framer-motion": "^12.23.25",
     "jszip": "^3.10.0",
-    "lucide-react": "^0.500.0",
+    "lucide-react": "^0.563.0",
     "prismjs": "^1.29.0",
-    "react": "^19.2.0",
-    "react-dom": "^19.2.0",
-    "shiki": "^3.0.0",
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4",
+    "shiki": "^3.22.0",
     "zod": "^3.24.0"
   },
   "devDependencies": {
-    "@types/react": "^19.0.0",
-    "@types/react-dom": "^19.0.0",
+    "@types/react": "^19.2.13",
+    "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^5.1.1",
     "typescript": "^5.9.3",
     "vite": "^7.2.6"
