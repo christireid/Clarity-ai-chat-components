@@ -89,7 +89,7 @@ jobs:
       # ============================================
       - name: Harden Runner
         if: ${{ inputs.enable-harden-runner }}
-        uses: step-security/harden-runner@c6295a65d1254861815972266d5933fd6e532bdf # v2.11.1
+        uses: step-security/harden-runner@5ef0c079ce82195b2a36a210272d6b661572d83e # v2.14.2
         with:
           egress-policy: audit
           disable-sudo: true
@@ -163,7 +163,7 @@ jobs:
       # ============================================
       - name: Setup Turbo Remote Cache
         if: ${{ !inputs.skip-cache }}
-        uses: rharkor/caching-for-turbo@cda201ff2b32699a2ae9f59704db029e3dde4fbd # v2.3.5
+        uses: rharkor/caching-for-turbo@0abc2381e688c4d2832f0665a68a01c6e82f0d6c # v2.3.11
 
       # ============================================
       # RUN: Custom command (if provided)
