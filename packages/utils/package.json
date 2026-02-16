@@ -112,7 +112,7 @@
     "@types/node": "^22.10.5",
     "tsup": "^8.5.1",
     "typescript": "^5.9.3",
-    "vitest": "^4.0.15"
+    "vitest": "^4.0.18"
   },
   "engines": {
     "node": ">=20.0.0"
