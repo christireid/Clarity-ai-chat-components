@@ -23,7 +23,7 @@
     "@storybook/test": "^8.6.15",
     "chromatic": "^11.25.2",
     "serve": "^14.2.4",
-    "storybook": "^8.6.15",
+    "storybook": "^10.2.8",
     "storybook-dark-mode": "^4.0.2"
   },
   "dependencies": {
