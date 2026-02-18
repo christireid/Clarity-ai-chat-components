@@ -2,10 +2,10 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "version": 2,
   "name": "clarity-chat-docs",
-  "buildCommand": "cd apps/docs && npm install && npm run build",
+  "buildCommand": "cd apps/docs && pnpm install && pnpm run build",
   "outputDirectory": "apps/docs/.next",
-  "devCommand": "cd apps/docs && npm run dev",
-  "installCommand": "npm install",
+  "devCommand": "cd apps/docs && pnpm run dev",
+  "installCommand": "pnpm install",
   "framework": "nextjs",
   "builds": [
     {

@@ -2,9 +2,13 @@
   "name": "@clarity-chat/license",
   "version": "1.0.0",
   "description": "License validation for Clarity Chat Pro - AI Chat Component Library",
-  "author": "Code & Clarity <hello@codeandclarity.dev>",
+  "author": {
+    "name": "Code & Clarity",
+    "email": "hello@codeclarity.ai",
+    "url": "https://codeclarity.ai"
+  },
   "license": "MIT",
-  "homepage": "https://claritychat.dev",
+  "homepage": "https://github.com/christireid/Clarity-ai-chat-components#readme",
   "repository": {
     "type": "git",
     "url": "https://github.com/christireid/Clarity-ai-chat-components.git",
@@ -77,7 +81,6 @@
     "vitest": "^3.0.0"
   },
   "publishConfig": {
-    "access": "restricted",
-    "registry": "https://npm.pkg.github.com"
+    "access": "public"
   }
 }

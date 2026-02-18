@@ -215,4 +215,4 @@ For large datasets:
 
 ## 📄 License
 
-MIT © [Code & Clarity](https://codeandclarity.com)
+MIT © [Code & Clarity](https://codeclarity.ai)

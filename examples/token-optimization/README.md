@@ -192,4 +192,4 @@ const COST_PER_TOKEN = {
 
 ## 📄 License
 
-MIT © [Code & Clarity](https://codeandclarity.com)
+MIT © [Code & Clarity](https://codeclarity.ai)

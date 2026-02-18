@@ -432,4 +432,4 @@ Embeddings require an OpenAI API key. Set `OPENAI_API_KEY` in your `.env.local` 
 
 ## 📄 License
 
-MIT © [Code & Clarity](https://codeandclarity.com)
+MIT © [Code & Clarity](https://codeclarity.ai)

@@ -483,8 +483,8 @@ Ensure author info is appropriate for public release:
 ```json
 "author": {
   "name": "Code & Clarity",
-  "email": "hello@codeandclarity.com",
-  "url": "https://codeandclarity.com"
+  "email": "hello@codeclarity.ai",
+  "url": "https://codeclarity.ai"
 }
 ```
 

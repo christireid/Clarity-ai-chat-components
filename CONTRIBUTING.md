@@ -14,7 +14,7 @@ Whether you're fixing a typo, adding a feature, or sharing an idea, every contri
 |-------------|----------|
 | Report a bug | [GitHub Issues](https://github.com/christireid/Clarity-ai-chat-components/issues/new?template=bug_report.md) |
 | Suggest a feature | [GitHub Discussions](https://github.com/christireid/Clarity-ai-chat-components/discussions/new?category=ideas) |
-| Ask a question | [Discord](https://discord.gg/clarity-chat) or [Discussions](https://github.com/christireid/Clarity-ai-chat-components/discussions) |
+| Ask a question | [GitHub Discussions](https://github.com/christireid/Clarity-ai-chat-components/discussions) |
 | Fix a bug | [See Development Setup](#development-setup) |
 | Add a feature | [See Pull Request Process](#pull-request-process) |
 
@@ -746,10 +746,9 @@ pnpm test -- --verbose
 
 ### Resources
 
-- **[Documentation](https://docs.clarity-chat.dev)** - Full docs
-- **[Discord](https://discord.gg/clarity-chat)** - Community chat
+- **[Documentation](./docs/getting-started.md)** - Getting started guide
 - **[GitHub Discussions](https://github.com/christireid/Clarity-ai-chat-components/discussions)** -
-  Q&A
+  Q&A and community chat
 - **[GitHub Issues](https://github.com/christireid/Clarity-ai-chat-components/issues)** - Bug
   reports
 
@@ -788,5 +787,4 @@ helping make Clarity Chat better!
 
 ---
 
-**Questions?** Join us on [Discord](https://discord.gg/clarity-chat) or start a
-[Discussion](https://github.com/christireid/Clarity-ai-chat-components/discussions)!
+**Questions?** Start a [Discussion](https://github.com/christireid/Clarity-ai-chat-components/discussions)!

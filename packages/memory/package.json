@@ -1,6 +1,6 @@
 {
   "name": "@clarity-chat/memory",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "Framework-agnostic AI memory and context management utilities",
   "type": "module",
   "main": "./dist/index.cjs",
@@ -48,8 +48,8 @@
   ],
   "author": {
     "name": "Code & Clarity",
-    "email": "hello@codeandclarity.com",
-    "url": "https://codeandclarity.com"
+    "email": "hello@codeclarity.ai",
+    "url": "https://codeclarity.ai"
   },
   "license": "MIT",
   "repository": {

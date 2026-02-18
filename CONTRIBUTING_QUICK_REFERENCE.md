@@ -454,8 +454,7 @@ test('has no a11y violations', async () => {
 - **Documentation site**: Check docs first
 - **GitHub Issues**: Search existing issues
 - **Discussions**: Ask questions
-- **Discord**: Real-time help
-- **Email**: hello@codeandclarity.com
+- **Email**: hello@codeclarity.ai
 
 ---
 

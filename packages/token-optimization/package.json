@@ -119,16 +119,20 @@
     "security",
     "performance"
   ],
-  "author": "Clarity Chat Team",
+  "author": {
+    "name": "Code & Clarity",
+    "email": "hello@codeclarity.ai",
+    "url": "https://codeclarity.ai"
+  },
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/clarity-ai/token-optimization.git",
+    "url": "https://github.com/christireid/Clarity-ai-chat-components.git",
     "directory": "packages/token-optimization"
   },
-  "homepage": "https://github.com/clarity-ai/token-optimization#readme",
+  "homepage": "https://github.com/christireid/Clarity-ai-chat-components#readme",
   "bugs": {
-    "url": "https://github.com/clarity-ai/token-optimization/issues"
+    "url": "https://github.com/christireid/Clarity-ai-chat-components/issues"
   },
   "publishConfig": {
     "access": "public"

@@ -6,8 +6,8 @@
 
 <h1>Build Beautiful AI Chat Interfaces<br/>in Minutes, Not Months</h1>
 
-<p><strong>The most complete, production-ready AI chat component library for React.</strong><br/>
-249K+ lines of code. 155+ components. 70+ hooks. Trusted by developers worldwide.</p>
+<p><strong>A comprehensive AI chat component library for React.</strong><br/>
+150+ components. 70+ hooks. TypeScript-first. Accessibility-first.</p>
 
 <p>
   <a href="https://github.com/christireid/Clarity-ai-chat-components/stargazers"><img src="https://img.shields.io/github/stars/christireid/Clarity-ai-chat-components?style=social" alt="GitHub Stars" /></a>
@@ -20,7 +20,7 @@
   <a href="#-quick-start" aria-label="Jump to Quick Start section"><strong>Quick Start</strong></a> •
   <a href="./docs/getting-started.md" aria-label="View full documentation"><strong>Documentation</strong></a> •
   <a href="./examples" aria-label="Browse code examples"><strong>Examples</strong></a> •
-  <a href="https://discord.gg/clarity-chat" aria-label="Join Discord community"><strong>Discord</strong></a>
+  <a href="https://github.com/christireid/Clarity-ai-chat-components/discussions" aria-label="Join community discussions"><strong>Discussions</strong></a>
 </p>
 
 </div>
@@ -204,11 +204,10 @@ export default function App() {
 
 #### 🤖 **AI Quality**
 
-- **+16% response quality**
-- **-78% hallucination rate** (18% → 4%)
-- Chain-of-Thought for complex queries
-- Citation-grounded responses (92% coverage)
-- Hallucination detection (avg confidence: 0.87)
+
+- Chain-of-Thought support for complex queries
+- Citation-grounded response patterns
+- Hallucination detection hooks
 
 #### 📚 **Documentation**
 
@@ -337,7 +336,7 @@ new grouped props API that reduces complexity by 73%.
 
 #### 🎨 **Components**
 
-- **200+** React components
+- **150+** React components
 - **15** theme presets
 - **150+** animations
 - Virtual scrolling
@@ -351,7 +350,7 @@ new grouped props API that reduces complexity by 73%.
 
 #### ⚙️ **Hooks & Logic**
 
-- **95+** custom hooks
+- **70+** custom hooks
 - **🚀 Ultra-simple APIs** - `chat()`, `ChatPresets.*`
 - **🛠️ Development helpers** - setup wizards, validation
 - **🔄 useChatSync** - Cross-device synchronization
@@ -387,8 +386,8 @@ new grouped props API that reduces complexity by 73%.
 
 <div align="center">
 
-**📊 300K+ Lines of Code** • **🧪 450+ Tests (85%+ Coverage)** • **📚 60+ Documentation Guides** •
-**🎯 100% TypeScript** • **🚀 7 API Entry Points**
+**🧪 450+ Tests** • **📚 60+ Documentation Guides** •
+**🎯 100% TypeScript** • **🚀 Tree-shakeable Exports**
 
 </div>
 
@@ -733,7 +732,7 @@ Battery-aware streaming, performance optimization, analytics
 
 <br />
 
-## 🏆 How We Compare
+## 🏆 Feature Comparison
 
 <table>
 <thead>
@@ -741,25 +740,24 @@ Battery-aware streaming, performance optimization, analytics
 <th>Feature</th>
 <th><strong>Clarity Chat</strong></th>
 <th>Vercel AI SDK</th>
+<th>assistant-ui</th>
 <th>Stream Chat</th>
-<th>Sendbird</th>
 </tr>
 </thead>
 <tbody>
-<tr><td>Setup Time</td><td><strong>3 minutes</strong></td><td>~15 min</td><td>~30 min</td><td>~10 min</td></tr>
-<tr><td>Components</td><td><strong>155+</strong></td><td>~20</td><td>~50</td><td>~40</td></tr>
-<tr><td>React Hooks</td><td><strong>70+</strong></td><td>~5</td><td>~10</td><td>~8</td></tr>
-<tr><td>Token Optimization</td><td><strong>✅ 60-90% savings*</strong></td><td>❌</td><td>❌</td><td>❌</td></tr>
+<tr><td>Focus</td><td><strong>Full UI kit + infra</strong></td><td>AI primitives</td><td>Chat UI components</td><td>Chat infrastructure</td></tr>
+<tr><td>Components</td><td><strong>150+</strong></td><td>~20</td><td>~40</td><td>~50</td></tr>
+<tr><td>React Hooks</td><td><strong>70+</strong></td><td>~5</td><td>~15</td><td>~10</td></tr>
+<tr><td>Token Optimization</td><td><strong>Built-in</strong></td><td>❌</td><td>❌</td><td>❌</td></tr>
 <tr><td>Memory/Context</td><td><strong>Built-in</strong></td><td>Manual</td><td>Manual</td><td>Manual</td></tr>
-<tr><td>RAG Pipeline</td><td><strong>✅</strong></td><td>❌</td><td>❌</td><td>❌</td></tr>
+<tr><td>Accessibility</td><td><strong>WCAG AAA target</strong></td><td>Basic</td><td>WCAG AA</td><td>WCAG AA</td></tr>
 <tr><td>Preset System</td><td><strong>6 presets</strong></td><td>❌</td><td>❌</td><td>❌</td></tr>
-<tr><td>Accessibility</td><td><strong>WCAG AAA</strong></td><td>Basic</td><td>WCAG AA</td><td>WCAG AA</td></tr>
-<tr><td>Bundle Size (core)</td><td><strong>~30KB</strong></td><td>~15KB</td><td>~200KB</td><td>~150KB</td></tr>
-<tr><td>License</td><td><strong>MIT</strong></td><td>MIT</td><td>Commercial</td><td>Commercial</td></tr>
+<tr><td>License</td><td><strong>MIT</strong></td><td>MIT</td><td>MIT</td><td>Commercial</td></tr>
+<tr><td>Maturity</td><td>Pre-release</td><td><strong>Mature</strong></td><td>Growing</td><td><strong>Mature</strong></td></tr>
 </tbody>
 </table>
 
-<sub>\*Based on provider prompt caching specifications. Actual savings may vary.</sub>
+<sub>Token optimization savings depend on provider prompt caching hit rates and usage patterns.</sub>
 
 <br />
 
@@ -805,8 +803,8 @@ const chat = useClarityChatApp({ api: '/api/chat' })
 
 **What you get:**
 
-- 200+ UI components (messages, inputs, bubbles, etc.)
-- 95+ hooks (`useClarityChatApp`, `useMessages`, `useStreaming`, etc.)
+- 150+ UI components (messages, inputs, bubbles, etc.)
+- 70+ hooks (`useClarityChatApp`, `useMessages`, `useStreaming`, etc.)
 - Built-in themes and animations
 - Memory, token optimization, and safety features (via re-exports)
 - Full accessibility (WCAG AAA)
@@ -1068,15 +1066,14 @@ Error handling?
 
 <div align="center">
 
-**Join developers worldwide building with Clarity Chat**
+**Get involved with Clarity Chat**
 
 <p>
-  <a href="https://discord.gg/clarity-chat"><img src="https://img.shields.io/badge/Discord-Join%20Community-5865F2?style=for-the-badge&logo=discord&logoColor=white" alt="Discord" /></a>
   <a href="https://github.com/christireid/Clarity-ai-chat-components/discussions"><img src="https://img.shields.io/badge/GitHub-Discussions-181717?style=for-the-badge&logo=github&logoColor=white" alt="Discussions" /></a>
   <a href="https://github.com/christireid/Clarity-ai-chat-components"><img src="https://img.shields.io/badge/GitHub-Star-181717?style=for-the-badge&logo=github&logoColor=white" alt="GitHub" /></a>
 </p>
 
-**[📧 Email Support](mailto:support@codeclarity.ai)** •
+**[📧 Email](mailto:hello@codeclarity.ai)** •
 **[🐛 Report Issues](https://github.com/christireid/Clarity-ai-chat-components/issues)** •
 **[💡 Feature Requests](https://github.com/christireid/Clarity-ai-chat-components/discussions)**
 
@@ -1094,12 +1091,12 @@ Error handling?
 
 <table>
 <tr>
-<td align="center"><strong>4,935</strong><br/>Files</td>
-<td align="center"><strong>249K+</strong><br/>Lines of Code</td>
-<td align="center"><strong>2,767</strong><br/>Commits</td>
-<td align="center"><strong>80%+</strong><br/>Test Coverage</td>
+<td align="center"><strong>150+</strong><br/>Components</td>
+<td align="center"><strong>70+</strong><br/>Hooks</td>
+<td align="center"><strong>450+</strong><br/>Tests</td>
 <td align="center"><strong>100%</strong><br/>TypeScript</td>
-<td align="center"><strong>~30KB</strong><br/>Core Bundle</td>
+<td align="center"><strong>16</strong><br/>Packages</td>
+<td align="center"><strong>MIT</strong><br/>License</td>
 </tr>
 </table>
 
@@ -1126,7 +1123,7 @@ We welcome contributions! Please read our [Contributing Guide](./CONTRIBUTING.md
 
 ## 📄 License
 
-MIT © 2024 [Code & Clarity](https://codeclarity.ai)
+MIT © 2025-2026 [Code & Clarity](https://codeclarity.ai)
 
 ---
 
@@ -1140,7 +1137,7 @@ MIT © 2024 [Code & Clarity](https://codeclarity.ai)
   <a href="https://github.com/christireid/Clarity-ai-chat-components"><strong>⭐ Star on GitHub</strong></a> •
   <a href="./docs/getting-started.md"><strong>📚 Read the Docs</strong></a> •
   <a href="./examples"><strong>🎯 Browse Examples</strong></a> •
-  <a href="https://discord.gg/clarity-chat"><strong>💬 Join Discord</strong></a>
+  <a href="https://github.com/christireid/Clarity-ai-chat-components/discussions"><strong>💬 Discussions</strong></a>
 </p>
 
 <sub>Made with [React](https://react.dev) • [TypeScript](https://www.typescriptlang.org) •

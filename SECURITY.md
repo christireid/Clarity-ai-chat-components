@@ -17,7 +17,7 @@ We take security vulnerabilities seriously. If you discover a security issue, pl
 
 Instead, please report security vulnerabilities by emailing:
 
-**security@codeandclarity.com**
+**hello@codeclarity.ai**
 
 ### What to Include
 
@@ -55,9 +55,9 @@ When reporting a vulnerability, please include:
 
 Clarity Chat includes built-in protections against common AI security threats:
 
-- **Prompt Injection Detection**: Multi-layered detection system (90%+ detection rate)
-- **Jailbreak Prevention**: Advanced prevention techniques (<1% success rate)
-- **PII Detection & Redaction**: GDPR/HIPAA compliant personal data handling
+- **Prompt Injection Detection**: Multi-layered detection system with configurable sensitivity
+- **Jailbreak Prevention**: Configurable prevention techniques
+- **PII Detection & Redaction**: Personal data detection and redaction utilities
 - **Content Filtering**: Configurable content moderation
 - **Rate Limiting**: Protection against abuse
 
@@ -114,7 +114,7 @@ We follow a coordinated disclosure process:
 Security advisories will be published on:
 
 - [GitHub Security Advisories](https://github.com/christireid/Clarity-ai-chat-components/security/advisories)
-- Our [security mailing list](https://codeandclarity.com/security-updates)
+- Our [GitHub Discussions](https://github.com/christireid/Clarity-ai-chat-components/discussions)
 
 ## Bug Bounty
 
@@ -122,6 +122,6 @@ We currently do not have a formal bug bounty program. However, we deeply appreci
 
 ## Contact
 
-- **Security Issues**: security@codeandclarity.com
-- **General Support**: support@codeandclarity.com
-- **Enterprise Inquiries**: enterprise@codeandclarity.com
+- **Security Issues**: hello@codeclarity.ai
+- **General Support**: hello@codeclarity.ai
+- **GitHub Issues**: https://github.com/christireid/Clarity-ai-chat-components/issues

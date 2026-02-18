@@ -192,15 +192,15 @@ Required author fields:
 ```json
 "author": {
   "name": "Code & Clarity",
-  "email": "hello@codeandclarity.com",
-  "url": "https://codeandclarity.com"
+  "email": "hello@codeclarity.ai",
+  "url": "https://codeclarity.ai"
 }
 ```
 
 - [ ] All packages have author field
 - [ ] Author name is "Code & Clarity"
-- [ ] Author email is "hello@codeandclarity.com"
-- [ ] Author URL is "https://codeandclarity.com"
+- [ ] Author email is "hello@codeclarity.ai"
+- [ ] Author URL is "https://codeclarity.ai"
 
 **Status**: Completed in Task 3.1
 

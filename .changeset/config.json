@@ -7,9 +7,9 @@
   "commit": false,
   "fixed": [],
   "linked": [
-    ["@clarity-chat/react", "@clarity-chat/primitives", "@clarity-chat/types"]
+    ["@clarity-chat/react", "@clarity-chat/primitives", "@clarity-chat/types", "@clarity-chat/utils", "@clarity-chat/memory", "@clarity-chat/error-handling", "@clarity-chat/token-optimization"]
   ],
-  "access": "restricted",
+  "access": "public",
   "baseBranch": "main",
   "updateInternalDependencies": "patch",
   "ignore": []

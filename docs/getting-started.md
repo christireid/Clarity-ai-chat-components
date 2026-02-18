@@ -1,6 +1,6 @@
 # Getting Started with Clarity Chat
 
-Build a production-ready AI chat interface in under 5 minutes.
+Build an AI chat interface in under 3 minutes.
 
 ---
 
@@ -10,29 +10,13 @@ Build a production-ready AI chat interface in under 5 minutes.
 | ----------- | ------------------------------------------------------------- |
 | React       | 18+ or 19                                                     |
 | Node.js     | 20+                                                           |
-| License Key | [Get one at claritychat.dev](https://claritychat.dev/pricing) |
+| License Key | Optional for core features (required for Pro/Enterprise) |
 
 ---
 
 ## Installation
 
-Clarity Chat is distributed via GitHub Packages. You'll need to configure npm once, then install
-normally.
-
-### Step 1: Configure npm for GitHub Packages (One-time)
-
-```bash
-# Set the registry for @clarity-chat scope
-npm config set @clarity-chat:registry https://npm.pkg.github.com
-
-# Set your access token (provided with your license)
-npm config set //npm.pkg.github.com/:_authToken YOUR_ACCESS_TOKEN
-```
-
-> **Note:** Your access token is provided when you purchase a license. Keep it secure and never
-> commit it to version control.
-
-### Step 2: Install the package
+### Install the package
 
 ```bash
 # npm
@@ -45,9 +29,9 @@ pnpm add @clarity-chat/react
 yarn add @clarity-chat/react
 ```
 
-### Step 3: Set your license key
+### (Optional) Set your license key
 
-Add your license key to your environment:
+If you have a Pro or Enterprise license, add it to your environment:
 
 ```bash
 # .env.local (Next.js) or .env (other frameworks)
@@ -343,7 +327,7 @@ app.post('/api/chat', async (c) => {
 | Custom Branding  | -         | Yes | Yes        |
 | Priority Support | -         | Yes | Yes        |
 
-[Compare plans](https://claritychat.dev/pricing)
+[View license details](../LICENSE)
 
 ---
 
@@ -500,7 +484,7 @@ import { ClarityChatPresets } from '@clarity-chat/react'
 
 ## Get Help
 
-- **Support**: [support@claritychat.dev](mailto:support@claritychat.dev)
+- **Support**: [hello@codeclarity.ai](mailto:hello@codeclarity.ai)
 - **GitHub Issues**: [Report bugs](https://github.com/christireid/Clarity-ai-chat-components/issues)
 - **Discussions**:
   [Ask questions](https://github.com/christireid/Clarity-ai-chat-components/discussions)
