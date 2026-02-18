@@ -939,7 +939,7 @@ Need help with migration?
 
 1. **Check documentation**: Review all guides in `/docs`
 2. **Migration support**: File an issue with `migration` label
-3. **Community Discord**: Ask in #migration-help channel
+3. **GitHub Discussions**: Ask in the [migration help discussion](https://github.com/christireid/Clarity-ai-chat-components/discussions)
 4. **Professional support**: Contact support@clarity.ai for migration assistance
 
 ---

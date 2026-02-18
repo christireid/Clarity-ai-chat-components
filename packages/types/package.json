@@ -55,7 +55,8 @@
     "dev": "tsup --watch",
     "clean": "rm -rf dist",
     "typecheck": "tsc --noEmit",
-    "lint": "eslint src --ext ts --report-unused-disable-directives --max-warnings 25"
+    "lint": "eslint src --ext ts --report-unused-disable-directives --max-warnings 25",
+    "prepublishOnly": "pnpm typecheck && pnpm build"
   },
   "devDependencies": {
     "tsup": "^8.5.1",

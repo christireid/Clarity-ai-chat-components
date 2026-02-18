@@ -38,7 +38,8 @@ export class PromptManager {
   private engine: PromptTemplateEngine = new PromptTemplateEngine()
 
   constructor() {
-    // TODO: Load prompts from a persistent storage (e.g., localStorage)
+    // Prompts are currently held in memory only
+    // Persistent storage can be added via the memory package
   }
 
   /**

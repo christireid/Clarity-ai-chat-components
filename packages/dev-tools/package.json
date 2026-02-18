@@ -1,8 +1,9 @@
 {
   "name": "@clarity-chat/dev-tools",
   "version": "1.0.0",
+  "private": true,
   "type": "module",
-  "description": "Premium developer tools for debugging, testing, and validation in Clarity Chat AI applications",
+  "description": "Developer tools for debugging, testing, and validation in Clarity Chat AI applications (deferred - not published in v1)",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "exports": {

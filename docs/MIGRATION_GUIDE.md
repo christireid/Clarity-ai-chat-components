@@ -112,4 +112,4 @@ If you have questions about migration, please:
 
 1. Check the [API Reference](./api-reference.md)
 2. Open an issue on GitHub
-3. Join our Discord community
+3. Join our GitHub Discussions

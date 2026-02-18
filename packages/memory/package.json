@@ -32,7 +32,8 @@
     "example:file": "tsx examples/file-storage.ts",
     "example:indexeddb": "echo 'IndexedDB example requires browser environment' && tsx examples/indexeddb-storage.ts",
     "examples": "npm run example:basic",
-    "verify": "npm run build && npm run typecheck"
+    "verify": "npm run build && npm run typecheck",
+    "prepublishOnly": "pnpm typecheck && pnpm test && pnpm build"
   },
   "keywords": [
     "ai",

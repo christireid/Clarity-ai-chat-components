@@ -139,8 +139,8 @@ export default function StubPage({
               GitHub Discussions
             </a>{' '}
             or{' '}
-            <a href="https://discord.gg/your-discord" className="text-primary hover:underline">
-              Discord
+            <a href="https://github.com/christireid/Clarity-ai-chat-components/discussions" className="text-primary hover:underline">
+              GitHub Discussions
             </a>
             . Community feedback helps us prioritize documentation development.
           </p>

@@ -1,5 +1,10 @@
 // @ts-nocheck
-// TODO: Fix export conflicts and type mismatches
+// NOTE: @ts-nocheck required because multiple `export *` statements re-export
+// overlapping identifiers (e.g., StreamChunk, ChatMessage, Tool, etc.) from
+// different modules (adapters/types, hooks/streaming, agents, etc.), causing
+// TS2308 duplicate export errors. Resolving requires converting all `export *`
+// to explicit named exports, which is a large refactor. This file is an internal
+// reference only and is not consumed by any build entry point.
 'use client'
 
 /**

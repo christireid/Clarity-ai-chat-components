@@ -297,7 +297,7 @@ function App() {
 
 - Check the [Troubleshooting Guide](../TROUBLESHOOTING.md) for common issues
 - File an issue on GitHub
-- Join our community Discord
+- Join our [GitHub Discussions](https://github.com/christireid/Clarity-ai-chat-components/discussions)
 
 ---
 

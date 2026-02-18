@@ -10,8 +10,8 @@
 150+ components. 70+ hooks. TypeScript-first. Accessibility-first.</p>
 
 <p>
+  <a href="./ROADMAP.md"><img src="https://img.shields.io/badge/status-pre--release-orange?style=flat" alt="Status: Pre-release" /></a>
   <a href="https://github.com/christireid/Clarity-ai-chat-components/stargazers"><img src="https://img.shields.io/github/stars/christireid/Clarity-ai-chat-components?style=social" alt="GitHub Stars" /></a>
-  <a href="https://www.npmjs.com/package/@clarity-chat/react"><img src="https://img.shields.io/npm/dm/@clarity-chat/react?style=flat&color=4A90E2" alt="NPM Downloads" /></a>
   <a href="https://github.com/christireid/Clarity-ai-chat-components/actions"><img src="https://img.shields.io/github/actions/workflow/status/christireid/Clarity-ai-chat-components/ci.yml?branch=main&label=CI&color=22C55E" alt="Build Status" /></a>
   <a href="./LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue" alt="License" /></a>
 </p>

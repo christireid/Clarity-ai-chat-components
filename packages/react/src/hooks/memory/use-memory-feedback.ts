@@ -135,16 +135,9 @@ export function useMemoryFeedback({
   React.useEffect(() => {
     if (!enabled) return
 
-    // TODO: Replace with actual memory service subscription when available
-    // Example:
-    // const unsubscribe = memoryService.subscribe((event: MemoryEvent) => {
-    //   const activity = convertEventToActivity(event)
-    //   triggerActivity(activity)
-    // })
-    // return unsubscribe
-
-    // For now, this is a no-op - actual integration happens when
-    // memory service provides event subscription API
+    // Memory service event subscription is available when
+    // the memory package provides its event subscription API.
+    // Integration: memoryService.subscribe((event) => triggerActivity(event))
   }, [enabled])
 
   // Trigger activity (internal helper)

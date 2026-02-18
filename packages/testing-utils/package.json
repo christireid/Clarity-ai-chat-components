@@ -1,7 +1,8 @@
 {
   "name": "@clarity-chat/testing-utils",
   "version": "2.0.0",
-  "description": "Testing utilities for Clarity Chat Components",
+  "private": true,
+  "description": "Testing utilities for Clarity Chat Components (internal - not published in v1)",
   "type": "module",
   "main": "./dist/index.js",
   "module": "./dist/index.js",

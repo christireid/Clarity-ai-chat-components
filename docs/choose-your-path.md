@@ -219,7 +219,7 @@ How to contribute code, docs, or examples.
 ## 🆘 Need Help?
 
 - **Documentation Issues?** [Open an issue](https://github.com/christireid/Clarity-ai-chat-components/issues)
-- **Questions?** [Discord Community](https://discord.gg/clarity-chat)
+- **Questions?** [GitHub Discussions](https://github.com/christireid/Clarity-ai-chat-components/discussions)
 - **Found a Bug?** [Report it](https://github.com/christireid/Clarity-ai-chat-components/issues/new)
 - **Feature Request?** [Suggest it](https://github.com/christireid/Clarity-ai-chat-components/discussions)
 

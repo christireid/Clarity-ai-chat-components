@@ -1,7 +1,8 @@
 {
   "name": "@clarity-chat/cli",
   "version": "0.1.0",
-  "description": "Beautiful CLI for Clarity Chat - Developer productivity toolkit",
+  "private": true,
+  "description": "CLI for Clarity Chat - Developer productivity toolkit (experimental - not published in v1)",
   "type": "module",
   "bin": {
     "clarity-chat": "./dist/index.js",

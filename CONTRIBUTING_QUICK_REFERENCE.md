@@ -445,7 +445,7 @@ test('has no a11y violations', async () => {
 - **Architecture**: `docs/architecture.md`
 - **GitHub Issues**: https://github.com/christireid/Clarity-ai-chat-components/issues
 - **Discussions**: https://github.com/christireid/Clarity-ai-chat-components/discussions
-- **Discord**: https://discord.gg/clarity-chat
+- **Discussions**: https://github.com/christireid/Clarity-ai-chat-components/discussions
 
 ---
 

@@ -643,7 +643,7 @@ If you're still experiencing issues:
 
 3. **Ask the community:**
    - [GitHub Discussions](https://github.com/christireid/Clarity-ai-chat-components/discussions)
-   - [Discord Server](https://discord.gg/claritychat)
+   - [GitHub Discussions](https://github.com/christireid/Clarity-ai-chat-components/discussions)
 
 4. **Create a new issue:**
    - Provide error message and stack trace

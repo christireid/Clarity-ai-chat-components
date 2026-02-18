@@ -461,7 +461,7 @@ you'll need to reload the page after installing it.
 
 - **Documentation**: https://clarity-chat.dev/docs/feature-flags
 - **GitHub Issues**: https://github.com/clarity-chat/clarity-chat-components/issues
-- **Discord**: https://discord.gg/clarity-chat
+- **Discussions**: https://github.com/christireid/Clarity-ai-chat-components/discussions
 
 ---
 

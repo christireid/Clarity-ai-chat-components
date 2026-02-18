@@ -1,4 +1,4 @@
-name: Publish to GitHub Packages
+name: Publish to npm
 
 on:
   push:
@@ -32,7 +32,6 @@ jobs:
     timeout-minutes: 20
     permissions:
       contents: read
-      packages: write
       id-token: write # Required for npm provenance
     steps:
       - name: Harden Runner
@@ -43,7 +42,6 @@ jobs:
           allowed-endpoints: >
             github.com:443
             api.github.com:443
-            npm.pkg.github.com:443
             registry.npmjs.org:443
             nodejs.org:443
 
@@ -61,7 +59,7 @@ jobs:
         uses: actions/setup-node@39370e3970a6d050c480ffad4ff0ed4d3fdee5af # v4.1.0
         with:
           node-version: ${{ env.NODE_VERSION }}
-          registry-url: 'https://npm.pkg.github.com'
+          registry-url: 'https://registry.npmjs.org'
           scope: '@clarity-chat'
           cache: 'pnpm'
 
@@ -96,15 +94,15 @@ jobs:
           echo "🔍 Dry run mode - checking what would be published..."
           pnpm -r publish --dry-run --no-git-checks
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
-      - name: Publish to GitHub Packages
+      - name: Publish to npm
         if: ${{ github.event.inputs.dry_run != 'true' }}
         run: |
-          echo "📦 Publishing packages to GitHub Packages..."
-          pnpm -r publish --access restricted --no-git-checks --provenance
+          echo "📦 Publishing packages to npm..."
+          pnpm -r publish --access public --no-git-checks --provenance
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Create release notes
         if: ${{ github.event.inputs.dry_run != 'true' && startsWith(github.ref, 'refs/tags/') }}
@@ -115,11 +113,6 @@ jobs:
             ## Installation
 
             ```bash
-            # Configure npm for GitHub Packages (one-time)
-            npm config set @clarity-chat:registry https://npm.pkg.github.com
-            npm config set //npm.pkg.github.com/:_authToken YOUR_TOKEN
-
-            # Install
             npm install @clarity-chat/react
             ```
 
@@ -142,7 +135,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     permissions:
-      packages: read
+      contents: read
     steps:
       - name: Harden Runner
         uses: step-security/harden-runner@c6295a65d1254861815972266d5933fd6e532bdf # v2.11.1
@@ -150,32 +143,26 @@ jobs:
           egress-policy: audit
           disable-sudo: true
           allowed-endpoints: >
-            npm.pkg.github.com:443
+            registry.npmjs.org:443
             nodejs.org:443
 
       - name: Setup Node.js
         uses: actions/setup-node@39370e3970a6d050c480ffad4ff0ed4d3fdee5af # v4.1.0
         with:
           node-version: '20'
-          registry-url: 'https://npm.pkg.github.com'
+          registry-url: 'https://registry.npmjs.org'
 
       - name: Create test project
         run: |
           mkdir test-install
           cd test-install
           npm init -y
-          cat > .npmrc << EOF
-          @clarity-chat:registry=https://npm.pkg.github.com
-          //npm.pkg.github.com/:_authToken=\${NODE_AUTH_TOKEN}
-          EOF
 
       - name: Verify installation
         working-directory: test-install
         run: |
           npm install @clarity-chat/react@latest
           echo "✅ Package installed successfully"
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Verify imports
         working-directory: test-install
@@ -185,5 +172,3 @@ jobs:
           console.log('✅ Main exports work:', typeof ClarityChat, typeof initializeClarity, typeof useClarityChat);
           EOF
           node test.mjs
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

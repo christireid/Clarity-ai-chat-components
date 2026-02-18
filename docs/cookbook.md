@@ -537,4 +537,4 @@ function App() {
 
 ---
 
-**Need a specific pattern?** [Open an issue](https://github.com/christireid/Clarity-ai-chat-components/issues) or ask in [Discord](https://discord.gg/clarity-chat).
+**Need a specific pattern?** [Open an issue](https://github.com/christireid/Clarity-ai-chat-components/issues) or ask in [GitHub Discussions](https://github.com/christireid/Clarity-ai-chat-components/discussions).

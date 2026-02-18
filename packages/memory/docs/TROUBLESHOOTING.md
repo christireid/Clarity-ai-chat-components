@@ -1380,4 +1380,4 @@ const memory = clarityMemory()
 
 ---
 
-**Need more help?** Join our community Discord or file an issue on GitHub.
+**Need more help?** Join our [GitHub Discussions](https://github.com/christireid/Clarity-ai-chat-components/discussions) or file an issue on GitHub.

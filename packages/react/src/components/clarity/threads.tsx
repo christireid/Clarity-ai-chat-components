@@ -1,6 +1,4 @@
 'use client'
-// @ts-nocheck
-// TODO: Fix ContextMenuTrigger and TooltipProps imports
 
 import * as React from 'react'
 import {

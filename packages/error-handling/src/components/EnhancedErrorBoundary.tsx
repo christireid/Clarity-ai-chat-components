@@ -592,8 +592,7 @@ export function EnhancedErrorBoundary({
           componentStack: info.componentStack,
         })
 
-        // TODO: Replace with actual error logging service
-        // logErrorToService(error, info);
+        // Error logging can be configured via the onError callback prop
       }
 
       onError?.(error, info)

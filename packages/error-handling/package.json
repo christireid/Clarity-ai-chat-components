@@ -30,8 +30,9 @@
     "access": "public"
   },
   "scripts": {
-    "dev": "vite",
-    "build": "NODE_OPTIONS='--max-old-space-size=8192' vite build && NODE_OPTIONS='--max-old-space-size=8192' tsc --emitDeclarationOnly",
+    "dev": "tsup --watch",
+    "build": "NODE_OPTIONS='--max-old-space-size=8192' tsup",
+    "prepublishOnly": "pnpm typecheck && pnpm test && pnpm build",
     "typecheck": "tsc --noEmit",
     "test": "vitest run --passWithNoTests",
     "test:run": "vitest run",
@@ -79,7 +80,7 @@
     "@types/node": "^22.10.5",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
-    "@vitejs/plugin-react": "^5.1.1",
+    "tsup": "^8.5.1",
     "@vitest/coverage-v8": "^4.0.15",
     "eslint": "^9.39.1",
     "eslint-plugin-jsx-a11y": "^6.10.2",
@@ -91,8 +92,6 @@
     "react-dom": "^19.2.0",
     "size-limit": "^12.0.0",
     "typescript": "^5.9.3",
-    "vite": "^6.0.0",
-    "vite-plugin-dts": "^4.3.0",
     "vitest": "^4.0.15"
   },
   "size-limit": [

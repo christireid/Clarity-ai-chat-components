@@ -126,7 +126,8 @@
     "test:watch": "vitest",
     "test:ui": "vitest --ui",
     "test:coverage": "vitest run --coverage",
-    "size": "size-limit"
+    "size": "size-limit",
+    "prepublishOnly": "pnpm typecheck && pnpm test && pnpm build"
   },
   "peerDependencies": {
     "react": "^18.0.0 || ^19.0.0",

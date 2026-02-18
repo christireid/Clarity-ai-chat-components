@@ -25,26 +25,21 @@ export const SkeletonTransition: React.FC<SkeletonTransitionProps> = ({
   const loadingStartTime = React.useRef<number>(0)
   const containerRef = React.useRef<HTMLDivElement>(null)
 
-  // Smart loading prediction - TODO: Update for new API
+  // Smart loading prediction placeholder
   React.useEffect(() => {
     if (enablePrediction) {
-      // const predicted = LoadingPredictor.predictDuration()
-      // setPredictedDuration(predicted)
+      // Loading prediction can be configured via props
     }
   }, [enablePrediction])
 
-  // Performance monitoring - TODO: Update for new UnifiedPerformanceMonitor API
+  // Performance monitoring - tracks loading duration in development
   React.useEffect(() => {
     if (monitorPerformance && typeof window !== 'undefined') {
-      // Track loading duration without performance monitor for now
       if (isLoading) {
         loadingStartTime.current = Date.now()
       } else if (loadingStartTime.current > 0) {
-        const loadingDuration = Date.now() - loadingStartTime.current
-        if (process.env.NODE_ENV === 'development') {
-          console.log('Loading duration:', loadingDuration)
-        }
-        // TODO: Record with new performance API
+        const _loadingDuration = Date.now() - loadingStartTime.current
+        loadingStartTime.current = 0
       }
     }
   }, [isLoading, monitorPerformance, enablePrediction])

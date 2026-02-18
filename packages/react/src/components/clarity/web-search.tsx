@@ -1,5 +1,3 @@
-// @ts-nocheck
-// TODO: Fix lucide-react icon imports
 'use client'
 
 import * as React from 'react'

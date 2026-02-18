@@ -1,5 +1,3 @@
-// @ts-nocheck
-// TODO: Fix export conflicts and type mismatches
 /**
  * Anthropic Model Adapter
  *
@@ -1557,32 +1555,3 @@ export function useAnthropicAdapter(
   return createAnthropicAdapter(config)
 }
 
-// =============================================================================
-// Exports
-// =============================================================================
-
-export type {
-  AnthropicRole,
-  AnthropicContentBlockType,
-  AnthropicTextBlock,
-  AnthropicToolUseBlock,
-  AnthropicImageBlock,
-  AnthropicThinkingBlock,
-  AnthropicToolResultBlock,
-  AnthropicContentBlock,
-  AnthropicMessage,
-  AnthropicToolDefinition,
-  AnthropicTokenUsage,
-  AnthropicResponse,
-  AnthropicStreamEventType,
-  AnthropicMessageStartEvent,
-  AnthropicContentBlockStartEvent,
-  AnthropicContentBlockDeltaEvent,
-  AnthropicContentBlockStopEvent,
-  AnthropicMessageDeltaEvent,
-  AnthropicMessageStopEvent,
-  AnthropicStreamEvent,
-  StreamingToolUseBlock,
-  StreamingThinkingBlock,
-  AnthropicClarityChatAdapterConfig,
-}

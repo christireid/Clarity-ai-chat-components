@@ -364,5 +364,5 @@ See [CONTRIBUTING.md](../CONTRIBUTING.md) for guidelines. We welcome PRs!
 
 - 📚 Check [Full Documentation](../packages/react/README.md)
 - 🐛 [Open an Issue](https://github.com/christireid/Clarity-ai-chat-components/issues)
-- 💬 [Join Discord](https://discord.gg/clarity-chat)
+- 💬 [Join GitHub Discussions](https://github.com/christireid/Clarity-ai-chat-components/discussions)
 - 📖 Read [Troubleshooting Guide](./TROUBLESHOOTING.md)

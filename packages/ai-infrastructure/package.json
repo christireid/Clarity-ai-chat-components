@@ -1,7 +1,8 @@
 {
   "name": "@clarity-chat/ai-infrastructure",
   "version": "0.1.0",
-  "description": "AI infrastructure utilities for Clarity Chat including multi-provider streaming",
+  "private": true,
+  "description": "AI infrastructure utilities for Clarity Chat including multi-provider streaming (experimental - not published in v1)",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",

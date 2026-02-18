@@ -1,7 +1,8 @@
 {
   "name": "@clarity-chat/codemods",
   "version": "1.0.0",
-  "description": "Automated migration tools for Clarity Chat API changes",
+  "private": true,
+  "description": "Automated migration tools for Clarity Chat API changes (deferred - not published in v1)",
   "main": "dist/index.js",
   "bin": {
     "clarity-codemods": "./dist/index.js"

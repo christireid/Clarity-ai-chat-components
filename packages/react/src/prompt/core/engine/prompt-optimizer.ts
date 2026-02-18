@@ -22,9 +22,7 @@ import {
   getTokenizerForModel,
   estimateCost,
 } from '../tokenizer'
-// import { compressContext } from '../compression-chain' // TODO: Re-enable when compression-chain exists
-
-// Temporary stub for compressContext until compression-chain is added back
+// Stub for compressContext (compression-chain module not yet implemented)
 async function compressContext(
   messages: any,
   _options: any

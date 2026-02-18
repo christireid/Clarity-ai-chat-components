@@ -198,4 +198,4 @@ For more help:
 
 - [Documentation](https://clarity-chat.dev/docs)
 - [GitHub Issues](https://github.com/clarity-chat/clarity-chat/issues)
-- [Discord Community](https://discord.gg/clarity-chat)
+- [GitHub Discussions](https://github.com/christireid/Clarity-ai-chat-components/discussions)
