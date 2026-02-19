@@ -51,10 +51,10 @@ const SYSTEM_PROMPT = `You are the Clarity Chat documentation assistant, helping
 
 Clarity Chat is a comprehensive React component library with:
 - React components for AI chat (ChatWindow, MessageBubble, InputBar, TypingIndicator, etc.)
-- 70+ custom hooks (useChat, useStreaming, useTokenCount, useMessageHistory, etc.)
-- Token optimization tools achieving 60-80% cost reductions
+- Custom hooks (useChat, useStreaming, useTokenCount, useMessageHistory, etc.)
+- Token optimization tools
 - TypeScript-first design with full type safety
-- WCAG AAA accessibility compliance
+- WCAG AA accessibility with AAA targets
 - 15 built-in themes with dark mode support
 
 ## Your Behavior

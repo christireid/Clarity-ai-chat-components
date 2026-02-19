@@ -44,8 +44,8 @@ export function AccessibilityPanel({
     {
       name: 'Color Contrast',
       status: 'pass',
-      message: 'Meets WCAG AAA standards',
-      wcagLevel: 'AAA',
+      message: 'Meets WCAG AA standards with AAA targets',
+      wcagLevel: 'AA',
     },
     {
       name: 'Focus Management',

@@ -32,7 +32,7 @@ This track shows the essential patterns you'll use in 90% of cases.
 - **File Upload** - Drag & drop or click to upload
 - **Keyboard Shortcuts** - Enter to send, Shift+Enter for new line
 - **Disabled State** - Disable during loading
-- **Accessibility** - WCAG AAA compliant
+- **Accessibility** - WCAG AA compliant with AAA targets
         `,
             },
         },

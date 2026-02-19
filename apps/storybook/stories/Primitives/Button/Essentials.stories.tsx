@@ -25,7 +25,7 @@ and states. This track shows the essential patterns you'll use in 90% of cases.
 - **Variants** - Default, destructive, outline, secondary, ghost, link
 - **Sizes** - Default, sm, lg, icon
 - **States** - Loading, disabled, success, error
-- **Accessibility** - WCAG AAA compliant
+- **Accessibility** - WCAG AA compliant with AAA targets
         `,
       },
     },

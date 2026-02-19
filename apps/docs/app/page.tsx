@@ -221,7 +221,7 @@ function CustomChat() {
                 <Accessibility className="w-5 h-5 text-purple-500 mb-2 flex-shrink-0" />
                 <div>
                   <h3 className="text-sm font-semibold text-neutral-900 dark:text-white mb-0.5">Accessible</h3>
-                  <p className="text-[11px] text-neutral-500 dark:text-neutral-400 leading-snug">WCAG AAA. Keyboard nav.</p>
+                  <p className="text-[11px] text-neutral-500 dark:text-neutral-400 leading-snug">WCAG AA+. Keyboard nav.</p>
                 </div>
               </div>
             </div>

@@ -140,7 +140,7 @@ const changelog: ChangelogEntry[] = [
     version: '1.8.0',
     date: '2025-11-01',
     title: 'Accessibility Excellence',
-    description: 'Achieved WCAG AAA compliance across all components.',
+    description: 'Achieved WCAG AA compliance with AAA targets across components.',
     type: 'minor',
     changes: [
       {

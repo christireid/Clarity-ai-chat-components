@@ -80,7 +80,7 @@ export default function AboutPage() {
               <Users className="w-8 h-8 text-brand-500 mb-4" />
               <h3 className="text-xl font-bold mb-3">Accessibility for All</h3>
               <p className="text-text-secondary">
-                WCAG AAA compliance isn't optional—it's built into every
+                WCAG AA compliance with AAA targets—accessibility is built into every
                 component. Everyone deserves access to great AI chat
                 experiences, regardless of ability.
               </p>

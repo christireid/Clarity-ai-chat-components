@@ -28,7 +28,7 @@ export default function ComparePage() {
       {/* Floating Share Button */}
       <ShareButton
         variant="floating"
-        text={`Clarity Chat vs alternatives - see why ${LIBRARY_STATS.components} components, enterprise features, and WCAG AAA accessibility set it apart 🚀`}
+        text={`Clarity Chat vs alternatives - ${LIBRARY_STATS.components} components, enterprise features, and WCAG AA accessibility`}
         url="https://clarity-chat.dev/compare"
       />
 
@@ -75,7 +75,7 @@ export default function ComparePage() {
               <li>• Robust React chat components</li>
               <li>• Full TypeScript support with IntelliSense</li>
               <li>• Enterprise features (RBAC, multi-tenancy, audit logs)</li>
-              <li>• WCAG AAA accessibility compliance</li>
+              <li>• WCAG AA accessibility (with AAA targets)</li>
               <li>• Extensive customization without fighting the framework</li>
               <li>
                 • Performance optimization for 1000+ message conversations
@@ -125,8 +125,8 @@ export default function ComparePage() {
               icon: <Accessibility className="w-6 h-6" />,
               title: 'True Accessibility',
               description:
-                'WCAG AAA compliant, full keyboard navigation, screen reader tested. Not an afterthought.',
-              highlight: 'The only AAA-compliant option',
+                'WCAG AA compliant with AAA targets, full keyboard navigation, screen reader tested. Not an afterthought.',
+              highlight: 'Accessibility-first design',
             },
             {
               icon: <Palette className="w-6 h-6" />,

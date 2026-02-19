@@ -338,7 +338,7 @@ function CustomChat() {
 | Streaming          | Built-in           | Manual             |
 | Memory management  | **6 presets**      | Build from scratch |
 | Token optimization | **60-90% savings** | Manual             |
-| Accessibility      | **WCAG AAA**       | DIY                |
+| Accessibility      | **WCAG AA+**       | DIY                |
 | Error recovery     | Auto-retry         | Custom logic       |
 
 ---

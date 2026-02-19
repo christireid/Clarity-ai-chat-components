@@ -32,7 +32,7 @@ patterns you'll use in 90% of cases.
 - **Auto-Scroll** - Automatically scrolls to latest message
 - **Smooth Scrolling** - Optimized scroll performance
 - **Empty States** - Handles empty chat gracefully
-- **Accessibility** - WCAG AAA compliant
+- **Accessibility** - WCAG AA compliant with AAA targets
         `,
             },
         },

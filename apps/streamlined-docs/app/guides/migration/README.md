@@ -347,17 +347,6 @@ Guide: v1-to-v2.mdx § Bundle Size Optimization
 
 ---
 
-## Success Stories
-
-> "Migration took 15 minutes and reduced our bundle from 6.1 MB to 600 KB. Huge improvement!"
-> — *Sarah Chen, Frontend Lead @ TechCorp*
-
-> "The codemod handled 95% of changes automatically. Very smooth migration."
-> — *Alex Kumar, Senior Developer @ StartupXYZ*
-
-> "Testing guide was comprehensive. Caught several edge cases before production."
-> — *Maria Rodriguez, QA Engineer @ Enterprise Co*
-
 ---
 
 ## Support

@@ -27,7 +27,7 @@ limit warnings. This track shows the essential patterns you'll use in
 - **Cost Tracking** - Real-time cost calculation
 - **Visual Warnings** - Color-coded status (normal/warning/error)
 - **Progress Indicator** - Visual progress bar
-- **Accessibility** - WCAG AAA compliant
+- **Accessibility** - WCAG AA compliant with AAA targets
         `,
       },
     },

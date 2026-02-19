@@ -41,13 +41,7 @@ can be moved to a dedicated business/sales repository.
   - Demo scripts (5 minutes)
   - Objection handling guide
   - Follow-up templates
-- **CASE_STUDIES.md** - 6 detailed customer success stories
-  - HealthAI: $150K saved, HIPAA compliance
-  - TechCorp: $400K saved, 8-week launch
-  - FinanceFlow: $120K/year savings, 80% automation
-  - EduTech: Enabled $3M fundraise
-  - ShopSmart: $2.4M revenue impact, 24,000% ROI
-  - DevTools Inc: 60% faster onboarding
+- **CASE_STUDIES.md** - Case studies placeholder (to be populated with real customer stories once available)
 
 ### Implementation & Support
 
@@ -165,14 +159,14 @@ can be moved to a dedicated business/sales repository.
 ### For Sales Team
 
 1. Start with **PRICING.md** - Know all tiers inside out
-2. Review **CASE_STUDIES.md** - Have stories ready
+2. Review **CASE_STUDIES.md** - Case studies (pending real customer stories)
 3. Use **SALES_DECK_OUTLINE.md** - Follow presentation structure
 4. Practice demo and objection handling
 
 ### For Marketing Team
 
 1. Read **COMMERCIAL_SUMMARY.md** - Understand GTM strategy
-2. Use **CASE_STUDIES.md** - Create content
+2. Use **CASE_STUDIES.md** - Create content (pending real customer stories)
 3. Reference **PRICING.md** - Messaging and value props
 4. Follow SEO strategy outlined in summary
 
@@ -186,7 +180,7 @@ can be moved to a dedicated business/sales repository.
 ### For Customer Success
 
 1. Use **IMPLEMENTATION_GUIDE.md** - Onboarding process
-2. Reference **CASE_STUDIES.md** - Success patterns
+2. Reference **CASE_STUDIES.md** - Success patterns (pending real customer stories)
 3. Track metrics from **COMMERCIAL_SUMMARY.md**
 4. Follow best practices outlined
 

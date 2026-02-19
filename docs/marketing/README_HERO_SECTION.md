@@ -680,7 +680,7 @@ _"I need everything"_
 
 <div align="center">
 
-**📦 300K+ Lines of Code** • **🧪 85%+ Test Coverage** • **📚 60+ Guides** • **🎯 100% TypeScript**
+**📦 300K+ Lines of Code** • **🧪 85%+ Test Coverage** • **📚 60+ Guides** • **🎯 TypeScript**
 
 <br />
 

@@ -23,7 +23,7 @@ export function SimpleChat() {
  * - Error handling
  * - Loading states
  * - Beautiful UI
- * - WCAG AAA accessibility
+ * - WCAG AA accessibility
  * - Mobile responsive
  * 
  * Want more? See the other examples:

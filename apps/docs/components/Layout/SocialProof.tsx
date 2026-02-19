@@ -149,15 +149,15 @@ export function SocialProof() {
     },
     {
       icon: <Users className="w-8 h-8" />,
-      value: '100%',
+      value: 'TS',
       label: 'TypeScript',
       trend: 'Type-safe',
     },
     {
-      icon: <span className="text-3xl">🏆</span>,
-      value: '100%',
-      label: 'WCAG AAA',
-      trend: 'Certified',
+      icon: <span className="text-3xl">♿</span>,
+      value: 'AA',
+      label: 'WCAG Accessible',
+      trend: 'AAA targets',
     },
   ]
 

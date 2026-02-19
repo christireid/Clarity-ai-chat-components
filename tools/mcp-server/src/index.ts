@@ -10,7 +10,7 @@
  * - 28+ tools for component discovery, documentation, project management, and more
  * - 6+ resources for docs, examples, and model information
  * - 10+ prompt templates for common AI chat development tasks
- * - Comprehensive component registry with 200+ components and 95+ hooks
+ * - Comprehensive component registry with 150+ components and 95+ hooks
  * - Full accessibility (WCAG AA) documentation for all components
  * - Updated AI model pricing for 2024/2025 models
  * - Plugin system for extending functionality

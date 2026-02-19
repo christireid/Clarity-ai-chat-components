@@ -255,7 +255,7 @@ export const navigationConfig = [
             {
                 title: 'Accessibility',
                 href: '/learn/guides/accessibility',
-                description: 'WCAG AAA compliance',
+                description: 'WCAG AA compliance',
             },
             {
                 title: 'Styling',
@@ -461,7 +461,7 @@ export const navigationConfig = [
  */
 export const projectDescription = `React component library for building accessible AI chat interfaces. Features 150+ components, 70+ custom hooks, 15 themes, and token optimization. Built with TypeScript, React 19, and Tailwind CSS.
 
-Clarity Chat provides components for building AI chat interfaces in React, from basic chat windows to advanced features like streaming, token optimization, and accessibility (WCAG AAA target).`;
+Clarity Chat provides components for building AI chat interfaces in React, from basic chat windows to advanced features like streaming, token optimization, and accessibility (WCAG AA target).`;
 /**
  * MCP Server configuration for llms.txt
  */

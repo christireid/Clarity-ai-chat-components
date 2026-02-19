@@ -13,7 +13,7 @@
 - **Framer Motion** animations for delightful UX
 - **TypeScript** throughout for type safety
 - **Tailwind CSS** for beautiful, responsive styling
-- **Accessibility** WCAG AAA compliant
+- **Accessibility** WCAG AA compliant with AAA targets
 
 ## 📁 Structure
 
@@ -132,7 +132,7 @@ The site can be deployed to:
 2. **Copy-Paste Ready**: All code examples work out of the box
 3. **Beautiful Design**: Delightful, professional appearance
 4. **Fast Performance**: Optimized for speed
-5. **Accessibility**: WCAG AAA compliant
+5. **Accessibility**: WCAG AA compliant with AAA targets
 6. **SEO**: Excellent search engine optimization
 
 ## 📚 Inspiration

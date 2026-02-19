@@ -27,9 +27,9 @@ const features = [
     bgColor: 'bg-purple-100',
   },
   {
-    name: 'WCAG AAA Accessible',
+    name: 'Accessibility-First',
     description:
-      'Only AI chat library with WCAG 2.1 AAA certification. Reduces legal risk and improves UX for everyone.',
+      'WCAG AA compliant with AAA targets. Built-in screen reader support, keyboard navigation, and focus management.',
     icon: Shield,
     color: 'text-green-600',
     bgColor: 'bg-green-100',
@@ -131,7 +131,7 @@ export default function Features() {
             <div className="hidden sm:block w-px bg-gray-300 dark:bg-gray-600" />
             <div>
               <div className="text-3xl font-bold text-brand-600 mb-1">
-                100%
+                TS
               </div>
               <div className="text-sm text-gray-600 dark:text-gray-300">
                 TypeScript

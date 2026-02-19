@@ -18,7 +18,7 @@ const meta = {
 - 🎨 Partial JSON parsing and formatting
 - ⚡ Smooth animations and transitions
 - 🌙 Full dark mode support
-- ♿ WCAG AAA accessible
+- ♿ WCAG AA accessible
 
 Perfect for displaying AI responses from ChatGPT, Claude, Gemini, or custom models with streaming support.
         `,

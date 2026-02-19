@@ -147,20 +147,20 @@ jobs:
           echo "Verifying current counts in key files..."
 
           # Check homepage - accept either literal or LIBRARY_STATS import
-          if ! grep -q "190+ components" apps/docs/app/page.tsx && \
+          if ! grep -q "150+ components" apps/docs/app/page.tsx && \
              ! grep -q "LIBRARY_STATS" apps/docs/app/page.tsx; then
-            echo "❌ Homepage missing '190+ components' or LIBRARY_STATS import"
+            echo "❌ Homepage missing '150+ components' or LIBRARY_STATS import"
             exit 1
           fi
 
           # Check llms.txt (static file, must have literal values)
-          if ! grep -q "190+" apps/docs/public/llms.txt 2>/dev/null; then
-            echo "❌ llms.txt missing current component count (190+)"
+          if ! grep -q "150+" apps/docs/public/llms.txt 2>/dev/null; then
+            echo "❌ llms.txt missing current component count (150+)"
             exit 1
           fi
 
           # Verify library-stats.ts exists and has correct values
-          if ! grep -q "components: '190+'" apps/docs/lib/library-stats.ts 2>/dev/null; then
+          if ! grep -q "components: '15" apps/docs/lib/library-stats.ts 2>/dev/null; then
             echo "❌ library-stats.ts missing or has incorrect component count"
             exit 1
           fi

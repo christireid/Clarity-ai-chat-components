@@ -36,7 +36,7 @@ Model Context Protocol is an open protocol developed by Anthropic that standardi
 
 | Tool                             | Description                                              |
 | -------------------------------- | -------------------------------------------------------- |
-| `clarity_discover_components`    | Search 200+ components by name, category, or use case    |
+| `clarity_discover_components`    | Search 150+ components by name, category, or use case    |
 | `clarity_get_component_docs`     | Get full documentation for a component (props, examples) |
 | `clarity_discover_hooks`         | Search 95+ React hooks by functionality                  |
 | `clarity_get_hook_docs`          | Get documentation for a hook (parameters, return values) |
@@ -414,7 +414,7 @@ tools/mcp-server/
 │   ├── plugins/
 │   │   └── index.ts          # Plugin registry system
 │   ├── data/
-│   │   ├── component-registry.ts  # 200+ components, 95+ hooks
+│   │   ├── component-registry.ts  # 150+ components, 95+ hooks
 │   │   └── model-registry.ts      # 2024/2025 model pricing
 │   └── utils/
 │       ├── schemas.ts        # Zod validation schemas

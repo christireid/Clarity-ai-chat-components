@@ -59,7 +59,7 @@ export default function Hero() {
             </div>
             <div className="flex items-center gap-2">
               <div className="h-2 w-2 rounded-full bg-green-500" />
-              <span>WCAG AAA Certified</span>
+              <span>WCAG AA Accessible</span>
             </div>
             <div className="flex items-center gap-2">
               <div className="h-2 w-2 rounded-full bg-green-500" />
@@ -116,7 +116,7 @@ export default function Hero() {
             </div>
           </div>
           <div className="text-center">
-            <div className="text-4xl font-bold text-brand-600 mb-2">100%</div>
+            <div className="text-4xl font-bold text-brand-600 mb-2">TS</div>
             <div className="text-sm text-gray-600 dark:text-gray-400">
               TypeScript
             </div>

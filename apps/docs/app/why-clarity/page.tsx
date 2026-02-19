@@ -229,7 +229,7 @@ const features: Feature[] = [
 
   // Accessibility
   {
-    name: 'WCAG AAA',
+    name: 'WCAG AA+',
     category: 'Accessibility',
     clarity: 'full',
     'assistant-ui': 'full',

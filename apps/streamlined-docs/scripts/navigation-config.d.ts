@@ -12,7 +12,7 @@ export declare const navigationConfig: NavigationSection[];
 /**
  * Project description for llms.txt header
  */
-export declare const projectDescription = "React component library for building accessible AI chat interfaces. Features 150+ components, 70+ custom hooks, 15 themes, and token optimization. Built with TypeScript, React 19, and Tailwind CSS.\n\nClarity Chat provides components for building AI chat interfaces in React, from basic chat windows to advanced features like streaming, token optimization, and accessibility (WCAG AAA target).";
+export declare const projectDescription = "React component library for building accessible AI chat interfaces. Features 150+ components, 70+ custom hooks, 15 themes, and token optimization. Built with TypeScript, React 19, and Tailwind CSS.\n\nClarity Chat provides components for building AI chat interfaces in React, from basic chat windows to advanced features like streaming, token optimization, and accessibility (WCAG AA with AAA targets).";
 /**
  * MCP Server configuration for llms.txt
  */

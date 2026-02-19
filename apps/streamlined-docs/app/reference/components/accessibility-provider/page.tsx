@@ -1028,8 +1028,8 @@ export default function AccessibilityProviderPage() {
               {[
                 {
                   icon: CheckIcon,
-                  label: 'WCAG AAA',
-                  desc: 'Highest standard',
+                  label: 'WCAG AA+',
+                  desc: 'AA with AAA targets',
                 },
                 {
                   icon: Keyboard,

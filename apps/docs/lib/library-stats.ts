@@ -28,8 +28,8 @@ export const LIBRARY_STATS = {
   hooks: '70+',
   /** Exact theme preset count */
   themes: 15,
-  /** Animation/micro-interaction count */
-  animations: '150+',
+  /** Animation/micro-interaction description */
+  animations: 'Rich',
   /** Cookbook recipe count */
   recipes: '33+',
   /** AI provider adapter count */

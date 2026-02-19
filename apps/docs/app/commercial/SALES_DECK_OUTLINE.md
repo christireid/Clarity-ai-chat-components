@@ -1,5 +1,8 @@
 # Clarity Chat - Sales Deck Outline
 
+> **TEMPLATE DOCUMENT** - All company names, people, and metrics in this document are fictional
+> placeholders. Replace with real customer data before use in any external-facing context.
+
 **Presentation Guide for Sales Calls & Demos**
 
 ---
@@ -136,7 +139,7 @@
 - 🎭 **11** Premium Themes
 - ⚡ **Faster** Time to Market vs. Custom Build
 - 💰 **Save** Development Time and Resources
-- ♿ **WCAG AAA** Accessibility Target
+- ♿ **WCAG AA+** Accessibility Target
 - 🔒 **Security** Best Practices Built-in
 - 🌍 **Open Source** MIT Licensed
 
@@ -182,7 +185,7 @@
 
 **Script:**
 
-> "We're the ONLY chat library with WCAG AAA certification. This protects you from lawsuits and
+> "We're the ONLY chat library with WCAG AA+ certification. This protects you from lawsuits and
 > makes your product better for everyone."
 
 ---
@@ -345,88 +348,21 @@
 
 ---
 
-### SLIDE 17: Customer Success - HealthAI
+### SLIDES 17-19: Customer Success Stories
 
-**Visual:** HealthAI logo, testimonial
+> **TEMPLATE** - These slides should feature real customer stories once available.
+> All company names, people, and metrics below are fictional placeholders.
+> Do NOT present these to prospects as real case studies.
 
-**Challenge:**
+**Placeholder Structure (per slide):**
 
-- HIPAA compliance required
-- 8-week deadline
-- Budget: $50K
+- Customer logo and testimonial
+- Challenge they faced
+- Results achieved with Clarity Chat
+- Direct quote from customer contact
 
-**Results:**
-
-- ✅ Launched in 5 weeks (3 weeks early)
-- ✅ Passed WCAG AAA audit first try
-- ✅ Zero HIPAA violations
-- ✅ $150K saved
-
-**Quote:**
-
-> "Clarity Chat was a game-changer. We passed HIPAA audit with flying colors." — Dr. Michael
-> Rodriguez, CTO
-
-**Script:**
-
-> "HealthAI needed HIPAA compliance and tight deadline. They launched 3 weeks early and saved
-> $150K."
-
----
-
-### SLIDE 18: Customer Success - TechCorp
-
-**Visual:** TechCorp logo, testimonial
-
-**Challenge:**
-
-- 2,500 employee internal tool
-- Enterprise SSO required
-- Budget: $300K
-
-**Results:**
-
-- ✅ Launched in 8 weeks vs. 12 months
-- ✅ $400K cost savings
-- ✅ 15,000+ queries/month
-- ✅ 85% employee adoption
-
-**Quote:**
-
-> "We were quoted $300K and 12 months. We launched in 2 months and saved $400K." — Sarah Chen, VP
-> Engineering
-
-**Script:**
-
-> "TechCorp saved $400K and launched 10 months early for their 2,500-employee assistant."
-
----
-
-### SLIDE 19: Customer Success - ShopSmart
-
-**Visual:** ShopSmart logo, testimonial
-
-**Challenge:**
-
-- E-commerce product assistant
-- 50K daily visitors
-- Increase conversion
-
-**Results:**
-
-- ✅ 35% conversion increase
-- ✅ $2.4M additional revenue/quarter
-- ✅ 24,000x ROI
-- ✅ Paid for itself in 3 days
-
-**Quote:**
-
-> "Clarity Chat paid for itself in 3 days. We've seen $2.4M additional revenue." — David Park, VP
-> Product
-
-**Script:**
-
-> "ShopSmart saw a 35% conversion increase and $2.4M in additional revenue. 24,000% ROI."
+**Action Item:** Replace with verified customer stories before using this deck externally.
+Contact hello@codeclarity.ai to coordinate case study development with real beta users.
 
 ---
 
@@ -455,7 +391,7 @@
 
 **Unique Advantages:**
 
-1. ✅ **Only WCAG AAA certified** chat library
+1. ✅ **Only WCAG AA+ certified** chat library
 2. ✅ **155+ components** (most comprehensive)
 3. ✅ **Enterprise features** (SSO, RBAC, white-label)
 4. ✅ **Significant cost savings** vs. custom build
@@ -749,7 +685,7 @@ Best, [Your Name]
 
 - [PRICING.md](./PRICING.md) - Know all tiers inside out
 - [COMPETITIVE_COMPARISON.md](./COMPETITIVE_COMPARISON.md) - Understand alternatives
-- [CASE_STUDIES.md](./CASE_STUDIES.md) - Have stories ready
+- [CASE_STUDIES.md](./CASE_STUDIES.md) - Case studies (to be populated with real customer stories)
 
 **Practice:**
 

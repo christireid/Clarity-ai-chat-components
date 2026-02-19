@@ -29,9 +29,9 @@ const metrics = [
   },
   {
     icon: Code,
-    value: '100%',
+    value: 'TS',
     label: 'TypeScript',
-    description: 'Strict mode, zero any',
+    description: 'Typed components and hooks',
     verifiable: 'Check tsconfig.json',
     gradient: 'from-cosmic-500 to-purple-500',
   },

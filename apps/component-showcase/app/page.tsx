@@ -213,7 +213,7 @@ const features = [
   },
   {
     icon: Shield,
-    title: 'WCAG AAA',
+    title: 'WCAG AA+',
     description: 'Accessible & keyboard navigable',
   },
   {
