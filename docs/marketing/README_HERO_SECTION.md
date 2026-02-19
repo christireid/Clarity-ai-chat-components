@@ -152,7 +152,7 @@ Auto-select optimal prompting strategy.
 
 <h1>Robust AI Chat Components<br/>with Token Optimization Built-In</h1>
 
-<p><strong>245 React components for building AI applications.</strong><br/>
+<p><strong>150+ React components for building AI applications.</strong><br/>
 The only library with real-time token tracking, cost optimization, and prompt routing.</p>
 
 <p>
@@ -200,7 +200,7 @@ export default function App() {
 ✅ **Cost estimation and ROI metrics** (unique to us)
 ✅ Beautiful animations and dark mode
 ✅ Full keyboard navigation
-✅ WCAG AAA accessibility
+✅ WCAG AA with AAA targets
 ✅ Mobile responsive design
 
 <br />
@@ -342,7 +342,7 @@ Benefits:
 
 <table>
 <tr>
-<td align="center"><strong>245</strong><br/>Components</td>
+<td align="center"><strong>150+</strong><br/>Components</td>
 <td align="center"><strong>3</strong><br/>Unique Features</td>
 <td align="center"><strong>5</strong><br/>Minutes Setup</td>
 <td align="center"><strong>MIT</strong><br/>Licensed</td>
@@ -486,7 +486,7 @@ export default function App() {
 - ✅ **Cost optimization** (unique to Clarity)
 - ✅ Beautiful UI with dark mode
 - ✅ Full keyboard navigation
-- ✅ WCAG AAA accessibility
+- ✅ WCAG AA with AAA targets
 
 <br />
 
@@ -560,7 +560,7 @@ Auto-select optimal prompting
 
 | Feature | Clarity | shadcn/ui AI | Vercel AI SDK | Ant Design X | Assistant UI |
 |---------|---------|--------------|---------------|--------------|--------------|
-| Components | **245** | 52 | 0 | ~50 | ~100 |
+| Components | **150+** | 52 | 0 | ~50 | ~100 |
 | Token Tracking | **✅ Built-in** | ❌ | ⚠️ Metadata | ❌ | ❌ |
 | Cost Optimization | **✅ Unique** | ❌ | ❌ | ❌ | ❌ |
 | Setup Time | **3 min** | 15 min | 20 min | 15 min | 30 min |
@@ -581,7 +581,7 @@ Auto-select optimal prompting
 
 #### 🎨 **Components**
 
-- **245** React components
+- **150+** React components
 - **15** theme presets
 - **150+** animations
 - Virtual scrolling
@@ -733,7 +733,7 @@ _"I need everything"_
 ## Visual Assets to Create
 
 1. **Hero image** showing token budget visualization in action
-2. **Comparison chart** (bar graph: Clarity 245 vs others)
+2. **Comparison chart** (bar graph: Clarity 150+ vs others)
 3. **Feature matrix screenshot** from comparison table
 4. **Cost savings calculator** showing $2.50 vs $0.50/1M tokens
 5. **Quick start terminal GIF** showing `npm install` → working chat in 30 seconds

@@ -15,7 +15,7 @@ Clarity Chat is the most complete open-source solution for building AI chat inte
 - [Component System](https://clarity-chat.dev/learn/concepts/components): Understanding Clarity's composable component architecture
 - [React Hooks](https://clarity-chat.dev/learn/concepts/hooks): 70+ hooks for chat functionality, streaming, and state management
 - [Theming System](https://clarity-chat.dev/learn/concepts/theming): 15 pre-built themes with full customization support
-- [Animations](https://clarity-chat.dev/learn/concepts/animations): 150+ micro-interactions with Framer Motion
+- [Animations](https://clarity-chat.dev/learn/concepts/animations): Rich micro-interactions with Framer Motion
 - [Architecture](https://clarity-chat.dev/learn/architecture): Three-tier API design philosophy
 
 ## Main Components

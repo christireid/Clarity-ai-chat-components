@@ -139,7 +139,7 @@ Developer-focused marketing content highlighting competitive advantages.
 5. **Developer Documentation** - Best-in-class guides and examples
 
 ### Competitive Positioning
-- **vs. shadcn/ui AI:** npm package + copy-paste, 245 vs 52 components, token features
+- **vs. shadcn/ui AI:** npm package + copy-paste, 150+ vs 52 components, token features
 - **vs. Vercel AI SDK:** Full UI components, not just hooks
 - **vs. Ant Design X:** AI-native features (token tracking, cost ROI)
 - **vs. Assistant UI:** Complete components + unique token optimization
@@ -209,7 +209,7 @@ Developer-focused marketing content highlighting competitive advantages.
 
 ### Priority 1 (Create First)
 1. **Hero image** showing token budget visualization in action
-2. **Comparison bar chart** (Clarity 245 vs competitors 52-100)
+2. **Comparison bar chart** (Clarity 150+ vs competitors 52-100)
 3. **Feature matrix heatmap** (visual version of comparison table)
 4. **Quick start terminal GIF** (npm install → working chat in 30 seconds)
 
@@ -283,7 +283,7 @@ Developer-focused marketing content highlighting competitive advantages.
 
 ### Audience 2: Enterprise CTOs
 **Pain Point:** Need compliance, security, cost management
-**Message:** "Enterprise-grade with token management, WCAG AAA, OWASP compliance."
+**Message:** "Enterprise-grade with token management, WCAG AA with AAA targets, OWASP compliance."
 **Best Content:** Comparison Table (completeness focus)
 
 ### Audience 3: Individual Developers

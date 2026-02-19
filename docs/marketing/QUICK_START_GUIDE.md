@@ -176,7 +176,7 @@ Visit `http://localhost:3000` — you now have a working AI chat!
 ✅ **Beautiful animations** and smooth transitions
 ✅ **Dark mode** with theme switching
 ✅ **Full keyboard navigation** (try `Shift + ?`)
-✅ **WCAG AAA accessibility** (screen reader support)
+✅ **WCAG AA with AAA targets** (screen reader support)
 ✅ **Mobile responsive** design
 ✅ **Error recovery** with automatic retry
 ✅ **Code highlighting** with copy-to-clipboard

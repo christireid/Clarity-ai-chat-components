@@ -42,7 +42,7 @@ You now have:
 - Cost estimation and ROI metrics
 - Beautiful animations and dark mode
 - Full keyboard navigation
-- WCAG AAA accessibility
+- WCAG AA with AAA targets
 
 ---
 
@@ -120,7 +120,7 @@ Best-in-class docs with interactive examples, migration guides, and Claude devel
 
 | Metric | Clarity | shadcn/ui AI | Vercel AI SDK | Ant Design X | Assistant UI |
 |--------|---------|--------------|---------------|--------------|--------------|
-| **Components** | 245 | 52 | 0 | ~50 | ~100 (primitives) |
+| **Components** | 150+ | 52 | 0 | ~50 | ~100 (primitives) |
 | **Token Optimization** | ✅ Built-in | ❌ None | ⚠️ Metadata | ❌ None | ❌ None |
 | **Setup Time** | 3 minutes | ~15 min | ~20 min | ~15 min | ~30 min |
 | **Distribution** | npm + copy-paste | Copy-paste only | npm only | npm only | npm only |

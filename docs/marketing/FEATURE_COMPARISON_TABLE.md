@@ -182,11 +182,11 @@ Vercel AI SDK     ████████░░░░░░░░░░░░�
 | **Theme Presets** | 15 | 10+ | 0 | 5+ | 8+ |
 | **Dark Mode** | ✅ | ✅ | ❌ | ✅ | ✅ |
 | **Color System** | CSS Vars | OKLCH | N/A | Ant Tokens | Radix Tokens |
-| **Animations** | 150+ | 100+ | 0 | 50+ | 80+ |
+| **Animations** | Rich | 100+ | 0 | 50+ | 80+ |
 | **Component Slots** | ✅ | ✅ | N/A | ✅ | ✅ |
 | **Custom Styling** | ✅ Full | ✅ Full | N/A | ✅ Full | ✅ Full |
 | **Responsive** | ✅ Mobile-first | ✅ Yes | N/A | ✅ Yes | ✅ Yes |
-| **Accessibility** | WCAG AAA | WCAG AA | N/A | WCAG AA | WCAG AA |
+| **Accessibility** | WCAG AA with AAA targets | WCAG AA | N/A | WCAG AA | WCAG AA |
 
 ---
 
