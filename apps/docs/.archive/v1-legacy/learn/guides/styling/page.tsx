@@ -95,7 +95,7 @@ export default function LearnStylingGuidePage() {
         <Callout type="success">
           Ready for more? Read the{' '}
           <Link href="/guides/accessibility">Accessibility Guide</Link> to
-          ensure your customisations retain WCAG AAA compliance.
+          ensure your customisations retain WCAG AA compliance with AAA targets.
         </Callout>
       </section>
     </div>

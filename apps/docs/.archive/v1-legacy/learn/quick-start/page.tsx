@@ -426,7 +426,7 @@ export default function CustomChat() {
                     Accessibility
                   </h4>
                   <p className="text-sm text-text-secondary">
-                    WCAG AAA compliant with full keyboard navigation
+                    WCAG AA compliant with AAA targets with full keyboard navigation
                   </p>
                 </div>
                 <div className="p-4 rounded-lg bg-bg-secondary border border-border">

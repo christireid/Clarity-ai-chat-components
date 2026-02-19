@@ -267,7 +267,7 @@ export default function WhyClarityPage() {
           </li>
           <li className="flex items-start">
             <span className="mr-2 text-green-500 mt-1">✓</span>
-            <span>Comprehensive accessibility (WCAG AAA compliance)</span>
+            <span>Comprehensive accessibility (WCAG AA compliance with AAA targets)</span>
           </li>
           <li className="flex items-start">
             <span className="mr-2 text-green-500 mt-1">✓</span>

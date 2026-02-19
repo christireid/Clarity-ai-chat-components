@@ -99,7 +99,7 @@ export default function App() {
             <li>⌨️ Full keyboard navigation</li>
             <li>📱 Mobile responsive</li>
             <li>⚡ Optimized performance</li>
-            <li>♿ WCAG AAA accessible</li>
+            <li>♿ WCAG AA accessible with AAA targets</li>
             <li>🔒 Robust security</li>
             <li>🔄 Streaming responses</li>
             <li>🛡️ Error recovery</li>
