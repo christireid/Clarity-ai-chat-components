@@ -1,6 +1,6 @@
 # Tool Call Types Guide
 
-**Version**: 1.0 **Last Updated**: 2026-01-22 **Status**: Production Ready
+**Version**: 1.0 **Last Updated**: 2026-01-22 **Status**: Stable
 
 This guide clarifies the three different tool call types in the Clarity Chat tool calling system and
 when to use each.
@@ -692,4 +692,4 @@ const message: AssistantMessage = {
 
 ---
 
-**Last Updated**: 2026-01-22 **Version**: 1.0 **Status**: Production Ready
+**Last Updated**: 2026-01-22 **Version**: 1.0 **Status**: Stable

@@ -6,7 +6,7 @@
  * will automatically reflect the changes.
  *
  * Last verified: 2026-01-10
- * - Components: 156 production-ready components in packages/react/src/components/
+ * - Components: 156 comprehensive components in packages/react/src/components/
  *   (excluding index.ts, test files, stories, spec files, and internal utilities)
  * - Hooks: 72 custom hooks matching use*.ts in packages/react/src/
  * - Themes: 15 presets in packages/react/src/theme/modern-presets/
@@ -22,7 +22,7 @@
  * These are the numbers shown in user-facing documentation
  */
 export const LIBRARY_STATS = {
-  /** Total component count (conservative, production-ready only) */
+  /** Total component count (conservative, robust only) */
   components: '155+',
   /** Total hook count (conservative, exported hooks only) */
   hooks: '70+',
@@ -55,7 +55,7 @@ export const LIBRARY_DESCRIPTIONS = {
   tagline: `${LIBRARY_STATS.components} components, ${LIBRARY_STATS.hooks} hooks, ${LIBRARY_STATS.themes} themes`,
 
   /** Full description for meta tags */
-  metaDescription: `Enterprise-grade React component library for building beautiful, accessible AI chat interfaces. Features ${LIBRARY_STATS.components} production-ready components, ${LIBRARY_STATS.hooks} custom hooks, ${LIBRARY_STATS.themes} themes, and comprehensive token optimization.`,
+  metaDescription: `Enterprise-grade React component library for building beautiful, accessible AI chat interfaces. Features ${LIBRARY_STATS.components} comprehensive components, ${LIBRARY_STATS.hooks} custom hooks, ${LIBRARY_STATS.themes} themes, and comprehensive token optimization.`,
 
   /** Component description */
   componentsDescription: `Explore all ${LIBRARY_STATS.components} components with interactive examples`,

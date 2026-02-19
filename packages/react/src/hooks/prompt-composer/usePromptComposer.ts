@@ -42,7 +42,7 @@ const DEFAULT_EXPAND_THRESHOLD = 100 // Characters before expanding
 // ============================================================================
 
 /**
- * Production-ready PromptComposer hook for progressive disclosure AI chat.
+ * Comprehensive PromptComposer hook for progressive disclosure AI chat.
  *
  * **Features:**
  * - Progressive context expansion (90% token savings)

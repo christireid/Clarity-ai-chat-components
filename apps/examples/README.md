@@ -1,6 +1,6 @@
 # Clarity Chat Examples
 
-> **29 Production-Ready Examples** - Copy, customize, and ship in minutes.
+> **29 Robust Examples** - Copy, customize, and ship in minutes.
 
 Every example is a complete, working application with **all peer dependencies pre-configured**. Just run `pnpm install && pnpm dev`!
 

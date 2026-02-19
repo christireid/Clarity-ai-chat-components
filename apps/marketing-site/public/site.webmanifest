@@ -1,7 +1,7 @@
 {
   "name": "Clarity Chat",
   "short_name": "Clarity",
-  "description": "Production-ready React components for AI chat. Multi-provider support, intelligent memory, 40%+ cost savings.",
+  "description": "React components for AI chat. Multi-provider support, intelligent memory, 40%+ cost savings.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#0a0a0a",

@@ -321,4 +321,4 @@ This comprehensive test suite provides:
 - **Performance benchmarks** for scalability planning
 - **Implementation guidance** through test examples
 
-The tests validate that the memory package is GDPR-compliant and production-ready for handling user data with appropriate consent, audit trails, deletion, and export capabilities.
+The tests validate that the memory package is GDPR-compliant and ready for handling user data with appropriate consent, audit trails, deletion, and export capabilities.

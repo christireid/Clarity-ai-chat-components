@@ -901,7 +901,7 @@ function App() {
 
       <section className="docs-section">
         <h2>Complete Theme Example</h2>
-        <p>Here's a production-ready theme configuration:</p>
+        <p>Here's a robust theme configuration:</p>
         <pre>
           <code>{`// themes.ts
 export const themes = {

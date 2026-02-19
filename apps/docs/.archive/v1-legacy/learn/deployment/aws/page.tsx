@@ -18,7 +18,7 @@ export default function AWSDeploymentPage() {
         <h1>Deploy to AWS</h1>
         <p className="docs-lead">
           Deploy Clarity Chat on AWS using Lambda, API Gateway, S3, and
-          CloudFront for a scalable, production-ready setup.
+          CloudFront for a scalable, robust setup.
         </p>
       </div>
 

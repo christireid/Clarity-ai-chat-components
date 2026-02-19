@@ -234,7 +234,7 @@ export default function App() {
         <ul>
           <li>Use simple APIs for rapid development</li>
           <li>Gradually migrate to more specific configurations</li>
-          <li>All levels are production-ready</li>
+          <li>All levels are robust</li>
         </ul>
       </div>
     </div>

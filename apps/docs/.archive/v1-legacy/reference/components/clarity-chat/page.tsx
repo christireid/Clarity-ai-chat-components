@@ -266,7 +266,7 @@ function App() {
         />
         <p className="mt-4 text-sm text-muted-foreground">
           That's it! You now have a fully functional AI chat interface with
-          streaming, error handling, and all production-ready features.
+          streaming, error handling, and all robust features.
         </p>
       </section>
 
@@ -479,7 +479,7 @@ function EnterpriseApp() {
         />
         <p className="mt-4 text-sm text-muted-foreground">
           Complete enterprise configuration with memory, rate limiting, sync,
-          and comprehensive error handling. Production-ready for high-traffic applications.
+          and comprehensive error handling. Robust for high-traffic applications.
         </p>
       </section>
 

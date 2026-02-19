@@ -1,7 +1,7 @@
 /**
  * AI Memory & Context System
  *
- * Production-ready memory management for AI chat applications
+ * Comprehensive memory management for AI chat applications
  *
  * @module @clarity-chat/react/memory
  */

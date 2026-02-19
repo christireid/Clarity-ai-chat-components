@@ -640,7 +640,7 @@ export function AnalyticsCommandPalette() {
 // ============================================================================
 
 /**
- * Production-ready command palette with all features.
+ * Full-featured command palette with all features.
  * Combines multiple patterns for a complete implementation.
  */
 export function ProductionCommandPalette() {

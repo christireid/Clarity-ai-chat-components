@@ -11,7 +11,7 @@ building visually striking landing pages, portfolios, and marketing sites. The l
 Manu Arora and has gained significant traction with enterprise clients including Google, Microsoft,
 and Cisco.
 
-**Key Differentiator:** Production-ready animated components with copy-paste simplicity, powered by
+**Key Differentiator:** Robust animated components with copy-paste simplicity, powered by
 Framer Motion.
 
 ---
@@ -112,7 +112,7 @@ Framer Motion.
 
 ### Design Language
 
-- **Modern & Polished**: Emphasis on smooth, production-ready animations
+- **Modern & Polished**: Emphasis on smooth, robust animations
 - **Glassmorphism**: Heavy use of glass-like transparent overlays
 - **Gradients**: Vibrant, animated gradient effects throughout
 - **Dark/Light Themes**: Full support for both modes
@@ -132,7 +132,7 @@ Framer Motion.
 
 ### Core Technology: Framer Motion
 
-Aceternity UI is built entirely on **Framer Motion**, React's production-ready animation library.
+Aceternity UI is built entirely on **Framer Motion**, React's robust animation library.
 This choice provides:
 
 - **Declarative Animations**: Simple, React-friendly API

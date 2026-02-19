@@ -189,7 +189,7 @@ memory: {
 ### ✅ DO: Use ChatWindow for Production
 
 ```tsx
-// Good: Production-ready component
+// Good: Well-structured component
 import { ChatWindow, useClarityChat } from '@clarity-chat/react'
 
 function MyChat() {

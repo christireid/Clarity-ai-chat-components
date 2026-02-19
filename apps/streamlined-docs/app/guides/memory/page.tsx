@@ -1932,7 +1932,7 @@ export default function MemoryGuidePage() {
           </div>
 
           <p className="text-neutral-600 dark:text-neutral-400 mb-6">
-            A production-ready chat implementation with memory, consent management,
+            A complete chat implementation with memory, consent management,
             GDPR compliance, and user data controls.
           </p>
 

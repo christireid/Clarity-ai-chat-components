@@ -23,7 +23,7 @@ export default function OpenAIStreamingChatPage() {
 
       <section className="docs-section">
         <h2>What You'll Build</h2>
-        <p>A production-ready chat interface with:</p>
+        <p>A robust chat interface with:</p>
         <ul>
           <li>✅ Real-time streaming responses</li>
           <li>✅ Message history</li>

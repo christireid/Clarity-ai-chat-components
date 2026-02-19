@@ -19,7 +19,7 @@ export default function App() {
 }
 ```
 
-Done. You have a production-ready chat with streaming, error handling, and accessibility.
+Done. You have a complete chat with streaming, error handling, and accessibility.
 
 ## More Control? Use the Hook
 

@@ -41,7 +41,7 @@ The `@clarity-chat/token-optimization` package is designed as a **production-gra
 **Problem:** Most token optimization libraries are either:
 - Too simple (just wrappers around tokenizers)
 - Too complex (require deep integration with LLM frameworks)
-- Not production-ready (missing monitoring, error handling, caching)
+- Not complete (missing monitoring, error handling, caching)
 
 **Solution:** A **layered architecture** that provides:
 - **Simple layer:** Drop-in utilities for common tasks

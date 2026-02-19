@@ -23,14 +23,14 @@ with a focus on:
 - **Accessibility-First**: WCAG compliance built into every component
 - **Keyboard Navigation**: First-class keyboard UX
 - **Unopinionated Primitives**: Flexible, customizable foundation
-- **Production-Ready**: Battle-tested in Cal.com
+- **Robust**: Battle-tested in Cal.com
 
 **Design Principles**:
 
 - **Accessibility**: Keyboard navigation and screen reader support built-in
 - **Composability**: Build complex UIs from simple primitives
 - **Flexibility**: Style and customize without limitations
-- **Quality**: Polished, production-ready components
+- **Quality**: Polished, robust components
 
 ## Command Palette Component (CRITICAL STUDY)
 
@@ -466,7 +466,7 @@ CommandRoot (search & state)
 
 1. **Design Excellence**: Beautiful, professional aesthetic from Cal.com
 2. **Base UI Foundation**: Robust, accessible primitives
-3. **Production-Ready**: Battle-tested in real applications
+3. **Robust**: Battle-tested in real applications
 4. **Accessibility**: WCAG-compliant out of the box
 5. **Keyboard Navigation**: First-class keyboard UX
 6. **Composability**: Build complex UIs from primitives

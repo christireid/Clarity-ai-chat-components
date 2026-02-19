@@ -1061,7 +1061,7 @@ primitives), shadcn Chatbot Kit (Framer Motion)
 - Developer experience (better than shadcn/ui AI setup)
 - Token/cost optimization (unique)
 - Prompt engineering (unique)
-- Production-ready quality (match shadcn/ui AI polish)
+- Robust quality (match shadcn/ui AI polish)
 - Comprehensive documentation (better than CopilotKit)
 
 **Recommended Reading Priority for Remaining Files:**

@@ -165,7 +165,7 @@ export interface UseStreamingWebSocketReturn {
  * **Architecture Layer**: Mid-Level (Composable Building Blocks)
  * **Domain**: Streaming & Transport
  *
- * Production-ready WebSocket streaming hook with automatic reconnection,
+ * Robust WebSocket streaming hook with automatic reconnection,
  * heartbeat/ping-pong, and lifecycle management.
  *
  * For chat streaming, use top-level `useClarityChat` with transport: 'websocket'.
@@ -215,7 +215,7 @@ export function useStreamingWebSocket(
         'Please provide a valid WebSocket URL (ws:// or wss://).\n\n' +
         'Example:\n' +
         '  const ws = useStreamingWebSocket({ url: "wss://api.example.com/ws" })\n\n' +
-        'For more help, see: https://clarity-chat.dev/docs/streaming'
+        'For more help, see: https://github.com/christireid/Clarity-ai-chat-components/blob/main/docs/streaming'
     )
   }
 
@@ -230,7 +230,7 @@ export function useStreamingWebSocket(
         '  ✓ ws://localhost:8080/ws (local development)\n' +
         '  ✗ https://api.example.com/ws (HTTP protocol not supported)\n' +
         '  ✗ api.example.com/ws (missing protocol)\n\n' +
-        'For more help, see: https://clarity-chat.dev/docs/streaming'
+        'For more help, see: https://github.com/christireid/Clarity-ai-chat-components/blob/main/docs/streaming'
     )
   }
 

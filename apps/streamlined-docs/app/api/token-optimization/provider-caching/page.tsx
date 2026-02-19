@@ -315,7 +315,7 @@ export default function ProviderCachingPage() {
       icon={Trophy}
       badges={[
         { label: '90% Savings', variant: 'success' },
-        { label: 'Production Ready', variant: 'stable' },
+        { label: 'Stable', variant: 'stable' },
         { label: 'Hero Feature', variant: 'premium' },
       ]}
       packageName="@clarity-chat/token-optimization"

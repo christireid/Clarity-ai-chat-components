@@ -138,7 +138,7 @@ export const DOCS_STARTER_PROMPTS: PromptSuggestion[] = [
     id: 'examples',
     text: 'Show me some example implementations',
     label: 'Examples',
-    description: 'Browse 30+ production-ready examples',
+    description: 'Browse 30+ robust examples',
     icon: <Lightbulb className="w-4 h-4" />,
     type: 'starter',
     category: 'Examples',

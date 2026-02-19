@@ -93,11 +93,11 @@ can be moved to a dedicated business/sales repository.
 
 ## 🎯 Key Value Propositions
 
-1. **Speed:** 10-50x faster time to market (1 week vs. 6 months)
-2. **Cost:** 97% cost savings ($1,499 vs. $150K custom build)
-3. **Quality:** WCAG AAA certified, SOC 2 compliant
+1. **Speed:** Faster time to market vs. building from scratch
+2. **Cost:** Significant cost savings vs. custom build
+3. **Quality:** Accessibility-first, TypeScript-first
 4. **Support:** Commercial support with SLA
-5. **ROI:** Average 2,847% return on investment
+5. **ROI:** Save development time and resources
 
 ---
 

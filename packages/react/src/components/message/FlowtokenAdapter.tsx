@@ -9,7 +9,7 @@
  * @installation npm install flowtoken
  * @bundleImpact ~15KB when flowtoken is installed
  * @fallback Shows static text without animations if flowtoken is not installed
- * @docs https://clarity-chat.dev/docs/animations/flowtoken
+ * @docs https://github.com/christireid/Clarity-ai-chat-components/blob/main/docs/animations/flowtoken
  *
  * @example
  * ```tsx

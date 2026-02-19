@@ -4,7 +4,7 @@ Progressive disclosure prompt system with **90% token savings** through smart co
 
 ## Overview
 
-PromptComposer is a production-ready AI chat input system that rivals ChatGPT, Claude, and Cursor. It features:
+PromptComposer is a comprehensive AI chat input system that rivals ChatGPT, Claude, and Cursor. It features:
 
 - **90% Token Savings** - Progressive context expansion (summary → preview → full)
 - **Smart Relevance Ranking** - AI-powered context prioritization

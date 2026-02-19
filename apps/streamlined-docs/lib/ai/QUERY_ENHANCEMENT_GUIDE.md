@@ -2,7 +2,7 @@
 
 > **Version**: 1.0.0
 > **Last Updated**: January 27, 2026
-> **Status**: Production Ready
+> **Status**: Stable
 
 ## Table of Contents
 

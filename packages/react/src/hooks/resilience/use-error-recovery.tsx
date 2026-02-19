@@ -135,7 +135,7 @@ function getUserFriendlyMessage(errorType: string): string {
 }
 
 /**
- * Production-ready error recovery hook with intelligent retry logic.
+ * Robust error recovery hook with intelligent retry logic.
  *
  * **Features:**
  * - Automatic retry with exponential backoff

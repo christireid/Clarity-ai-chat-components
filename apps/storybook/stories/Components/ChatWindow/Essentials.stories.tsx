@@ -12,7 +12,7 @@ const meta: Meta<typeof ChatWindow> = {
     docs: {
       description: {
         component: `
-The ChatWindow component is a complete, production-ready chat interface that combines
+The ChatWindow component is a complete, full-featured chat interface that combines
 message display, input, and interactions into a single component. This track shows
 the essential patterns you'll use in 90% of cases.
 

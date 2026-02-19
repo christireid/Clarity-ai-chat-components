@@ -13,7 +13,7 @@
 👉 **[Getting Started Guide](./GETTING_STARTED_TOOL_CALLING.md)** - 5-minute quick start
 
 **Build your first tool in 5 minutes** with step-by-step instructions, real-world examples, and
-production-ready templates.
+ready-to-use templates.
 
 ---
 
@@ -48,7 +48,7 @@ production-ready templates.
 - Security checklists (application, tool, infrastructure)
 - Incident response procedures
 
-**Best for**: Building secure, production-ready tools
+**Best for**: Building secure, robust tools
 
 ---
 

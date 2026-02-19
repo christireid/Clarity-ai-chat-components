@@ -99,7 +99,7 @@ applications.
   - Links to official documentation
 
 - **Code Snippets**
-  - 60+ production-ready snippets for TypeScript, JavaScript, and React
+  - 60+ ready-to-use snippets for TypeScript, JavaScript, and React
   - OpenAI, Anthropic, and Google AI integrations
   - Next.js API routes with streaming support
   - React components and hooks for chat interfaces

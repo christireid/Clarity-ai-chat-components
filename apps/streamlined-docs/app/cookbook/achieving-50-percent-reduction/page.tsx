@@ -37,7 +37,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'Achieving 50-70% AI Cost Reduction - Token Optimization Guide',
     description:
-      'Learn how to reduce AI costs by 50-70% using provider caching, compression, and smart routing. Production-ready code examples and cost analysis included.',
+      'Learn how to reduce AI costs by 50-70% using provider caching, compression, and smart routing. Robust code examples and cost analysis included.',
     type: 'article',
     url: '/cookbook/achieving-50-percent-reduction',
   },

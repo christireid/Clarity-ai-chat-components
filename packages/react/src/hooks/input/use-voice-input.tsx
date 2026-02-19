@@ -113,7 +113,7 @@ function getSpeechRecognition(): SpeechRecognitionAPI | null {
 }
 
 /**
- * Production-ready voice input hook with Web Speech API.
+ * Robust voice input hook with Web Speech API.
  * 
  * **Features:**
  * - Real-time speech-to-text

@@ -6,7 +6,7 @@
 
 **The Ultimate VS Code Extension for Building AI Chat Applications**
 
-Build production-ready AI chat interfaces in minutes with intelligent code completion, 50+ snippets,
+Build robust AI chat interfaces in minutes with intelligent code completion, 50+ snippets,
 GitHub Copilot integration, and comprehensive tooling for the
 [Clarity Chat](https://github.com/code-and-clarity/clarity-chat) component library.
 
@@ -82,7 +82,7 @@ Access all hooks organized by category:
 
 **Command:** `Clarity Chat: Create API Route` (`Ctrl/Cmd+Shift+P`)
 
-Generate production-ready streaming API routes:
+Generate complete streaming API routes:
 
 - **Providers:** OpenAI, Anthropic, Google AI, Multi-Provider
 - **Frameworks:** Next.js App Router, Next.js Pages Router, Express, Hono

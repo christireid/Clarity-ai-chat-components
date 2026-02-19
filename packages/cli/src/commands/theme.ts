@@ -24,6 +24,6 @@ themeCommand
   .action(async (theme) => {
     logger.info(`Copying theme "${theme}" to your project...`)
     logger.warn(
-      'Theme copying is coming in v1.1. For now, please visit https://clarity-chat.dev/themes to copy CSS variables.'
+      'Theme copying is coming in v1.1. For now, please visit https://github.com/christireid/Clarity-ai-chat-components to copy CSS variables.'
     )
   })

@@ -268,7 +268,7 @@ showQuickStart('enterprise')`}
               {/* Success Celebration */}
               <SuccessCelebration
                 title="Your first chat is ready!"
-                message="You've just created a production-ready AI chat interface. Here's what to explore next:"
+                message="You've just created a robust AI chat interface. Here's what to explore next:"
                 nextSteps={[
                   {
                     title: 'Add Memory',
@@ -387,7 +387,7 @@ export default function CustomChat() {
             <TutorialStep step={5} title="What's Included">
               <p className="text-text-secondary mb-6">
                 The basic ChatWindow component includes everything you need for
-                a production-ready chat interface:
+                a robust chat interface:
               </p>
 
               <div className="grid md:grid-cols-2 gap-4">

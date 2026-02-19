@@ -167,7 +167,7 @@ export function useClarityChatWithTools(
         '  import { createToolUIRegistry } from "@clarity-chat/react"\n' +
         '  const registry = createToolUIRegistry({ weather: WeatherComponent })\n' +
         '  const { toolResults } = useClarityChatWithTools({ api: "/api/chat", toolRegistry: registry })\n\n' +
-        'For more help, see: https://clarity-chat.dev/docs/tools'
+        'For more help, see: https://github.com/christireid/Clarity-ai-chat-components/blob/main/docs/tools'
     )
   }
 

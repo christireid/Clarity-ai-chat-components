@@ -216,7 +216,7 @@ export function useRequireLicense(featureName = 'This feature'): void {
     throw new Error(
       `${featureName} requires a valid Clarity Chat license. ` +
         `Status: ${status.status}. ${status.reason ?? ''} ` +
-        `Purchase at https://claritychat.dev/pricing`
+        `Purchase at https://github.com/christireid/Clarity-ai-chat-components`
     )
   }
 }
@@ -268,7 +268,7 @@ export function useLicenseWarning(
           `%c Clarity Chat License Warning %c\n\n` +
             `The "${featureName}" feature requires a ${requiredPlan} license.\n\n` +
             `${reason}\n\n` +
-            `Get your license at: https://claritychat.dev/pricing\n\n` +
+            `Get your license at: https://github.com/christireid/Clarity-ai-chat-components\n\n` +
             `This warning only appears in development mode.`,
           'background: #f59e0b; color: black; font-weight: bold; padding: 4px 8px;',
           ''

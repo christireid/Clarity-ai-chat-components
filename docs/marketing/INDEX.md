@@ -1,3 +1,5 @@
+<!-- NOTE: These are draft marketing templates. All claims must be verified before use. -->
+
 # Marketing Content: Clarity AI Chat Components
 
 Developer-focused marketing content highlighting competitive advantages.

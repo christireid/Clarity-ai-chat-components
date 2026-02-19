@@ -13,7 +13,7 @@ const statusConfig = {
     color: 'green',
     label: 'Stable',
     icon: '✓',
-    description: 'Production-ready and fully supported',
+    description: 'Stable and fully supported',
     className: 'bg-green-100 text-green-700 border-green-200 dark:bg-green-900/20 dark:text-green-400 dark:border-green-800',
   },
   beta: {

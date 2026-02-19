@@ -28,7 +28,7 @@ components across 12+ technology platforms. The Conversational UI offering provi
 - **Enterprise-first**: Designed for large-scale business applications
 - **Platform-agnostic**: Consistent API across different frameworks
 - **AI-enhanced**: Native support for AI models and chatbot services
-- **Production-ready**: Handle complex enterprise requirements out of the box
+- **Robust**: Handle complex enterprise requirements out of the box
 - **Comprehensive**: Full-featured chat components, not just UI primitives
 
 ## Platform Availability

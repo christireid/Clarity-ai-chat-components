@@ -20,7 +20,7 @@ export default function ExamplesCatalogPage() {
       <div>
         <h1 className="text-5xl font-bold mb-4">Examples Catalog</h1>
         <p className="text-xl text-text-secondary">
-          16 production-ready examples covering the top 10 AI chatbot use cases
+          16 robust examples covering the top 10 AI chatbot use cases
         </p>
       </div>
 
@@ -43,7 +43,7 @@ export default function ExamplesCatalogPage() {
           </div>
           <div>
             <div className="text-3xl font-bold text-brand-500 mb-2">11</div>
-            <div className="text-sm text-text-secondary">Production Ready</div>
+            <div className="text-sm text-text-secondary">Stable</div>
           </div>
         </div>
       </section>

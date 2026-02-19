@@ -29,7 +29,7 @@ export type {
 } from './ConversationList.types'
 
 /**
- * Production-ready Conversation List component.
+ * Robust Conversation List component.
  *
  * **Features:**
  * - Search conversations by title/content

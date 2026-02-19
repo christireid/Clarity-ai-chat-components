@@ -119,7 +119,7 @@ export interface UseMessageOperationsReturn {
 import { generateMessageId as generateId } from '@clarity-chat/utils'
 
 /**
- * Production-ready Message Operations hook for advanced chat features.
+ * Robust Message Operations hook for advanced chat features.
  *
  * **Features:**
  * - Message editing with version history

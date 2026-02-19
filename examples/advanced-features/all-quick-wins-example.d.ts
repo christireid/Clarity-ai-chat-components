@@ -11,7 +11,7 @@
  * Complete Advanced Chat Application
  *
  * This example shows how to integrate all four Quick Win features
- * for a production-ready, high-performance chat experience.
+ * for a robust, high-performance chat experience.
  */
 export declare function AdvancedChatApplication(): any;
 /**

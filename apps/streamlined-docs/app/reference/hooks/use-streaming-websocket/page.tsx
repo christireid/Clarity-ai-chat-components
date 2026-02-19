@@ -3,7 +3,7 @@
 /**
  * useStreamingWebSocket Hook - API Reference Documentation
  *
- * Production-ready WebSocket streaming hook with bidirectional communication,
+ * Robust WebSocket streaming hook with bidirectional communication,
  * automatic reconnection, heartbeat monitoring, and message acknowledgment.
  */
 
@@ -1249,7 +1249,7 @@ export default function UseStreamingWebSocketPage() {
               </h1>
 
               <p className="text-lg text-muted-foreground max-w-3xl">
-                Production-ready WebSocket streaming hook with bidirectional
+                Robust WebSocket streaming hook with bidirectional
                 communication, automatic reconnection with exponential backoff,
                 heartbeat monitoring, message acknowledgment, and support for
                 text and binary data. Built for real-time AI chat and

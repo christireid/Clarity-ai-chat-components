@@ -320,7 +320,7 @@ large conversation handling.
 
 #### Strategic Alignment: 17/20
 
-**CEO priority (9/10)**: High - Enterprise requirement. Shows production-ready focus. Compliance
+**CEO priority (9/10)**: High - Enterprise requirement. Shows robust focus. Compliance
 checkbox.
 
 **CTO priority (8/10)**: High - Straightforward implementation. Good utility showcase. Enables data

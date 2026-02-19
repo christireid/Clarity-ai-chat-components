@@ -3,7 +3,7 @@
 
 ## About Clarity Chat
 
-Clarity Chat is a premium React component library for building AI chat interfaces. It provides production-ready components with multi-provider support (OpenAI, Anthropic Claude, Google Gemini), intelligent memory management, and 40%+ token cost savings.
+Clarity Chat is a premium React component library for building AI chat interfaces. It provides comprehensive components with multi-provider support (OpenAI, Anthropic Claude, Google Gemini), intelligent memory management, and 40%+ token cost savings.
 
 ## Key Features
 

@@ -6,7 +6,7 @@ import { useState, useMemo } from 'react';
  * **useClarityChat Hook - Essentials Track**
  *
  * This track focuses on the most common use cases for useClarityChat.
- * These examples are production-ready and can be copied directly into your app.
+ * These examples are ready to use and can be copied directly into your app.
  *
  * For advanced patterns, see the "Enterprise" track.
  */
@@ -133,7 +133,7 @@ The most basic chat setup. This is the foundation for all other patterns.
 /**
  * **Essential Pattern 2: With ChatWindow**
  *
- * Use the ChatWindow component for a complete, production-ready interface.
+ * Use the ChatWindow component for a complete, full-featured interface.
  * This is the recommended pattern for most applications.
  */
 export const WithChatWindow = {
@@ -142,7 +142,7 @@ export const WithChatWindow = {
             api: '/api/chat',
         });
         const messages = useMemo(() => convertCoreMessagesToMessages(coreMessages), [coreMessages]);
-        return (_jsx("div", { className: "w-full max-w-4xl", children: _jsxs(Card, { className: "p-4", children: [_jsx("h3", { className: "text-lg font-semibold mb-4", children: "With ChatWindow Component" }), _jsx("p", { className: "text-sm text-muted-foreground mb-4", children: "Using ChatWindow provides a complete, production-ready interface with all features built-in." }), _jsx(ChatWindow, { messages: messages, isLoading: isLoading, onSendMessage: async (content) => {
+        return (_jsx("div", { className: "w-full max-w-4xl", children: _jsxs(Card, { className: "p-4", children: [_jsx("h3", { className: "text-lg font-semibold mb-4", children: "With ChatWindow Component" }), _jsx("p", { className: "text-sm text-muted-foreground mb-4", children: "Using ChatWindow provides a complete, full-featured interface with all features built-in." }), _jsx(ChatWindow, { messages: messages, isLoading: isLoading, onSendMessage: async (content) => {
                             await append({ role: 'user', content });
                         } })] }) }));
     },

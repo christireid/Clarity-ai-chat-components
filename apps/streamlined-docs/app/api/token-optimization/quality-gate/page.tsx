@@ -40,7 +40,7 @@ export default function QualityGateAPIPage() {
       badges={[
         { label: 'API Reference', variant: 'info' },
         { label: 'Quality Assurance', variant: 'success' },
-        { label: 'Production Ready', variant: 'primary' },
+        { label: 'Stable', variant: 'primary' },
       ]}
       features={[
         'Configurable quality thresholds (default: 85%)',

@@ -23,7 +23,7 @@ provides pre-built, customizable React components for AI applications.
 - **AI SDK Native**: Built for Vercel AI SDK from the ground up
 - **shadcn/ui Architecture**: Copy-paste components that become part of your codebase
 - **React 19 Optimized**: Uses latest React features (no forwardRef)
-- **Production-Ready**: Battle-tested patterns from Vercel's AI products
+- **Robust**: Battle-tested patterns from Vercel's AI products
 - **Composable**: Build complex UIs from simple primitives
 - **Type-Safe**: Full TypeScript support with AI SDK types
 
@@ -272,7 +272,7 @@ import { ToolCall, ToolResult } from '@/components/ai-elements'
 4. **Suspense**: Loading states handled elegantly
 5. **Accessibility**: Built with a11y in mind
 
-### Production-Ready
+### Robust
 
 1. **Vercel-Backed**: Maintained by Vercel team
 2. **Battle-Tested**: Used in Vercel's AI products

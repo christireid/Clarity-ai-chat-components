@@ -104,7 +104,7 @@ Returns a list of example names with descriptions. Use get_example to retrieve t
   },
   {
     name: 'get_example',
-    description: `Get complete, production-ready code for a specific Clarity Chat example.
+    description: `Get complete, ready-to-use code for a specific Clarity Chat example.
 
 Use this tool when the user wants to see how to implement a specific feature (streaming, function calling), get starter code for a pattern, or learn Clarity Chat API usage through examples.
 
@@ -437,7 +437,7 @@ Use this tool when the user wants to:
 - See how to integrate a component
 - Get TypeScript code with proper typing
 
-Returns: Production-ready code snippet with imports and usage.
+Returns: Ready-to-use code snippet with imports and usage.
 
 Example output:
 {

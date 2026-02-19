@@ -1,7 +1,7 @@
 /**
  * Chat Analytics Service
  *
- * Provides a production-ready abstraction for tracking chat interactions.
+ * Provides a robust abstraction for tracking chat interactions.
  * Supports multiple analytics providers, environment-aware logging, and
  * batching for high-volume scenarios.
  *

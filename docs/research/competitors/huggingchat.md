@@ -779,7 +779,7 @@ for self-hosting **Alternative**: Provider marketplace or simplified setup wizar
 
 **For Developers**:
 
-> "Reference implementation of modern LLM chat UI with production-ready architecture"
+> "Reference implementation of modern LLM chat UI with robust architecture"
 
 **For Organizations**:
 

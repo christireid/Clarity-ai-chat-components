@@ -18,7 +18,7 @@ const meta: Meta<typeof ChatWindow> = {
       description: {
         component: `
 Enterprise patterns for production applications. These examples demonstrate
-advanced features, performance optimizations, and production-ready configurations.
+advanced features, performance optimizations, and robust configurations.
 
 ## Enterprise Features
 

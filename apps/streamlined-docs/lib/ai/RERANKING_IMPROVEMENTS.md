@@ -678,7 +678,7 @@ const results = await crossEncoderRerank(query, hybridResults, {
 
 ## Summary
 
-These improvements deliver **15-17% quality improvement** at the cost of **+15ms latency**. The enhanced system is production-ready and can be further upgraded with external cross-encoder APIs for additional quality gains.
+These improvements deliver **15-17% quality improvement** at the cost of **+15ms latency**. The enhanced system is robust and can be further upgraded with external cross-encoder APIs for additional quality gains.
 
 **Key Files Modified**:
 - `apps/streamlined-docs/lib/ai/ragOptimized.ts` (532 → 850 lines)

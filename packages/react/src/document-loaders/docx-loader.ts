@@ -8,7 +8,7 @@
  * @installation npm install jszip
  * @bundleImpact ~100KB (JSZip library)
  * @fallback Returns error document with installation instructions if jszip is not installed
- * @docs https://clarity-chat.dev/docs/document-loaders#docx-setup
+ * @docs https://github.com/christireid/Clarity-ai-chat-components/blob/main/docs/document-loaders#docx-setup
  *
  * @example
  * ```tsx
@@ -27,7 +27,7 @@
  * })
  * ```
  *
- * @see https://clarity-chat.dev/docs/document-loaders#docx-loader
+ * @see https://github.com/christireid/Clarity-ai-chat-components/blob/main/docs/document-loaders#docx-loader
  */
 
 import type { Document, DocumentLoader, DocumentLoadOptions } from './types'

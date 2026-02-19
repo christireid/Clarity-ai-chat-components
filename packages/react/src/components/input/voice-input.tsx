@@ -70,7 +70,7 @@ const variantMap = {
 }
 
 /**
- * Production-ready Voice Input component with Web Speech API.
+ * Robust Voice Input component with Web Speech API.
  *
  * **Features:**
  * - One-click voice recording

@@ -37,12 +37,12 @@ for dir in "$EXAMPLES_DIR"/*; do
 done
 
 echo "- **Total examples:** $TOTAL"
-echo "- **Production-ready (P0):** $ENHANCED_P0"
+echo "- **Robust (P0):** $ENHANCED_P0"
 echo "- **With comprehensive README:** $WITH_README"
 echo "- **With @ts-nocheck:** $WITH_NOCHECK"
 echo "- **Ready for enhancement:** $((TOTAL - ENHANCED_P0))"
 echo ""
-echo "## Production-Ready Examples (5)"
+echo "## Robust Examples (5)"
 echo ""
 echo "These examples are fully enhanced with zero type errors:"
 echo ""

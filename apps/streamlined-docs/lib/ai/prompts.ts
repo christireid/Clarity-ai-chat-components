@@ -118,7 +118,7 @@ const PAGE_CONTEXT_MAP: Record<string, string> = {
   '/examples':
     '\n\n**Current Context:** The user is viewing examples. Focus on explaining the implementation details and suggesting variations or extensions.',
   '/cookbook':
-    '\n\n**Current Context:** The user is viewing cookbook recipes. Focus on complete, production-ready patterns and real-world use cases.',
+    '\n\n**Current Context:** The user is viewing cookbook recipes. Focus on complete, robust patterns and real-world use cases.',
   '/learn':
     '\n\n**Current Context:** The user is in the learning section. Provide beginner-friendly explanations with progressive complexity.',
   '/playground':

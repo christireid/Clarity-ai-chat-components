@@ -240,7 +240,7 @@ export function ThreadBrowserExample() {
 // Example 4: Complete Threading Setup with Backend Integration
 // =============================================================================
 /**
- * Production-ready threading with backend integration
+ * Robust threading with backend integration
  */
 export function ProductionThreadingExample() {
     const [messages, setMessages] = React.useState([]);

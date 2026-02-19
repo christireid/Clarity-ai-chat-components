@@ -27,7 +27,7 @@ export default function MultiUserChatExamplePage() {
       <section className="docs-section">
         <h2>Overview</h2>
         <p>
-          This example demonstrates a production-ready multi-user chat
+          This example demonstrates a robust multi-user chat
           application with all the features you'd expect from modern chat
           platforms like Slack, Discord, or Microsoft Teams.
         </p>
@@ -1058,7 +1058,7 @@ useEffect(() => {
           <li>Connection resilience and error handling</li>
         </ul>
         <p>
-          This example provides a solid foundation for building production-ready
+          This example provides a solid foundation for building robust
           chat applications with Clarity Chat Components.
         </p>
       </section>

@@ -10,7 +10,7 @@ const SimulatedWidget = ({ explode }) => {
 /**
  * **ErrorBoundary Component**
  *
- * Production-ready React error boundaries with enhanced reporting
+ * Robust React error boundaries with enhanced reporting
  * and recovery mechanisms.
  *
  * **Key Features:**
@@ -35,7 +35,7 @@ const meta = {
         docs: {
             description: {
                 component: `
-Production-ready React error boundaries with enhanced reporting
+Robust React error boundaries with enhanced reporting
 and recovery mechanisms.
 
 ## Features

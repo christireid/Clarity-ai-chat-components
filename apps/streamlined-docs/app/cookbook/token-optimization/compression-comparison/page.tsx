@@ -1127,7 +1127,7 @@ const benchmarks = {
                     <li>• Automatic strategy selection</li>
                     <li>• Real-time quality monitoring</li>
                     <li>• Balanced latency (150-300ms)</li>
-                    <li>• Production-ready with excellent results</li>
+                    <li>• Robust with excellent results</li>
                   </ul>
                 </div>
 
@@ -2264,7 +2264,7 @@ const benchmarks = {
                 Best for Production
               </h4>
               <p className="text-sm text-violet-700 dark:text-violet-300">
-                <strong>Adaptive:</strong> Balanced complexity, excellent results, production-ready patterns
+                <strong>Adaptive:</strong> Balanced complexity, excellent results, robust patterns
               </p>
             </div>
             <div className="p-4 rounded-lg bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-800/50">

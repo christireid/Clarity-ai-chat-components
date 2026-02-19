@@ -320,7 +320,7 @@ export function FuzzySearchExample() {
 // =============================================================================
 
 /**
- * Production-ready chat with mention system
+ * Robust chat with mention system
  */
 export function CompleteMentionChatExample() {
   const [messages, setMessages] = React.useState<ChatMessageWithMentions[]>([])
@@ -721,7 +721,7 @@ export function ProductionMentionExample() {
  *    - Try different search patterns
  *
  * 4. Complete Chat:
- *    - Production-ready chat app
+ *    - Complete chat app
  *    - Mention extraction and tracking
  *    - Full integration example
  *

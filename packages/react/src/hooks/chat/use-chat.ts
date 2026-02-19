@@ -89,7 +89,7 @@ export function useChat(options: UseChatOptions = {}): UseChatReturn {
   if (process.env['NODE_ENV'] === 'development' && !hasWarnedUseChat) {
     hasWarnedUseChat = true
     console.warn(
-      '[Clarity] useChat is deprecated. Use useClarityChat instead. See migration guide: https://docs.clarity-chat.dev/migration'
+      '[Clarity] useChat is deprecated. Use useClarityChat instead. See migration guide: https://github.com/christireid/Clarity-ai-chat-components/blob/main/docs/migration'
     )
   }
 

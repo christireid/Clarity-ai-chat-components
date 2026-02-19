@@ -517,7 +517,7 @@ Usable code examples          55%       92%      +37%
 ✅ **Better search** - Find specific functions, filter by complexity
 ✅ **Rich context** - Metadata enables advanced reranking
 ✅ **Cost-effective** - Smart model selection saves 40%
-✅ **Production-ready** - Comprehensive testing and documentation
+✅ **Robust** - Comprehensive testing and documentation
 
 ### Bottom Line
 
@@ -526,6 +526,6 @@ The enhanced embedding strategy delivers:
 - **40% cost reduction**
 - **95% code preservation** (up from 60%)
 - **Rich metadata** for advanced search
-- **Production-ready** with comprehensive tests
+- **Robust** with comprehensive tests
 
 All while maintaining backward compatibility and providing clear migration path.

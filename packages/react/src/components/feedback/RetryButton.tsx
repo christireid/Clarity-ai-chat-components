@@ -80,7 +80,7 @@ const ERROR_MESSAGES: Record<RetryErrorType, string> = {
 }
 
 /**
- * Production-ready Retry Button component with exponential backoff.
+ * Robust Retry Button component with exponential backoff.
  *
  * **Features:**
  * - Exponential backoff with configurable delays

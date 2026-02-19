@@ -141,7 +141,7 @@ export function warnIfMemoryMisconfigured(
       'Memory features will be disabled.\n\n' +
       'To fix this, wrap your app with MemoryProvider:\n' +
       '<MemoryProvider>\n  <App />\n</MemoryProvider>\n\n' +
-      'Docs: https://clarity-chat.dev/memory/getting-started'
+      'Docs: https://github.com/christireid/Clarity-ai-chat-components/blob/main/docs/memory/getting-started'
   )
 }
 

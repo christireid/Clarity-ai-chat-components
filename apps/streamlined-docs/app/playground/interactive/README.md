@@ -23,7 +23,7 @@ Each component includes configurable properties:
 ### 3. Code Export
 - **Copy to Clipboard**: One-click code copying
 - **Download as File**: Export component code as `.tsx` file
-- **Production-Ready**: Generated code follows best practices
+- **Robust**: Generated code follows best practices
 - **Syntax Highlighting**: Clear, readable code display
 
 ### 4. Theme Switcher
@@ -356,4 +356,4 @@ For issues or questions:
 
 **Last Updated**: January 28, 2026
 **Version**: 1.0.0
-**Status**: Production Ready
+**Status**: Stable

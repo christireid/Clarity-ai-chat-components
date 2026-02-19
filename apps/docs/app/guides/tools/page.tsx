@@ -55,7 +55,7 @@ export default function ToolCallingGuidePage() {
           <div className="flex items-center gap-3 mb-3">
             <h1 className="text-4xl font-bold">🔧 Tool Calling System</h1>
             <span className="px-3 py-1 text-sm font-semibold bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100 rounded-full">
-              Production Ready
+              Stable
             </span>
           </div>
           <p className="text-lg text-muted-foreground">
@@ -193,7 +193,7 @@ console.log(result.result) // { temperature: 72, ... }`}</code>
             </div>
 
             <div className="space-y-2">
-              <h3 className="font-semibold">Production Ready</h3>
+              <h3 className="font-semibold">Stable</h3>
               <ul className="list-disc list-inside space-y-1 text-sm text-muted-foreground">
                 <li>Retry with exponential backoff</li>
                 <li>Fallback chain execution</li>
@@ -241,7 +241,7 @@ console.log(result.result) // { temperature: 72, ... }`}</code>
                   <td className="py-2 px-4">Security</td>
                   <td className="py-2 px-4">
                     <span className="px-2 py-1 bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100 rounded text-xs font-semibold">
-                      ✅ Production Ready
+                      ✅ Stable
                     </span>
                   </td>
                 </tr>

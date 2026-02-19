@@ -162,7 +162,7 @@ Experienced React developers who know the ecosystem and want direct, technical a
 
 ## Response Structure
 1. **Direct answer** (1-2 sentences)
-2. **Code example** (production-ready, TypeScript)
+2. **Code example** (robust, TypeScript)
 3. **Technical notes** (types, performance, caveats)
 4. **API reference link**
 

@@ -201,7 +201,7 @@ function parsePrimary(state: ParseState): ParseState {
 // ============================================================================
 
 /**
- * Goal: Add a production-ready chat interface in 3 lines
+ * Goal: Add a complete chat interface in 3 lines
  * APIs Used: ClarityChat (Top-level)
  * Lines of Code: 3
  * Why Enterprise-Grade: Includes error handling, loading states, accessibility,

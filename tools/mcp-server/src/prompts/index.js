@@ -127,7 +127,7 @@ export const prompts = [
   },
   {
     name: 'build-chatbot',
-    description: 'Step-by-step guide to building a production-ready chatbot',
+    description: 'Step-by-step guide to building a complete chatbot',
     arguments: [
       {
         name: 'type',
@@ -277,7 +277,7 @@ Please provide:
    - Data models or interfaces needed
 
 3. **Example Implementation**:
-   - Complete, production-ready code
+   - Complete, ready-to-use code
    - Error handling
    - TypeScript types
    - Comments explaining key decisions
@@ -377,7 +377,7 @@ For each optimization:
 - Estimate the performance impact
 - Note any trade-offs
 
-Please provide production-ready solutions with code examples.`
+Please provide robust solutions with code examples.`
 }
 /**
  * Review Code Prompt
@@ -472,7 +472,7 @@ Please provide:
    - Edge cases specific to ${to}
 
 Please ensure the converted code is:
-- Production-ready
+- Well-tested
 - Well-documented
 - Follows Clarity Chat conventions
 - Includes proper error handling
@@ -692,7 +692,7 @@ function generateBuildChatbotPrompt(type, features) {
   const config = typeConfigs[type] || typeConfigs['general']
   return `# Building a ${config.title}
 
-Let's build a production-ready ${config.title.toLowerCase()} step by step!
+Let's build a complete ${config.title.toLowerCase()} step by step!
 
 ## Architecture Overview
 

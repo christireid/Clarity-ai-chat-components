@@ -2,7 +2,7 @@
 
 # Enhanced Prompting System
 
-> **Status**: Production Ready
+> **Status**: Stable
 > **Version**: 2.0.0
 > **Last Updated**: January 27, 2026
 
@@ -504,7 +504,7 @@ All code examples must:
 4. Include comments for complex logic
 5. Follow project best practices
 6. Handle errors appropriately
-7. Be production-ready
+7. Be robust
 
 ### Explanation Quality Standards
 

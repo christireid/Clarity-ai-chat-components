@@ -494,4 +494,4 @@ If you encounter issues:
 
 ---
 
-**Last Updated**: January 26, 2026 **Maintainer**: Package team **Status**: Production ready
+**Last Updated**: January 26, 2026 **Maintainer**: Package team **Status**: Stable

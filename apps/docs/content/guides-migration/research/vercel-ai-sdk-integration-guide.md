@@ -1,6 +1,6 @@
 # Clarity × Vercel AI SDK Integration Guide
 
-> **Goal:** pair Vercel’s server-side AI primitives with Clarity’s production-ready component library so teams can ship polished chat experiences without rebuilding UI, safety, or analytics from scratch.
+> **Goal:** pair Vercel’s server-side AI primitives with Clarity’s robust component library so teams can ship polished chat experiences without rebuilding UI, safety, or analytics from scratch.
 
 ## 1. Prerequisites
 - Next.js 14+ (App Router) or Pages Router with API routes

@@ -163,7 +163,7 @@ Clarity Memory consists of:
 - **File**: Persistent JSON files
 - **IndexedDB**: Browser-based persistence
 - **Redis**: Fast, distributed storage
-- **PostgreSQL**: Production-ready SQL storage
+- **PostgreSQL**: Robust SQL storage
 - **Vector DBs**: Chroma, Qdrant, Pinecone, LanceDB
 
 ## 🔌 Integrations

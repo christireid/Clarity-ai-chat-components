@@ -137,21 +137,21 @@ export function SocialProof() {
   const stats = [
     {
       icon: <Star className="w-8 h-8" />,
-      value: githubStats ? formatNumber(githubStats.stars) : '2.5K+',
+      value: githubStats ? formatNumber(githubStats.stars) : '--',
       label: 'GitHub Stars',
       trend: 'Live count',
     },
     {
       icon: <Download className="w-8 h-8" />,
-      value: '50K+',
-      label: 'NPM Downloads',
-      trend: '+12% this month',
+      value: '70+',
+      label: 'Components',
+      trend: 'And growing',
     },
     {
       icon: <Users className="w-8 h-8" />,
-      value: '10K+',
-      label: 'Developers',
-      trend: 'Worldwide',
+      value: '100%',
+      label: 'TypeScript',
+      trend: 'Type-safe',
     },
     {
       icon: <span className="text-3xl">🏆</span>,

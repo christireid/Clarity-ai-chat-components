@@ -21,7 +21,7 @@
  * 3. Handle file upload for large batches (OpenAI requires JSONL file upload)
  *
  * The helper functions `createOpenAIBatchFile`, `createAnthropicBatchFile`, and
- * `parseOpenAIBatchResults` are production-ready for formatting requests/responses.
+ * `parseOpenAIBatchResults` are well-tested for formatting requests/responses.
  *
  * @see https://platform.openai.com/docs/guides/batch
  * @see https://docs.anthropic.com/en/docs/build-with-claude/message-batches

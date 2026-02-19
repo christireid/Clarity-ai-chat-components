@@ -334,7 +334,7 @@ export function useMemory(): MemoryContextValue {
         '  <MemoryProvider config={{ maxTokens: 10000 }}>\n' +
         '    <YourComponent />\n' +
         '  </MemoryProvider>\n\n' +
-        'For more help, see: https://clarity-chat.dev/docs/memory'
+        'For more help, see: https://github.com/christireid/Clarity-ai-chat-components/blob/main/docs/memory'
     )
   }
 

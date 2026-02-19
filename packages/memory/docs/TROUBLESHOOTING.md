@@ -1252,7 +1252,7 @@ setInterval(async () => {
 ### Production Best Practices
 
 ```typescript
-// 1. Use production-ready configuration
+// 1. Use recommended configuration
 import { createProductionConfig } from '@clarity-chat/memory'
 
 const memory = clarityMemory(

@@ -68,7 +68,7 @@ export default function PlaygroundPage() {
           </KineticText>
 
           <p className="text-lg text-neutral-600 dark:text-neutral-400 max-w-2xl mx-auto">
-            Experience real component functionality. Click, type, record, and interact with production-ready examples.
+            Experience real component functionality. Click, type, record, and interact with ready-to-use examples.
           </p>
         </div>
       </ScrollReveal>
@@ -134,7 +134,7 @@ export default function PlaygroundPage() {
             <div>
               <h3 className="font-semibold mb-2 text-blue-600 dark:text-blue-400">Need Help?</h3>
               <p className="text-sm text-neutral-600 dark:text-neutral-400 mb-2">
-                These demos showcase production-ready components. All code is available in our documentation and can be copied directly into your project.
+                These demos showcase comprehensive components. All code is available in our documentation and can be copied directly into your project.
               </p>
               <a
                 href="/get-started"

@@ -4,10 +4,10 @@
 
 <img src="https://img.shields.io/badge/Clarity_Chat-4A90E2?style=for-the-badge&logo=react&logoColor=white" alt="Clarity Chat" />
 
-<h1>Build Beautiful AI Chat Interfaces<br/>in Minutes, Not Months</h1>
+<h1>React Components for AI Chat Interfaces</h1>
 
-<p><strong>A comprehensive AI chat component library for React.</strong><br/>
-150+ components. 70+ hooks. TypeScript-first. Accessibility-first.</p>
+<p>An open-source component library for building AI chat UIs in React.<br/>
+TypeScript. Accessible. Streaming. Token-aware.</p>
 
 <p>
   <a href="./ROADMAP.md"><img src="https://img.shields.io/badge/status-pre--release-orange?style=flat" alt="Status: Pre-release" /></a>
@@ -17,78 +17,53 @@
 </p>
 
 <p>
-  <a href="#-quick-start" aria-label="Jump to Quick Start section"><strong>Quick Start</strong></a> •
-  <a href="./docs/getting-started.md" aria-label="View full documentation"><strong>Documentation</strong></a> •
-  <a href="./examples" aria-label="Browse code examples"><strong>Examples</strong></a> •
-  <a href="https://github.com/christireid/Clarity-ai-chat-components/discussions" aria-label="Join community discussions"><strong>Discussions</strong></a>
+  <a href="#quick-start"><strong>Quick Start</strong></a> &bull;
+  <a href="./docs/getting-started.md"><strong>Docs</strong></a> &bull;
+  <a href="./apps/examples"><strong>Examples</strong></a> &bull;
+  <a href="https://github.com/christireid/Clarity-ai-chat-components/discussions"><strong>Discussions</strong></a>
 </p>
 
 </div>
 
-<br />
-<br />
-
 ---
 
-<br />
+> **Note:** This project is in pre-release. The API may change before v1. Feedback and contributions welcome.
 
-## ⚡ Quick Start
-
-Get an AI chat interface running in **under 3 minutes**:
+## Quick Start
 
 ```bash
 npm install @clarity-chat/react
 ```
 
-### 🚀 Ultra-Simple APIs (New!)
-
-Choose the level that fits your needs:
-
-#### Level 1: One-Line Chat (Simplest)
+### Simplest: Drop-in Chat
 
 ```tsx
-import { chat } from '@clarity-chat/react'
+import { ClarityChatApp } from '@clarity-chat/react'
 
 export default function App() {
-  return chat('/api/chat') // That's it! 🎉
+  return <ClarityChatApp api="/api/chat" />
 }
 ```
 
-#### Level 2: Named Presets
+### With Presets
 
 ```tsx
 import { ChatPresets } from '@clarity-chat/react'
 
-export default function App() {
-  return ChatPresets.Enterprise('/api/chat') // Production-ready!
-}
+// Simple chat
+ChatPresets.Simple('/api/chat')
+
+// With memory
+ChatPresets.Memory('/api/chat')
+
+// Full-featured
+ChatPresets.Enterprise('/api/chat')
 ```
 
-#### Level 3: Builder Pattern
+### Custom UI with Hooks
 
 ```tsx
-import { ChatBuilder } from '@clarity-chat/react'
-
-export default function App() {
-  return ChatBuilder.create('/api/chat')
-    .withMemory('vector-store')
-    .withHeader('My AI Assistant')
-    .build()
-}
-```
-
-### 🎯 Modern Grouped Props API (Recommended)
-
-```tsx
-import { useClarityChat, ChatWindow, MemoryProvider } from '@clarity-chat/react'
-
-export default function App() {
-  return (
-    <MemoryProvider config={{ maxTokens: 10000 }}>
-      <ChatApp />
-    </MemoryProvider>
-  )
-}
+import { useClarityChat, ChatWindow } from '@clarity-chat/react'
 
 function ChatApp() {
   const { messages, append, isLoading } = useClarityChat({
@@ -101,1047 +76,113 @@ function ChatApp() {
       messages={messages}
       isLoading={isLoading}
       onSendMessage={(content) => append({ role: 'user', content })}
-      // 🎯 New grouped props API - much cleaner!
-      header={{
-        show: true,
-        title: 'AI Assistant',
-        showMessageCount: true,
-      }}
-      messageActions={{
-        onFeedback: (id, type) => console.log('Feedback:', type),
-      }}
-      prompts={{
-        starterPrompts: [{ text: 'Tell me about React', category: 'technical' }],
-      }}
+      header={{ show: true, title: 'AI Assistant' }}
     />
   )
 }
 ```
 
-### 📚 Legacy API (Still Supported)
+**That's it.** You get streaming, animations, dark mode, keyboard navigation, WCAG AA accessibility, mobile responsive design, and error recovery.
+
+---
+
+## What's Included
+
+| Category | Details |
+|----------|---------|
+| **Components** | Chat window, message list, input, code blocks, markdown rendering, voice input, file upload, typing indicators |
+| **Hooks** | `useClarityChat`, `useStreaming`, `useTokenBudget`, `useMemoryFeedback`, `useAutoScroll`, `useClipboard`, and more |
+| **Features** | Streaming (SSE/WebSocket), token tracking, conversation memory, error boundaries, virtual scrolling |
+| **Themes** | 15 theme presets, dark mode, custom theming via Tailwind CSS |
+| **Accessibility** | WCAG AA compliant with AAA targets, keyboard navigation, screen reader support, reduced motion |
+| **Presets** | `simple`, `pro`, `memory`, `rag`, `tools`, `enterprise`, `sync` |
+
+### Token Optimization
+
+Track and visualize token usage across AI providers:
 
 ```tsx
-import { ClarityChatApp } from '@clarity-chat/react'
-
-export default function App() {
-  return <ClarityChatApp api="/api/chat" />
-}
-```
-
-**That's it.** You now have:
-
-- ✅ Streaming responses with auto-reconnection
-- ✅ Beautiful animations and dark mode
-- ✅ Full keyboard navigation (try `Shift + ?`)
-- ✅ WCAG AAA target accessibility
-- ✅ Mobile responsive design
-- ✅ Error recovery with retry
-
-### Enable Advanced Features with One Line
-
-```tsx
-// Add memory - conversations persist and context is injected automatically
-<ClarityChatApp api="/api/chat" features={{ memory: true }} />
-
-// Add token optimization - reduce AI costs by 60-90%*
-// *Based on provider prompt caching specifications. Actual savings may vary.
 <ClarityChatApp api="/api/chat" features={{ tokenOptimization: true }} />
-
-// Use a preset for common configurations
-<ClarityChatApp api="/api/chat" preset="pro" />
-
-// Enterprise preset - memory, tokens, safety, analytics all enabled
-<ClarityChatApp api="/api/chat" preset="enterprise" />
 ```
 
-**Available presets:** `simple` | `pro` | `memory` | `rag` | `tools` | `enterprise` | `sync`
+Token savings depend on your AI provider's prompt caching capabilities (e.g., OpenAI, Anthropic). Clarity provides the UI to monitor and visualize costs — the actual savings come from provider-side caching.
 
-```tsx
-// Enable all enterprise features with one preset
-<ClarityChatApp api="/api/chat" preset="enterprise" />
+### Memory
 
-// Enable sync + rate limiting
-<ClarityChatApp api="/api/chat" preset="sync" />
-```
-
-<br />
-
----
-
-<br />
-
-## 🆕 **Recent Major Improvements**
-
-### **Wave 3: Code Cleanup & Optimization (January 2026)**
-
-**Complete system-wide optimization** with enterprise-grade improvements:
-
-#### 🚀 **Performance**
-
-- **-59% bundle size** (1.1 MB → 450 KB)
-- **-90% TTFB** (850ms → 85ms)
-- **-6.3 MB total** (Monaco, Three.js, Mermaid, AI SDKs optimized)
-- Progressive enhancement for mobile users
-- ISR caching for documentation pages (8 pages)
-
-#### 💎 **Code Quality**
-
-- **-39% LOC** (358k → 218k lines)
-- **+23 points type safety** (72 → 95/100)
-- **+17% accessibility** (68% → 85% WCAG AA)
-- 172 files standardized to PascalCase
-- 5,352 LOC dead code removed
-- Component consolidation (Button, Card, Badge unified)
-
-#### 🔒 **Security**
-
-- **3 CVEs patched** (lodash x2, undici x1)
-- **+10 security score** (85 → 95/100)
-- CSRF protection on all API routes
-- Zod validation on 12 endpoints
-- Security headers (CSP, X-Content-Type-Options, Permissions-Policy)
-- PII detection and redaction
-
-#### 🤖 **AI Quality**
-
-
-- Chain-of-Thought support for complex queries
-- Citation-grounded response patterns
-- Hallucination detection hooks
-
-#### 📚 **Documentation**
-
-- **41% → 95% completeness**
-- Comprehensive patterns guide (lazy loading, ISR, prompting)
-- Security best practices
-- Performance & cache runbooks
-- Claude development guide
-
-**[→ View Complete Wave 3 Report](./WAVE_3_COMPLETE.md)**
-
-#### 📖 **Wave 3 Documentation**
-
-New comprehensive guides covering all Wave 3 improvements:
-
-**Performance Patterns:**
-
-- [Lazy Loading Patterns](./docs/patterns/lazy-loading.md) - Progressive enhancement and
-  network-aware loading
-- [ISR Caching Patterns](./docs/patterns/isr-caching.md) - Incremental Static Regeneration
-  strategies
-- [Performance Debugging Runbook](./docs/runbooks/performance-debugging.md) - Bundle analysis, TTFB
-  measurement, optimization
-
-**Security Guides:**
-
-- [Security Headers](./docs/patterns/security-headers.md) - CSP, CSRF protection, secure cookies
-- [Data Validation with Zod](./docs/patterns/data-validation.md) - Type-safe validation patterns
-- [Security Best Practices](./docs/security/best-practices.md) - OWASP LLM Top 10 compliance
-- [Security Runbook](./docs/runbooks/security.md) - Audit procedures and testing
-- [Cache Management Runbook](./docs/runbooks/cache-management.md) - ISR revalidation and debugging
-
-**AI Quality:**
-
-- [Advanced Prompting Patterns](./docs/patterns/advanced-prompting.md) - Chain-of-Thought,
-  citation-grounding, hallucination detection
-
-**Development:**
-
-- [CLAUDE.md](./apps/streamlined-docs/CLAUDE.md) - AI assistant development guide
-- [Architecture Documentation](./docs/architecture.md) - System design and patterns
-
----
-
-### **v1.0+: Enterprise-Grade Foundation**
-
-**Comprehensive 5-phase audit completed** with major enhancements:
-
-#### 📊 **Audit Results**
-
-- ✅ **7/7 P0 Critical Issues Resolved** - Zero remaining blockers
-- ✅ **82% Test Coverage** - 2.3x increase in reliability
-- ✅ **73% Props Reduction** - 30+ props → 8 grouped props
-- ✅ **Race-Condition-Free** - Stable memory integration
-- ✅ **Modular Architecture** - Components split for maintainability
-
-#### 🎯 **Key Improvements**
-
-- **Grouped Props API**: Cleaner, more intuitive component configuration
-- **Memory Integration**: Automatic context injection with sliding window and vector search
-- **Component Architecture**: Modular design with focused sub-components
-- **Error Handling**: Comprehensive recovery with safe fallbacks
-- **Performance**: Sub-100ms interactions, smart virtual scrolling, lazy markdown rendering, 60fps
-  animations
-
-#### 📚 **Migration Guide**
-
-Existing code continues to work, but check out the [migration guide](./docs/migration.md) for the
-new grouped props API that reduces complexity by 73%.
-
-<br />
-
----
-
-## 💎 Why Clarity Chat?
-
-<table>
-<tr>
-<td width="50%">
-
-### **Without Clarity Chat**
-
-- ⏱️ **Weeks** of development
-- 🔧 **10+** dependencies to manage
-- ♿ DIY accessibility compliance
-- 🐛 Custom error handling
-- 💰 Manual token optimization
-- 📊 Build analytics from scratch
-
-</td>
-<td width="50%">
-
-### **With Clarity Chat**
-
-- ⚡ **Minutes** to get started
-- 📦 **1** tree-shakeable package
-- ✨ WCAG AAA built-in
-- 🛡️ Built-in error recovery
-- 💸 Automatic optimization (60-90% savings)\*
-
-<sub>\*Based on provider prompt caching specifications. Actual savings may vary.</sub>
-
-- 📈 7 analytics providers included
-
-</td>
-</tr>
-</table>
-
-<br />
-
----
-
-<br />
-
-## 🚀 What's Inside
-
-<div align="center">
-
-### **The Complete AI Chat Development Platform**
-
-</div>
-
-<table>
-<tr>
-<td width="33%" valign="top">
-
-#### 🎨 **Components**
-
-- **150+** React components
-- **15** theme presets
-- **150+** animations
-- Virtual scrolling
-- Drag & drop support
-- Rate limit status displays
-- Sync status indicators
-- **Lazy-loaded components** for performance
-
-</td>
-<td width="33%" valign="top">
-
-#### ⚙️ **Hooks & Logic**
-
-- **70+** custom hooks
-- **🚀 Ultra-simple APIs** - `chat()`, `ChatPresets.*`
-- **🛠️ Development helpers** - setup wizards, validation
-- **🔄 useChatSync** - Cross-device synchronization
-- **🛡️ useRateLimitedChat** - Request queuing & rate limiting
-- **🏗️ ChatBuilder** - Fluent configuration API
-- Streaming (SSE/WebSocket)
-- Token optimization
-- Error recovery
-- Voice input
-
-</td>
-<td width="33%" valign="top">
-
-#### 🤖 **Enterprise AI + DX**
-
-- **🔄 Cross-device sync** with conflict resolution
-- **🛡️ Advanced rate limiting** with request queuing
-- **🎨 Template marketplace** with community sharing
-- **⚡ Performance monitoring** and lazy loading
-- **🎯 Setup wizards** for easy configuration
-- **📚 IntelliSense helpers** for better DX
-- Vector stores (4 providers)
-- RAG pipeline
-- Agent orchestration
-- PII detection
-- Multi-tenancy
-
-</td>
-</tr>
-</table>
-
-<br />
-
-<div align="center">
-
-**🧪 450+ Tests** • **📚 60+ Documentation Guides** •
-**🎯 100% TypeScript** • **🚀 Tree-shakeable Exports**
-
-</div>
-
-<br />
-
----
-
-<br />
-
-## 🏆 **New Enterprise Features**
-
-### 🔄 **Cross-Device Synchronization**
-
-Never lose a conversation again. Sync chat history seamlessly across all your devices with
-intelligent conflict resolution.
-
-```tsx
-import { useChatSync, ChatSyncStatus } from '@clarity-chat/react'
-
-function SyncedChat() {
-  const sync = useChatSync(messages, setMessages, {
-    conversationId: 'my-chat',
-    apiEndpoint: '/api/sync',
-    enableRealtime: true,
-    conflictStrategy: 'merge', // auto-resolve conflicts
-  })
-
-  return (
-    <div>
-      <ChatSyncStatus sync={sync} />
-      {/* Your chat UI */}
-    </div>
-  )
-}
-```
-
-### 🛡️ **Advanced Rate Limiting**
-
-Handle API limits gracefully with intelligent queuing, retry logic, and user-friendly status
-displays.
-
-```tsx
-<ClarityChat
-  api="/api/chat"
-  enableRateLimiting={true}
-  maxConcurrentRequests={3}
-  maxQueueSize={10}
-  showQueueStatus={true}
-  onRateLimited={(resetTime) => {
-    // Handle rate limit events
-  }}
-/>
-```
-
-### 🎨 **Template Marketplace**
-
-Share, discover, and manage prompt templates with a built-in marketplace and community features.
-
-```tsx
-import { PromptLibrary, TemplateMarketplace } from '@clarity-chat/react'
-
-function TemplateSystem() {
-  return (
-    <Tabs>
-      <Tab value="library">
-        <PromptLibrary enableSharing={true} />
-      </Tab>
-      <Tab value="marketplace">
-        <TemplateMarketplace currentUser={user} />
-      </Tab>
-    </Tabs>
-  )
-}
-```
-
-### 🧪 **Comprehensive Testing Suite**
-
-6 integration test suites with 100+ scenarios covering real-world usage patterns and edge cases.
-
-### ⚡ **Performance Benchmarking**
-
-Validate 60fps performance across all animations with our built-in benchmarking suite:
-
-```bash
-# Run all performance benchmarks
-pnpm perf:benchmark
-
-# Run specific benchmark suites
-pnpm bench:streaming   # Message streaming performance
-pnpm bench:animations  # Animation frame rates
-pnpm bench:layout      # Layout thrashing detection
-```
-
-**Features:**
-
-- Validates 60fps target for smooth animations
-- Compares normal vs reduced motion performance
-- Tests concurrent streaming scenarios
-- Generates detailed performance reports
-- CI/CD integration ready
-
-See [MIGRATION_GUIDES.md](./MIGRATION_GUIDES.md) and
-[TEST_PARALLELIZATION.md](./TEST_PARALLELIZATION.md) for more details.
-
----
-
-<br />
-
-## 🎯 Choose Your Path
-
-<table>
-<tr>
-<td width="33%" valign="top">
-
-### 🚀 **Quick Start**
-
-_"I just want a chat UI"_
-
-```tsx
-<ClarityChatApp api="/api/chat" />
-```
-
-**You get:** Streaming, animations, accessibility, error recovery
-
-</td>
-<td width="33%" valign="top">
-
-### 🧠 **With Memory**
-
-_"I need conversation persistence"_
+Persist conversations with automatic context injection:
 
 ```tsx
 <ClarityChatApp api="/api/chat" features={{ memory: true }} />
 ```
 
-**You get:** + Context injection, sliding window, vector search
+---
 
-</td>
-<td width="33%" valign="top">
+## Packages
 
-### 🏢 **Enterprise**
+| Package | Purpose |
+|---------|---------|
+| `@clarity-chat/react` | UI components and hooks for chat interfaces |
+| `@clarity-chat/primitives` | Base UI primitives (Button, Dialog, Tooltip) built on Radix UI |
+| `@clarity-chat/types` | TypeScript type definitions |
+| `@clarity-chat/utils` | Formatting, caching, logging utilities |
+| `@clarity-chat/token-optimization` | Token counting, budget monitoring, compression |
+| `@clarity-chat/memory` | Conversation memory and vector search |
+| `@clarity-chat/error-handling` | Error boundaries and recovery for React 19 |
 
-_"I need everything"_
-
-```tsx
-<ClarityChatApp api="/api/chat" preset="enterprise" />
-```
-
-**You get:** + Token optimization, safety, RAG, analytics, tools
-
-</td>
-</tr>
-</table>
-
-<br />
-
-## 🔧 Key Features
-
-### **💰 Token Optimization** → _Save 60-90% on AI costs\*_
-
-<sub>\*Based on provider prompt caching specifications. Actual savings may vary.</sub>
-
-```tsx
-// Enabled with one flag - no setup required
-;<ClarityChatApp api="/api/chat" features={{ tokenOptimization: true }} />
-
-// Access stats in your custom UI
-const chat = useClarityChatApp({ api: '/api/chat', features: { tokenOptimization: true } })
-console.log(chat.meta.token.totalTokens) // Real-time token tracking
-console.log(chat.meta.token.budgetRemaining) // Budget monitoring
-```
-
-### **🛡️ Enterprise Security** → _OWASP LLM Top 10 aligned_
-
-```tsx
-// Safety features enabled with enterprise preset
-<ClarityChatApp api="/api/chat" preset="enterprise" />
-
-// Or enable specific features
-<ClarityChatApp
-  api="/api/chat"
-  features={{ safety: true }}
-  config={{ safety: { piiRedaction: true, promptInjectionDetection: true } }}
-/>
-```
-
-### **🎨 Beautiful Design System** → _15 themes, 150+ animations_
-
-```tsx
-import { ThemeProvider, ClarityChatApp } from '@clarity-chat/react'
-
-<ThemeProvider theme="glassmorphism">  {/* ✨ Modern glass effect */}
-<ThemeProvider theme="ocean">           {/* 🌊 Ocean vibes */}
-<ThemeProvider theme="neon">            {/* 💜 Cyberpunk neon */}
-  <ClarityChatApp api="/api/chat" />
-</ThemeProvider>
-```
-
-### **⚡ Headless Mode** → _Full control, zero UI constraints_
-
-```tsx
-import { useClarityChatApp } from '@clarity-chat/react'
-
-const chat = useClarityChatApp({ api: '/api/chat', preset: 'pro' })
-
-// Full control over UI
-<div>{chat.messages.map(m => <MyMessage key={m.id} message={m} />)}</div>
-<input value={chat.input} onChange={chat.handleInputChange} />
-<button onClick={chat.handleSubmit}>Send</button>
-
-// Access metadata from all systems
-chat.meta.token.totalTokens    // Token stats
-chat.meta.memory.totalItems    // Memory stats
-chat.meta.safety.riskLevel     // Safety stats
-```
-
-<br />
+Most users only need `@clarity-chat/react`, which re-exports from the other packages.
 
 ---
 
-<br />
+## Feature Comparison
 
-## 📦 Installation
+| Feature | Clarity Chat | Vercel AI SDK | assistant-ui | Stream Chat |
+|---------|-------------|---------------|--------------|-------------|
+| Focus | Full UI kit | AI primitives | Chat UI | Chat infra |
+| Token tracking | Built-in | No | No | No |
+| Memory/Context | Built-in | Manual | Manual | Manual |
+| Accessibility | WCAG AA | Basic | WCAG AA | WCAG AA |
+| License | MIT | MIT | MIT | Commercial |
+| Maturity | **Pre-release** | Mature | Growing | Mature |
 
-<details>
-<summary><strong>📋 Prerequisites</strong></summary>
+Clarity's unique value is built-in token optimization UI and conversation memory. For a mature, battle-tested solution, consider Vercel AI SDK or assistant-ui.
+
+---
+
+## Requirements
 
 - Node.js 20+
-- React 18+ or 19+ (both supported)
-- Modern browser (last 2 versions)
+- React 18 or 19
+- TypeScript 5+ (recommended)
 
-</details>
-
-### Install the package
+## Installation
 
 ```bash
-# npm
-npm install @clarity-chat/react
-
-# pnpm
-pnpm add @clarity-chat/react
-
-# yarn
-yarn add @clarity-chat/react
-
-# bun
-bun add @clarity-chat/react
-```
-
-### Quick Patterns
-
-<details>
-<summary><strong>🧠 Chat with Memory</strong></summary>
-
-```tsx
-import { ClarityChatPresets } from '@clarity-chat/react'
-;<ClarityChatPresets.WithMemory api="/api/chat" memoryStrategy="sliding-window" maxTokens={4000} />
-```
-
-</details>
-
-<details>
-<summary><strong>🏢 Enterprise Chat</strong></summary>
-
-```tsx
-import { ClarityChatPresets } from '@clarity-chat/react'
-;<ClarityChatPresets.Enterprise api="/api/chat" enableRAG enableSafety enableAnalytics />
-```
-
-</details>
-
-<details>
-<summary><strong>🎨 Custom Theme</strong></summary>
-
-```tsx
-import { ThemeProvider, ClarityChat } from '@clarity-chat/react'
-;<ThemeProvider theme="ocean">
-  <ClarityChat api="/api/chat" />
-</ThemeProvider>
-```
-
-</details>
-
-<br />
-
----
-
-<br />
-
-## 🌟 Showcase
-
-### **Example Apps**
-
-<table>
-<tr>
-<td width="50%">
-
-#### 🛍️ **Multi-Provider Chat**
-
-AI-powered chat with OpenAI, Anthropic, Google support
-
-[View Example →](./examples/multi-provider)
-
-</td>
-<td width="50%">
-
-#### 💻 **Tool Calling Demo**
-
-AI function calling with weather, search, calculator tools
-
-[View Example →](./examples/tool-calling)
-
-</td>
-</tr>
-<tr>
-<td width="50%">
-
-#### 🛡️ **Security Features**
-
-Prompt injection detection, PII redaction, security policies
-
-[View Example →](./examples/security-examples)
-
-</td>
-<td width="50%">
-
-#### ⚡ **Advanced Features**
-
-Battery-aware streaming, performance optimization, analytics
-
-[View Example →](./examples/advanced-features)
-
-</td>
-</tr>
-</table>
-
-**[→ Browse All 12+ Example Apps](./examples)**
-
-<br />
-
----
-
-<br />
-
-## 🏆 Feature Comparison
-
-<table>
-<thead>
-<tr>
-<th>Feature</th>
-<th><strong>Clarity Chat</strong></th>
-<th>Vercel AI SDK</th>
-<th>assistant-ui</th>
-<th>Stream Chat</th>
-</tr>
-</thead>
-<tbody>
-<tr><td>Focus</td><td><strong>Full UI kit + infra</strong></td><td>AI primitives</td><td>Chat UI components</td><td>Chat infrastructure</td></tr>
-<tr><td>Components</td><td><strong>150+</strong></td><td>~20</td><td>~40</td><td>~50</td></tr>
-<tr><td>React Hooks</td><td><strong>70+</strong></td><td>~5</td><td>~15</td><td>~10</td></tr>
-<tr><td>Token Optimization</td><td><strong>Built-in</strong></td><td>❌</td><td>❌</td><td>❌</td></tr>
-<tr><td>Memory/Context</td><td><strong>Built-in</strong></td><td>Manual</td><td>Manual</td><td>Manual</td></tr>
-<tr><td>Accessibility</td><td><strong>WCAG AAA (target)</strong></td><td>Basic</td><td>WCAG AA</td><td>WCAG AA</td></tr>
-<tr><td>Preset System</td><td><strong>6 presets</strong></td><td>❌</td><td>❌</td><td>❌</td></tr>
-<tr><td>License</td><td><strong>MIT</strong></td><td>MIT</td><td>MIT</td><td>Commercial</td></tr>
-<tr><td>Maturity</td><td>Pre-release</td><td><strong>Mature</strong></td><td>Growing</td><td><strong>Mature</strong></td></tr>
-</tbody>
-</table>
-
-<sub>Token optimization savings depend on provider prompt caching hit rates and usage patterns.</sub>
-
-<br />
-
----
-
-<br />
-
-## 📚 Documentation
-
-<div align="center">
-
-|               Getting Started                |                    Guides                    |                 API Reference                 |                 Examples                 |
-| :------------------------------------------: | :------------------------------------------: | :-------------------------------------------: | :--------------------------------------: |
-|   [Quick Start](./docs/getting-started.md)   |    [Architecture](./docs/architecture.md)    |    [React API](./packages/react/README.md)    |         [Browse All](./examples)         |
-|  [Best Practices](./docs/best-practices.md)  |   [Token Optimization](./docs/cookbook.md)   | [Hooks](./packages/react/src/hooks/README.md) |   [Basic Chat](./examples/basic-chat)    |
-| [Migration](./docs/migrating-from-vercel.md) | [Troubleshooting](./docs/TROUBLESHOOTING.md) | [Primitives](./packages/primitives/README.md) | [Advanced](./examples/advanced-features) |
-
-</div>
-
-<br />
-
----
-
-<br />
-
-## 📦 Which Package Should I Use?
-
-Clarity Chat is organized into focused packages. Here's how to choose:
-
-### **@clarity-chat/react** - Full-Featured UI Components
-
-**Use this when:** You want a complete chat interface with UI components.
-
-```tsx
-import { ClarityChatApp, useClarityChatApp } from '@clarity-chat/react'
-
-// Complete chat UI
-;<ClarityChatApp api="/api/chat" />
-
-// Or use the hook for custom UI
-const chat = useClarityChatApp({ api: '/api/chat' })
-```
-
-**What you get:**
-
-- 150+ UI components (messages, inputs, bubbles, etc.)
-- 70+ hooks (`useClarityChatApp`, `useMessages`, `useStreaming`, etc.)
-- Built-in themes and animations
-- Memory, token optimization, and safety features (via re-exports)
-- Accessibility-focused (WCAG AAA target)
-
-**Exports:** Components, hooks, contexts, types for building chat UIs
-
----
-
-### **@clarity-chat/primitives** - Core UI Primitives
-
-**Use this when:** You need base UI components and utilities.
-
-```tsx
-import { Button, Dialog, Tooltip, cn } from '@clarity-chat/primitives'
-
-// Accessible UI primitives
-<Button variant="primary">Click me</Button>
-<Dialog open={isOpen}>...</Dialog>
-
-// Class name utility
-className={cn('base-class', isActive && 'active-class')}
-```
-
-**What you get:**
-
-- Accessible UI components (Button, Dialog, Tooltip, etc.)
-- `cn` utility for class name merging
-- ARIA utilities and animation helpers
-- No heavy dependencies (just Radix UI + Tailwind)
-
-**Exports:** UI primitives, accessibility utilities, core UI helpers
-
----
-
-### **@clarity-chat/utils** - General Utilities
-
-**Use this when:** You need formatting, validation, caching, or logging utilities.
-
-```tsx
-import { formatBytes, debounce, LRUCache, getLogger } from '@clarity-chat/utils'
-
-// Formatting
-const size = formatBytes(1024) // "1 KB"
-
-// Async utilities
-const debouncedFn = debounce(fn, 300)
-
-// Caching
-const cache = new LRUCache({ maxSize: 1000 })
-
-// Logging
-const logger = getLogger('MyComponent')
-logger.info('Hello')
-```
-
-**What you get:**
-
-- Formatting utilities (bytes, duration, numbers, etc.)
-- Validation helpers (type guards, assertions)
-- Async utilities (debounce, throttle, retry)
-- Caching (LRUCache, TTLCache, memoize)
-- Logging system
-- Environment detection
-
-**Exports:** General-purpose utilities (formatting, validation, caching, logging)
-
----
-
-### **@clarity-chat/token-optimization** - Advanced Token Management
-
-**Use this when:** You need token counting, compression, or optimization.
-
-```tsx
-import { AccurateTokenCounter, useTokenBudgetMonitor } from '@clarity-chat/token-optimization'
-
-// Count tokens accurately
-const counter = new AccurateTokenCounter({ model: 'gpt-4o' })
-const tokens = counter.count(text)
-
-// Budget monitoring hook
-const { usage, isWarning } = useTokenBudgetMonitor({
-  maxInputTokens: 128000,
-  reservedForOutput: 4096,
-})
-
-// Compress prompts
-import { compressAdaptively } from '@clarity-chat/token-optimization'
-const result = await compressAdaptively(longText, { targetTokens: 1000 })
-```
-
-**What you get:**
-
-- Token counting (`AccurateTokenCounter` - canonical implementation)
-- Budget monitoring hooks and components
-- Compression strategies (LLMLingua, Extractive, Adaptive)
-- Model registry and pricing
-- Cost calculation
-- Caching and routing
-
-**Exports:** Token optimization tools, hooks, and utilities
-
----
-
-### **@clarity-chat/memory** - Conversation Memory
-
-**Use this when:** You need conversation persistence and context management.
-
-```tsx
-import { MemoryService, useMemory } from '@clarity-chat/memory'
-
-// Core memory service
-const memory = new MemoryService()
-await memory.add('User prefers dark mode')
-
-// React hook
-const { add, search } = useMemory()
-const results = await search('preferences')
-```
-
-**What you get:**
-
-- Conversation memory service
-- Vector store integration
-- Semantic search
-- Memory strategies
-
-**Exports:** Memory management APIs and React hooks
-
----
-
-### **@clarity-chat/error-handling** - Error Recovery
-
-**Use this when:** You need robust error handling and recovery.
-
-```tsx
-import { ErrorBoundary, useErrorHandler } from '@clarity-chat/error-handling'
-
-// Error boundary
-;<ErrorBoundary fallback={<ErrorUI />}>
-  <ChatComponent />
-</ErrorBoundary>
-
-// Error hook
-const { error, retry } = useErrorHandler()
-```
-
-**What you get:**
-
-- Error boundary components
-- Error handling hooks
-- Recovery strategies
-
-**Exports:** Error handling components and hooks
-
----
-
-### Package Import Best Practices
-
-Follow these guidelines for optimal bundle size and code clarity:
-
-#### ✅ Recommended Import Patterns
-
-```tsx
-// UI Components - from @clarity-chat/react
-import { ClarityChatApp, ChatWindow } from '@clarity-chat/react'
-
-// UI Primitives - from @clarity-chat/primitives
-import { Button, Dialog, cn } from '@clarity-chat/primitives'
-
-// General Utilities - from @clarity-chat/utils
-import { formatBytes, debounce, LRUCache } from '@clarity-chat/utils'
-
-// Token Optimization - from @clarity-chat/token-optimization
-import { AccurateTokenCounter, useTokenBudgetMonitor } from '@clarity-chat/token-optimization'
-
-// Memory - from @clarity-chat/memory
-import { MemoryService, useMemory } from '@clarity-chat/memory'
-```
-
-#### ❌ Avoid These Patterns
-
-```tsx
-// ❌ Don't import utilities from React package
-import { formatBytes, debounce } from '@clarity-chat/react'
-
-// ✅ Import from utils package instead
-import { formatBytes, debounce } from '@clarity-chat/utils'
-
-// ❌ Don't import token counting from React package
-import { AccurateTokenCounter } from '@clarity-chat/react'
-
-// ✅ Import from token-optimization package
-import { AccurateTokenCounter } from '@clarity-chat/token-optimization'
-
-// ❌ Don't import primitives from React package
-import { cn } from '@clarity-chat/react'
-
-// ✅ Import from primitives package
-import { cn } from '@clarity-chat/primitives'
-```
-
-**Why?**
-
-- **Better tree-shaking:** Smaller bundle sizes
-- **Clearer dependencies:** Easier to understand what your code needs
-- **Better TypeScript support:** More accurate autocomplete and type checking
-- **Follows package semantics:** Each package has a clear responsibility
-
----
-
-### Migration from Deprecated Patterns
-
-If you're using old import patterns, update them:
-
-```tsx
-// ❌ Old (deprecated, adds bundle weight)
-import { TokenCounter, formatBytes, cn } from '@clarity-chat/react'
-
-// ✅ New (recommended, better tree-shaking)
-import { ClarityChatApp } from '@clarity-chat/react'
-import { AccurateTokenCounter } from '@clarity-chat/token-optimization'
-import { formatBytes, debounce } from '@clarity-chat/utils'
-import { cn } from '@clarity-chat/primitives'
+npm install @clarity-chat/react    # npm
+pnpm add @clarity-chat/react       # pnpm
+yarn add @clarity-chat/react       # yarn
 ```
 
 ---
 
-### Quick Decision Tree
+## Documentation
 
-```
-What do you need?
-
-UI Components for chat?
-  └─ @clarity-chat/react
-
-Token counting/optimization?
-  └─ @clarity-chat/token-optimization
-
-General utilities (format, validate, cache)?
-  └─ @clarity-chat/utils
-
-Base UI components (Button, Dialog)?
-  └─ @clarity-chat/primitives
-
-Conversation memory?
-  └─ @clarity-chat/memory
-
-Error handling?
-  └─ @clarity-chat/error-handling
-```
-
-<br />
+| Resource | Link |
+|----------|------|
+| Getting Started | [docs/getting-started.md](./docs/getting-started.md) |
+| Architecture | [docs/architecture.md](./docs/architecture.md) |
+| API Reference | [packages/react/README.md](./packages/react/README.md) |
+| Hooks Guide | [packages/react/src/hooks/README.md](./packages/react/src/hooks/README.md) |
+| Examples | [apps/examples/](./apps/examples/) |
+| Migration Guide | [docs/migration.md](./docs/migration.md) |
 
 ---
 
-<br />
+## Contributing
 
-## 💬 Community & Support
-
-<div align="center">
-
-**Get involved with Clarity Chat**
-
-<p>
-  <a href="https://github.com/christireid/Clarity-ai-chat-components/discussions"><img src="https://img.shields.io/badge/GitHub-Discussions-181717?style=for-the-badge&logo=github&logoColor=white" alt="Discussions" /></a>
-  <a href="https://github.com/christireid/Clarity-ai-chat-components"><img src="https://img.shields.io/badge/GitHub-Star-181717?style=for-the-badge&logo=github&logoColor=white" alt="GitHub" /></a>
-</p>
-
-**[📧 Email](mailto:hello@codeclarity.ai)** •
-**[🐛 Report Issues](https://github.com/christireid/Clarity-ai-chat-components/issues)** •
-**[💡 Feature Requests](https://github.com/christireid/Clarity-ai-chat-components/discussions)**
-
-</div>
-
-<br />
+Contributions welcome! See [CONTRIBUTING.md](./CONTRIBUTING.md).
 
 ---
 
-<br />
+## License
 
-## 🎯 Quick Stats
-
-<div align="center">
-
-<table>
-<tr>
-<td align="center"><strong>150+</strong><br/>Components</td>
-<td align="center"><strong>70+</strong><br/>Hooks</td>
-<td align="center"><strong>450+</strong><br/>Tests</td>
-<td align="center"><strong>100%</strong><br/>TypeScript</td>
-<td align="center"><strong>16</strong><br/>Packages</td>
-<td align="center"><strong>MIT</strong><br/>License</td>
-</tr>
-</table>
-
-</div>
-
-<br />
-
----
-
-<br />
-
-## 🤝 Contributing
-
-We welcome contributions! Please read our [Contributing Guide](./CONTRIBUTING.md) to get started.
-
-**⚠️ Documentation Policy:** We maintain a clean repository structure. Please review our
-[Documentation Policy](./.github/DOCUMENTATION_POLICY.md) before adding documentation files.
-
-<br />
-
----
-
-<br />
-
-## 📄 License
-
-MIT © 2025-2026 [Code & Clarity](https://codeclarity.ai)
-
----
-
-<br />
-
-<div align="center">
-
-**Built with ❤️ by developers, for developers**
-
-<p>
-  <a href="https://github.com/christireid/Clarity-ai-chat-components"><strong>⭐ Star on GitHub</strong></a> •
-  <a href="./docs/getting-started.md"><strong>📚 Read the Docs</strong></a> •
-  <a href="./examples"><strong>🎯 Browse Examples</strong></a> •
-  <a href="https://github.com/christireid/Clarity-ai-chat-components/discussions"><strong>💬 Discussions</strong></a>
-</p>
-
-<sub>Made with [React](https://react.dev) • [TypeScript](https://www.typescriptlang.org) •
-[Tailwind CSS](https://tailwindcss.com) • [Framer Motion](https://www.framer.com/motion) •
-[Radix UI](https://www.radix-ui.com)</sub>
-
-</div>
+MIT &copy; 2025-2026 [Christi Reid](https://github.com/christireid)

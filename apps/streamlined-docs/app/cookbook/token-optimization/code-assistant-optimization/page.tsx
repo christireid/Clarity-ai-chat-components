@@ -93,7 +93,7 @@ export default function CodeAssistantOptimizationCookbook() {
             What You'll Build
           </h2>
           <p className="text-neutral-600 dark:text-neutral-400 mb-4">
-            A production-ready code generation assistant that automatically optimizes token usage
+            A robust code generation assistant that automatically optimizes token usage
             through intelligent compression and model routing, perfect for:
           </p>
           <ul className="space-y-3">

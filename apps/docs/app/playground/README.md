@@ -81,7 +81,7 @@ See your component render live in the preview panel
 
 ## Templates
 
-All templates are production-ready and include:
+All templates are robust and include:
 - TypeScript definitions
 - Proper error handling
 - Responsive design

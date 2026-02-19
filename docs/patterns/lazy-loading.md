@@ -1,6 +1,6 @@
 # Lazy Loading Patterns
 
-> **Wave 3.3 Feature** | Production Ready | Bundle Size: -6.3 MB
+> **Wave 3.3 Feature** | Stable | Bundle Size: -6.3 MB
 
 ## Overview
 

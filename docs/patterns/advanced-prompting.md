@@ -1,6 +1,6 @@
 # Advanced Prompting Techniques
 
-> **Wave 3.4 Feature** | Production Ready | Quality: +16%, Hallucinations: -22%
+> **Wave 3.4 Feature** | Stable | Quality: +16%, Hallucinations: -22%
 
 ## Overview
 

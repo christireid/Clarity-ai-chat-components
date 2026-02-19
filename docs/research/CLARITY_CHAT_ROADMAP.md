@@ -24,7 +24,7 @@
 
 ### Vision
 
-Establish Clarity Chat Components as the **production-ready, developer-first AI chat component
+Establish Clarity Chat Components as the **robust, developer-first AI chat component
 library** for React, combining best-in-class UX patterns with comprehensive feature coverage and
 unmatched token optimization capabilities.
 
@@ -39,16 +39,16 @@ unmatched token optimization capabilities.
 
 - **Feature coverage**: 95%+ (43/45 features)
 - **Market position**: Top 3 in AI chat libraries
-- **Production deployments**: 100+ companies
-- **GitHub stars**: 5,000+
-- **npm downloads**: 10,000+/month
-- **Enterprise customers**: 15+
+- **Production deployments**: Pre-release (0)
+- **GitHub stars**: 5,000+ (target)
+- **npm downloads**: 10,000+/month (target)
+- **Enterprise customers**: Pre-release (0)
 
 ### Success Metrics
 
 - **npm downloads**: 2k → 10k+/month
 - **GitHub stars**: Current → 5k+
-- **Production deployments**: Target 100+ companies
+- **Production deployments**: Growing adoption (target TBD)
 - **Developer satisfaction**: NPS >50
 - **Test coverage**: >90% across all components
 - **Documentation coverage**: 100% of public APIs
@@ -69,7 +69,7 @@ unmatched token optimization capabilities.
 - Excellent documentation and examples
 - Clear error messages with actionable guidance
 
-### 2. Production-Ready Quality
+### 2. Robust Quality
 
 **Principle**: All shipped features must meet production standards.
 
@@ -1190,7 +1190,7 @@ Backlog (Q4 2026+):
 
 **Key Messages**:
 
-- "Production-ready AI chat components"
+- "Robust AI chat components"
 - "Voice input in 5 minutes"
 - "Best-in-class token optimization"
 - "TypeScript-first, accessible by default"
@@ -1371,7 +1371,7 @@ API Refactoring (Continuous)                  |
 
 This roadmap establishes a clear path from **feature parity** (Q1) to **market leadership** (Q4
 2026). By maintaining our unique advantages in token optimization while systematically closing
-feature gaps, we will position Clarity Chat Components as the **production-ready, developer-first AI
+feature gaps, we will position Clarity Chat Components as the **robust, developer-first AI
 chat library**.
 
 ### Key Success Factors

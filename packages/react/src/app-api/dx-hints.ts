@@ -63,13 +63,13 @@ const ERROR_MESSAGES: Record<
     message: 'Invalid API endpoint provided',
     suggestion:
       'Ensure `api` prop is a valid URL path (e.g., "/api/chat") or full URL. Check that your API route exists and is properly configured.',
-    docsUrl: 'https://clarity-chat.dev/docs/api-setup',
+    docsUrl: 'https://github.com/christireid/Clarity-ai-chat-components/blob/main/docs/api-setup',
   },
   CONFIG_INVALID_PRESET: {
     message: 'Unknown preset specified',
     suggestion:
       'Valid presets are: "simple", "pro", "memory", "rag", "tools", "enterprise". Check spelling or use feature flags instead.',
-    docsUrl: 'https://clarity-chat.dev/docs/presets',
+    docsUrl: 'https://github.com/christireid/Clarity-ai-chat-components/blob/main/docs/presets',
   },
   CONFIG_INVALID_BUDGET: {
     message: 'Token budget must be a positive number',
@@ -85,7 +85,7 @@ const ERROR_MESSAGES: Record<
     message: 'RAG is enabled but no sources provided',
     suggestion:
       'Either disable RAG with `features={{ rag: false }}` or provide sources via `sources` prop or `config.rag.sources`.',
-    docsUrl: 'https://clarity-chat.dev/docs/rag',
+    docsUrl: 'https://github.com/christireid/Clarity-ai-chat-components/blob/main/docs/rag',
   },
   CONFIG_TOOL_INVALID: {
     message: 'Invalid tool definition in registry',
@@ -167,7 +167,7 @@ const ERROR_MESSAGES: Record<
     message: 'RAG query failed: no sources available',
     suggestion:
       'Provide RAG sources via the `sources` prop or `config.rag.sources`. Supported types: text, url, file.',
-    docsUrl: 'https://clarity-chat.dev/docs/rag',
+    docsUrl: 'https://github.com/christireid/Clarity-ai-chat-components/blob/main/docs/rag',
   },
   TOOLS_EXECUTION_FAILED: {
     message: 'Tool execution failed',
@@ -518,7 +518,7 @@ export function showQuickStartOnError(): void {
      onEvent={(e) => console.log('Event:', e)}
    />
 
-%cDocs: https://clarity-chat.dev/docs
+%cDocs: https://github.com/christireid/Clarity-ai-chat-components
 %c━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 `,
       'color: #0066cc; font-size: 14px; font-weight: bold;',

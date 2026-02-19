@@ -84,7 +84,7 @@ export const COMPONENTS: ComponentMeta[] = [
     name: 'ClarityChat',
     displayName: 'Clarity Chat',
     description:
-      'The main chat interface component. A complete, production-ready AI chat UI with streaming support, message history, and customizable appearance.',
+      'The main chat interface component. A complete, full-featured AI chat UI with streaming support, message history, and customizable appearance.',
     category: 'top-level',
     package: '@clarity-chat/react',
     importPath: '@clarity-chat/react',

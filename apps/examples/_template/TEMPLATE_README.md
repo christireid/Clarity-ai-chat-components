@@ -252,7 +252,7 @@ pnpm generate:example \
   --title "Advanced RAG Pipeline" \
   --description "RAG with reranking, evaluation, and caching" \
   --icon "🔍" \
-  --subtitle "Production-ready RAG implementation"
+  --subtitle "Robust RAG implementation"
 ```
 
 ## ROI Metrics

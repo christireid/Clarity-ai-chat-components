@@ -57,7 +57,7 @@ export function verifyLicense(
     return {
       status: 'Missing',
       reason:
-        'No license key provided. Purchase at https://claritychat.dev/pricing',
+        'No license key provided. Purchase at https://github.com/christireid/Clarity-ai-chat-components',
     }
   }
 
@@ -131,7 +131,7 @@ export function verifyLicense(
         return {
           status: 'GracePeriod',
           payload,
-          reason: `License expired. ${daysRemaining} days remaining in grace period. Renew at https://claritychat.dev/account`,
+          reason: `License expired. ${daysRemaining} days remaining in grace period. Renew at https://github.com/christireid/Clarity-ai-chat-components`,
         }
       }
       // After grace period in production - still valid but no watermark removal
@@ -149,7 +149,7 @@ export function verifyLicense(
         return {
           status: 'GracePeriod',
           payload,
-          reason: `License expired. ${daysRemaining} days remaining in grace period. Renew at https://claritychat.dev/account`,
+          reason: `License expired. ${daysRemaining} days remaining in grace period. Renew at https://github.com/christireid/Clarity-ai-chat-components`,
         }
       }
       // After grace period in development
@@ -157,7 +157,7 @@ export function verifyLicense(
         status: 'ExpiredForDevelopment',
         payload,
         reason:
-          'License expired and grace period ended. Renew at https://claritychat.dev/account for continued updates.',
+          'License expired and grace period ended. Renew at https://github.com/christireid/Clarity-ai-chat-components for continued updates.',
       }
     }
   }

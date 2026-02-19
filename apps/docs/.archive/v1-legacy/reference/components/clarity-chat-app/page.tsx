@@ -14,7 +14,7 @@ export default function ClarityChatAppPage() {
         </div>
         <h1 className="text-4xl font-bold mb-4">ClarityChatApp</h1>
         <p className="text-xl text-muted-foreground mb-4">
-          The unified, easy-to-use chat component. Get a production-ready AI
+          The unified, easy-to-use chat component. Get a robust AI
           chat in 3 minutes with automatic integration of advanced features.
         </p>
         <p className="text-muted-foreground">

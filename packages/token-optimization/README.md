@@ -318,7 +318,7 @@ import { UnsupportedModelError } from '@clarity-chat/token-optimization'
 //    Model "gpt-5-turbo" is not supported.
 //
 // 💡 Suggestion: Use one of: gpt-4o, gpt-4o-mini, claude-3-5-sonnet, ...
-// 📚 Docs: https://clarity-chat.dev/docs/supported-models
+// Docs: https://github.com/christireid/Clarity-ai-chat-components/blob/main/docs/supported-models
 ```
 
 ## Progressive Complexity

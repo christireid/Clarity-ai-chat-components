@@ -280,7 +280,7 @@ const examples: Example[] = [
   {
     id: 'enterprise-chat',
     title: 'Enterprise Chat',
-    description: 'Full-featured setup with SSO, audit logging, and rate limiting. Production-ready for enterprise deployments.',
+    description: 'Full-featured setup with SSO, audit logging, and rate limiting. Robust for enterprise deployments.',
     difficulty: 'Advanced',
     tags: ['enterprise', 'sso', 'security', 'audit', 'rate-limiting'],
     category: 'Enterprise',
@@ -380,7 +380,7 @@ export default function ExamplesPage() {
               <div className="inline-flex items-center gap-2 px-4 py-2 bg-purple-50 dark:bg-purple-950/50 border border-purple-200 dark:border-purple-800/50 rounded-full mb-6">
                 <Code2 className="w-4 h-4 text-purple-500" />
                 <span className="text-sm font-medium text-purple-600 dark:text-purple-400">
-                  Production-Ready Examples
+                  Robust Examples
                 </span>
               </div>
             </ScrollReveal>
@@ -400,7 +400,7 @@ export default function ExamplesPage() {
             <ScrollReveal direction="up" delay={0.3}>
               <p className="text-lg sm:text-xl text-neutral-600 dark:text-neutral-400 mb-8 max-w-2xl mx-auto">
                 Explore our collection of chat examples with live previews. Copy, customize, and
-                build production-ready chat experiences in minutes.
+                build complete chat experiences in minutes.
               </p>
             </ScrollReveal>
 

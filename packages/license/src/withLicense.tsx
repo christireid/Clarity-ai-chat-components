@@ -113,7 +113,7 @@ export function withLicense<P extends object>(
           `%c[Clarity Chat]%c ${componentName} requires a valid license.\n` +
             `Status: ${status.status}\n` +
             `${status.reason ?? ''}\n` +
-            `Purchase at: https://claritychat.dev/pricing`,
+            `Purchase at: https://github.com/christireid/Clarity-ai-chat-components`,
           'color: #3b82f6; font-weight: bold',
           'color: inherit'
         )

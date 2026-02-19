@@ -403,7 +403,7 @@ export default function EnterpriseDashboardPage() {
             <h2 className="text-2xl font-bold mb-4">Overview</h2>
             <div className="prose prose-neutral dark:prose-invert max-w-none">
               <p>
-                This example demonstrates how to build a production-ready
+                This example demonstrates how to build a robust
                 enterprise chat dashboard with real-time analytics, user
                 management, conversation monitoring, and system health metrics.
                 Perfect for teams managing AI chat at scale.

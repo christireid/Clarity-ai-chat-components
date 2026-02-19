@@ -12,7 +12,7 @@
  * - Cost per request metrics
  * - Export functionality (CSV/JSON)
  * - Real-time updates
- * - Production-ready responsive design
+ * - Responsive design
  *
  * @example
  * ```tsx

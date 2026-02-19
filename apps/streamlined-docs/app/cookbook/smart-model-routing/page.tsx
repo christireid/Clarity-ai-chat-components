@@ -85,7 +85,7 @@ export default function SmartModelRoutingCookbook() {
             'When to use Haiku vs Sonnet vs Opus',
             'Implementing intent-based routing',
             'Measuring routing accuracy and cost impact',
-            'Building a production-ready routing system',
+            'Building a robust routing system',
           ].map((item, idx) => (
             <li key={idx} className="flex items-start gap-3">
               <CheckCircle className="w-5 h-5 text-emerald-600 flex-shrink-0 mt-0.5" />

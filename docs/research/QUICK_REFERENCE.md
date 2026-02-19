@@ -198,7 +198,7 @@ API discoverability
    - Token compression
    - Cost savings calculator
 
-3. **Production-Ready Quality** ⭐ BEST-IN-CLASS
+3. **Robust Quality** ⭐ BEST-IN-CLASS
    - Battle-tested components
    - > 90% test coverage
    - 100% TypeScript coverage
@@ -228,7 +228,7 @@ API discoverability
 
 - ✅ Simpler API for common cases
 - ✅ Better documentation
-- ✅ Production-ready quality
+- ✅ Robust quality
 - = Advanced composition patterns
 
 **vs Vercel AI SDK**:
@@ -350,8 +350,8 @@ API discoverability
 
 - **npm downloads**: 10k+/month by Q4 2026
 - **GitHub stars**: 5k+ by Q4 2026
-- **Production deployments**: 100+ companies
-- **Enterprise customers**: 15+
+- **Production deployments**: Pre-release (0)
+- **Enterprise customers**: Pre-release (0)
 
 ### Quality Targets
 
@@ -393,7 +393,7 @@ API discoverability
 
 > **"The React component library for AI applications"**
 >
-> Production-ready React components for AI chat interfaces. Build beautiful AI experiences in
+> Robust React components for AI chat interfaces. Build beautiful AI experiences in
 > minutes, not months. Streaming, token tracking, tool calling, and code rendering built-in.
 
 ### Competitive Moat

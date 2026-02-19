@@ -827,7 +827,7 @@ font-family: system-ui, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
 - Vercel AI SDK integration out of the box
 - Streaming response handling pre-configured
 - Tool calling with type-safe schemas
-- Production-ready code, not just UI mockups
+- Robust code, not just UI mockups
 
 **6. Modern Tech Stack**
 
@@ -1153,7 +1153,7 @@ export const POST = createChatAPI({
 ```
 
 - **Why:** Complete solution; no backend setup needed
-- **Benefit:** Production-ready; handles streaming, tools, errors
+- **Benefit:** Robust; handles streaming, tools, errors
 
 **Configuration Hierarchy (Most Important Patterns):**
 
@@ -1233,7 +1233,7 @@ Provide multiple entry points for different skill levels and use cases. The copy
     - Backend API route generators
     - Complete streaming setup
     - Tool calling infrastructure
-    - Production-ready patterns
+    - Robust patterns
 
 12. **CLI Installation Tool**
     - One-command component installation

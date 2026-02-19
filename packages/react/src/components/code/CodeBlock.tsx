@@ -160,7 +160,7 @@ function getShikiTheme(theme: CodeThemeName | BundledTheme): BundledTheme {
  * @installation npm install shiki
  * @bundleImpact ~200KB when shiki is installed
  * @fallback Basic <pre><code> rendering without syntax highlighting
- * @docs https://clarity-chat.dev/docs/peer-dependencies
+ * @docs https://github.com/christireid/Clarity-ai-chat-components/blob/main/docs/peer-dependencies
  *
  * @example
  * ```tsx
@@ -485,12 +485,12 @@ const CodeBlockComponent = React.memo<CodeBlockProps>(function CodeBlock({
                   <p className="text-xs text-amber-300/80">
                     See:{' '}
                     <a
-                      href="https://clarity-chat.dev/docs/peer-dependencies"
+                      href="https://github.com/christireid/Clarity-ai-chat-components/blob/main/docs/peer-dependencies"
                       target="_blank"
                       rel="noopener noreferrer"
                       className="underline hover:text-amber-200 transition-colors"
                     >
-                      https://clarity-chat.dev/docs/peer-dependencies
+                      https://github.com/christireid/Clarity-ai-chat-components/blob/main/docs/peer-dependencies
                     </a>
                   </p>
                 </>

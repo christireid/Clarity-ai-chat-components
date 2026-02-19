@@ -1,6 +1,6 @@
 # RAG (Retrieval-Augmented Generation) Guide
 
-Build powerful, production-ready RAG applications with Clarity Chat's comprehensive RAG infrastructure including vector stores, document loaders, embeddings, hybrid search, reranking, and evaluation tools.
+Build powerful, robust RAG applications with Clarity Chat's comprehensive RAG infrastructure including vector stores, document loaders, embeddings, hybrid search, reranking, and evaluation tools.
 
 ## Overview
 

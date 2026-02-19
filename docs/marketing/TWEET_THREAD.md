@@ -1,3 +1,5 @@
+<!-- NOTE: These are draft marketing templates. All claims must be verified before use. -->
+
 # Twitter Thread: Clarity AI Chat Components
 
 ## 5-Tweet Thread Explaining Unique Value Propositions
@@ -146,7 +148,7 @@ Vercel, shadcn, Assistant UI? Manual only.
 ✅ npm + copy-paste (hybrid distribution)
 ✅ MIT license (free forever)
 
-Used by 100+ companies in production.
+Open-source. MIT licensed.
 
 Ready to ship?
 
@@ -162,7 +164,7 @@ Start shipping AI features.
 **Engagement tactics:**
 - Checklist format (easy to scan)
 - Specific comparisons (credibility)
-- Social proof ("100+ companies")
+- Open-source credibility (MIT license)
 - Multiple CTAs (install, docs, examples)
 - Memorable closing line
 - URL shortening for character limit
@@ -293,18 +295,18 @@ Thread 🧵
 ```
 Enterprise AI chat requirements:
 
-✅ WCAG AAA accessibility
+✅ WCAG AAA target
 ✅ Token budget management
 ✅ Cost tracking & ROI
-✅ Security compliance (OWASP LLM Top 10)
+✅ Security aligned with OWASP LLM Top 10
 ✅ Multi-model support
-✅ Production-grade error handling
+✅ Built-in error handling
 
 Most libraries give you 2-3 of these.
 
 Clarity gives you all 6.
 
-Used by 100+ companies in production.
+Open-source. MIT licensed.
 
 Thread 🧵
 ```
@@ -375,7 +377,7 @@ Setup time: 5 minutes
 Bundle size: ~30KB
 License: MIT (free)
 
-Used by 100+ companies in production.
+Open-source. MIT licensed.
 
 If you're building AI applications, check it out:
 npm install @clarity-chat/react
@@ -438,7 +440,7 @@ Thread 🧵
 ### Variant 3: Speed to Market
 
 ```
-Time to production-ready AI chat:
+Time to robust AI chat:
 
 DIY from scratch: 6 weeks
 Vercel AI SDK: 2 weeks (just hooks)

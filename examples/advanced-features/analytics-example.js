@@ -430,7 +430,7 @@ export function ChatWithABTestExample() {
 // Example 5: Production Analytics with Backend Integration
 // =============================================================================
 /**
- * Production-ready analytics with backend API calls
+ * Robust analytics with backend API calls
  */
 export function ProductionAnalyticsExample() {
   const [experiments, setExperiments] = React.useState([])

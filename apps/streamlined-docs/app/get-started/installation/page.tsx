@@ -726,7 +726,7 @@ export default function InstallationPage() {
                 <strong className="text-emerald-600 dark:text-emerald-400">
                   IntelliSense Ready:
                 </strong>{' '}
-                All 200+ components and 95+ hooks include comprehensive JSDoc
+                All components and hooks include comprehensive JSDoc
                 documentation and type definitions.
               </div>
             </div>
@@ -874,7 +874,7 @@ export default function InstallationPage() {
                 {
                   icon: <Box className="w-5 h-5" />,
                   title: 'Explore Components',
-                  description: 'Browse 200+ components with live demos',
+                  description: 'Browse components with live demos',
                   href: '/explore',
                 },
                 {

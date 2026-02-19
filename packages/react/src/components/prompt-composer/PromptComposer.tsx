@@ -38,7 +38,7 @@ export interface PromptComposerProps
 }
 
 /**
- * Production-ready PromptComposer with progressive disclosure
+ * Comprehensive PromptComposer with progressive disclosure
  *
  * **Features:**
  * - Progressive context expansion (90% token savings)

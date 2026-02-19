@@ -19,7 +19,7 @@ export default function CommonPatternsPage() {
       <h1>Common Patterns</h1>
 
       <p className="lead">
-        Essential patterns for building production-ready AI chat interfaces.
+        Essential patterns for building robust AI chat interfaces.
         These patterns represent best practices from real-world applications.
       </p>
 

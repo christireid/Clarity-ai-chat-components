@@ -259,7 +259,7 @@ export default function UseStreamingSSEPage() {
         <h1>useStreamingSSE</h1>
 
         <p className="lead">
-          A production-ready hook for Server-Sent Events (SSE) streaming with
+          A robust hook for Server-Sent Events (SSE) streaming with
           automatic reconnection, authentication handling, event parsing, and
           network status detection.
         </p>

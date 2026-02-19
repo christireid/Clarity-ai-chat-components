@@ -519,7 +519,7 @@ npm install @clarity-chat/primitives @clarity-chat/types
 
 <div align="center">
 
-**🌟 Join 1,000+ developers building amazing AI chat experiences**
+**🌟 Get started building amazing AI chat experiences**
 
 [Start Free](https://clarity-chat.dev/docs) • [View Pricing](https://clarity-chat.dev/pricing) • [Book Demo](https://clarity-chat.dev/demo)
 

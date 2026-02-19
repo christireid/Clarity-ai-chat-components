@@ -28,7 +28,7 @@ libraries and establishes a 4-phase implementation roadmap to achieve market lea
 
 - npm downloads: 10k+/month
 - GitHub stars: 5k+
-- Production deployments: 100+ companies
+- Production deployments: Pre-release (0)
 - Developer satisfaction: NPS >50
 
 ---
@@ -817,7 +817,7 @@ Backlog (Q4 2026+):
 
 - **Goal**: Establish category leadership
 - **Focus**: Generative UI, advanced features
-- **Position**: "The production-ready AI chat library"
+- **Position**: "The accessible AI chat library"
 
 ### Q4 2026: Ecosystem Expansion
 

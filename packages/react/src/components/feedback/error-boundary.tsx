@@ -90,7 +90,7 @@ const DefaultFallback: React.FC<{ error: Error; resetError: () => void }> = ({
 }
 
 /**
- * Production-ready Error Boundary component for graceful error handling.
+ * Robust Error Boundary component for graceful error handling.
  *
  * **Features:**
  * - Catches JavaScript errors anywhere in child component tree

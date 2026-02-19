@@ -5,7 +5,7 @@
 
 ## Overview
 
-This document describes the comprehensive reliability infrastructure added to the model adapters in **Priority 2** of the [Model Adapter Audit](./ADAPTER_AUDIT_REPORT.md). These features transform the adapters from basic API wrappers into production-ready, resilient infrastructure.
+This document describes the comprehensive reliability infrastructure added to the model adapters in **Priority 2** of the [Model Adapter Audit](./ADAPTER_AUDIT_REPORT.md). These features transform the adapters from basic API wrappers into robust, resilient infrastructure.
 
 ## Features
 

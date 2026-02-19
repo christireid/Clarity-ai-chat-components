@@ -136,7 +136,7 @@ export default function ModelRouterPage() {
                 />
                 <FeatureBadge
                   icon={Shield}
-                  label="Production Ready"
+                  label="Stable"
                   color="blue"
                 />
               </div>

@@ -221,7 +221,7 @@ function estimateTokensFromText(text: string): number {
 }
 
 /**
- * Production-ready Token Tracker hook for cost transparency.
+ * Robust Token Tracker hook for cost transparency.
  *
  * **Features:**
  * - Real-time token counting across conversation

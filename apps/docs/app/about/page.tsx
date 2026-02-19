@@ -49,7 +49,7 @@ export default function AboutPage() {
             </p>
             <p className="text-lg text-text-secondary leading-relaxed mt-4">
               Clarity Chat was born from this frustration. We set out to create
-              the most complete, production-ready chat component library that
+              the most complete, robust chat component library that
               handles all the hard parts—so you can focus on building unique AI
               experiences for your users.
             </p>

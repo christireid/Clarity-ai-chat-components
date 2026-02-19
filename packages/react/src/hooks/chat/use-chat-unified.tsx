@@ -96,7 +96,7 @@ export function useChat(options: UseChatOptions = {}): UseChatReturn {
     console.warn(
       '[Clarity Chat] useChat is deprecated. Use useClarityChat directly for better ' +
         'TypeScript support and direct access to all features. ' +
-        'See: https://clarity-chat.dev/docs/migration/deprecated-hooks'
+        'See: https://github.com/christireid/Clarity-ai-chat-components/blob/main/docs/migration/deprecated-hooks'
     )
   }
 

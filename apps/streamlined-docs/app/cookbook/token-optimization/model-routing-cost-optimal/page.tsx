@@ -70,7 +70,7 @@ export default function ModelRoutingCostOptimalPage() {
           </h1>
 
           <p className="text-lg text-neutral-600 dark:text-neutral-400 max-w-2xl mx-auto">
-            Build a production-ready routing system that automatically selects the most cost-effective
+            Build a robust routing system that automatically selects the most cost-effective
             model for each query. Add 10-15% savings on top of caching and compression.
           </p>
         </div>

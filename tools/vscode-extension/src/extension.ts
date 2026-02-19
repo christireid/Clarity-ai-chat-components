@@ -807,7 +807,7 @@ function getWelcomeHtml(version: string): string {
       <div class="logo">✨</div>
       <h1>Welcome to Clarity Chat</h1>
       <p>Build stunning AI chat applications with intelligent memory, streaming, and token optimization.</p>
-      <span class="version-badge">v${version} - Production Ready</span>
+      <span class="version-badge">v${version} - Stable</span>
       <div class="copilot-badge">
         <span>🤖</span>
         <span>GitHub Copilot Integrated - Type @clarity in chat</span>
@@ -881,7 +881,7 @@ function getWelcomeHtml(version: string): string {
         <div class="feature-icon">🎨</div>
         <div>
           <h4>Beautiful UI</h4>
-          <p>Production-ready components with theming</p>
+          <p>Full-featured components with theming</p>
         </div>
       </div>
 

@@ -222,7 +222,7 @@ export default function AccurateTokenCounterPage() {
               <li className="flex items-start gap-3">
                 <span className="text-green-500 text-xl shrink-0">✓</span>
                 <span>
-                  <strong className="text-foreground">Production Ready:</strong> Used by Microsoft Teams
+                  <strong className="text-foreground">Stable:</strong> Used by Microsoft Teams
                   AI, CodeRabbit
                 </span>
               </li>

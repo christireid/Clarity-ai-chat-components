@@ -869,7 +869,7 @@ export default function TutorialPage() {
             </KineticText>
 
             <p className="text-lg sm:text-xl text-neutral-600 dark:text-neutral-400 max-w-3xl mx-auto mb-8">
-              Follow this step-by-step tutorial to build a production-ready AI chat
+              Follow this step-by-step tutorial to build a complete AI chat
               application with memory, tools, and beautiful UI customization.
             </p>
 
@@ -1645,7 +1645,7 @@ export default function TutorialPage() {
                   {
                     icon: <BookOpen className="w-5 h-5" />,
                     title: 'Explore Examples',
-                    description: 'Browse production-ready examples',
+                    description: 'Browse ready-to-use examples',
                     href: '/explore/examples',
                     color: 'from-rose-500/10 to-red-500/10',
                   },
@@ -1694,7 +1694,7 @@ export default function TutorialPage() {
                 You Did It!
               </h2>
               <p className="text-lg text-white/90 max-w-2xl mx-auto mb-8">
-                You have successfully built a production-ready AI chat application with
+                You have successfully built a robust AI chat application with
                 memory, tools, and custom UI. The possibilities are endless!
               </p>
               <div className="flex flex-wrap justify-center gap-4">

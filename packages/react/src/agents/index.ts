@@ -128,7 +128,7 @@ export function createAgent(
       'createAgent: "name" is required in agent configuration.\n\n' +
         'Example:\n' +
         '  const agent = createAgent({ name: "MyAgent", description: "...", tools: [...] })\n\n' +
-        'For more help, see: https://clarity-chat.dev/docs/agents'
+        'For more help, see: https://github.com/christireid/Clarity-ai-chat-components/blob/main/docs/agents'
     )
   }
 
@@ -141,7 +141,7 @@ export function createAgent(
       'createAgent: "description" is required in agent configuration.\n\n' +
         'Example:\n' +
         '  const agent = createAgent({ name: "MyAgent", description: "Agent description", tools: [...] })\n\n' +
-        'For more help, see: https://clarity-chat.dev/docs/agents'
+        'For more help, see: https://github.com/christireid/Clarity-ai-chat-components/blob/main/docs/agents'
     )
   }
 

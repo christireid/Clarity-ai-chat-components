@@ -1,6 +1,6 @@
 # @clarity-chat/primitives
 
-Core primitive UI components for Clarity Chat - beautifully designed, accessible, and production-ready React components.
+Core primitive UI components for Clarity Chat - beautifully designed, accessible React components built on Radix UI.
 
 ## Features
 

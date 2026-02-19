@@ -244,7 +244,7 @@ The tokenizer split architecture delivers:
 - **4.4 seconds faster** page load on 3G
 - **2109:1 ROI** (benefit-to-cost ratio)
 
-**Status:** Production-ready, verified, recommended for all users
+**Status:** Stable, verified, recommended for all users
 
 **Implementation:** Simple import path change
 

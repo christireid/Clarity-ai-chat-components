@@ -38,7 +38,7 @@ export const COMPONENT_REGISTRY: Record<string, ComponentConfig> = {
     devDependencies: [],
     peerDependencies: ['react', 'react-dom'],
     registryDependencies: ['streaming-handler'],
-    docs: 'https://clarity-chat.dev/components/chat-interface',
+    docs: 'https://github.com/christireid/Clarity-ai-chat-components/blob/main/docs/components/chat-interface',
     examples: [
       {
         name: 'Basic',
@@ -69,7 +69,7 @@ export const COMPONENT_REGISTRY: Record<string, ComponentConfig> = {
     devDependencies: [],
     peerDependencies: ['react'],
     registryDependencies: [],
-    docs: 'https://clarity-chat.dev/components/model-selector',
+    docs: 'https://github.com/christireid/Clarity-ai-chat-components/blob/main/docs/components/model-selector',
     examples: [
       {
         name: 'Basic',
@@ -92,7 +92,7 @@ export const COMPONENT_REGISTRY: Record<string, ComponentConfig> = {
     devDependencies: [],
     peerDependencies: ['react'],
     registryDependencies: [],
-    docs: 'https://clarity-chat.dev/components/token-counter',
+    docs: 'https://github.com/christireid/Clarity-ai-chat-components/blob/main/docs/components/token-counter',
     examples: [
       {
         name: 'Basic',
@@ -116,7 +116,7 @@ export const COMPONENT_REGISTRY: Record<string, ComponentConfig> = {
     devDependencies: [],
     peerDependencies: ['react'],
     registryDependencies: ['token-counter'],
-    docs: 'https://clarity-chat.dev/components/cost-estimator',
+    docs: 'https://github.com/christireid/Clarity-ai-chat-components/blob/main/docs/components/cost-estimator',
     examples: [
       {
         name: 'Basic',
@@ -140,7 +140,7 @@ export const COMPONENT_REGISTRY: Record<string, ComponentConfig> = {
     devDependencies: [],
     peerDependencies: ['react'],
     registryDependencies: [],
-    docs: 'https://clarity-chat.dev/hooks/use-streaming',
+    docs: 'https://github.com/christireid/Clarity-ai-chat-components/blob/main/docs/hooks/use-streaming',
     examples: [
       {
         name: 'Basic',
@@ -163,7 +163,7 @@ export const COMPONENT_REGISTRY: Record<string, ComponentConfig> = {
     devDependencies: [],
     peerDependencies: ['react'],
     registryDependencies: [],
-    docs: 'https://clarity-chat.dev/components/message-list',
+    docs: 'https://github.com/christireid/Clarity-ai-chat-components/blob/main/docs/components/message-list',
     examples: [
       {
         name: 'Basic',
@@ -187,7 +187,7 @@ export const COMPONENT_REGISTRY: Record<string, ComponentConfig> = {
     devDependencies: [],
     peerDependencies: ['react'],
     registryDependencies: [],
-    docs: 'https://clarity-chat.dev/components/chat-input',
+    docs: 'https://github.com/christireid/Clarity-ai-chat-components/blob/main/docs/components/chat-input',
     examples: [
       {
         name: 'Basic',
@@ -211,7 +211,7 @@ export const COMPONENT_REGISTRY: Record<string, ComponentConfig> = {
     devDependencies: [],
     peerDependencies: ['react'],
     registryDependencies: [],
-    docs: 'https://clarity-chat.dev/components/typing-indicator',
+    docs: 'https://github.com/christireid/Clarity-ai-chat-components/blob/main/docs/components/typing-indicator',
     examples: [
       {
         name: 'Basic',
@@ -232,7 +232,7 @@ export const COMPONENT_REGISTRY: Record<string, ComponentConfig> = {
     devDependencies: ['shiki'],
     peerDependencies: ['react'],
     registryDependencies: [],
-    docs: 'https://clarity-chat.dev/components/code-block',
+    docs: 'https://github.com/christireid/Clarity-ai-chat-components/blob/main/docs/components/code-block',
     examples: [
       {
         name: 'Basic',
@@ -256,7 +256,7 @@ export const COMPONENT_REGISTRY: Record<string, ComponentConfig> = {
     devDependencies: ['remark-gfm', 'rehype-katex'],
     peerDependencies: ['react'],
     registryDependencies: ['code-block'],
-    docs: 'https://clarity-chat.dev/components/markdown-renderer',
+    docs: 'https://github.com/christireid/Clarity-ai-chat-components/blob/main/docs/components/markdown-renderer',
     examples: [
       {
         name: 'Basic',
@@ -276,7 +276,7 @@ export const COMPONENT_REGISTRY: Record<string, ComponentConfig> = {
     devDependencies: [],
     peerDependencies: ['react'],
     registryDependencies: [],
-    docs: 'https://clarity-chat.dev/components/error-boundary',
+    docs: 'https://github.com/christireid/Clarity-ai-chat-components/blob/main/docs/components/error-boundary',
     examples: [
       {
         name: 'Basic',

@@ -25,7 +25,7 @@ export default function MigrateFromVercelAISDKPage() {
       <section className="docs-section">
         <h2>Why Migrate?</h2>
         <Callout type="info" title="Clarity Chat Advantages">
-          • **Production-ready UI components** out of the box
+          • **Robust UI components** out of the box
           <br />
           • **Enterprise features**: SSO, RBAC, audit logging
           <br />
@@ -52,7 +52,7 @@ export default function MigrateFromVercelAISDKPage() {
             <tr>
               <td>UI Components</td>
               <td>Build your own</td>
-              <td>50+ production-ready components</td>
+              <td>50+ robust components</td>
             </tr>
             <tr>
               <td>Streaming</td>
@@ -165,7 +165,7 @@ import type { Message } from '@clarity-chat/react/types'`}</code>
         </pre>
 
         <Callout type="success" title="Result">
-          You get a production-ready chat UI with streaming, markdown rendering,
+          You get a robust chat UI with streaming, markdown rendering,
           code highlighting, file upload, and more - all with 10 lines of code!
         </Callout>
       </section>
@@ -604,7 +604,7 @@ const { error, retry, resetError } = useChat({
         <h2>Success Stories</h2>
         <Callout type="success" title="Real Migration">
           "We migrated from Vercel AI SDK to Clarity Chat in 2 days. The
-          production-ready components saved us 3 weeks of UI development, and
+          robust components saved us 3 weeks of UI development, and
           the built-in memory system improved our RAG quality by 40%." - CTO, AI
           Startup
         </Callout>

@@ -207,7 +207,7 @@ Try sending a message below!`,
       <div className="showcase-app">
         <header className="showcase-header">
           <h1>Clarity Chat Components</h1>
-          <p>Production-ready AI chat components for React</p>
+          <p>Robust AI chat components for React</p>
         </header>
 
         <nav className="showcase-nav">

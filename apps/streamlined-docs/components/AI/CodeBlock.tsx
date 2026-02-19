@@ -47,7 +47,7 @@ export interface CodeBlockProps {
  * CodeBlock component for AI assistant responses
  *
  * This wrapper maintains backwards compatibility with the AI-specific API
- * while using the production-ready unified CodeBlock component.
+ * while using the unified CodeBlock component.
  *
  * @example
  * ```tsx

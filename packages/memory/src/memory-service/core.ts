@@ -1,7 +1,7 @@
 /**
  * Memory Service Core
  *
- * Production-ready memory management for AI chat applications
+ * Comprehensive memory management for AI chat applications
  * Implements hybrid memory system with:
  * - Short-term and long-term memory
  * - Episodic and semantic memory

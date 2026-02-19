@@ -1,6 +1,6 @@
 # Clarity Chat Documentation Site
 
-> Production-ready documentation site built with Next.js 14, inspired by React.dev
+> Robust documentation site built with Next.js 14, inspired by React.dev
 
 ## 🚀 Features
 

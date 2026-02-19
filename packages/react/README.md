@@ -259,7 +259,7 @@ export default function App() {
 }
 ```
 
-**That's it.** You now have a production-ready chat with streaming, error handling, memory, and
+**That's it.** You now have a complete chat with streaming, error handling, memory, and
 accessibility.
 
 ---

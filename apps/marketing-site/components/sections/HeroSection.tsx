@@ -105,7 +105,7 @@ export default function HeroSection() {
               {...getMotionProps(fadeInUp, 0.3)}
               className="text-lg sm:text-xl text-gray-300 mb-8 max-w-xl mx-auto lg:mx-0"
             >
-              170+ production-ready React components for AI chat. OpenAI,
+              170+ React components for AI chat. OpenAI,
               Anthropic, and Google AI in one library. Token optimization built
               in.
             </motion.p>

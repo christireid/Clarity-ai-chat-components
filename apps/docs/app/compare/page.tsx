@@ -72,7 +72,7 @@ export default function ComparePage() {
               <Check className="w-5 h-5" /> Use Clarity Chat if you need:
             </h3>
             <ul className="space-y-2 text-text-secondary">
-              <li>• Production-ready React chat components</li>
+              <li>• Robust React chat components</li>
               <li>• Full TypeScript support with IntelliSense</li>
               <li>• Enterprise features (RBAC, multi-tenancy, audit logs)</li>
               <li>• WCAG AAA accessibility compliance</li>

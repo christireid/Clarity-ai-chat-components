@@ -514,7 +514,7 @@ const result = await compressWithLLMLingua(text, {
 **New Page**: `apps/streamlined-docs/app/cookbook/enterprise-pipeline/page.tsx`
 
 **Structure**:
-1. Introduction - "Production-ready optimization pipeline"
+1. Introduction - "Robust optimization pipeline"
 2. Prerequisites
 3. Architecture - Full pipeline diagram
 4. Component 1: Request preprocessing

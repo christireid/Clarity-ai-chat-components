@@ -3,7 +3,7 @@ import { ImageResponse } from 'next/og'
 export const runtime = 'edge'
 
 export const alt =
-  'Clarity Chat - Production-ready React components for AI chat interfaces'
+  'Clarity Chat - React components for AI chat interfaces'
 export const size = {
   width: 1200,
   height: 630,
@@ -112,7 +112,7 @@ export default async function Image() {
             marginBottom: '48px',
           }}
         >
-          Production-ready React components for building AI chat interfaces.
+          Robust React components for building AI chat interfaces.
           Streaming, accessibility, and theming built-in.
         </p>
 

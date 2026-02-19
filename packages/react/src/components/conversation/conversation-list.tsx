@@ -126,7 +126,7 @@ export interface ConversationListProps {
 // formatRelativeTime imported from @clarity-chat/primitives
 
 /**
- * Production-ready Conversation List component.
+ * Robust Conversation List component.
  *
  * **Features:**
  * - Search conversations by title/content

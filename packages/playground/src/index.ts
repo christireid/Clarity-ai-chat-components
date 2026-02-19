@@ -11,7 +11,7 @@
  * - Keyboard shortcuts
  * - Auto-save to localStorage
  * - Error boundaries with recovery
- * - 10+ production-ready templates
+ * - 10+ ready-to-use templates
  *
  * @packageDocumentation
  */

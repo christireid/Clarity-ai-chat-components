@@ -11,7 +11,7 @@ import {
 
 const features = [
   {
-    name: '70+ Production-Ready Components',
+    name: '70+ Full-Featured Components',
     description:
       'Everything from basic chat to enterprise SSO. Voice input, file upload, streaming, analytics, and more.',
     icon: Code,
@@ -123,36 +123,36 @@ export default function Features() {
         <div className="mt-20 text-center">
           <div className="inline-flex flex-col sm:flex-row gap-6 sm:gap-12 p-8 rounded-2xl bg-gradient-to-r from-brand-50 to-purple-50 dark:from-brand-900/30 dark:to-purple-900/30">
             <div>
-              <div className="text-3xl font-bold text-brand-600 mb-1">97%</div>
+              <div className="text-3xl font-bold text-brand-600 mb-1">70+</div>
               <div className="text-sm text-gray-600 dark:text-gray-300">
-                Cost Savings
+                Components
               </div>
             </div>
             <div className="hidden sm:block w-px bg-gray-300 dark:bg-gray-600" />
             <div>
               <div className="text-3xl font-bold text-brand-600 mb-1">
-                $144K
+                100%
               </div>
               <div className="text-sm text-gray-600 dark:text-gray-300">
-                Avg Savings
+                TypeScript
               </div>
             </div>
             <div className="hidden sm:block w-px bg-gray-300 dark:bg-gray-600" />
             <div>
               <div className="text-3xl font-bold text-brand-600 mb-1">
-                2,847%
+                11
               </div>
               <div className="text-sm text-gray-600 dark:text-gray-300">
-                Avg ROI
+                Themes
               </div>
             </div>
             <div className="hidden sm:block w-px bg-gray-300 dark:bg-gray-600" />
             <div>
               <div className="text-3xl font-bold text-brand-600 mb-1">
-                1 Week
+                MIT
               </div>
               <div className="text-sm text-gray-600 dark:text-gray-300">
-                Time to Launch
+                Licensed
               </div>
             </div>
           </div>

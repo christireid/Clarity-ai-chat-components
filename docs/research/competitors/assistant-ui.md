@@ -20,7 +20,7 @@ app" through **composable primitives** rather than monolithic components. The ar
 inspired by Radix UI and shadcn/ui, emphasizing:
 
 - **Composability over monolithic solutions**: Provide building blocks, not pre-built components
-- **Production-ready defaults**: Handle complex features (streaming, auto-scroll, accessibility) out
+- **Robust defaults**: Handle complex features (streaming, auto-scroll, accessibility) out
   of the box
 - **Complete customization**: "Full control over every pixel" while maintaining functionality
 - **Provider-agnostic**: Works with Claude, ChatGPT, Grok, Perplexity, and other LLM providers
@@ -1178,7 +1178,7 @@ Assistant UI follows a **minimalist, functional design system**:
 1. **Radix UI-Inspired Architecture**: Uses composable primitives rather than monolithic components,
    enabling unprecedented customization flexibility
 
-2. **Production-Ready Defaults**: Handles complex features (streaming, auto-scroll, accessibility,
+2. **Robust Defaults**: Handles complex features (streaming, auto-scroll, accessibility,
    retry, interruptions) out of the box
 
 3. **Provider-Agnostic**: Works with any LLM provider (Claude, ChatGPT, Grok, Perplexity, etc.) and

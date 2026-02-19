@@ -1,6 +1,6 @@
 # Clarity Chat Components
 
-> Clarity Chat is a production-ready React component library for building AI chat interfaces with 200+ components, 95+ hooks, streaming support, RAG, memory management, and enterprise features. Built with TypeScript, React 19, and Tailwind CSS.
+> Clarity Chat is a React component library for building AI chat interfaces with streaming support, token optimization, memory management, and accessibility. Built with TypeScript, React 19, and Tailwind CSS.
 
 Clarity Chat provides everything you need to build AI chat applications - from simple chatbots to enterprise-grade conversational AI with memory, RAG, tool calling, and multi-tenancy support.
 
@@ -17,10 +17,10 @@ Clarity Chat provides everything you need to build AI chat applications - from s
 
 ### Core Concepts
 - /get-started/concepts - Understanding Clarity's architecture
-- /reference/components - 200+ production-ready components
-- /reference/hooks - 95+ hooks for chat functionality and state management
+- /reference/components - React components for AI chat interfaces
+- /reference/hooks - Hooks for chat functionality and state management
 - /get-started/concepts/theming - 15 pre-built themes with full customization
-- /get-started/concepts/animations - 150+ micro-interactions with Framer Motion
+- /get-started/concepts/animations - Micro-interactions with Framer Motion
 
 ---
 

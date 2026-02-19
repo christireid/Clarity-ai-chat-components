@@ -324,7 +324,7 @@ export default function HooksIndexPage() {
             <code className="text-brand-600 dark:text-brand-400">
               useClarityChat
             </code>{' '}
-            - it provides everything you need for a production-ready chat
+            - it provides everything you need for a complete chat
             interface.
           </p>
           <Link

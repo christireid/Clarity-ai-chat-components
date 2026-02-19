@@ -271,7 +271,7 @@ export default function ClarityToolResultPage() {
         results: [
           {
             title: 'Top 10 AI Development Best Practices',
-            snippet: 'Learn essential best practices for building production-ready AI applications...',
+            snippet: 'Learn essential best practices for building robust AI applications...',
             url: 'https://example.com/ai-best-practices',
             relevance: 0.95,
           },

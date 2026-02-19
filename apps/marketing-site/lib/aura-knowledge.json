@@ -590,7 +590,7 @@
     },
     {
       "title": "@clarity-chat/react > useErrorRecovery",
-      "content": "### useErrorRecovery\n\nProduction-ready error recovery hook with intelligent retry logic.\n\n**Features:**\n- Automatic retry with exponential backoff\n- Configurable retry logic (max attempts, delays, conditions)\n- Error classification (network, rate limit, server, auth)\n- User-friendly error messages\n- Retry state tracking\n- Manual retry capability\n- Success/failure callbacks for analytics\n\n**Use Cases:**\n- API request error handling\n- Network failure recovery\n- Rate limit handling\n- Server error retry\n- Authentication refresh\n\n```typescript\n(options: UseErrorRecoveryOptions<T>) => UseErrorRecoveryReturn<T>\n```",
+      "content": "### useErrorRecovery\n\nRobust error recovery hook with intelligent retry logic.\n\n**Features:**\n- Automatic retry with exponential backoff\n- Configurable retry logic (max attempts, delays, conditions)\n- Error classification (network, rate limit, server, auth)\n- User-friendly error messages\n- Retry state tracking\n- Manual retry capability\n- Success/failure callbacks for analytics\n\n**Use Cases:**\n- API request error handling\n- Network failure recovery\n- Rate limit handling\n- Server error retry\n- Authentication refresh\n\n```typescript\n(options: UseErrorRecoveryOptions<T>) => UseErrorRecoveryReturn<T>\n```",
       "sourcePath": "apps/docs/content/api/react/index.mdx"
     },
     {
@@ -710,12 +710,12 @@
     },
     {
       "title": "@clarity-chat/react > useMessageOperations",
-      "content": "### useMessageOperations\n\nProduction-ready Message Operations hook for advanced chat features.\n\n**Features:**\n- Message editing with version history\n- Message regeneration (resend to AI)\n- Conversation branching/forking\n- Undo/redo operations\n- Message deletion\n- Branch switching\n- Context preservation\n\n**Use Cases:**\n- Allow users to edit their messages\n- Regenerate AI responses with same context\n- Create alternative conversation paths\n- Undo mistakes\n- Delete unwanted messages\n\n```typescript\n(options: UseMessageOperationsOptions = {}) => UseMessageOperationsReturn\n```",
+      "content": "### useMessageOperations\n\nRobust Message Operations hook for advanced chat features.\n\n**Features:**\n- Message editing with version history\n- Message regeneration (resend to AI)\n- Conversation branching/forking\n- Undo/redo operations\n- Message deletion\n- Branch switching\n- Context preservation\n\n**Use Cases:**\n- Allow users to edit their messages\n- Regenerate AI responses with same context\n- Create alternative conversation paths\n- Undo mistakes\n- Delete unwanted messages\n\n```typescript\n(options: UseMessageOperationsOptions = {}) => UseMessageOperationsReturn\n```",
       "sourcePath": "apps/docs/content/api/react/index.mdx"
     },
     {
       "title": "@clarity-chat/react > useMobileKeyboard",
-      "content": "### useMobileKeyboard\n\nProduction-ready mobile keyboard detection hook.\n\n**Features:**\n- Detects keyboard show/hide events\n- Estimates keyboard height\n- Auto-scroll to focused input\n- Handles viewport changes\n- iOS and Android support\n- Debounced resize handling\n\n**Use Cases:**\n- Adjust UI when keyboard appears\n- Scroll chat input into view\n- Prevent content from being hidden\n- Improve mobile UX\n\n**Platform Notes:**\n- iOS: Uses visualViewport API and focusin/focusout events\n- Android: Uses window resize detection\n- Falls back gracefully on desktop\n\n```typescript\n(options: UseMobileKeyboardOptions = {}) => MobileKeyboardState\n```",
+      "content": "### useMobileKeyboard\n\nRobust mobile keyboard detection hook.\n\n**Features:**\n- Detects keyboard show/hide events\n- Estimates keyboard height\n- Auto-scroll to focused input\n- Handles viewport changes\n- iOS and Android support\n- Debounced resize handling\n\n**Use Cases:**\n- Adjust UI when keyboard appears\n- Scroll chat input into view\n- Prevent content from being hidden\n- Improve mobile UX\n\n**Platform Notes:**\n- iOS: Uses visualViewport API and focusin/focusout events\n- Android: Uses window resize detection\n- Falls back gracefully on desktop\n\n```typescript\n(options: UseMobileKeyboardOptions = {}) => MobileKeyboardState\n```",
       "sourcePath": "apps/docs/content/api/react/index.mdx"
     },
     {
@@ -835,7 +835,7 @@
     },
     {
       "title": "@clarity-chat/react > useRealisticTyping",
-      "content": "### useRealisticTyping\n\nProduction-ready Realistic Typing hook for natural AI responses.\n\n**Features:**\n- Simulates human reading/thinking time\n- Adjusts delay based on input length\n- Multi-stage typing indicators\n- Progress tracking through stages\n- Prevents instant responses (uncanny valley)\n- Prevents overly long waits\n\n**Use Cases:**\n- Make AI responses feel more natural\n- Show realistic \"thinking\" indicators\n- Adjust timing based on message complexity\n- Improve perceived response quality\n\n```typescript\n(options: UseRealisticTypingOptions = {}) => UseRealisticTypingReturn\n```",
+      "content": "### useRealisticTyping\n\nRobust Realistic Typing hook for natural AI responses.\n\n**Features:**\n- Simulates human reading/thinking time\n- Adjusts delay based on input length\n- Multi-stage typing indicators\n- Progress tracking through stages\n- Prevents instant responses (uncanny valley)\n- Prevents overly long waits\n\n**Use Cases:**\n- Make AI responses feel more natural\n- Show realistic \"thinking\" indicators\n- Adjust timing based on message complexity\n- Improve perceived response quality\n\n```typescript\n(options: UseRealisticTypingOptions = {}) => UseRealisticTypingReturn\n```",
       "sourcePath": "apps/docs/content/api/react/index.mdx"
     },
     {
@@ -945,12 +945,12 @@
     },
     {
       "title": "@clarity-chat/react > useStreamingSSE",
-      "content": "### useStreamingSSE\n\nProduction-ready SSE streaming hook with automatic reconnection,\nauthentication handling, token assembly, and network status detection.\n\n**Features:**\n- Automatic reconnection with exponential backoff\n- Token authentication (header + cookie fallback)\n- Resume from last event ID\n- Partial message assembly\n- Network status detection\n- Heartbeat monitoring\n- Memory-efficient event buffering\n\n**Use Cases:**\n- OpenAI/Anthropic API streaming\n- Real-time chat message streaming\n- Live notifications\n- Server-to-client updates\n\n```typescript\n(options: UseStreamingSSEOptions) => UseStreamingSSEReturn\n```",
+      "content": "### useStreamingSSE\n\nRobust SSE streaming hook with automatic reconnection,\nauthentication handling, token assembly, and network status detection.\n\n**Features:**\n- Automatic reconnection with exponential backoff\n- Token authentication (header + cookie fallback)\n- Resume from last event ID\n- Partial message assembly\n- Network status detection\n- Heartbeat monitoring\n- Memory-efficient event buffering\n\n**Use Cases:**\n- OpenAI/Anthropic API streaming\n- Real-time chat message streaming\n- Live notifications\n- Server-to-client updates\n\n```typescript\n(options: UseStreamingSSEOptions) => UseStreamingSSEReturn\n```",
       "sourcePath": "apps/docs/content/api/react/index.mdx"
     },
     {
       "title": "@clarity-chat/react > useStreamingWebSocket",
-      "content": "### useStreamingWebSocket\n\nuseStreamingWebSocket - Mid-Level WebSocket Streaming Hook\n\n**Architecture Layer**: Mid-Level (Composable Building Blocks)\n**Domain**: Streaming & Transport\n\nProduction-ready WebSocket streaming hook with automatic reconnection,\nheartbeat/ping-pong, and lifecycle management.\n\nFor chat streaming, use top-level `useClarityChat` with transport: 'websocket'.\nFor low-level streaming, use `useStreaming` primitive.\n\n**Features:**\n- Automatic reconnection with exponential backoff\n- Heartbeat/ping-pong for keepalive\n- Support for text and binary messages\n- Automatic JSON parsing\n- Connection lifecycle management\n- Memory-efficient message buffering\n\n```typescript\n(options: UseStreamingWebSocketOptions) => UseStreamingWebSocketReturn\n```",
+      "content": "### useStreamingWebSocket\n\nuseStreamingWebSocket - Mid-Level WebSocket Streaming Hook\n\n**Architecture Layer**: Mid-Level (Composable Building Blocks)\n**Domain**: Streaming & Transport\n\nRobust WebSocket streaming hook with automatic reconnection,\nheartbeat/ping-pong, and lifecycle management.\n\nFor chat streaming, use top-level `useClarityChat` with transport: 'websocket'.\nFor low-level streaming, use `useStreaming` primitive.\n\n**Features:**\n- Automatic reconnection with exponential backoff\n- Heartbeat/ping-pong for keepalive\n- Support for text and binary messages\n- Automatic JSON parsing\n- Connection lifecycle management\n- Memory-efficient message buffering\n\n```typescript\n(options: UseStreamingWebSocketOptions) => UseStreamingWebSocketReturn\n```",
       "sourcePath": "apps/docs/content/api/react/index.mdx"
     },
     {
@@ -1040,7 +1040,7 @@
     },
     {
       "title": "@clarity-chat/react > useTokenTracker",
-      "content": "### useTokenTracker\n\nProduction-ready Token Tracker hook for cost transparency.\n\n**Features:**\n- Real-time token counting across conversation\n- Automatic model pricing lookup\n- Cost estimation for input/output tokens\n- Warning alerts at configurable thresholds\n- Context limit validation\n- Pruning suggestions\n- Support for popular models (GPT-4, Claude, etc.)\n\n**Use Cases:**\n- Display current conversation token usage\n- Warn users before hitting context limits\n- Show estimated API costs\n- Prevent messages that would exceed limits\n- Suggest context pruning\n\n```typescript\n(options: UseTokenTrackerOptions) => UseTokenTrackerReturn\n```",
+      "content": "### useTokenTracker\n\nRobust Token Tracker hook for cost transparency.\n\n**Features:**\n- Real-time token counting across conversation\n- Automatic model pricing lookup\n- Cost estimation for input/output tokens\n- Warning alerts at configurable thresholds\n- Context limit validation\n- Pruning suggestions\n- Support for popular models (GPT-4, Claude, etc.)\n\n**Use Cases:**\n- Display current conversation token usage\n- Warn users before hitting context limits\n- Show estimated API costs\n- Prevent messages that would exceed limits\n- Suggest context pruning\n\n```typescript\n(options: UseTokenTrackerOptions) => UseTokenTrackerReturn\n```",
       "sourcePath": "apps/docs/content/api/react/index.mdx"
     },
     {
@@ -1115,7 +1115,7 @@
     },
     {
       "title": "@clarity-chat/react > useVoiceInput",
-      "content": "### useVoiceInput\n\nProduction-ready voice input hook with Web Speech API.\n\n**Features:**\n- Real-time speech-to-text\n- Continuous and single-shot modes\n- Interim and final transcripts\n- Multi-language support\n- Confidence scores\n- Auto-stop on silence\n- Browser compatibility detection\n\n**Browser Support:**\n- ✅ Chrome/Edge (best support)\n- ✅ Safari (iOS 14.5+, macOS 14.3+)\n- ❌ Firefox (not yet supported)\n- ❌ Mobile Firefox/Samsung Internet\n\n**Use Cases:**\n- Voice-to-text input for chat\n- Voice commands\n- Accessibility features\n- Hands-free operation\n\n```typescript\n(options: UseVoiceInputOptions = {}) => { startListening: () => void; stopListening: () => void; resetTranscript: () => void; isListening: boolean; transcript: string; finalTranscript: string; interimTranscript: string; isSupported: boolean; error: string | null; confidence: number; }\n```",
+      "content": "### useVoiceInput\n\nRobust voice input hook with Web Speech API.\n\n**Features:**\n- Real-time speech-to-text\n- Continuous and single-shot modes\n- Interim and final transcripts\n- Multi-language support\n- Confidence scores\n- Auto-stop on silence\n- Browser compatibility detection\n\n**Browser Support:**\n- ✅ Chrome/Edge (best support)\n- ✅ Safari (iOS 14.5+, macOS 14.3+)\n- ❌ Firefox (not yet supported)\n- ❌ Mobile Firefox/Samsung Internet\n\n**Use Cases:**\n- Voice-to-text input for chat\n- Voice commands\n- Accessibility features\n- Hands-free operation\n\n```typescript\n(options: UseVoiceInputOptions = {}) => { startListening: () => void; stopListening: () => void; resetTranscript: () => void; isListening: boolean; transcript: string; finalTranscript: string; interimTranscript: string; isSupported: boolean; error: string | null; confidence: number; }\n```",
       "sourcePath": "apps/docs/content/api/react/index.mdx"
     },
     {
@@ -1415,7 +1415,7 @@
     },
     {
       "title": "@clarity-chat/react > CodeAssistant",
-      "content": "### CodeAssistant\n\nProduction-ready Code Assistant Template.\n\n**Features:**\n- Specialized for coding tasks\n- Syntax highlighting for code blocks\n- Quick actions (explain, debug, optimize)\n- Code execution preview\n- Multi-language support\n- Copy code functionality\n- Code context awareness\n\n**Use Cases:**\n- IDE coding assistants\n- Code review tools\n- Learning platforms\n- Developer documentation\n\n```typescript\n(__0: CodeAssistantConfig) => Element\n```",
+      "content": "### CodeAssistant\n\nFull-Featured Code Assistant Template.\n\n**Features:**\n- Specialized for coding tasks\n- Syntax highlighting for code blocks\n- Quick actions (explain, debug, optimize)\n- Code execution preview\n- Multi-language support\n- Copy code functionality\n- Code context awareness\n\n**Use Cases:**\n- IDE coding assistants\n- Code review tools\n- Learning platforms\n- Developer documentation\n\n```typescript\n(__0: CodeAssistantConfig) => Element\n```",
       "sourcePath": "apps/docs/content/api/react/index.mdx"
     },
     {
@@ -3480,7 +3480,7 @@
     },
     {
       "title": "@clarity-chat/react > SupportBot",
-      "content": "### SupportBot\n\nProduction-ready Support Bot Template.\n\n**Features:**\n- Pre-configured for customer support use cases\n- Built-in knowledge base with FAQ matching\n- Quick reply buttons for common actions\n- Smart escalation to human agents\n- Typing indicators and friendly responses\n- Tracks conversation context\n\n**Use Cases:**\n- E-commerce customer support\n- SaaS help desk\n- Service chatbots\n- FAQ automation\n\n```typescript\n(__0: SupportBotConfig) => Element\n```",
+      "content": "### SupportBot\n\nFull-Featured Support Bot Template.\n\n**Features:**\n- Pre-configured for customer support use cases\n- Built-in knowledge base with FAQ matching\n- Quick reply buttons for common actions\n- Smart escalation to human agents\n- Typing indicators and friendly responses\n- Tracks conversation context\n\n**Use Cases:**\n- E-commerce customer support\n- SaaS help desk\n- Service chatbots\n- FAQ automation\n\n```typescript\n(__0: SupportBotConfig) => Element\n```",
       "sourcePath": "apps/docs/content/api/react/index.mdx"
     },
     {
@@ -6245,7 +6245,7 @@
     },
     {
       "title": "@clarity-chat/types > MemoryScope",
-      "content": "### MemoryScope\n\nAdvanced Memory & Context Type Definitions\n\nImplements hybrid memory architecture with episodic, semantic, short-term, and long-term memory layers\nBased on production-ready patterns for AI chat applications\n\n```typescript\nexport type MemoryScope = 'session' | 'thread' | 'global'\n```",
+      "content": "### MemoryScope\n\nAdvanced Memory & Context Type Definitions\n\nImplements hybrid memory architecture with episodic, semantic, short-term, and long-term memory layers\nBased on robust patterns for AI chat applications\n\n```typescript\nexport type MemoryScope = 'session' | 'thread' | 'global'\n```",
       "sourcePath": "apps/docs/content/api/types/index.mdx"
     },
     {
@@ -6670,7 +6670,7 @@
     },
     {
       "title": "Clarity Chat Case Studies > Across All Case Studies",
-      "content": "### Across All Case Studies\n\n| Metric                     | Average Result        |\n| -------------------------- | --------------------- |\n| **Time Saved**             | 68% faster to market  |\n| **Cost Savings**           | $144K average         |\n| **ROI**                    | 2,847% average        |\n| **Customer Satisfaction**  | +24% average increase |\n| **Support Cost Reduction** | 55% average           |\n| **Time to Launch**         | 5 weeks average       |",
+      "content": "### Summary\n\nThese case studies are templates for future customer success stories. Actual metrics will be populated once real customer data is available.",
       "sourcePath": "apps/docs/content/commercial/CASE_STUDIES.md"
     },
     {
@@ -6680,7 +6680,7 @@
     },
     {
       "title": "Clarity Chat Case Studies > Common Success Factors",
-      "content": "### Common Success Factors\n\n1. ✅ **Accessibility First** - WCAG AAA compliance saves legal costs\n2. ✅ **Enterprise Features** - SSO, RBAC, audit logs save months\n3. ✅ **Fast Implementation** - Average 5 weeks vs. 4-6 months custom\n4. ✅ **Cost Savings** - Average $144K saved vs. custom build\n5. ✅ **Support Quality** - Responsive support accelerates launches\n\n---",
+      "content": "### Common Success Factors\n\n1. ✅ **Accessibility First** - Built-in accessibility support\n2. ✅ **Enterprise Features** - SSO, RBAC, audit logs included\n3. ✅ **Fast Implementation** - Pre-built components save development time\n4. ✅ **Cost Savings** - Reduce custom build effort\n5. ✅ **Support Quality** - Responsive support accelerates launches\n\n---",
       "sourcePath": "apps/docs/content/commercial/CASE_STUDIES.md"
     },
     {
@@ -7015,7 +7015,7 @@
     },
     {
       "title": "Clarity Chat Pricing Guide > 📄 Additional Resources",
-      "content": "## 📄 Additional Resources\n\n- [Full Feature Comparison](https://clarity-chat.dev/compare)\n- [Component Gallery](https://clarity-chat.dev/components)\n- [Live Demo](https://clarity-chat.dev/demo)\n- [Documentation](https://clarity-chat.dev/docs)\n- [Case Studies](https://clarity-chat.dev/case-studies)\n- [Customer Reviews](https://clarity-chat.dev/reviews)\n- [License Comparison](https://clarity-chat.dev/licenses)\n- [Security & Compliance](https://clarity-chat.dev/security)\n\n---\n\n<div align=\"center\">\n\n**🌟 Join 1,000+ developers building amazing AI chat experiences**\n\n[Start Free](https://clarity-chat.dev/docs) • [View Pricing](https://clarity-chat.dev/pricing) • [Book Demo](https://clarity-chat.dev/demo)\n\n</div>",
+      "content": "## 📄 Additional Resources\n\n- [Full Feature Comparison](https://clarity-chat.dev/compare)\n- [Component Gallery](https://clarity-chat.dev/components)\n- [Live Demo](https://clarity-chat.dev/demo)\n- [Documentation](https://clarity-chat.dev/docs)\n- [Case Studies](https://clarity-chat.dev/case-studies)\n- [Customer Reviews](https://clarity-chat.dev/reviews)\n- [License Comparison](https://clarity-chat.dev/licenses)\n- [Security & Compliance](https://clarity-chat.dev/security)\n\n---\n\n<div align=\"center\">\n\n**🌟 Get started building amazing AI chat experiences**\n\n[Start Free](https://clarity-chat.dev/docs) • [View Pricing](https://clarity-chat.dev/pricing) • [Book Demo](https://clarity-chat.dev/demo)\n\n</div>",
       "sourcePath": "apps/docs/content/commercial/PRICING.md"
     },
     {
@@ -7375,7 +7375,7 @@
     },
     {
       "title": "Clarity Chat - Commercial Documentation > 🎯 Key Value Propositions",
-      "content": "## 🎯 Key Value Propositions\n\n1. **Speed:** 10-50x faster time to market (1 week vs. 6 months)\n2. **Cost:** 97% cost savings ($1,499 vs. $150K custom build)\n3. **Quality:** WCAG AAA certified, SOC 2 compliant\n4. **Support:** Commercial support with SLA\n5. **ROI:** Average 2,847% return on investment\n\n---",
+      "content": "## 🎯 Key Value Propositions\n\n1. **Speed:** Faster time to market vs. building from scratch\n2. **Cost:** Significant cost savings vs. custom build\n3. **Quality:** Accessibility-first, TypeScript-first\n4. **Support:** Commercial support with SLA\n5. **ROI:** Save development time and resources\n\n---",
       "sourcePath": "apps/docs/content/commercial/README.md"
     },
     {
@@ -7510,7 +7510,7 @@
     },
     {
       "title": "Clarity Chat - Sales Deck Outline > SLIDE 1: Title Slide",
-      "content": "### SLIDE 1: Title Slide\n\n**Visual:** Clarity Chat logo + hero screenshot\n\n- Company name: **Clarity Chat by Code & Clarity**\n- Tagline: **\"Ship Production-Ready AI Chat in Hours, Not Months\"**\n- Presenter name & title\n- Date\n\n**Script:**\n\n> \"Thank you for your time today. I'm excited to show you how Clarity Chat can help you [specific\n> pain point from discovery call].\"\n\n---",
+      "content": "### SLIDE 1: Title Slide\n\n**Visual:** Clarity Chat logo + hero screenshot\n\n- Company name: **Clarity Chat by Code & Clarity**\n- Tagline: **\"Ship AI Chat in Hours, Not Months\"**\n- Presenter name & title\n- Date\n\n**Script:**\n\n> \"Thank you for your time today. I'm excited to show you how Clarity Chat can help you [specific\n> pain point from discovery call].\"\n\n---",
       "sourcePath": "apps/docs/content/commercial/SALES_DECK_OUTLINE.md"
     },
     {
@@ -7535,12 +7535,12 @@
     },
     {
       "title": "Clarity Chat - Sales Deck Outline > SLIDE 6: Introducing Clarity Chat",
-      "content": "### SLIDE 6: Introducing Clarity Chat\n\n**Visual:** Product hero shot, logo\n\n**Positioning:**\n\n- Premium AI Chat Component Library for React\n- 70+ Production-Ready Components\n- WCAG 2.1 AAA Compliant\n- Enterprise Security & Features\n- Ship in Hours, Not Months\n\n**Script:**\n\n> \"That's why we built Clarity Chat. Production-ready AI chat components that you can ship in hours,\n> not months.\"\n\n---",
+      "content": "### SLIDE 6: Introducing Clarity Chat\n\n**Visual:** Product hero shot, logo\n\n**Positioning:**\n\n- Premium AI Chat Component Library for React\n- 70+ Full-Featured Components\n- WCAG 2.1 AAA Compliant\n- Enterprise Security & Features\n- Ship in Hours, Not Months\n\n**Script:**\n\n> \"That's why we built Clarity Chat. Robust AI chat components that you can ship in hours,\n> not months.\"\n\n---",
       "sourcePath": "apps/docs/content/commercial/SALES_DECK_OUTLINE.md"
     },
     {
       "title": "Clarity Chat - Sales Deck Outline > SLIDE 7: By The Numbers",
-      "content": "### SLIDE 7: By The Numbers\n\n**Visual:** Stats with icons\n\n- 🎨 **70+** Production-Ready Components\n- 🎭 **11** Premium Themes\n- ⚡ **10-50x** Faster Time to Market\n- 💰 **97%** Cost Savings vs. Custom\n- ♿ **WCAG AAA** Accessibility Certified\n- 🔒 **SOC 2** Compliance Support\n- 🌍 **1,000+** Developers Using Clarity Chat\n\n**Script:**\n\n> \"Here's what that means in numbers: [highlight 2-3 most relevant stats].\"\n\n---",
+      "content": "### SLIDE 7: By The Numbers\n\n**Visual:** Stats with icons\n\n- 🎨 **70+** Full-Featured Components\n- 🎭 **11** Premium Themes\n- ⚡ **Faster** Time to Market vs. Custom Build\n- 💰 **Save** Development Time and Resources\n- ♿ **WCAG AAA** Accessibility Target\n- 🔒 **Security** Best Practices Built-in\n- 🌍 **Open Source** MIT Licensed\n\n**Script:**\n\n> \"Here's what that means in numbers: [highlight 2-3 most relevant stats].\"\n\n---",
       "sourcePath": "apps/docs/content/commercial/SALES_DECK_OUTLINE.md"
     },
     {
@@ -7610,7 +7610,7 @@
     },
     {
       "title": "Clarity Chat - Sales Deck Outline > SLIDE 21: Why Choose Clarity Chat",
-      "content": "### SLIDE 21: Why Choose Clarity Chat\n\n**Visual:** Checkmark list\n\n**Unique Advantages:**\n\n1. ✅ **Only WCAG AAA certified** chat library\n2. ✅ **155+ components** (most comprehensive)\n3. ✅ **Enterprise features** (SSO, RBAC, white-label)\n4. ✅ **97% cost savings** vs. custom build\n5. ✅ **10-50x faster** time to market\n6. ✅ **Commercial support** with SLA\n7. ✅ **Active development** (updates weekly)\n8. ✅ **1,000+ developers** trust us\n\n**Script:**\n\n> \"Here's why companies choose us over building it themselves or using other libraries.\"\n\n---",
+      "content": "### SLIDE 21: Why Choose Clarity Chat\n\n**Visual:** Checkmark list\n\n**Unique Advantages:**\n\n1. ✅ **Only WCAG AAA certified** chat library\n2. ✅ **155+ components** (most comprehensive)\n3. ✅ **Enterprise features** (SSO, RBAC, white-label)\n4. ✅ **Significant cost savings** vs. custom build\n5. ✅ **Faster** time to market\n6. ✅ **Commercial support** with SLA\n7. ✅ **Active development** (updates weekly)\n8. ✅ **Open source** MIT licensed\n\n**Script:**\n\n> \"Here's why companies choose us over building it themselves or using other libraries.\"\n\n---",
       "sourcePath": "apps/docs/content/commercial/SALES_DECK_OUTLINE.md"
     },
     {
@@ -8305,7 +8305,7 @@
     },
     {
       "title": "Content Components Audit & Improvements > Conclusion",
-      "content": "## Conclusion\n\nThe Clarity AI Chat Components library has achieved **industry-leading quality standards** through systematic auditing and remediation:\n\n- ✅ **95% Design System Compliance**\n- ✅ **99% WCAG 2.1 AA Accessibility**\n- ✅ **92 Lighthouse Performance Score**\n- ✅ **98% Mobile Usability**\n\nAll components are production-ready and exceed industry standards for quality, performance, and accessibility.\n\n---",
+      "content": "## Conclusion\n\nThe Clarity AI Chat Components library has achieved **industry-leading quality standards** through systematic auditing and remediation:\n\n- ✅ **95% Design System Compliance**\n- ✅ **99% WCAG 2.1 AA Accessibility**\n- ✅ **92 Lighthouse Performance Score**\n- ✅ **98% Mobile Usability**\n\nAll components meet or exceed industry standards for quality, performance, and accessibility.\n\n---",
       "sourcePath": "apps/docs/content/components/content-components-improvements.mdx"
     },
     {
@@ -10210,7 +10210,7 @@
     },
     {
       "title": "Enterprise Features Guide > Support",
-      "content": "## Support\n\n- 📚 [Full API Documentation](../api/)\n- 💡 [Examples](../../examples/)\n- 🐛 [Issues](https://github.com/christireid/Clarity-ai-chat-components/issues)\n- 💬 [Discussions](https://github.com/christireid/Clarity-ai-chat-components/discussions)\n\n---\n\n**All features are optional, flexible, and production-ready** 🚀",
+      "content": "## Support\n\n- 📚 [Full API Documentation](../api/)\n- 💡 [Examples](../../examples/)\n- 🐛 [Issues](https://github.com/christireid/Clarity-ai-chat-components/issues)\n- 💬 [Discussions](https://github.com/christireid/Clarity-ai-chat-components/discussions)\n\n---\n\n**All features are optional, flexible, and well-tested** 🚀",
       "sourcePath": "apps/docs/content/guides-migration/enterprise/ENTERPRISE_FEATURES.md"
     },
     {
@@ -10575,7 +10575,7 @@
     },
     {
       "title": "RAG (Retrieval-Augmented Generation) Guide > RAG (Retrieval-Augmented Generation) Guide",
-      "content": "# RAG (Retrieval-Augmented Generation) Guide\n\nBuild powerful, production-ready RAG applications with Clarity Chat's comprehensive RAG infrastructure including vector stores, document loaders, embeddings, hybrid search, reranking, and evaluation tools.",
+      "content": "# RAG (Retrieval-Augmented Generation) Guide\n\nBuild powerful, comprehensive RAG applications with Clarity Chat's comprehensive RAG infrastructure including vector stores, document loaders, embeddings, hybrid search, reranking, and evaluation tools.",
       "sourcePath": "apps/docs/content/guides-migration/guides/rag-guide.md"
     },
     {
@@ -10730,7 +10730,7 @@
     },
     {
       "title": "Token Optimization Guide > Overview",
-      "content": "## Overview\n\nToken optimization can **reduce your AI API costs by 50-80%** while maintaining quality. Clarity Chat provides a complete suite of reusable, production-ready components and utilities for token optimization.",
+      "content": "## Overview\n\nToken optimization can **reduce your AI API costs by 50-80%** while maintaining quality. Clarity Chat provides a complete suite of reusable, comprehensive components and utilities for token optimization.",
       "sourcePath": "apps/docs/content/guides-migration/guides/token-optimization.md"
     },
     {
@@ -10835,7 +10835,7 @@
     },
     {
       "title": "Tool Calling System > Tool Calling System",
-      "content": "# Tool Calling System\n\n**Complete guide to tool calling in Clarity Chat**\n\nThe Clarity Chat tool calling system enables AI assistants to interact with external systems, APIs, and functions during conversations. The system is production-ready, secure by default, and works with any React application.\n\n---",
+      "content": "# Tool Calling System\n\n**Complete guide to tool calling in Clarity Chat**\n\nThe Clarity Chat tool calling system enables AI assistants to interact with external systems, APIs, and functions during conversations. The system is robust, secure by default, and works with any React application.\n\n---",
       "sourcePath": "apps/docs/content/guides-migration/guides/tools/index.md"
     },
     {
@@ -10859,8 +10859,8 @@
       "sourcePath": "apps/docs/content/guides-migration/guides/tools/index.md"
     },
     {
-      "title": "Tool Calling System > Production Ready",
-      "content": "### Production Ready\n- ✅ Automatic retry with exponential backoff\n- ✅ Fallback chain execution\n- ✅ Performance monitoring and analytics\n- ✅ Comprehensive error handling",
+      "title": "Tool Calling System > Robust",
+      "content": "### Robust\n- ✅ Automatic retry with exponential backoff\n- ✅ Fallback chain execution\n- ✅ Performance monitoring and analytics\n- ✅ Comprehensive error handling",
       "sourcePath": "apps/docs/content/guides-migration/guides/tools/index.md"
     },
     {
@@ -10930,7 +10930,7 @@
     },
     {
       "title": "Tool Calling System > 📊 System Status",
-      "content": "## 📊 System Status\n\n| Component | Status |\n|-----------|--------|\n| **Security** | ✅ Production Ready |\n| **Architecture** | ✅ Stable |\n| **Documentation** | ✅ Comprehensive |\n| **Test Coverage** | ✅ 177+ tests |\n| **Framework Support** | ✅ All React frameworks |\n| **AI Provider Support** | ✅ All major providers |\n\n**Current Version**: 1.0.0\n**Last Updated**: 2026-01-21\n**Audit Score**: 100/100 🎯\n\n---\n\n<style>\n.grid-cards {\n  display: grid;\n  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));\n  gap: 1.5rem;\n  margin: 2rem 0;\n}\n\n.grid-cards > * {\n  padding: 1.5rem;\n  border: 1px solid var(--border-color, #e5e7eb);\n  border-radius: 8px;\n  background: var(--card-bg, #f9fafb);\n}\n\n.grid-cards h4 {\n  margin-top: 0;\n  color: var(--heading-color, #1f2937);\n}\n\n.grid-cards a {\n  text-decoration: none;\n  color: var(--link-color, #3b82f6);\n}\n\n.grid-cards a:hover {\n  text-decoration: underline;\n}\n</style>",
+      "content": "## 📊 System Status\n\n| Component | Status |\n|-----------|--------|\n| **Security** | ✅ Stable |\n| **Architecture** | ✅ Stable |\n| **Documentation** | ✅ Comprehensive |\n| **Test Coverage** | ✅ 177+ tests |\n| **Framework Support** | ✅ All React frameworks |\n| **AI Provider Support** | ✅ All major providers |\n\n**Current Version**: 1.0.0\n**Last Updated**: 2026-01-21\n**Audit Score**: 100/100 🎯\n\n---\n\n<style>\n.grid-cards {\n  display: grid;\n  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));\n  gap: 1.5rem;\n  margin: 2rem 0;\n}\n\n.grid-cards > * {\n  padding: 1.5rem;\n  border: 1px solid var(--border-color, #e5e7eb);\n  border-radius: 8px;\n  background: var(--card-bg, #f9fafb);\n}\n\n.grid-cards h4 {\n  margin-top: 0;\n  color: var(--heading-color, #1f2937);\n}\n\n.grid-cards a {\n  text-decoration: none;\n  color: var(--link-color, #3b82f6);\n}\n\n.grid-cards a:hover {\n  text-decoration: underline;\n}\n</style>",
       "sourcePath": "apps/docs/content/guides-migration/guides/tools/index.md"
     },
     {
@@ -12045,7 +12045,7 @@
     },
     {
       "title": "Clarity × Vercel AI SDK Integration Guide > Clarity × Vercel AI SDK Integration Guide",
-      "content": "# Clarity × Vercel AI SDK Integration Guide\n\n> **Goal:** pair Vercel’s server-side AI primitives with Clarity’s production-ready component library so teams can ship polished chat experiences without rebuilding UI, safety, or analytics from scratch.",
+      "content": "# Clarity × Vercel AI SDK Integration Guide\n\n> **Goal:** pair Vercel’s server-side AI primitives with Clarity's comprehensive component library so teams can ship polished chat experiences without rebuilding UI, safety, or analytics from scratch.",
       "sourcePath": "apps/docs/content/guides-migration/research/vercel-ai-sdk-integration-guide.md"
     },
     {
@@ -12805,7 +12805,7 @@
     },
     {
       "title": "useErrorRecovery > useErrorRecovery",
-      "content": "# useErrorRecovery\n\nProduction-ready error recovery hook with intelligent retry logic.\n\n**Features:**\n- Automatic retry with exponential backoff\n- Configurable retry logic (max attempts, delays, conditions)\n- Error classification (network, rate limit, server, auth)\n- User-friendly error messages\n- Retry state tracking\n- Manual retry capability\n- Success/failure callbacks for analytics\n\n**Use Cases:**\n- API request error handling\n- Network failure recovery\n- Rate limit handling\n- Server error retry\n- Authentication refresh",
+      "content": "# useErrorRecovery\n\nRobust error recovery hook with intelligent retry logic.\n\n**Features:**\n- Automatic retry with exponential backoff\n- Configurable retry logic (max attempts, delays, conditions)\n- Error classification (network, rate limit, server, auth)\n- User-friendly error messages\n- Retry state tracking\n- Manual retry capability\n- Success/failure callbacks for analytics\n\n**Use Cases:**\n- API request error handling\n- Network failure recovery\n- Rate limit handling\n- Server error retry\n- Authentication refresh",
       "sourcePath": "apps/docs/content/hooks/use-error-recovery.mdx"
     },
     {
@@ -13055,7 +13055,7 @@
     },
     {
       "title": "useMessageOperations > useMessageOperations",
-      "content": "# useMessageOperations\n\nProduction-ready Message Operations hook for advanced chat features.\n\n**Features:**\n- Message editing with version history\n- Message regeneration (resend to AI)\n- Conversation branching/forking\n- Undo/redo operations\n- Message deletion\n- Branch switching\n- Context preservation\n\n**Use Cases:**\n- Allow users to edit their messages\n- Regenerate AI responses with same context\n- Create alternative conversation paths\n- Undo mistakes\n- Delete unwanted messages",
+      "content": "# useMessageOperations\n\nRobust Message Operations hook for advanced chat features.\n\n**Features:**\n- Message editing with version history\n- Message regeneration (resend to AI)\n- Conversation branching/forking\n- Undo/redo operations\n- Message deletion\n- Branch switching\n- Context preservation\n\n**Use Cases:**\n- Allow users to edit their messages\n- Regenerate AI responses with same context\n- Create alternative conversation paths\n- Undo mistakes\n- Delete unwanted messages",
       "sourcePath": "apps/docs/content/hooks/use-message-operations.mdx"
     },
     {
@@ -13090,7 +13090,7 @@
     },
     {
       "title": "useMobileKeyboard > useMobileKeyboard",
-      "content": "# useMobileKeyboard\n\nProduction-ready mobile keyboard detection hook.\n\n**Features:**\n- Detects keyboard show/hide events\n- Estimates keyboard height\n- Auto-scroll to focused input\n- Handles viewport changes\n- iOS and Android support\n- Debounced resize handling\n\n**Use Cases:**\n- Adjust UI when keyboard appears\n- Scroll chat input into view\n- Prevent content from being hidden\n- Improve mobile UX\n\n**Platform Notes:**\n- iOS: Uses visualViewport API and focusin/focusout events\n- Android: Uses window resize detection\n- Falls back gracefully on desktop",
+      "content": "# useMobileKeyboard\n\nRobust mobile keyboard detection hook.\n\n**Features:**\n- Detects keyboard show/hide events\n- Estimates keyboard height\n- Auto-scroll to focused input\n- Handles viewport changes\n- iOS and Android support\n- Debounced resize handling\n\n**Use Cases:**\n- Adjust UI when keyboard appears\n- Scroll chat input into view\n- Prevent content from being hidden\n- Improve mobile UX\n\n**Platform Notes:**\n- iOS: Uses visualViewport API and focusin/focusout events\n- Android: Uses window resize detection\n- Falls back gracefully on desktop",
       "sourcePath": "apps/docs/content/hooks/use-mobile-keyboard.mdx"
     },
     {
@@ -13580,7 +13580,7 @@
     },
     {
       "title": "useStreamingSSE > useStreamingSSE",
-      "content": "# useStreamingSSE\n\nProduction-ready SSE streaming hook with automatic reconnection,\nauthentication handling, token assembly, and network status detection.\n\n**Features:**\n- Automatic reconnection with exponential backoff\n- Token authentication (header + cookie fallback)\n- Resume from last event ID\n- Partial message assembly\n- Network status detection\n- Heartbeat monitoring\n- Memory-efficient event buffering\n\n**Use Cases:**\n- OpenAI/Anthropic API streaming\n- Real-time chat message streaming\n- Live notifications\n- Server-to-client updates",
+      "content": "# useStreamingSSE\n\nRobust SSE streaming hook with automatic reconnection,\nauthentication handling, token assembly, and network status detection.\n\n**Features:**\n- Automatic reconnection with exponential backoff\n- Token authentication (header + cookie fallback)\n- Resume from last event ID\n- Partial message assembly\n- Network status detection\n- Heartbeat monitoring\n- Memory-efficient event buffering\n\n**Use Cases:**\n- OpenAI/Anthropic API streaming\n- Real-time chat message streaming\n- Live notifications\n- Server-to-client updates",
       "sourcePath": "apps/docs/content/hooks/use-streaming-sse.mdx"
     },
     {
@@ -13615,7 +13615,7 @@
     },
     {
       "title": "useStreamingWebSocket > useStreamingWebSocket",
-      "content": "# useStreamingWebSocket\n\nuseStreamingWebSocket - Mid-Level WebSocket Streaming Hook\n\n**Architecture Layer**: Mid-Level (Composable Building Blocks)\n**Domain**: Streaming & Transport\n\nProduction-ready WebSocket streaming hook with automatic reconnection,\nheartbeat/ping-pong, and lifecycle management.\n\nFor chat streaming, use top-level `useClarityChat` with transport: 'websocket'.\nFor low-level streaming, use `useStreaming` primitive.\n\n**Features:**\n- Automatic reconnection with exponential backoff\n- Heartbeat/ping-pong for keepalive\n- Support for text and binary messages\n- Automatic JSON parsing\n- Connection lifecycle management\n- Memory-efficient message buffering",
+      "content": "# useStreamingWebSocket\n\nuseStreamingWebSocket - Mid-Level WebSocket Streaming Hook\n\n**Architecture Layer**: Mid-Level (Composable Building Blocks)\n**Domain**: Streaming & Transport\n\nRobust WebSocket streaming hook with automatic reconnection,\nheartbeat/ping-pong, and lifecycle management.\n\nFor chat streaming, use top-level `useClarityChat` with transport: 'websocket'.\nFor low-level streaming, use `useStreaming` primitive.\n\n**Features:**\n- Automatic reconnection with exponential backoff\n- Heartbeat/ping-pong for keepalive\n- Support for text and binary messages\n- Automatic JSON parsing\n- Connection lifecycle management\n- Memory-efficient message buffering",
       "sourcePath": "apps/docs/content/hooks/use-streaming-web-socket.mdx"
     },
     {
@@ -13965,7 +13965,7 @@
     },
     {
       "title": "useTokenTracker > useTokenTracker",
-      "content": "# useTokenTracker\n\nProduction-ready Token Tracker hook for cost transparency.\n\n**Features:**\n- Real-time token counting across conversation\n- Automatic model pricing lookup\n- Cost estimation for input/output tokens\n- Warning alerts at configurable thresholds\n- Context limit validation\n- Pruning suggestions\n- Support for popular models (GPT-4, Claude, etc.)\n\n**Use Cases:**\n- Display current conversation token usage\n- Warn users before hitting context limits\n- Show estimated API costs\n- Prevent messages that would exceed limits\n- Suggest context pruning",
+      "content": "# useTokenTracker\n\nRobust Token Tracker hook for cost transparency.\n\n**Features:**\n- Real-time token counting across conversation\n- Automatic model pricing lookup\n- Cost estimation for input/output tokens\n- Warning alerts at configurable thresholds\n- Context limit validation\n- Pruning suggestions\n- Support for popular models (GPT-4, Claude, etc.)\n\n**Use Cases:**\n- Display current conversation token usage\n- Warn users before hitting context limits\n- Show estimated API costs\n- Prevent messages that would exceed limits\n- Suggest context pruning",
       "sourcePath": "apps/docs/content/hooks/use-token-tracker.mdx"
     },
     {
@@ -14000,7 +14000,7 @@
     },
     {
       "title": "useVoiceInput > useVoiceInput",
-      "content": "# useVoiceInput\n\nProduction-ready voice input hook with Web Speech API.\n\n**Features:**\n- Real-time speech-to-text\n- Continuous and single-shot modes\n- Interim and final transcripts\n- Multi-language support\n- Confidence scores\n- Auto-stop on silence\n- Browser compatibility detection\n\n**Browser Support:**\n- ✅ Chrome/Edge (best support)\n- ✅ Safari (iOS 14.5+, macOS 14.3+)\n- ❌ Firefox (not yet supported)\n- ❌ Mobile Firefox/Samsung Internet\n\n**Use Cases:**\n- Voice-to-text input for chat\n- Voice commands\n- Accessibility features\n- Hands-free operation",
+      "content": "# useVoiceInput\n\nRobust voice input hook with Web Speech API.\n\n**Features:**\n- Real-time speech-to-text\n- Continuous and single-shot modes\n- Interim and final transcripts\n- Multi-language support\n- Confidence scores\n- Auto-stop on silence\n- Browser compatibility detection\n\n**Browser Support:**\n- ✅ Chrome/Edge (best support)\n- ✅ Safari (iOS 14.5+, macOS 14.3+)\n- ❌ Firefox (not yet supported)\n- ❌ Mobile Firefox/Samsung Internet\n\n**Use Cases:**\n- Voice-to-text input for chat\n- Voice commands\n- Accessibility features\n- Hands-free operation",
       "sourcePath": "apps/docs/content/hooks/use-voice-input.mdx"
     },
     {
@@ -15775,7 +15775,7 @@
     },
     {
       "title": "MemoryScope > MemoryScope",
-      "content": "# MemoryScope\n\nAdvanced Memory & Context Type Definitions\n\nImplements hybrid memory architecture with episodic, semantic, short-term, and long-term memory layers\nBased on production-ready patterns for AI chat applications",
+      "content": "# MemoryScope\n\nAdvanced Memory & Context Type Definitions\n\nImplements hybrid memory architecture with episodic, semantic, short-term, and long-term memory layers\nBased on robust patterns for AI chat applications",
       "sourcePath": "apps/docs/content/types/memory-scope.mdx"
     },
     {
@@ -19455,7 +19455,7 @@
     },
     {
       "title": "Async Utilities > Async Utilities",
-      "content": "# Async Utilities\n\n> Production-ready async patterns for debouncing, throttling, retrying, timeout handling, and concurrency control.\n\nAsync utilities provide robust, well-tested implementations of common asynchronous patterns. They handle edge cases, provide proper cleanup, and integrate seamlessly with TypeScript for type-safe async operations.",
+      "content": "# Async Utilities\n\n> Robust async patterns for debouncing, throttling, retrying, timeout handling, and concurrency control.\n\nAsync utilities provide robust, well-tested implementations of common asynchronous patterns. They handle edge cases, provide proper cleanup, and integrate seamlessly with TypeScript for type-safe async operations.",
       "sourcePath": "apps/docs/content/utilities/async.mdx"
     },
     {
@@ -19550,7 +19550,7 @@
     },
     {
       "title": "Cache Utilities > Cache Utilities",
-      "content": "# Cache Utilities\n\n> High-performance in-memory caching with LRU eviction, automatic expiration, and function memoization for optimizing expensive operations.\n\nCache utilities provide production-ready caching implementations to reduce redundant computations, minimize API calls, and improve application performance. They offer flexible eviction strategies, automatic expiration, and seamless memoization of synchronous and async functions.",
+      "content": "# Cache Utilities\n\n> High-performance in-memory caching with LRU eviction, automatic expiration, and function memoization for optimizing expensive operations.\n\nCache utilities provide robust caching implementations to reduce redundant computations, minimize API calls, and improve application performance. They offer flexible eviction strategies, automatic expiration, and seamless memoization of synchronous and async functions.",
       "sourcePath": "apps/docs/content/utilities/cache.mdx"
     },
     {
@@ -19715,7 +19715,7 @@
     },
     {
       "title": "Error Handling Utilities > Error Handling Utilities",
-      "content": "# Error Handling Utilities\n\n> Production-ready error handling with automatic retry, severity classification, and comprehensive error reporting.\n\nError handling utilities provide a robust foundation for managing errors across your Clarity Chat application. They offer type-safe error classes, automatic retry with exponential backoff, severity-based logging, and detailed error analytics.",
+      "content": "# Error Handling Utilities\n\n> Robust error handling with automatic retry, severity classification, and comprehensive error reporting.\n\nError handling utilities provide a robust foundation for managing errors across your Clarity Chat application. They offer type-safe error classes, automatic retry with exponential backoff, severity-based logging, and detailed error analytics.",
       "sourcePath": "apps/docs/content/utilities/error-handling.mdx"
     },
     {
@@ -19920,7 +19920,7 @@
     },
     {
       "title": "Logging Utilities > Logging Utilities",
-      "content": "# Logging Utilities\n\n> Production-ready structured logging with namespaces, log levels, request tracking, and flexible output formats for development and production environments.\n\nLogging utilities provide a unified logging system with namespace isolation, configurable log levels, request ID tracking for distributed tracing, and support for both human-readable pretty-printed output and machine-parseable JSON logs.",
+      "content": "# Logging Utilities\n\n> Robust structured logging with namespaces, log levels, request tracking, and flexible output formats for development and production environments.\n\nLogging utilities provide a unified logging system with namespace isolation, configurable log levels, request ID tracking for distributed tracing, and support for both human-readable pretty-printed output and machine-parseable JSON logs.",
       "sourcePath": "apps/docs/content/utilities/logging.mdx"
     },
     {
@@ -21640,7 +21640,7 @@
     },
     {
       "title": "Getting Started > What is Clarity Chat?",
-      "content": "## What is Clarity Chat?\n\nClarity Chat is an enterprise-grade React component library for building AI chat interfaces. It provides everything you need to create beautiful, production-ready chat applications with minimal effort.",
+      "content": "## What is Clarity Chat?\n\nClarity Chat is an enterprise-grade React component library for building AI chat interfaces. It provides everything you need to create beautiful, complete chat applications with minimal effort.",
       "sourcePath": "apps/docs/content/vitepress-migration/guide/getting-started.md"
     },
     {
@@ -21650,7 +21650,7 @@
     },
     {
       "title": "Getting Started > Key Features",
-      "content": "## Key Features\n\n- **70+ Production-Ready Components**: Complete set of chat UI components\n- **35+ Custom Hooks**: Powerful hooks for chat functionality including `useClarityChat`\n- **11 Beautiful Themes**: Stunning themes with 6-level shadow system\n- **Real-time Streaming**: Built-in SSE and WebSocket support\n- **Memory Integration**: Sliding-window, semantic-chunks, or vector-store strategies\n- **Error Handling**: Comprehensive error recovery system\n- **Token Optimization**: Save 50-80% on AI API costs\n- **Enterprise AI Infrastructure**: Vector stores, RAG pipeline, agent orchestration\n- **TypeScript**: Full type safety and IntelliSense\n- **Accessible**: WCAG 2.1 AAA compliant\n- **Customizable**: 11 built-in themes with extensive customization options\n- **Production Ready**: Battle-tested and optimized",
+      "content": "## Key Features\n\n- **70+ Full-Featured Components**: Complete set of chat UI components\n- **35+ Custom Hooks**: Powerful hooks for chat functionality including `useClarityChat`\n- **11 Beautiful Themes**: Stunning themes with 6-level shadow system\n- **Real-time Streaming**: Built-in SSE and WebSocket support\n- **Memory Integration**: Sliding-window, semantic-chunks, or vector-store strategies\n- **Error Handling**: Comprehensive error recovery system\n- **Token Optimization**: Save 50-80% on AI API costs\n- **Enterprise AI Infrastructure**: Vector stores, RAG pipeline, agent orchestration\n- **TypeScript**: Full type safety and IntelliSense\n- **Accessible**: WCAG 2.1 AAA compliant\n- **Customizable**: 11 built-in themes with extensive customization options\n- **Well-Tested**: Battle-tested and optimized",
       "sourcePath": "apps/docs/content/vitepress-migration/guide/getting-started.md"
     },
     {
@@ -21935,7 +21935,7 @@
     },
     {
       "title": "Interactive Examples > Advanced AI Operations Toolkit",
-      "content": "## Advanced AI Operations Toolkit\n\nBeyond core chat primitives, Clarity ships a library of AI-operations components that elevate review, safety, and hand-off flows:\n\n- **FollowUpSuggestions** surfaces contextual quick prompts so users can keep the conversation flowing.\n- **PersonaPanel** lets operators swap between curated assistant personas with distinct tone and temperatures.\n- **ConversationTimeline** visualises user turns, assistant responses, and tool calls in sequence.\n- **MemoryInspector** exposes what context is pinned across session, thread, or global scopes.\n- **SafetyStatusCard** aggregates moderation outcomes so risk teams can approve or redact a reply.\n- **ResponseQualityMeter** charts evaluation metrics like groundedness versus target thresholds.\n- **MultiModalPreview** previews images, audio, video, and docs referenced by the assistant.\n- **AgentRunFeed** tracks autonomous agent/tool runs with retry and log access.\n- **SessionSummaryCard** produces a shareable recap with metrics and recommended next actions.\n- **WorkflowSuggestionList** recommends templated flows (e.g., support hand-off, marketing brief) users can trigger.\n\nCombine these modules inside custom dashboards to ship production-ready agent experiences that are auditable, safe, and actionable.",
+      "content": "## Advanced AI Operations Toolkit\n\nBeyond core chat primitives, Clarity ships a library of AI-operations components that elevate review, safety, and hand-off flows:\n\n- **FollowUpSuggestions** surfaces contextual quick prompts so users can keep the conversation flowing.\n- **PersonaPanel** lets operators swap between curated assistant personas with distinct tone and temperatures.\n- **ConversationTimeline** visualises user turns, assistant responses, and tool calls in sequence.\n- **MemoryInspector** exposes what context is pinned across session, thread, or global scopes.\n- **SafetyStatusCard** aggregates moderation outcomes so risk teams can approve or redact a reply.\n- **ResponseQualityMeter** charts evaluation metrics like groundedness versus target thresholds.\n- **MultiModalPreview** previews images, audio, video, and docs referenced by the assistant.\n- **AgentRunFeed** tracks autonomous agent/tool runs with retry and log access.\n- **SessionSummaryCard** produces a shareable recap with metrics and recommended next actions.\n- **WorkflowSuggestionList** recommends templated flows (e.g., support hand-off, marketing brief) users can trigger.\n\nCombine these modules inside custom dashboards to ship robust agent experiences that are auditable, safe, and actionable.",
       "sourcePath": "apps/docs/content/vitepress-migration/guide/interactive.md"
     },
     {
@@ -22120,7 +22120,7 @@
     },
     {
       "title": "Migration Guide > Overview of Changes",
-      "content": "## Overview of Changes\n\nVersion 1.0+ introduces significant improvements:\n- ✅ **Grouped Props API**: 73% reduction in prop complexity\n- ✅ **Modular Architecture**: Better maintainability and performance\n- ✅ **Race-Condition-Free**: Stable memory integration\n- ✅ **Enhanced Error Handling**: Production-ready reliability",
+      "content": "## Overview of Changes\n\nVersion 1.0+ introduces significant improvements:\n- ✅ **Grouped Props API**: 73% reduction in prop complexity\n- ✅ **Modular Architecture**: Better maintainability and performance\n- ✅ **Race-Condition-Free**: Stable memory integration\n- ✅ **Enhanced Error Handling**: Robust reliability",
       "sourcePath": "apps/docs/content/vitepress-migration/guide/migration.md"
     },
     {
@@ -23580,17 +23580,17 @@
     },
     {
       "title": "README.md",
-      "content": "<div align=\"center\">\n\n<br />\n\n<img src=\"https://img.shields.io/badge/Clarity_Chat-4A90E2?style=for-the-badge&logo=react&logoColor=white\" alt=\"Clarity Chat\" />\n\n<h1>Build Beautiful AI Chat Interfaces<br/>in Minutes, Not Months</h1>\n\n<p><strong>The most complete, production-ready AI chat component library for React.</strong><br/>\n249K+ lines of code. 155+ components. 70+ hooks. Trusted by developers worldwide.</p>\n\n<p>\n  <a href=\"https://github.com/christireid/Clarity-ai-chat-components/stargazers\"><img src=\"https://img.shields.io/github/stars/christireid/Clarity-ai-chat-components?style=social\" alt=\"GitHub Stars\" /></a>\n  <a href=\"https://www.npmjs.com/package/@clarity-chat/react\"><img src=\"https://img.shields.io/npm/dm/@clarity-chat/react?style=flat&color=4A90E2\" alt=\"NPM Downloads\" /></a>\n  <a href=\"https://github.com/christireid/Clarity-ai-chat-components/actions\"><img src=\"https://img.shields.io/github/actions/workflow/status/christireid/Clarity-ai-chat-components/ci.yml?branch=main&label=CI&color=22C55E\" alt=\"Build Status\" /></a>\n  <a href=\"./LICENSE\"><img src=\"https://img.shields.io/badge/license-MIT-blue\" alt=\"License\" /></a>\n</p>\n\n<p>\n  <a href=\"#-quick-start\" aria-label=\"Jump to Quick Start section\"><strong>Quick Start</strong></a> •\n  <a href=\"./docs/getting-started.md\" aria-label=\"View full documentation\"><strong>Documentation</strong></a> •\n  <a href=\"./examples\" aria-label=\"Browse code examples\"><strong>Examples</strong></a> •\n  <a href=\"https://discord.gg/clarity-chat\" aria-label=\"Join Discord community\"><strong>Discord</strong></a>\n</p>\n\n</div>\n\n<br />\n<br />\n\n---\n\n<br />",
+      "content": "<div align=\"center\">\n\n<br />\n\n<img src=\"https://img.shields.io/badge/Clarity_Chat-4A90E2?style=for-the-badge&logo=react&logoColor=white\" alt=\"Clarity Chat\" />\n\n<h1>Build Beautiful AI Chat Interfaces<br/>in Minutes, Not Months</h1>\n\n<p><strong>The most complete AI chat component library for React.</strong><br/>\n249K+ lines of code. 155+ components. 70+ hooks. TypeScript-first. Accessibility-first.</p>\n\n<p>\n  <a href=\"https://github.com/christireid/Clarity-ai-chat-components/stargazers\"><img src=\"https://img.shields.io/github/stars/christireid/Clarity-ai-chat-components?style=social\" alt=\"GitHub Stars\" /></a>\n  <a href=\"https://www.npmjs.com/package/@clarity-chat/react\"><img src=\"https://img.shields.io/npm/dm/@clarity-chat/react?style=flat&color=4A90E2\" alt=\"NPM Downloads\" /></a>\n  <a href=\"https://github.com/christireid/Clarity-ai-chat-components/actions\"><img src=\"https://img.shields.io/github/actions/workflow/status/christireid/Clarity-ai-chat-components/ci.yml?branch=main&label=CI&color=22C55E\" alt=\"Build Status\" /></a>\n  <a href=\"./LICENSE\"><img src=\"https://img.shields.io/badge/license-MIT-blue\" alt=\"License\" /></a>\n</p>\n\n<p>\n  <a href=\"#-quick-start\" aria-label=\"Jump to Quick Start section\"><strong>Quick Start</strong></a> •\n  <a href=\"./docs/getting-started.md\" aria-label=\"View full documentation\"><strong>Documentation</strong></a> •\n  <a href=\"./examples\" aria-label=\"Browse code examples\"><strong>Examples</strong></a> •\n  <a href=\"https://discord.gg/clarity-chat\" aria-label=\"Join Discord community\"><strong>Discord</strong></a>\n</p>\n\n</div>\n\n<br />\n<br />\n\n---\n\n<br />",
       "sourcePath": "README.md"
     },
     {
       "title": "README.md > ⚡ Quick Start",
-      "content": "## ⚡ Quick Start\n\nGet a production-ready AI chat interface running in **under 3 minutes**:\n\n```bash\nnpm install @clarity-chat/react\n```",
+      "content": "## ⚡ Quick Start\n\nGet a complete AI chat interface running in **under 3 minutes**:\n\n```bash\nnpm install @clarity-chat/react\n```",
       "sourcePath": "README.md"
     },
     {
       "title": "README.md > 🚀 Ultra-Simple APIs (New!)",
-      "content": "### 🚀 Ultra-Simple APIs (New!)\n\nChoose the level that fits your needs:\n\n#### Level 1: One-Line Chat (Simplest)\n\n```tsx\nimport { chat } from '@clarity-chat/react'\n\nexport default function App() {\n  return chat('/api/chat') // That's it! 🎉\n}\n```\n\n#### Level 2: Named Presets\n\n```tsx\nimport { ChatPresets } from '@clarity-chat/react'\n\nexport default function App() {\n  return ChatPresets.Enterprise('/api/chat') // Production-ready!\n}\n```\n\n#### Level 3: Builder Pattern\n\n```tsx\nimport { ChatBuilder } from '@clarity-chat/react'\n\nexport default function App() {\n  return ChatBuilder.create('/api/chat')\n    .withMemory('vector-store')\n    .withHeader('My AI Assistant')\n    .build()\n}\n```",
+      "content": "### 🚀 Ultra-Simple APIs (New!)\n\nChoose the level that fits your needs:\n\n#### Level 1: One-Line Chat (Simplest)\n\n```tsx\nimport { chat } from '@clarity-chat/react'\n\nexport default function App() {\n  return chat('/api/chat') // That's it! 🎉\n}\n```\n\n#### Level 2: Named Presets\n\n```tsx\nimport { ChatPresets } from '@clarity-chat/react'\n\nexport default function App() {\n  return ChatPresets.Enterprise('/api/chat') // Ready to use!\n}\n```\n\n#### Level 3: Builder Pattern\n\n```tsx\nimport { ChatBuilder } from '@clarity-chat/react'\n\nexport default function App() {\n  return ChatBuilder.create('/api/chat')\n    .withMemory('vector-store')\n    .withHeader('My AI Assistant')\n    .build()\n}\n```",
       "sourcePath": "README.md"
     },
     {
@@ -23615,7 +23615,7 @@
     },
     {
       "title": "README.md > **v1.0+: Enterprise-Grade Foundation**",
-      "content": "### **v1.0+: Enterprise-Grade Foundation**\n\n**Comprehensive 5-phase audit completed** with production-ready enhancements:\n\n#### 📊 **Audit Results**\n\n- ✅ **7/7 P0 Critical Issues Resolved** - Zero remaining blockers\n- ✅ **82% Test Coverage** - 2.3x increase in reliability\n- ✅ **73% Props Reduction** - 30+ props → 8 grouped props\n- ✅ **Race-Condition-Free** - Stable memory integration\n- ✅ **Modular Architecture** - Components split for maintainability\n\n#### 🎯 **Key Improvements**\n\n- **Grouped Props API**: Cleaner, more intuitive component configuration\n- **Memory Integration**: Production-ready with automatic context injection\n- **Component Architecture**: Modular design with focused sub-components\n- **Error Handling**: Comprehensive recovery with safe fallbacks\n- **Performance**: Sub-100ms interactions, smart virtual scrolling, lazy markdown rendering, 60fps\n  animations\n\n#### 📚 **Migration Guide**\n\nExisting code continues to work, but check out the [migration guide](./docs/migration.md) for the\nnew grouped props API that reduces complexity by 73%.\n\n<br />\n\n---",
+      "content": "### **v1.0+: Enterprise-Grade Foundation**\n\n**Comprehensive 5-phase audit completed** with comprehensive enhancements:\n\n#### 📊 **Audit Results**\n\n- ✅ **7/7 P0 Critical Issues Resolved** - Zero remaining blockers\n- ✅ **82% Test Coverage** - 2.3x increase in reliability\n- ✅ **73% Props Reduction** - 30+ props → 8 grouped props\n- ✅ **Race-Condition-Free** - Stable memory integration\n- ✅ **Modular Architecture** - Components split for maintainability\n\n#### 🎯 **Key Improvements**\n\n- **Grouped Props API**: Cleaner, more intuitive component configuration\n- **Memory Integration**: Robust with automatic context injection\n- **Component Architecture**: Modular design with focused sub-components\n- **Error Handling**: Comprehensive recovery with safe fallbacks\n- **Performance**: Sub-100ms interactions, smart virtual scrolling, lazy markdown rendering, 60fps\n  animations\n\n#### 📚 **Migration Guide**\n\nExisting code continues to work, but check out the [migration guide](./docs/migration.md) for the\nnew grouped props API that reduces complexity by 73%.\n\n<br />\n\n---",
       "sourcePath": "README.md"
     },
     {
@@ -23724,8 +23724,8 @@
       "sourcePath": "README.md"
     },
     {
-      "title": "README.md > **Production-Ready Examples**",
-      "content": "### **Production-Ready Examples**\n\n<table>\n<tr>\n<td width=\"50%\">\n\n#### 🛍️ **Multi-Provider Chat**\n\nAI-powered chat with OpenAI, Anthropic, Google support\n\n[View Example →](./examples/multi-provider)\n\n</td>\n<td width=\"50%\">\n\n#### 💻 **Tool Calling Demo**\n\nAI function calling with weather, search, calculator tools\n\n[View Example →](./examples/tool-calling)\n\n</td>\n</tr>\n<tr>\n<td width=\"50%\">\n\n#### 🛡️ **Security Features**\n\nPrompt injection detection, PII redaction, security policies\n\n[View Example →](./examples/security-examples)\n\n</td>\n<td width=\"50%\">\n\n#### ⚡ **Advanced Features**\n\nBattery-aware streaming, performance optimization, analytics\n\n[View Example →](./examples/advanced-features)\n\n</td>\n</tr>\n</table>\n\n**[→ Browse All 12+ Example Apps](./examples)**\n\n<br />\n\n---\n\n<br />",
+      "title": "README.md > **Ready-to-Use Examples**",
+      "content": "### **Ready-to-Use Examples**\n\n<table>\n<tr>\n<td width=\"50%\">\n\n#### 🛍️ **Multi-Provider Chat**\n\nAI-powered chat with OpenAI, Anthropic, Google support\n\n[View Example →](./examples/multi-provider)\n\n</td>\n<td width=\"50%\">\n\n#### 💻 **Tool Calling Demo**\n\nAI function calling with weather, search, calculator tools\n\n[View Example →](./examples/tool-calling)\n\n</td>\n</tr>\n<tr>\n<td width=\"50%\">\n\n#### 🛡️ **Security Features**\n\nPrompt injection detection, PII redaction, security policies\n\n[View Example →](./examples/security-examples)\n\n</td>\n<td width=\"50%\">\n\n#### ⚡ **Advanced Features**\n\nBattery-aware streaming, performance optimization, analytics\n\n[View Example →](./examples/advanced-features)\n\n</td>\n</tr>\n</table>\n\n**[→ Browse All 12+ Example Apps](./examples)**\n\n<br />\n\n---\n\n<br />",
       "sourcePath": "README.md"
     },
     {
@@ -23790,7 +23790,7 @@
     },
     {
       "title": "README.md > 💬 Community & Support",
-      "content": "## 💬 Community & Support\n\n<div align=\"center\">\n\n**Join developers worldwide building with Clarity Chat**\n\n<p>\n  <a href=\"https://discord.gg/clarity-chat\"><img src=\"https://img.shields.io/badge/Discord-Join%20Community-5865F2?style=for-the-badge&logo=discord&logoColor=white\" alt=\"Discord\" /></a>\n  <a href=\"https://github.com/christireid/Clarity-ai-chat-components/discussions\"><img src=\"https://img.shields.io/badge/GitHub-Discussions-181717?style=for-the-badge&logo=github&logoColor=white\" alt=\"Discussions\" /></a>\n  <a href=\"https://github.com/christireid/Clarity-ai-chat-components\"><img src=\"https://img.shields.io/badge/GitHub-Star-181717?style=for-the-badge&logo=github&logoColor=white\" alt=\"GitHub\" /></a>\n</p>\n\n**[📧 Email Support](mailto:support@codeclarity.ai)** •\n**[🐛 Report Issues](https://github.com/christireid/Clarity-ai-chat-components/issues)** •\n**[💡 Feature Requests](https://github.com/christireid/Clarity-ai-chat-components/discussions)**\n\n</div>\n\n<br />\n\n---\n\n<br />",
+      "content": "## 💬 Community & Support\n\n<div align=\"center\">\n\n**Build with Clarity Chat**\n\n<p>\n  <a href=\"https://discord.gg/clarity-chat\"><img src=\"https://img.shields.io/badge/Discord-Join%20Community-5865F2?style=for-the-badge&logo=discord&logoColor=white\" alt=\"Discord\" /></a>\n  <a href=\"https://github.com/christireid/Clarity-ai-chat-components/discussions\"><img src=\"https://img.shields.io/badge/GitHub-Discussions-181717?style=for-the-badge&logo=github&logoColor=white\" alt=\"Discussions\" /></a>\n  <a href=\"https://github.com/christireid/Clarity-ai-chat-components\"><img src=\"https://img.shields.io/badge/GitHub-Star-181717?style=for-the-badge&logo=github&logoColor=white\" alt=\"GitHub\" /></a>\n</p>\n\n**[📧 Email Support](mailto:support@codeclarity.ai)** •\n**[🐛 Report Issues](https://github.com/christireid/Clarity-ai-chat-components/issues)** •\n**[💡 Feature Requests](https://github.com/christireid/Clarity-ai-chat-components/discussions)**\n\n</div>\n\n<br />\n\n---\n\n<br />",
       "sourcePath": "README.md"
     },
     {

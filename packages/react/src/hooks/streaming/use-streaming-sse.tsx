@@ -145,7 +145,7 @@ export interface UseStreamingSSEReturn {
 }
 
 /**
- * Production-ready SSE streaming hook with automatic reconnection,
+ * Robust SSE streaming hook with automatic reconnection,
  * authentication handling, token assembly, and network status detection.
  *
  * **Features:**
@@ -249,7 +249,7 @@ export function useStreamingSSE(
         'Please provide a valid SSE endpoint URL.\n\n' +
         'Example:\n' +
         '  const stream = useStreamingSSE({ url: "/api/stream" })\n\n' +
-        'For more help, see: https://clarity-chat.dev/docs/streaming'
+        'For more help, see: https://github.com/christireid/Clarity-ai-chat-components/blob/main/docs/streaming'
     )
   }
   const {

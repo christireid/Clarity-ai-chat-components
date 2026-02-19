@@ -102,7 +102,7 @@ export interface EnhancedMarkdownConfig {
  * @installation npm install mermaid (for diagram support)
  * @bundleImpact react-markdown ~50KB, remark-gfm ~15KB, rehype-highlight ~30KB, mermaid ~300KB
  * @fallback Plain text rendering with basic formatting when react-markdown is not installed
- * @docs https://clarity-chat.dev/docs/peer-dependencies
+ * @docs https://github.com/christireid/Clarity-ai-chat-components/blob/main/docs/peer-dependencies
  *
  * @example
  * ```tsx

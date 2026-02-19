@@ -1025,7 +1025,7 @@ export default function VideoPlayerPage() {
       <Section id="overview" title="Overview">
         <div className="prose prose-neutral dark:prose-invert max-w-none">
           <p>
-            <code>VideoPlayer</code> is a production-ready video player component
+            <code>VideoPlayer</code> is a robust video player component
             with modern features like adaptive streaming, subtitles,
             picture-in-picture, and comprehensive accessibility support. It provides
             a polished media experience with custom controls, keyboard shortcuts,

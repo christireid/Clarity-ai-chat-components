@@ -3,7 +3,7 @@
 /**
  * useStreamingSSE Hook - API Reference Documentation
  *
- * Production-ready SSE streaming hook with automatic reconnection,
+ * Robust SSE streaming hook with automatic reconnection,
  * authentication handling, token assembly, and network status detection.
  */
 
@@ -1053,7 +1053,7 @@ export default function UseStreamingSSEPage() {
               </h1>
 
               <p className="text-lg text-muted-foreground max-w-3xl">
-                Production-ready Server-Sent Events (SSE) streaming hook with
+                Robust Server-Sent Events (SSE) streaming hook with
                 automatic reconnection, authentication handling, event
                 resumption, and memory-efficient buffering. Built for reliable
                 real-time communication with AI APIs and streaming endpoints.

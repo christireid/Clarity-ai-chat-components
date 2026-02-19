@@ -4,7 +4,7 @@ import { CodeBlock } from '@/components/CodeBlock'
 export const metadata: Metadata = {
   title: 'RAG Document Chat | Clarity Chat Cookbook',
   description:
-    'Build a production-ready RAG-powered document chat with enhanced query understanding and quality validation',
+    'Build a robust RAG-powered document chat with enhanced query understanding and quality validation',
 }
 
 export default function RAGDocumentChatPage() {
@@ -12,7 +12,7 @@ export default function RAGDocumentChatPage() {
     <div className="max-w-4xl mx-auto px-4 py-8">
       <h1 className="text-4xl font-bold mb-4">RAG Document Chat</h1>
       <p className="text-xl text-muted-foreground mb-8">
-        Build a production-ready RAG system with enhanced query understanding,
+        Build a robust RAG system with enhanced query understanding,
         vector search optimization, and quality validation.
       </p>
 

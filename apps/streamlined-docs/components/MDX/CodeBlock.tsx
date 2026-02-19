@@ -46,7 +46,7 @@ export interface CodeBlockProps {
  * CodeBlock component for documentation pages
  *
  * This wrapper maintains backwards compatibility with the docs-specific API
- * while using the production-ready unified CodeBlock component.
+ * while using the unified CodeBlock component.
  *
  * @example
  * ```tsx

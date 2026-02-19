@@ -82,7 +82,7 @@ export default function TemplatesPage() {
         </h1>
 
         <p className="text-xl text-text-secondary leading-relaxed">
-          Production-ready templates for common AI chat use cases. Start with a
+          Robust templates for common AI chat use cases. Start with a
           template and customize to your needs.
         </p>
       </div>

@@ -15,7 +15,7 @@
  * @bundleImpact ~7KB (included in @clarity-chat/react)
  * @note This is a direct dependency, not a peer dependency - no installation needed
  * @recommended Use this over VirtualizedMessageList for new projects
- * @docs https://clarity-chat.dev/docs/components/tanstack-message-list
+ * @docs https://github.com/christireid/Clarity-ai-chat-components/blob/main/docs/components/tanstack-message-list
  *
  * @see https://tanstack.com/virtual/latest
  * @license MIT (TanStack Virtual)

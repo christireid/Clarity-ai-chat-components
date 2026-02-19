@@ -1233,7 +1233,7 @@ export default function AudioRecorderPage() {
             <Section id="overview" title="Overview">
               <div className="prose prose-neutral dark:prose-invert max-w-none">
                 <p>
-                  <code>AudioRecorder</code> is a production-ready audio
+                  <code>AudioRecorder</code> is a robust audio
                   recording component that leverages the Web Audio API and
                   MediaRecorder API for high-quality browser-based recording.
                   Perfect for voice messages, podcasts, voice notes, and any

@@ -170,7 +170,7 @@ export function ChatWithPersistence({
 /**
  * ChatWithErrorHandling - Chat component with built-in error boundary
  *
- * Wraps ClarityChat with ErrorBoundary for production-ready error handling.
+ * Wraps ClarityChat with ErrorBoundary for robust error handling.
  *
  * @example
  * ```tsx

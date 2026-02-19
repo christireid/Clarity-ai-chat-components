@@ -20,7 +20,7 @@ import { durations } from '@/lib/animations'
 export const metadata: Metadata = {
   title: 'Token Optimization Cookbook | 50-90% Cost Reduction Recipes',
   description:
-    'Real-world recipes for reducing AI costs by 50-90% through provider caching, token compression, and smart model routing. Production-ready code examples with cost analysis, performance benchmarks, and implementation guides for e-commerce, customer support, and code assistants.',
+    'Real-world recipes for reducing AI costs by 50-90% through provider caching, token compression, and smart model routing. Robust code examples with cost analysis, performance benchmarks, and implementation guides for e-commerce, customer support, and code assistants.',
   keywords: [
     'token optimization',
     'cost reduction',
@@ -44,7 +44,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'Token Optimization Cookbook',
     description:
-      '6 production-ready recipes for 50-90% AI cost reduction. Provider caching, compression, and smart routing strategies.',
+      '6 robust recipes for 50-90% AI cost reduction. Provider caching, compression, and smart routing strategies.',
   },
 }
 
@@ -176,7 +176,7 @@ export default function TokenOptimizationCookbookPage() {
           </h1>
           <p className="text-lg text-muted-foreground max-w-3xl">
             Real-world recipes for reducing AI API costs by 50-90%. Each recipe
-            includes production-ready code, cost analysis, and performance
+            includes robust code, cost analysis, and performance
             benchmarks.
           </p>
         </motion.header>
@@ -222,7 +222,7 @@ export default function TokenOptimizationCookbookPage() {
               100%
             </div>
             <div className="text-sm text-neutral-600 dark:text-neutral-400">
-              Production Ready
+              Stable
             </div>
           </div>
         </motion.div>

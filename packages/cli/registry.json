@@ -1,5 +1,5 @@
 {
-  "$schema": "https://clarity-chat.dev/schema/registry.json",
+  "$schema": "https://github.com/christireid/Clarity-ai-chat-components/blob/main/schema/registry.json",
   "name": "@clarity-chat/cli",
   "version": "0.1.0",
   "components": [
@@ -22,7 +22,7 @@
       "devDependencies": [],
       "peerDependencies": ["react", "react-dom"],
       "registryDependencies": ["streaming-handler"],
-      "docs": "https://clarity-chat.dev/components/chat-interface"
+      "docs": "https://github.com/christireid/Clarity-ai-chat-components/blob/main/docs/components/chat-interface"
     },
     {
       "name": "Model Selector",
@@ -35,7 +35,7 @@
       "devDependencies": [],
       "peerDependencies": ["react"],
       "registryDependencies": [],
-      "docs": "https://clarity-chat.dev/components/model-selector"
+      "docs": "https://github.com/christireid/Clarity-ai-chat-components/blob/main/docs/components/model-selector"
     },
     {
       "name": "Token Counter",
@@ -48,7 +48,7 @@
       "devDependencies": [],
       "peerDependencies": ["react"],
       "registryDependencies": [],
-      "docs": "https://clarity-chat.dev/components/token-counter"
+      "docs": "https://github.com/christireid/Clarity-ai-chat-components/blob/main/docs/components/token-counter"
     },
     {
       "name": "Cost Estimator",
@@ -61,7 +61,7 @@
       "devDependencies": [],
       "peerDependencies": ["react"],
       "registryDependencies": ["token-counter"],
-      "docs": "https://clarity-chat.dev/components/cost-estimator"
+      "docs": "https://github.com/christireid/Clarity-ai-chat-components/blob/main/docs/components/cost-estimator"
     },
     {
       "name": "Streaming Handler",
@@ -74,7 +74,7 @@
       "devDependencies": [],
       "peerDependencies": ["react"],
       "registryDependencies": [],
-      "docs": "https://clarity-chat.dev/hooks/use-streaming"
+      "docs": "https://github.com/christireid/Clarity-ai-chat-components/blob/main/docs/hooks/use-streaming"
     },
     {
       "name": "Message List",
@@ -87,7 +87,7 @@
       "devDependencies": [],
       "peerDependencies": ["react"],
       "registryDependencies": [],
-      "docs": "https://clarity-chat.dev/components/message-list"
+      "docs": "https://github.com/christireid/Clarity-ai-chat-components/blob/main/docs/components/message-list"
     },
     {
       "name": "Chat Input",
@@ -100,7 +100,7 @@
       "devDependencies": [],
       "peerDependencies": ["react"],
       "registryDependencies": [],
-      "docs": "https://clarity-chat.dev/components/chat-input"
+      "docs": "https://github.com/christireid/Clarity-ai-chat-components/blob/main/docs/components/chat-input"
     },
     {
       "name": "Typing Indicator",
@@ -113,7 +113,7 @@
       "devDependencies": [],
       "peerDependencies": ["react"],
       "registryDependencies": [],
-      "docs": "https://clarity-chat.dev/components/typing-indicator"
+      "docs": "https://github.com/christireid/Clarity-ai-chat-components/blob/main/docs/components/typing-indicator"
     },
     {
       "name": "Code Block",
@@ -126,7 +126,7 @@
       "devDependencies": ["shiki"],
       "peerDependencies": ["react"],
       "registryDependencies": [],
-      "docs": "https://clarity-chat.dev/components/code-block"
+      "docs": "https://github.com/christireid/Clarity-ai-chat-components/blob/main/docs/components/code-block"
     },
     {
       "name": "Markdown Renderer",
@@ -139,7 +139,7 @@
       "devDependencies": ["remark-gfm", "rehype-katex"],
       "peerDependencies": ["react"],
       "registryDependencies": ["code-block"],
-      "docs": "https://clarity-chat.dev/components/markdown-renderer"
+      "docs": "https://github.com/christireid/Clarity-ai-chat-components/blob/main/docs/components/markdown-renderer"
     },
     {
       "name": "Error Boundary",
@@ -152,7 +152,7 @@
       "devDependencies": [],
       "peerDependencies": ["react"],
       "registryDependencies": [],
-      "docs": "https://clarity-chat.dev/components/error-boundary"
+      "docs": "https://github.com/christireid/Clarity-ai-chat-components/blob/main/docs/components/error-boundary"
     }
   ],
   "templates": [

@@ -25,7 +25,7 @@ Clarity is:
 | **Memory & context**       | Guide-level, DIY                   | First-class `MemoryProvider` + `@clarity-chat/memory` engine       |
 | **Tools & generative UI**  | Docs + patterns; UI built manually | Agents + tools + tool→UI registry + `<ClarityToolResult />`        |
 | **Streaming protocols**    | UIMessage streams, stream helpers  | `useClarityChat` with `transport: 'sse' \| 'websocket'` option     |
-| **Chat UI components**     | Examples, some primitives          | Production-ready `<ChatWindow>`, message components, indicators    |
+| **Chat UI components**     | Examples, some primitives          | Robust `<ChatWindow>`, message components, indicators    |
 | **Error handling**         | Basic examples                     | `useErrorRecovery`, opinionated error components                   |
 | **Observability & quotas** | BYO infra                          | Analytics / quotas / RBAC scaffolding (packages in repo)           |
 
@@ -123,7 +123,7 @@ useClarityChat({
 
 **Vercel:** Provides examples and some primitive components. You build most UI yourself.
 
-**Clarity:** Production-ready components:
+**Clarity:** Robust components:
 
 - `<ChatWindow>`: Complete chat interface
 - `<VirtualizedMessageList>`: Handles 1000+ messages smoothly
@@ -159,7 +159,7 @@ useClarityChat({
 Choose Clarity if you need:
 
 - ✅ **Memory & context management** without building it yourself
-- ✅ **Production-ready UI components** out of the box
+- ✅ **Robust UI components** out of the box
 - ✅ **Enterprise features** (analytics, quotas, RBAC)
 - ✅ **Advanced streaming** (WebSocket, SSE with reconnection)
 - ✅ **Tool UI registry** for generative UIs

@@ -78,7 +78,7 @@ const STATUS_CONFIG = {
 }
 
 /**
- * Production-ready Network Status indicator component.
+ * Robust Network Status indicator component.
  *
  * **Features:**
  * - Auto-detection of network status using Navigator API

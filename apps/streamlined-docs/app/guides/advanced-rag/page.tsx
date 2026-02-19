@@ -871,7 +871,7 @@ export default function AdvancedRAGGuidePage() {
           </KineticText>
 
           <p className="text-lg text-neutral-600 dark:text-neutral-400 max-w-2xl mx-auto mb-8">
-            Build production-ready RAG systems that combine retrieval excellence with aggressive cost
+            Build robust RAG systems that combine retrieval excellence with aggressive cost
             optimization. From smart chunking to provider caching and intelligent reranking.
           </p>
 

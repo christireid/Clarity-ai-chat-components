@@ -1,6 +1,6 @@
 # ISR Caching Patterns
 
-> **Wave 3.3 Feature** | Production Ready | TTFB: 850ms → 85ms (-90%)
+> **Wave 3.3 Feature** | Stable | TTFB: 850ms → 85ms (-90%)
 
 ## Overview
 

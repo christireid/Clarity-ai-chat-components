@@ -2,7 +2,7 @@
 
 > **Copy-paste ready recipes for common patterns and use cases.**
 
-This cookbook provides practical, production-ready examples you can use immediately. Each recipe is tested, documented, and ready to drop into your project.
+This cookbook provides practical, robust examples you can use immediately. Each recipe is tested, documented, and ready to drop into your project.
 
 ---
 

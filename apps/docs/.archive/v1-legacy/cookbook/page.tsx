@@ -128,7 +128,7 @@ export default function CookbookPage() {
           </h1>
           <p className="text-xl text-text-secondary leading-relaxed">
             Real-world recipes you can copy and use. Each recipe solves a
-            specific problem with production-ready code.
+            specific problem with robust code.
           </p>
         </div>
 

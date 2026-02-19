@@ -6,7 +6,7 @@
 
 ## 🎯 Purpose
 
-This site is a **production-ready shell** with:
+This site is a **complete documentation shell** with:
 
 - ✅ Finalized information architecture
 - ✅ Perfect navigation and routing

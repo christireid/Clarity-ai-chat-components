@@ -26,7 +26,7 @@ between design and development. It's not a traditional component library but rat
 
 - **Instant integration**: Components work immediately with no configuration
 - **Full ownership**: Code is copied into your project, not installed as dependency
-- **AI-assisted**: Natural language → production-ready components
+- **AI-assisted**: Natural language → robust components
 - **Style-aware**: Follows your project's existing code style
 - **Framework-agnostic**: Works with any React-based framework
 
@@ -142,7 +142,7 @@ npm install -g @21st-dev/magic-mcp
 
 1. **Visit 21st.dev/magic**
 2. **Describe component**: "Chat interface with message history and input"
-3. **AI generates**: Production-ready React component
+3. **AI generates**: Robust React component
 4. **Preview**: See component in action
 5. **Customize**: Modify styling, behavior
 6. **Copy**: Paste into your project
@@ -200,7 +200,7 @@ npm install -g @21st-dev/magic-mcp
 2. **Limited AI Components**: Few pre-built AI-specific components
 3. **No Streaming Support**: No built-in streaming patterns
 4. **No Token Tracking**: No AI-specific features
-5. **Basic Chat**: Chat components are basic, not production-ready
+5. **Basic Chat**: Chat components are basic, not robust
 
 ### Component Quality Variability
 
@@ -233,7 +233,7 @@ npm install -g @21st-dev/magic-mcp
 | **Component Type**    | AI-generated         | Pre-built library     |
 | **Distribution**      | Copy-paste           | npm install           |
 | **AI Chat Focus**     | ❌ General purpose   | ✅ AI-specialized     |
-| **Chat Components**   | ⚠️ Basic             | ✅ Production-ready   |
+| **Chat Components**   | ⚠️ Basic             | ✅ Robust   |
 | **Streaming Support** | ❌ No                | ✅ Yes                |
 | **Token Tracking**    | ❌ No                | ✅ Yes                |
 | **Code Blocks**       | ⚠️ Generated         | ✅ Shiki built-in     |
@@ -293,7 +293,7 @@ npm install -g @21st-dev/magic-mcp
 
 1. **AI-Specific Focus**: 21st.dev doesn't specialize in AI
    - **Opportunity**: Clarity's AI-first approach fills gap
-   - **Opportunity**: Production-ready AI components out of the box
+   - **Opportunity**: Robust AI components out of the box
 
 2. **Maintained Library**: npm-based updates vs copy-paste
    - **Opportunity**: Professional maintenance and updates
@@ -308,7 +308,7 @@ npm install -g @21st-dev/magic-mcp
    - **Opportunity**: Cohesive chat experience
 
 5. **Testing & Quality**: Generated code often lacks tests
-   - **Opportunity**: Fully tested, production-ready components
+   - **Opportunity**: Fully tested, robust components
    - **Opportunity**: Accessibility and performance guarantees
 
 ## Use Cases
@@ -356,12 +356,12 @@ traditional component library but rather a component marketplace and generation 
 5. **Quality Varies**: Generated components need refinement
 
 **For Clarity**: 21st.dev validates the value of AI-powered tooling but also highlights the need for
-maintained, production-ready component libraries. While 21st.dev can generate chat components, they
+maintained, robust component libraries. While 21st.dev can generate chat components, they
 lack the polish, testing, and AI-specific features (streaming, token tracking) that Clarity
 provides.
 
 Clarity's opportunity is to offer what 21st.dev cannot: a **curated, maintained library** of
-AI-specific components with built-in streaming, token tracking, and production-ready quality.
+AI-specific components with built-in streaming, token tracking, and robust quality.
 Clarity components are designed to work together as a cohesive system, not isolated generated code.
 
 However, Clarity can learn from 21st.dev's AI-powered approach and consider similar tooling for

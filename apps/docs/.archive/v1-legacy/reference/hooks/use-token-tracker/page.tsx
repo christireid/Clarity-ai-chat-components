@@ -288,7 +288,7 @@ export default function UseTokenTrackerPage() {
         <h1>useTokenTracker</h1>
 
         <p className="lead">
-          A production-ready hook for tracking token usage, estimating costs,
+          A robust hook for tracking token usage, estimating costs,
           and managing context window limits in AI conversations. Provides
           real-time token counting, automatic model pricing lookup, and
           threshold-based alerts.

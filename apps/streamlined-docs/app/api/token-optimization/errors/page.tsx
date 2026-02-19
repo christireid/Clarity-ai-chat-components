@@ -22,10 +22,10 @@ export default function ErrorsPage() {
       <Section>
         <SectionHeader
           title="Error Handling System"
-          description="Production-ready error handling with actionable messages, intelligent retry strategies, and circuit breakers"
+          description="Comprehensive error handling with actionable messages, intelligent retry strategies, and circuit breakers"
           badge={
             <Badge variant="secondary" className="ml-3">
-              Production Ready
+              Stable
             </Badge>
           }
         />
@@ -187,7 +187,7 @@ abstract class ClarityError extends Error {
               <li className="flex items-start gap-2">
                 <span className="text-success mt-0.5">✓</span>
                 <span>
-                  <strong>Production Ready:</strong> Sensitive data filtered in
+                  <strong>Stable:</strong> Sensitive data filtered in
                   production
                 </span>
               </li>
@@ -774,7 +774,7 @@ openaiBreaker.reset()`}
         <SubSection title="Complete Production Example">
           <p className="text-muted-foreground mb-6">
             Combine error handling, retries, and circuit breakers for
-            production-ready resilience.
+            robust resilience.
           </p>
 
           <CodeBlock
@@ -812,7 +812,7 @@ class OpenAIError extends ClarityError {
   }
 }
 
-// Production-ready AI call with full error handling
+// Robust AI call with full error handling
 export async function callOpenAIWithResilience(
   messages: Message[],
   options: {

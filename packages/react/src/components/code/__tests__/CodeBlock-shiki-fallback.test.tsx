@@ -61,12 +61,12 @@ describe('CodeBlock - Shiki Fallback', () => {
 
     // Check for documentation link
     const link = screen.getByRole('link', {
-      name: /clarity-chat.dev\/docs\/peer-dependencies/i,
+      name: /github.com\/christireid\/Clarity-ai-chat-components\/blob\/main\/docs\/peer-dependencies/i,
     })
     expect(link).toBeInTheDocument()
     expect(link).toHaveAttribute(
       'href',
-      'https://clarity-chat.dev/docs/peer-dependencies'
+      'https://github.com/christireid/Clarity-ai-chat-components/blob/main/docs/peer-dependencies'
     )
   })
 

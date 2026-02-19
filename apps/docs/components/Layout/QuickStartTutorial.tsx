@@ -39,7 +39,7 @@ npm install @clarity-chat/react`,
   {
     id: 2,
     title: 'Import & Build',
-    description: 'Production-ready chat with built-in Token Optimization.',
+    description: 'Robust chat with built-in Token Optimization.',
     icon: <Code className="w-5 h-5" />,
     code: `import { ChatWindow, useClarityChat } from '@clarity-chat/react'
 import '@clarity-chat/react/styles.css'

@@ -207,7 +207,7 @@ export async function costGovernanceMiddleware(req, res, next) {
           </KineticText>
 
           <p className="text-lg text-neutral-600 dark:text-neutral-400 max-w-2xl mx-auto mb-8">
-            Production-ready cost tracking, budget alerts, and optimization monitoring for enterprise AI
+            Robust cost tracking, budget alerts, and optimization monitoring for enterprise AI
             deployments at scale.
           </p>
 

@@ -467,4 +467,4 @@ Users can get started faster, with smaller bundles, and less confusion.
 
 ---
 
-**Created**: January 26, 2026 **Version**: 1.0.0 **Status**: Production Ready
+**Created**: January 26, 2026 **Version**: 1.0.0 **Status**: Stable

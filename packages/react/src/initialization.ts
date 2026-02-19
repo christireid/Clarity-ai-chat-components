@@ -87,7 +87,7 @@ export function initializeClarity(
     console.warn(
       '[Clarity Chat] Running without a license key.\n' +
         'A watermark will be displayed. To remove it, set CLARITY_LICENSE in your environment.\n' +
-        'Get your license at: https://claritychat.dev/pricing'
+        'Get your license at: https://github.com/christireid/Clarity-ai-chat-components'
     )
   }
 

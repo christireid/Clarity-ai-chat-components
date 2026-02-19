@@ -1,7 +1,7 @@
 /**
  * AI Infrastructure Domain
  *
- * Production-ready APIs for AI adapters, embeddings, and vector stores.
+ * Comprehensive APIs for AI adapters, embeddings, and vector stores.
  *
  * NOTE: useAgent and useRAGPipeline are on the roadmap for v2.0.
  * See: https://github.com/christireid/Clarity-ai-chat-components/issues

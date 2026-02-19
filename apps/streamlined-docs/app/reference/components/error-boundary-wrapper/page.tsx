@@ -111,7 +111,7 @@ export default function ErrorBoundaryWrapperPage() {
           <p>
             The <code className="text-sm bg-accent px-2 py-0.5 rounded">ErrorBoundaryWrapper</code>{' '}
             component (exported as <code className="text-sm bg-accent px-2 py-0.5 rounded">EnhancedErrorBoundary</code>)
-            is a production-ready error boundary built on top of{' '}
+            is a robust error boundary built on top of{' '}
             <a
               href="https://github.com/bvaughn/react-error-boundary"
               target="_blank"

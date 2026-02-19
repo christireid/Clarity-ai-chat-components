@@ -15,11 +15,11 @@ The Clarity Chat Pro License grants additional features beyond the MIT-licensed 
 
 ## Core (MIT) vs Pro
 
-The core library (`@clarity-chat/react`) is MIT-licensed and includes:
+The core library (`@clarity-chat/react`) is fully MIT-licensed and includes:
 - Chat components (ChatWindow, MessageList, ChatInput, etc.)
 - Basic hooks (useClarityChat, useMessages, useStreaming)
 - Streaming support (SSE/WebSocket)
-- Accessibility features (WCAG AAA)
+- Accessibility features (WCAG AA with AAA targets)
 - Error boundaries and basic error handling
 - Theme system (15 built-in themes)
 - Animations and transitions

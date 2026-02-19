@@ -17,7 +17,7 @@ export declare function MentionInboxExample(): any;
  */
 export declare function FuzzySearchExample(): any;
 /**
- * Production-ready chat with mention system
+ * Robust chat with mention system
  */
 export declare function CompleteMentionChatExample(): any;
 /**
@@ -45,7 +45,7 @@ export declare function ProductionMentionExample(): any;
  *    - Try different search patterns
  *
  * 4. Complete Chat:
- *    - Production-ready chat app
+ *    - Complete chat app
  *    - Mention extraction and tracking
  *    - Full integration example
  *

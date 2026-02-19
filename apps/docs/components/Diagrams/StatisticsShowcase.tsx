@@ -125,7 +125,7 @@ export function LibraryStats() {
           value: 70,
           suffix: '+',
           label: 'Components',
-          description: 'Production-ready UI components',
+          description: 'Robust UI components',
           color: 'text-blue-600 dark:text-blue-400',
         },
         {

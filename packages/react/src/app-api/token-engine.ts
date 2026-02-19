@@ -3,7 +3,7 @@
 /**
  * Clarity Chat - Token Optimization Engine
  *
- * A production-ready token optimization system with:
+ * A comprehensive token optimization system with:
  * - Accurate token estimation for multiple models
  * - Context compression strategies
  * - Response caching

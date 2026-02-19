@@ -155,7 +155,7 @@ export function MessageList({
         prop: 'messages',
         received: typeof messages,
         expected: 'Message[]',
-        docs: 'https://clarity-chat.dev/api/message-list#messages',
+        docs: 'https://github.com/christireid/Clarity-ai-chat-components/blob/main/docs/api/message-list#messages',
       }
     )
   }

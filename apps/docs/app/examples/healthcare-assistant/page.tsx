@@ -43,7 +43,7 @@ export default function HealthcareAssistantPage() {
             HIPAA-Compliant
           </span>
           <span className="px-3 py-1 bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300 rounded-full text-sm">
-            Production-Ready
+            Robust
           </span>
         </div>
 

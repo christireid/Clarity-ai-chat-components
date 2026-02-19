@@ -22,7 +22,7 @@ Try out Clarity Chat components in this interactive playground. Experiment with 
 
 ## Getting Started
 
-Use the controls below to configure the components and see live updates. All examples are production-ready and can be copied directly into your application.
+Use the controls below to configure the components and see live updates. All examples are ready to use and can be copied directly into your application.
         `,
       },
     },

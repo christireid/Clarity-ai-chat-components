@@ -47,7 +47,7 @@ function isMobileDevice(): boolean {
 }
 
 /**
- * Production-ready mobile keyboard detection hook.
+ * Robust mobile keyboard detection hook.
  *
  * **Features:**
  * - Detects keyboard show/hide events

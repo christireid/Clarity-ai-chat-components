@@ -331,7 +331,7 @@ export default function UseStreamingWebSocketPage() {
         <h1>useStreamingWebSocket</h1>
 
         <p className="lead">
-          A production-ready hook for bidirectional WebSocket streaming with
+          A robust hook for bidirectional WebSocket streaming with
           automatic reconnection, heartbeat/ping-pong, message queuing, and
           lifecycle management.
         </p>

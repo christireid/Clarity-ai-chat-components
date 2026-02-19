@@ -164,7 +164,7 @@ export function useClarityObject<TObject = any, TInput = any>(
         'Please provide your API endpoint URL.\n\n' +
         'Example:\n' +
         '  const { object, run } = useClarityObject<Product>({ api: "/api/generate-object" })\n\n' +
-        'For more help, see: https://clarity-chat.dev/docs/getting-started'
+        'For more help, see: https://github.com/christireid/Clarity-ai-chat-components/blob/main/docs/getting-started'
     )
   }
 

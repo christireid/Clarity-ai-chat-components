@@ -48,7 +48,7 @@ export default function Page() {
             <ScrollReveal direction="up" delay={0.3}>
               <p className="text-lg sm:text-xl text-neutral-600 dark:text-neutral-400 mb-8 max-w-2xl mx-auto">
                 See our components in action. Interactive demos, code examples,
-                and production-ready recipes to accelerate your development.
+                and robust recipes to accelerate your development.
               </p>
             </ScrollReveal>
 
@@ -223,7 +223,7 @@ export default function Page() {
               </h3>
 
               <p className="text-sm text-neutral-600 dark:text-neutral-400 mb-4">
-                Production-ready patterns and best practices. Complete solutions
+                Robust patterns and best practices. Complete solutions
                 for common challenges with optimization tips.
               </p>
 

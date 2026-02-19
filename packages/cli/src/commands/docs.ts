@@ -17,12 +17,12 @@ interface DocsOptions {
 }
 
 const DOCS_URLS = {
-  main: 'https://clarity-chat.dev',
-  'chat-interface': 'https://clarity-chat.dev/components/chat-interface',
-  'model-selector': 'https://clarity-chat.dev/components/model-selector',
-  streaming: 'https://clarity-chat.dev/guides/streaming',
-  'api-keys': 'https://clarity-chat.dev/guides/api-keys',
-  examples: 'https://clarity-chat.dev/examples',
+  main: 'https://github.com/christireid/Clarity-ai-chat-components',
+  'chat-interface': 'https://github.com/christireid/Clarity-ai-chat-components/components/chat-interface',
+  'model-selector': 'https://github.com/christireid/Clarity-ai-chat-components/components/model-selector',
+  streaming: 'https://github.com/christireid/Clarity-ai-chat-components/guides/streaming',
+  'api-keys': 'https://github.com/christireid/Clarity-ai-chat-components/guides/api-keys',
+  examples: 'https://github.com/christireid/Clarity-ai-chat-components/examples',
 }
 
 export async function docsCommand(query?: string, options?: DocsOptions) {
@@ -33,7 +33,7 @@ export async function docsCommand(query?: string, options?: DocsOptions) {
   if (options?.offline) {
     console.log(
       warningBox(
-        'Offline documentation not yet available\n\nVisit: https://clarity-chat.dev',
+        'Offline documentation not yet available\n\nVisit: https://github.com/christireid/Clarity-ai-chat-components',
         '⚠ Offline Mode'
       )
     )

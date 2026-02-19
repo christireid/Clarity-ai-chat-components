@@ -1,7 +1,7 @@
 /**
  * ChatWithErrorBoundary - Chat component with built-in error handling
  *
- * Wraps ClarityChat with ErrorBoundary for production-ready error handling.
+ * Wraps ClarityChat with ErrorBoundary for robust error handling.
  * This is useful when you want error boundaries without manually wrapping.
  *
  * @example

@@ -2,7 +2,7 @@
 
 ## Overview
 
-`useClarityChat` is Clarity's flagship chat hook, providing a production-ready API for building AI chat interfaces. It wraps `useChatEnhanced` (Vercel AI SDK compatible) with Clarity-specific enhancements including memory integration, transport selection, and convenience features.
+`useClarityChat` is Clarity's flagship chat hook, providing a comprehensive API for building AI chat interfaces. It wraps `useChatEnhanced` (Vercel AI SDK compatible) with Clarity-specific enhancements including memory integration, transport selection, and convenience features.
 
 ## Quick Start
 

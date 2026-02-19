@@ -19,7 +19,7 @@
 **Visual:** Clarity Chat logo + hero screenshot
 
 - Company name: **Clarity Chat by Code & Clarity**
-- Tagline: **"Ship Production-Ready AI Chat in Hours, Not Months"**
+- Tagline: **"Ship Robust AI Chat in Hours, Not Months"**
 - Presenter name & title
 - Date
 
@@ -116,14 +116,14 @@
 **Positioning:**
 
 - Premium AI Chat Component Library for React
-- 70+ Production-Ready Components
+- 70+ Robust Components
 - WCAG 2.1 AAA Compliant
 - Enterprise Security & Features
 - Ship in Hours, Not Months
 
 **Script:**
 
-> "That's why we built Clarity Chat. Production-ready AI chat components that you can ship in hours,
+> "That's why we built Clarity Chat. Robust AI chat components that you can ship in hours,
 > not months."
 
 ---
@@ -132,13 +132,13 @@
 
 **Visual:** Stats with icons
 
-- 🎨 **70+** Production-Ready Components
+- 🎨 **70+** Robust Components
 - 🎭 **11** Premium Themes
-- ⚡ **10-50x** Faster Time to Market
-- 💰 **97%** Cost Savings vs. Custom
-- ♿ **WCAG AAA** Accessibility Certified
-- 🔒 **SOC 2** Compliance Support
-- 🌍 **1,000+** Developers Using Clarity Chat
+- ⚡ **Faster** Time to Market vs. Custom Build
+- 💰 **Save** Development Time and Resources
+- ♿ **WCAG AAA** Accessibility Target
+- 🔒 **Security** Best Practices Built-in
+- 🌍 **Open Source** MIT Licensed
 
 **Script:**
 
@@ -458,11 +458,11 @@
 1. ✅ **Only WCAG AAA certified** chat library
 2. ✅ **155+ components** (most comprehensive)
 3. ✅ **Enterprise features** (SSO, RBAC, white-label)
-4. ✅ **97% cost savings** vs. custom build
-5. ✅ **10-50x faster** time to market
+4. ✅ **Significant cost savings** vs. custom build
+5. ✅ **Faster** time to market
 6. ✅ **Commercial support** with SLA
 7. ✅ **Active development** (updates weekly)
-8. ✅ **1,000+ developers** trust us
+8. ✅ **Open source** MIT licensed
 
 **Script:**
 

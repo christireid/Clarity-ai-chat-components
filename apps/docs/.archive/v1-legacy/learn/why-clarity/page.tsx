@@ -99,7 +99,7 @@ const benefits = [
   {
     title: 'Ship Faster',
     description:
-      'Pre-built components mean you can have a production-ready chat interface in minutes, not weeks.',
+      'Pre-built components mean you can have a robust chat interface in minutes, not weeks.',
     metric: '10x faster development',
   },
   {
@@ -255,7 +255,7 @@ export default function WhyClarityPage() {
         <ul className="space-y-2 mb-6">
           <li className="flex items-start">
             <span className="mr-2 text-green-500 mt-1">✓</span>
-            <span>A complete, production-ready chat UI with minimal setup</span>
+            <span>A complete, robust chat UI with minimal setup</span>
           </li>
           <li className="flex items-start">
             <span className="mr-2 text-green-500 mt-1">✓</span>

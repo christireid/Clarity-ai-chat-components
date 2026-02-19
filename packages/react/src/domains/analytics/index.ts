@@ -1,7 +1,7 @@
 /**
  * Analytics & Observability Domain
  *
- * Production-ready analytics integration for chat applications.
+ * Comprehensive analytics integration for chat applications.
  * Supports 7 analytics providers out of the box.
  */
 

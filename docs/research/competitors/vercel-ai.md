@@ -812,7 +812,7 @@ This is a deliberate design choice to:
    - Multi-step agent loops
    - Dynamic tool definition
 
-7. **Production Ready**
+7. **Stable**
    - Used by Vercel and major companies
    - 21K+ GitHub stars
    - Active development and community
@@ -842,7 +842,7 @@ This is a deliberate design choice to:
    - No out-of-box chat interface
 
 2. **RSC Experimental Status**
-   - Server Components integration not production-ready
+   - Server Components integration not robust
    - Docs recommend using UI SDK instead
    - Uncertain future of RSC features
 
@@ -1123,7 +1123,7 @@ function works(model: LanguageModel) { ... }
 **COMPETITIVE EDGE**:
 
 - Vercel has no UI components - Clarity can provide both hooks AND components
-- RSC is experimental - Clarity can focus on production-ready patterns
+- RSC is experimental - Clarity can focus on robust patterns
 - Documentation gaps - Clarity can have comprehensive docs from day one
 - Focus on clarity and simplicity in API design
 - Provide UI implementation guidance that Vercel lacks

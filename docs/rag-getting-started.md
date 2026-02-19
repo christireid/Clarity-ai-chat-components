@@ -265,7 +265,7 @@ const results = await store.query({
 ```
 
 **Supported vector stores:**
-- **Pinecone**: Managed, scalable, production-ready
+- **Pinecone**: Managed, scalable, robust
 - **Qdrant**: Open-source, self-hosted
 - **Weaviate**: GraphQL, object-based
 - **Chroma**: Lightweight, prototyping

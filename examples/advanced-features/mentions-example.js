@@ -144,7 +144,7 @@ export function FuzzySearchExample() {
 // Example 4: Complete Chat with Mentions
 // =============================================================================
 /**
- * Production-ready chat with mention system
+ * Robust chat with mention system
  */
 export function CompleteMentionChatExample() {
     const [messages, setMessages] = React.useState([]);

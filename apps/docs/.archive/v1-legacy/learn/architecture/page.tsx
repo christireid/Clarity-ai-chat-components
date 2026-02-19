@@ -18,7 +18,7 @@ export default function ArchitecturePage() {
         <h1>Architecture & Design Patterns</h1>
         <p className="docs-lead">
           Learn the architectural principles and design patterns behind
-          production-ready AI chat applications.
+          robust AI chat applications.
         </p>
       </div>
 

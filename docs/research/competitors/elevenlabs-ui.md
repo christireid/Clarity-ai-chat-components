@@ -15,7 +15,7 @@
 ## Project Philosophy
 
 ElevenLabs UI is an open-source component library specifically designed for building **voice and
-audio AI applications**. Built on top of shadcn/ui, it provides production-ready React components
+audio AI applications**. Built on top of shadcn/ui, it provides robust React components
 for:
 
 - **Voice agents**: Real-time voice interaction interfaces
@@ -28,7 +28,7 @@ for:
 - **Audio-first**: Components optimized for voice/audio experiences
 - **Real-time performance**: Handle streaming audio without blocking
 - **State synchronization**: Visual feedback tied to audio states
-- **Production-ready**: Complex audio functionality simplified
+- **Robust**: Complex audio functionality simplified
 - **Developer experience**: Easy integration via CLI
 
 ## Component Architecture
@@ -329,7 +329,7 @@ function AgentConversation() {
 2. **Real-Time Performance**: Optimized for streaming audio with minimal latency
 3. **Visual Feedback**: Rich audio visualization components
 4. **State Management**: Built-in agent state handling
-5. **Production-Ready**: Complex audio features simplified
+5. **Robust**: Complex audio features simplified
 6. **WebSocket Support**: Native support for audio streaming protocols
 7. **Accessibility**: Audio-specific a11y considerations
 8. **Mobile Support**: Touch-optimized for mobile voice interfaces

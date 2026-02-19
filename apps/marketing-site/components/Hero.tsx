@@ -12,7 +12,7 @@ export default function Hero() {
           {/* Badge */}
           <div className="inline-flex items-center rounded-full bg-brand-100 px-4 py-2 text-sm font-medium text-brand-700 mb-8 animate-fade-in">
             <Star className="w-4 h-4 mr-2 fill-current" />
-            <span>Trusted by 1,000+ developers</span>
+            <span>Open Source AI Chat Components</span>
           </div>
 
           {/* Main heading */}
@@ -24,13 +24,10 @@ export default function Hero() {
 
           {/* Subheading */}
           <p className="mx-auto max-w-2xl text-xl text-gray-600 dark:text-gray-300 mb-10 animate-slide-up animation-delay-100">
-            Production-ready React components for AI chat. Save{' '}
-            <span className="font-bold text-brand-600">$150K+</span> and{' '}
-            <span className="font-bold text-brand-600">6 months</span> vs.
-            building from scratch.
+            React components for AI chat with token optimization built-in.
             <br />
-            <span className="font-semibold">WCAG AAA certified.</span>{' '}
-            Enterprise features included.
+            <span className="font-semibold">Accessibility-first.</span>{' '}
+            TypeScript-first. MIT licensed.
           </p>
 
           {/* CTAs */}
@@ -66,11 +63,11 @@ export default function Hero() {
             </div>
             <div className="flex items-center gap-2">
               <div className="h-2 w-2 rounded-full bg-green-500" />
-              <span>2,847% Avg ROI</span>
+              <span>Token Optimization</span>
             </div>
             <div className="flex items-center gap-2">
               <div className="h-2 w-2 rounded-full bg-green-500" />
-              <span>$144K Avg Savings</span>
+              <span>MIT Licensed</span>
             </div>
           </div>
         </div>
@@ -119,15 +116,15 @@ export default function Hero() {
             </div>
           </div>
           <div className="text-center">
-            <div className="text-4xl font-bold text-brand-600 mb-2">97%</div>
+            <div className="text-4xl font-bold text-brand-600 mb-2">100%</div>
             <div className="text-sm text-gray-600 dark:text-gray-400">
-              Cost Savings
+              TypeScript
             </div>
           </div>
           <div className="text-center">
-            <div className="text-4xl font-bold text-brand-600 mb-2">2.8K%</div>
+            <div className="text-4xl font-bold text-brand-600 mb-2">MIT</div>
             <div className="text-sm text-gray-600 dark:text-gray-400">
-              Avg ROI
+              Licensed
             </div>
           </div>
         </div>

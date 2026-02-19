@@ -117,7 +117,7 @@ export default function TokenOptimizationPage() {
             role: 'system',
             content: `You are a helpful AI assistant specialized in software engineering.
         You have deep knowledge of React, TypeScript, Node.js, and modern web development.
-        Always provide practical, production-ready solutions with clear explanations.
+        Always provide practical, robust solutions with clear explanations.
         Consider performance, security, and best practices in all recommendations.`,
         },
         {

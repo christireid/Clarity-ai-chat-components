@@ -67,7 +67,7 @@ function formatCost(cost: number): string {
 }
 
 /**
- * Production-ready Token Counter component with cost transparency.
+ * Robust Token Counter component with cost transparency.
  *
  * **Features:**
  * - Real-time token count display

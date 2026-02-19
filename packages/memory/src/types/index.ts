@@ -1,7 +1,7 @@
 /**
  * AI Memory & Context Types
  *
- * Production-ready memory system for AI chat applications with support for:
+ * Comprehensive memory system for AI chat applications with support for:
  * - Short-term and long-term memory
  * - Episodic and semantic memory
  * - Token optimization

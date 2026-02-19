@@ -3,7 +3,7 @@
 /**
  * Clarity Chat - Tools Engine
  *
- * A production-ready tool execution engine with:
+ * A comprehensive tool execution engine with:
  * - Type-safe tool registry
  * - Automatic parameter validation
  * - Timeout handling

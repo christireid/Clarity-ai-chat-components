@@ -3,7 +3,7 @@
 /**
  * Clarity Chat - RAG (Retrieval Augmented Generation) Engine
  *
- * A production-ready RAG implementation with:
+ * A comprehensive RAG implementation with:
  * - Multiple chunking strategies (fixed, sentence, paragraph, balanced)
  * - Simple but effective TF-IDF-like similarity matching
  * - Support for text, URL, file, and pre-chunked sources

@@ -3,7 +3,7 @@
  *
  * Demonstrates the simplest possible end-to-end chat using:
  * - useClarityChat hook (flagship API)
- * - ChatWindow component (production-ready UI)
+ * - ChatWindow component (full-featured UI)
  *
  * This example shows the recommended way to use Clarity for most use cases.
  *

@@ -2,7 +2,7 @@ import type { StoryObj } from '@storybook/react-vite';
 /**
  * **ErrorBoundary Component**
  *
- * Production-ready React error boundaries with enhanced reporting
+ * Robust React error boundaries with enhanced reporting
  * and recovery mechanisms.
  *
  * **Key Features:**

@@ -13,7 +13,7 @@ export default function HealthCheckerPage() {
       <header>
         <h1 className="text-4xl font-bold mb-4">HealthChecker</h1>
         <p className="text-xl text-muted-foreground">
-          Production-ready health monitoring system with component-level health tracking,
+          Comprehensive health monitoring system with component-level health tracking,
           liveness/readiness probes, and comprehensive performance metrics for token optimization
           systems.
         </p>

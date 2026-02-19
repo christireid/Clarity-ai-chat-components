@@ -419,7 +419,7 @@ const response = await openai.chat.completions.create({
 5. **"Enterprise Compression Pipeline"**
    - Scenario: Large document processing
    - Strategy: AdaptiveCompressor + Chunking + Caching
-   - Implementation: Production-ready setup
+   - Implementation: Robust setup
    - Result: Cost at scale
 
 ### 4.4 Configuration Guides

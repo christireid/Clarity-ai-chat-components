@@ -7,7 +7,7 @@ import { CodePlayground } from '@/components/Playground/CodePlayground'
 export const metadata: Metadata = {
   title: 'Tutorial: Building Your First Chatbot',
   description:
-    'Step-by-step guide to building a production-ready chatbot in 30 minutes.',
+    'Step-by-step guide to building a robust chatbot in 30 minutes.',
 }
 
 export default function BuildingFirstChatbotTutorial() {
@@ -25,7 +25,7 @@ export default function BuildingFirstChatbotTutorial() {
       <section className="docs-section">
         <h2>What You'll Build</h2>
         <p>
-          By the end of this tutorial, you'll have a production-ready chatbot
+          By the end of this tutorial, you'll have a robust chatbot
           with:
         </p>
         <ul>

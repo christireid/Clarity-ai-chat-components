@@ -9,7 +9,7 @@
  * - Custom styling
  * - Analytics integration
  * 
- * This shows how to build a production-ready chat application
+ * This shows how to build a robust chat application
  * with enterprise features while maintaining simplicity.
  */
 

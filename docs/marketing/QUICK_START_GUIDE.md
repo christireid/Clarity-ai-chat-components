@@ -1,6 +1,8 @@
+<!-- NOTE: These are draft marketing templates. All claims must be verified before use. -->
+
 # Quick Start: Zero to AI Chat in 5 Minutes
 
-Get a production-ready AI chat interface running in **under 5 minutes**. No complex setup. No configuration hell. Just clean, working code.
+Get a robust AI chat interface running in **under 5 minutes**. No complex setup. No configuration hell. Just clean, working code.
 
 ---
 
@@ -444,7 +446,7 @@ import '@clarity-chat/react/styles.css'
 
 ### 1. Explore Examples
 
-Browse 12+ production-ready examples:
+Browse 12+ robust examples:
 ```bash
 git clone https://github.com/christireid/Clarity-ai-chat-components
 cd Clarity-ai-chat-components/examples

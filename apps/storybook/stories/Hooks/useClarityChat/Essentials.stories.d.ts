@@ -3,7 +3,7 @@ import type { StoryObj } from '@storybook/react-vite';
  * **useClarityChat Hook - Essentials Track**
  *
  * This track focuses on the most common use cases for useClarityChat.
- * These examples are production-ready and can be copied directly into your app.
+ * These examples are ready to use and can be copied directly into your app.
  *
  * For advanced patterns, see the "Enterprise" track.
  */
@@ -31,7 +31,7 @@ export declare const BasicChat: Story;
 /**
  * **Essential Pattern 2: With ChatWindow**
  *
- * Use the ChatWindow component for a complete, production-ready interface.
+ * Use the ChatWindow component for a complete, full-featured interface.
  * This is the recommended pattern for most applications.
  */
 export declare const WithChatWindow: Story;

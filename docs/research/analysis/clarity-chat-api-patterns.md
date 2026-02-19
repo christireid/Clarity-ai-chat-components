@@ -112,7 +112,7 @@ interface ClarityChatSimpleProps {
 
 - **Zero Configuration**: Literally 1 prop to get started
 - **Sensible Defaults**: Enables all UX features (token counter, network status, message operations)
-- **Perfect for MVPs**: Get a production-ready chat in 2 lines
+- **Perfect for MVPs**: Get a robust chat in 2 lines
 
 **Weaknesses**:
 

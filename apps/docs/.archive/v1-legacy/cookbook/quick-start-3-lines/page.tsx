@@ -7,7 +7,7 @@ import { Pagination } from '@/components/Navigation/Pagination'
 export const metadata: Metadata = {
   title: '3-Line Quick Start | Clarity Chat Cookbook',
   description:
-    'Get a production-ready AI chat interface in just 3 lines of code.',
+    'Get a robust AI chat interface in just 3 lines of code.',
 }
 
 export default function QuickStart3LinesPage() {
@@ -18,7 +18,7 @@ export default function QuickStart3LinesPage() {
       <h1>3-Line Quick Start</h1>
 
       <p className="lead">
-        Get a production-ready AI chat interface in{' '}
+        Get a robust AI chat interface in{' '}
         <strong>just 3 lines of code</strong>
         (plus imports). No configuration needed.
       </p>
@@ -100,7 +100,7 @@ export default function App() {
             <li>📱 Mobile responsive</li>
             <li>⚡ Optimized performance</li>
             <li>♿ WCAG AAA accessible</li>
-            <li>🔒 Production-ready security</li>
+            <li>🔒 Robust security</li>
             <li>🔄 Streaming responses</li>
             <li>🛡️ Error recovery</li>
             <li>💾 Automatic state management</li>

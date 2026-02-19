@@ -20,7 +20,7 @@ export const createConfigError = {
       code: 'MISSING_API_ENDPOINT',
       solution:
         'Add apiEndpoint prop to your ChatContainer: <ChatContainer apiEndpoint="/api/chat" />',
-      docs: 'https://docs.claritychat.dev/configuration#api-endpoint',
+      docs: 'https://github.com/christireid/Clarity-ai-chat-components/blob/main/docs/configuration#api-endpoint',
       context: {
         requiredProp: 'apiEndpoint',
         type: 'string',
@@ -31,7 +31,7 @@ export const createConfigError = {
     new ConfigurationError(`Invalid model: ${model}`, {
       code: 'INVALID_MODEL',
       solution: `Use one of the supported models: ${validModels.join(', ')}`,
-      docs: 'https://docs.claritychat.dev/configuration#models',
+      docs: 'https://github.com/christireid/Clarity-ai-chat-components/blob/main/docs/configuration#models',
       context: {
         providedModel: model,
         validModels,
@@ -43,7 +43,7 @@ export const createConfigError = {
       code: 'MISSING_API_KEY',
       solution:
         'Add apiKey prop to your ChatContainer or set CLARITY_API_KEY environment variable',
-      docs: 'https://docs.claritychat.dev/authentication',
+      docs: 'https://github.com/christireid/Clarity-ai-chat-components/blob/main/docs/authentication',
       context: {
         requiredProp: 'apiKey',
         environmentVariable: 'CLARITY_API_KEY',
@@ -94,7 +94,7 @@ export const createApiError = {
       code: 'INVALID_API_RESPONSE',
       solution:
         'Ensure your API returns valid JSON with the expected structure',
-      docs: 'https://docs.claritychat.dev/api-reference#response-format',
+      docs: 'https://github.com/christireid/Clarity-ai-chat-components/blob/main/docs/api-reference#response-format',
       context: {
         endpoint,
         details,
@@ -133,14 +133,14 @@ export const createAuthError = {
       code: 'MISSING_API_KEY',
       solution:
         'Provide an API key via the apiKey prop or CLARITY_API_KEY environment variable',
-      docs: 'https://docs.claritychat.dev/authentication',
+      docs: 'https://github.com/christireid/Clarity-ai-chat-components/blob/main/docs/authentication',
     }),
 
   invalidApiKey: () =>
     new AuthenticationError('API key is invalid', {
       code: 'INVALID_API_KEY',
       solution: 'Check that your API key is correct and has not expired',
-      docs: 'https://docs.claritychat.dev/authentication#api-keys',
+      docs: 'https://github.com/christireid/Clarity-ai-chat-components/blob/main/docs/authentication#api-keys',
     }),
 
   insufficientPermissions: (action: string) =>

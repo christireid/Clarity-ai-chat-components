@@ -148,7 +148,7 @@ export function SocialProof() {
       icon: <Download className="w-8 h-8" />,
       value: '~15',
       label: 'Core Components',
-      trend: 'Production Ready',
+      trend: 'Stable',
     },
     {
       icon: <GitFork className="w-8 h-8" />,

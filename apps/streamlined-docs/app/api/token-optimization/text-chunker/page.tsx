@@ -36,7 +36,7 @@ export default function TextChunkerPage() {
             <li>Rich metadata with character positions and token counts</li>
             <li>Three preset strategies with customizable configuration</li>
             <li>Overlap support for context continuity between chunks</li>
-            <li>Built on llm-splitter for production-ready performance</li>
+            <li>Built on llm-splitter for robust performance</li>
           </ul>
         </div>
       </section>
@@ -731,7 +731,7 @@ const result = chunker.chunk(document)`}
           >
             llm-splitter
           </a>{' '}
-          for production-ready performance.
+          for robust performance.
         </p>
       </footer>
     </div>

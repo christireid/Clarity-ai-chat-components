@@ -4,7 +4,7 @@ export default function Page() {
   return (
     <StubPage
       title="Enterprise Production Pipeline"
-      description="Deploy AI chat at enterprise scale with production-ready infrastructure. Covers Kubernetes deployment, monitoring, scaling, security hardening, and cost governance."
+      description="Deploy AI chat at enterprise scale with robust infrastructure. Covers Kubernetes deployment, monitoring, scaling, security hardening, and cost governance."
       category="Cookbook"
       estimatedDate="March 2026"
       priority="medium"

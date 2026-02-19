@@ -94,7 +94,7 @@ const DEFAULT_STAGES: TypingStage[] = [
 ]
 
 /**
- * Production-ready Realistic Typing hook for natural AI responses.
+ * Robust Realistic Typing hook for natural AI responses.
  *
  * **Features:**
  * - Simulates human reading/thinking time

@@ -71,7 +71,7 @@ const demoResponses: Record<string, string> = {
     'Theming is automatic! Use `theme="auto"` to respect system preferences, or set `theme="dark"` or `theme="light"`. You can also use CSS variables for complete customization.',
   features:
     `Clarity Chat includes: ✨ Streaming support, 🎨 Theming & dark mode, ⌨️ Keyboard shortcuts, 📱 Mobile responsive, ♿ Accessibility (WCAG 2.1 AA), 🔧 ${LIBRARY_STATS.components} components, and much more!`,
-  code: "The code you see is real! Just `npm install @clarity-chat/react`, import the component, and pass your API endpoint. That's it - you get a production-ready chat with all the polish.",
+  code: "The code you see is real! Just `npm install @clarity-chat/react`, import the component, and pass your API endpoint. That's it - you get a robust chat with all the polish.",
 }
 
 function getResponse(input: string): string {
@@ -362,7 +362,7 @@ export default function ZeroToChatDemo() {
                     </span>
                     <span className="text-green-400 flex items-center gap-1">
                       <Sparkles className="w-3 h-3" />
-                      Production ready
+                      Stable
                     </span>
                   </div>
                 </div>

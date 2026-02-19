@@ -1,6 +1,6 @@
 # Security Best Practices
 
-> **Wave 3.4 Feature** | Production Ready | Security Score: 85 → 95/100
+> **Wave 3.4 Feature** | Stable | Security Score: 85 → 95/100
 
 ## Overview
 

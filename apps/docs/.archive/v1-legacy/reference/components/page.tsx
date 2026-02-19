@@ -115,7 +115,7 @@ export default function ComponentsPage() {
           <span className="docs-badge mb-4">Components</span>
           <h1 className="text-5xl font-bold mb-6">Component Library</h1>
           <p className="text-xl text-text-secondary mb-4">
-            Browse {totalComponents}+ production-ready React components for building beautiful chat interfaces.
+            Browse {totalComponents}+ robust React components for building beautiful chat interfaces.
             Each component is fully typed, accessible, and customizable.
           </p>
           <div className="flex gap-4 flex-wrap">

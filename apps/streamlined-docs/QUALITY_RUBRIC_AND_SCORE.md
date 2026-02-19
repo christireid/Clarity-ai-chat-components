@@ -249,7 +249,7 @@ All requirements met:
 | Hook Refs       | 5 pages          | Core covered                 |
 | Guides          | 8 pages          | 100% essential topics        |
 | Examples        | Index + demos    | Comprehensive                |
-| Recipes         | Index + patterns | Production-ready             |
+| Recipes         | Index + patterns | Robust             |
 | AI Components   | 9 new components | Full AI workflow coverage    |
 | AI Files        | 4 files          | 100%                         |
 | Accessibility   | Dedicated guide  | WCAG 2.2 AA compliant        |

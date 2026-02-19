@@ -79,7 +79,7 @@ export default async function Image() {
                             textAlign: 'center',
                             margin: 0,
                             lineHeight: 1.4,
-                        }, children: ["Production-ready React components for AI chat.", _jsx("br", {}), "Multi-provider support, intelligent memory, 40%+ cost savings."] })] }), _jsx("div", { style: {
+                        }, children: ["React components for AI chat.", _jsx("br", {}), "Multi-provider support, intelligent memory, 40%+ cost savings."] })] }), _jsx("div", { style: {
                     display: 'flex',
                     gap: '48px',
                     marginTop: '48px',

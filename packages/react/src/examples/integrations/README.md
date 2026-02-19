@@ -2,7 +2,7 @@
 
 Complete, copy-pasteable examples showing how to integrate Clarity Chat components with popular AI frameworks and full-stack platforms.
 
-Each example is production-ready and includes:
+Each example is well-tested and includes:
 - Complete setup and configuration
 - Error handling
 - Loading states

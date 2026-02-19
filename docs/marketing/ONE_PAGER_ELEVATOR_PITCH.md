@@ -1,8 +1,10 @@
+<!-- NOTE: These are draft marketing templates. All claims must be verified before use. -->
+
 # Clarity AI Chat Components: One-Pager
 
 ## Elevator Pitch
 
-**Clarity AI Chat Components** is the only production-ready React component library purpose-built for AI applications, with **unique token optimization features that no competitor offers**.
+**Clarity AI Chat Components** is the only robust React component library purpose-built for AI applications, with **unique token optimization features that no competitor offers**.
 
 Build beautiful AI chat interfaces in minutes—with streaming, token tracking, cost ROI dashboards, and prompt optimization built-in.
 
@@ -23,7 +25,7 @@ Developers building AI applications face a dilemma:
 
 ## Our Solution
 
-**Clarity AI Chat Components = Production-ready React components + AI-native intelligence**
+**Clarity AI Chat Components = Robust React components + AI-native intelligence**
 
 ```tsx
 // Get a working AI chat in 3 lines
@@ -129,16 +131,12 @@ Best-in-class docs with interactive examples, migration guides, and Claude devel
 
 ---
 
-## What Developers Say
+## Try It Yourself
 
-> "I was building token tracking from scratch. Clarity had it built-in. Saved me 2 weeks."
-> — Frontend Dev, AI Startup
+<!-- TODO: Replace with real testimonials once available. Do not fabricate quotes. -->
 
-> "The only library that actually understands AI applications. Token visualization is a game-changer."
-> — CTO, B2B SaaS
-
-> "Setup took 5 minutes. Production-ready components. No other library comes close."
-> — Senior Engineer, Enterprise
+Try Clarity AI Chat Components and see how token optimization, cost tracking, and prompt routing
+can accelerate your AI chat development workflow.
 
 ---
 
@@ -198,7 +196,7 @@ No vendor lock-in. No usage limits. No hidden fees.
 - **GitHub:** https://github.com/christireid/Clarity-ai-chat-components
 - **npm:** https://npmjs.com/package/@clarity-chat/react
 - **Discord:** https://discord.gg/clarity-chat
-- **Examples:** 12+ production-ready demo apps
+- **Examples:** 12+ robust demo apps
 
 ---
 
@@ -210,6 +208,6 @@ No vendor lock-in. No usage limits. No hidden fees.
 npm install @clarity-chat/react
 ```
 
-Get your first AI chat running in under 5 minutes. Join 100+ companies already in production.
+Get your first AI chat running in under 5 minutes. Pre-release. Feedback welcome.
 
 [Read the Docs →](https://clarity-chat.dev) | [View Examples →](https://github.com/christireid/Clarity-ai-chat-components/tree/main/examples) | [Star on GitHub →](https://github.com/christireid/Clarity-ai-chat-components)

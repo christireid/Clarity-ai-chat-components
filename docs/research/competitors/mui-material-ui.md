@@ -17,7 +17,7 @@
 MUI is the world's most popular React UI framework, implementing Google's Material Design system.
 While not specifically an AI-focused library, MUI has evolved to support AI/chat use cases through:
 
-- **Material Design principles**: Consistent, accessible, and production-ready components
+- **Material Design principles**: Consistent, accessible, and robust components
 - **Comprehensive component library**: 50+ components that can be composed for AI interfaces
 - **Enterprise-ready**: Battle-tested in production environments worldwide
 - **Customizable theming**: Deep customization without sacrificing functionality

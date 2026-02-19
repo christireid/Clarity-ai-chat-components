@@ -3,7 +3,7 @@
 /**
  * useTokenTracker Hook - API Reference Documentation
  *
- * Documentation for the useTokenTracker hook - a production-ready hook for
+ * Documentation for the useTokenTracker hook - a robust hook for
  * tracking token usage, monitoring costs, and managing context window limits.
  */
 
@@ -1050,7 +1050,7 @@ export default function UseTokenTrackerPage() {
               </h1>
 
               <p className="text-lg text-muted-foreground max-w-3xl">
-                Production-ready hook for tracking token usage, monitoring
+                Robust hook for tracking token usage, monitoring
                 costs, and managing context window limits in AI conversations.
                 Essential for building cost-transparent applications.
               </p>

@@ -19,7 +19,7 @@ export default function CTA() {
 
         {/* Description */}
         <p className="text-xl text-white/90 mb-10 max-w-2xl mx-auto">
-          Join 1,000+ developers building amazing AI chat experiences. Start free, upgrade when
+          Get started building AI chat experiences today. Start free, upgrade when
           you're ready. 30-day money-back guarantee.
         </p>
 

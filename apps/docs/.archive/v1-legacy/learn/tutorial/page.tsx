@@ -74,7 +74,7 @@ export default function TutorialPage() {
         <h2 className="text-3xl font-bold mb-4">What You'll Build</h2>
 
         <p className="text-text-secondary mb-6">
-          By the end of this tutorial, you'll have a production-ready chat app
+          By the end of this tutorial, you'll have a robust chat app
           with:
         </p>
 

@@ -26,7 +26,7 @@ export default function WhyClarityPage() {
           </KineticText>
           
           <p className="text-lg text-neutral-600 dark:text-neutral-400 max-w-2xl mx-auto">
-            Production-ready components that combine beautiful design with enterprise-grade reliability.
+            Robust components that combine beautiful design with enterprise-grade reliability.
           </p>
         </div>
       </ScrollReveal>
@@ -47,7 +47,7 @@ export default function WhyClarityPage() {
               </div>
               <h3 className="text-3xl font-bold mb-4">155+ Components</h3>
               <p className="text-neutral-600 dark:text-neutral-400 text-lg mb-6">
-                Production-ready components for every use case. Chat windows, message lists, input fields, and more.
+                Robust components for every use case. Chat windows, message lists, input fields, and more.
               </p>
               <div className="flex flex-wrap gap-2">
                 <span className="px-3 py-1 bg-white dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 rounded-full text-sm">TypeScript</span>

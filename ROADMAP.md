@@ -143,12 +143,19 @@ For the npm publish, focus on packages that matter:
 
 ### 1.3 Fix the marketing honesty gap
 
-- [ ] Remove "Trusted by developers worldwide" (0 users)
-- [ ] Change "production-ready" to "pre-release" or "beta"
-- [ ] Remove specific performance numbers without methodology (hallucination rate, response quality)
-- [ ] Add honest "Status" section: "Clarity Chat is in active pre-release development."
-- [ ] Add "Maturity: Pre-release" to comparison table (done)
-- [ ] Keep technical claims that are verifiable (TypeScript strict, WCAG target, component count)
+- [x] Remove "Trusted by developers worldwide" (0 users)
+- [x] Change "production-ready" to "pre-release" or "beta"
+- [x] Remove specific performance numbers without methodology (hallucination rate, response quality)
+- [x] Add honest "Status" section: "Clarity Chat is in active pre-release development."
+- [x] Add "Maturity: Pre-release" to comparison table
+- [x] Keep technical claims that are verifiable (TypeScript strict, WCAG target, component count)
+- [x] Rewrite README from 1148 lines to <200 lines (honest, concise)
+- [x] Archive 60+ root audit/report markdown files to docs/archive/
+- [x] Remove all fabricated "100+ companies in production" claims
+- [x] Fix LICENSE to pure MIT (removed conditional notice)
+- [x] Fix "WCAG AAA" to "WCAG AA with AAA targets" throughout
+- [x] Fix "100% TypeScript" claim
+- [x] Recommend competitors honestly in README comparison table
 
 ---
 

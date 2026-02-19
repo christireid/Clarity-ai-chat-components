@@ -1,7 +1,7 @@
 /**
  * Chat UI Domain
  *
- * Production-ready components and hooks for chat interfaces.
+ * Comprehensive components and hooks for chat interfaces.
  */
 
 // =============================================================================

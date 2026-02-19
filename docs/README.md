@@ -20,7 +20,7 @@ for getting started, building production applications, and understanding the sys
 
 ### 📖 Core Guides
 
-- **[Best Practices](./best-practices.md)** ✨ Production-ready patterns
+- **[Best Practices](./best-practices.md)** ✨ Robust patterns
   - Component usage patterns
   - Performance optimization
   - Error handling
@@ -30,7 +30,7 @@ for getting started, building production applications, and understanding the sys
   - Copy-pasteable examples
   - Real-world patterns
   - Quick solutions
-  - Production-ready code
+  - Robust code
 
 - **[Architecture](./architecture.md)** 🏗️ System overview
   - Component architecture

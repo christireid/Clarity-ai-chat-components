@@ -1,3 +1,5 @@
+<!-- NOTE: These are draft marketing templates. All claims must be verified before use. -->
+
 # README Hero Section: Clarity AI Chat Components
 
 ## Version 1: Problem/Solution Format (Recommended)
@@ -125,14 +127,14 @@ Auto-select optimal prompting strategy.
 
 |  | Clarity | shadcn/ui AI | Vercel AI SDK | Ant Design X | Assistant UI |
 |--|---------|--------------|---------------|--------------|--------------|
-| **Components** | 245 | 52 | 0 | ~50 | ~100 |
+| **Components** | 150+ | 52 | 0 | ~50 | ~100 |
 | **Token Tracking** | ✅ Built-in | ❌ | ⚠️ Metadata | ❌ | ❌ |
 | **Cost Optimization** | ✅ **Unique** | ❌ | ❌ | ❌ | ❌ |
 | **Setup Time** | 3 min | 15 min | 20 min | 15 min | 30 min |
 | **Distribution** | npm + copy-paste | copy-paste | npm | npm | npm |
 | **Bundle Size** | ~30KB | ~25KB | ~15KB | ~50KB | ~35KB |
 
-**Used by 100+ companies in production.**
+**Open-source. MIT licensed. Pre-release.**
 
 <br />
 ```
@@ -148,7 +150,7 @@ Auto-select optimal prompting strategy.
 
 <img src="https://img.shields.io/badge/Clarity_Chat-4A90E2?style=for-the-badge&logo=react&logoColor=white" alt="Clarity Chat" />
 
-<h1>Production-Ready AI Chat Components<br/>with Token Optimization Built-In</h1>
+<h1>Robust AI Chat Components<br/>with Token Optimization Built-In</h1>
 
 <p><strong>245 React components for building AI applications.</strong><br/>
 The only library with real-time token tracking, cost optimization, and prompt routing.</p>
@@ -343,7 +345,7 @@ Benefits:
 <td align="center"><strong>245</strong><br/>Components</td>
 <td align="center"><strong>3</strong><br/>Unique Features</td>
 <td align="center"><strong>5</strong><br/>Minutes Setup</td>
-<td align="center"><strong>100+</strong><br/>Companies</td>
+<td align="center"><strong>MIT</strong><br/>Licensed</td>
 <td align="center"><strong>65%</strong><br/>Feature Coverage</td>
 <td align="center"><strong>~30KB</strong><br/>Core Bundle</td>
 </tr>
@@ -705,8 +707,8 @@ _"I need everything"_
 - Emphasizes unique differentiation
 
 ### 2. Social Proof
-- **"Used by 100+ companies in production"**
-- Builds credibility
+- **"Open-source and MIT licensed"**
+- Transparent development process
 
 ### 3. Quick Wins
 - **"5-minute setup"** / **"3 lines of code"**
@@ -743,7 +745,7 @@ _"I need everything"_
 Test these headline variants:
 
 **A:** "Stop Building Chat UIs. Start Shipping AI Features."
-**B:** "Production-Ready AI Chat Components with Token Optimization Built-In"
+**B:** "Robust AI Chat Components with Token Optimization Built-In"
 **C:** "The Most Complete AI Chat Component Library for React"
 **D:** "Build AI Chat Interfaces in Minutes, Not Months"
 

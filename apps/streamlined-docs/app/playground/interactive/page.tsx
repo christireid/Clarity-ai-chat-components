@@ -566,7 +566,7 @@ export default function InteractivePlaygroundPage() {
             <div>
               <h1 className="text-4xl sm:text-5xl font-bold mb-2 dark:text-white">Interactive Playground</h1>
               <p className="text-lg text-neutral-600 dark:text-neutral-400">
-                Customize components in real-time and export production-ready code
+                Customize components in real-time and export robust code
               </p>
             </div>
 

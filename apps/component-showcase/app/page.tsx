@@ -204,7 +204,7 @@ const features = [
   {
     icon: Sparkles,
     title: '180+ Components',
-    description: 'Production-ready AI chat components',
+    description: 'Full-featured AI chat components',
   },
   {
     icon: Zap,

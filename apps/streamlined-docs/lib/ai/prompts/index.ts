@@ -1,7 +1,7 @@
 /**
  * Enhanced Prompting System - Main Export
  *
- * Production-ready prompt engineering system with:
+ * Robust prompt engineering system with:
  * - Multi-dimensional query classification
  * - Quality-optimized system prompts
  * - Automated response validation

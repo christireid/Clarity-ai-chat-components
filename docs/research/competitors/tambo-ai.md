@@ -21,7 +21,7 @@ interfaces:
 
 - **Generative UI**: AI controls what components to render, not just text responses
 - **Interactive Components**: Persistent components that update as users refine requests
-- **Pre-built Primitives**: Production-ready components for common AI patterns
+- **Pre-built Primitives**: Robust components for common AI patterns
 - **Type-Safe**: Full TypeScript support for AI-generated UIs
 - **Framework Agnostic**: Works with React, Next.js, and other frameworks
 
@@ -31,7 +31,7 @@ interfaces:
 - **Interactivity**: Components persist and evolve with conversation
 - **Composability**: Pre-built components that work together
 - **Developer control**: Balance between AI autonomy and developer constraints
-- **Production-ready**: Battle-tested patterns, not experiments
+- **Robust**: Battle-tested patterns, not experiments
 
 ## Architecture & Approach
 
@@ -93,7 +93,7 @@ interfaces:
 
 ### Pre-Built UI Primitives
 
-Tambo provides production-ready components via CLI:
+Tambo provides robust components via CLI:
 
 ```bash
 npx tambo add <component>@latest
@@ -325,7 +325,7 @@ function Chat() {
 | **Component Count**         | ⚠️ ~10                  | ✅ 20+                  |
 | **Design System**           | ❌ No                   | ✅ Tailwind-based       |
 | **Learning Curve**          | ⚠️ Steep (new paradigm) | ✅ Gentle               |
-| **Production Ready**        | ⚠️ Emerging             | ✅ Stable               |
+| **Stable**        | ⚠️ Emerging             | ✅ Stable               |
 
 ## Strategic Insights for Clarity
 
@@ -388,7 +388,7 @@ function Chat() {
    - **Opportunity**: Tailwind CSS for easy customization
 
 5. **Production Focus**: Stability and reliability
-   - **Opportunity**: Battle-tested, production-ready components
+   - **Opportunity**: Battle-tested, robust components
    - **Opportunity**: Mature library with community support
 
 ### Future Collaboration

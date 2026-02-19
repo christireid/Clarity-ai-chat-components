@@ -65,7 +65,7 @@ Beyond core chat primitives, Clarity ships a library of AI-operations components
 - **SessionSummaryCard** produces a shareable recap with metrics and recommended next actions.
 - **WorkflowSuggestionList** recommends templated flows (e.g., support hand-off, marketing brief) users can trigger.
 
-Combine these modules inside custom dashboards to ship production-ready agent experiences that are auditable, safe, and actionable.
+Combine these modules inside custom dashboards to ship robust agent experiences that are auditable, safe, and actionable.
 
 ## Tips for Customization
 

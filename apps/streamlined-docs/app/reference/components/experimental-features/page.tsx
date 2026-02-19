@@ -1098,7 +1098,7 @@ export default function ExperimentalFeaturesPage() {
                 <span className="font-medium text-foreground">Stable Release</span>
               </div>
               <p className="text-sm text-muted-foreground">
-                Production-ready features. 100% rollout. Stable API with semantic versioning.
+                Robust features. 100% rollout. Stable API with semantic versioning.
               </p>
             </div>
           </div>

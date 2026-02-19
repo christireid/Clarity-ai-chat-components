@@ -40,7 +40,7 @@ const shareOptions: ShareOption[] = [
 
 export function ShareButton({
   title = 'Share',
-  text = `Check out Clarity Chat - ${LIBRARY_STATS.components} production-ready React components for AI chat UIs 🚀`,
+  text = `Check out Clarity Chat - ${LIBRARY_STATS.components} robust React components for AI chat UIs 🚀`,
   url,
   className,
   variant = 'inline',

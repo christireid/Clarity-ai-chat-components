@@ -1211,7 +1211,7 @@ npx copilotkit@latest create
    - TypeScript-first with Zod validation
    - Extensive customization options
 
-6. **Production-Ready**
+6. **Robust**
    - 28.2k GitHub stars
    - Used by Fortune 500s (Cisco, Deloitte, TripAdvisor)
    - 100k+ developers

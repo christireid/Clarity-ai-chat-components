@@ -175,7 +175,7 @@ const BranchVisualizerDemo: React.FC<{
           <p>✨ Tips</p>
           <ul className="list-disc pl-4 space-y-1">
             <li>
-              Track hypothesis branches vs. production-ready conversations.
+              Track hypothesis branches vs. finalized conversations.
             </li>
             <li>
               Visualize evaluation paths for safety and compliance reviews.

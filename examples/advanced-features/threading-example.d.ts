@@ -18,7 +18,7 @@ export declare function SidebarThreadingExample(): any;
  */
 export declare function ThreadBrowserExample(): any;
 /**
- * Production-ready threading with backend integration
+ * Robust threading with backend integration
  */
 export declare function ProductionThreadingExample(): any;
 /**

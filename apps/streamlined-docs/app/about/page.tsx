@@ -4,7 +4,7 @@ import { Check, X, Zap, DollarSign, Brain, Command, Search, Library } from 'luci
 export const metadata: Metadata = {
   title: 'About Clarity Chat UI',
   description:
-    'Learn about Clarity Chat UI - a React library focused on production-ready AI chat interfaces with built-in token optimization, streaming, and conversation memory.',
+    'Learn about Clarity Chat UI - a React library focused on robust AI chat interfaces with built-in token optimization, streaming, and conversation memory.',
 }
 
 export default function AboutPage() {

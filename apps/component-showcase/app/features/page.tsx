@@ -1595,7 +1595,7 @@ function LinkPreviewDemo() {
       url: 'https://github.com/clarity-chat/react',
       title: 'Clarity Chat React Components',
       description:
-        'Production-ready AI chat components for React with streaming, memory, and more.',
+        'Robust AI chat components for React with streaming, memory, and more.',
       image: null,
       favicon: '🔗',
     },

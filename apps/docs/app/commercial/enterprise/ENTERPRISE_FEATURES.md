@@ -467,5 +467,5 @@ const truncated = contextMgr.truncate(messages)
 
 ---
 
-**All features are optional, flexible, and production-ready** 🚀
+**All features are optional, flexible, and robust** 🚀
 

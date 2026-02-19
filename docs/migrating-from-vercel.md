@@ -116,7 +116,7 @@ export default function ChatPage() {
 ```
 
 **Benefits:**
-- ✅ Production-ready UI out of the box
+- ✅ Robust UI out of the box
 - ✅ Virtualized message list (handles 1000+ messages)
 - ✅ Better error handling
 - ✅ Accessible components

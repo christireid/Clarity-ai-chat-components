@@ -565,7 +565,7 @@ async function main() {
     )
     console.log(
       colors.dim +
-        '\nFor more info, visit: https://clarity-chat.dev/docs/installation' +
+        '\nFor more info, visit: https://github.com/christireid/Clarity-ai-chat-components/blob/main/docs/installation' +
         colors.reset +
         '\n'
     )

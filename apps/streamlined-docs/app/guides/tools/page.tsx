@@ -1865,7 +1865,7 @@ export default function ToolCallingGuidePage() {
 
           <CollapsibleSection
             title="Security Implementation Examples"
-            badge="Production Ready"
+            badge="Stable"
           >
             <CodeBlock
               code={securityConsiderationsExample}

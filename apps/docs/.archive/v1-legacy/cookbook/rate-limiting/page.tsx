@@ -18,7 +18,7 @@ export default function RateLimitingRecipePage() {
         <h1>Enterprise Rate Limiting</h1>
         <p className="docs-lead">
           Advanced rate limiting with automatic request queuing, intelligent retry logic,
-          and seamless integration with ClarityChat for production-ready AI applications.
+          and seamless integration with ClarityChat for robust AI applications.
         </p>
       </div>
 

@@ -332,7 +332,7 @@ export function ChatInterface() {
 
 5. **Missing AI Features**: Streaming, tokens, code highlighting needed
    - **Action**: Build these features into Clarity
-   - **Action**: Production-ready AI capabilities
+   - **Action**: Robust AI capabilities
 
 ### Opportunities for Clarity
 
@@ -411,7 +411,7 @@ limitations of CSS-only solutions. Developers need more than styled HTML - they 
 - **TypeScript support** for type safety
 - **npm distribution** for easy updates
 
-Clarity's opportunity is to provide what LangUI cannot: **functional, production-ready React
+Clarity's opportunity is to provide what LangUI cannot: **functional, robust React
 components** with AI-specific features built-in. LangUI can serve as design inspiration, but Clarity
 delivers the implementation.
 

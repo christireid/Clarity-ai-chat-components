@@ -3,7 +3,7 @@
 /**
  * Clarity Chat - Memory Engine
  *
- * A production-ready memory system with:
+ * A comprehensive memory system with:
  * - Multiple storage backends (memory, IndexedDB)
  * - Sliding window and vector-store strategies
  * - Automatic context summarization

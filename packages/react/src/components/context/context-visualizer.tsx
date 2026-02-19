@@ -86,7 +86,7 @@ function formatTimestamp(timestamp?: number): string {
 }
 
 /**
- * Production-ready Context Visualizer component.
+ * Robust Context Visualizer component.
  * 
  * **Features:**
  * - Visual display of included/excluded messages

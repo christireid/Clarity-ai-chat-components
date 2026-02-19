@@ -144,7 +144,7 @@ export default async function Image() {
             lineHeight: 1.4,
           }}
         >
-          Production-ready React components for AI chat.
+          React components for AI chat.
           <br />
           Multi-provider support, intelligent memory, 40%+ cost savings.
         </p>

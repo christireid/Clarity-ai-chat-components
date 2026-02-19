@@ -1,6 +1,6 @@
 # Best Practices Guide
 
-Production-ready patterns and recommendations for building with Clarity Chat.
+Robust patterns and recommendations for building with Clarity Chat.
 
 ---
 
@@ -397,7 +397,7 @@ function CustomLayout() {
 ## Next Steps
 
 - [API Reference](./api-reference.md) - Complete API documentation
-- [Examples](../apps/examples/README.md) - 35+ production-ready examples
+- [Examples](../apps/examples/README.md) - 35+ robust examples
 - [Troubleshooting](./TROUBLESHOOTING.md) - Common issues and solutions
 - [Architecture](./architecture.md) - System design overview
 

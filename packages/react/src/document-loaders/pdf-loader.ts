@@ -9,7 +9,7 @@
  * @bundleImpact ~600KB (includes worker bundle)
  * @note Requires additional setup for worker configuration
  * @fallback Throws error if pdfjs-dist is not installed
- * @docs https://clarity-chat.dev/docs/document-loaders#pdf-setup
+ * @docs https://github.com/christireid/Clarity-ai-chat-components/blob/main/docs/document-loaders#pdf-setup
  *
  * @example
  * ```tsx

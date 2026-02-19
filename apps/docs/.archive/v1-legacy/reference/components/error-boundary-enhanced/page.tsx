@@ -11,7 +11,7 @@ export default function ErrorBoundaryEnhancedPage() {
     <div className="max-w-5xl mx-auto px-4 py-8">
       <h1 className="text-4xl font-bold mb-4">Error Boundary Enhanced</h1>
       <p className="text-xl text-muted-foreground mb-8">
-        Production-ready error boundary with automatic error reporting, user
+        Robust error boundary with automatic error reporting, user
         feedback collection, and customizable fallback UI.
       </p>
 

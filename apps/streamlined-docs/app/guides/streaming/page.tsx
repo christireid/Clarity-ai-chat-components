@@ -1288,7 +1288,7 @@ export default function StreamingGuidePage() {
                 'Abort/cancel streaming operations',
                 'Tool execution during streams',
                 'Memory optimization for long sessions',
-                'Production-ready error handling patterns',
+                'Robust error handling patterns',
               ].map((item, i) => (
                 <div key={i} className="flex items-center gap-2">
                   <CheckCircle2 className="w-4 h-4 text-brand-500 flex-shrink-0" />
@@ -1912,7 +1912,7 @@ export default function StreamingGuidePage() {
           </div>
 
           <p className="text-neutral-600 dark:text-neutral-400 mb-6">
-            A production-ready chat implementation combining all the patterns:
+            A complete chat implementation combining all the patterns:
             SSE streaming, progress tracking, error handling, and reconnection.
           </p>
 

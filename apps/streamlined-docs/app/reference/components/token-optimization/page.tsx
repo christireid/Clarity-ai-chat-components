@@ -40,7 +40,7 @@ export default function TokenOptimizationOverviewPage() {
       badges={[
         { label: 'System Overview', variant: 'info' },
         { label: 'Cost Management', variant: 'success' },
-        { label: 'Production Ready', variant: 'primary' },
+        { label: 'Stable', variant: 'primary' },
       ]}
       features={[
         'Real-time token counting and cost estimation',

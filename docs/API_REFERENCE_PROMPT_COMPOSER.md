@@ -23,7 +23,7 @@ Complete API documentation for the PromptComposer system - a progressive disclos
 
 ## Overview
 
-PromptComposer is a production-ready prompt input system designed for AI chat interfaces with advanced features:
+PromptComposer is a comprehensive prompt input system designed for AI chat interfaces with advanced features:
 
 - **Progressive Context Expansion**: 90% token savings through multi-level context (summary → preview → full)
 - **Smart @mentions**: Context providers for files, docs, users with fuzzy search
@@ -2353,4 +2353,4 @@ const commands: Command[] = [
 
 **Last Updated**: January 28, 2026
 **Version**: 1.0.0
-**Status**: Production Ready
+**Status**: Stable

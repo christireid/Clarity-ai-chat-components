@@ -26,7 +26,7 @@ research from React, Vercel AI SDK, Material UI, shadcn/ui, and AI optimization 
 | -------------------------- | --------------------------------------------------------- |
 | **Second-person voice**    | "You can configure..." not "The developer should..."      |
 | **Action-oriented**        | "Add streaming to your chat" not "Streaming capabilities" |
-| **Progressive complexity** | Basic → With options → Production-ready                   |
+| **Progressive complexity** | Basic → With options → Robust                   |
 | **Show-Explain-Verify**    | Code → Explanation → Interactive sandbox                  |
 | **Pitfall callouts**       | Warning boxes for common mistakes                         |
 | **Deep Dive sections**     | Expandable advanced content                               |

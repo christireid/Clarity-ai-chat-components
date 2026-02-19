@@ -8,7 +8,7 @@
  * @internal
  */
 
-const DOCS_BASE = 'https://clarity-chat.dev'
+const DOCS_BASE = 'https://github.com/christireid/Clarity-ai-chat-components'
 
 /**
  * Warning categories for better organization and filtering

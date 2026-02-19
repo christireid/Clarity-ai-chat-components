@@ -1047,7 +1047,7 @@ export default function UseStreamingPage() {
               <p className="text-lg text-muted-foreground max-w-3xl">
                 Mid-level hooks for real-time streaming via Server-Sent Events
                 (SSE) and WebSocket. Features automatic reconnection, heartbeat
-                monitoring, and production-ready connection management.
+                monitoring, and robust connection management.
               </p>
             </motion.header>
 
@@ -1099,7 +1099,7 @@ export default function UseStreamingPage() {
             <Section id="overview" title="Overview">
               <div className="prose prose-neutral dark:prose-invert max-w-none">
                 <p>
-                  The streaming hooks provide production-ready real-time
+                  The streaming hooks provide robust real-time
                   communication for AI chat applications. They are mid-level
                   hooks in the Clarity architecture, sitting between the
                   low-level <code>useStreaming</code> primitive and the
@@ -1224,7 +1224,7 @@ export default function UseStreamingPage() {
             {/* useStreamingSSE Section */}
             <Section id="use-streaming-sse" title="useStreamingSSE">
               <p className="text-muted-foreground mb-6">
-                Production-ready SSE streaming hook with automatic reconnection,
+                Robust SSE streaming hook with automatic reconnection,
                 authentication handling, and event resumption.
               </p>
 
@@ -1252,7 +1252,7 @@ export default function UseStreamingPage() {
             {/* useStreamingWebSocket Section */}
             <Section id="use-streaming-websocket" title="useStreamingWebSocket">
               <p className="text-muted-foreground mb-6">
-                Production-ready WebSocket hook with heartbeat/ping-pong,
+                Robust WebSocket hook with heartbeat/ping-pong,
                 automatic reconnection, and message acknowledgment support.
               </p>
 

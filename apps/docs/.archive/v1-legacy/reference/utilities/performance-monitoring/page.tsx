@@ -280,7 +280,7 @@ function ProductionChatApp() {
 }`}
         />
         <p className="mt-4 text-sm text-muted-foreground">
-          Production-ready monitoring with batching, critical alerts, and comprehensive
+          Robust monitoring with batching, critical alerts, and comprehensive
           client-side tracking for performance analysis and optimization.
         </p>
       </section>

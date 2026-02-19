@@ -960,7 +960,7 @@ Each palette has complete light/dark variable sets.
 7. **RAG-specific Components** - Document viewers, chunk displays, retrieval status
 8. **Better TypeScript DX** - Even stronger type inference and generic support
 9. **Simpler API** - Less Radix dependency, more intuitive prop names
-10. **Production-ready Examples** - Full application templates, not just components
+10. **Robust Examples** - Full application templates, not just components
 
 ## Summary
 

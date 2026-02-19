@@ -35,7 +35,7 @@ const meta = {
     docs: {
       description: {
         component: `
-The \`useClarityChat\` hook is Clarity's flagship API for building production-ready
+The \`useClarityChat\` hook is Clarity's flagship API for building robust
 AI chat applications with memory integration and advanced features.
 
 ## Features

@@ -34,7 +34,7 @@ export default function ErrorHandlingAPIReference() {
         </h1>
 
         <p className="text-lg text-neutral-600 dark:text-neutral-400 max-w-2xl mx-auto">
-          Production-ready error handling with optimization fallbacks. Maintain 50-70% cost savings even during
+          Robust error handling with optimization fallbacks. Maintain 50-70% cost savings even during
           errors with intelligent retry, fallback chains, and circuit breakers.
         </p>
 

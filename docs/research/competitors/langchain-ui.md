@@ -550,7 +550,7 @@ Tailwind classes as well as shadcn/ui in your UI components."
    - LangSmith for monitoring
    - Visual tracing and inspection
 
-5. **Production-Ready Examples**
+5. **Robust Examples**
    - Agent Chat UI reference implementation
    - Real-world patterns
    - Battle-tested architecture

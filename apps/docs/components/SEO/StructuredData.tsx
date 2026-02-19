@@ -401,7 +401,7 @@ export function SoftwareLibraryStructuredData() {
       {
         '@type': 'SoftwareSourceCode',
         name: 'Components',
-        description: `${LIBRARY_STATS.components} production-ready React components for chat interfaces`,
+        description: `${LIBRARY_STATS.components} robust React components for chat interfaces`,
       },
       {
         '@type': 'SoftwareSourceCode',

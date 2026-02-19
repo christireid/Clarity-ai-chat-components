@@ -97,7 +97,7 @@ export default function MarkdownRendererEnhancedPage() {
       <Callout type="info">
         <p>
           This component includes automatic error boundaries, performance monitoring,
-          and analytics tracking out of the box for production-ready reliability.
+          and analytics tracking out of the box for robust reliability.
         </p>
       </Callout>
 

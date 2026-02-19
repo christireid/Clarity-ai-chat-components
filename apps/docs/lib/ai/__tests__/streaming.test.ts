@@ -274,7 +274,7 @@ describe('streaming utilities', () => {
       }
 
       const response = chunks.join('')
-      expect(response).toContain('30+ production-ready examples')
+      expect(response).toContain('30+ robust examples')
       expect(response).toContain('Examples Gallery')
     })
 

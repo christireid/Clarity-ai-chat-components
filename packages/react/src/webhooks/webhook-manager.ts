@@ -93,7 +93,7 @@ export interface EndpointHealth {
 }
 
 /**
- * Webhook Manager - Secure, production-ready webhook delivery
+ * Webhook Manager - Secure, robust webhook delivery
  *
  * This is the canonical implementation with enterprise-grade security features.
  * Use this for all webhook functionality.

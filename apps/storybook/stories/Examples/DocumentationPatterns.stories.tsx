@@ -191,7 +191,7 @@ export const SocialSharing: Story = {
       </div>
 
       <ShareButton
-        text="Check out Clarity Chat - 70+ production-ready React components!"
+        text="Check out Clarity Chat - 70+ React components!"
         url="https://clarity-chat.dev"
       />
 

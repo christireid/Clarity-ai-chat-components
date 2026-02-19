@@ -40,7 +40,7 @@ export default function TieredCachePage() {
       category="Token Optimization"
       icon="🎯"
       badges={[
-        { label: 'Production Ready', variant: 'success' },
+        { label: 'Stable', variant: 'success' },
         { label: '30-60% Cost Reduction', variant: 'primary' },
         { label: 'Sub-50ms Latency', variant: 'info' },
       ]}
@@ -58,7 +58,7 @@ export default function TieredCachePage() {
     >
       <Section id="overview" title="Overview">
         <p className="text-lg text-muted-foreground leading-relaxed mb-6">
-          The TieredCache is a production-ready multi-tier caching orchestrator designed to maximize
+          The TieredCache is a robust multi-tier caching orchestrator designed to maximize
           cache hit rates for LLM prompts while minimizing lookup latency. By combining three
           complementary caching strategies, it achieves 30-60% cost reduction in typical production
           scenarios.
@@ -107,7 +107,7 @@ export default function TieredCachePage() {
               exact, similar, and semantically equivalent queries
             </li>
             <li>
-              • <strong className="text-foreground">Production Ready</strong>: Built-in TTL, LRU
+              • <strong className="text-foreground">Stable</strong>: Built-in TTL, LRU
               eviction, and comprehensive metrics
             </li>
             <li>
@@ -941,7 +941,7 @@ setInterval(() => {
               language="typescript"
               code={`import { TieredCache } from '@clarity-chat/token-optimization'
 
-// Production-ready configuration
+// Robust configuration
 const cache = new TieredCache({
   exact: {
     maxSize: 5000,      // Scale based on traffic
@@ -1549,7 +1549,7 @@ await getCachedResponseWithContext('Show my orders', 'user456', 'ecommerce')`}
         <div className="bg-gradient-to-br from-purple-500/10 via-pink-500/10 to-orange-500/10 backdrop-blur-xl border border-purple-500/20 rounded-2xl p-8">
           <h3 className="text-2xl font-bold mb-4">Ready to Reduce Costs?</h3>
           <p className="text-muted-foreground mb-6">
-            TieredCache is production-ready and battle-tested. Start saving 30-60% on LLM costs
+            TieredCache is robust and battle-tested. Start saving 30-60% on LLM costs
             today with intelligent multi-tier caching.
           </p>
           <div className="flex flex-wrap gap-4">

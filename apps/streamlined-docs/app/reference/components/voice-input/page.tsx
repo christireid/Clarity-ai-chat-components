@@ -3,7 +3,7 @@
 /**
  * VoiceInput Component - API Reference Documentation
  *
- * A production-ready voice input component with Web Speech API support,
+ * A robust voice input component with Web Speech API support,
  * real-time transcription, multi-language support, and visual feedback.
  */
 
@@ -910,7 +910,7 @@ export default function VoiceInputPage() {
               </h1>
 
               <p className="text-lg text-muted-foreground max-w-3xl">
-                A production-ready voice input component with Web Speech API
+                A robust voice input component with Web Speech API
                 support, real-time transcription, visual feedback, multi-language
                 support, and accessibility features. Enables hands-free chat
                 interaction with animated pulse effects and confidence scoring.
@@ -968,7 +968,7 @@ export default function VoiceInputPage() {
             <Section id="overview" title="Overview">
               <div className="prose prose-neutral dark:prose-invert max-w-none">
                 <p>
-                  <code>VoiceInput</code> is a production-ready component that
+                  <code>VoiceInput</code> is a robust component that
                   enables speech-to-text input for chat applications. It uses the
                   Web Speech API for real-time transcription with visual
                   feedback, error handling, and accessibility features.

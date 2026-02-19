@@ -10,7 +10,7 @@
 
 import type { ErrorInfo } from 'react'
 
-const DOCS_BASE = 'https://clarity-chat.dev'
+const DOCS_BASE = 'https://github.com/christireid/Clarity-ai-chat-components'
 
 /**
  * Error codes for programmatic handling

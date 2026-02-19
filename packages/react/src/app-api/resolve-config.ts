@@ -329,7 +329,7 @@ function validateConfig(config: ClarityResolvedConfig): void {
         message: 'budget must be a positive number',
         suggestion:
           'Set a token budget based on your model: GPT-3.5 (4096), GPT-4 (8192), GPT-4 Turbo (128000).',
-        docsUrl: 'https://clarity-chat.dev/docs/token-optimization',
+        docsUrl: 'https://github.com/christireid/Clarity-ai-chat-components/blob/main/docs/token-optimization',
       })
     }
     if (
@@ -353,7 +353,7 @@ function validateConfig(config: ClarityResolvedConfig): void {
         message: 'topK must be a positive number',
         suggestion:
           'Set topK to the number of chunks to retrieve (e.g., 3-5). Higher values provide more context but use more tokens.',
-        docsUrl: 'https://clarity-chat.dev/docs/rag',
+        docsUrl: 'https://github.com/christireid/Clarity-ai-chat-components/blob/main/docs/rag',
       })
     }
     if (
@@ -387,7 +387,7 @@ function validateConfig(config: ClarityResolvedConfig): void {
           message: 'Each tool must have a valid name',
           suggestion:
             'Add a unique string name: { name: "my_tool", description: "...", execute: async () => {...} }',
-          docsUrl: 'https://clarity-chat.dev/docs/tools',
+          docsUrl: 'https://github.com/christireid/Clarity-ai-chat-components/blob/main/docs/tools',
         })
       }
       if (!tool.execute || typeof tool.execute !== 'function') {
@@ -396,7 +396,7 @@ function validateConfig(config: ClarityResolvedConfig): void {
           message: `Tool "${tool.name || 'unnamed'}" must have an execute function`,
           suggestion:
             'Add an async execute function: { execute: async (params) => { return result; } }',
-          docsUrl: 'https://clarity-chat.dev/docs/tools',
+          docsUrl: 'https://github.com/christireid/Clarity-ai-chat-components/blob/main/docs/tools',
         })
       }
     })

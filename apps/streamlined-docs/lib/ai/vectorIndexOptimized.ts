@@ -364,7 +364,7 @@ export function createAdaptiveHNSWIndex(
 }
 
 /**
- * Create production-ready HNSW index with all optimizations
+ * Create robust HNSW index with all optimizations
  * Recommended for most use cases
  */
 export function createProductionHNSWIndex(

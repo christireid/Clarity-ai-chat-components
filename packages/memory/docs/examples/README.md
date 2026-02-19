@@ -58,7 +58,7 @@ npx tsx docs/examples/02-privacy-first.tsx
 
 ---
 
-### 3. Production-Ready Template (`03-production-ready.tsx`)
+### 3. Complete Template (`03-production-ready.tsx`)
 
 **What it demonstrates:**
 - Production configuration with presets
@@ -268,7 +268,7 @@ function App() {
 | **Basic Operations** | ✅ | ✅ | ✅ | ✅ | ✅ |
 | **Privacy/Consent** | ❌ | ✅ | ✅ | ❌ | ❌ |
 | **Error Handling** | Basic | Basic | ✅ Advanced | ✅ | ✅ |
-| **Production Ready** | ❌ | ❌ | ✅ | ❌ | ❌ |
+| **Complete** | ❌ | ❌ | ✅ | ❌ | ❌ |
 | **Tool Integration** | ❌ | ❌ | ❌ | ✅ | ❌ |
 | **Streaming** | ❌ | ❌ | ❌ | ❌ | ✅ |
 | **React Components** | ✅ | ✅ | ✅ | ✅ | ✅ |

@@ -1,6 +1,6 @@
 # AI Memory & Context System
 
-> Production-ready memory management for AI chat applications with up to 90% token cost reduction
+> Comprehensive memory management for AI chat applications with up to 90% token cost reduction
 
 ## Features
 
@@ -9,7 +9,7 @@
 ✅ **Token Optimization** - Intelligent compression and allocation  
 ✅ **Auto-Management** - Automatic cleanup and summarization  
 ✅ **Event System** - Subscribe to memory lifecycle events  
-✅ **Production Ready** - Docker infrastructure included
+✅ **Ready to Use** - Docker infrastructure included
 
 ## Quick Start
 

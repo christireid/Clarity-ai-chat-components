@@ -50,7 +50,7 @@ Deep dive into how Clarity Chat is structured and how components work together.
 ### Build a production chat app
 **→ [Best Practices Guide](./best-practices.md)**
 
-Complete guide for building production-ready chat applications.
+Complete guide for building complete chat applications.
 
 **Topics:**
 - Error handling
@@ -116,7 +116,7 @@ Complete API reference for all components, hooks, and utilities.
 ### See examples in action
 **→ [Examples Gallery](../apps/examples/README.md)**
 
-35+ production-ready examples you can copy and customize.
+35+ ready-to-use examples you can copy and customize.
 
 **Popular examples:**
 - [Basic Chat](../apps/examples/basic-chat/)
@@ -201,7 +201,7 @@ How to contribute code, docs, or examples.
 4. [API Reference](./api-reference.md) (1 hour)
 
 **Total time:** ~3.5 hours
-**Outcome:** Build production-ready apps
+**Outcome:** Build complete apps
 
 ---
 

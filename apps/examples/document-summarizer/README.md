@@ -62,6 +62,6 @@ Extract key concepts from technical docs
 
 ---
 
-**Status**: 🎯 Production-Ready  
+**Status**: 🎯 Robust  
 **Use Case**: Document Processing & Knowledge Management  
 **Complexity**: Intermediate

@@ -269,7 +269,7 @@ export function useCompletion(
         'Please provide a valid API endpoint URL.\n\n' +
         'Example:\n' +
         '  const { completion, complete } = useCompletion({ api: "/api/completion" })\n\n' +
-        'For more help, see: https://clarity-chat.dev/docs/completions'
+        'For more help, see: https://github.com/christireid/Clarity-ai-chat-components/blob/main/docs/completions'
     )
   }
 

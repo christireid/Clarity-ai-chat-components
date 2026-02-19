@@ -12,7 +12,7 @@
  * @bundleImpact ~50KB when cohere-ai is installed
  * @note Requires Cohere API key (get free key at https://cohere.com)
  * @alternative Use SimpleReranker for local reranking without API calls
- * @docs https://clarity-chat.dev/docs/rag/reranking
+ * @docs https://github.com/christireid/Clarity-ai-chat-components/blob/main/docs/rag/reranking
  *
  * @example
  * ```tsx

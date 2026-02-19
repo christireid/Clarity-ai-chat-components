@@ -56,7 +56,7 @@ console.log(result.tokenStats) // { original, optimized, saved }
 
 - **`minimal`** - Lightweight optimization with basic features
 - **`standard`** (default) - Good balance of quality and efficiency
-- **`production`** - Production-ready with comprehensive features
+- **`production`** - Ready to use with comprehensive features
 - **`enterprise`** - Maximum features with advanced optimizations
 
 ## Available Models

@@ -28,7 +28,7 @@ export default function ProductionMonitoringCookbook() {
           Monitor performance, track usage, detect anomalies, and maintain SLAs
           in production with integrated observability tools.
         </p>
-        <Callout type="warning" title="Production Ready">
+        <Callout type="warning" title="Stable">
           This recipe covers enterprise-grade monitoring suitable for
           high-traffic applications.
         </Callout>

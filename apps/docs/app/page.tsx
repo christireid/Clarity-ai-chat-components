@@ -49,7 +49,7 @@ export default function HomePage() {
             <span className="text-brand-500">That Don't Fight You</span>
           </>
         }
-        description="Cut API costs dramatically with intelligent Token Optimization. 155+ production-ready components with streaming, accessibility, and theming—all built-in. Stop rebuilding chat. Start shipping."
+        description="Cut API costs dramatically with intelligent Token Optimization. 155+ robust components with streaming, accessibility, and theming—all built-in. Stop rebuilding chat. Start shipping."
         installCommand="Coming Soon — Join the Waitlist"
         primaryCta={{
           text: 'Join Waitlist',
@@ -120,7 +120,7 @@ export default function HomePage() {
                   code={`import { ClarityChatApp } from '@clarity-chat/react'
 import '@clarity-chat/react/styles.css'
 
-// Production-ready chat in one line
+// Robust chat in one line
 export default function App() {
   return <ClarityChatApp api="/api/chat" />
 }
@@ -153,7 +153,7 @@ function CustomChat() {
               </div>
               <h2 className="text-xl md:text-2xl font-semibold mb-3 text-neutral-900 dark:text-white">Start Building in Seconds</h2>
               <p className="text-sm text-neutral-500 dark:text-neutral-400 leading-relaxed mb-5">
-                Copy, paste, and customize. Production-ready chat in one line of code.
+                Copy, paste, and customize. Robust chat in one line of code.
               </p>
               <Link
                 href="/learn/quick-start"
@@ -272,7 +272,7 @@ function CustomChat() {
             </h2>
 
             <p className="text-sm md:text-base text-neutral-400 mb-8 leading-relaxed max-w-md mx-auto">
-              One install. One import. Production-ready chat in sixty seconds.
+              One install. One import. Robust chat in sixty seconds.
             </p>
 
             <div className="flex gap-3 justify-center flex-wrap">

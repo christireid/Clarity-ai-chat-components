@@ -876,7 +876,7 @@ export default function AdvancedAgentsGuidePage() {
           </KineticText>
 
           <p className="text-lg text-neutral-600 dark:text-neutral-400 max-w-2xl mx-auto mb-8">
-            Build production-ready AI agents with advanced reasoning patterns, tool calling,
+            Build robust AI agents with advanced reasoning patterns, tool calling,
             and token optimization. Reduce agent costs by 55-70% through intelligent caching
             and compression.
           </p>
@@ -1244,7 +1244,7 @@ export default function AdvancedAgentsGuidePage() {
           </div>
 
           <p className="text-neutral-600 dark:text-neutral-400 mb-6">
-            Complete implementation of a production-ready customer support agent with tool calling,
+            Complete implementation of a robust customer support agent with tool calling,
             token optimization, and analytics tracking.
           </p>
 
@@ -1363,7 +1363,7 @@ export default function AdvancedAgentsGuidePage() {
           <div className="text-center mb-8">
             <h2 className="text-3xl font-bold mb-4">Start Building Agents</h2>
             <p className="text-neutral-600 dark:text-neutral-400 max-w-2xl mx-auto">
-              Explore cookbooks, API reference, and examples to build production-ready AI agents.
+              Explore cookbooks, API reference, and examples to build robust AI agents.
             </p>
           </div>
 

@@ -20,7 +20,7 @@ export declare function ABTestingExample(): any;
  */
 export declare function ChatWithABTestExample(): any;
 /**
- * Production-ready analytics with backend API calls
+ * Robust analytics with backend API calls
  */
 export declare function ProductionAnalyticsExample(): any;
 /**
@@ -54,7 +54,7 @@ export declare function CompleteAnalyticsSuiteExample(): any;
  *
  * 6. Complete Suite:
  *    - All features together
- *    - Production-ready setup
+ *    - Robust setup
  *
  * Choose the pattern that fits your needs!
  */

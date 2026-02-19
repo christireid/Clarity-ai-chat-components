@@ -1,5 +1,5 @@
 /**
- * Example 3: Production-Ready Template
+ * Example 3: Complete Template
  *
  * Demonstrates production-grade implementation with:
  * - Configuration presets for production

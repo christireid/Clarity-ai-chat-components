@@ -378,31 +378,18 @@ Built AI documentation assistant with Clarity Chat:
 
 ## 📊 Summary: Aggregate Results
 
-### Across All Case Studies
+### Summary
 
-| Metric                     | Average Result        |
-| -------------------------- | --------------------- |
-| **Time Saved**             | 68% faster to market  |
-| **Cost Savings**           | $144K average         |
-| **ROI**                    | 2,847% average        |
-| **Customer Satisfaction**  | +24% average increase |
-| **Support Cost Reduction** | 55% average           |
-| **Time to Launch**         | 5 weeks average       |
+<!-- NOTE: These are hypothetical case study templates. All metrics must be replaced with real data from actual customers before publication. -->
 
-### By Company Size
-
-| Size                    | Avg. License Cost | Avg. Savings | Avg. ROI |
-| ----------------------- | ----------------- | ------------ | -------- |
-| **Startup (< 50)**      | $1,500/year       | $90K         | 5,900%   |
-| **Mid-Market (50-500)** | $9,000/year       | $140K        | 1,456%   |
-| **Enterprise (500+)**   | $25,000/year      | $200K        | 700%     |
+These case studies are templates for future customer success stories. Actual metrics will be populated once real customer data is available.
 
 ### Common Success Factors
 
-1. ✅ **Accessibility First** - WCAG AAA compliance saves legal costs
-2. ✅ **Enterprise Features** - SSO, RBAC, audit logs save months
-3. ✅ **Fast Implementation** - Average 5 weeks vs. 4-6 months custom
-4. ✅ **Cost Savings** - Average $144K saved vs. custom build
+1. ✅ **Accessibility First** - Built-in accessibility support
+2. ✅ **Enterprise Features** - SSO, RBAC, audit logs included
+3. ✅ **Fast Implementation** - Pre-built components save development time
+4. ✅ **Cost Savings** - Reduce custom build effort
 5. ✅ **Support Quality** - Responsive support accelerates launches
 
 ---

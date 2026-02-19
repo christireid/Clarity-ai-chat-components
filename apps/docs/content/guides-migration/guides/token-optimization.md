@@ -4,7 +4,7 @@ Comprehensive guide to optimizing token usage and reducing AI API costs with Cla
 
 ## Overview
 
-Token optimization can **reduce your AI API costs by 50-80%** while maintaining quality. Clarity Chat provides a complete suite of reusable, production-ready components and utilities for token optimization.
+Token optimization can **reduce your AI API costs by 50-80%** while maintaining quality. Clarity Chat provides a complete suite of reusable, robust components and utilities for token optimization.
 
 ## Quick Start
 

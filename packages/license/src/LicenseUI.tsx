@@ -248,14 +248,14 @@ export interface LicenseExpiryWarningProps {
  * ```tsx
  * <LicenseExpiryWarning
  *   daysThreshold={30}
- *   renewUrl="https://claritychat.dev/renew"
+ *   renewUrl="https://github.com/christireid/Clarity-ai-chat-components"
  *   onDismiss={() => console.log('dismissed')}
  * />
  * ```
  */
 export function LicenseExpiryWarning({
   daysThreshold = 30,
-  renewUrl = 'https://claritychat.dev/pricing',
+  renewUrl = 'https://github.com/christireid/Clarity-ai-chat-components',
   onDismiss,
   onRenew,
   className = '',
@@ -473,7 +473,7 @@ export function LicenseUpgradePrompt({
   currentPlan,
   requiredPlan,
   featureName = 'This feature',
-  upgradeUrl = 'https://claritychat.dev/pricing',
+  upgradeUrl = 'https://github.com/christireid/Clarity-ai-chat-components',
   onUpgrade,
   className = '',
   variant = 'card',
@@ -708,7 +708,7 @@ export function LicenseUpgradePrompt({
       >
         Need help?{' '}
         <a
-          href="mailto:support@claritychat.dev"
+          href="https://github.com/christireid/Clarity-ai-chat-components"
           style={{ color: '#6b7280', textDecoration: 'underline' }}
         >
           Contact Sales

@@ -40,7 +40,7 @@ import Link from 'next/link'
 export const metadata: Metadata = {
   title: 'Token Optimization Guide | Reduce AI Costs by 50-70%',
   description:
-    'Comprehensive guide to reducing AI costs by 50-70% through provider caching (up to 90% on cached tokens), token compression (50-70% reduction), and smart model routing (10-15% additional savings). Production-ready strategies with real-world examples, cost calculators, and implementation guides.',
+    'Comprehensive guide to reducing AI costs by 50-70% through provider caching (up to 90% on cached tokens), token compression (50-70% reduction), and smart model routing (10-15% additional savings). Robust strategies with real-world examples, cost calculators, and implementation guides.',
   keywords: [
     'token optimization',
     'AI cost reduction',
@@ -679,7 +679,7 @@ export default function TokenOptimizationGuidePage() {
                     'Context compression and summarization',
                     'Intelligent model routing based on complexity',
                     'Cost tracking and analytics dashboards',
-                    'Production-ready optimization patterns',
+                    'Robust optimization patterns',
                   ].map((item, i) => (
                     <div key={i} className="flex items-center gap-2">
                       <CheckCircle2 className="w-4 h-4 text-blue-500 flex-shrink-0" />
@@ -1081,7 +1081,7 @@ export default function TokenOptimizationGuidePage() {
           </div>
 
           <p className="text-neutral-600 dark:text-neutral-400 mb-6">
-            Here&apos;s a production-ready example combining all optimization strategies:
+            Here&apos;s a comprehensive example combining all optimization strategies:
           </p>
 
           <CodeBlock code={codeExamples.completeExample} filename="ProductionChat.tsx" />
@@ -1214,7 +1214,7 @@ export default function TokenOptimizationGuidePage() {
                 {
                   icon: <FileCode className="w-5 h-5" />,
                   title: 'Examples',
-                  description: 'Production-ready code samples and patterns',
+                  description: 'Robust code samples and patterns',
                   href: '/explore/examples',
                 },
               ].map((item, i) => (

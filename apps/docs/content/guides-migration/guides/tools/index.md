@@ -2,7 +2,7 @@
 
 **Complete guide to tool calling in Clarity Chat**
 
-The Clarity Chat tool calling system enables AI assistants to interact with external systems, APIs, and functions during conversations. The system is production-ready, secure by default, and works with any React application.
+The Clarity Chat tool calling system enables AI assistants to interact with external systems, APIs, and functions during conversations. The system is robust, secure by default, and works with any React application.
 
 ---
 
@@ -102,7 +102,7 @@ const result = await orchestrator.executeTool('get_weather', {
 - ✅ Manual approval flows with risk detection
 - ✅ Input validation and sanitization
 
-### Production Ready
+### Stable
 - ✅ Automatic retry with exponential backoff
 - ✅ Fallback chain execution
 - ✅ Performance monitoring and analytics
@@ -283,7 +283,7 @@ monitor.start()
 
 | Component | Status |
 |-----------|--------|
-| **Security** | ✅ Production Ready |
+| **Security** | ✅ Stable |
 | **Architecture** | ✅ Stable |
 | **Documentation** | ✅ Comprehensive |
 | **Test Coverage** | ✅ 177+ tests |

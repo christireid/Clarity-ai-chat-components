@@ -9,7 +9,7 @@
  * @bundleImpact react-window ~8KB, react-virtualized-auto-sizer ~3KB (included in @clarity-chat/react)
  * @note These are direct dependencies, not peer dependencies - no installation needed
  * @alternative Consider TanStackMessageList for modern API and better TypeScript support
- * @docs https://clarity-chat.dev/docs/components/virtualized-message-list
+ * @docs https://github.com/christireid/Clarity-ai-chat-components/blob/main/docs/components/virtualized-message-list
  *
  * @blueprint Feature 6.1 - Virtual Scrolling
  * @priority HIGH

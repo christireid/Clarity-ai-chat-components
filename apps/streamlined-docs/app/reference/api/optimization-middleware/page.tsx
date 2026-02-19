@@ -191,7 +191,7 @@ export default function OptimizationMiddlewareAPIReference() {
                 • Cost tracking: Per-request and aggregate cost monitoring
               </li>
               <li>
-                • Production-ready: Error handling, rate limiting, monitoring
+                • Robust: Error handling, rate limiting, monitoring
               </li>
               <li>
                 • Framework-agnostic: Works with Express, Fastify, and Hono

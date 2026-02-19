@@ -313,7 +313,7 @@ Get help with common problems. → [Troubleshooting Guide](./TROUBLESHOOTING.md)
 **A:** The core token counting works in React Native. React hooks work if you're using React Native
 Web. Provider caching requires a Node.js environment.
 
-### Q: Is this production-ready?
+### Q: Is this ready for use?
 
 **A:** Yes! The package includes:
 

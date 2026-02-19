@@ -315,7 +315,7 @@ rg "DynamicCompressionEngine" packages/ --type ts
 
 **Dialog:**
 
-- Radix-based: `primitives/src/components/ui/dialog.tsx` (production-ready)
+- Radix-based: `primitives/src/components/ui/dialog.tsx` (robust)
 - Motion-based: `primitives/src/components/dialog.tsx` (premium animations)
 
 #### 9.4 Consumers Updated (8 files)
@@ -456,7 +456,7 @@ eliminated)
 
 **Canonical Logger:** `@clarity-chat/utils/logger` (313 lines)
 
-- Full-featured, production-ready
+- Full-featured, robust
 - Supports JSON output, request tracking, global log levels, namespaces
 - Already used by 32+ files across packages
 - Comprehensive test coverage

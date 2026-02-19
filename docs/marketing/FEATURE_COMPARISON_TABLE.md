@@ -1,3 +1,5 @@
+<!-- NOTE: These are draft marketing templates. All claims must be verified before use. -->
+
 # Feature Comparison: Clarity vs. Competitors
 
 ## Visual Comparison Table
@@ -219,7 +221,7 @@ Vercel AI SDK     ████████░░░░░░░░░░░░�
 ### When to Choose Clarity
 
 ✅ Building AI applications with token/cost tracking needs
-✅ Need production-ready components out of the box
+✅ Need robust components out of the box
 ✅ Want both npm package convenience + copy-paste flexibility
 ✅ Require comprehensive documentation and examples
 ✅ Building B2B SaaS, AI copilots, or chatbots
@@ -275,11 +277,11 @@ Vercel AI SDK     ████████░░░░░░░░░░░░�
 - ✅ Most comprehensive feature set (65% coverage)
 - ✅ Only library with token optimization
 - ✅ Best developer documentation
-- ✅ Production-ready AI-specific features
+- ✅ Robust AI-specific features
 - ✅ Hybrid distribution (npm + copy-paste)
 
 **Choose Clarity when you need:**
-- Production-ready AI chat components
+- Robust AI chat components
 - Token tracking and cost optimization
 - Comprehensive documentation
 - Flexible distribution options

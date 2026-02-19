@@ -405,7 +405,7 @@ export function useAssistant(
         'Please provide a valid API endpoint URL.\n\n' +
         'Example:\n' +
         '  const { messages, append } = useAssistant({ api: "/api/assistant" })\n\n' +
-        'For more help, see: https://clarity-chat.dev/docs/assistants'
+        'For more help, see: https://github.com/christireid/Clarity-ai-chat-components/blob/main/docs/assistants'
     )
   }
 

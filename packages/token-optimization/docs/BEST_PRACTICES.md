@@ -1,6 +1,6 @@
 # Best Practices for Production
 
-This guide covers production-ready patterns and best practices for using
+This guide covers recommended patterns and best practices for using
 `@clarity-chat/token-optimization` at scale.
 
 ## Table of Contents

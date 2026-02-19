@@ -6,7 +6,7 @@
 
 ## 🎯 One-Sentence Summary
 
-**We analyzed 24+ AI UI libraries and found a clear market gap for a production-ready, AI-native
+**We analyzed 24+ AI UI libraries and found a clear market gap for a robust, AI-native
 React component library with token optimization features that no competitor offers.**
 
 ---
@@ -92,7 +92,7 @@ font-family: 'Geist', system-ui, sans-serif;
 
 **Positioning Statement:**
 
-> "The React component library for AI applications. Production-ready components with streaming,
+> "The React component library for AI applications. Robust components with streaming,
 > token tracking, tool calling, and code rendering built-in."
 
 **Competitive Moat:**

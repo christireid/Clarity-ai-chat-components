@@ -23,7 +23,7 @@ const metrics = [
     icon: Cpu,
     value: '170+',
     label: 'React Components',
-    description: 'Production-ready, fully typed',
+    description: 'Robust, fully typed',
     verifiable: 'Browse in packages/react/src/components',
     gradient: 'from-clarity-500 to-cyan-500',
   },

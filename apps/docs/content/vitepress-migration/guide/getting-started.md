@@ -4,7 +4,7 @@ Welcome to Clarity Chat! This guide will help you get up and running with the li
 
 ## What is Clarity Chat?
 
-Clarity Chat is an enterprise-grade React component library for building AI chat interfaces. It provides everything you need to create beautiful, production-ready chat applications with minimal effort.
+Clarity Chat is an enterprise-grade React component library for building AI chat interfaces. It provides everything you need to create beautiful, robust chat applications with minimal effort.
 
 ## 🆕 Recent Major Improvements (v1.0+)
 
@@ -17,7 +17,7 @@ Clarity Chat is an enterprise-grade React component library for building AI chat
 
 ## Key Features
 
-- **70+ Production-Ready Components**: Complete set of chat UI components
+- **70+ Robust Components**: Complete set of chat UI components
 - **35+ Custom Hooks**: Powerful hooks for chat functionality including `useClarityChat`
 - **11 Beautiful Themes**: Stunning themes with 6-level shadow system
 - **Real-time Streaming**: Built-in SSE and WebSocket support

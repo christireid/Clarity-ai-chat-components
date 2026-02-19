@@ -16,7 +16,7 @@ export default function CicdToolsPage() {
         <span className="docs-badge">Automation</span>
         <h1>CI/CD Reference Pipeline</h1>
         <p className="docs-lead">
-          The repository includes a production-ready CI/CD recipe tested during the
+          The repository includes a robust CI/CD recipe tested during the
           “CI/CD Final Status” audit. Use it as-is or tailor it to your platform.
         </p>
       </div>

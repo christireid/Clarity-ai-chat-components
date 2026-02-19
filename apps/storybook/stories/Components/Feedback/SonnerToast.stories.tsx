@@ -411,7 +411,7 @@ export const ComparisonWithLegacy: Story = {
           <li>Promise-based toasts for async operations</li>
           <li>Rich colors with semantic meaning</li>
           <li>Lightweight (~4KB gzipped)</li>
-          <li>MIT licensed, production-ready</li>
+          <li>MIT licensed, well-tested</li>
         </ul>
         <button
           onClick={() => toast.success('Using Sonner!')}

@@ -293,7 +293,7 @@ function AdvancedMonitor() {
     title: 'Cost Optimization Dashboard',
     icon: <TrendingUp className="w-5 h-5" />,
     description:
-      'Production-ready cost tracking with ROI calculations and savings reports',
+      'Robust cost tracking with ROI calculations and savings reports',
     example: `import { CostTracker } from '@clarity-chat/token-optimization'
 
 const tracker = new CostTracker('gpt-4o')
@@ -574,7 +574,7 @@ export default function MigrationV2V3Page() {
                 '+15% cache hit rate improvement',
                 '40% memory usage reduction',
                 'Enhanced analytics and cost tracking',
-                'Production-ready circuit breaker pattern',
+                'Robust circuit breaker pattern',
                 'Quality gates for compression validation',
               ].map((item, i) => (
                 <div key={i} className="flex items-center gap-2">

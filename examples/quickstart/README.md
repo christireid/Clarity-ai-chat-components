@@ -30,7 +30,7 @@ No API keys needed. The example runs in demo mode by default.
 | ---------------- | ------------------------------------------ |
 | Demo Mode        | Works without API keys - great for testing |
 | SSE Streaming    | Real-time token-by-token responses         |
-| Production Ready | Add your API key to switch to real AI      |
+| Stable | Add your API key to switch to real AI      |
 | Dark Mode        | Automatic light/dark theme support         |
 
 ## Upgrade to Production

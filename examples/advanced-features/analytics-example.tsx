@@ -423,7 +423,7 @@ export function ChatWithABTestExample() {
 // =============================================================================
 
 /**
- * Production-ready analytics with backend API calls
+ * Robust analytics with backend API calls
  */
 export function ProductionAnalyticsExample() {
   const [experiments, setExperiments] = React.useState<ExperimentResult[]>([])
@@ -637,7 +637,7 @@ export function CompleteAnalyticsSuiteExample() {
  *
  * 6. Complete Suite:
  *    - All features together
- *    - Production-ready setup
+ *    - Robust setup
  *
  * Choose the pattern that fits your needs!
  */

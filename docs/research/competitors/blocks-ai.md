@@ -193,7 +193,7 @@ Users compose by:
 
 **4 Complete AI Chat Blocks:**
 
-- Each is a self-contained, production-ready component
+- Each is a self-contained, robust component
 - Include all HTML, React, TypeScript, and styling
 - No assembly required
 
@@ -567,7 +567,7 @@ endless configuration.
 
 ### 2. Prebuilt Templates Value
 
-**Observation:** All 4 AI blocks are free and production-ready
+**Observation:** All 4 AI blocks are free and robust
 
 **Lesson:** Users value **working examples** they can copy and customize over **flexible APIs** they
 must learn and configure.

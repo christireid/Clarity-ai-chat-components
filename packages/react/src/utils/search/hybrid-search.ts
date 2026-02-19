@@ -3,7 +3,7 @@
  *
  * Premium hybrid search combining keyword (BM25) and semantic (vector) search.
  * Features multiple fusion algorithms, intelligent score normalization,
- * and production-ready optimizations.
+ * and robust optimizations.
  */
 
 export interface SearchResult {
@@ -62,7 +62,7 @@ export interface HybridSearchOptions {
  * - Intelligent score normalization
  * - Match type tracking
  * - Configurable weighting
- * - Production-ready performance
+ * - Robust performance
  *
  * @example
  * ```tsx

@@ -1336,7 +1336,7 @@ export function formatEnhancedCitations(
 // ============================================================================
 
 /**
- * Cross-encoder reranking using external API (production-ready)
+ * Cross-encoder reranking using external API (robust)
  *
  * For production deployment, integrate one of these services:
  * 1. Cohere Rerank API (recommended for most use cases)

@@ -187,7 +187,7 @@ export default function FormatForCachingPage() {
       badges={[
         { label: '90% Savings', variant: 'success' },
         { label: 'Token Optimization', variant: 'premium' },
-        { label: 'Production Ready', variant: 'stable' },
+        { label: 'Stable', variant: 'stable' },
       ]}
       packageName="@clarity-chat/token-optimization"
       features={[
@@ -1551,7 +1551,7 @@ console.log(\`Avg cost per request: $\${(metrics.totalCost / metrics.totalReques
                 50-90% Savings
               </span>
               <span className="px-3 py-1 rounded-full bg-white/20 backdrop-blur-sm text-sm font-semibold">
-                Production Ready
+                Stable
               </span>
               <span className="px-3 py-1 rounded-full bg-white/20 backdrop-blur-sm text-sm font-semibold">
                 Multi-Provider

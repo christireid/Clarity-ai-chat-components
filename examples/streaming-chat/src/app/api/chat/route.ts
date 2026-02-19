@@ -103,7 +103,7 @@ function generateDemoResponse(userMessage: string): string {
   }
 
   if (lowerMessage.includes('clarity') || lowerMessage.includes('chat')) {
-    return 'Clarity Chat is a premium AI chat component library that provides:\n\n• **Streaming components** for real-time AI responses\n• **Accessibility-first design** (WCAG 2.1 AA compliant)\n• **TypeScript support** with full type safety\n• **Customizable themes** with Tailwind CSS\n• **Production-ready patterns** for enterprise applications\n\nThis example demonstrates the streaming chat pattern you can implement with Clarity Chat components.'
+    return 'Clarity Chat is a premium AI chat component library that provides:\n\n• **Streaming components** for real-time AI responses\n• **Accessibility-first design** (WCAG 2.1 AA compliant)\n• **TypeScript support** with full type safety\n• **Customizable themes** with Tailwind CSS\n• **Robust patterns** for enterprise applications\n\nThis example demonstrates the streaming chat pattern you can implement with Clarity Chat components.'
   }
 
   if (lowerMessage.includes('code') || lowerMessage.includes('example')) {

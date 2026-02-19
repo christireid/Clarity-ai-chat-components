@@ -183,7 +183,7 @@ graph TD
       const docLink = screen.getByRole('link', { name: /peer-dependencies/i })
       expect(docLink).toHaveAttribute(
         'href',
-        'https://clarity-chat.dev/docs/peer-dependencies'
+        'https://github.com/christireid/Clarity-ai-chat-components/blob/main/docs/peer-dependencies'
       )
 
       global.require = originalRequire
@@ -375,7 +375,7 @@ Regular paragraphs should work.
       // 3. Documentation link
       const link = screen.getByRole('link')
       expect(link.getAttribute('href')).toBe(
-        'https://clarity-chat.dev/docs/peer-dependencies'
+        'https://github.com/christireid/Clarity-ai-chat-components/blob/main/docs/peer-dependencies'
       )
 
       global.require = originalRequire

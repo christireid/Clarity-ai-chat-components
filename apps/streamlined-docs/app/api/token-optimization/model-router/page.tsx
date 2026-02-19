@@ -161,7 +161,7 @@ export default function ModelRouterPage() {
       badges={[
         { label: '40-70% Cost Reduction', variant: 'success' },
         { label: 'Smart Routing', variant: 'primary' },
-        { label: 'Production Ready', variant: 'info' },
+        { label: 'Stable', variant: 'info' },
       ]}
       features={[
         'Automatic complexity detection from prompt analysis',
@@ -312,7 +312,7 @@ await chat("What's 2+2?")
 await chat("Explain quantum entanglement and its implications for computing")
 // ✓ Routes to gpt-4 (high complexity, $0.0030)
 
-await chat("Write a production-ready React component with TypeScript")
+await chat("Write a robust React component with TypeScript")
 // ✓ Routes to gpt-4 (medium-high complexity, $0.0025)`}
           filename="quick-start.ts"
         />

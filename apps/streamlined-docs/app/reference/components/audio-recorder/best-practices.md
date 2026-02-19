@@ -1,6 +1,6 @@
 # AudioRecorder Best Practices
 
-Production-ready patterns and best practices for implementing audio recording in your application.
+Robust patterns and best practices for implementing audio recording in your application.
 
 ## Table of Contents
 

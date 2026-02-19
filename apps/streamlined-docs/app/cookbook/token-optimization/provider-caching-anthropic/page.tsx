@@ -52,7 +52,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'Anthropic Prompt Caching - 90% Cost Reduction',
     description:
-      'Implement Anthropic prompt caching for massive cost savings on repeated context. Production-ready examples included.',
+      'Implement Anthropic prompt caching for massive cost savings on repeated context. Robust examples included.',
   },
 }
 

@@ -8,7 +8,7 @@ import { useState, useMemo } from 'react'
  * **useClarityChat Hook - Essentials Track**
  *
  * This track focuses on the most common use cases for useClarityChat.
- * These examples are production-ready and can be copied directly into your app.
+ * These examples are ready to use and can be copied directly into your app.
  *
  * For advanced patterns, see the "Enterprise" track.
  */
@@ -216,7 +216,7 @@ The most basic chat setup. This is the foundation for all other patterns.
 /**
  * **Essential Pattern 2: With ChatWindow**
  *
- * Use the ChatWindow component for a complete, production-ready interface.
+ * Use the ChatWindow component for a complete, full-featured interface.
  * This is the recommended pattern for most applications.
  */
 export const WithChatWindow: Story = {
@@ -241,7 +241,7 @@ export const WithChatWindow: Story = {
             With ChatWindow Component
           </h3>
           <p className="text-sm text-muted-foreground mb-4">
-            Using ChatWindow provides a complete, production-ready interface
+            Using ChatWindow provides a complete, full-featured interface
             with all features built-in.
           </p>
           <ChatWindow

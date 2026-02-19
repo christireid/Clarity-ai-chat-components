@@ -56,7 +56,7 @@ export interface ClarityErrorContext {
  *     prop: 'messages',
  *     received: typeof messages,
  *     expected: 'Message[]',
- *     docs: 'https://clarity-chat.dev/api/chat-window#messages'
+ *     docs: 'https://github.com/christireid/Clarity-ai-chat-components/blob/main/docs/api/chat-window#messages'
  *   }
  * )
  * ```
@@ -204,7 +204,7 @@ export function validateMessageRole(
         prop: 'message.role',
         received: role,
         expected: validRoles.join(' | '),
-        docs: 'https://clarity-chat.dev/api/types#message',
+        docs: 'https://github.com/christireid/Clarity-ai-chat-components/blob/main/docs/api/types#message',
       }
     )
   }
@@ -224,7 +224,7 @@ export function validateMessagesArray(
     messages,
     'messages',
     componentName,
-    'https://clarity-chat.dev/api/types#message'
+    'https://github.com/christireid/Clarity-ai-chat-components/blob/main/docs/api/types#message'
   )
 
   // Validate each message has required fields
@@ -240,7 +240,7 @@ export function validateMessagesArray(
           prop: `messages[${i}]`,
           received: typeof msg,
           expected: 'Message object',
-          docs: 'https://clarity-chat.dev/api/types#message',
+          docs: 'https://github.com/christireid/Clarity-ai-chat-components/blob/main/docs/api/types#message',
         }
       )
     }

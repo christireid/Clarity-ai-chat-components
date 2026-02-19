@@ -1,6 +1,6 @@
 # Getting Started with Clarity Chat Examples
 
-Welcome! This directory contains 29 production-ready examples demonstrating Clarity Chat Components.
+Welcome! This directory contains 29 robust examples demonstrating Clarity Chat Components.
 
 ## Quick Start
 

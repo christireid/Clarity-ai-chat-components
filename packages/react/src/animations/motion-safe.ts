@@ -8,7 +8,7 @@
  * @installation npm install framer-motion
  * @bundleImpact ~80KB when framer-motion is installed
  * @note framer-motion is a required peer dependency for @clarity-chat/react
- * @docs https://clarity-chat.dev/docs/animations/motion-safe
+ * @docs https://github.com/christireid/Clarity-ai-chat-components/blob/main/docs/animations/motion-safe
  */
 
 import type { Variant } from 'framer-motion'

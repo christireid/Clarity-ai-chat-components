@@ -7,7 +7,7 @@ import type { Message as MessageType } from '@clarity-chat/types'
  * **Message Component - Essentials Track**
  *
  * This track focuses on the most common use cases for the Message component.
- * These examples are production-ready and can be copied directly into your app.
+ * These examples are ready to use and can be copied directly into your app.
  *
  * For advanced patterns, see the "Enterprise" and "Composability" tracks.
  */

@@ -67,7 +67,7 @@ export interface StreamingCodeBlockProps {
  * @installation npm install shiki
  * @bundleImpact ~200KB when shiki is installed (lazy-loaded on demand)
  * @fallback Basic plain text rendering without syntax highlighting
- * @docs https://clarity-chat.dev/docs/peer-dependencies
+ * @docs https://github.com/christireid/Clarity-ai-chat-components/blob/main/docs/peer-dependencies
  *
  * @example
  * ```tsx

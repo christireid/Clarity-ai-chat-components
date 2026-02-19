@@ -672,7 +672,7 @@ export default function SavingsDashboardPage() {
                       Stable
                     </span>
                     <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-800">
-                      Production Ready
+                      Stable
                     </span>
                     <span className="text-xs text-muted-foreground">
                       @clarity-chat/react
@@ -686,7 +686,7 @@ export default function SavingsDashboardPage() {
               <p className="text-lg text-muted-foreground max-w-3xl">
                 A comprehensive dashboard for tracking optimization metrics with multiple
                 metric cards, trend charts, strategy breakdown, cache hit rate monitoring,
-                and CSV/JSON export functionality. Production-ready with real-time updates
+                and CSV/JSON export functionality. Robust with real-time updates
                 and responsive mobile design.
               </p>
             </motion.header>

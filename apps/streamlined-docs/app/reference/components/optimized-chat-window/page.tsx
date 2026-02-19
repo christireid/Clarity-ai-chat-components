@@ -3,7 +3,7 @@
 /**
  * OptimizedChatWindow Component - API Reference Documentation
  *
- * Production-ready chat window with automatic performance optimizations,
+ * Robust chat window with automatic performance optimizations,
  * lazy loading, and resource management.
  */
 
@@ -850,7 +850,7 @@ export default function OptimizedChatWindowPage() {
               </h1>
 
               <p className="text-lg text-muted-foreground max-w-3xl">
-                Production-ready chat window with automatic performance
+                Robust chat window with automatic performance
                 optimizations, lazy loading, and resource management. Drop-in
                 replacement for ChatWindow with 75% faster rendering and 60%
                 less memory usage.
