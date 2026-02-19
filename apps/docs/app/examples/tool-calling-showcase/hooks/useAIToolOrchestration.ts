@@ -1,4 +1,3 @@
-// @ts-nocheck
 'use client'
 
 /**
@@ -8,7 +7,7 @@
  * Streams responses, handles tool calls, and manages human-in-the-loop approval.
  */
 
-import { useChat, type Message as AIMessage } from 'ai/react'
+import { useChat } from 'ai/react'
 import { useState, useCallback, useRef, useEffect } from 'react'
 import type {
   Message,
@@ -44,7 +43,6 @@ export function useAIToolOrchestration(): UseAIToolOrchestrationReturn {
 
   const debugEvents = useDebugEvents()
   const lastPriceRef = useRef<Record<string, number>>({})
-  const abortControllerRef = useRef<AbortController | null>(null)
 
   // Use AI SDK's useChat hook
   const {

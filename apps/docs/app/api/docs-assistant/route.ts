@@ -1,5 +1,3 @@
-// @ts-nocheck
-// TODO: Fix type errors
 /**
  * Documentation Assistant API Endpoint
  *

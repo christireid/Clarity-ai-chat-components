@@ -298,7 +298,7 @@ export default function HomePage() {
                 </button>
               </Link>
               <a
-                href="https://github.com/clarity-chat/components"
+                href="https://github.com/christireid/Clarity-ai-chat-components"
                 target="_blank"
                 rel="noopener noreferrer"
               >

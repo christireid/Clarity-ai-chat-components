@@ -252,8 +252,8 @@ can be moved to a dedicated business/sales repository.
 
 ## 📞 Contact
 
-**Company:** Code & Clarity **Email:** hello@codeandclarity.com  
-**Website:** https://clarity-chat.dev  
+**Company:** Code & Clarity **Email:** hello@codeclarity.ai
+**Website:** https://codeclarity.ai
 **GitHub:** https://github.com/christireid/Clarity-ai-chat-components
 
 ---

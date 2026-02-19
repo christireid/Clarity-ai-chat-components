@@ -22,7 +22,11 @@
     "react",
     "typescript"
   ],
-  "author": "Clarity Chat Team",
+  "author": {
+    "name": "Code & Clarity",
+    "email": "hello@codeclarity.ai",
+    "url": "https://codeclarity.ai"
+  },
   "license": "MIT",
   "dependencies": {
     "jscodeshift": "^0.15.0"
@@ -46,11 +50,11 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/clarity-chat/components.git",
+    "url": "git+https://github.com/christireid/Clarity-ai-chat-components.git",
     "directory": "packages/codemods"
   },
   "bugs": {
-    "url": "https://github.com/clarity-chat/components/issues"
+    "url": "https://github.com/christireid/Clarity-ai-chat-components/issues"
   },
-  "homepage": "https://github.com/clarity-chat/components/tree/main/packages/codemods"
+  "homepage": "https://github.com/christireid/Clarity-ai-chat-components#readme"
 }

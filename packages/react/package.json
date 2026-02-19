@@ -36,7 +36,7 @@
     "pdf-loader",
     "docx-loader"
   ],
-  "homepage": "https://clarity-chat.dev",
+  "homepage": "https://github.com/christireid/Clarity-ai-chat-components#readme",
   "bugs": {
     "url": "https://github.com/christireid/Clarity-ai-chat-components/issues"
   },
@@ -96,7 +96,7 @@
     "build:types": "tsc --declaration --emitDeclarationOnly --outDir dist",
     "dev": "tsup --watch",
     "clean": "rm -rf dist",
-    "typecheck": "pnpm -C ../license run build && pnpm -C ../memory run build && pnpm -C ../types run build && pnpm -C ../utils run build && pnpm -C ../primitives run build && echo 'Skipping tsc --noEmit - see @ts-nocheck comments'",
+    "typecheck": "pnpm -C ../license run build && pnpm -C ../memory run build && pnpm -C ../types run build && pnpm -C ../utils run build && pnpm -C ../primitives run build && tsc --noEmit",
     "lint": "eslint src --ext ts,tsx --ignore-pattern '*.js' --ignore-pattern '*.d.ts' --fix",
     "lint:check": "eslint src --ext ts,tsx --ignore-pattern '*.js' --ignore-pattern '*.d.ts'",
     "lint:accessibility": "eslint src --ext ts,tsx --rule 'jsx-a11y/*:error'",

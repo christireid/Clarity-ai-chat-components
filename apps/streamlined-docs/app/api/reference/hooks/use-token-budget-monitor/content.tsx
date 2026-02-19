@@ -1,4 +1,4 @@
-// @ts-nocheck
+// @ts-nocheck -- Imports 'ToastProvider' and 'useTokenBudgetMonitor' from '@clarity-chat/react' which is a workspace package not available in the docs app's TypeScript context. These are used in live demo components rendered on this page.
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'

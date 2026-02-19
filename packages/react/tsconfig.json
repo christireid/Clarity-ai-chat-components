@@ -3,9 +3,9 @@
   "compilerOptions": {
     "outDir": "./dist",
     "rootDir": "./src",
-    // TODO: Re-enable after fixing remaining 728 strict mode errors
-    // Progress: Fixed 98 errors (NODE_ENV access patterns + React imports)
-    // Remaining: undefined access checks, type annotations, module structure
+    // NOTE: These strict checks are disabled pending migration.
+    // Progress: Fixed 98 errors (NODE_ENV access, React imports, @ts-nocheck removal)
+    // Remaining: ~630 undefined access checks, type annotations, module structure
     "noUncheckedIndexedAccess": false,
     "noPropertyAccessFromIndexSignature": false,
     "esModuleInterop": true,

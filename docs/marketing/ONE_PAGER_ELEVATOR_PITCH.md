@@ -47,7 +47,7 @@ You now have:
 ## Why We're Better
 
 ### vs. shadcn/ui AI
-- **Us:** npm package + copy-paste, 245 components, token optimization
+- **Us:** npm package + copy-paste, 150+ components, token optimization
 - **Them:** Copy-paste only, 52 components, no token features
 
 ### vs. Vercel AI SDK

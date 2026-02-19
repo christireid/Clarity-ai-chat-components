@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * Enhanced TypeScript Types for Clarity Chat React Package
  *
@@ -46,6 +45,7 @@
  * @packageDocumentation
  */
 
+import type * as React from 'react'
 import type {
   ChatMessage,
   MessageRole,
@@ -60,7 +60,6 @@ import type {
   FormalizedModelAdapter,
   AdapterCapabilities,
 } from '../adapters/types'
-import type { CoreMessage } from '../hooks/chat/use-chat-enhanced'
 
 // =============================================================================
 // 1. STRICTER EVENT TYPES - Discriminated Union for Type Safety
@@ -653,7 +652,7 @@ export function isFormalizedModelAdapter(value: unknown): value is FormalizedMod
 export function supportsCapability<K extends keyof AdapterCapabilities>(
   adapter: { capabilities: AdapterCapabilities },
   capability: K
-): adapter.capabilities[K] extends boolean ? boolean : boolean {
+): boolean {
   return Boolean(adapter.capabilities[capability])
 }
 
@@ -720,6 +719,7 @@ export type PropsOfType<T, V> = {
 /**
  * Props that are callbacks/functions
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Required for generic function matching
 export type CallbackProps<T> = PropsOfType<T, (...args: any[]) => any>
 
 /**
@@ -931,7 +931,7 @@ export function isEventType<T extends EventType>(
  * dispatch(event)
  * ```
  */
-export function createEventDispatcher<T extends Partial<Record<EventType, (event: any) => void>>>(
+export function createEventDispatcher<T extends Partial<Record<EventType, (event: StrictChatEvent) => void>>>(
   handlers: T
 ): (event: StrictChatEvent) => void {
   return (event) => {
@@ -948,8 +948,9 @@ export function createEventDispatcher<T extends Partial<Record<EventType, (event
 export function deepFreeze<T extends Record<string, unknown>>(obj: T): Readonly<T> {
   Object.freeze(obj)
   Object.getOwnPropertyNames(obj).forEach((prop) => {
-    if (obj[prop] !== null && (typeof obj[prop] === 'object' || typeof obj[prop] === 'function')) {
-      deepFreeze(obj[prop])
+    const value = obj[prop]
+    if (value !== null && (typeof value === 'object' || typeof value === 'function')) {
+      deepFreeze(value as Record<string, unknown>)
     }
   })
   return obj
@@ -961,34 +962,34 @@ export function deepFreeze<T extends Record<string, unknown>>(obj: T): Readonly<
 export function createStrictEventEmitter(): StrictEventEmitter {
   const listeners = new Map<EventType, Set<StrictEventListener>>()
 
-  return {
+  const emitter: StrictEventEmitter = {
     on: (type, listener) => {
       if (!listeners.has(type)) {
         listeners.set(type, new Set())
       }
-      listeners.get(type)!.add(listener)
+      listeners.get(type)!.add(listener as StrictEventListener)
 
       return () => {
-        listeners.get(type)?.delete(listener)
+        listeners.get(type)?.delete(listener as StrictEventListener)
       }
     },
     once: (type, listener) => {
-      const wrappedListener = ((event: any) => {
-        listener(event)
-        listeners.get(type)?.delete(wrappedListener)
+      const wrappedListener = ((event: StrictChatEvent) => {
+        ;(listener as StrictEventListener)(event)
+        listeners.get(type)?.delete(wrappedListener as StrictEventListener)
       }) as StrictEventListener
 
-      return this.on(type, wrappedListener)
+      return emitter.on(type, wrappedListener as StrictEventListener<typeof type>)
     },
     off: (type, listener) => {
-      listeners.get(type)?.delete(listener)
+      listeners.get(type)?.delete(listener as StrictEventListener)
     },
     emit: (type, payload) => {
       const eventListeners = listeners.get(type)
       if (eventListeners) {
-        eventListeners.forEach((listener) => {
+        eventListeners.forEach((l) => {
           try {
-            listener(payload as any)
+            ;(l as StrictEventListener<typeof type>)(payload)
           } catch (error) {
             console.error(`Error in event listener for ${type}:`, error)
           }
@@ -996,6 +997,8 @@ export function createStrictEventEmitter(): StrictEventEmitter {
       }
     },
   }
+
+  return emitter
 }
 
 /**

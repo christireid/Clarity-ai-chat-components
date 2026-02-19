@@ -1,4 +1,4 @@
-// @ts-nocheck
+// @ts-nocheck -- Imports 'StructuredInputBuilder' from '@clarity-chat/react' which is a workspace package not available in the docs app's TypeScript context. The component is rendered in a live demo (BasicBuilderDemo). Also imports from '@/components/UI/ScrollReveal' which may have type mismatches with the actual module exports.
 'use client'
 
 import React from 'react'

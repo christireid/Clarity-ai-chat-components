@@ -1,4 +1,6 @@
-// @ts-nocheck
+// @ts-nocheck -- SecurityManager is not exported from @clarity-chat/react public API,
+// and the validateChatInput method used here is not part of the current SecurityManager interface.
+// This playground page needs to be updated when the SecurityManager API is stabilized and exported.
 /**
  * Security Playground
  *

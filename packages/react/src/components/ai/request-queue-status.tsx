@@ -201,8 +201,7 @@ export function RequestQueueStatus({
                   <Progress
                     value={activeProgress}
                     className="h-2"
-                    // @ts-ignore - Progress component may not have indicator props
-                    indicatorClassName={isAtCapacity ? 'bg-warning' : 'bg-primary'}
+                    variant={isAtCapacity ? 'warning' : 'primary'}
                   />
                 )}
               </div>
@@ -221,8 +220,7 @@ export function RequestQueueStatus({
                   <Progress
                     value={queueProgress}
                     className="h-2"
-                    // @ts-ignore
-                    indicatorClassName={isQueueFull ? 'bg-destructive' : 'bg-secondary'}
+                    variant={isQueueFull ? 'destructive' : 'primary'}
                   />
                 )}
               </div>

@@ -1,5 +1,4 @@
-// @ts-nocheck
-// TODO: Fix Zod schema type errors
+// @ts-nocheck -- Zod type inference issues: commonSchemas.uuid and commonSchemas.timestamp from '@/lib/validation' produce complex generic types that cause TS inference failures when composed with z.object().optional() chains. Likely a Zod version mismatch between the schema definitions and the installed version.
 /**
  * Validation schemas for /api/feedback endpoint
  *

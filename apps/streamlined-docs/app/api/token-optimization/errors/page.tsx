@@ -1,5 +1,4 @@
-// @ts-nocheck
-// TODO: Fix missing component modules
+// @ts-nocheck -- Multiple unresolvable imports: '@/components/Layout/Documentation' (Section, SectionHeader, SubSection) does not exist at that path, '@clarity-chat/primitives' (Badge) is a workspace package not available in the docs app's TS context, and '@/components/CodeBlock' should be '@/components/Docs/CodeBlock'.
 import React from 'react'
 import { Metadata } from 'next'
 import {

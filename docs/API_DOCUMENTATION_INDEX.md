@@ -589,8 +589,8 @@ const provider: ContextProvider = {
 
 1. Check the [API Reference](./API_REFERENCE_PROMPT_COMPOSER.md)
 2. Review [Examples](../packages/react/src/components/prompt-composer/PromptComposer.example.tsx)
-3. Search [GitHub Issues](https://github.com/clarity-chat/components/issues)
-4. Ask in [Discussions](https://github.com/clarity-chat/components/discussions)
+3. Search [GitHub Issues](https://github.com/christireid/Clarity-ai-chat-components/issues)
+4. Ask in [Discussions](https://github.com/christireid/Clarity-ai-chat-components/discussions)
 
 ---
 

@@ -34,7 +34,7 @@
 
 ## ⚡ Quick Start
 
-Get a production-ready AI chat interface running in **under 3 minutes**:
+Get an AI chat interface running in **under 3 minutes**:
 
 ```bash
 npm install @clarity-chat/react
@@ -133,7 +133,7 @@ export default function App() {
 - ✅ Streaming responses with auto-reconnection
 - ✅ Beautiful animations and dark mode
 - ✅ Full keyboard navigation (try `Shift + ?`)
-- ✅ WCAG AAA accessibility
+- ✅ WCAG AAA target accessibility
 - ✅ Mobile responsive design
 - ✅ Error recovery with retry
 
@@ -254,7 +254,7 @@ New comprehensive guides covering all Wave 3 improvements:
 
 ### **v1.0+: Enterprise-Grade Foundation**
 
-**Comprehensive 5-phase audit completed** with production-ready enhancements:
+**Comprehensive 5-phase audit completed** with major enhancements:
 
 #### 📊 **Audit Results**
 
@@ -267,7 +267,7 @@ New comprehensive guides covering all Wave 3 improvements:
 #### 🎯 **Key Improvements**
 
 - **Grouped Props API**: Cleaner, more intuitive component configuration
-- **Memory Integration**: Production-ready with automatic context injection
+- **Memory Integration**: Automatic context injection with sliding window and vector search
 - **Component Architecture**: Modular design with focused sub-components
 - **Error Handling**: Comprehensive recovery with safe fallbacks
 - **Performance**: Sub-100ms interactions, smart virtual scrolling, lazy markdown rendering, 60fps
@@ -302,10 +302,10 @@ new grouped props API that reduces complexity by 73%.
 
 ### **With Clarity Chat**
 
-- ⚡ **Minutes** to production
+- ⚡ **Minutes** to get started
 - 📦 **1** tree-shakeable package
 - ✨ WCAG AAA built-in
-- 🛡️ Battle-tested recovery
+- 🛡️ Built-in error recovery
 - 💸 Automatic optimization (60-90% savings)\*
 
 <sub>\*Based on provider prompt caching specifications. Actual savings may vary.</sub>
@@ -560,7 +560,7 @@ console.log(chat.meta.token.totalTokens) // Real-time token tracking
 console.log(chat.meta.token.budgetRemaining) // Budget monitoring
 ```
 
-### **🛡️ Enterprise Security** → _OWASP LLM Top 10 2025 compliant_
+### **🛡️ Enterprise Security** → _OWASP LLM Top 10 aligned_
 
 ```tsx
 // Safety features enabled with enterprise preset
@@ -679,7 +679,7 @@ import { ThemeProvider, ClarityChat } from '@clarity-chat/react'
 
 ## 🌟 Showcase
 
-### **Production-Ready Examples**
+### **Example Apps**
 
 <table>
 <tr>
@@ -750,7 +750,7 @@ Battery-aware streaming, performance optimization, analytics
 <tr><td>React Hooks</td><td><strong>70+</strong></td><td>~5</td><td>~15</td><td>~10</td></tr>
 <tr><td>Token Optimization</td><td><strong>Built-in</strong></td><td>❌</td><td>❌</td><td>❌</td></tr>
 <tr><td>Memory/Context</td><td><strong>Built-in</strong></td><td>Manual</td><td>Manual</td><td>Manual</td></tr>
-<tr><td>Accessibility</td><td><strong>WCAG AAA target</strong></td><td>Basic</td><td>WCAG AA</td><td>WCAG AA</td></tr>
+<tr><td>Accessibility</td><td><strong>WCAG AAA (target)</strong></td><td>Basic</td><td>WCAG AA</td><td>WCAG AA</td></tr>
 <tr><td>Preset System</td><td><strong>6 presets</strong></td><td>❌</td><td>❌</td><td>❌</td></tr>
 <tr><td>License</td><td><strong>MIT</strong></td><td>MIT</td><td>MIT</td><td>Commercial</td></tr>
 <tr><td>Maturity</td><td>Pre-release</td><td><strong>Mature</strong></td><td>Growing</td><td><strong>Mature</strong></td></tr>
@@ -807,7 +807,7 @@ const chat = useClarityChatApp({ api: '/api/chat' })
 - 70+ hooks (`useClarityChatApp`, `useMessages`, `useStreaming`, etc.)
 - Built-in themes and animations
 - Memory, token optimization, and safety features (via re-exports)
-- Full accessibility (WCAG AAA)
+- Accessibility-focused (WCAG AAA target)
 
 **Exports:** Components, hooks, contexts, types for building chat UIs
 

@@ -2346,8 +2346,8 @@ const commands: Command[] = [
 
 ### Community
 
-- [GitHub Issues](https://github.com/clarity-chat/components/issues)
-- [Discussions](https://github.com/clarity-chat/components/discussions)
+- [GitHub Issues](https://github.com/christireid/Clarity-ai-chat-components/issues)
+- [Discussions](https://github.com/christireid/Clarity-ai-chat-components/discussions)
 
 ---
 

@@ -627,7 +627,7 @@ const ClarityChatApp = dynamic(
 **Total time: 5 minutes**
 
 **What you get:**
-- 245 production-ready components
+- 150+ React components
 - Token tracking and cost optimization
 - Beautiful UI with dark mode
 - Full accessibility

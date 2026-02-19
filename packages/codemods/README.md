@@ -247,8 +247,8 @@ Use these codemods to migrate from v0.x.x to v1.0.0+.
 ## Support
 
 - 📖 [Migration Guide](../docs/migration-interactive-components.md)
-- 🐛 [Issues](https://github.com/clarity-chat/components/issues)
-- 💬 [Discussions](https://github.com/clarity-chat/components/discussions)
+- 🐛 [Issues](https://github.com/christireid/Clarity-ai-chat-components/issues)
+- 💬 [Discussions](https://github.com/christireid/Clarity-ai-chat-components/discussions)
 
 ---
 

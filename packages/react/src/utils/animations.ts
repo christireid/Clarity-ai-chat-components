@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * Animation Utilities for Clarity Chat
  *
@@ -588,7 +587,7 @@ export function useAnimationPerformance(): {
   React.useEffect(() => {
     // Check if browser supports GPU-accelerated properties
     const test = document.createElement('div')
-    const style = test.style as any
+    const style: Record<string, unknown> = test.style as unknown as Record<string, unknown>
     const transforms = [
       'transform',
       'WebkitTransform',

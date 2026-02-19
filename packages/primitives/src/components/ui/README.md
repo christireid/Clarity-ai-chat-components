@@ -156,7 +156,7 @@ export function MyComponent() {
 - ✅ **Composable** - Built on Radix UI primitives
 - ✅ **Type-safe** - Full TypeScript support
 - ✅ **Keyboard nav** - Proper keyboard shortcuts and focus management
-- ✅ **Battle-tested** - Used by thousands of projects
+- ✅ **Well-tested** - Built on Radix UI, a widely-used primitive library
 
 ## Migration from Legacy Components
 

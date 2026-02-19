@@ -11,11 +11,21 @@
   "publishConfig": {
     "access": "public"
   },
+  "author": {
+    "name": "Code & Clarity",
+    "email": "hello@codeclarity.ai",
+    "url": "https://codeclarity.ai"
+  },
+  "license": "MIT",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/christireid/Clarity-ai-chat-components.git",
     "directory": "packages/cli"
   },
+  "bugs": {
+    "url": "https://github.com/christireid/Clarity-ai-chat-components/issues"
+  },
+  "homepage": "https://github.com/christireid/Clarity-ai-chat-components#readme",
   "scripts": {
     "dev": "tsx watch src/index.ts",
     "build": "tsup src/index.ts --format esm --dts --clean",

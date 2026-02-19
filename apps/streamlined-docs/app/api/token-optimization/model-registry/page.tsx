@@ -1,5 +1,4 @@
-// @ts-nocheck
-// TODO: Fix lucide-react FileJson and type errors
+// @ts-nocheck -- 'FileJson' may not exist in the installed lucide-react version (icon was renamed or removed). Also imports 'durations' from '@/lib/animations' and 'Breadcrumbs' from '@/components/Navigation/Breadcrumbs' which may have type mismatches with the actual module exports.
 'use client'
 
 /**

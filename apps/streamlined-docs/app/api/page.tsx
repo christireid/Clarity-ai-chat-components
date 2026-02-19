@@ -1,5 +1,4 @@
-// @ts-nocheck
-// TODO: Fix missing imports (toast, durations)
+// @ts-nocheck -- References undefined variables: 'toast' (from sonner or similar toast library, never imported) and 'durations' (from '@/lib/animations', never imported) are used in the onClick handler at the bottom of this file. Also, ScrollReveal/KineticText/ScrollRevealStagger/ScrollRevealStaggerItem from '@/components/Enhanced/ScrollReveal' and InteractivePreview from '@/components/Enhanced/InteractivePreview' may have type export mismatches.
 import {
   ScrollReveal,
   KineticText,

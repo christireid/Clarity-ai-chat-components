@@ -1,4 +1,3 @@
-// @ts-nocheck
 'use client'
 
 /**
@@ -19,12 +18,57 @@
  */
 
 import * as React from 'react'
-import {
-  CodeBlock as UnifiedCodeBlock,
-  parseCodeBlocks as parseCodeBlocksUtil,
-  type ParsedCodeBlock,
-} from '@clarity-chat/react'
+import { CodeBlock as UnifiedCodeBlock } from '@clarity-chat/react'
 import { cn } from '@/lib/utils'
+
+/**
+ * Parsed code block from markdown text
+ */
+export interface ParsedCodeBlock {
+  type: 'code' | 'text'
+  content: string
+  language?: string
+}
+
+/**
+ * Parse markdown code blocks from text
+ *
+ * Extracts fenced code blocks from markdown text and returns an array of
+ * blocks, preserving text content between them.
+ */
+function parseCodeBlocksUtil(text: string): ParsedCodeBlock[] {
+  const blocks: ParsedCodeBlock[] = []
+  const codeBlockRegex = /```(\w+)?\n([\s\S]*?)```/g
+
+  let lastIndex = 0
+  let match: RegExpExecArray | null
+
+  while ((match = codeBlockRegex.exec(text)) !== null) {
+    if (match.index > lastIndex) {
+      const textContent = text.slice(lastIndex, match.index)
+      if (textContent.trim()) {
+        blocks.push({ type: 'text', content: textContent })
+      }
+    }
+
+    blocks.push({
+      type: 'code',
+      content: match[2].trim(),
+      language: match[1] || 'text',
+    })
+
+    lastIndex = match.index + match[0].length
+  }
+
+  if (lastIndex < text.length) {
+    const textContent = text.slice(lastIndex)
+    if (textContent.trim()) {
+      blocks.push({ type: 'text', content: textContent })
+    }
+  }
+
+  return blocks
+}
 
 /**
  * Props for the AI CodeBlock wrapper
@@ -224,5 +268,3 @@ export function getLanguageDisplayName(lang: string): string {
   return names[lang.toLowerCase()] || lang.toUpperCase()
 }
 
-// Re-export types
-export type { ParsedCodeBlock }

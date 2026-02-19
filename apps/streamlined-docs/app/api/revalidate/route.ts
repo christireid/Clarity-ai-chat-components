@@ -1,5 +1,4 @@
-// @ts-nocheck
-// TODO: Fix validation function argument error
+// @ts-nocheck -- The revalidateRequestSchema uses .refine() which produces a ZodEffects type. When passed to validateRequestBody(request, schema) the ZodEffects<ZodObject<...>> type causes inference failures with the generic ZodSchema<T> parameter, making the inferred 'data' type incorrect.
 import { revalidatePath, revalidateTag } from 'next/cache'
 import { NextRequest, NextResponse } from 'next/server'
 import { validateRequestBody, validationErrorResponse } from '@/lib/validation'

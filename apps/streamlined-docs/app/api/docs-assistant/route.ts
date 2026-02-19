@@ -1,5 +1,4 @@
-// @ts-nocheck
-// TODO: Fix type errors in this file - API interfaces have changed
+// @ts-nocheck -- Multiple type issues: (1) StreamChunk type from '@/lib/ai/streaming' doesn't include 'metadata' event type used in streamWithAdvancedPrompting, (2) various @/lib/ai/* module interfaces (RAG, streaming, session, query-processing) have evolved and their type signatures no longer fully align with usage here, (3) AsyncGenerator yield types don't match the StreamChunk union due to extended event types like 'metadata'.
 /**
  * Documentation Assistant API Endpoint
  *

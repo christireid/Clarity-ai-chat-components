@@ -1,5 +1,4 @@
-// @ts-nocheck
-// TODO: Fix type errors - Zod schema API changes
+// @ts-nocheck -- Zod type inference issues: commonSchemas.uuid and commonSchemas.tokenCount from '@/lib/validation' produce complex generic types that cause TS inference failures when composed in z.object() schemas. The discriminatedUnion and complex nested schemas amplify the type resolution burden.
 /**
  * Validation schemas for /api/docs-assistant endpoint
  *

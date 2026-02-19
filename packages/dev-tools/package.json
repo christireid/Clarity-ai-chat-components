@@ -56,8 +56,16 @@
     "performance",
     "profiling"
   ],
-  "author": "Clarity Chat",
+  "author": {
+    "name": "Code & Clarity",
+    "email": "hello@codeclarity.ai",
+    "url": "https://codeclarity.ai"
+  },
   "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/christireid/Clarity-ai-chat-components/issues"
+  },
+  "homepage": "https://github.com/christireid/Clarity-ai-chat-components#readme",
   "sideEffects": [
     "*.css"
   ],

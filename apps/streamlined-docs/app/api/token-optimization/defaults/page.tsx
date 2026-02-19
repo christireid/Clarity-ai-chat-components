@@ -1,5 +1,4 @@
-// @ts-nocheck
-// TODO: Fix missing Docs component modules
+// @ts-nocheck -- TocItem type mismatch: this page passes { id, title, level } but the actual TocItem interface (components/Docs/TableOfContents) uses { id, title, children? } without a 'level' property. Also, Badge variants ('info', 'secondary') don't match the DocumentationPage Badge type which expects 'stable'/'beta'/'deprecated'/'experimental'/'new'.
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { DocumentationPage } from '../../../../../components/Docs/DocumentationPage'

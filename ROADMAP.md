@@ -72,10 +72,10 @@ This document is the honest, detailed plan for turning Clarity Chat from a well-
 ### 0.4 Brand cleanup
 
 - [ ] Verify `codeclarity.ai` domain ownership and configure
-- [ ] Remove all references to `codeandclarity.com` (different company)
+- [x] Remove all references to `codeandclarity.com` (different company)
 - [ ] Remove all references to `claritychat.dev` and `clarity-chat.dev` unless you own and configure them
-- [ ] Standardize all package.json author fields to `codeclarity.ai`
-- [ ] Update all email references to `hello@codeclarity.ai`
+- [x] Standardize all package.json author fields to `codeclarity.ai`
+- [x] Update all email references to `hello@codeclarity.ai`
 
 ### 0.5 Deploy live demo
 

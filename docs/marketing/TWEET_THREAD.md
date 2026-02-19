@@ -19,14 +19,14 @@ Clarity AI Chat gives you all of this in 3 lines:
 
 npm install @clarity-chat/react
 
-245 components. Token tracking built-in. 5 min setup.
+150+ components. Token tracking built-in. 5 min setup.
 
 🧵 Here's what makes us different →
 ```
 
 **Engagement tactics:**
 - Problem/solution format
-- Specific numbers (245 components, 5 min)
+- Specific numbers (150+ components, 5 min)
 - Visual contrast (❌ vs checkmarks in thread)
 - Thread promise
 
@@ -138,7 +138,7 @@ Vercel, shadcn, Assistant UI? Manual only.
 ```
 4/ Why developers choose Clarity:
 
-✅ 245 components (vs. 52 in shadcn/ui)
+✅ 150+ components (vs. 52 in shadcn/ui)
 ✅ Token optimization (unique to us)
 ✅ Cost tracking (unique to us)
 ✅ Prompt routing (unique to us)
@@ -185,7 +185,7 @@ Clarity AI Chat Components:
 • Multi-provider cost comparison ($2.50 vs $0.50/1M)
 • Automatic prompt strategy selection
 
-245 components. Production-ready. 5 min setup.
+150+ components. TypeScript-first. 5 min setup.
 
 Thread 🧵
 ```
@@ -203,11 +203,11 @@ BEFORE Clarity:
 ❌ Custom error handling
 
 AFTER Clarity:
-✅ 5 minutes to production
+✅ 5 minutes to get started
 ✅ Token tracking built-in
 ✅ Cost ROI dashboard
-✅ WCAG AAA compliance
-✅ Battle-tested recovery
+✅ WCAG AAA target
+✅ Built-in error recovery
 
 npm install @clarity-chat/react
 
@@ -228,7 +228,7 @@ Here's what we found:
 So we built it.
 
 Clarity AI Chat Components:
-• 245 components (vs 52 in shadcn)
+• 150+ components (vs 52 in shadcn)
 • 65% feature coverage (vs 48% average)
 • 5 min setup (vs 30 min average)
 • 3 unique features competitors lack
@@ -279,7 +279,7 @@ Your developers are spending 40% of their time building chat UIs instead of ship
 
 We solved this.
 
-Clarity AI Chat: 245 production-ready components with token tracking.
+Clarity AI Chat: 150+ React components with token tracking.
 
 Your team ships AI features in 5 minutes instead of 5 weeks.
 
@@ -320,7 +320,7 @@ Clarity AI Chat:
 • Free (MIT license)
 • 5 min setup
 • Token tracking (save 60-90% costs)
-• 245 components
+• 150+ components
 • Copy-paste OR npm
 
 Focus on your product, not UI plumbing.
@@ -364,7 +364,7 @@ Compare costs across OpenAI, Anthropic, Google in real-time.
 3️⃣ Prompt Strategy Router
 Auto-select optimal prompting strategy based on complexity.
 
-Plus 245 production-ready components for:
+Plus 150+ React components for:
 - Streaming responses
 - Tool calling UI
 - Code highlighting
@@ -447,7 +447,7 @@ Ant Design X: 1 week (no AI features)
 
 Clarity AI Chat: 5 minutes ⚡
 
-245 components. Token tracking. MIT license.
+150+ components. Token tracking. MIT license.
 
 npm install @clarity-chat/react
 

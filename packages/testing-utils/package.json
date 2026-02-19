@@ -30,6 +30,21 @@
     "lint": "eslint \"src/**/*.ts\" \"src/**/*.tsx\"",
     "typecheck": "tsc --noEmit"
   },
+  "author": {
+    "name": "Code & Clarity",
+    "email": "hello@codeclarity.ai",
+    "url": "https://codeclarity.ai"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/christireid/Clarity-ai-chat-components.git",
+    "directory": "packages/testing-utils"
+  },
+  "bugs": {
+    "url": "https://github.com/christireid/Clarity-ai-chat-components/issues"
+  },
+  "homepage": "https://github.com/christireid/Clarity-ai-chat-components#readme",
   "keywords": [
     "testing",
     "utilities",

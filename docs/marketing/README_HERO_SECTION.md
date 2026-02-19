@@ -12,7 +12,7 @@
 <h1>Stop Building Chat UIs.<br/>Start Shipping AI Features.</h1>
 
 <p><strong>The only React component library with token optimization built-in.</strong><br/>
-245 components. 5-minute setup. Production-ready. MIT license.</p>
+150+ components. 5-minute setup. TypeScript-first. MIT license.</p>
 
 <p>
   <a href="https://github.com/christireid/Clarity-ai-chat-components/stargazers"><img src="https://img.shields.io/github/stars/christireid/Clarity-ai-chat-components?style=social" alt="GitHub Stars" /></a>
@@ -37,7 +37,7 @@ export default function App() {
   <strong>✅ Token tracking</strong> •
   <strong>✅ Cost ROI dashboard</strong> •
   <strong>✅ Prompt optimization</strong> •
-  <strong>✅ 245 components</strong>
+  <strong>✅ 150+ components</strong>
 </p>
 
 <p>
@@ -321,7 +321,7 @@ Benefits:
 
 <h1>The Most Complete AI Chat Component Library</h1>
 
-<p><strong>245 components • 3-minute setup • Token optimization built-in</strong></p>
+<p><strong>150+ components • 3-minute setup • Token optimization built-in</strong></p>
 
 <p>
   <a href="https://github.com/christireid/Clarity-ai-chat-components/stargazers"><img src="https://img.shields.io/github/stars/christireid/Clarity-ai-chat-components?style=social" alt="GitHub Stars" /></a>
@@ -386,9 +386,9 @@ Benefits:
 - 🎯 Token tracking built-in (visual budget)
 - 💰 Cost ROI dashboard (unique to us)
 - 📦 **1** tree-shakeable package
-- ✨ WCAG AAA compliance out of the box
+- ✨ WCAG AAA target accessibility
 - 📈 7 analytics providers included
-- 🛡️ Battle-tested error recovery
+- 🛡️ Built-in error recovery
 
 </td>
 </tr>
@@ -441,7 +441,7 @@ export default function App() {
 
 <h1>Build AI Chat Interfaces in Minutes,<br/>Not Months</h1>
 
-<p><strong>245 production-ready React components with token optimization no competitor has.</strong></p>
+<p><strong>150+ React components with token optimization no competitor has.</strong></p>
 
 <p>
   <a href="https://github.com/christireid/Clarity-ai-chat-components/stargazers"><img src="https://img.shields.io/github/stars/christireid/Clarity-ai-chat-components?style=social" alt="GitHub Stars" /></a>
@@ -713,7 +713,7 @@ _"I need everything"_
 - Removes friction
 
 ### 4. Feature Count
-- **"245 components"** (vs. competitors: 52, 50, 100)
+- **"150+ components"** (vs. competitors: 52, 50, 100)
 - Quantifiable advantage
 
 ### 5. Unique Features (Repeat Often)

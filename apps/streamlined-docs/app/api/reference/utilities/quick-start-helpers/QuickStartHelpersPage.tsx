@@ -1,4 +1,4 @@
-// @ts-nocheck
+// @ts-nocheck -- Imports reference non-existent module paths: '@/components/Callout' (actual: '@/components/MDX/Callout'), '@/components/CodeBlock' (actual: '@/components/Docs/CodeBlock'), and '@/components/ComponentPreview' (actual: '@/components/Docs/ComponentPreview'). Fixing requires updating imports and verifying prop compatibility.
 'use client'
 
 import * as React from 'react'

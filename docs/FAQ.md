@@ -6,13 +6,13 @@ Common questions about Clarity Chat Components.
 
 ### What is Clarity Chat?
 
-Clarity Chat is a React-first AI UI library that provides production-ready components and hooks for building AI chat interfaces. It's API-compatible with Vercel AI SDK UI but adds first-class memory management, agent orchestration, and enterprise features.
+Clarity Chat is a React-first AI UI library that provides components and hooks for building AI chat interfaces. It's API-compatible with Vercel AI SDK UI but adds first-class memory management, agent orchestration, and enterprise features.
 
 ### How does Clarity compare to Vercel AI SDK UI?
 
 Clarity maintains API compatibility with Vercel's core hooks (`useChat`, `useCompletion`, `useAssistant`) while adding:
 - Built-in memory management with multiple strategies
-- Production-ready UI components (`ChatWindow`, etc.)
+- Full-featured UI components (`ChatWindow`, etc.)
 - Agent orchestration and tool UI registry
 - Advanced streaming protocols (SSE, WebSocket)
 - Enterprise features (RBAC, quotas, analytics)

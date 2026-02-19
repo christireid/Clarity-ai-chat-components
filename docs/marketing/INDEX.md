@@ -143,13 +143,12 @@ Developer-focused marketing content highlighting competitive advantages.
 - **vs. Assistant UI:** Complete components + unique token optimization
 
 ### By The Numbers
-- **245 components** (vs. competitors: 52-100)
+- **150+ components** (vs. competitors: 52-100)
 - **65% feature coverage** (vs. competitors: 30-52%)
 - **3-minute setup** (vs. competitors: 15-30 min)
-- **100+ companies** in production
 - **~30KB bundle size** (competitive)
-- **85%+ test coverage**
-- **WCAG AAA compliance**
+- **450+ tests**
+- **WCAG AAA target**
 
 ---
 
@@ -220,7 +219,7 @@ Developer-focused marketing content highlighting competitive advantages.
 
 ### Priority 3 (Nice to Have)
 9. **Video demo** (2-3 minutes showing setup to production)
-10. **Animated infographic** (245 components, 3 unique features)
+10. **Animated infographic** (150+ components, 3 unique features)
 11. **Developer testimonial cards** (quotes with headshots)
 12. **Use case screenshots** (customer support, code assistant, document Q&A)
 
@@ -292,7 +291,7 @@ Developer-focused marketing content highlighting competitive advantages.
 
 ### Audience 4: Development Teams
 **Pain Point:** Multiple developers, need consistency
-**Message:** "245 components. Best-in-class docs. TypeScript-first."
+**Message:** "150+ components. Best-in-class docs. TypeScript-first."
 **Best Content:** README Hero (completeness focus)
 
 ---
@@ -306,7 +305,7 @@ Developer-focused marketing content highlighting competitive advantages.
 - **Confident:** Lead with unique strengths
 
 ### Language
-- **Use specifics:** "245 components" not "lots of components"
+- **Use specifics:** "150+ components" not "lots of components"
 - **Use comparisons:** "vs. 52 in shadcn/ui" not just features list
 - **Use time estimates:** "5 minutes" not "quickly"
 - **Use code examples:** Show, don't just tell
