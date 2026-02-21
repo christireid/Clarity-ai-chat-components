@@ -27,9 +27,11 @@ TypeScript. Accessible. Streaming. Token-aware.</p>
 
 ---
 
-> **Note:** This project is in pre-release. The API may change before v1. Feedback and contributions welcome.
+> **Status:** This project is in active development and has not yet been published to npm. You can try it by cloning the repo and building from source. See [Development Setup](#development-setup) below.
 
 ## Quick Start
+
+Once published to npm (coming soon):
 
 ```bash
 npm install @clarity-chat/react
@@ -156,11 +158,19 @@ Clarity's unique value is built-in token optimization UI and conversation memory
 
 ## Installation
 
+Not yet published to npm. Coming soon.
+
+## Development Setup
+
 ```bash
-npm install @clarity-chat/react    # npm
-pnpm add @clarity-chat/react       # pnpm
-yarn add @clarity-chat/react       # yarn
+git clone https://github.com/christireid/Clarity-ai-chat-components.git
+cd Clarity-ai-chat-components
+pnpm install
+pnpm build:packages
+pnpm storybook          # Browse components in Storybook
 ```
+
+Requires Node.js 20+ and pnpm 10+.
 
 ---
 

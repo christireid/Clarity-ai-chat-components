@@ -1,10 +1,11 @@
 /**
- * Analytics & Observability Domain
+ * Analytics Domain
  *
- * Comprehensive analytics integration for chat applications.
- * Supports 7 analytics providers out of the box.
+ * Analytics integration for chat applications.
+ *
+ * NOTE: Observability has been moved out of the react package
+ * as an infrastructure concern.
  */
 
-// Re-export analytics and observability modules
+// Re-export analytics modules
 export * from '../../analytics'
-export * from '../../observability'

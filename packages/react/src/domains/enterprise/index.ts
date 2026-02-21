@@ -1,7 +1,10 @@
 /**
  * Enterprise Domain
  *
- * APIs for multi-tenancy, RBAC, audit, quotas, safety
+ * APIs for enterprise features: audit and safety.
+ *
+ * NOTE: Multi-tenancy, RBAC, and quotas have been moved out of the react package
+ * as infrastructure concerns. They belong in backend services.
  */
 
 // Top-level: Drop-in ready APIs
@@ -16,17 +19,7 @@ export {
   type UseEnterpriseAuthReturn,
 } from '../../enterprise/use-enterprise-auth'
 
-// Mid-level: Building blocks
-export {
-  MultiTenancyProvider,
-  useMultiTenancy,
-} from '../../multi-tenancy/react'
-export { RBACProvider, useRBAC } from '../../rbac/react'
+// Re-export remaining enterprise modules
 export { AuditLogger } from '../../audit/audit-logger'
-
-// Re-export enterprise modules
-export * from '../../multi-tenancy'
-export * from '../../rbac'
 export * from '../../audit'
 export * from '../../safety'
-export * from '../../quotas'

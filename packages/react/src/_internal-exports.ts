@@ -146,8 +146,7 @@ export type {
   MemoryStats,
 } from '@clarity-chat/memory'
 
-// Vector Stores
-export * from './vector-stores'
+// Vector Stores — moved out of react package (infrastructure concern)
 
 // =============================================================================
 // DOMAIN 4: STREAMING & TRANSPORT
@@ -269,18 +268,14 @@ export * from './components/ai-ops'
 // Enterprise-grade features for production
 // =============================================================================
 
-// Analytics & Observability
+// Analytics
 export * from './analytics'
-export * from './observability'
-
-// Access Control & Security
-export * from './quotas'
-export * from './rbac'
-export * from './multi-tenancy'
 
 // Compliance & Audit
 export * from './audit'
-export * from './webhooks'
+
+// Enterprise infrastructure (RBAC, multi-tenancy, observability, quotas, webhooks)
+// moved out of react package — these are backend/infrastructure concerns
 
 // =============================================================================
 // DOMAIN 9: DEVELOPER EXPERIENCE
@@ -309,8 +304,7 @@ export {
 // Supporting systems and utilities
 // =============================================================================
 
-// Document Processing
-export * from './reranking'
+// Document Processing — reranking moved out of react package
 
 // Theme System
 export {
