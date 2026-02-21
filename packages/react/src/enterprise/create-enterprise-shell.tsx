@@ -26,8 +26,6 @@ import {
   ClarityChat,
   type ClarityChatProps,
 } from '../components/chat/ClarityChat'
-import { MultiTenancyProvider } from '../multi-tenancy/react'
-import { RBACProvider } from '../rbac/react'
 import { AnalyticsProvider } from '../analytics/AnalyticsProvider'
 // Note: AuditProvider would be created if needed, for now using AuditLogger directly
 import { AuditLogger } from '../audit/audit-logger'
@@ -103,35 +101,8 @@ export function createEnterpriseShell(
   const Provider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     let content = <>{children}</>
 
-    // Wrap with multi-tenancy if enabled
-    if (multiTenancy.enabled) {
-      content = (
-        <MultiTenancyProvider
-          initialContext={
-            multiTenancy.tenantId
-              ? {
-                  tenant: {
-                    id: multiTenancy.tenantId,
-                    name: multiTenancy.tenantId,
-                    status: 'active' as const,
-                    createdAt: Date.now(),
-                  },
-                }
-              : undefined
-          }
-        >
-          {content}
-        </MultiTenancyProvider>
-      )
-    }
-
-    // Wrap with RBAC if enabled
-    if (rbac.enabled) {
-      content = <RBACProvider>{content}</RBACProvider>
-    }
-
-    // Audit is handled via AuditLogger (no provider needed)
-    // Audit logging happens via the logger instance
+    // NOTE: Multi-tenancy and RBAC providers have been moved out of the react package.
+    // Use dedicated multi-tenancy/RBAC packages for those features.
 
     // Wrap with analytics if enabled
     if (analytics.enabled) {

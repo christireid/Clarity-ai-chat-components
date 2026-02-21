@@ -35,8 +35,10 @@ import type {
   MemoryEvent,
   MemoryContext as MemoryContextType,
 } from '@clarity-chat/memory'
-import type { VectorStore } from '../vector-stores/types'
-import type { EmbeddingProvider } from '../embeddings/types'
+// NOTE: VectorStore and EmbeddingProvider types moved out of the react package.
+// Using minimal inline types for backward compatibility.
+type VectorStore = { search: (query: string, options?: any) => Promise<any[]> }
+type EmbeddingProvider = { embed: (text: string) => Promise<number[]> }
 import { MemoryService } from '@clarity-chat/memory'
 
 /**

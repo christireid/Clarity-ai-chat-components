@@ -122,8 +122,8 @@ export { DefaultEmptyState as EmptyChatState } from './components/chat/EmptyStat
 export type { DefaultEmptyStateProps as EmptyChatStateProps } from './components/chat/EmptyState'
 
 // 8.9. UI Components
-export { BaseErrorBoundary as ErrorBoundary } from './components/ui/ErrorBoundary'
-export type { ErrorBoundaryProps } from './components/ui/ErrorBoundary'
+export { ChatErrorBoundary as ErrorBoundary } from '@clarity-chat/error-handling'
+export type { ChatErrorBoundaryProps as ErrorBoundaryProps } from '@clarity-chat/error-handling'
 
 // 8.10. Media Components
 export { ExportDialog } from './components/media/ExportDialog'

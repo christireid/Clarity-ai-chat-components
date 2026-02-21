@@ -388,12 +388,9 @@ export type {
 
 // ============================================================================
 // ENTERPRISE FEATURES
+// NOTE: quotas, rbac, multi-tenancy, webhooks moved out as infrastructure concerns
 // ============================================================================
-export * from './quotas'
-export * from './rbac'
-export * from './multi-tenancy'
 export * from './audit'
-export * from './webhooks'
 
 // ============================================================================
 // ADVANCED COMPONENTS
@@ -404,25 +401,9 @@ export * from './components/ai-ops'
 export * from './components/pro'
 
 // ============================================================================
-// VECTOR STORES & EMBEDDINGS
+// VECTOR STORES, EMBEDDINGS, DOCUMENT LOADERS, RERANKING, EVALUATION
+// NOTE: All moved out of the react package as non-UI infrastructure concerns.
 // ============================================================================
-export * from './vector-stores'
-
-// ============================================================================
-// DOCUMENT LOADERS
-// ============================================================================
-export * from './document-loaders/docx-loader'
-export * from './document-loaders/pdf-loader'
-
-// ============================================================================
-// RERANKING
-// ============================================================================
-export * from './reranking'
-
-// ============================================================================
-// RAG EVALUATION
-// ============================================================================
-export * from './evaluation'
 
 // ============================================================================
 // AGENTS & TOOLS

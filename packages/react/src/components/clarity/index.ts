@@ -377,8 +377,7 @@ export * from './scheduled-messages'
 // Presence & Online Status (Superior to Stream/PubNub presence)
 export * from './presence'
 
-// Error Boundary & Error Handling (Comprehensive error management)
-export * from './error-boundary'
+// Error Boundary & Error Handling — use @clarity-chat/error-handling directly
 
 // Message Grouping & Date Separators (Superior to TalkJS/Stream grouping)
 export * from './message-grouping'

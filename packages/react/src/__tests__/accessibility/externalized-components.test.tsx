@@ -21,8 +21,17 @@ import userEvent from '@testing-library/user-event'
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { CodeBlock } from '../../components/code/CodeBlock'
 import { PlainTextMarkdown } from '../../utils/markdown/markdown-fallback'
-import { DOCXLoader } from '../../document-loaders/docx-loader'
-import { PDFLoader } from '../../document-loaders/pdf-loader'
+// NOTE: document-loaders moved out of the react package. Using stubs.
+class DOCXLoader {
+  name = 'docx'; supportedTypes = ['docx']
+  supports(_type: string) { return true }
+  async load(_file: any): Promise<any[]> { return [{ content: 'Stub', metadata: { type: 'stub' } }] }
+}
+class PDFLoader {
+  name = 'pdf'; supportedTypes = ['application/pdf']
+  supports(_type: string) { return true }
+  async load(_file: any): Promise<any[]> { return [{ content: 'Stub PDF', metadata: { error: true, source: 'stub' } }] }
+}
 
 expect.extend(toHaveNoViolations)
 

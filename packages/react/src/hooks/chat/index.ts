@@ -58,7 +58,6 @@ export * from './use-chat-history'
 export * from './use-completion'
 export * from './use-assistant'
 export * from './use-agent'
-export * from './use-rag-pipeline'
 
 // ============================================================================
 // CORE TYPES (Re-exported from internal)

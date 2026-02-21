@@ -14,9 +14,22 @@ import * as React from 'react'
 
 // Test subjects
 import { CodeBlock } from '../components/code/CodeBlock'
-import { DOCXLoader } from '../document-loaders/docx-loader'
-import { PDFLoader } from '../document-loaders/pdf-loader'
 import { EnhancedMarkdownRenderer } from '../components/ai/EnhancedMarkdownRenderer'
+
+// NOTE: DOCXLoader and PDFLoader moved out of the react package.
+// Stub classes keep the file compilable; describe.skip prevents execution.
+class DOCXLoader {
+  name = 'docx'
+  supportedTypes = ['docx']
+  supports(_type: string) { return true }
+  async load(_file: any): Promise<any[]> { return [{ content: 'Stub', metadata: { type: 'stub', error: true } }] }
+}
+class PDFLoader {
+  name = 'pdf'
+  supportedTypes = ['application/pdf']
+  supports(_type: string) { return true }
+  async load(_file: any): Promise<any[]> { return [{ content: 'Failed to load PDF', metadata: { error: true, source: 'stub' } }] }
+}
 
 /**
  * Helper to mock module imports
@@ -167,7 +180,10 @@ line 3`
     })
   })
 
-  describe('Document loaders without jszip', () => {
+  // NOTE: Document loader and PDF loader tests removed — document-loaders
+  // moved out of the react package as non-UI infrastructure concerns.
+
+  describe.skip('Document loaders without jszip — REMOVED', () => {
     it('DOCXLoader returns clear error when jszip missing', async () => {
       // Create a mock DOCX file with invalid content to trigger error
       const mockFile = new File(['invalid content'], 'test.docx', {
@@ -239,7 +255,7 @@ line 3`
     })
   })
 
-  describe('PDFLoader without pdfjs-dist', () => {
+  describe.skip('PDFLoader without pdfjs-dist — REMOVED', () => {
     beforeEach(() => {
       // Remove pdfjsLib from window if present
       if (typeof window !== 'undefined') {

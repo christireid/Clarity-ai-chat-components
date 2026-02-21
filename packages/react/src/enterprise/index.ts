@@ -1,7 +1,9 @@
 /**
  * Enterprise Domain Exports
- * 
- * Complete enterprise features: multi-tenancy, RBAC, audit, quotas, safety
+ *
+ * Enterprise features: audit and safety.
+ * NOTE: Multi-tenancy, RBAC, and quotas have been moved out of the react package
+ * as infrastructure concerns.
  */
 
 export {
@@ -17,8 +19,5 @@ export {
 } from './use-enterprise-auth'
 
 // Re-export enterprise modules
-export * from '../multi-tenancy'
-export * from '../rbac'
 export * from '../audit'
 export * from '../safety'
-export * from '../quotas'

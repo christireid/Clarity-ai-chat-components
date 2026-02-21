@@ -46,8 +46,5 @@ export * from '../agents/tool-ui-registry'
 // Types
 export type { StreamChunk } from '../adapters/types'
 
-// RAG infrastructure
-export * from '../vector-stores'
-export * from '../embeddings'
-export * from '../document-loaders'
-export * from '../reranking'
+// NOTE: RAG infrastructure (vector-stores, embeddings, document-loaders, reranking)
+// has been moved out of the react package as non-UI concerns.

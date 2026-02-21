@@ -6,7 +6,7 @@
  */
 
 import React from 'react'
-import { errorReporter } from '../components/ui/ErrorBoundary'
+import { errorReporter } from '@clarity-chat/error-handling'
 
 // ============================================================================
 // TYPES
