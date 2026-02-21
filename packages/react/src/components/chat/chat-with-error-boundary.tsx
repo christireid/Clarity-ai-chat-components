@@ -22,9 +22,9 @@
 import * as React from 'react'
 import { ClarityChat, type ClarityChatProps } from './clarity-chat'
 import {
-  ErrorBoundary,
-  type ErrorBoundaryProps,
-} from '../feedback/error-boundary'
+  EnhancedErrorBoundary as ErrorBoundary,
+  type EnhancedErrorBoundaryProps as ErrorBoundaryProps,
+} from '@clarity-chat/error-handling'
 
 export interface ChatWithErrorBoundaryProps extends ClarityChatProps {
   /** Error boundary fallback UI */

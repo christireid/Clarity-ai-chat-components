@@ -94,7 +94,7 @@ export {
 } from './utils/message/message-conversion'
 
 // Error handling
-export { ErrorBoundary } from './components/feedback/error-boundary'
+export { EnhancedErrorBoundary as ErrorBoundary } from '@clarity-chat/error-handling'
 export {
   ChatWithErrorBoundary,
   type ChatWithErrorBoundaryProps,

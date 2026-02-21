@@ -28,7 +28,7 @@ import type {
   ToolComponentProps,
 } from '../../agents/tool-ui-registry'
 import { Card, CardContent, CardHeader } from '@clarity-chat/primitives'
-import { ErrorBoundary } from '../feedback/error-boundary'
+import { EnhancedErrorBoundary as ErrorBoundary } from '@clarity-chat/error-handling'
 
 /**
  * Escape HTML special characters to prevent XSS

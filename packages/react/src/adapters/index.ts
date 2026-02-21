@@ -75,25 +75,6 @@ export type {
 } from './circuit-breaker'
 
 // Logging types and utilities
-export {
-  LogLevel,
-  Logger,
-  ConsoleLogTransport,
-  JSONLogTransport,
-  BufferedLogTransport,
-  globalLogger,
-  createCorrelationId,
-  logAdapterRequest,
-  logAdapterResponse,
-  logAdapterError,
-} from './logging'
-
-export type {
-  LogEntry,
-  LogTransport,
-  LoggerConfig,
-} from './logging'
-
 // Monitoring types and utilities
 export {
   HealthMonitor,

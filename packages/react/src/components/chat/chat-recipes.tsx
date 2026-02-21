@@ -9,7 +9,7 @@
 
 import * as React from 'react'
 import { ClarityChat, type ClarityChatProps } from './clarity-chat'
-import { ErrorBoundary } from '../feedback/error-boundary'
+import { EnhancedErrorBoundary as ErrorBoundary } from '@clarity-chat/error-handling'
 import { applyChatPreset, type ChatPreset } from '../../presets/chat-presets'
 import {
   validateApiEndpoint,
