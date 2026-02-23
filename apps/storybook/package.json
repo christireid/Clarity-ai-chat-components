@@ -39,17 +39,17 @@
     "flowtoken": "^1.0.40",
     "framer-motion": "^12.23.25",
     "jszip": "^3.10.0",
-    "lucide-react": "^0.500.0",
+    "lucide-react": "^0.575.0",
     "mammoth": "^1.8.0",
-    "mermaid": "^11.0.0",
+    "mermaid": "^11.12.3",
     "pdfjs-dist": "^4.0.0",
     "prismjs": "^1.30.0",
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0",
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4",
     "react-markdown": "^10.1.0",
     "rehype-highlight": "^7.0.2",
     "remark-gfm": "^4.0.1",
-    "shiki": "^3.0.0",
+    "shiki": "^3.22.0",
     "zod": "^3.24.0"
   }
 }
