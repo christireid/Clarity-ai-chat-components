@@ -51,8 +51,8 @@
   },
   "dependencies": {
     "@clarity-chat/utils": "workspace:*",
-    "@modelcontextprotocol/sdk": "^1.24.3",
-    "hono": ">=4.11.7",
+    "@modelcontextprotocol/sdk": "^1.27.1",
+    "hono": ">=4.12.5",
     "zod": "^3.24.0"
   },
   "devDependencies": {
