@@ -18,7 +18,7 @@
 <p>
   <a href="#-quick-start"><strong>Quick Start</strong></a> •
   <a href="#-see-it-in-action"><strong>See It Live</strong></a> •
-  <a href="#-the-component-gallery"><strong>Gallery</strong></a> •
+  <a href="./docs/GALLERY.md"><strong>Full Gallery</strong></a> •
   <a href="./docs/getting-started.md"><strong>Docs</strong></a> •
   <a href="./examples"><strong>Examples</strong></a>
 </p>
@@ -103,6 +103,90 @@ Every component ships both themes. One toggle, no flash, no half-styled corners.
 ### 🗺️ 23 categories, one sidebar away
 
 <img src="./docs/assets/readme/component-tour.gif" alt="Touring the component categories: core chat, messages, reasoning, tools, dashboards, primitives" width="100%" />
+
+<br />
+
+### 🪞 Seven familiar interfaces, one component set
+
+Claude, ChatGPT, Perplexity, Grok, Manus, Emergent and Lovable — each rebuilt from the same library.
+If it can wear those faces, it can wear yours.
+
+<img src="./docs/assets/readme/clones-tour.gif" alt="Cycling through seven AI interface clones rebuilt from Clarity Chat components" width="100%" />
+
+<br />
+
+<table>
+<tr>
+<td width="50%" valign="top">
+
+**🛠️ Tool calling, end to end**
+
+Tool cards, live execution, approval gates, confirmations, a registry and metrics.
+
+<img src="./docs/assets/readme/tools-tour.gif" alt="Tool calling: cards, execution, approval, confirmation, registry and metrics" width="100%" />
+
+</td>
+<td width="50%" valign="top">
+
+**📊 Five operational dashboards**
+
+Token optimization, prompt library, conversation history, agent observability, SDK devtools.
+
+<img src="./docs/assets/readme/dashboards-tour.gif" alt="Five operational dashboards for running AI in production" width="100%" />
+
+</td>
+</tr>
+<tr>
+<td width="50%" valign="top">
+
+**⌨️ Command palette**
+
+Quick actions with keyboard shortcuts, wired into the chat shell.
+
+<img src="./docs/assets/readme/command-palette.gif" alt="Command palette with keyboard shortcuts" width="100%" />
+
+</td>
+<td width="50%" valign="top">
+
+**✍️ Streaming, token by token**
+
+Real-time text generation with a live cursor and a stop control.
+
+<img src="./docs/assets/readme/message-streaming.gif" alt="Streaming message component rendering text in real time" width="100%" />
+
+</td>
+</tr>
+<tr>
+<td width="50%" valign="top">
+
+**⏳ Loading states that fit AI**
+
+Spinners, skeletons, shimmer, progress and AI-specific waiting states.
+
+<img src="./docs/assets/readme/shimmer.gif" alt="Shimmer and skeleton loading placeholders" width="100%" />
+
+</td>
+<td width="50%" valign="top">
+
+**🧬 The feature catalogue**
+
+Workflows, forms, realtime status, streaming, provider adapters and more.
+
+<img src="./docs/assets/readme/features-tour.gif" alt="Touring the feature component catalogue" width="100%" />
+
+</td>
+</tr>
+</table>
+
+<br />
+
+<div align="center">
+
+### 📸 [**See all 103 component views and 26 clips →**](./docs/GALLERY.md)
+
+Every tab of every category, captured from the running showcase.
+
+</div>
 
 <br />
 
@@ -234,14 +318,14 @@ Bubble variants, rich markdown with code, delivery status, grouping, actions and
 
 **🪙 Token budgets**
 
-<img src="./docs/assets/readme/token-management.png" alt="Token counter with context usage and per-role breakdown" width="100%" />
+<img src="./docs/assets/readme/token-budget.gif" alt="Live token counter tracking context usage" width="100%" />
 
 </td>
 <td width="50%" valign="top">
 
 **📚 Citations and sources**
 
-<img src="./docs/assets/readme/citations.png" alt="Citation chips, source cards and numbered references" width="100%" />
+<img src="./docs/assets/readme/citations-tour.gif" alt="Citation chips, source cards, link previews and quote blocks" width="100%" />
 
 </td>
 </tr>
@@ -249,12 +333,12 @@ Bubble variants, rich markdown with code, delivery status, grouping, actions and
 
 <br />
 
-### 🪞 Proof it composes: seven interface clones
+### 🪞 The Claude clone, up close
 
-Claude, ChatGPT, Perplexity, Grok, Manus, Emergent and Lovable — each recreated from the same
-component set. If the library can wear those faces, it can wear yours.
+One of the seven recreations — sidebar, conversation history, model picker and message actions, all
+standard components. [See the other six →](./docs/GALLERY.md#ai-interface-clones)
 
-<img src="./docs/assets/readme/clones.png" alt="AI interface clones — Claude, ChatGPT, Perplexity, Grok, Manus, Emergent and Lovable rebuilt from Clarity Chat components" width="100%" />
+<img src="./docs/assets/readme/clones.png" alt="The Claude interface clone rebuilt from Clarity Chat components" width="100%" />
 
 <br />
 
@@ -272,37 +356,73 @@ built on.
 
 **⌨️ Input** — voice, file upload, mentions, slash commands, structured input.
 
-<img src="./docs/assets/readme/input.png" alt="Chat input variants" width="100%" />
+<img src="./docs/assets/readme/input-tour.gif" alt="Input variants: voice, file upload, mentions, rich text and shortcuts" width="100%" />
 
 <br />
 
 **🔍 Search** — semantic search, filters, result lists and highlighting.
 
-<img src="./docs/assets/readme/search.png" alt="Search components" width="100%" />
+<img src="./docs/assets/readme/search-tour.gif" alt="Search: filters, semantic search and history" width="100%" />
 
 <br />
 
 **📎 Media and files** — previews, galleries, attachments and document handling.
 
-<img src="./docs/assets/readme/media-files.png" alt="Media and file components" width="100%" />
+<img src="./docs/assets/readme/media-tour.gif" alt="Media: gallery, attachments, audio player and file viewer" width="100%" />
 
 <br />
 
 **💻 Code and data** — code blocks, diffs, tables, charts and structured output.
 
-<img src="./docs/assets/readme/code-data.png" alt="Code and data components" width="100%" />
+<img src="./docs/assets/readme/code-data-tour.gif" alt="Code blocks, diffs, terminal, data tables and test results" width="100%" />
 
 <br />
 
 **⏳ Loading states** — skeletons, shimmers, progress and streaming placeholders.
 
-<img src="./docs/assets/readme/loading-states.png" alt="Loading state components" width="100%" />
+<img src="./docs/assets/readme/ai-states.gif" alt="AI-specific loading states" width="100%" />
 
 <br />
 
 **🎨 Theming** — switchers, palettes, presets and appearance settings.
 
-<img src="./docs/assets/readme/theme.png" alt="Theme switcher and appearance settings" width="100%" />
+<img src="./docs/assets/readme/theme-tour.gif" alt="Theme colors, presets and appearance settings" width="100%" />
+
+<br />
+
+**🔔 Feedback and status** — toasts, network status, error states and notifications.
+
+<img src="./docs/assets/readme/feedback-tour.gif" alt="Network status, error states, feedback and notifications" width="100%" />
+
+<br />
+
+**💡 Suggestions** — follow-ups, prompt suggestions, quick replies and chips.
+
+<img src="./docs/assets/readme/suggestions-tour.gif" alt="Follow-ups, prompt suggestions, quick replies and suggestion chips" width="100%" />
+
+<br />
+
+**🧭 Navigation** — conversation lists, history, breadcrumbs and quick nav.
+
+<img src="./docs/assets/readme/navigation-tour.gif" alt="Conversations, history, breadcrumbs and quick nav" width="100%" />
+
+<br />
+
+**💬 Typing indicators** — the three dots, done properly.
+
+<img src="./docs/assets/readme/typing-indicators.gif" alt="Typing indicator variants" width="100%" />
+
+<br />
+
+**🧠 Thinking indicators** — pulsing brain, progress bar and step-by-step status.
+
+<img src="./docs/assets/readme/thinking-indicators.gif" alt="Thinking indicators showing AI reasoning in progress" width="100%" />
+
+<br />
+
+**🧩 Primitives** — 25 base components on Radix UI and shadcn/ui.
+
+<img src="./docs/assets/readme/primitives.png" alt="Primitive components: buttons, dialogs, dropdowns, popovers, tooltips, tabs" width="100%" />
 
 </details>
 
