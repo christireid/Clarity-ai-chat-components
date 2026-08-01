@@ -9,6 +9,24 @@
 
 ![Token Optimization Demo](./public/screenshot.svg)
 
+<!-- visual-header -->
+
+<div align="center">
+
+<img src="./assets/hero.png" alt="token-optimization example" width="100%" />
+
+<sub>The optimization playground with savings, tokens saved and cost saved.</sub>
+
+</div>
+
+<br />
+
+**Running TOON optimization, prompt compression and cache preparation — the stats update live.**
+
+<img src="./assets/demo.gif" alt="token-optimization example in action" width="100%" />
+
+<!-- visual-header -->
+
 ## ✨ Features
 
 - **TOON Format** - Token-Optimized Object Notation for 30-60% savings on structured data

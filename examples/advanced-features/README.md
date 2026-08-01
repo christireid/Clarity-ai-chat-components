@@ -1,6 +1,15 @@
 # Advanced Features Examples
 
-This directory contains comprehensive examples demonstrating the advanced features implemented for the Clarity AI Chat Components library.
+<!-- visual-header -->
+
+> **No screenshot** — This example does not currently boot: it imports `useBatteryAware` from
+> `@clarity-chat/react`, which the package does not export. There is no screenshot here for that
+> reason.
+
+<!-- visual-header -->
+
+This directory contains comprehensive examples demonstrating the advanced features implemented for
+the Clarity AI Chat Components library.
 
 ## 📚 Feature Categories
 
@@ -13,7 +22,8 @@ High-impact, low-effort enhancements that provide immediate value:
 3. **Battery-Aware Features** - Automatic optimization based on device battery
 4. **Performance Analytics Dashboard** - Real-time performance monitoring
 
-See [ADVANCED_FEATURES_QUICK_WINS.md](../../ADVANCED_FEATURES_QUICK_WINS.md) for complete documentation.
+See [ADVANCED_FEATURES_QUICK_WINS.md](../../ADVANCED_FEATURES_QUICK_WINS.md) for complete
+documentation.
 
 ### Phase 1: AI-Native Features
 
@@ -24,7 +34,8 @@ Advanced AI/ML capabilities:
 3. **Conversation Analytics** - AI-powered insights
 4. **Auto-Summarization** - Multi-level summaries
 
-See [PHASE_1_AI_NATIVE_FEATURES_COMPLETE.md](../../PHASE_1_AI_NATIVE_FEATURES_COMPLETE.md) for complete documentation.
+See [PHASE_1_AI_NATIVE_FEATURES_COMPLETE.md](../../PHASE_1_AI_NATIVE_FEATURES_COMPLETE.md) for
+complete documentation.
 
 ### Phase 3: Collaboration Features
 
@@ -33,7 +44,8 @@ Team collaboration tools:
 1. **Message Threading** - Slack-style threads
 2. **Mention System** - @mention autocomplete
 
-See [PHASE_3_COLLABORATION_FEATURES_COMPLETE.md](../../PHASE_3_COLLABORATION_FEATURES_COMPLETE.md) for complete documentation.
+See [PHASE_3_COLLABORATION_FEATURES_COMPLETE.md](../../PHASE_3_COLLABORATION_FEATURES_COMPLETE.md)
+for complete documentation.
 
 ## 📁 Examples Overview
 
@@ -83,8 +95,7 @@ Replace your existing `PromptSuggestions` with `PromptSuggestionsEnhanced`:
 
 ```tsx
 import { PromptSuggestionsEnhanced } from '@clarity-chat/react'
-
-<PromptSuggestionsEnhanced
+;<PromptSuggestionsEnhanced
   messages={messages}
   onSelect={(suggestion) => sendMessage(suggestion.text)}
   config={{
@@ -107,8 +118,7 @@ Generate AI-powered summaries of your conversations:
 
 ```tsx
 import { ConversationSummarizer } from '@clarity-chat/react'
-
-<ConversationSummarizer
+;<ConversationSummarizer
   messages={messages}
   config={{
     trigger: 'manual', // or 'auto' or 'interval'
@@ -160,8 +170,7 @@ Track and visualize performance metrics in real-time:
 
 ```tsx
 import { PerformanceAnalyticsDashboard } from '@clarity-chat/react'
-
-<PerformanceAnalyticsDashboard
+;<PerformanceAnalyticsDashboard
   updateInterval={1000}
   showWebVitals
   showComponentMetrics
@@ -189,13 +198,13 @@ function ThreadedChat() {
   return (
     <div className="grid grid-cols-3 gap-4">
       <div className="col-span-2">
-        {messages.map(message => (
+        {messages.map((message) => (
           <div key={message.id}>
             <Message message={message} />
 
             <MessageThreadView
               parentMessage={message}
-              thread={threads.find(t => t.parentMessageId === message.id)}
+              thread={threads.find((t) => t.parentMessageId === message.id)}
               config={{ maxDepth: 3, showPreview: true }}
               onSendMessage={(content) => handleThreadReply(message.id, content)}
               onCreateThread={() => createThread(message.id)}
@@ -205,11 +214,7 @@ function ThreadedChat() {
         ))}
       </div>
 
-      <ThreadList
-        threads={threads}
-        parentMessages={messages}
-        onSelectThread={scrollToThread}
-      />
+      <ThreadList threads={threads} parentMessages={messages} onSelectThread={scrollToThread} />
     </div>
   )
 }
@@ -321,11 +326,7 @@ function MobileChat() {
 
   return (
     <div className="mobile-chat">
-      {shouldEnableBatterySaver && (
-        <div className="battery-warning">
-          ⚡ Battery Saver Active
-        </div>
-      )}
+      {shouldEnableBatterySaver && <div className="battery-warning">⚡ Battery Saver Active</div>}
 
       <ChatWindow
         enableAnimations={!recommendations.disableAnimations}
@@ -358,12 +359,7 @@ function DevDashboard() {
   return (
     <div className="dev-dashboard">
       <div className="performance-panel">
-        <PerformanceAnalyticsDashboard
-          showWebVitals
-          showComponentMetrics
-          showMemoryUsage
-          showFPS
-        />
+        <PerformanceAnalyticsDashboard showWebVitals showComponentMetrics showMemoryUsage showFPS />
       </div>
 
       <div className="analytics-panel">
@@ -420,21 +416,15 @@ function AdaptiveChat() {
 
   return (
     <>
-      <ChatWindow
-        enableAnimations={!recommendations.disableAnimations}
-      />
+      <ChatWindow enableAnimations={!recommendations.disableAnimations} />
 
       {FEATURES.enhancedSuggestions && (
         <PromptSuggestionsEnhanced messages={messages} onSelect={handleSelect} />
       )}
 
-      {FEATURES.summarization && (
-        <ConversationSummarizer messages={messages} />
-      )}
+      {FEATURES.summarization && <ConversationSummarizer messages={messages} />}
 
-      {FEATURES.performanceMonitoring && (
-        <PerformanceAnalyticsDashboard compact />
-      )}
+      {FEATURES.performanceMonitoring && <PerformanceAnalyticsDashboard compact />}
     </>
   )
 }
@@ -489,6 +479,7 @@ Connect your own ML ranking service:
 ```
 
 Your API should accept:
+
 ```typescript
 // POST /api/rank-suggestions
 {
@@ -524,6 +515,7 @@ Use your own LLM for summarization:
 ```
 
 Your API should return:
+
 ```typescript
 {
   id: string
@@ -570,45 +562,47 @@ const { recommendations } = useBatteryAware({
 
 ### Bundle Size
 
-| Feature | Minified | Gzipped |
-|---------|----------|---------|
-| Enhanced Suggestions | ~8 KB | ~3 KB |
-| Conversation Summarizer | ~10 KB | ~3.5 KB |
-| Battery-Aware Hook | ~5 KB | ~2 KB |
-| Performance Dashboard | ~12 KB | ~4 KB |
-| **Total** | **~38 KB** | **~13.5 KB** |
+| Feature                 | Minified   | Gzipped      |
+| ----------------------- | ---------- | ------------ |
+| Enhanced Suggestions    | ~8 KB      | ~3 KB        |
+| Conversation Summarizer | ~10 KB     | ~3.5 KB      |
+| Battery-Aware Hook      | ~5 KB      | ~2 KB        |
+| Performance Dashboard   | ~12 KB     | ~4 KB        |
+| **Total**               | **~38 KB** | **~13.5 KB** |
 
 ### Runtime Performance
 
-| Feature | Init Time | Per Update | Memory |
-|---------|-----------|------------|--------|
-| Enhanced Suggestions | < 5ms | < 2ms | ~50 KB |
-| Conversation Summarizer | < 1ms | N/A | ~20 KB |
-| Battery-Aware Hook | < 1ms | < 0.5ms | ~10 KB |
-| Performance Dashboard | < 2ms | < 1ms | ~30 KB |
+| Feature                 | Init Time | Per Update | Memory |
+| ----------------------- | --------- | ---------- | ------ |
+| Enhanced Suggestions    | < 5ms     | < 2ms      | ~50 KB |
+| Conversation Summarizer | < 1ms     | N/A        | ~20 KB |
+| Battery-Aware Hook      | < 1ms     | < 0.5ms    | ~10 KB |
+| Performance Dashboard   | < 2ms     | < 1ms      | ~30 KB |
 
 ## 🎯 Expected Improvements
 
-| Metric | Before | After | Improvement |
-|--------|--------|-------|-------------|
-| Suggestion CTR | ~10% | ~25% | **+150%** |
-| Conversation Review | 5 min | 1.5 min | **-70%** |
-| Mobile Battery Life | 2 hours | 3 hours | **+50%** |
-| Performance Detection | Days | Minutes | **-99%** |
-| User Engagement | Baseline | +40% | **+40%** |
+| Metric                | Before   | After   | Improvement |
+| --------------------- | -------- | ------- | ----------- |
+| Suggestion CTR        | ~10%     | ~25%    | **+150%**   |
+| Conversation Review   | 5 min    | 1.5 min | **-70%**    |
+| Mobile Battery Life   | 2 hours  | 3 hours | **+50%**    |
+| Performance Detection | Days     | Minutes | **-99%**    |
+| User Engagement       | Baseline | +40%    | **+40%**    |
 
 ## 🚨 Common Pitfalls
 
 ### Pitfall 1: Not Tracking Effectiveness
 
 ❌ **Bad:**
+
 ```tsx
 <PromptSuggestionsEnhanced messages={messages} onSelect={handleSelect} />
 ```
 
 ✅ **Good:**
+
 ```tsx
-<PromptSuggestionsEnhanced
+;<PromptSuggestionsEnhanced
   messages={messages}
   onSelect={handleSelect}
   config={{
@@ -624,6 +618,7 @@ console.log('CTR:', stats.clickThroughRate)
 ### Pitfall 2: Ignoring Battery Recommendations
 
 ❌ **Bad:**
+
 ```tsx
 const { recommendations } = useBatteryAware()
 // Not using recommendations
@@ -631,6 +626,7 @@ const { recommendations } = useBatteryAware()
 ```
 
 ✅ **Good:**
+
 ```tsx
 const { recommendations } = useBatteryAware()
 <ChatWindow
@@ -642,6 +638,7 @@ const { recommendations } = useBatteryAware()
 ### Pitfall 3: Not Handling Summary Errors
 
 ❌ **Bad:**
+
 ```tsx
 <ConversationSummarizer
   messages={messages}
@@ -655,6 +652,7 @@ const { recommendations } = useBatteryAware()
 ```
 
 ✅ **Good:**
+
 ```tsx
 <ConversationSummarizer
   messages={messages}
@@ -716,7 +714,7 @@ function AdvancedCollaborativeChat() {
       timestamp: Date.now(),
     }
 
-    setMessages(prev => [...prev, newMessage])
+    setMessages((prev) => [...prev, newMessage])
     setInputValue('')
   }
 
@@ -726,9 +724,7 @@ function AdvancedCollaborativeChat() {
       <div className="space-y-4">
         <Card>
           <CardHeader>
-            <CardTitle>
-              Mentions {unreadCount > 0 && <Badge>{unreadCount}</Badge>}
-            </CardTitle>
+            <CardTitle>Mentions {unreadCount > 0 && <Badge>{unreadCount}</Badge>}</CardTitle>
           </CardHeader>
           <CardContent>
             <MentionList
@@ -761,14 +757,14 @@ function AdvancedCollaborativeChat() {
       {/* Main chat area */}
       <div className="col-span-2 flex flex-col">
         <div className="flex-1 overflow-auto space-y-4">
-          {messages.map(message => (
+          {messages.map((message) => (
             <div key={message.id}>
               <Message message={message} />
 
               {/* Thread preview */}
               <MessageThreadView
                 parentMessage={message}
-                thread={threads.find(t => t.parentMessageId === message.id)}
+                thread={threads.find((t) => t.parentMessageId === message.id)}
                 config={{ maxDepth: 3, showPreview: true }}
                 onSendMessage={handleThreadReply}
                 onCreateThread={() => createThread(message.id)}
@@ -792,10 +788,7 @@ function AdvancedCollaborativeChat() {
 
       {/* Right sidebar - AI Features */}
       <div className="space-y-4">
-        <PromptSuggestionsEnhanced
-          messages={messages}
-          onSelect={(s) => setInputValue(s.text)}
-        />
+        <PromptSuggestionsEnhanced messages={messages} onSelect={(s) => setInputValue(s.text)} />
 
         <ConversationSummarizer
           messages={messages}
@@ -812,19 +805,21 @@ function AdvancedCollaborativeChat() {
 ### Documentation
 
 - **Quick Wins (Phase 0):** [ADVANCED_FEATURES_QUICK_WINS.md](../../ADVANCED_FEATURES_QUICK_WINS.md)
-- **Phase 1 (AI-Native):** [PHASE_1_AI_NATIVE_FEATURES_COMPLETE.md](../../PHASE_1_AI_NATIVE_FEATURES_COMPLETE.md)
-- **Phase 3 (Collaboration):** [PHASE_3_COLLABORATION_FEATURES_COMPLETE.md](../../PHASE_3_COLLABORATION_FEATURES_COMPLETE.md)
-- **Full Enhancement Plan:** [ADVANCED_FEATURES_ENHANCEMENT_PLAN.md](../../ADVANCED_FEATURES_ENHANCEMENT_PLAN.md)
+- **Phase 1 (AI-Native):**
+  [PHASE_1_AI_NATIVE_FEATURES_COMPLETE.md](../../PHASE_1_AI_NATIVE_FEATURES_COMPLETE.md)
+- **Phase 3 (Collaboration):**
+  [PHASE_3_COLLABORATION_FEATURES_COMPLETE.md](../../PHASE_3_COLLABORATION_FEATURES_COMPLETE.md)
+- **Full Enhancement Plan:**
+  [ADVANCED_FEATURES_ENHANCEMENT_PLAN.md](../../ADVANCED_FEATURES_ENHANCEMENT_PLAN.md)
 - **Overall Implementation:** [IMPLEMENTATION_SUMMARY_2025.md](../../IMPLEMENTATION_SUMMARY_2025.md)
 - **Quick Reference:** [QUICK_REFERENCE_2025.md](../../QUICK_REFERENCE_2025.md)
 
 ## 💬 Support
 
-- GitHub Issues: [Report bugs or request features](https://github.com/yourusername/clarity-ai-chat-components/issues)
+- GitHub Issues:
+  [Report bugs or request features](https://github.com/yourusername/clarity-ai-chat-components/issues)
 - Documentation: [Full library docs](https://docs.example.com)
 
 ---
 
-**Version:** 1.0
-**Date:** 2025-11-20
-**Status:** ✅ Production Ready
+**Version:** 1.0 **Date:** 2025-11-20 **Status:** ✅ Production Ready

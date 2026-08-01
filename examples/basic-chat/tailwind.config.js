@@ -3,8 +3,6 @@ module.exports = {
   content: [
     './app/**/*.{js,ts,jsx,tsx,mdx}',
     './components/**/*.{js,ts,jsx,tsx,mdx}',
-    './node_modules/@clarity-chat/react/dist/**/*.{js,ts,jsx,tsx}',
-    './node_modules/@clarity-chat/primitives/dist/**/*.{js,ts,jsx,tsx}',
   ],
   darkMode: 'class',
   theme: {

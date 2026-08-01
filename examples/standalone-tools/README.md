@@ -1,8 +1,17 @@
 # Standalone Tool System Example
 
-This example shows how to use the Clarity Chat tool calling system in **ANY React application**, without requiring Clarity Chat UI components.
+<!-- visual-header -->
+
+> **No screenshot** — These are copy-paste snippets rather than a runnable app, so there is nothing
+> to screenshot. See the [tool-calling clips in the gallery](../../docs/GALLERY.md#tools).
+
+<!-- visual-header -->
+
+This example shows how to use the Clarity Chat tool calling system in **ANY React application**,
+without requiring Clarity Chat UI components.
 
 The tool system is completely framework-agnostic and works with:
+
 - ✅ Plain React
 - ✅ Next.js
 - ✅ Remix
@@ -32,25 +41,25 @@ const weatherTool = {
   parameters: {
     type: 'object',
     properties: {
-      location: { type: 'string' }
+      location: { type: 'string' },
     },
-    required: ['location']
+    required: ['location'],
   },
   handler: async ({ location }) => {
     const response = await fetch(`https://api.weather.com/...`)
     return response.json()
-  }
+  },
 }
 
 // 2. Create orchestrator
 const orchestrator = new ToolOrchestrator({
   autoApprove: true,
-  tools: [weatherTool]
+  tools: [weatherTool],
 })
 
 // 3. Execute tools
 const result = await orchestrator.executeTool('get_weather', {
-  location: 'San Francisco'
+  location: 'San Francisco',
 })
 
 console.log(result.result) // { temperature: 72, ... }
@@ -231,7 +240,7 @@ const result = await executeWithRetry(
     backoffMultiplier: 2,
     onRetry: (attempt, delay) => {
       console.log(`Retry ${attempt} after ${delay}ms`)
-    }
+    },
   }
 )
 ```
@@ -248,7 +257,7 @@ const result = await executeWithFallback(
     tools: ['primary_api', 'secondary_api', 'backup_api'],
     onFallback: (failed, next) => {
       console.warn(`${failed} failed, trying ${next}`)
-    }
+    },
   }
 )
 ```
@@ -262,7 +271,7 @@ const monitor = new ToolPerformanceMonitor(orchestrator, {
   slowQueryThreshold: 3000,
   onSlowQuery: (metric) => {
     console.warn(`Slow: ${metric.toolName} took ${metric.duration}ms`)
-  }
+  },
 })
 
 monitor.start()
@@ -277,14 +286,15 @@ console.log(formatPerformanceReport(report))
 
 The tool system is completely independent:
 
-| Component | Requires Clarity? | Description |
-|-----------|------------------|-------------|
-| `ToolOrchestrator` | ❌ No | Core tool execution engine |
-| `executeWithRetry` | ❌ No | Utility functions |
-| `ToolPerformanceMonitor` | ❌ No | Performance tracking |
-| `ToolApprovalDialog` | ✅ Optional | Pre-built React UI component |
+| Component                | Requires Clarity? | Description                  |
+| ------------------------ | ----------------- | ---------------------------- |
+| `ToolOrchestrator`       | ❌ No             | Core tool execution engine   |
+| `executeWithRetry`       | ❌ No             | Utility functions            |
+| `ToolPerformanceMonitor` | ❌ No             | Performance tracking         |
+| `ToolApprovalDialog`     | ✅ Optional       | Pre-built React UI component |
 
-**You only need Clarity UI components if you want pre-built approval dialogs.** Everything else works standalone!
+**You only need Clarity UI components if you want pre-built approval dialogs.** Everything else
+works standalone!
 
 ## Integration Examples
 
@@ -298,6 +308,7 @@ See the `examples/` directory for complete examples:
 ## API Reference
 
 See the complete documentation:
+
 - [Tool Calling Guide](../../packages/react/src/docs/TOOL_CALLING_GUIDE.md)
 - [Quick Reference](../../packages/react/src/docs/TOOL_CALLING_QUICK_REFERENCE.md)
 - [Migration Guide](../../packages/react/src/docs/MIGRATION_GUIDE.md)

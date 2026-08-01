@@ -2,6 +2,24 @@
 
 > WCAG 2.1 AA compliant AI chat interface with comprehensive accessibility features.
 
+<!-- visual-header -->
+
+<div align="center">
+
+<img src="./assets/hero.png" alt="accessibility example" width="100%" />
+
+<sub>A WCAG 2.1 AA chat with accessibility options and documented keyboard shortcuts.</sub>
+
+</div>
+
+<br />
+
+**Toggling High Contrast, Large Font and Reduced Motion.**
+
+<img src="./assets/demo.gif" alt="accessibility example in action" width="100%" />
+
+<!-- visual-header -->
+
 ## Features
 
 - Keyboard navigation with arrow keys

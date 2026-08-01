@@ -6,6 +6,28 @@
 ![Difficulty](https://img.shields.io/badge/Difficulty-Beginner-green)
 ![Time](https://img.shields.io/badge/Time-5%20min-orange)
 
+<!-- visual-header -->
+
+<div align="center">
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="./assets/hero-dark.png" />
+  <source media="(prefers-color-scheme: light)" srcset="./assets/hero.png" />
+  <img src="./assets/hero.png" alt="quickstart example" width="100%" />
+</picture>
+
+<sub>The quickstart running with zero configuration — demo mode, no API key.</sub>
+
+</div>
+
+<br />
+
+**Asking a question and watching the demo-mode reply stream back.**
+
+<img src="./assets/demo.gif" alt="quickstart example in action" width="100%" />
+
+<!-- visual-header -->
+
 ## What You'll Learn
 
 - How to run Clarity Chat with zero configuration

@@ -2,6 +2,26 @@
 
 > AI function calling with visual tool rendering and execution status.
 
+<!-- visual-header -->
+
+<div align="center">
+
+<img src="./assets/hero.png" alt="tool-calling example" width="100%" />
+
+<sub>A chat wired to weather, search, calculator and stock tools.</sub>
+
+</div>
+
+<br />
+
+**Composing prompts that route to different tools. Add an `OPENAI_API_KEY` to see them execute.**
+
+<img src="./assets/demo.gif" alt="tool-calling example in action" width="100%" />
+
+> **Heads up** — Tool execution runs through OpenAI function calling, so it needs a key.
+
+<!-- visual-header -->
+
 ## Features
 
 - 4 built-in tools (weather, search, calculator, stock)

@@ -3,6 +3,26 @@
 > The simplest possible AI chat implementation using `@clarity-chat/react` - get started in under 5
 > minutes.
 
+<!-- visual-header -->
+
+<div align="center">
+
+<img src="./assets/hero.png" alt="basic-chat example" width="100%" />
+
+<sub>A minimal chat window: header, message list, composer.</sub>
+
+</div>
+
+<br />
+
+**Composing a message. Add an `OPENAI_API_KEY` to `.env.local` to get real replies.**
+
+<img src="./assets/demo.gif" alt="basic-chat example in action" width="100%" />
+
+> **Heads up** — This example calls OpenAI, so it needs a key before it will answer.
+
+<!-- visual-header -->
+
 ## Features
 
 - **@clarity-chat/react Integration** - Uses the official `useClarityChat` hook

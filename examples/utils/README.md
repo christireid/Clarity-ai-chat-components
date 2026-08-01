@@ -1,5 +1,12 @@
 # Clarity Examples - Shared Utilities
 
+<!-- visual-header -->
+
+> **No screenshot** — This is the shared helper package the other examples import, not a demo, so
+> there is nothing to screenshot.
+
+<!-- visual-header -->
+
 Reusable utilities and components for all Clarity Chat examples.
 
 ## Available Utilities

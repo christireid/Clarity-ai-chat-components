@@ -1,6 +1,25 @@
 # Security Examples
 
-This directory contains comprehensive examples demonstrating the security features of Clarity AI Chat Components.
+<!-- visual-header -->
+
+<div align="center">
+
+<img src="./assets/hero.png" alt="security-examples example" width="100%" />
+
+<sub>A security test bench: attack patterns, validation modes and results.</sub>
+
+</div>
+
+<br />
+
+**Selecting attack patterns and running them through server-side validation.**
+
+<img src="./assets/demo.gif" alt="security-examples example in action" width="100%" />
+
+<!-- visual-header -->
+
+This directory contains comprehensive examples demonstrating the security features of Clarity AI
+Chat Components.
 
 ## Examples
 
@@ -9,24 +28,28 @@ This directory contains comprehensive examples demonstrating the security featur
 Interactive examples demonstrating all security features:
 
 #### Simple Secure Chat
+
 - Basic security setup with React hooks
 - Prompt injection detection
 - PII redaction
 - Jailbreak prevention
 
 #### Advanced Secure Chat
+
 - Full security configuration
 - Real-time security monitoring
 - Security metrics dashboard
 - Critical event tracking
 
 #### Custom Security Manager
+
 - Custom SecurityManager setup
 - Webhook alert integration
 - Manual validation flow
 - Security statistics
 
 #### Security Test Bench
+
 - Pre-loaded attack patterns
 - Custom input testing
 - Real-time validation results
@@ -72,6 +95,7 @@ The examples include the following attack patterns for testing:
 ## Expected Results
 
 ### Blocked Messages
+
 - DAN jailbreak attempts → `prompt_injection` (confidence: 0.9+)
 - Instruction override → `prompt_injection` (confidence: 0.8+)
 - Role manipulation → `prompt_injection` (confidence: 0.7+)
@@ -79,9 +103,11 @@ The examples include the following attack patterns for testing:
 - Encoding attacks → `prompt_injection` (confidence: 0.6+)
 
 ### Allowed with Redaction
+
 - PII leakage → Allowed but sanitized (email/SSN/phone redacted)
 
 ### Allowed Messages
+
 - Legitimate questions → Allowed with no modifications
 - Technical questions → Allowed with no modifications
 
@@ -132,9 +158,7 @@ const security = new SecurityManager({
   monitoring: {
     enabled: true,
     logEvents: true,
-    alertHandlers: [
-      new WebhookAlertHandler('https://alerts.example.com'),
-    ],
+    alertHandlers: [new WebhookAlertHandler('https://alerts.example.com')],
   },
 })
 ```
@@ -248,7 +272,9 @@ function YourChatComponent() {
 ## Support
 
 For questions or issues:
-- GitHub Issues: [Report an issue](https://github.com/yourusername/clarity-ai-chat-components/issues)
+
+- GitHub Issues:
+  [Report an issue](https://github.com/yourusername/clarity-ai-chat-components/issues)
 - Security vulnerabilities: security@example.com
 - Documentation: [Full docs](https://docs.example.com)
 

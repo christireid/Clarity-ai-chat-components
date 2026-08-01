@@ -9,6 +9,13 @@
 
 ![Memory Examples](./public/screenshot.svg)
 
+<!-- visual-header -->
+
+> **No screenshot** — This example runs as an Express/Fastify server and an interactive CLI rather
+> than a web app, so there is no browser UI to screenshot.
+
+<!-- visual-header -->
+
 ## ✨ Features
 
 - **Multiple frameworks** - Express.js, Fastify, Next.js, and CLI examples

@@ -8,6 +8,24 @@
 
 ![Enterprise AI Ops Dashboard](./public/screenshot.svg)
 
+<!-- visual-header -->
+
+<div align="center">
+
+<img src="./assets/hero.png" alt="enterprise-ai-ops example" width="100%" />
+
+<sub>The AI ops console: request volume, token breakdown, safety alerts and model performance.</sub>
+
+</div>
+
+<br />
+
+**Scrolling the live dashboard.**
+
+<img src="./assets/demo.gif" alt="enterprise-ai-ops example in action" width="100%" />
+
+<!-- visual-header -->
+
 ## ✨ Features
 
 - **Real-time metrics** - Track requests, tokens, costs, and latency at a glance

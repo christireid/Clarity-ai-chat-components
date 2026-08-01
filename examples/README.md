@@ -2,6 +2,152 @@
 
 Commercial-grade example applications showcasing Clarity Chat capabilities.
 
+<!-- visual-gallery -->
+
+## 🖼️ The Examples, At A Glance
+
+Every image below is a capture of that example running locally. Click one to open it.
+
+<table>
+<tr>
+<td width="50%" valign="top">
+
+#### [Quickstart](./quickstart)
+
+Zero config, demo mode, works the moment it boots.
+
+<a href="./quickstart"><img src="./quickstart/assets/demo.gif" alt="Quickstart example" width="100%" /></a>
+
+`pnpm dev` → `localhost:3000`
+
+</td>
+<td width="50%" valign="top">
+
+#### [Basic Chat](./basic-chat)
+
+The smallest useful chat: header, messages, composer.
+
+<a href="./basic-chat"><img src="./basic-chat/assets/demo.gif" alt="Basic Chat example" width="100%" /></a>
+
+`pnpm dev` → `localhost:3000`
+
+</td>
+</tr>
+<tr>
+<td width="50%" valign="top">
+
+#### [Custom Theming](./custom-theming)
+
+Eight presets and a live preview that recolors instantly.
+
+<a href="./custom-theming"><img src="./custom-theming/assets/demo.gif" alt="Custom Theming example" width="100%" /></a>
+
+`pnpm dev` → `localhost:3003`
+
+</td>
+<td width="50%" valign="top">
+
+#### [Enterprise AI Ops](./enterprise-ai-ops)
+
+Requests, tokens, cost, latency, safety alerts.
+
+<a href="./enterprise-ai-ops"><img src="./enterprise-ai-ops/assets/demo.gif" alt="Enterprise AI Ops example" width="100%" /></a>
+
+`pnpm dev` → `localhost:3002`
+
+</td>
+</tr>
+<tr>
+<td width="50%" valign="top">
+
+#### [Tool Calling](./tool-calling)
+
+Weather, search, calculator and stock tools.
+
+<a href="./tool-calling"><img src="./tool-calling/assets/demo.gif" alt="Tool Calling example" width="100%" /></a>
+
+`pnpm dev` → `localhost:3004`
+
+</td>
+<td width="50%" valign="top">
+
+#### [Accessibility](./accessibility)
+
+WCAG 2.1 AA, contrast and motion controls.
+
+<a href="./accessibility"><img src="./accessibility/assets/demo.gif" alt="Accessibility example" width="100%" /></a>
+
+`pnpm dev` → `localhost:3005`
+
+</td>
+</tr>
+<tr>
+<td width="50%" valign="top">
+
+#### [Security](./security-examples)
+
+Prompt injection, PII and jailbreak validation.
+
+<a href="./security-examples"><img src="./security-examples/assets/demo.gif" alt="Security example" width="100%" /></a>
+
+`pnpm dev` → `localhost:3007`
+
+</td>
+<td width="50%" valign="top">
+
+#### [Multi-Provider](./multi-provider)
+
+Switch providers and models with live pricing.
+
+<a href="./multi-provider"><img src="./multi-provider/assets/hero.png" alt="Multi-Provider example" width="100%" /></a>
+
+`pnpm dev` → `localhost:3008`
+
+</td>
+</tr>
+<tr>
+<td width="50%" valign="top">
+
+#### [Headless Mode](./headless-mode)
+
+Your markup, the library's chat state.
+
+<a href="./headless-mode"><img src="./headless-mode/assets/demo.gif" alt="Headless Mode example" width="100%" /></a>
+
+`pnpm dev` → `localhost:3010`
+
+</td>
+<td width="50%" valign="top">
+
+#### [Token Optimization](./token-optimization)
+
+TOON, compression and cache preparation.
+
+<a href="./token-optimization"><img src="./token-optimization/assets/demo.gif" alt="Token Optimization example" width="100%" /></a>
+
+`pnpm dev` → `localhost:3003`
+
+</td>
+</tr>
+</table>
+
+### Not pictured
+
+These have no screenshot, and here is why:
+
+- **[streaming-chat](./streaming-chat)** — does not currently boot — its `@/*` alias points at
+  `./src/*` while the app Next.js serves lives in `./app`.
+- **[advanced-features](./advanced-features)** — does not currently boot — it imports
+  `useBatteryAware`, which `@clarity-chat/react` does not export.
+- **[memory-examples](./memory-examples)** — runs as an Express/Fastify server and an interactive
+  CLI, so there is no browser UI to capture.
+- **[standalone](./standalone)** — is a set of copy-paste snippets rather than a runnable app.
+- **[standalone-tools](./standalone-tools)** — is a set of copy-paste snippets rather than a
+  runnable app.
+- **[utils](./utils)** — is the shared helper package the other examples import, not a demo.
+
+<!-- visual-gallery -->
+
 ## Getting Started
 
 Each example is a standalone Next.js application that can be run independently:

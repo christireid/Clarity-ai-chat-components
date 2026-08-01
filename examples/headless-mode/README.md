@@ -6,6 +6,28 @@
 ![Headless](https://img.shields.io/badge/Mode-Headless-purple)
 ![Custom UI](https://img.shields.io/badge/UI-Your%20Own-blue)
 
+<!-- visual-header -->
+
+<div align="center">
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="./assets/hero-dark.png" />
+  <source media="(prefers-color-scheme: light)" srcset="./assets/hero.png" />
+  <img src="./assets/hero.png" alt="headless-mode example" width="100%" />
+</picture>
+
+<sub>Headless mode — your own layout, the library's chat state.</sub>
+
+</div>
+
+<br />
+
+**A full conversation running in demo mode, rendered entirely by custom markup.**
+
+<img src="./assets/demo.gif" alt="headless-mode example in action" width="100%" />
+
+<!-- visual-header -->
+
 ## What You'll Learn
 
 - Building a chat UI with pure React state and fetch

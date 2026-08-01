@@ -2,6 +2,25 @@
 
 > Explore preset themes and create custom color schemes for Clarity Chat.
 
+<!-- visual-header -->
+
+<div align="center">
+
+<img src="./assets/hero.png" alt="custom-theming example" width="100%" />
+
+<sub>Theme Studio: eight presets on the left, a live chat preview on the right.</sub>
+
+</div>
+
+<br />
+
+**Switching between Ocean, Forest, Rose, Default Dark and Midnight — the preview recolors
+instantly.**
+
+<img src="./assets/demo.gif" alt="custom-theming example in action" width="100%" />
+
+<!-- visual-header -->
+
 ## Features
 
 - 8 preset themes (4 light, 4 dark)

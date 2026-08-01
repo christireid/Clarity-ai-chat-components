@@ -8,6 +8,16 @@
 
 ![Streaming Chat Demo](./public/screenshot.svg)
 
+<!-- visual-header -->
+
+> **No screenshot** — This example does not currently boot: its `tsconfig.json` maps `@/*` to
+> `./src/*`, but the app Next.js serves is `./app`, so `@/components/*` fails to resolve. There is
+> no screenshot here for that reason — see the
+> [streaming clips in the gallery](../../docs/GALLERY.md#messages) for what these components look
+> like.
+
+<!-- visual-header -->
+
 ## ✨ Features
 
 - **Real-time streaming** - See AI responses appear word-by-word as they're generated

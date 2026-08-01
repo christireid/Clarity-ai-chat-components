@@ -11,7 +11,9 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@clarity-chat/example-utils": "workspace:*",
     "@clarity-chat/react": "workspace:*",
+    "@emotion/is-prop-valid": "^1.2.2",
     "next": "15.1.0",
     "openai": "^4.72.0",
     "react": "^19.0.0",

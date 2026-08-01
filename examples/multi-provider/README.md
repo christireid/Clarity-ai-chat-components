@@ -2,6 +2,21 @@
 
 > Switch between OpenAI, Anthropic Claude, and Google Gemini with a unified interface.
 
+<!-- visual-header -->
+
+<div align="center">
+
+<img src="./assets/hero.png" alt="multi-provider example" width="100%" />
+
+<sub>Provider and model switching with live per-model pricing and context limits.</sub>
+
+</div>
+
+> **Heads up** — Providers show **No key** until you add one — add `OPENAI_API_KEY` or
+> `ANTHROPIC_API_KEY` to switch and chat.
+
+<!-- visual-header -->
+
 ## Features
 
 - Provider switching (OpenAI, Anthropic, Google)
