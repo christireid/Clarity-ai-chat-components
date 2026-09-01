@@ -22,7 +22,7 @@
     "@storybook/react-vite": "^8.6.15",
     "@storybook/test": "^8.6.15",
     "chromatic": "^11.25.2",
-    "serve": "^14.2.4",
+    "serve": "^14.2.6",
     "storybook": "^8.6.15",
     "storybook-dark-mode": "^4.0.2"
   },
