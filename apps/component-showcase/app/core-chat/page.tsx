@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { PageHeader, ComponentSection } from '@/components/component-section'
+import { coreChatDocs } from '@/data/docs/core-chat-docs'
 import {
   Card,
   CardHeader,
@@ -503,6 +504,7 @@ export default function CoreChatPage() {
           <ComponentSection
             title="ChatWindow"
             description="Complete chat window with messages, input, and actions"
+            docs={coreChatDocs.ChatWindow}
           >
             <ChatWindowDemo />
           </ComponentSection>
@@ -512,6 +514,7 @@ export default function CoreChatPage() {
           <ComponentSection
             title="ChatSidebar"
             description="Conversation list with search and management"
+            docs={coreChatDocs.ChatSidebar}
           >
             <ChatSidebarDemo />
           </ComponentSection>
@@ -521,6 +524,7 @@ export default function CoreChatPage() {
           <ComponentSection
             title="ChatInput Variants"
             description="Different input styles for various use cases"
+            docs={coreChatDocs['ChatInput Variants']}
           >
             <ChatInputVariants />
           </ComponentSection>
@@ -530,6 +534,7 @@ export default function CoreChatPage() {
           <ComponentSection
             title="ChatContainer"
             description="Full-featured chat container component"
+            docs={coreChatDocs.ChatContainer}
           >
             <ChatContainerDemo />
           </ComponentSection>
@@ -539,6 +544,7 @@ export default function CoreChatPage() {
           <ComponentSection
             title="ExpandableChat"
             description="Floating chat widget for websites"
+            docs={coreChatDocs.ExpandableChat}
           >
             <ExpandableChatDemo />
           </ComponentSection>

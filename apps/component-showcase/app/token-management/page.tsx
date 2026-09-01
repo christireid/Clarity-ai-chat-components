@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { PageHeader, ComponentSection } from '@/components/component-section'
+import { tokenManagementDocs } from '@/data/docs/token-management-docs'
 import {
   Card,
   CardHeader,
@@ -476,6 +477,7 @@ export default function TokenManagementPage() {
           <ComponentSection
             title="Token Counter"
             description="Real-time token tracking"
+            docs={tokenManagementDocs['Token Counter']}
           >
             <TokenCounterDemo />
           </ComponentSection>
@@ -485,6 +487,7 @@ export default function TokenManagementPage() {
           <ComponentSection
             title="Token Budget"
             description="Usage limits and alerts"
+            docs={tokenManagementDocs['Token Budget']}
           >
             <TokenBudgetDemo />
           </ComponentSection>
@@ -494,6 +497,7 @@ export default function TokenManagementPage() {
           <ComponentSection
             title="Token Optimization"
             description="Reduce usage with smart strategies"
+            docs={tokenManagementDocs['Token Optimization']}
           >
             <TokenOptimizationDemo />
           </ComponentSection>
@@ -503,13 +507,18 @@ export default function TokenManagementPage() {
           <ComponentSection
             title="Cost Tracking"
             description="Monitor spending by model"
+            docs={tokenManagementDocs['Cost Tracking']}
           >
             <CostTrackingDemo />
           </ComponentSection>
         </TabsContent>
 
         <TabsContent value="metrics">
-          <ComponentSection title="Token Metrics" description="Usage analytics">
+          <ComponentSection
+            title="Token Metrics"
+            description="Usage analytics"
+            docs={tokenManagementDocs['Token Metrics']}
+          >
             <TokenMetricsDemo />
           </ComponentSection>
         </TabsContent>

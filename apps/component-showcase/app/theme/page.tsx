@@ -29,6 +29,7 @@ import {
   Square,
   Circle,
 } from 'lucide-react'
+import { themeDocs } from '@/data/docs/theme-docs'
 
 // ============================================================================
 // THEME SWITCHER DEMO
@@ -416,6 +417,7 @@ export default function ThemePage() {
           <ComponentSection
             title="Theme Switcher"
             description="Light/dark mode controls"
+            docs={themeDocs['Theme Switcher']}
           >
             <ThemeSwitcherDemo />
           </ComponentSection>
@@ -425,6 +427,7 @@ export default function ThemePage() {
           <ComponentSection
             title="Color Palette"
             description="Accent color customization"
+            docs={themeDocs['Color Palette']}
           >
             <ColorPaletteDemo />
           </ComponentSection>
@@ -434,6 +437,7 @@ export default function ThemePage() {
           <ComponentSection
             title="Theme Presets"
             description="Pre-made color schemes"
+            docs={themeDocs['Theme Presets']}
           >
             <ThemePresetsDemo />
           </ComponentSection>
@@ -443,6 +447,7 @@ export default function ThemePage() {
           <ComponentSection
             title="Appearance Settings"
             description="UI customization options"
+            docs={themeDocs['Appearance Settings']}
           >
             <AppearanceSettingsDemo />
           </ComponentSection>

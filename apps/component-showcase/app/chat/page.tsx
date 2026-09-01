@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react'
 import { PageHeader, ComponentSection } from '@/components/component-section'
+import { chatDocs } from '@/data/docs/chat-docs'
 import {
   // Core Chat Components
   ChatInput,
@@ -2636,6 +2637,7 @@ export default function ChatPage() {
             title="Agentic Chat with Tool Calling"
             description="Full-featured chat with thinking, tools, citations, and token tracking"
             icon={Brain}
+            docs={chatDocs['Agentic Chat with Tool Calling']}
           >
             <AdvancedAgenticChatDemo />
           </ComponentSection>
@@ -2647,6 +2649,7 @@ export default function ChatPage() {
               title="Code Editor & Terminal"
               description="Syntax-highlighted code with live execution"
               icon={Terminal}
+              docs={chatDocs['Code Editor & Terminal']}
             >
               <CodeTerminalDemo />
             </ComponentSection>
@@ -2654,6 +2657,7 @@ export default function ChatPage() {
               title="File Explorer"
               description="Navigate project structure"
               icon={FolderOpen}
+              docs={chatDocs['File Explorer']}
             >
               <FileTreeDemo />
             </ComponentSection>
@@ -2662,6 +2666,7 @@ export default function ChatPage() {
             title="Chain of Thought"
             description="AI reasoning visualization"
             icon={Brain}
+            docs={chatDocs['Chain of Thought']}
           >
             <ChainOfThoughtDemo />
           </ComponentSection>
@@ -2673,6 +2678,7 @@ export default function ChatPage() {
               title="Tool Approval"
               description="Human-in-the-loop"
               icon={ShieldCheck}
+              docs={chatDocs['Tool Approval']}
             >
               <ApprovalCardDemo />
             </ComponentSection>
@@ -2680,6 +2686,7 @@ export default function ChatPage() {
               title="Safety & Guardrails"
               description="Content moderation"
               icon={Shield}
+              docs={chatDocs['Safety & Guardrails']}
             >
               <SafetyAlertsDemo />
             </ComponentSection>
@@ -2689,6 +2696,7 @@ export default function ChatPage() {
               title="Retry Logic"
               description="Automatic retry with backoff"
               icon={RotateCw}
+              docs={chatDocs['Retry Logic']}
             >
               <RetryLogicDemo />
             </ComponentSection>
@@ -2696,6 +2704,7 @@ export default function ChatPage() {
               title="Model Fallback"
               description="Automatic model failover"
               icon={Layers}
+              docs={chatDocs['Model Fallback']}
             >
               <ModelFallbackDemo />
             </ComponentSection>
@@ -2708,6 +2717,7 @@ export default function ChatPage() {
               title="Drafts & Archive"
               description="Message drafts and archiving"
               icon={Edit3}
+              docs={chatDocs['Drafts & Archive']}
             >
               <MessageDraftsDemo />
             </ComponentSection>
@@ -2715,6 +2725,7 @@ export default function ChatPage() {
               title="Quick Replies"
               description="Pre-defined responses"
               icon={Reply}
+              docs={chatDocs['Quick Replies']}
             >
               <QuickRepliesDemo />
             </ComponentSection>
@@ -2724,6 +2735,7 @@ export default function ChatPage() {
               title="Message Search"
               description="Full-text search"
               icon={Search}
+              docs={chatDocs['Message Search']}
             >
               <MessageSearchDemo />
             </ComponentSection>
@@ -2731,6 +2743,7 @@ export default function ChatPage() {
               title="Sources"
               description="Citation sources"
               icon={Link}
+              docs={chatDocs['Sources']}
             >
               <SourcesDemo />
             </ComponentSection>
@@ -2739,6 +2752,7 @@ export default function ChatPage() {
             title="Inline Citations"
             description="Citations within text"
             icon={FileText}
+            docs={chatDocs['Inline Citations']}
           >
             <InlineCitationsDemo />
           </ComponentSection>
@@ -2750,6 +2764,7 @@ export default function ChatPage() {
               title="Notifications"
               description="Real-time alerts"
               icon={Bell}
+              docs={chatDocs['Notifications']}
             >
               <NotificationsDemo />
             </ComponentSection>
@@ -2757,6 +2772,7 @@ export default function ChatPage() {
               title="Personas"
               description="AI personas"
               icon={Users}
+              docs={chatDocs['Personas']}
             >
               <PersonasDemo />
             </ComponentSection>
@@ -2766,6 +2782,7 @@ export default function ChatPage() {
               title="Empty States"
               description="Empty content handling"
               icon={Inbox}
+              docs={chatDocs['Empty States']}
             >
               <EmptyStateDemo />
             </ComponentSection>
@@ -2773,6 +2790,7 @@ export default function ChatPage() {
               title="Error States"
               description="Error handling"
               icon={AlertCircle}
+              docs={chatDocs['Error States']}
             >
               <ErrorPageDemo />
             </ComponentSection>
@@ -2781,6 +2799,7 @@ export default function ChatPage() {
             title="Date Picker"
             description="Date selection"
             icon={Calendar}
+            docs={chatDocs['Date Picker']}
           >
             <DatePickerDemo />
           </ComponentSection>

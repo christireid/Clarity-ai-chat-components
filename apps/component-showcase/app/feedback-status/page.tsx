@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { PageHeader, ComponentSection } from '@/components/component-section'
+import { feedbackStatusDocs } from '@/data/docs/feedback-status-docs'
 import {
   Card,
   CardHeader,
@@ -520,6 +521,7 @@ export default function FeedbackStatusPage() {
           <ComponentSection
             title="Toast Notifications"
             description="Temporary status messages"
+            docs={feedbackStatusDocs['Toast Notifications']}
           >
             <ToastNotificationsDemo />
           </ComponentSection>
@@ -529,6 +531,7 @@ export default function FeedbackStatusPage() {
           <ComponentSection
             title="Network Status"
             description="Connection indicators"
+            docs={feedbackStatusDocs['Network Status']}
           >
             <NetworkStatusDemo />
           </ComponentSection>
@@ -538,6 +541,7 @@ export default function FeedbackStatusPage() {
           <ComponentSection
             title="Error States"
             description="Error handling displays"
+            docs={feedbackStatusDocs['Error States']}
           >
             <ErrorStatesDemo />
           </ComponentSection>
@@ -547,6 +551,7 @@ export default function FeedbackStatusPage() {
           <ComponentSection
             title="Feedback Components"
             description="User feedback collection"
+            docs={feedbackStatusDocs['Feedback Components']}
           >
             <FeedbackButtonsDemo />
           </ComponentSection>
@@ -556,6 +561,7 @@ export default function FeedbackStatusPage() {
           <ComponentSection
             title="Notification Center"
             description="Centralized notifications"
+            docs={feedbackStatusDocs['Notification Center']}
           >
             <NotificationCenterDemo />
           </ComponentSection>

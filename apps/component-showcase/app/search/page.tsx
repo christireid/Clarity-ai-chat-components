@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { PageHeader, ComponentSection } from '@/components/component-section'
+import { searchDocs } from '@/data/docs/search-docs'
 import {
   Card,
   CardHeader,
@@ -493,6 +494,7 @@ export default function SearchPage() {
           <ComponentSection
             title="Message Search"
             description="Full-text search with highlighting"
+            docs={searchDocs['Message Search']}
           >
             <MessageSearchDemo />
           </ComponentSection>
@@ -502,6 +504,7 @@ export default function SearchPage() {
           <ComponentSection
             title="Search Filters"
             description="Advanced filtering options"
+            docs={searchDocs['Search Filters']}
           >
             <SearchFiltersDemo />
           </ComponentSection>
@@ -511,6 +514,7 @@ export default function SearchPage() {
           <ComponentSection
             title="Semantic Search"
             description="AI-powered contextual search"
+            docs={searchDocs['Semantic Search']}
           >
             <SemanticSearchDemo />
           </ComponentSection>
@@ -520,6 +524,7 @@ export default function SearchPage() {
           <ComponentSection
             title="Search History"
             description="Recent and saved searches"
+            docs={searchDocs['Search History']}
           >
             <RecentSearchesDemo />
           </ComponentSection>

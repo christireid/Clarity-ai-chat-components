@@ -6,6 +6,7 @@ import {
   PageHeader,
   ComponentGrid,
 } from '@/components/component-section'
+import { primitivesDocs } from '@/data/docs/primitives-docs'
 import {
   Button,
   Dialog,
@@ -76,6 +77,7 @@ export default function PrimitivesPage() {
       <ComponentSection
         title="Button"
         description="Buttons with various variants and states"
+        docs={primitivesDocs['Button']}
       >
         <div className="space-y-4">
           <div className="flex flex-wrap gap-2">
@@ -103,6 +105,7 @@ export default function PrimitivesPage() {
         <ComponentSection
           title="Dialog"
           description="Modal dialog with animations"
+          docs={primitivesDocs['Dialog']}
         >
           <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
             <DialogTrigger asChild>
@@ -132,6 +135,7 @@ export default function PrimitivesPage() {
         <ComponentSection
           title="DropdownMenu"
           description="Dropdown menu with items"
+          docs={primitivesDocs['DropdownMenu']}
         >
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -153,7 +157,11 @@ export default function PrimitivesPage() {
       </ComponentGrid>
 
       <ComponentGrid cols={2}>
-        <ComponentSection title="Popover" description="Floating popover panel">
+        <ComponentSection
+          title="Popover"
+          description="Floating popover panel"
+          docs={primitivesDocs['Popover']}
+        >
           <Popover>
             <PopoverTrigger asChild>
               <Button variant="outline">Open Popover</Button>
@@ -172,6 +180,7 @@ export default function PrimitivesPage() {
         <ComponentSection
           title="Tooltip"
           description="Helpful tooltips on hover"
+          docs={primitivesDocs['Tooltip']}
         >
           <div className="flex gap-4">
             <Tooltip content="This is a tooltip">
@@ -186,7 +195,11 @@ export default function PrimitivesPage() {
         </ComponentSection>
       </ComponentGrid>
 
-      <ComponentSection title="Tabs" description="Tab navigation component">
+      <ComponentSection
+        title="Tabs"
+        description="Tab navigation component"
+        docs={primitivesDocs['Tabs']}
+      >
         <Tabs defaultValue="tab1" className="w-full">
           <TabsList>
             <TabsTrigger value="tab1">Overview</TabsTrigger>
@@ -217,6 +230,7 @@ export default function PrimitivesPage() {
       <ComponentSection
         title="Form Elements"
         description="Input, textarea, checkbox, switch, and select"
+        docs={primitivesDocs['Form Elements']}
       >
         <div className="grid md:grid-cols-2 gap-6">
           <div className="space-y-4">
@@ -285,7 +299,11 @@ export default function PrimitivesPage() {
       </ComponentSection>
 
       <ComponentGrid cols={2}>
-        <ComponentSection title="Avatar" description="User avatar display">
+        <ComponentSection
+          title="Avatar"
+          description="User avatar display"
+          docs={primitivesDocs['Avatar']}
+        >
           <div className="flex items-center gap-4">
             <Avatar
               src="https://i.pravatar.cc/150?u=1"
@@ -306,7 +324,11 @@ export default function PrimitivesPage() {
           </div>
         </ComponentSection>
 
-        <ComponentSection title="Badge" description="Status and label badges">
+        <ComponentSection
+          title="Badge"
+          description="Status and label badges"
+          docs={primitivesDocs['Badge']}
+        >
           <div className="flex flex-wrap gap-2">
             <Badge>Default</Badge>
             <Badge variant="secondary">Secondary</Badge>
@@ -318,7 +340,11 @@ export default function PrimitivesPage() {
         </ComponentSection>
       </ComponentGrid>
 
-      <ComponentSection title="Card" description="Content card container">
+      <ComponentSection
+        title="Card"
+        description="Content card container"
+        docs={primitivesDocs['Card']}
+      >
         <div className="grid md:grid-cols-3 gap-4">
           <Card>
             <CardHeader>
@@ -365,6 +391,7 @@ export default function PrimitivesPage() {
         <ComponentSection
           title="ScrollArea"
           description="Custom scrollable container"
+          docs={primitivesDocs['ScrollArea']}
         >
           <ScrollArea className="h-48 border rounded-lg p-4">
             <div className="space-y-4">
@@ -381,6 +408,7 @@ export default function PrimitivesPage() {
         <ComponentSection
           title="Separator & Kbd"
           description="Dividers and keyboard keys"
+          docs={primitivesDocs['Separator & Kbd']}
         >
           <div className="space-y-4">
             <div>

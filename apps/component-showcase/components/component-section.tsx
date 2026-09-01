@@ -1,7 +1,14 @@
 'use client'
 
-import { cn } from '@clarity-chat/primitives'
-import { LucideIcon } from 'lucide-react'
+import {
+  cn,
+  Tabs,
+  TabsList,
+  TabsTrigger,
+  TabsContent,
+} from '@clarity-chat/primitives'
+import { LucideIcon, Eye, BookOpen } from 'lucide-react'
+import { DocPanel, type ComponentDoc } from './doc-panel'
 
 interface ComponentSectionProps {
   title: string
@@ -9,6 +16,7 @@ interface ComponentSectionProps {
   children: React.ReactNode
   className?: string
   icon?: LucideIcon
+  docs?: ComponentDoc | ComponentDoc[]
 }
 
 export function ComponentSection({
@@ -17,6 +25,7 @@ export function ComponentSection({
   children,
   className,
   icon: Icon,
+  docs,
 }: ComponentSectionProps) {
   return (
     <div className={cn('glass-card p-6 mb-8', className)}>
@@ -35,7 +44,34 @@ export function ComponentSection({
           )}
         </div>
       </div>
-      <div>{children}</div>
+      {docs ? (
+        <Tabs defaultValue="preview" className="w-full">
+          <TabsList className="mb-4 h-auto gap-1 p-1 bg-muted/50">
+            <TabsTrigger
+              value="preview"
+              className="rounded-md gap-1.5 text-xs px-3 py-1.5"
+            >
+              <Eye className="h-3.5 w-3.5" />
+              Preview
+            </TabsTrigger>
+            <TabsTrigger
+              value="docs"
+              className="rounded-md gap-1.5 text-xs px-3 py-1.5"
+            >
+              <BookOpen className="h-3.5 w-3.5" />
+              Documentation
+            </TabsTrigger>
+          </TabsList>
+          <TabsContent value="preview">
+            <div>{children}</div>
+          </TabsContent>
+          <TabsContent value="docs">
+            <DocPanel docs={docs} />
+          </TabsContent>
+        </Tabs>
+      ) : (
+        <div>{children}</div>
+      )}
     </div>
   )
 }
