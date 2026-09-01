@@ -138,7 +138,7 @@
     "turbo": "^2.6.3",
     "typescript": "^5.9.3",
     "vite": "^7.2.6",
-    "vitest": "^4.0.16"
+    "vitest": "^4.0.18"
   },
   "pnpm": {
     "overrides": {
